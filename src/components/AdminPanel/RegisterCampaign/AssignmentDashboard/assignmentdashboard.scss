@@ -1,0 +1,61 @@
+/* General styles for the assignment dashboard */
+.assignment-card {
+    display: inline-block;
+    border-radius: 0.5em;
+    box-shadow: 0 1px 2.5em rgba(0, 0, 0, 0.1);
+    padding: 2.5em 1.5em 1.5em 1.5em;
+    background-color: #fff;
+    width: 212px; /* Adjust the width as needed */
+    margin-right: 20px;
+    transition: 0.15s ease-out all;
+    border: 1px solid transparent;
+    cursor: default;
+    position: relative;
+    &:not(:last-child) {
+      margin-right: 0.75em;
+    }
+    &.is-hoverable {
+      cursor: pointer;
+      margin-bottom: 30px;
+      &:hover {
+        z-index: 1;
+        border-color: #f1f1f1;
+        transform: translateY(-7px);
+        box-shadow: 0 3px 2.5em rgba(0, 0, 0, 0.15);
+      }
+    }
+  }
+  
+  .assignment-card__val {
+    font-weight: 200;
+    font-size: 32px;
+    margin-bottom: 15px;
+  }
+  
+  .assignment-card__label {
+    margin-bottom: 0.75em;
+    font-size: 14px;
+    font-weight: 500;
+    color: #777e86;
+  }
+  
+  .assignment-card__color {
+    width: 30px;
+    height: 5px;
+    background-color: #e1e1e1;
+    border-radius: 1em;
+    &.is-green {
+      background-color: #64dead; /* Adjust the color as needed */
+    }
+    &.is-orange {
+      background-color: #eeba89; /* Adjust the color as needed */
+    }
+    &.is-red {
+      background-color: #ec5e66; /* Adjust the color as needed */
+    }
+  }
+  
+  /* Additional styles specific to the assignment dashboard */
+  /* Add your custom styles here, for example, to style specific elements
+     that only appear within the assignment dashboard. */
+  

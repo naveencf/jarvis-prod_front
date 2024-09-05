@@ -1,0 +1,331 @@
+import {
+  Blueprint,
+  Invoice,
+  Scroll,
+  Files,
+  FileX,
+} from "@phosphor-icons/react";
+import Modal from "react-modal";
+import View from "./Account/View/View";
+import { useGlobalContext } from "../../../Context/Context";
+import getDecodedToken from "../../../utils/DecodedToken";
+import { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import IncentiveRelease from "./Incenti Dashboard/IncentiveRelease";
+import FormContainer from "../FormContainer";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import DateISOtoNormal from "../../../utils/DateISOtoNormal";
+import formatString from "../../../utils/formatString";
+import SalesBadges from "./SalesBadges";
+import Loader from "../../Finance/Loader/Loader";
+import { formatIndianNumber } from "../../../utils/formatIndianNumber";
+import MonthlyWeeklyCard from "./MonthlyWeeklyCard";
+
+const SalesDashboard = () => {
+  const { toastAlert, toastError } = useGlobalContext();
+  const loginUserId = getDecodedToken().id;
+  const loginUserRole = getDecodedToken().role_id;
+  const loginUserDept = getDecodedToken().dept_id;
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [releaseModal, setReleaseModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState("");
+  const [weekMonthCard, setWeekMonthCard] = useState();
+  const [userBadgeData, setUserBadgeData] = useState();
+
+  async function getData() {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(
+        baseUrl +
+          `sales/top20_account_list?userId=${loginUserId}&isAdmin=${
+            loginUserRole == 1
+          }`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const response1 = await axios.get(
+        baseUrl +
+          `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
+            loginUserRole == 1 ? "true" : "false"
+          }`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const responseOutstanding = await axios.get(
+        baseUrl + `sales/badges_sales_booking_data?userId=${loginUserId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setUserBadgeData(responseOutstanding.data.data);
+      setWeekMonthCard(response1.data.data);
+      setData(response.data.data);
+    } catch (error) {
+      if (error.message !== "Request failed with status code 404")
+        toastError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const columns = [
+    {
+      name: "S.No",
+      renderRowCell: (row, index) => {
+        return index + 1;
+      },
+      width: 50,
+    },
+    {
+      key: "account_name",
+      name: "Account Name",
+      renderRowCell: (row) => (
+        <Link
+          style={{ color: "blue" }}
+          to={`/sales-account-info/${row?.account_obj_id}`}
+        >
+          {formatString(row?.account_name)}
+        </Link>
+      ),
+      width: 150,
+    },
+    // {
+    //   key: "created_by_name",
+    //   name: "Created By",
+    //   renderRowCell: (row) => row.created_by_name,
+    //   width: 150,
+    // },
+    // {
+    //   key: "created_by_contact_no",
+    //   name: "Created By Contact Number",
+    //   renderRowCell: (row) => row.created_by_contact_no,
+    //   width: 150,
+    // },
+    {
+      key: "totalCampaignAmount",
+      name: "Total Campaign Amount",
+      renderRowCell: (row) => formatIndianNumber(row.totalCampaignAmount),
+      width: 150,
+    },
+    {
+      key: "totalSaleBookingCounts",
+      name: "Total Sale Booking Counts",
+      renderRowCell: (row) => row.totalSaleBookingCounts,
+      width: 150,
+    },
+  ];
+
+  return (
+    <div>
+      {isLoading && <Loader />}
+      <Modal
+        className="salesModal"
+        isOpen={releaseModal}
+        onRequestClose={() => setReleaseModal(false)}
+        contentLabel="modal"
+        preventScroll={true}
+        appElement={document.getElementById("root")}
+        style={{
+          overlay: {
+            position: "fixed",
+            backgroundColor: "rgba(255, 255, 255, 0.75)",
+            height: "100vh",
+          },
+          content: {
+            position: "absolute",
+            maxWidth: "900px",
+            top: "50px",
+            border: "1px solid #ccc",
+            background: "#fff",
+            overflow: "auto",
+            WebkitOverflowScrolling: "touch",
+            borderRadius: "4px",
+            outline: "none",
+            padding: "20px",
+            maxHeight: "650px",
+          },
+        }}
+      >
+        <IncentiveRelease
+          selectedRow={selectedRow}
+          setSelectedRow={setSelectedRow}
+        />
+      </Modal>
+
+      <div className="action_heading">
+        <div className="action_title">
+          <FormContainer mainTitle={"Dashboard"} link={true} />
+        </div>
+        <div className="action_btns">
+          <Link to={"/admin/create-sales-account/0"}>
+            <button className="btn cmnbtn btn-primary btn_sm">
+              Add account
+            </button>
+          </Link>
+          <Link to={"/admin/create-sales-booking"}>
+            <button className="btn cmnbtn btn-primary btn_sm">
+              Create Sale Booking
+            </button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="row">
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.weeklyData}
+          previousData={weekMonthCard?.lastWeekData}
+          title="Weekly"
+          cardClass="bgPrimary"
+          titleClass="colorPrimary"
+          colorClass="bgPrimary"
+        />
+
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.monthlyData}
+          previousData={weekMonthCard?.lastMonthData}
+          title="Monthly"
+          cardClass="bgSecondary"
+          titleClass="colorSecondary"
+          colorClass="bgSecondary"
+        />
+
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.quarterlyData}
+          previousData={weekMonthCard?.lastQuarterData}
+          title="Quarterly"
+          cardClass="bgTertiary"
+          titleClass="colorTertiary"
+          colorClass="bgTertiary"
+        />
+      </div>
+
+      <div className="row">
+        <div className="col">
+          <NavLink to="/admin/sales-incentive-overview">
+            <div className="card shadow-none bgPrimaryLight">
+              <div className="card-body text-center pb20">
+                <div class="iconBadge bgPrimaryLight">
+                  <span>
+                    <Blueprint weight="duotone" />
+                  </span>
+                </div>
+                <h6 className="fs_16">Incentive Plan</h6>
+                {/* <h6 className="mt8 fs_16">
+                  {formatNumber(incentiveTotalData?.totalCampaignAmount)}
+                </h6> */}
+              </div>
+            </div>
+          </NavLink>
+        </div>
+
+        <div className="col">
+          <NavLink to="/admin/view-invoice-request">
+            <div className="card shadow-none bgSecondaryLight">
+              <div className="card-body text-center pb20">
+                <div class="iconBadge bgSecondaryLight">
+                  <span>
+                    <Invoice weight="duotone" />
+                  </span>
+                </div>
+                <h6 className="fs_16">Invoice Request List</h6>
+                {/* <h6 className="mt8 fs_16">
+                  {formatNumber(incentiveTotalData?.totalCampaignAmount)}
+                </h6> */}
+              </div>
+            </div>
+          </NavLink>
+        </div>
+
+        {loginUserRole === 1 && (
+          <div className="col">
+            <NavLink to="/admin/sales-incentive-settlement-overview">
+              <div className="card shadow-none bgTertiaryLight">
+                <div className="card-body text-center pb20">
+                  <div class="iconBadge bgTertiaryLight">
+                    <span>
+                      <Scroll weight="duotone" />
+                    </span>
+                  </div>
+                  <h6 className="fs_16">Incentive Settlement</h6>
+                  {/* <h6 className="mt8 fs_16">
+                  {formatNumber(incentiveTotalData?.totalCampaignAmount)}
+                </h6> */}
+                </div>
+              </div>
+            </NavLink>
+          </div>
+        )}
+
+        {loginUserRole !== 4 && (
+          <div className="col">
+            <NavLink to="https://forms.gle/jz7d66xRpska5fWU9">
+              <div className="card shadow-none bgSuccessLight">
+                <div className="card-body text-center pb20">
+                  <div class="iconBadge bgSuccessLight">
+                    <span>
+                      <Files weight="duotone" />
+                    </span>
+                  </div>
+                  <h6 className="fs_16">Request Plan</h6>
+                  {/* <h6 className="mt8 fs_16">
+                  {formatNumber(incentiveTotalData?.totalCampaignAmount)}
+                </h6> */}
+                </div>
+              </div>
+            </NavLink>
+          </div>
+        )}
+
+        {loginUserRole === 1 && (
+          <div className="col">
+            <NavLink to="/admin/deleted-sales-booking">
+              <div className="card shadow-none bgDangerLight">
+                <div className="card-body text-center pb20">
+                  <div class="iconBadge bgDangerLight">
+                    <span>
+                      <FileX weight="duotone" />
+                    </span>
+                  </div>
+                  <h6 className="fs_16">Deleted Sale Booking</h6>
+                  {/* <h6 className="mt8 fs_16">
+                  {formatNumber(incentiveTotalData?.totalCampaignAmount)}
+                </h6> */}
+                </div>
+              </div>
+            </NavLink>
+          </div>
+        )}
+      </div>
+
+      {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />}
+
+      <View
+        title={"Top Bookings"}
+        data={data}
+        columns={columns}
+        isLoading={isLoading}
+        pagination={[10]}
+        tableName={"Top 20 Account Campaign Amount Wise"}
+      />
+    </div>
+  );
+};
+
+export default SalesDashboard;

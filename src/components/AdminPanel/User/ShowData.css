@@ -1,0 +1,25 @@
+.table-main {
+  padding: 0 15px;
+  margin-top: 20px;
+  height: 75vh !important;
+  /* overflow: scroll; */
+}
+
+thead {
+  white-space: nowrap;
+}
+.btn-sml {
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-left: 2px;
+  border-radius: 8px;
+}
+.table-grid {
+  /* display: flex;
+  flex-direction: column; */
+}
+
+.user-button {
+  margin: 0 5px;
+}

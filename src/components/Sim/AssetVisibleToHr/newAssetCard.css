@@ -1,0 +1,76 @@
+.one_card {
+  display: inline-block;
+  width: 400px;
+  padding: 1em;
+  border-radius: 15px;
+  margin: 10px;
+  background: #ddd;
+  text-align: left;
+  box-shadow: 0px 5px 20px -10px #111;
+  position: relative;
+  transition: 0.4s;
+}
+.one_card__caption {
+  background-color: rgba(255, 255, 255, 0.65);
+  padding: 1em;
+  position: relative;
+  border-radius: 0 0 3px 3px;
+}
+
+.one_card__type {
+  position: absolute;
+  top: 0;
+  right: 1em;
+  transform: translateY(-50%);
+  color: #fff;
+  text-transform: uppercase;
+  font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+  letter-spacing: 0.1em;
+  padding: 0.25em;
+  line-height: 1;
+  border-radius: 2px;
+  background: #bbb;
+}
+.one_card__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 400;
+  display: block;
+  margin-bottom: 3px;
+}
+.one_card__name {
+  font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.one_card__stats {
+  margin: 1em 0;
+  width: 100%;
+}
+.one_card__stats th {
+  font-family: "Open Sans Condensed", "Open Sans", helvetica, sans-serif;
+  text-align: right;
+  font-weight: 300;
+}
+.one_card__stats th,
+.one_card__stats td {
+  width: 50%;
+  padding: 0.25em 0.5em 0;
+}
+.one_card__abilities {
+  display: flex;
+  justify-content: space-between;
+}
+.one_card__ability {
+  margin-top: 1em;
+  flex: 1 0;
+}
+.one_card--normal {
+  background: linear-gradient(110deg, #fdbb2d 0%, #3a1c71 100%);
+  box-shadow: 0px 5px 20px -10px #3a1c71;
+}
+.one_card--normal .one_card__type {
+  background-color: #c08a53;
+}

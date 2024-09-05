@@ -1,0 +1,24 @@
+.order_history img {
+  margin-right: 10px;
+}
+
+.order_history {
+  align-items: center;
+  margin-bottom: 20px;
+  border: 1px solid #cfcdcd;
+  padding: 10px;
+  border-radius: 5px;
+}
+.order_history h1 {
+  font-size: 14px;
+}
+
+.order_history p {
+  margin-bottom: 0px;
+}
+
+.order_history_model_body {
+  min-height: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+}

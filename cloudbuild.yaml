@@ -1,0 +1,43 @@
+steps:
+  # Install dependencies
+  - name: 'node:18'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install --f
+
+  # Build React app
+  - name: 'node:18'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm run build
+
+  # Copy the build output to the GCP VM instance
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute scp --recurse dist icreativefuel@node-prod-instance:/var/www/html --zone=us-central1-a
+
+  # Delete the existing reactapp folder on the GCP VM instance
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh icreativefuel@node-prod-instance --zone=us-central1-a --command="rm -rf /var/www/html/assets/ /var/www/html/index.html /var/www/html/logo.png"
+
+  # Move contents of dist/ to /var/www/html/ and delete dist/ folder
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud compute ssh icreativefuel@node-prod-instance --zone=us-central1-a --command="mv /var/www/html/dist/* /var/www/html/ && rm -rf /var/www/html/dist/"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
