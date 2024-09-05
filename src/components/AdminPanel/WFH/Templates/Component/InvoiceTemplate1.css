@@ -1,0 +1,288 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Oswald:wght@200;300;400;500;600;700&family=Pacifico&display=swap");
+body {
+  width: 100%;
+  font-family: "Open Sans", sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+img {
+  display: block;
+  border: 0;
+  outline: none;
+  text-decoration: none;
+  -ms-interpolation-mode: bicubic;
+}
+
+p,
+hr {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0;
+  padding: 0;
+  line-height: 120%;
+}
+
+p,
+ul li,
+ol li,
+a {
+  -webkit-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+.font_oswald {
+  font-family: "Oswald", sans-serif;
+}
+
+.font_opensans {
+  font-family: "Open Sans", sans-serif;
+}
+
+.font_pacifico {
+  font-family: "Pacifico", cursive;
+}
+
+.invoiceWrapper {
+  background-color: #f7faff;
+}
+
+.invoiceBody {
+  width: 100%;
+  max-width: 794px;
+  /* min-height: 1123px; */
+  margin: 0 auto;
+  background-color: #ffffff;
+  position: relative;
+}
+
+.invoiceBodyInner {
+  padding: 30px 35px;
+  display: flex;
+  flex-direction: column;
+}
+
+.invoiceBodyUpper {
+  min-height: 790px;
+}
+
+.invoiceHeading {
+  margin: 0px 0px 30px;
+}
+
+.invoiceHeading h1 {
+  font-family: "Oswald", sans-serif;
+  color: #003366;
+  font-size: 60px;
+  line-height: 70px;
+  text-transform: uppercase;
+}
+
+.addressBox {
+  margin: 0px 0px 30px;
+}
+
+.addressBox h3 {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #000;
+  margin: 0px 0px 5px;
+}
+
+.addressBox h4 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+}
+
+.billBox {
+  margin: 0px 0px 30px;
+}
+
+.billBox {
+  display: flex;
+}
+
+.billBoxLeft {
+  flex: 0 0 auto;
+  width: 60%;
+}
+
+.billBoxLeft h3 {
+  font-family: "Oswald", sans-serif;
+  color: #003366;
+  font-size: 20px;
+  line-height: 30px;
+  margin: 0px 0px 10px;
+  text-transform: uppercase;
+}
+
+.billBoxLeft h4 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+}
+
+.billBoxRight {
+  flex: 0 0 auto;
+  width: 40%;
+}
+
+.billBoxRight h3 {
+  font-family: "Oswald", sans-serif;
+  color: #003366;
+  font-size: 20px;
+  line-height: 30px;
+  margin: 0px 0px 5px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.billBoxRight h3 span {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+  text-transform: capitalize;
+  font-family: "Open Sans", sans-serif;
+}
+
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+.invoiceTable thead th {
+  font-family: "Oswald", sans-serif;
+  color: #003366;
+  text-transform: uppercase;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 600;
+  padding: 6px 6px;
+  margin: 0;
+  border-top: 2px solid #e42421;
+  border-bottom: 2px solid #e42421;
+}
+
+.invoiceTable tbody td {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+  padding: 6px 6px;
+  margin: 0;
+}
+
+.text_left {
+  text-align: left;
+}
+
+.text_right {
+  text-align: right;
+}
+
+.text_center {
+  text-align: center;
+}
+
+.invoiceTable tfoot td {
+  font-family: "Oswald", sans-serif;
+  color: #003366;
+  text-transform: uppercase;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 600;
+  padding: 6px 6px;
+  margin: 0;
+}
+
+.invoiceBodyFooter {
+  display: flex;
+  align-items: flex-end;
+}
+
+.invoiceBodyFooter_left {
+  flex: 0 0 auto;
+  width: 50%;
+}
+
+.invoiceBodyFooter_left h3 {
+  font-family: "Pacifico", cursive;
+  color: #003366;
+  text-align: right;
+  padding: 0px 15px;
+  font-size: 60px;
+  font-weight: 300;
+}
+
+.invoiceBodyFooter_right {
+  flex: 0 0 auto;
+  width: 50%;
+  border-left: 2px solid #000;
+  padding: 0px 0px 0px 15px;
+}
+
+.invoiceBodyFooter_right h3 {
+  font-family: "Oswald", sans-serif;
+  color: #e42421;
+  font-size: 20px;
+  line-height: 30px;
+  font-weight: 600;
+  margin: 0px 0px 10px;
+  text-transform: uppercase;
+}
+
+.invoiceBodyFooter_right h4 {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 600;
+  color: #000;
+}
+.signBox {
+  padding: 0px 15px 10px 0px;
+  text-align: right;
+  float: right;
+}
+.signBox img {
+  width: 160px;
+}
+@media only screen and (max-width: 600px) {
+}

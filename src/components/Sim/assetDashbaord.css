@@ -1,0 +1,49 @@
+.Asset-info-card{
+    width: 100%;
+   
+}
+.flex-direct{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+.asset-card{
+    gap: 10px;
+    .card-body .pack{
+       
+        align-items: flex-start;
+    }
+    .pack{
+        align-items: center;
+    } 
+    h1{
+        
+        font-size: 20px;
+        font-weight: 600;
+        color: var(--gray-700);
+    }
+    .gap{
+        display: flex;
+        gap: 20px;
+       flex-direction: column;
+    }
+    .card-body{
+        display: flex;
+        flex-direction: row !important;
+        align-items: flex-start;
+        i{
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--bg-white);
+        }
+    }
+}
+.asset-d_infocard_txt h3{
+    color: var(--bg-white   );
+    font-size: 25px;
+}
+.asset-d_infocard_icon h1{
+    color: var(--bg-white);
+    font-size: 35px;
+}

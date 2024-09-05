@@ -1,0 +1,35 @@
+.org-tree-container {
+  margin-bottom: 24px;
+  overflow: scroll;
+  scrollbar-width: none;
+  .stabelizer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 10px;
+    background-color: var(--white);
+    width: max-content;
+    border: 1px solid var(--border);
+    border-radius: var(--radiusM);
+    font-size: 20px;
+    .image-p {
+      display: flex;
+      overflow: hidden;
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .icon-1 {
+      i {
+        font-size: 25px;
+      }
+    }
+  }
+}

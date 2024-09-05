@@ -1,0 +1,48 @@
+.cards-list {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.card-last-data {
+  margin: 15px auto;
+  width: 300px;
+  height: 200px;
+  border-radius: 20px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  transition: 0.4s;
+}
+
+.card-last-data:hover {
+  transform: scale(0.9, 0.9);
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+.button-align {
+  margin-top: 15px;
+  display: flex;
+  justify-content: space-around;
+}
+.button-align button {
+  min-width: 100px;
+}
+
+.card_main {
+  border: 1px solid;
+  border-radius: 10px;
+  width: 90%;
+  padding: 10px;
+  margin: 25px auto;
+}
+.salary-deparmtnet {
+  width: 90%;
+  /* border: 2px solid; */
+  margin: auto;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+.date-adjest {
+  /* display: flex; */
+  /* justify-content: space-between; */
+}

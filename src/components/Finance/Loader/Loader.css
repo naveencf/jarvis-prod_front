@@ -1,0 +1,50 @@
+.loader-overlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100dvw;
+  height: 100vh;
+  background-color: #00000069;
+  position: fixed;
+  z-index: 100000000000;
+  top: 0;
+  right: 0;
+}
+
+.loading-container {
+  position: relative;
+  height: 6rem;
+  width: 6rem;
+}
+
+.loading-progress {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  border-radius: 50%;
+  border: 5px solid #ACCAFF36;
+
+}
+
+.loading-progress::before {
+  content: "";
+  position: absolute;
+  height: 6rem;
+  width: 6rem;
+  border-radius: 50%;
+  border: 5px solid transparent;
+  border-top-color: var(--primary);
+  top: -5px;
+  left: -5px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
