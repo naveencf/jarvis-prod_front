@@ -831,7 +831,7 @@ const UserUpdate = () => {
       "emergency_contact_person_name2",
       isApplicable?.value || isApplicable
     );
-    formData.append("salary", monthlyGrossSalary);
+    formData.append("salary", monthlyGrossSalary || 0);
     formData.append("ctc", ctc);
     formData.append("user_credit_limit", Number(creditLimit));
 

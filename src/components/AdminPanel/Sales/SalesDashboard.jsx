@@ -15,33 +15,35 @@ import IncentiveRelease from "./Incenti Dashboard/IncentiveRelease";
 import FormContainer from "../FormContainer";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
-import DateISOtoNormal from "../../../utils/DateISOtoNormal";
 import formatString from "../../../utils/formatString";
 import SalesBadges from "./SalesBadges";
 import Loader from "../../Finance/Loader/Loader";
 import { formatIndianNumber } from "../../../utils/formatIndianNumber";
 import MonthlyWeeklyCard from "./MonthlyWeeklyCard";
+import TargetCard from "./TargetCard";
+import { useGetAllTargetCompetitionsQuery } from "../../Store/API/Sales/TargetCompetitionApi";
+import { useGetTotalSaleAmountDateWiseQuery } from "../../Store/API/Sales/SaleBookingApi";
 
 const SalesDashboard = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const loginUserId = getDecodedToken().id;
   const loginUserRole = getDecodedToken().role_id;
-  const loginUserDept = getDecodedToken().dept_id;
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [releaseModal, setReleaseModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState("");
   const [weekMonthCard, setWeekMonthCard] = useState();
   const [userBadgeData, setUserBadgeData] = useState();
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
 
   async function getData() {
     setIsLoading(true);
     try {
       const response = await axios.get(
         baseUrl +
-          `sales/top20_account_list?userId=${loginUserId}&isAdmin=${
-            loginUserRole == 1
-          }`,
+        `sales/top20_account_list?userId=${loginUserId}&isAdmin=${loginUserRole == 1
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -51,9 +53,8 @@ const SalesDashboard = () => {
 
       const response1 = await axios.get(
         baseUrl +
-          `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
-            loginUserRole == 1 ? "true" : "false"
-          }`,
+        `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${loginUserRole == 1 ? "true" : "false"
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -80,7 +81,38 @@ const SalesDashboard = () => {
       setIsLoading(false);
     }
   }
+  const {
+    data: allTargetCompetitionsData,
+    refetch: refetchTargetCompetitions,
+    isError: targetCompetitionsError,
+    isLoading: targetCompetitionsLoading,
+  } = useGetAllTargetCompetitionsQuery();
 
+  useEffect(() => {
+    if (!targetCompetitionsLoading && allTargetCompetitionsData) {
+      console.log("running"); // This should run after data is loaded
+      const activeCompetitions = allTargetCompetitionsData?.filter(
+        (competition) => competition.status == 1
+      );
+
+      if (activeCompetitions?.length > 0) {
+        const formattedStartDate =
+          activeCompetitions[0].start_date?.split("T")[0];
+        const formattedEndDate = activeCompetitions[0].end_date?.split("T")[0];
+
+        setStartDate(formattedStartDate);
+        setEndDate(formattedEndDate);
+      }
+    }
+  }, [targetCompetitionsLoading, allTargetCompetitionsData]); // Add loading check in the dependency
+
+  const { data: totalSaleAmountDateWise, isError: totalSaleAmountError } =
+    useGetTotalSaleAmountDateWiseQuery(
+      { startDate, endDate },
+      { skip: !startDate || !endDate }
+    );
+
+  console.log(startDate, endDate, "satart date ");
   useEffect(() => {
     getData();
   }, []);
@@ -127,7 +159,6 @@ const SalesDashboard = () => {
     {
       key: "totalSaleBookingCounts",
       name: "Total Sale Booking Counts",
-      renderRowCell: (row) => row.totalSaleBookingCounts,
       width: 150,
     },
   ];
@@ -174,6 +205,11 @@ const SalesDashboard = () => {
           <FormContainer mainTitle={"Dashboard"} link={true} />
         </div>
         <div className="action_btns">
+          <Link to={"/admin/view-target-competition"}>
+            <button className="btn cmnbtn btn-primary btn_sm">
+              View target competition
+            </button>
+          </Link>
           <Link to={"/admin/create-sales-account/0"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Add account
@@ -314,16 +350,28 @@ const SalesDashboard = () => {
         )}
       </div>
 
+      {allTargetCompetitionsData?.map(
+        (data) =>
+          data?.status == 1 && (
+            <TargetCard
+              data={data}
+              totalSaleAmountDateWise={totalSaleAmountDateWise}
+            />
+          )
+      )}
+
       {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />}
 
-      <View
-        title={"Top Bookings"}
-        data={data}
-        columns={columns}
-        isLoading={isLoading}
-        pagination={[10]}
-        tableName={"Top 20 Account Campaign Amount Wise"}
-      />
+      {loginUserRole == 1 && (
+        <View
+          title={"Top Bookings"}
+          data={data}
+          columns={columns}
+          isLoading={isLoading}
+          pagination={[10]}
+          tableName={"Top 20 Account Campaign Amount Wise"}
+        />
+      )}
     </div>
   );
 };

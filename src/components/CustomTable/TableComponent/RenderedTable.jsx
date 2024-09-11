@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dropdown from "./Dropdown";
 import SkeletonLoader from "./SkeletonLoader";
 import axios from "axios";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import { type } from "jquery";
+import { set } from "date-fns";
 
 const RenderedTable = ({
+  headref,
   applyFlag,
   setApplyFlag,
   originalData,
@@ -50,6 +52,8 @@ const RenderedTable = ({
   const [rowColour, setRowColour] = useState(
     columnsheader.filter((col) => col.hasOwnProperty("colorRow"))[0]
   );
+  const [lastTap, setLastTap] = useState(0);
+  const tapTimeout = useRef(null);
   useEffect(() => {
     setRowColour(
       columnsheader.filter((col) => col.hasOwnProperty("colorRow"))[0]
@@ -312,6 +316,7 @@ const RenderedTable = ({
     setSelectedId(newSelectedId);
     setColSearch(updatedColSearch);
   };
+
   return (
     <>
       {dataLoading ? (
@@ -319,7 +324,7 @@ const RenderedTable = ({
       ) : (
         <table className={`${preventSelect ? "prevent-select" : ""}`}>
           <thead className={fixedHeader ? "sticky-header" : ""}>
-            <tr>
+            <tr ref={headref}>
               {visibleColumns?.some((value) => value) && rowSelectable && (
                 <th
                   style={{
@@ -345,7 +350,7 @@ const RenderedTable = ({
                     <th
                       key={index}
                       style={{
-                        width: `${column.width ? column.width : 100}px`,
+                        width: column.width ? `${column.width}px` : "auto",
                       }}
                     >
                       <div className="table-header">
@@ -363,8 +368,8 @@ const RenderedTable = ({
                           <p>{column.name}</p>
                         </div>
                         <div className="wrapper-filed">
-                          {column?.name?.toUpperCase() !== "ACTIONS" &&
-                            column?.name?.toUpperCase() !== "S.NO" && (
+                          {column?.name?.toUpperCase().trim() !== "ACTIONS" &&
+                            column?.name?.toUpperCase().trim() !== "S.NO" && (
                               <Dropdown
                                 tableref={tableref}
                                 btnHtml={
@@ -642,18 +647,44 @@ const RenderedTable = ({
                       />
                     </td>
                   )}
+
                   {columnsheader?.map(
                     (column, colIndex) =>
                       visibleColumns?.[colIndex] && (
-                        <td key={colIndex}>
-                          {editableRows[colIndex] && editflag === index ? (
+                        <td key={colIndex}
+                          onClick={() => {
+                            const now = Date.now();
+                            const timeSinceLastTap = now - lastTap;
+
+                            clearTimeout(tapTimeout.current);
+
+                            if (timeSinceLastTap < 1000 && timeSinceLastTap > 0) {
+
+                              setEditFlag(prev => {
+                                if (prev === index) {
+                                  return false
+                                } else {
+                                  return index
+                                }
+                              });
+                            } else {
+                              // Set timeout to detect double tap
+                              tapTimeout.current = setTimeout(() => {
+                                // Handle single tap if needed
+                                setLastTap(0);
+                              }, 300);
+                            }
+                            setLastTap(now);
+                          }}>
+
+                          {(editableRows[colIndex] && editflag === index) ? (
                             column?.customEditElement ? (
                               column?.customEditElement(
                                 row,
                                 (currentPage - 1) * itemsPerPage + index,
                                 setEditFlag,
-                                handelchange,
                                 editflag,
+                                handelchange,
                                 column
                               )
                             ) : (

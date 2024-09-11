@@ -345,7 +345,7 @@ const CreatePaymentUpdate = () => {
               value={paymentAmount}
               onChange={(e) => {
                 if (
-                  e.target.value <
+                  e.target.value <=
                   saleBookingData.find(
                     (item) =>
                       item.sale_booking_id === selectedSaleBooking?.salebookID

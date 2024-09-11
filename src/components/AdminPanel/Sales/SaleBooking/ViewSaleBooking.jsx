@@ -20,6 +20,7 @@ import getDecodedToken from "../../../../utils/DecodedToken";
 import InvoiceDownload from "./InvoiceDownload";
 import ExecutionData from "./ExecutionData";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../../Store/API/Sales/ExecutionCampaignApi";
+import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear, subDays, subWeeks, subMonths, subYears, subQuarters } from 'date-fns';
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -65,6 +66,8 @@ const ViewSaleBooking = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filterByIncentive, setFilterByIncentive] = useState("");
+  const [quickFiltring, setQuickFiltring] = useState("today");
+
 
   const handleDelete = async (rowId) => {
     try {
@@ -74,7 +77,78 @@ const ViewSaleBooking = () => {
       toastError("Error deleting sale booking:", error);
     }
   };
+  const dateFilterOptions = [
+    { value: "today", label: "Today" },
+    { value: "this_week", label: "This Week" },
+    { value: "this_month", label: "This Month" },
+    { value: "this_quarter", label: "This Quarter" },
+    { value: "this_year", label: "This Year" },
+    { value: "yesterday", label: "Yesterday" },
+    { value: "previous_week", label: "Previous Week" },
+    { value: "previous_month", label: "Previous Month" },
+    { value: "previous_year", label: "Previous Year" },
+    { value: "previous_quarter", label: "Previous Quarter" },
 
+    { value: "custom", label: "Custom" }
+  ];
+  const handleDateFilterChange = () => {
+
+    const today = new Date();
+    let from, to;
+
+    switch (quickFiltring) {
+      case 'today':
+        from = to = today;
+        break;
+      case 'this_week':
+        from = startOfWeek(today);
+        to = today;
+        break;
+      case 'this_month':
+        from = startOfMonth(today);
+        to = today;
+        break;
+      case 'this_quarter':
+        from = startOfQuarter(today);
+        to = today;
+        break;
+      case 'this_year':
+        from = startOfYear(today);
+        to = today;
+        break;
+      case 'yesterday':
+        from = to = subDays(today, 1);
+        break;
+      case 'previous_week':
+        from = startOfWeek(subWeeks(today, 1));
+        to = subDays(startOfWeek(today), 1);
+        break;
+      case 'previous_month':
+        from = startOfMonth(subMonths(today, 1));
+        to = subDays(startOfMonth(today), 1);
+        break;
+      case 'previous_quarter':
+        from = startOfQuarter(subQuarters(today, 1));
+        to = subDays(startOfQuarter(today), 1);
+        break;
+      case 'previous_year':
+        from = startOfYear(subYears(today, 1));
+        to = subDays(startOfYear(today), 1);
+        break;
+      case 'custom':
+      default:
+        from = "";
+        to = "";
+        break;
+    }
+
+    setFromDate(from ? format(from, 'yyyy-MM-dd') : "");
+    setToDate(to ? format(to, 'yyyy-MM-dd') : "");
+  };
+
+  useEffect(() => {
+    handleDateFilterChange();
+  }, [quickFiltring])
   const openModal = (row, name) => {
     setSelectedRowData(row);
     setExecutionModal(true);
@@ -193,9 +267,10 @@ const ViewSaleBooking = () => {
     {
       key: "Serial_no",
       name: "S.NO",
-      renderRowCell: (row, index) => <div>{index + 1}</div>,
+      renderRowCell: (row, index) => index + 1,
       width: 20,
       showCol: true,
+      compare: true,
     },
     {
       key: "campaign_name",
@@ -239,9 +314,10 @@ const ViewSaleBooking = () => {
       key: "campaign_amount",
       name: "Campaign Amount / Net Amount",
       renderRowCell: (row) => row.campaign_amount + "₹",
-
       showCol: true,
       width: 100,
+      getTotal: true,
+
     },
     {
       key: "record_service_counts",
@@ -269,14 +345,17 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) => row.base_amount + "₹",
       showCol: true,
       width: 100,
+      getTotal: true,
+
     },
     {
       key: "invoice_download",
       name: "Invoice Request",
+      compare: true,
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-          "uploaded" == row?.invoice_request_status ? (
+            "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -303,17 +382,22 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) => (row.gst_amount ? row.gst_amount : 0) + "₹",
       showCol: true,
       width: 100,
+      getTotal: true,
     },
     {
       key: "approved_amount",
+      compare: true,
       name: "Approved Amount",
       renderRowCell: (row) =>
         row.approved_amount ? row.approved_amount + "₹" : "0₹",
       width: 100,
+      getTotal: true,
+
     },
     {
       key: "Payment Requested",
       name: "Payment Requested",
+      comapare: true,
       renderRowCell: (row) => (
         <div
           style={{
@@ -329,24 +413,29 @@ const ViewSaleBooking = () => {
       key: "requested_amount",
       name: "Requested Amount",
       renderRowCell: (row) =>
-        row.requested_amount ? row.requested_amount + "₹" : "0 ₹",
+        row?.requested_amount ? row.requested_amount + "₹" : "0 ₹",
       colorRow: (row) => {
-        if (row.requested_amount > 0) {
+        if (row?.approved_amount > 0) {
           return "#c4fac4";
         } else {
           return "#ffff008c";
         }
       },
       width: 100,
+      getTotal: true,
+      compare: true,
+
     },
     {
-      key: "service_taken",
+      key: "Outstanding_Amount",
       name: "Outstanding Amount",
       renderRowCell: (row) =>
         row.campaign_amount - row.requested_amount
           ? (row.campaign_amount - row.approved_amount).toFixed(2) + "₹"
           : "0",
       width: 100,
+      getTotal: true,
+      compare: true,
     },
     {
       key: "incentive_status",
@@ -356,11 +445,28 @@ const ViewSaleBooking = () => {
       showCol: true,
       width: 100,
     },
+    {
+      key: "earned_incentive_amount",
+      name: "Earned Incentive",
+      renderRowCell: (row) => row.earned_incentive_amount,
+      compare: true,
+      showCol: true,
+      width: 100,
+
+    },
 
     {
       key: "createdAt",
       name: "Booking Date Created",
+      compare: true,
       renderRowCell: (row) => DateISOtoNormal(row.createdAt),
+      showCol: true,
+      width: 100,
+    },
+    {
+      key: "record_service_amount",
+      name: "Record Service Amount",
+      renderRowCell: (row) => row.record_service_amount,
       showCol: true,
       width: 100,
     },
@@ -377,6 +483,37 @@ const ViewSaleBooking = () => {
           </div>
         ) : (
           row.booking_status
+        ),
+      width: 200,
+      showCol: true,
+    },
+    {
+      key: "record_service_file_url",
+      name: "Record Service File",
+      renderRowCell: (row) =>
+        row.record_service_file_url ? (
+          <div className="flex-row">
+            <a
+              className="icon-1"
+              target="_blank"
+              href={row?.record_service_file_url}
+            >
+              <i className="bi bi-download" />
+            </a>
+
+            <a
+              href={`https://docs.google.com/viewer?url=${encodeURIComponent(
+                row?.record_service_file_url
+              )}&embedded=true`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="icon-1"
+            >
+              <i className="bi bi-eye" />
+            </a>
+          </div>
+        ) : (
+          "N/A"
         ),
       width: 200,
       showCol: true,
@@ -415,6 +552,7 @@ const ViewSaleBooking = () => {
     {
       key: "TaxInvoice",
       name: "Tax Invoice",
+      compare: true,
       width: 100,
       renderRowCell: (row) => {
         const save = row?.salesInvoiceRequestData?.filter(
@@ -422,7 +560,6 @@ const ViewSaleBooking = () => {
             obj?.invoice_type_id == "tax-invoice" &&
             obj?.invoice_creation_status == "uploaded"
         );
-        console.log(save, "save");
         if (save?.length == 0) {
           return "N/A";
         } else if (save?.length == 1) {
@@ -453,7 +590,7 @@ const ViewSaleBooking = () => {
     },
 
     {
-      key: "sale_booking_id",
+      key: "actions",
       name: "Actions",
       width: 100,
       renderRowCell: (row) => (
@@ -503,6 +640,7 @@ const ViewSaleBooking = () => {
     columns.push({
       key: "created_by",
       name: "Sales Executive name",
+      compare: true,
       renderRowCell: (row) =>
         userContextData?.find((user) => user?.user_id === row?.created_by)
           ?.user_name,
@@ -608,7 +746,7 @@ const ViewSaleBooking = () => {
             <CustomSelect
               label="Sales Executive Name"
               fieldGrid={4}
-              dataArray={userContextData}
+              dataArray={userContextData?.filter((item) => item.dept_id == 36)}
               optionId="user_id"
               optionLabel="user_name"
               selectedId={filterBySalesExecutiveName}
@@ -633,20 +771,36 @@ const ViewSaleBooking = () => {
             selectedId={filterByIncentive}
             setSelectedId={setFilterByIncentive}
           />
-          <FieldContainer
-            type="date"
-            label="From Date"
+          <CustomSelect
+            label="date"
             fieldGrid={4}
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
+            dataArray={dateFilterOptions}
+            optionId="value"
+            optionLabel="label"
+            selectedId={quickFiltring}
+            setSelectedId={setQuickFiltring}
           />
-          <FieldContainer
-            type="date"
-            label="To Date"
-            fieldGrid={4}
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
+          {
+            quickFiltring === "custom" && (
+              <>
+
+                <FieldContainer
+                  type="date"
+                  label="From Date"
+                  fieldGrid={4}
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+                <FieldContainer
+                  type="date"
+                  label="To Date"
+                  fieldGrid={4}
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </>
+            )
+          }
 
           <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
             <button
@@ -675,7 +829,8 @@ const ViewSaleBooking = () => {
         // rowSelectable={true}
         pagination={[100, 200]}
         tableName={"SaleBookingView"}
-        // rowSelectable={true}
+        showTotal={true}
+      // rowSelectable={true}
       />
     </div>
   );

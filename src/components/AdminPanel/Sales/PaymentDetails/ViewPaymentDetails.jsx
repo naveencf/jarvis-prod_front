@@ -23,12 +23,10 @@ const ViewPaymentDetails = () => {
     { isLoading: paymentUpdating, isError: paymentUpdateError },
   ] = useUpdatePaymentDetailsMutation();
 
-  console.log(allPaymentDetailsData);
   const [paymentDetailsData, setPaymentDetailsData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [search, setSearch] = useState("");
   const [copiedRowId, setCopiedRowId] = useState(null);
-  const [deleteId, setDeleteId] = useState(null);
   const [deletePaymentDetails, { isLoading: deleting }] =
     useDeletePaymentDetailsMutation();
   const getData = async () => {

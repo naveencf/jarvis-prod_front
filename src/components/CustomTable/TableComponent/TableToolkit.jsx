@@ -5,6 +5,7 @@ import * as XLSX from "xlsx";
 import Modal from "react-modal";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
+import { Log } from "@phosphor-icons/react";
 
 
 const TableToolkit = ({
@@ -38,6 +39,7 @@ const TableToolkit = ({
   setApplyFlag,
   setApiFilters,
   setColumns,
+  originalData1,
 }) => {
   const [ModalOpen, setModalOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
@@ -172,18 +174,43 @@ const TableToolkit = ({
   };
 
   const handleExport = () => {
-    const elxdata = !rowSelectable ? data : selectedRowsData;
+
+
+    const ax = !rowSelectable ? data : selectedRowsData;
+    const elxdata = ax?.map((item) => {
+      const cols = columnsheader.filter((column) => column.compare === true);
+      const additionalProps = cols.reduce((acc, column) => {
+        acc[column.key] = column.renderRowCell(item);
+
+        return acc;
+      }, {});
+
+      return {
+        ...item,
+        ...additionalProps,
+      };
+    });
+
+
     if (elxdata?.length === 0) return alert("No data to export");
     const formattedData = elxdata?.map((row, index) => {
       let formattedRow = {
-        "S.No": index + 1,
+        "Serial No": index + 1,
       };
+      let obj = {};
       columnsheader.forEach((header, index) => {
-        if (row[header.key] && visibleColumns[index]) {
-          formattedRow[header.name] = row[header.key];
+
+        if (visibleColumns[index]) {
+          obj[header.name] = row[header.key];
         }
       });
-      return formattedRow;
+
+
+
+      return {
+        ...formattedRow,
+        ...obj,
+      };
     });
 
     const fileName = "data.xlsx";
@@ -240,6 +267,7 @@ const TableToolkit = ({
                 setCheckedState(new Array(filterList?.length).fill(false));
                 setSelectedId(columnsheader?.map(() => []));
                 setColSearch(columnsheader?.map(() => []));
+                setApplyFlag(false);
                 setFilterCondition(
                   columnsheader?.map((col) => ({
                     colName: col.key,

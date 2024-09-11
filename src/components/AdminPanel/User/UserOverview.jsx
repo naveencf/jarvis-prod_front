@@ -54,7 +54,7 @@ const UserOverview = () => {
   const [checkedData, setCheckedData] = useState([]);
   const [separationReasonGet, setSeparationReasonGet] = useState([]);
   const [separationUserID, setSeparationUserID] = useState(null);
-  const [separationStatus, setSeparationStatus] = useState("");
+  const [separationStatus, setSeparationStatus] = useState("Resigned");
   const [separationReason, setSeparationReason] = useState("");
   const [separationRemark, setSeparationRemark] = useState("");
   const [separationReinstateDate, setSeparationReinstateDate] = useState("");
@@ -145,14 +145,16 @@ const UserOverview = () => {
       user_id: separationUserID,
       status: separationStatus,
       created_by: userID,
-      resignation_date: separationResignationDate,
+      releaving_date: separationResignationDate,
       last_working_day: separationLWD,
       remark: separationRemark,
-      reason: separationReason,
+      // reason: separationReason,
+      reason: "Exit User",
     });
     const formData = new FormData();
     formData.append("user_id", separationUserID);
     formData.append("user_status", "Exit");
+    formData.append("releaving_date", separationResignationDate);
     axios.put(baseUrl + "update_user", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -360,6 +362,7 @@ const UserOverview = () => {
       field: "id",
       headerName: "S.No",
       width: 70,
+      valueGetter :(params) =>{params.row.id + 1},
       renderCell: (params) => <div>{params.row.id + 1}</div>,
     },
     {
@@ -385,7 +388,7 @@ const UserOverview = () => {
     {
       field: "user_login_id",
       headerName: "Login ID",
-      width: 190,
+      width: 180,
       sortable: true,
       renderCell: (params) => (
         <span>{capitalizeFirstLetter(params.value)}</span>
@@ -394,7 +397,7 @@ const UserOverview = () => {
     {
       field: "Role_name",
       headerName: "Role",
-      width: 190,
+      width: 100,
       sortable: true,
     },
     // {
@@ -404,11 +407,31 @@ const UserOverview = () => {
     //   sortable: true,
     // },
     {
+      field: "dept_id",
+      headerName: "Major Department",
+      width: 220,
+      sortable: true,
+      valueGetter :(params) => {
+        const department = departmentData.find(
+          (d) => d.dept_id === params.row.dept_id
+        );
+        return department ? department.major_dept_name : "N/A";
+      },
+      renderCell: (params) => {
+        const department = departmentData.find(
+          (d) => d.dept_id === params.row.dept_id
+        );
+        return department ? department.major_dept_name : "N/A";
+      },
+    },
+    {
       field: "department_name",
       headerName: "Department",
-      width: 120,
+      width: 190,
       sortable: true,
     },
+    
+    
     {
       field: "designation_name",
       headerName: "Designation",
@@ -570,7 +593,7 @@ const UserOverview = () => {
     {
       field: "actions",
       headerName: "Action",
-      width: 150,
+      width: 100,
       renderCell: (params) => (
         <>
           {contextData &&
@@ -599,7 +622,7 @@ const UserOverview = () => {
     {
       field: "Re-Join",
       headerName: "Re-Join",
-      width: 100,
+      // width: 100,
       renderCell: (params) =>
         params.row.user_status === "Exit" && (
           <button
@@ -844,7 +867,7 @@ const UserOverview = () => {
       ) : (
         //  Active inActive toggle button here
         <>
-          <div className="tab">
+          <div className="tab mt16">
             <button
               className={`named-tab ${activeButton === 1 ? "active-tab" : ""}`}
               onClick={() => handleRadioChange(1)}
@@ -1176,30 +1199,10 @@ const UserOverview = () => {
                 value={separationStatus}
                 onChange={(e) => setSeparationStatus(e.target.value)}
               >
-                <option value="" disabled>
+                {/* <option value="" disabled>
                   Choose...
-                </option>
-                <option value="Resigned">Resigned</option>
-                <option value="Resign Accepted">Resign Accepted</option>
-                <option value="On Long Leave">On Long Leave</option>
-                <option value="Subatical">Subatical</option>
-                <option value="Suspended">Suspended</option>
-              </FieldContainer>
-              <FieldContainer
-                label="Reason"
-                Tag="select"
-                value={separationReason}
-                onChange={(e) => setSeparationReason(e.target.value)}
-              >
-                <option value="" disabled selected hidden>
-                  Choose...
-                </option>
-                {separationReasonGet.map((option) => (
-                  <option value={option.id} key={option.id}>
-                    {" "}
-                    {option.reason}
-                  </option>
-                ))}
+                </option> */}
+                <option value="Resigned">Exit</option>
               </FieldContainer>
               <FieldContainer
                 label="Remark"
@@ -1216,25 +1219,16 @@ const UserOverview = () => {
                   onChange={(e) => setSeparationReinstateDate(e.target.value)}
                 />
               )}
-              {separationStatus == "Resign Accepted" && (
-                <input
-                  label="Last Working Day"
-                  className="form-control"
-                  style={{ width: "220px" }}
-                  type="date"
-                  value={separationLWD}
-                  max={today}
-                  onChange={(e) => setSeparationLWD(e.target.value)}
-                />
-              )}
-              {separationStatus == "Resigned" && (
+             
+              
+              {/* {separationStatus == "Resigned" && ( */}
                 <FieldContainer
                   label="Resignation Date"
                   type="date"
                   value={separationResignationDate}
                   onChange={(e) => setSeparationResignationDate(e.target.value)}
                 />
-              )}
+              {/* )} */}
             </div>
             <div className="modal-footer">
               <button
@@ -1251,7 +1245,6 @@ const UserOverview = () => {
                 disabled={
                   !separationRemark ||
                   !separationStatus ||
-                  !separationReason ||
                   !separationResignationDate
                 }
                 data-dismiss="modal"

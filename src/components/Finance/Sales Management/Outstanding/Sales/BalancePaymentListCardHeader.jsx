@@ -2,78 +2,77 @@ import React, { useEffect, useState } from "react";
 import FormattedNumberWithTooltip from "../../../FormateNumWithTooltip/FormattedNumberWithTooltip";
 
 function BalancePaymentListHeader({ filterData }) {
-  const [headerCardArray, setHeaderCardArray] = useState([]);
+  const [headerCardArray, setHeaderCardArray] = useState({});
 
   useEffect(() => {
-    if (filterData.length > 0) {
+    if (filterData?.length > 0) {
       const results = calculateAmounts(filterData);
       setHeaderCardArray(results);
     }
   }, [filterData]);
 
   const calculateAmounts = (data) => {
-    const calculateTotalAmount = (data, key) =>
-      data.reduce((total, item) => total + parseFloat(item[key]) || 0, 0);
+    const calculateTotalAmount = (key) =>
+      data.reduce((total, item) => total + parseFloat(item[key] || 0), 0);
 
-    const calculateBalanceAmount = (data) =>
-      data.reduce(
-        (total, item) =>
-          total + parseFloat(item?.campaign_amount - item?.paid_amount) || 0,
-        0
-      );
+    const calculateBalanceAmount = (condition) =>
+      data
+        .filter(condition)
+        .reduce(
+          (total, item) =>
+            total +
+            (parseFloat(item.campaign_amount || 0) -
+              parseFloat(item.paid_amount || 0)),
+          0
+        );
 
-    const filterDataByCondition = (data, condition) => data.filter(condition);
+    const filterDataByCondition = (condition) => data.filter(condition);
 
     // GST counts
-    const gstCounts = filterDataByCondition(
-      data,
-      (count) => count.gst_status === true
+    const gstCounts = filterDataByCondition((item) => item.gst_status);
+    const totalGstBalanceAmount = calculateBalanceAmount(
+      (item) => item.gst_status
     );
-    const totalGstBalanceAmount = calculateBalanceAmount(gstCounts);
-    const totalGstReceivedAmount = calculateTotalAmount(
-      gstCounts,
-      "paid_amount"
-    );
+    const totalGstReceivedAmount = calculateTotalAmount("paid_amount");
 
     // Non-GST counts
-    const nonGstCounts = filterDataByCondition(
-      data,
-      (count) => count.gst_status === false
+    const nonGstCounts = filterDataByCondition((item) => !item.gst_status);
+    const totalNonGstBalanceAmount = calculateBalanceAmount(
+      (item) => !item.gst_status
     );
-    const totalNonGstBalanceAmount = calculateBalanceAmount(nonGstCounts);
-    const totalNonGstReceivedAmount = calculateTotalAmount(
-      nonGstCounts,
-      "paid_amount"
-    );
+    const totalNonGstReceivedAmount = calculateTotalAmount("paid_amount");
 
     // Invoice counts
     const invoiceCounts = filterDataByCondition(
-      data,
-      (invc) =>
-        invc?.salesInvoiceRequestData?.[0]?.invoice_file !== "" &&
-        invc?.salesInvoiceRequestData?.[0]?.invoice_type_id === "tax-invoice"
+      (item) =>
+        item.invoice_type_id === "tax-invoice" &&
+        item.invoice_creation_status !== "pending"
     );
-    const totalInvoiceBalanceAmount = calculateBalanceAmount(invoiceCounts);
-    const totalInvoiceReceivedAmount = calculateTotalAmount(
-      invoiceCounts,
-      "paid_amount"
+    const totalInvoiceBalanceAmount = calculateBalanceAmount(
+      (item) =>
+        item.invoice_type_id === "tax-invoice" &&
+        item.invoice_creation_status !== "pending"
     );
+    const totalInvoiceReceivedAmount = calculateTotalAmount("paid_amount");
 
     // Non-invoice counts
     const nonInvoiceCounts = filterDataByCondition(
-      data,
-      (invc) =>
-        invc?.salesInvoiceRequestData?.[0]?.invoice_file === "" ||
-        invc?.salesInvoiceRequestData?.[0]?.invoice_type_id !== "tax-invoice"
+      (item) =>
+        item.invoice_type_id !== "tax-invoice" ||
+        item.invoice_creation_status === "pending"
     );
-    const totalNonInvoiceBalanceAmount =
-      calculateBalanceAmount(nonInvoiceCounts);
-    const totalNonInvoiceReceivedAmount = calculateTotalAmount(
-      nonInvoiceCounts,
-      "paid_amount"
+    const totalNonInvoiceBalanceAmount = calculateBalanceAmount(
+      (item) =>
+        item.invoice_type_id !== "tax-invoice" ||
+        item.invoice_creation_status === "pending"
     );
+    const totalNonInvoiceReceivedAmount = calculateTotalAmount("paid_amount");
 
     return {
+      gstCounts: gstCounts.length,
+      nonGstCounts: nonGstCounts.length,
+      invoiceCounts: invoiceCounts.length,
+      nonInvoiceCounts: nonInvoiceCounts.length,
       totalGstBalanceAmount,
       totalGstReceivedAmount,
       totalNonGstBalanceAmount,
@@ -101,18 +100,18 @@ function BalancePaymentListHeader({ filterData }) {
                 className="font-weight-bold mt8"
                 style={{ color: "var(--orange)" }}
               >
-                {headerCardArray?.invoiceCounts?.length}
+                {headerCardArray.invoiceCounts}
               </h4>
             </div>
             <div>
-              <h5 className="mediumText"> Total Balance Amount</h5>
+              <h5 className="mediumText">Total Balance Amount</h5>
               <h4
                 className="font-weight-bold mt8"
                 style={{ color: "var(--yellow)" }}
               >
                 ₹{" "}
                 <FormattedNumberWithTooltip
-                  value={headerCardArray?.totalInvoiceBalanceAmount}
+                  value={headerCardArray.totalInvoiceBalanceAmount}
                 />
               </h4>
             </div>
@@ -133,7 +132,7 @@ function BalancePaymentListHeader({ filterData }) {
                 className="font-weight-bold mt8"
                 style={{ color: "var(--orange)" }}
               >
-                {headerCardArray?.nonInvoiceCounts?.length}
+                {headerCardArray.nonInvoiceCounts}
               </h4>
             </div>
             <div>
@@ -142,9 +141,9 @@ function BalancePaymentListHeader({ filterData }) {
                 className="font-weight-bold mt8"
                 style={{ color: "var(--yellow)" }}
               >
-                ₹
+                ₹{" "}
                 <FormattedNumberWithTooltip
-                  value={headerCardArray?.totalNonInvoiceBalanceAmount}
+                  value={headerCardArray.totalNonInvoiceBalanceAmount}
                 />
               </h4>
             </div>
@@ -163,20 +162,18 @@ function BalancePaymentListHeader({ filterData }) {
                 className="font-weight-bold mt8"
                 style={{ color: "var(--orange)" }}
               >
-                {headerCardArray?.gstCounts?.length}
+                {headerCardArray.gstCounts}
               </h4>
             </div>
-
             <div>
               <h5 className="mediumText">Total Balance Amount</h5>
               <h4
                 className="font-weight-bold mt8"
                 style={{ color: "var(--yellow)" }}
               >
-                {" "}
                 ₹{" "}
                 <FormattedNumberWithTooltip
-                  value={headerCardArray?.totalGstBalanceAmount}
+                  value={headerCardArray.totalGstBalanceAmount}
                 />
               </h4>
             </div>
@@ -195,18 +192,18 @@ function BalancePaymentListHeader({ filterData }) {
                 className="font-weight-bold mt8"
                 style={{ color: "var(--orange)" }}
               >
-                {headerCardArray?.nonGstCounts?.length}
+                {headerCardArray.nonGstCounts}
               </h4>
             </div>
             <div>
-              <h5 className="mediumText"> Total Balance Amount</h5>
+              <h5 className="mediumText">Total Balance Amount</h5>
               <h4
                 className="font-weight-bold mt8"
-                style={{ color: "var(--bs-yellow)" }}
+                style={{ color: "var(--yellow)" }}
               >
                 ₹{" "}
                 <FormattedNumberWithTooltip
-                  value={headerCardArray?.totalNonGstBalanceAmount}
+                  value={headerCardArray.totalNonGstBalanceAmount}
                 />
               </h4>
             </div>

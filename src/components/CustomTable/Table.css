@@ -9,6 +9,10 @@
     gap: 0px 8px;
   }
 
+  .flex-row {
+    display: flex;
+  }
+
   .tool-btn,
   .tool-input {
     border: 1px solid var(--border);
@@ -60,6 +64,7 @@
 
   thead {
     height: 50px;
+    max-height: 50px;
     background-color: var(--theme-bg);
     font-size: 14px;
   }
@@ -98,6 +103,15 @@
     width: 10px;
     height: 100%;
     cursor: col-resize;
+    color: #959DA3;
+    padding-top: 5px;
+  }
+
+  .resizable-hidden {
+    display: flex;
+    width: 10px;
+    height: 100%;
+
     color: #959DA3;
     padding-top: 5px;
   }
@@ -232,28 +246,44 @@ th .table-header {
   max-height: 500px;
 }
 
+.total-container {
+  position: relative;
+  overflow-x: scroll;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: max-content;
+
+}
+
+.total-container,
 .table-container {
   --sb-track-color: #ffffff;
   --sb-thumb-color: #f1f1f1;
   --sb-size: 7px;
 }
 
+.total-container::-webkit-scrollbar,
 .table-container::-webkit-scrollbar {
   width: var(--sb-size);
   height: var(--sb-size);
 }
 
+.total-container::-webkit-scrollbar,
 .table-container::-webkit-scrollbar-track {
   background: var(--sb-track-color);
   border-radius: 3px;
 }
 
+.total-container::-webkit-scrollbar,
 .table-container::-webkit-scrollbar-thumb {
   background: var(--sb-thumb-color);
   border-radius: 3px;
 }
 
 @supports not selector(::-webkit-scrollbar) {
+
+  .total-container,
   .table-container {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
   }
@@ -337,6 +367,7 @@ th .table-header {
 
   p {
     color: var(--dark);
+    white-space: nowrap;
   }
 }
 

@@ -31,7 +31,7 @@ const Login = () => {
           console.log(decodedToken);
           const status = decodedToken.user_status;
           const deptId = decodedToken.dept_id;
-          const onboardStatus = decodedToken.onboard_status
+          const onboardStatus = decodedToken.onboard_status;
 
           if (status == "Active") {
             if (deptId == 36 && onboardStatus == 1) {

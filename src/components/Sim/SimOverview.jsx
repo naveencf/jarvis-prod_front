@@ -7,7 +7,6 @@ import FormContainer from "../AdminPanel/FormContainer";
 import DeleteButton from "../AdminPanel/DeleteButton";
 import UserNav from "../Pantry/UserPanel/UserNav";
 import jwtDecode from "jwt-decode";
-import * as XLSX from "xlsx";
 import Select from "react-select";
 import Modal from "react-modal";
 import { useGlobalContext } from "../../Context/Context";

@@ -31,12 +31,12 @@ const InvoiceRequest = ({
   } = useGetInvoiceParticularListQuery();
   const { toastAlert, toastError } = useGlobalContext();
   const [invoiceType, setInvoiceType] = useState("");
-  // const [remark, setRemark] = useState("");
   const [invoiceParticular, setInvoiceParticular] = useState();
   const [InvoiceAmount, setInvoiceAmount] = useState();
   const [purchaseOrder, setPurchaseOrder] = useState("");
   const [purchaseOrderFile, setPurchaseOrderFile] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state for managing submission
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
@@ -62,10 +62,12 @@ const InvoiceRequest = ({
     if (hasErrors) {
       return;
     }
+
+    setIsSubmitting(true); // Set submitting to true
+
     const formData = new FormData();
     formData.append("sale_booking_id", saleBookingData?.sale_booking_id);
     formData.append("invoice_type_id", invoiceType);
-    // formData.append("invoice_action_reason", remark);
     formData.append("invoice_particular_id", invoiceParticular);
     formData.append("purchase_order_number", purchaseOrder);
     formData.append("created_by", loginUserId);
@@ -87,7 +89,9 @@ const InvoiceRequest = ({
       toastAlert("Invoice Request Submitted Successfully");
     } catch (error) {
       toastError("Error in submitting the form");
-      toastAlert(error);
+      toastAlert(error.message || "Error in submitting the form");
+    } finally {
+      setIsSubmitting(false); // Reset submitting to false after completion
     }
   };
 
@@ -132,7 +136,6 @@ const InvoiceRequest = ({
         style={{
           content: {
             width: "30%",
-            // height: "80%",
             top: "30%",
             left: "50%",
             right: "auto",
@@ -229,24 +232,16 @@ const InvoiceRequest = ({
         </>
       )}
 
-      {/* <FieldContainer
-        fieldGrid={12}
-        label={"Reason for Invoice Request"}
-        placeholder={"Reason"}
-        value={remark}
-        onChange={(e) => setRemark(e.target.value)}
-        required={false}
-      /> */}
-
       <button
         className="btn cmnbtn btn-primary btn_sm"
         onClick={(e) => handleSubmit(e)}
         disabled={
-          saleBookingData?.campaign_amount ==
-          saleBookingData?.invoice_requested_amount
+          isSubmitting || // Disable if submitting
+          saleBookingData?.campaign_amount ===
+            saleBookingData?.invoice_requested_amount
         }
       >
-        Submit
+        {isSubmitting ? "Submitting..." : "Submit"}
       </button>
     </div>
   );

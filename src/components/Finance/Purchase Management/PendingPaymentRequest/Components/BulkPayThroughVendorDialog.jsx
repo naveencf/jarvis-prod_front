@@ -118,6 +118,7 @@ const BulkPayThroughVendorDialog = (props) => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          width: "100%",
         }}
       >
         <DialogTitle>Bulk Pay Through Vendor</DialogTitle>

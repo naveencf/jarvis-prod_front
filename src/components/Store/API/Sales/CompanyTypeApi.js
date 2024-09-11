@@ -8,12 +8,13 @@ const CompanyTypeApi = createApi({
     getAllCompanyType: builder.query({
       query: () => "accounts/get_all_account_company_type",
       transformResponse: (response) => response.data,
-      keepUnusedDataFor: 60 * 60 * 24,
+      keepUnusedDataFor: 0,
     }),
 
     getSingleCompanyType: builder.query({
       query: (id) => `accounts/get_single_account_company_type/${id}`,
       transformResponse: (res) => res.data,
+      keepUnusedDataFor: 0,
     }),
 
     addCompanyType: builder.mutation({

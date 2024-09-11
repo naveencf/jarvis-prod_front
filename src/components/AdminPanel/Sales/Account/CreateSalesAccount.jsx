@@ -150,7 +150,7 @@ const CreateSalesAccount = () => {
   const [headPinCode, setHeadPincode] = useState(null);
   const [conPinCode, setConPinCode] = useState(null);
   const [companyEmail, setCompanyEmail] = useState(null);
-  const [description, setDescription] = useState(null);
+  // const [description, setDescription] = useState("");
   const [accOwnerNameData, setAccOwnerNameData] = useState([]);
   const [modalContentType, setModalContentType] = useState(false);
   const [fillHeadFields, setFillHeadFields] = useState(false);
@@ -351,7 +351,7 @@ const CreateSalesAccount = () => {
         account_owner_id,
         website,
         turn_over,
-        description,
+        // description,
         brand_id,
         company_email,
         account_image_url,
@@ -366,7 +366,7 @@ const CreateSalesAccount = () => {
       setSelectedOwner(account_owner_id);
       setWebsite(website);
       setTurnover(turn_over);
-      setDescription(description);
+      // setDescription(description);
       setSelectedBrand(brand_id);
       setCompanyEmail(company_email);
       setPreviewUrl(account_image_url);
@@ -629,7 +629,7 @@ const CreateSalesAccount = () => {
       head_billing_state: headBillingState,
       head_billing_country: headBillingCountry,
       head_billing_pin_code: Number(headPinCode),
-      description: description,
+      // description: description,
       created_by: loginUserId,
       company_email: companyEmail,
       account_image: selectedImage,
@@ -1065,6 +1065,11 @@ const CreateSalesAccount = () => {
           },
         }}
       >
+        <div className="d-flex">
+          <div className="icon-1 flex-end" onClick={() => closeModal()}>
+            <i class="bi bi-x" />
+          </div>
+        </div>
         {renderModalContent()}
       </Modal>
 

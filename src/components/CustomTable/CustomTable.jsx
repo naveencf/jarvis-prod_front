@@ -6,7 +6,7 @@ import RenderedTable from "./TableComponent/RenderedTable";
 import { baseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
-
+import TotalRow from "./TableComponent/TotalRow";
 // note: sync the table pagination and  sorted rows
 
 const CustomTable = ({
@@ -17,9 +17,13 @@ const CustomTable = ({
   dataLoading = false,
   rowSelectable,
   tableName,
+  showTotal = false,
   selectedData = (selecteddata) => { return selecteddata; },
 }) => {
+
+
   const tableref = useRef();
+  const headref = useRef();
   const [apiColumns, setApiColumns] = useState([]);
   const [columnsheader, setColumns] = useState(columns);
   const [resizing, setResizing] = useState(null);
@@ -69,8 +73,11 @@ const CustomTable = ({
   let pagination = Pagination?.length > 0 ? Pagination : [100, 50, 10];
 
   useEffect(() => {
-    pagination.push(data.length);
+    if (pagination.findIndex((item) => item === data.length) === -1)
+      pagination.push(data.length);
+
   }, [data]);
+
 
   useEffect(() => {
     selectedData(selectedRowsData);
@@ -179,6 +186,10 @@ const CustomTable = ({
     notBetween: (itemValue, value1, value2) =>
       itemValue <= parseInt(value1, 10) || itemValue >= parseInt(value2, 10),
   };
+
+
+
+
   useEffect(() => {
     const filterData = () => {
       const fd = originalData.filter((item) => {
@@ -209,6 +220,10 @@ const CustomTable = ({
 
     setUnSortedData(filterData());
   }, [applyFlag]);
+
+
+
+
   // useEffect(() => {
   //   const filterData = () => {
   //     return originalData.filter((item) => {
@@ -231,11 +246,16 @@ const CustomTable = ({
     setInvadeFlag(true);
   };
 
+
+
   useEffect(() => {
     if (invadeFlag) {
       cloudInvader();
     }
   }, [invadeFlag]);
+
+
+
 
   useEffect(() => {
     setSortedData(
@@ -248,12 +268,17 @@ const CustomTable = ({
     );
   }, [itemsPerPage, currentPage, searchQuery]);
 
+
+
+
   const createTable = async () => {
     const arrayOfColumnsName = columnsheader.map((column) => ({
       name: column.name,
       visibility: column.showCol === undefined ? true : column.showCol,
     }));
+
     let Response;
+
     try {
       Response = await axios.post(`${baseUrl}add_dynamic_table_data`, {
         table_name: tableName,
@@ -264,6 +289,8 @@ const CustomTable = ({
       console.error(e);
     }
   };
+
+
   useEffect(() => {
     // const isTableCreated = localStorage.getItem(
     //   `isTableCreated_${tableName + loginUserId}`
@@ -273,12 +300,16 @@ const CustomTable = ({
     //   localStorage.setItem(`isTableCreated_${tableName + loginUserId}`, "true");
     // }
   }, [tableName]);
+
+
   // useEffect(() => {
 
   //   if (data.length > 0) {
   //     createTable();
   //   }
   // }, [data]);
+
+
 
   async function cloudInvader() {
     const arrayofvisiblecolumns = columnsheader?.map((column, index) => ({
@@ -298,6 +329,8 @@ const CustomTable = ({
     }
   }
 
+
+
   useEffect(() => {
     const fetchCreatedTable = async () => {
       try {
@@ -314,6 +347,8 @@ const CustomTable = ({
     };
     fetchCreatedTable();
   }, [loginUserId, tableName]);
+
+
 
   useEffect(() => {
     const getIndex = (colName) =>
@@ -352,6 +387,8 @@ const CustomTable = ({
     );
   }, [dataLoading, columns, apiColumns]);
 
+
+
   useEffect(() => {
     setSortedData(
       pagination
@@ -362,6 +399,8 @@ const CustomTable = ({
         : unSortedData
     );
   }, [unSortedData]);
+
+
 
   function renderSort() {
     let unSortData;
@@ -417,9 +456,13 @@ const CustomTable = ({
     setUnSortedData(unSortData);
   }
 
+
+
   useEffect(() => {
     renderSort();
   }, [sortKey, sortDirection]);
+
+
 
   return (
     <div className="table-pagination-container">
@@ -454,10 +497,12 @@ const CustomTable = ({
         applyFlag={applyFlag}
         setColumns={setColumns}
         setApplyFlag={setApplyFlag}
+        originalData1={originalData}
       />
 
       <div className="table-container" ref={tableref}>
         <RenderedTable
+          headref={headref}
           setUnSortedData={setUnSortedData}
           applyFlag={applyFlag}
           setApplyFlag={setApplyFlag}
@@ -500,6 +545,7 @@ const CustomTable = ({
         />
       </div>
 
+      {showTotal && <TotalRow columnsheader={columnsheader} unSortedData={unSortedData} visibleColumns={visibleColumns} rowSelectable={rowSelectable} headref={headref} tableref={tableref} applyFlag={applyFlag} />}
       <PaginationComp
         data={unSortedData}
         Pagination={pagination}
