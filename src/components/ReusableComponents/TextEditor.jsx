@@ -3,7 +3,8 @@ import ReactQuill from "react-quill";
 
 const modules = {
   toolbar: [
-    [{ header: [1, 2, false] }],
+    [{ header: [1, 2, 3, 4, 5, 6, false] }], // Add more heading options
+    [{ font: [] }], // Add font size options
     ["bold", "italic", "underline", "strike", "blockquote"],
     [{ align: [] }],
     [{ color: [] }, { background: [] }],

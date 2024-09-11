@@ -1872,6 +1872,7 @@ const PreOnboardingUserMaster = () => {
                                     loginId={loginId}
                                     username={username}
                                     password={password}
+                                    email={personalEmail}
                                     currentJoiningDate={joiningDate}
                                     closeModal={closeReactModal}
                                   />

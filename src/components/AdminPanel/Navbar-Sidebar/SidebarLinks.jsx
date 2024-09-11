@@ -160,7 +160,7 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="collapse-inner internal">
-              {/* {contextData &&
+              {contextData &&
                 contextData[0] &&
                 contextData[0].view_value === 1 && (
                   <NavLink
@@ -169,7 +169,7 @@ const SidebarLinks = () => {
                   >
                     <i className="bi bi-dot"></i> User Dashboard
                   </NavLink>
-                )} */}
+                )}
               {contextData &&
                 contextData[0] &&
                 contextData[0].view_value === 1 && (
@@ -1785,6 +1785,9 @@ const SidebarLinks = () => {
                 contextData[0].view_value === 1 && ( */}
               <NavLink className="collapse-item" to="/admin/pms-page-overview">
                 <i className="bi bi-dot"></i>Page
+              </NavLink>
+              <NavLink className="collapse-item" to="/admin/pms-plan-making">
+                <i className="bi bi-dot"></i>Plan Making
               </NavLink>
               {/* )} */}
               {/* {contextData &&

@@ -4,7 +4,7 @@ import CustomTableWrapper from '../../../../ReusableComponents/CustomTableWrappe
 
 
 //c
-const View = ({ data, columns, isLoading, title, rowSelectable = false, pagination = false, tableName, selectedData }) => {
+const View = ({ data, columns, isLoading, title, rowSelectable = false, pagination = false, tableName, selectedData, showTotal = false }) => {
 
     return (
 
@@ -18,6 +18,7 @@ const View = ({ data, columns, isLoading, title, rowSelectable = false, paginati
                 rowSelectable={rowSelectable}
                 tableName={tableName}
                 selectedData={selectedData}
+                showTotal={showTotal}
             />
         </CustomTableWrapper>
 

@@ -40,6 +40,7 @@ import {
 } from "../../Store/reduxBaseURL";
 import { useParams, useNavigate } from "react-router";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import formatString from "../Operation/CampaignMaster/WordCapital";
 
 const PageMaster = () => {
   const location = useLocation();
@@ -679,7 +680,7 @@ const PageMaster = () => {
                  <Select
                   options={vendorData.map((option) => ({
                     value: option._id,
-                    label: option.vendor_name,
+                    label: formatString(option.vendor_name),
                   }))}
                   required={true}
                   value={getInitialValue()}

@@ -867,13 +867,6 @@ export const pendingApprovalColumn = ({
   filterData = [],
   handleCopyDetail,
   paymentModeArray,
-  statusDialog,
-  handleCloseStatusDialog,
-  setReasonField,
-  reasonField,
-  getData,
-  status,
-  setStatus,
   handleStatusChange,
   setViewImgSrc,
   setViewImgDialog,
@@ -1112,6 +1105,7 @@ export const pendingApprovalColumn = ({
 export const uniquePendingApprovalSalesExecutiveColumn = ({
   uniqueSalesExecutiveData = [],
   handleOpenSameSalesExecutive,
+  handleStatusChange,
 }) => [
   {
     field: "s_no",
@@ -1162,13 +1156,30 @@ export const uniquePendingApprovalSalesExecutiveColumn = ({
     ),
   },
   {
-    headerName: "Payment Status",
-    field: "payment_approval_status",
-    width: 190,
-    renderCell: (params) => (
-      <div>
-        {params.row.payment_approval_status === "pending" ? "Pending" : ""}
-      </div>
+    width: 200,
+    // field: "Status",
+    headerName: "Status",
+    renderCell: ({ row }) => (
+      <>
+        <Autocomplete
+          className="my-2"
+          id="combo-box-demo"
+          value={row.statusDropdown || null}
+          options={[
+            { label: "Approved", value: "approval" },
+            { label: "Rejected", value: "reject" },
+          ]}
+          getOptionLabel={(option) => option?.label}
+          onChange={(event, newValue) => {
+            handleStatusChange(row, newValue?.value);
+            row.statusDropdown = newValue;
+          }}
+          style={{ width: 150 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Status" variant="outlined" />
+          )}
+        />
+      </>
     ),
   },
 ];
@@ -1176,6 +1187,7 @@ export const uniquePendingApprovalSalesExecutiveColumn = ({
 export const uniquePendingApprovalCustomerColumn = ({
   uniqueCustomerData = [],
   handleOpenSameAccounts,
+  handleStatusChange,
 }) => [
   {
     field: "s_no",
@@ -1196,7 +1208,7 @@ export const uniquePendingApprovalCustomerColumn = ({
         href="#"
         onClick={() => handleOpenSameAccounts(params.row.account_name)}
       >
-        {params.row.account_name}{" "}
+        {params.row.account_name}
       </a>
     ),
   },
@@ -1223,6 +1235,34 @@ export const uniquePendingApprovalCustomerColumn = ({
     width: 180,
     renderCell: (params) => (
       <div>{params.row.campaign_amount - params.row.payment_amount} </div>
+    ),
+  },
+  {
+    width: 200,
+    // field: "Status",
+    headerName: "Status",
+    renderCell: ({ row }) => (
+      <>
+        <Autocomplete
+          className="my-2"
+          id="combo-box-demo"
+          value={row.statusDropdown || null}
+          options={[
+            { label: "Approved", value: "approval" },
+            { label: "Rejected", value: "reject" },
+          ]}
+          getOptionLabel={(option) => option?.label}
+          onChange={(event, newValue) => {
+            // console.log(newValue, "newValue--- newValueData---");
+            handleStatusChange(row, newValue?.value);
+            row.statusDropdown = newValue;
+          }}
+          style={{ width: 180 }}
+          renderInput={(params) => (
+            <TextField {...params} label="Status" variant="outlined" />
+          )}
+        />
+      </>
     ),
   },
 ];
@@ -1288,7 +1328,7 @@ export const pendingInvoiceColumn = ({
       <>
         <Link
           className="text-primary"
-          to={`/admin/finance-pendinginvoice/customer-details/${params.row._id}`}
+          to={`/admin/finance-pending-invoice/customer-details/${params.row.saleData.account_id}`}
         >
           {FormatString(params.row.saleData.account_name)}
         </Link>
@@ -1413,11 +1453,9 @@ export const pendingInvoiceColumn = ({
   },
 ];
 
-export const uniquePendingInvoiceCustomerColumn = ({
+export const uniquePendingInvoiceAccountColumn = ({
   uniqueCustomerData = [],
   handleOpenSameCustomer,
-  setOpenImageDialog,
-  setViewImgSrc,
 }) => [
   {
     field: "s_no",
@@ -1626,15 +1664,15 @@ export const uniquePendingInvoiceSalesExecutiveColumn = ({
     width: 220,
     renderCell: (params) => (
       <div
-        style={{ cursor: "pointer" }}
-        onClick={() => handleOpenSameCustomer(params.row.cust_name)}
+      // style={{ cursor: "pointer" }}
+      // onClick={() => handleOpenSameCustomer(params.row.saleData.account_name)}
       >
-        <Link
+        {/* <Link
           className="text-primary"
-          to={`/admin/finance-pendinginvoice/customer-details/${params.row._id}`}
-        >
-          {params.row.saleData.account_name}
-        </Link>
+          to={`/admin/finance-pendinginvoice/customer-details/${params.row.saleData.account_id}`}
+        > */}
+        {params.row.saleData.account_name}
+        {/* </Link> */}
       </div>
     ),
   },
@@ -1785,12 +1823,14 @@ export const pendingInvoiceProformaColumns = ({
     width: 220,
     renderCell: (params) => (
       <>
-        <Link
+        <div>
+          {/* <Link
           className="text-primary"
-          to={`/admin/finance-pendinginvoice/customer-details/${params.row._id}`}
-        >
+          to={`/admin/finance-pendinginvoice/customer-details/${params.row.saleData.account_id}`}
+        > */}
           {params.row.saleData.account_name}
-        </Link>
+          {/* </Link> */}
+        </div>
       </>
     ),
   },

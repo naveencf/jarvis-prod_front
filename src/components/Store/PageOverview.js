@@ -9,6 +9,7 @@ const initialState = {
   showPageModal: false,
   showVendorNotAssignedModal: false,
   showBankDetailsModal: false,
+  showPageHelathColumn:true,
   rowData:""
 };
 

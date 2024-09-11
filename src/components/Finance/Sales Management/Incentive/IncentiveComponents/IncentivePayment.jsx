@@ -458,7 +458,7 @@ const IncentivePayment = () => {
               setModalOpen(true);
             }}
           >
-            Complete Release
+            Release
           </button>
         ) : (
           //   <button
@@ -608,7 +608,7 @@ const IncentivePayment = () => {
               setModalOpen(true);
             }}
           >
-            Complete Release
+            Release
           </button>
         ) : (
           //   <button
@@ -774,7 +774,7 @@ const IncentivePayment = () => {
               setModalOpen(true);
             }}
           >
-            Complete Release
+            Release
           </button>
         );
       },

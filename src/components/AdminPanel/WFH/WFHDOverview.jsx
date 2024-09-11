@@ -262,6 +262,7 @@ const WFHDOverview = () => {
         const formData = new FormData();
         formData.append("user_id", separationUserID);
         formData.append("user_status", "Exit");
+        formData.append("releaving_date", separationResignationDate);
         axios.put(baseUrl + "update_user", formData, {
           headers: {
             "Content-Type": "multipart/form-data",

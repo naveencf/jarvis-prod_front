@@ -31,7 +31,6 @@ const NewJoineeAndExitUsers = () => {
   const allWFHDExitUsers = () => {
     axios.get(baseUrl + `get_all_exit_users_of_wfhd`).then((res) => {
       setAllExitUsers(res.data.data);
-      console.log(res.data.data, "new lalit exit");
     });
   };
 

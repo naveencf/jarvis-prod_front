@@ -30,7 +30,14 @@ const SaleBookingApi = createApi({
           userId ? `?userId=${userId}` : ""
         }`,
       transformResponse: (response) => response.data,
-      keepUnusedDataFor: 60 * 60,
+      keepUnusedDataFor: 0,
+    }),
+
+    getTotalSaleAmountDateWise: builder.query({
+      query: ({ startDate, endDate }) =>
+        `sales/date_range_total_sale_amount?startDate=${startDate}&endDate=${endDate}`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
     }),
 
     addSaleBooking: builder.mutation({
@@ -133,6 +140,7 @@ export const {
   useGetAllDeletedSaleBookingQuery,
   useGetIndividualSaleBookingQuery,
   useGetListOfIndividualSaleBookingQuery,
+  useGetTotalSaleAmountDateWiseQuery,
   useAddSaleBookingMutation,
   useEditSaleBookingMutation,
   useDeleteSaleBookingMutation,

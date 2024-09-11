@@ -104,7 +104,8 @@ const BalancePaymentList = () => {
   const [invcDate, setInvcDate] = useState("");
 
   const accordionButtons = [
-    "Invoice Created",
+    "All",
+    "Oustanding Invoice",
     "Non Invoice Created",
     "Approved",
   ];
@@ -233,7 +234,6 @@ const BalancePaymentList = () => {
         setUniqueNonInvoiceSalesExecutiveData(111);
       });
   };
-
   function pendingApprovalApi() {
     axios
       .get(
@@ -360,21 +360,42 @@ const BalancePaymentList = () => {
   const rejectedCount = datas?.filter(
     (item) => item.finance_refund_status === 2
   )?.length;
-
+  console.log(filterData, "filterData--->");
   const columns = [
     {
       width: 70,
       field: "sno",
       headerName: "S.No",
+      valueGetter: (params) => {
+        const invcForCreated =
+          activeAccordionIndex === 0
+            ? filterData
+            : activeAccordionIndex === 1
+            ? filterData?.filter(
+                (invc) =>
+                  invc.invoice_type_id === "tax-invoice" &&
+                  invc.invoice_creation_status !== "pending"
+              )
+            : activeAccordionIndex === 2
+            ? filterData?.filter(
+                (invc) =>
+                  invc.invoice_type_id !== "tax-invoice" ||
+                  invc.invoice_creation_status === "pending"
+              )
+            : [];
+        return invcForCreated.indexOf(params?.row) + 1;
+      },
       renderCell: (params) => {
         const invcForCreated =
           activeAccordionIndex === 0
+            ? filterData
+            : activeAccordionIndex === 1
             ? filterData?.filter(
                 (invc) =>
-                  invc.invoice_type_id == "tax-invoice" &&
+                  invc.invoice_type_id === "tax-invoice" &&
                   invc.invoice_creation_status !== "pending"
               )
-            : activeAccordionIndex === 1
+            : activeAccordionIndex === 2
             ? filterData?.filter(
                 (invc) =>
                   invc.invoice_type_id !== "tax-invoice" ||
@@ -393,6 +414,11 @@ const BalancePaymentList = () => {
     {
       field: "aging",
       headerName: "Aging",
+      valueGetter: (params) => {
+        const hours = calculateAging(params.row.sale_booking_date, new Date());
+        const days = Math.round(hours / 24);
+        return `${days} Days`;
+      },
       renderCell: (params) => {
         const hours = calculateAging(params.row.sale_booking_date, new Date());
         const days = Math.round(hours / 24);
@@ -477,6 +503,10 @@ const BalancePaymentList = () => {
     {
       field: "Balance Amount",
       headerName: "Balance Amount",
+      valueGetter: (params) => {
+        return params.row.campaign_amount - params.row.paid_amount || 0;
+      },
+
       renderCell: (params) =>
         params.row.campaign_amount - params.row.paid_amount || 0,
     },
@@ -669,7 +699,7 @@ const BalancePaymentList = () => {
 
   return (
     <div>
-      {activeAccordionIndex === 2 ? (
+      {activeAccordionIndex === 3 ? (
         ""
       ) : (
         <>
@@ -720,7 +750,6 @@ const BalancePaymentList = () => {
               paymentDate={paymentDate}
               tdsFieldSaleBookingId={tdsFieldSaleBookingId}
               getData={getData}
-              // handleCloseImageModal={handleCloseImageModal}
             />
           )}
 
@@ -792,27 +821,22 @@ const BalancePaymentList = () => {
           )}
         </div>
         <div className="card-body thm_table fx-head">
-          {(activeAccordionIndex === 0 || activeAccordionIndex === 1) && (
+          {(activeAccordionIndex === 0 ||
+            activeAccordionIndex === 1 ||
+            activeAccordionIndex === 2) && (
             <DataGrid
-              // rows={
-              //   activeAccordionIndex === 0
-              //     ? filterData?.filter(
-              //         (invc) => invc.invoice_type_id == "tax-invoice"
-              //       )
-              //     : activeAccordionIndex === 1
-              //     ? filterData?.filter(
-              //         (invc) => invc.invoice_type_id !== "tax-invoice"
-              //       )
-              //     : []
-              // }
               rows={
                 activeAccordionIndex === 0
+                  ? filterData
+                  : activeAccordionIndex === 1
                   ? filterData?.filter(
                       (invc) =>
                         invc.invoice_type_id === "tax-invoice" &&
-                        invc.invoice_creation_status !== "pending"
+                        invc.invoice_creation_status !== "pending" &&
+                        invc.gst_status === true &&
+                        invc.paid_amount <= invc.campaign_amount * 0.9
                     )
-                  : activeAccordionIndex === 1
+                  : activeAccordionIndex === 2
                   ? filterData?.filter(
                       (invc) =>
                         invc.invoice_type_id !== "tax-invoice" ||
@@ -834,7 +858,7 @@ const BalancePaymentList = () => {
             />
           )}
 
-          {activeAccordionIndex === 2 && <ApprovedList />}
+          {activeAccordionIndex === 3 && <ApprovedList />}
         </div>
       </div>
 

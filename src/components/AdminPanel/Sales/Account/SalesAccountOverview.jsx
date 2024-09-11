@@ -52,10 +52,12 @@ const SalesAccountOverview = () => {
         "An error occurred"
     );
   }
+
   useEffect(() => {
     setFilteredData(allAccount);
     setActiveText("0");
   }, [allAccount]);
+
   function filterEngine(data, isremove, isActive) {
     setActiveText(isActive);
     if (isremove === "remove") {
@@ -63,6 +65,7 @@ const SalesAccountOverview = () => {
     } else setFilteredDataBtn(true);
     setFilteredData(data);
   }
+
   const ViewSalesAccountColumns = [
     {
       key: "Serial_no",
@@ -166,11 +169,12 @@ const SalesAccountOverview = () => {
       sortable: true,
       showCol: true,
       editable: true,
+      renderRowCell: (row) => (row?.description ? row?.description : "N/A"),
       customEditElement: (row, index, setEditFlag, handelchange) => (
         <input
           type="text"
           onChange={(e) => handelchange(e)}
-          placeholder={row.description}
+          placeholder={row?.description}
         />
       ),
     },
@@ -362,7 +366,7 @@ const SalesAccountOverview = () => {
                 class="card p16 hov-pointer"
                 onClick={() => {
                   filterEngine(
-                    allAccount?.filter((account) => account?.paidAmount !== 0),
+                    allAccount?.filter((account) => account?.paidAmount == 0),
                     "",
                     "2"
                   );
@@ -371,7 +375,7 @@ const SalesAccountOverview = () => {
                 <h6 class="colorMedium">Idle Accounts (Without Payment) </h6>
                 <h6 class="mt8 fs_16">
                   {
-                    allAccount?.filter((account) => account?.paidAmount !== 0)
+                    allAccount?.filter((account) => account?.paidAmount == 0)
                       .length
                   }
                 </h6>

@@ -12,7 +12,7 @@ const ExtendJoining = ({
   gettingData,
   id,
   currentJoiningDate,
-  loginId,
+  email,
   username,
   password,
   closeModal,
@@ -25,16 +25,17 @@ const ExtendJoining = ({
   const [joiningDateError, setJoiningDateError] = useState("");
   const [joiningReasonError, setJoiningReasonError] = useState("");
 
-  const calculateMinDate = (dateStr) => {
-    const parts = dateStr.split("-");
-    const inputDate = new Date(parts[1], parts[1] - 1, parts[0]);
-    inputDate.setDate(inputDate.getDate() + 30);
-    return `${inputDate.getFullYear()}-${(inputDate.getMonth() + 1)
-      .toString()
-      .padStart(2, "0")}-${inputDate.getDate().toString().padStart(2, "0")}`;
+  const getTomorrowDate = () => {
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1); // Add 1 day to get tomorrow
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, "0");
+    const day = String(tomorrow.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
-  const minDateFormatted = calculateMinDate(currentJoiningDate);
+  const minDateFormatted = getTomorrowDate(); // Get tomorrow's date as min date
 
   const handleJoiningExtend = async (e) => {
     e.preventDefault();
@@ -44,23 +45,27 @@ const ExtendJoining = ({
 
     let hasErrors = false;
 
+    // Validate Joining Extend Date
     if (!joingingExtendDate.trim()) {
       setJoiningDateError("Joining date is required.");
       hasErrors = true;
     } else {
       const currentDate = new Date();
       const selectedDate = new Date(joingingExtendDate);
-      if (selectedDate < currentDate) {
-        setJoiningDateError("Joining date cannot be in the past.");
+      if (selectedDate <= currentDate) {
+        setJoiningDateError("Joining date cannot be today or in the past.");
         hasErrors = true;
+      } else {
+        setJoiningDateError(""); // Clear error if date is valid
       }
     }
 
+    // Validate Reason for extension
     if (!joiningExtendReason.trim()) {
-      setJoiningReasonError(
-        "Reason for extending the joining date is required."
-      );
+      setJoiningReasonError("Reason for extending the joining date is required.");
       hasErrors = true;
+    } else {
+      setJoiningReasonError(""); // Clear error if reason is provided
     }
 
     if (hasErrors) {
@@ -83,14 +88,12 @@ const ExtendJoining = ({
         },
       });
 
-      const emailResponse = axios.post(`${url}add_send_user_mail`, {
-        email: "lalit@creativefuel.io",
-        subject: "User Pre Onboarding Extend Date",
-        text: joiningExtendReason,
-        attachment: "",
-        login_id: loginId,
+      const emailResponse = await axios.post(`${url}send_mail_for_extend_joining_date`, {
+        email: email,
         name: username,
-        password: password,
+        joining_date:currentJoiningDate,
+        joining_date_extend:joingingExtendDate,
+        joining_date_extend_reason: joiningExtendReason,
       });
       console.log("Email sent successfully:", emailResponse.data);
 
@@ -102,6 +105,7 @@ const ExtendJoining = ({
         [username, joingingExtendDate.split("-").reverse().join("-")]
       );
 
+      // Clear form and errors after successful submission
       setJoiningExtendDate("");
       setJoiningExtendReason("");
       setJoiningExtendDocument(null);
@@ -130,12 +134,15 @@ const ExtendJoining = ({
                     type="date"
                     required
                     value={joingingExtendDate}
-                    onChange={(e) => setJoiningExtendDate(e.target.value)}
+                    onChange={(e) => {
+                      setJoiningExtendDate(e.target.value);
+                      if (e.target.value) setJoiningDateError(""); // Clear error on valid date
+                    }}
                     InputLabelProps={{
                       shrink: true,
                     }}
                     inputProps={{
-                      min: minDateFormatted,
+                      min: minDateFormatted, // Minimum date set to tomorrow
                     }}
                     error={!!joiningDateError}
                     helperText={joiningDateError}
@@ -150,7 +157,10 @@ const ExtendJoining = ({
                     variant="outlined"
                     type="text"
                     value={joiningExtendReason}
-                    onChange={(e) => setJoiningExtendReason(e.target.value)}
+                    onChange={(e) => {
+                      setJoiningExtendReason(e.target.value);
+                      if (e.target.value) setJoiningReasonError(""); // Clear error on valid input
+                    }}
                     error={!!joiningReasonError}
                     helperText={joiningReasonError}
                   />
@@ -189,11 +199,6 @@ const ExtendJoining = ({
                 </div>
               </div>
             </div>
-            {/* {allUserData?.joining_date_extend_status == "Reject" && (
-              <h1>
-                Request Rejected: {allUserData?.joining_date_extend_reason}
-              </h1>
-            )} */}
             <div className="col-12 d-flex justify-content-center gap-3">
               <div className="form-group mb-0 text-center">
                 <button

@@ -371,7 +371,7 @@ const PlanMaking = () => {
     dispatch(setShowPageHealthColumn(pageStatsAuth));
 
   if (showPageHealthColumn) {
-    dataGridcolumns.push(...pageHealthColumn);
+    // dataGridcolumns.push(...pageHealthColumn);
   }
 
   return (

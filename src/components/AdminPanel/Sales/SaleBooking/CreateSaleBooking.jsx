@@ -755,7 +755,7 @@ const CreateSaleBooking = () => {
           <SalesSubmitDialog
             response={"Success"}
             selectedPaymentStatus={selectedPaymentStatus}
-            id={id}
+            id={editId}
             setSubmitDialog={setSubmitDialog}
             closeModal={closeModal}
             newSaleBookingData={newSaleBookingData}

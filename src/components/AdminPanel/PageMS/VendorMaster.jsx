@@ -1591,6 +1591,7 @@ const VendorMaster = () => {
               />
             </div>
 
+            <div className="col-md-6">
             <FieldContainer
                 label="Threshold Limit"
                 value={limit}
@@ -1602,6 +1603,7 @@ const VendorMaster = () => {
                 <p className="vendor_threshold" onClick={() => setLimit(100)}>100</p>
                 <p className="vendor_threshold" onClick={() => setLimit(500)}>500</p>
                 <p className="vendor_threshold" onClick={() => setLimit(1000)}>1000</p>
+            </div>
             </div>
 
             {/* <FieldContainer
@@ -1694,6 +1696,26 @@ const VendorMaster = () => {
                 </div>
               </>
             )} */}
+
+            <div className="col-md-6 mb16">
+              <div className="form-group m0">
+                <label className="form-label">
+                  Is GST Available ? <sup style={{ color: "red" }}>*</sup>
+                </label>
+                <div className="input-group inputAddGroup">
+                  <div className="form-check-inline">
+                    <label className="form-check-label">
+                      <input type="radio" className="form-check-input" name="verified" value="" />Yes
+                    </label>
+                  </div>
+                  <div className="form-check-inline">
+                    <label className="form-check-label">
+                      <input type="radio" className="form-check-input" name="verified" value="" />No
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div className="card-header">Personal Details</div>
             <div className="card-body row">
