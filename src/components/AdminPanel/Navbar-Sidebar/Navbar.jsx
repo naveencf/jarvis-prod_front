@@ -344,14 +344,12 @@ const Navbar = () => {
                   <img src={imageTest1} alt="" width={40} />
                 </div>
               ) : (
-                // loginUserData.map((d) => (
                 <img
                   key={1}
                   className="img-profile"
                   src={loginUserData[0]?.image}
                   alt="user"
                 />
-                // ))
               )}
               <div className="profile-name">
                 <p>{userName}</p>
@@ -362,25 +360,18 @@ const Navbar = () => {
               className="dropdown-menu profilebar dropdown-menu-right shadow animated--grow-in mt16"
               aria-labelledby="userDropdown"
             >
-              {/* <Link to="/profile">
-                <a className="dropdown-item">
-                  <i className="bi bi-person" />
-                  Profile
-                </a>
-              </Link> */}
               <div className="profile-tab">
-                <div className="profile-img">
+                {/* <div className="profile-img">
                   <img
                     className="logo-img"
                     src={imageTest1}
                     alt=""
                     width={40}
                   />
-                </div>
-                <div className="profile-name">
+                </div> */}
+                {/* <div className="profile-name">
                   <p>{userName}</p>
-                  {/* <span>{user_role()}</span> */}
-                </div>
+                </div> */}
               </div>
               <div className="pack">
                 <div className="pro-btn">

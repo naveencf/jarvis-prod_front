@@ -1,32 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  TextField,
+} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
+import axios from "axios"; // Ensure you import axios here if not imported in the file
+import { useGlobalContext } from "../../../../../Context/Context";
+import jwtDecode from "jwt-decode";
+import { baseUrl } from "../../../../../utils/config";
 
 const EditInvoiceActionDialog = (props) => {
   const {
     editActionDialog,
     setEditActionDialog,
-    setInvcCreatedRowData,
     InvcCreatedRowData,
     setOpenImageDialog,
     setViewImgSrc,
+    getData,
+    handleGetProforma,
   } = props;
 
+  const { toastAlert, toastError } = useGlobalContext();
   const [invcDate, setInvcDate] = useState(dayjs());
   const [invcNumber, setInvcNumber] = useState("");
   const [partyInvoiceName, setPartyInvoiceName] = useState("");
-  const [imageInvoice, setImageInvoice] = useState([]);
-  const [preview, setPreview] = useState("");
+  const [imageInvoice, setImageInvoice] = useState(null);
+  const [preview, setPreview] = useState(null);
   const [isPDF, setIsPDF] = useState(false);
 
   const [isRequired, setIsRequired] = useState({
     imageInvoice: false,
     invcNumber: false,
   });
+
+  const token = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const loginUserId = decodedToken.id;
 
   const handleCloseEditFieldAction = () => {
     setEditActionDialog(false);
@@ -36,6 +52,7 @@ const EditInvoiceActionDialog = (props) => {
     setPartyInvoiceName("");
     setImageInvoice(null);
     setPreview(null);
+    setIsPDF(false);
     setIsRequired({
       imageInvoice: false,
       invcNumber: false,
@@ -57,8 +74,7 @@ const EditInvoiceActionDialog = (props) => {
         setViewImgSrc(InvcCreatedRowData.invoice_file_url);
 
         // Check if the file is a PDF
-        const isFilePDF =
-          InvcCreatedRowData?.invoice_file_url?.endsWith(".pdf");
+        const isFilePDF = InvcCreatedRowData?.invoice_file_url?.endsWith(".pdf");
         setIsPDF(isFilePDF);
       }
     }
@@ -66,36 +82,31 @@ const EditInvoiceActionDialog = (props) => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setImageInvoice(file);
-    setIsRequired((prev) => ({
-      ...prev,
-      imageInvoice: !file,
-    }));
-    const filePreview = URL.createObjectURL(file);
-    setPreview(filePreview);
-    setViewImgSrc(filePreview);
+    if (file) {
+      setImageInvoice(file);
+      setIsRequired((prev) => ({
+        ...prev,
+        imageInvoice: false,
+      }));
+      const filePreview = URL.createObjectURL(file);
+      setPreview(filePreview);
+      setViewImgSrc(filePreview);
 
-    // Check if the uploaded file is a PDF
-    const isFilePDF = file.type === "application/pdf";
-    setIsPDF(isFilePDF);
+      // Check if the uploaded file is a PDF
+      const isFilePDF = file.type === "application/pdf";
+      setIsPDF(isFilePDF);
+    }
   };
 
   const handleInvoiceEditFields = async (e) => {
     e.preventDefault();
-    if (imageInvoice == "") {
-      setIsRequired((perv) => ({ ...perv, imageInvoice: true }));
-    }
-    if (!imageInvoice || imageInvoice == "") {
+    if (!imageInvoice) {
+      setIsRequired((prev) => ({ ...prev, imageInvoice: true }));
       toastError("Please Add Invoice Image");
       return;
     }
-    // if (!invcNumber || isNaN(invcNumber)) {
-    //   setIsRequired((prev) => ({ ...prev, invcNumber: true }));
-    //   toastError("Please Enter a Valid Invoice Number");
-    //   return;
-    // }
-    const confirmation = confirm("Are you sure you want to submit this data?");
 
+    const confirmation = confirm("Are you sure you want to submit this data?");
     if (confirmation) {
       const formData = new FormData();
       formData.append("update_by", loginUserId);
@@ -111,8 +122,8 @@ const EditInvoiceActionDialog = (props) => {
           : dayjs().format("YYYY/MM/DD")
       );
 
-      await axios
-        .put(
+      try {
+        const res = await axios.put(
           baseUrl + `sales/invoice_request/${InvcCreatedRowData?._id}`,
           formData,
           {
@@ -121,125 +132,108 @@ const EditInvoiceActionDialog = (props) => {
               Authorization: `Bearer ${token}`,
             },
           }
-        )
-        .then((res) => {
-          if (res.status === 200) {
-            toastAlert("Data Submitted Successfully");
-            getData();
-            handleCloseEditFieldAction();
-            handleGetProforma();
-          }
-        })
-        .catch((err) => {
-          console.log(err, "submit invoice error-------");
-        });
+        );
+        if (res.status === 200) {
+          toastAlert("Data Submitted Successfully");
+          handleCloseEditFieldAction();
+          getData();
+          handleGetProforma();
+        }
+      } catch (err) {
+        console.log("Submit invoice error: ", err);
+      }
     }
   };
 
   return (
-    <div>
-      <Dialog
-        open={editActionDialog}
-        onClose={handleCloseEditFieldAction}
-        fullWidth={"md"}
-        maxWidth={"md"}
+    <Dialog
+      open={editActionDialog}
+      onClose={handleCloseEditFieldAction}
+      fullWidth
+      maxWidth="md"
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
+      <DialogTitle>Invoice Update</DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={handleCloseEditFieldAction}
         sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          position: "absolute",
+          right: 8,
+          top: 8,
+          color: (theme) => theme.palette.grey[500],
         }}
       >
-        <DialogTitle>Invoice Update</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseEditFieldAction}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          <div className="row">
-            <TextField
-              type="text"
-              name="input"
-              label="Invoice Number"
-              value={invcNumber}
-              onChange={(e) => {
-                const value = e.target.value;
-                setInvcNumber(value);
-              }}
+        <CloseIcon />
+      </IconButton>
+      <DialogContent dividers={true} sx={{ maxHeight: "80vh", overflowY: "auto" }}>
+        <div className="row">
+          <TextField
+            type="text"
+            label="Invoice Number"
+            value={invcNumber}
+            onChange={(e) => setInvcNumber(e.target.value)}
+            error={isRequired.invcNumber}
+            helperText={isRequired.invcNumber && "Please enter a valid invoice number"}
+          />
+          <label className="form-label mt-2">Invoice Date</label>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              format="DD/MM/YYYY"
+              value={invcDate}
+              onChange={(e) => setInvcDate(e)}
             />
-            <label className="form-label mt-2">Invoice Date</label>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                format="DD/MM/YYYY"
-                defaultValue={dayjs()}
-                onChange={(e) => {
-                  setInvcDate(e);
-                }}
-                value={dayjs(invcDate) || dayjs()}
-              />
-            </LocalizationProvider>
-            <TextField
-              type="text"
-              name="input"
-              label="Party Name"
-              value={partyInvoiceName}
-              className="mt-3"
-              onChange={(e) => setPartyInvoiceName(e.target.value)}
-            />
-            <div className=" col-3">
-              <label className="form-label mt-2">
-                Invoice Image <sup style={{ color: "red" }}>*</sup>
-              </label>
-              <input
-                type="file"
-                name="upload_image"
-                onChange={handleFileChange}
-              />
-              {isRequired?.imageInvoice && (
-                <p className="form-error">Please Add Correct File</p>
-              )}
-              {preview && (
-                <div className="mt-2">
-                  {!isPDF ? (
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      style={{ maxWidth: "70px", cursor: "pointer" }}
-                      onClick={() => setOpenImageDialog(true)}
-                    />
-                  ) : (
-                    <img
-                      src={pdf}
-                      alt="PDF Preview"
-                      style={{ maxWidth: "40px", cursor: "pointer" }}
-                      onClick={() => setOpenImageDialog(true)}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-            <Button
-              type="button"
-              className="mt-3"
-              variant="contained"
-              onClick={(e) => handleInvoiceEditFields(e)}
-            >
-              Update Invoice
-            </Button>
+          </LocalizationProvider>
+          <TextField
+            type="text"
+            label="Party Name"
+            value={partyInvoiceName}
+            className="mt-3"
+            onChange={(e) => setPartyInvoiceName(e.target.value)}
+          />
+          <div className="col-3">
+            <label className="form-label mt-2">
+              Invoice Image <sup style={{ color: "red" }}>*</sup>
+            </label>
+            <input type="file" onChange={handleFileChange} />
+            {isRequired?.imageInvoice && (
+              <p className="form-error">Please Add Correct File</p>
+            )}
+            {preview && (
+              <div className="mt-2">
+                {!isPDF ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    style={{ maxWidth: "70px", cursor: "pointer" }}
+                    onClick={() => setOpenImageDialog(true)}
+                  />
+                ) : (
+                  <img
+                    src="/pdf-icon.png"
+                    alt="PDF Preview"
+                    style={{ maxWidth: "40px", cursor: "pointer" }}
+                    onClick={() => setOpenImageDialog(true)}
+                  />
+                )}
+              </div>
+            )}
           </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+          <Button
+            type="button"
+            className="mt-3"
+            variant="contained"
+            onClick={handleInvoiceEditFields}
+          >
+            Update Invoice
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

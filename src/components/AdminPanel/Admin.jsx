@@ -4,6 +4,7 @@ import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import { baseUrl } from "../../utils/config";
 import Loader from "../Finance/Loader/Loader";
+import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
 
 const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
@@ -131,7 +132,7 @@ const PreOnboardUserDetailsProfile = lazy(() =>
   import("./AdminPreOnboarding/PreOnboardUserDetailsProfile")
 );
 const PreOnboardingOverview = lazy(() =>
-  import("./AdminPreOnboarding/PreonboardOverview")
+  import("./AdminPreOnboarding/PreOnboardOverview")
 );
 const OnboardExtendDateOverview = lazy(() =>
   import("./AdminPreOnboarding/OnboardExtendDateOverview")
@@ -723,6 +724,9 @@ const MajorDepartmentOverview = lazy(() =>
 );
 const MajorDepartmentUpdate = lazy(() =>
   import("./Department/MajorDepartment/MajorDepartmentUpdate")
+);
+const AllAssignedCategory = lazy(() =>
+  import("../SuperTracker/CommunityManagement/AllAssignedCategory")
 );
 
 const Admin = () => {
@@ -2193,33 +2197,41 @@ const Admin = () => {
                             element={<CommunityManager />}
                           />
 
-                          <Route
-                            path="/instaapi/community/manager/:creatorName"
-                            element={<CommunityPageView />}
-                          />
-                          <Route
-                            path="/instaapi/community/user"
-                            element={<CommunityUser />}
-                          />
-                          <Route
-                            path="/instaapi/community/managerView"
-                            element={<CommunityManagerView />}
-                          />
-                          <Route
-                            path="/instaapi/community/meetingPage"
-                            element={<MeetingPagesOverView />}
-                          />
-                          <Route
-                            path="/instaapi/community/overviewMeetingVia"
-                            element={<OverviewMeetingVia />}
-                          />
-                        </>
-                      )}
-                  </Route>
-                </Routes>
-              </div>
+                        <Route
+                          path="/instaapi/community/manager/:creatorName"
+                          element={<CommunityPageView />}
+                        />
+                        <Route
+                          path="/instaapi/community/user"
+                          element={<CommunityUser />}
+                        />
+                         <Route
+                          path="/instaapi/community/allAssignedcategory"
+                          element={<AllAssignedCategory />}
+                        />
+                        <Route
+                          path="/instaapi/community/managerView"
+                          element={<CommunityManagerView />}
+                        />
+                        <Route
+                          path="/instaapi/community/categoryWise/pagesHistoey"
+                          element={<CategoryWisePagesHistoey />}
+                        />
+                        <Route
+                          path="/instaapi/community/meetingPage"
+                          element={<MeetingPagesOverView />}
+                        />
+                        <Route
+                          path="/instaapi/community/overviewMeetingVia"
+                          element={<OverviewMeetingVia />}
+                        />
+                      </>
+                    )}
+                </Route>
+              </Routes>
             </div>
           </div>
+        </div>
         </div>
       </Suspense>
     </>

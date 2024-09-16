@@ -1,11 +1,14 @@
-import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography, Divider, Stack, Paper, Box } from '@mui/material';
+import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography, Divider, Stack, Paper, Box, Tooltip } from '@mui/material';
 import { useEffect, useState } from 'react';
 import BottomTenPage from './BottomTenPage';
 import TopTenPages from './TopTenPages';
 import TableViewPagesDetails from './TableViewPagesDetails';
+import HistoryIcon from '@mui/icons-material/History';
+import { useNavigate } from 'react-router-dom';
+
 
 function CommunityReport({ rows, setRows, pagecategory, allRows, setReportView }) {
-  console.log(rows, 'rows');
+const navigate  = useNavigate()
   const [teamCreated, setTeamCreated] = useState({ totalCor: 0, teamCount: 0 });
   const [zeroPostData, setZeroPostData] = useState([]);
   const [oneToFivePost, setOneToFivePost] = useState([]);
@@ -150,6 +153,13 @@ function CommunityReport({ rows, setRows, pagecategory, allRows, setReportView }
     setRows(positiveGrowth);
     setReportView(false);
   }
+
+  const handleClick = (categoryId) => {
+    navigate('/admin/instaapi/community/categoryWise/pagesHistoey', {
+      state: { categoryId }
+    });
+    // console.log(categoryId, 'catid');
+  }
   return (
     <div>
       <Stack direction="row" spacing={2} sx={{ width: '100%', alignItems: "flex-start" }}>
@@ -188,7 +198,7 @@ function CommunityReport({ rows, setRows, pagecategory, allRows, setReportView }
               <div key={index}>
                 {countData.count > 0 && (
                   <List sx={{ bgcolor: 'background.paper' }}>
-                    <ListItem alignItems="flex-start">
+                    <ListItem alignItems="flex-start" >
                       <ListItemAvatar>
                         <Avatar alt={item.category_name} src='n' />
                       </ListItemAvatar>
@@ -202,6 +212,10 @@ function CommunityReport({ rows, setRows, pagecategory, allRows, setReportView }
                           </>
                         }
                       />
+                      <Tooltip title=" Show History">
+                        <HistoryIcon onClick={() => handleClick(item.category_id)} color='error' />
+                      </Tooltip>
+
                     </ListItem>
                     <Divider variant="inset" component="li" />
                   </List>

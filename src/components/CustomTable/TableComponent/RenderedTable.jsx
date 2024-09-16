@@ -278,7 +278,9 @@ const RenderedTable = ({
     let newData = [...sortedData];
     newData[index] = { ...newData[index], [column?.key]: e.target.value };
     setSortedData(newData);
+
     if (e.target.value === "" || editflag === false) {
+
       let prevData = [...sortedData];
       prevData[index] = {
         ...prevData[index],

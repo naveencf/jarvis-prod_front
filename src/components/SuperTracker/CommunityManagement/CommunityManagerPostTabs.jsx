@@ -15,6 +15,7 @@ import DatePickerCf from "../../CommonTool/DatePickerCf";
 import dayjs from "dayjs";
 import PageOverViewinPage from "../../PageProfile/PageOverViewinPage";
 import PagePaidPosts from "../../PageProfile/PagePaidPosts";
+import axios from "axios";
 
 
 function CustomTabPanel(props) {
@@ -61,6 +62,7 @@ export default function CommunityManagerPostTabs({
   setEndDate,
   startDate,
   setStartDate,
+  creatorDetail
 }) {
   const [value, setValue] = useState(1);
   const [overViewvalue, setOverViewValue] = useState(9);
@@ -68,6 +70,8 @@ export default function CommunityManagerPostTabs({
   const [value2, setValue2] = useState(1);
   const [engagementArray, setEngagementArray] = useState(null);
   const [engagementArrayDateWise, setEngagementArrayDateWise] = useState(null);
+  const [highestGainandDropDay, setHighestGainandDropDay] = useState();
+  console.log(highestGainandDropDay, '-------nnnnn0000000nn');
 
   const handleChange = (event, newValue) => {
     if (newValue == 0) {
@@ -93,7 +97,7 @@ export default function CommunityManagerPostTabs({
     // setStartDate(null);
   };
   const minSelectableDate = dayjs("2023-11-01");
-  
+
   const formatDate = (date) => {
     const d = new Date(date);
     let month = "" + (d.getMonth() + 1);
@@ -138,7 +142,7 @@ export default function CommunityManagerPostTabs({
       setEndDate(new Date(now.getFullYear(), now.getMonth(), 2));
     } else if (newValue == 6) {
       // Previous Year
-      setStartDate(new Date(now.getFullYear() - 1, 0, 1)); 
+      setStartDate(new Date(now.getFullYear() - 1, 0, 1));
       setEndDate(new Date(now.getFullYear() - 1, 11, 31));
     } else if (newValue == 7) {
       // Custom (Example: Last 30 days)
@@ -147,12 +151,12 @@ export default function CommunityManagerPostTabs({
     } else if (newValue === 8) {
       // Yesterday
       setStartDate(new Date(now.setDate(now.getDate() - 2))); // Yesterday
-      setEndDate(new Date(now.setDate(now.getDate()+1 ))); // Today (end of day)
+      setEndDate(new Date(now.setDate(now.getDate() + 1))); // Today (end of day)
     } else if (newValue === 9) {
       // Yesterday
       setStartDate(null); // Yesterday
       setEndDate(null); // Today (end of day)
-    }else if (newValue === 10) {
+    } else if (newValue === 10) {
       // Previous Three Months
       setStartDate(new Date(now.getFullYear(), now.getMonth() - 3, 1));
       setEndDate(new Date(now.getFullYear(), now.getMonth(), 0));
@@ -176,12 +180,37 @@ export default function CommunityManagerPostTabs({
       return Math.round(value).toString();
     }
   };
+
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const today = new Date();
+        const startDate = new Date(today);
+        startDate.setMonth(today.getMonth() - 1);
+        const formatDate = (date) => date.toISOString().split('T')[0];
+        const response = await axios.post('https://insights.ist:8080/api/v1/community/retrive_growth_peek_and_low_dates', {
+          creatorName: creatorDetail?.creatorName,
+          startDate: formatDate(startDate),
+          endDate: formatDate(today)
+        });
+        console.log(response?.data?.data?.result?.highestFollowerGrowth, 'Data received');
+        setHighestGainandDropDay(response?.data?.data?.result)
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [creatorDetail?.creatorName]);
+
+
   return (
     <>
       <div className="card pgTab">
         <TabContext value={overViewvalue}>
           <div className="card-header flex_center_between">
-            <h5 className="cardHeaderTitle">Page Details  {startDate ? `From -${formatDate(startDate)}`: ""}</h5>
+            <h5 className="cardHeaderTitle">Page Details  {startDate ? `From -${formatDate(startDate)}` : ""}</h5>
             <TabList
               className="tabSM"
               onChange={handleOverViewChange}
@@ -213,7 +242,7 @@ export default function CommunityManagerPostTabs({
           <PageOverViewinPage
             value={overViewvalue}
             engagementArray={engagementArray}
-           
+
           />
         </TabContext>
       </div>
@@ -271,7 +300,7 @@ export default function CommunityManagerPostTabs({
                   </div>
                 </div>
               </div>
-              <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 pgRechCol">
+              <div className="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 pgRechCol">
                 <div className="pgRechBox">
                   <h2 className="pgRechBoxTitle">
                     <span>
@@ -316,7 +345,7 @@ export default function CommunityManagerPostTabs({
                   </div>
                 </div>
               </div>
-              <div className="col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12 pgRechCol">
+              <div className="col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12 pgRechCol">
                 <div className="pgRechBox">
                   <h2 className="pgRechBoxTitle">
                     <span>
@@ -354,6 +383,46 @@ export default function CommunityManagerPostTabs({
                       <div className="col-md-6 col-sm-12 col-12 col">
                         <div className="pgRechBoxItem_New">
                           <span>Engagement Rate</span> 23.9%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* ------ new content--------- */}
+              <div className="col-xl-2 col-lg-2 col-md-2 col-sm-12 col-12 pgRechCol">
+                <div className="pgRechBox">
+                  <h2 className="pgRechBoxTitle">
+                    <span>
+                      <img src={reelIcon} alt="reel" />
+                    </span>
+                    Highest Dorp And Gain Day
+
+                  </h2>
+                  <div className="pgRechBoxData_New">
+                    <div className="pgRechBoxItems_New row">
+                      <div className="col-md-6 col-sm-12 col-12 col">
+                        <div className="pgRechBoxItem_New">
+                          <span>Highest  Gain</span>{" "}
+
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-12 col-12 col">
+                        <div className="pgRechBoxItem_New">
+                          <span> :{highestGainandDropDay?.dateWithHighestFollowerGrowth} {highestGainandDropDay?.highestFollowerGrowth ? highestGainandDropDay?.highestFollowerGrowth : "NA"}</span>{" "}
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-12 col-12 col">
+                        <div className="pgRechBoxItem_New">
+                          <span>Highest Drop  </span>{" "}
+                        </div>
+                      </div>
+                      <div className="col-md-6 col-sm-12 col-12 col ">
+                        <div className="pgRechBoxItem_New d-flex flex-row gap-2">
+                          <span>
+                            :
+                          </span>
+                          <span className="text-danger"  >  {highestGainandDropDay?.dateWithLowestFollwerGrowth} {highestGainandDropDay?.lowestFollowerGrowth ? highestGainandDropDay?.lowestFollowerGrowth : "NA"}</span>
                         </div>
                       </div>
                     </div>

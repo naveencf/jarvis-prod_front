@@ -428,6 +428,7 @@ const CommunityPageView = () => {
             setEndDate={setEndDate}
             startDate={startDate}
             setStartDate={setStartDate}
+            creatorDetail={creatorDetail}
           />
           <PageDateWiseStatus
             startDate={startDate}

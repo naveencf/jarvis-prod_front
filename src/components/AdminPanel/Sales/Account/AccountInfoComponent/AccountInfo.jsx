@@ -38,7 +38,7 @@ const AccountInfo = () => {
     }
   };
   return (
-    <div className="AccountInfo">
+    <div className="AccountInfo"> 
       {SingleAccountLoading && <Loader />}
       <div className="sales-sidebar">
         <div className="topbarBrand-1">

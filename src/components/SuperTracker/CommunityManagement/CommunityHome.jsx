@@ -150,7 +150,7 @@ function CommunityHome() {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
-    const { contextData } = useAPIGlobalContext()
+  const { contextData } = useAPIGlobalContext()
   const navigate = useNavigate();
   const { userContextData } = useContext(ApiContextData);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -175,7 +175,19 @@ function CommunityHome() {
   const [endDate, setEndDate] = useState(null);
   const [teamDetail, setTeamDetail] = useState(null);
   const [reportView, setReportView] = useState(false);
+  const [communityManagerCategory, setCommunityManagerCategory] = useState();
+
   const minSelectableDate = dayjs("2023-11-01");
+
+  const getCommunityManagerCategory = async () => {
+    try {
+      const res = await axios.get(`https://insights.ist:8080/api/v1/community/category_manager_by_user/${loginUserId}`);
+      setCommunityManagerCategory(res.data.data);
+    } catch (error) {
+      console.error("Error fetching community manager category:", error);
+    }
+  };
+
   const fetchRows = async () => {
     try {
       const res = await axios.post(
@@ -185,26 +197,23 @@ function CommunityHome() {
           endDate: endDate,
         }
       );
-  
+
       if (res.status === 200) {
-        let filteredData = res.data.data;
-        // if (loginUserId === 926) {
-        //   filteredData = res.data.data.filter(item => {
-        //     return item.projectxRecord &&
-        //            (item.projectxRecord.pageCategoryId === 1004 ||
-        //             item.projectxRecord.pageCategoryId === 14 ||
-        //             item.projectxRecord.pageCategoryId === 1008);
-        //   });
-        // } else {
-        //   filteredData = res.data.data;
-        // }
+        let filteredData = res?.data?.data;
+        if (loginUserId === communityManagerCategory?.userId) {
+          const pageCategoryIds = communityManagerCategory?.pageCategoryIds;
+          filteredData = filteredData?.filter((item) =>
+            pageCategoryIds?.includes(item?.projectxRecord?.pageCategoryId)
+          );
+        }
         setRows(filteredData);
-        setAllRows(res.data.data);
+        setAllRows(res?.data?.data);
       }
     } catch (error) {
-      console.error("Error fetching data: ", error);
+      console.error("Error fetching Data: ", error);
     }
   };
+
 
   const fetchCategory = async () => {
     try {
@@ -241,6 +250,7 @@ function CommunityHome() {
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
+    getCommunityManagerCategory()
   }, []);
 
   const columns = [
@@ -290,7 +300,7 @@ function CommunityHome() {
             style={{ textDecoration: 'none' }}
           >
             <Button variant="outlined" color="primary">
-              <DownloadIcon/>
+              <DownloadIcon />
             </Button>
           </a>
         );
@@ -355,8 +365,7 @@ function CommunityHome() {
         }
       },
     }
-
-    ,
+ ,
     {
       field: "Date ",
       headerName: "Date",
@@ -605,7 +614,6 @@ function CommunityHome() {
             </Button>
           </ButtonGroup>
 
-
           {!reportView ? (
             <div className="card">
               {contextData && contextData[0] && contextData[0].view_value == 1 && (
@@ -636,7 +644,7 @@ function CommunityHome() {
                       aria-label="lab API tabs example"
                     >
                       {/* <Tab label="All" value={9} /> */}
-                      <Tab label="Today" value={0} />
+                      <Tab label="Yesterday" value={0} />
                       <Tab label="This Week" value={1} />
                       <Tab label="This Month" value={2} />
                       <Tab label="This Year" value={3} />

@@ -1936,6 +1936,12 @@ const SidebarLinks = () => {
               >
                 <i className="bi bi-dot"></i> Community-Manager
               </NavLink>
+              <NavLink
+                className="collapse-item"
+                to="/instaapi/community/learning"
+              >
+                <i className="bi bi-dot"></i> Learning
+              </NavLink>
             </div>
           </div>
         </li>

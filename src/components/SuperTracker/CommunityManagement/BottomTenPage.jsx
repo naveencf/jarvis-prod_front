@@ -87,7 +87,7 @@ const BottomTenPage = ({ rows, allRows }) => {
             field: "postCount",
             headerName: "Post Count",
             width: 100,
-            valueGetter: (params) => params.row.reportStatus?.previousDay?.todayPostCount || 0,
+            valueGetter: (params) => params.row.postcount || 0,
         },
         {
             field: 'Image', headerName: 'Image ', width: 150, valueGetter: (params) => params.row.postTypes[0]?.count ? params.row.postTypes[0]?.count : "-" ,

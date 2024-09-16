@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
 import { baseUrl } from "../../../../utils/config";
 
-function UserCountWithLpaWFO() {
+function UserCountWithLPAWFO() {
   const [graphData, setGraphData] = useState([]);
   const [state, setState] = useState({
     series: [], // Donut chart series is an array of values
@@ -42,9 +42,8 @@ function UserCountWithLpaWFO() {
 
   const getData = async () => {
     try {
-      const res = await axios.get(baseUrl + "get_salary_by_LPA");
+      const res = await axios.get(baseUrl + "get_salary_by_LPA_of_wfo_users");
       setGraphData(res.data.data);
-      console.log(res.data.data, "lpa");
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
@@ -130,4 +129,4 @@ function UserCountWithLpaWFO() {
   );
 }
 
-export default UserCountWithLpaWFO;
+export default UserCountWithLPAWFO;
