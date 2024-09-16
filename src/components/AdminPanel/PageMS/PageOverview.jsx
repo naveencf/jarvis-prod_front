@@ -166,17 +166,6 @@ const PageOverview = () => {
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
 
-  // const { isLoading: isNotAssignedVendorLoading, data: notAssignedVenodrData } =
-  //   useGetnotAssignedVendorsQuery();
-  // function handleNotAssignedVendorClick() {
-  //   dispatch(setShowVendorNotAssignedModal());
-  // }
-
-  // const handlePageChange = ()=>{
-  //   // if()
-
-  // }
-
   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   // const handleEditCellChange = (params) => {
