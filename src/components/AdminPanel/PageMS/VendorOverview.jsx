@@ -754,14 +754,14 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {Object.entries(categoryCounts).map(([category, count]) => (
-                    <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                    <div key={category} className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                       <div
                         className="card"
                         key={category}
                         onClick={() => vendorWithCategories(category)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
-                          <div class="iconBadge small bgPrimaryLight m-0">
+                          <div className="iconBadge small bgPrimaryLight m-0">
                             <span></span>
                           </div>
                           <div>
@@ -780,7 +780,7 @@ const VendorOverview = () => {
               <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                 <div className="card" onClick={vendorWithNoPages}>
                   <div className="card-body pb20 flexCenter colGap14">
-                    <div class="iconBadge small bgPrimaryLight m-0">
+                    <div className="iconBadge small bgPrimaryLight m-0">
                       <span></span>
                     </div>
                     <div>
