@@ -26,7 +26,7 @@ const PendingInvoice = ({
   onHandleOpenUniqueCustomerClickChange,
 }) => {
   const navigate = useNavigate();
-  const { toastAlert, toastError, usersDataContext } = useGlobalContext();
+  const { usersDataContext } = useGlobalContext();
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
@@ -69,6 +69,7 @@ const PendingInvoice = ({
           return {
             ...item,
             user_name: userData?.user_name || null,
+            account_name: item?.saleData?.account_name || null,
           };
         });
 
@@ -78,48 +79,55 @@ const PendingInvoice = ({
 
         setData(sortData);
         setFilterData(sortData);
-        calculateUniqueData(sortData);
-        calculateTotals(sortData);
+        calculateUniqueData([...sortData]);
+        calculateTotals([...sortData]);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
   };
-  console.log(filterData, "filter Data--");
 
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName) => {
       return data?.reduce((acc, curr) => {
         const key = curr[keyName];
-        console.log(key, "key--->>>>");
+        console.log(curr,"CURRENT VALUE ----->>>>>>>")
         if (!acc[key]) {
+          console.log(acc[key],"CURRENT VALUE ----->>>>>>>")
           acc[key] = {
-            ...curr,
-            campaign_amount: 0,
-            base_amount: 0,
+            account_name: curr?.account_name ||"",
+            user_name: curr?.user_name,
+            saleData: {
+              campaign_amount: 0,
+              base_amount: 0,
+              gst_amount: 0,
+            },
             invoice_amount: 0,
-            gst_amount: 0,
           };
         }
-        acc[key].saleData.campaign_amount += curr.saleData.campaign_amount ?? 0;
-        acc[key].saleData.base_amount += curr.saleData.base_amount ?? 0;
-        acc[key].invoice_amount += curr.invoice_amount ?? 0;
-        acc[key].saleData.gst_amount += curr.saleData.invoice_amount ?? 0;
+  
+        acc[key].saleData.campaign_amount += curr?.saleData?.campaign_amount ?? 0;
+        acc[key].saleData.base_amount += curr?.saleData?.base_amount ?? 0;
+        acc[key].invoice_amount += curr?.invoice_amount ?? 0;
+        acc[key].saleData.gst_amount += curr?.saleData?.gst_amount ?? 0;
+  
         return acc;
       }, {});
     };
-    // Aggregate data by account name:-
+  
+    // Aggregate data by account name
     const aggregatedAccountData = aggregateData(sortedData, "account_name");
     const uniqueAccData = Object.values(aggregatedAccountData);
     setUniqueCustomerData(uniqueAccData);
     setUniqueCustomerCount(uniqueAccData?.length);
-
-    // Aggregate data by sales executive name :-
+  
+    // Aggregate data by sales executive name
     const aggregatedSalesExData = aggregateData(sortedData, "user_name");
     const uniqueSalesExData = Object.values(aggregatedSalesExData);
     setUniqueSalesExecutiveData(uniqueSalesExData);
     setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
+  console.log(uniqueCustomerData,"unique customer data-->>")
 
   const handleGetProforma = () => {
     axios
@@ -264,7 +272,6 @@ const PendingInvoice = ({
     setProformaDialog(false);
   };
   // ==============================================
-
   return (
     <div>
       {/* Edit Action Field */}
@@ -273,6 +280,7 @@ const PendingInvoice = ({
         setEditActionDialog={setEditActionDialog}
         setPreview={setPreview}
         setViewImgSrc={setViewImgSrc}
+        getData={getData}
         setInvcCreatedRowData={setInvcCreatedRowData}
         InvcCreatedRowData={InvcCreatedRowData}
         setOpenImageDialog={setOpenImageDialog}

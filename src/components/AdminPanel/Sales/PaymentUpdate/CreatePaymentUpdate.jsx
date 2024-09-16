@@ -32,7 +32,12 @@ const CreatePaymentUpdate = () => {
     sales_user?.sales_user?.sale_booking_id || sales_user?.sale_id;
   const campaignAmount = sales_user?.sales_user?.campaign_amount;
   const [paymentAmount, setPaymentAmount] = useState(0);
-
+  const token = getDecodedToken();
+  let loginUserId;
+  const loginUserRole = token.role_id;
+  if (loginUserRole !== 1) {
+    loginUserId = token.id;
+  }
   const { data: paymentDetailDatalist, isLoading: getPaymentDatilLoading } =
     useGetPaymentDetailListQuery();
 
@@ -43,7 +48,7 @@ const CreatePaymentUpdate = () => {
     data: allSaleBookingData,
     refetch: refetchSaleBooking,
     isLoading: getAllSaleBookingLoading,
-  } = useGetAllSaleBookingQuery();
+  } = useGetAllSaleBookingQuery({ loginUserId });
 
   const [
     updatepayment,
@@ -59,8 +64,6 @@ const CreatePaymentUpdate = () => {
   const { id } = useParams();
   const { toastAlert, toastError } = useGlobalContext();
   const navigate = useNavigate();
-  const token = getDecodedToken();
-  const loginUserId = token.id;
   const [saleBookingData, setSaleBookingData] = useState([]);
   const [selectedBookingData, setselectedBookingData] = useState(null);
   const [selectedSaleBooking, setSelectedSaleBooking] = useState(
@@ -222,10 +225,10 @@ const CreatePaymentUpdate = () => {
       formData.append("remarks", remarks);
 
       if (id == 0) {
-        formData.append("created_by", loginUserId);
+        formData.append("created_by", token.id);
         await AddPayment(formData).unwrap();
       } else {
-        formData.append("updated_by", loginUserId);
+        formData.append("updated_by", token.id);
         let object = {};
         formData.forEach((value, key) => (object[key] = value));
         await updatepayment({ id, ...object }).unwrap();
@@ -250,8 +253,7 @@ const CreatePaymentUpdate = () => {
       )?.campaign_amount - userdata?.requested_amount;
     if (campaignAmount > paymentAmount) {
       toastError(
-        `Payment amount should be less than or equal to ${
-          campaignAmount - userdata?.approved_amount
+        `Payment amount should be less than or equal to ${campaignAmount - userdata?.approved_amount
         } amount`
       );
     }
@@ -274,13 +276,11 @@ const CreatePaymentUpdate = () => {
                   salebookID: option?.sale_booking_id,
                   accountID: option?.account_id,
                 },
-                label: `${
-                  allAccountData?.find(
-                    (data) => data.account_id === option.account_id
-                  )?.account_name
-                } | ${DateISOtoNormal(option?.sale_booking_date)} | ${
-                  option?.campaign_amount
-                }`,
+                label: `${allAccountData?.find(
+                  (data) => data.account_id === option.account_id
+                )?.account_name
+                  } | ${DateISOtoNormal(option?.sale_booking_date)} | ${option?.campaign_amount
+                  }`,
               }))}
               value={{
                 value: selectedSaleBooking,
@@ -288,24 +288,22 @@ const CreatePaymentUpdate = () => {
                   (item) =>
                     item?.sale_booking_id === selectedSaleBooking?.salebookID
                 )
-                  ? `${
-                      accountData?.find(
-                        (item) =>
-                          item.account_id === selectedSaleBooking?.accountID
-                      )?.account_name
-                    } | ${DateISOtoNormal(
-                      saleBookingData.find(
-                        (item) =>
-                          item.sale_booking_id ===
-                          selectedSaleBooking?.salebookID
-                      )?.sale_booking_date
-                    )} | ${
-                      saleBookingData.find(
-                        (item) =>
-                          item.sale_booking_id ===
-                          selectedSaleBooking?.salebookID
-                      )?.campaign_amount
-                    }`
+                  ? `${accountData?.find(
+                    (item) =>
+                      item.account_id === selectedSaleBooking?.accountID
+                  )?.account_name
+                  } | ${DateISOtoNormal(
+                    saleBookingData.find(
+                      (item) =>
+                        item.sale_booking_id ===
+                        selectedSaleBooking?.salebookID
+                    )?.sale_booking_date
+                  )} | ${saleBookingData.find(
+                    (item) =>
+                      item.sale_booking_id ===
+                      selectedSaleBooking?.salebookID
+                  )?.campaign_amount
+                  }`
                   : "",
               }}
               onChange={(e) => {
@@ -360,11 +358,11 @@ const CreatePaymentUpdate = () => {
                       (item) =>
                         item.sale_booking_id === selectedSaleBooking?.salebookID
                     )?.campaign_amount -
-                      saleBookingData.find(
-                        (item) =>
-                          item.sale_booking_id ===
-                          selectedSaleBooking?.salebookID
-                      )?.requested_amount
+                    saleBookingData.find(
+                      (item) =>
+                        item.sale_booking_id ===
+                        selectedSaleBooking?.salebookID
+                    )?.requested_amount
                   );
                 }
               }}

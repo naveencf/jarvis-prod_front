@@ -8,7 +8,7 @@ import { baseUrl } from "../../../utils/config";
 import { useGlobalContext } from "../../../Context/Context";
 import Loader from "../../Finance/Loader/Loader";
 
-const PreOnboardingOverview = () => {
+const PreOnboardOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const [search, setSearch] = useState("");
   const [datas, setDatas] = useState([]);
@@ -232,4 +232,4 @@ const PreOnboardingOverview = () => {
     </>
   );
 };
-export default PreOnboardingOverview;
+export default PreOnboardOverview;

@@ -6,7 +6,14 @@ const SaleBookingApi = createApi({
   baseQuery: authBaseQuery,
   endpoints: (builder) => ({
     getAllSaleBooking: builder.query({
-      query: (id) => `sales/sales_booking${id ? `?userId=${id}` : ""}`,
+      query: ({ loginUserId, stats }) =>
+        `sales/sales_booking${
+          loginUserId
+            ? `?userId=${loginUserId}`
+            : stats
+            ? `?booking_status=${stats}`
+            : ""
+        }`,
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),

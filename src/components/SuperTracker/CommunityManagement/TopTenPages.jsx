@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 
 const TopTenPages = ({ allRows }) => {
+console.log(allRows,'mmmmmm')
     const [top5Pages, setTop5Pages] = useState([]);
     const [top10FollowerGrowth, setTop10FollowerGrowth] = useState([]);
     const [top10Post, setTop10Post] = useState([]);
     const [top10Media, setTop10Media] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
-
+ 
     useEffect(() => {
         const rowsCopy = [...allRows];
 
@@ -83,10 +84,10 @@ const TopTenPages = ({ allRows }) => {
         },
         { field: '_id', headerName: 'Page ', width: 150 },
         {
-            field: 'postCount', headerName: 'Post Count ', width: 150, valueGetter: (params) => params.row.reportStatus?.previousDay?.todayPostCount || 0,
+            field: 'postCount', headerName: 'Post Count ', width: 150, valueGetter: (params) => params.row.postcount || 0,
         },
         {
-            field: 'Image', headerName: 'Image ', width: 150, valueGetter: (params) => params.row.postTypes[0]?.count ? params.row.postTypes[0]?.count : "-" ,
+            field: 'Image', headerName: 'Image ', width: 150, valueGetter: (params) => params.row.postTypes[0]?.count ? params.row.postTypes[0]?.count : "-",
         },
         {
             field: 'Carousel', headerName: 'Carousel ', width: 150, valueGetter: (params) => params.row.postTypes[1]?.count ? params.row.postTypes[1]?.count : "-",
@@ -120,7 +121,7 @@ const TopTenPages = ({ allRows }) => {
         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <Typography sx={{ mt: 2 }} variant="h6">Top Pages</Typography>
             <Tabs value={activeTab} onChange={handleTabChange} aria-label="tabs">
-                <Tab label={<div style={{ color: 'green' }}> Followers</div>}  />
+                <Tab label={<div style={{ color: 'green' }}> Followers</div>} />
                 <Tab label={<div style={{ color: 'green' }}> + Growth</div>} />
                 <Tab label={<div style={{ color: 'green' }}> <KeyboardArrowUpIcon />Post </div>} />
                 <Tab label={<div style={{ color: 'green' }}> <KeyboardArrowUpIcon />Media </div>} />

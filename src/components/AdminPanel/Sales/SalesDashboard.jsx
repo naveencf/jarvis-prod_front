@@ -25,6 +25,7 @@ import { useGetAllTargetCompetitionsQuery } from "../../Store/API/Sales/TargetCo
 import { useGetTotalSaleAmountDateWiseQuery } from "../../Store/API/Sales/SaleBookingApi";
 
 const SalesDashboard = () => {
+  const navigate = useNavigate();
   const { toastAlert, toastError } = useGlobalContext();
   const loginUserId = getDecodedToken().id;
   const loginUserRole = getDecodedToken().role_id;
@@ -36,6 +37,9 @@ const SalesDashboard = () => {
   const [userBadgeData, setUserBadgeData] = useState();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
+  const [salesBookingGridStat, setSalesBookingGridStat] = useState();
+  const [salesBookingStat, setSalesBookingStat] = useState();
+
 
   async function getData() {
     setIsLoading(true);
@@ -70,6 +74,24 @@ const SalesDashboard = () => {
           },
         }
       );
+      const salesBookingGridStatus = await axios.get(
+        baseUrl + `sales/sale_booking_grid_status_count_list`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      const salesBookingStatus = await axios.get(
+        baseUrl + `sales/sale_booking_status_list`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      setSalesBookingGridStat(salesBookingGridStatus.data.data);
+      setSalesBookingStat(salesBookingStatus.data.data);
 
       setUserBadgeData(responseOutstanding.data.data);
       setWeekMonthCard(response1.data.data);
@@ -90,7 +112,6 @@ const SalesDashboard = () => {
 
   useEffect(() => {
     if (!targetCompetitionsLoading && allTargetCompetitionsData) {
-      console.log("running"); // This should run after data is loaded
       const activeCompetitions = allTargetCompetitionsData?.filter(
         (competition) => competition.status == 1
       );
@@ -112,11 +133,57 @@ const SalesDashboard = () => {
       { skip: !startDate || !endDate }
     );
 
-  console.log(startDate, endDate, "satart date ");
   useEffect(() => {
     getData();
   }, []);
+  const booking = [
+    {
+      key: "s.no",
+      name: "S.No",
+      renderRowCell: (row, index) => {
+        return index + 1;
+      },
+      width: 70,
+    },
+    {
+      key: "status",
+      name: "Status",
+      width: 150,
+    },
+    {
+      key: "discription",
+      name: "Description",
+      width: 150,
+    }
+  ];
+  const bookingGrid = [
+    {
+      key: "s.no",
+      name: "S.No",
+      renderRowCell: (row, index) => {
+        return index + 1;
+      },
+      width: 70,
+    },
+    {
+      key: "booking_status",
+      name: "Booking Status",
+      width: 150,
+    },
+    {
+      key: "totalSaleBookingCounts",
+      name: "Total Sale Booking Counts",
+      renderRowCell: (row) => {
 
+        return <div style={{ color: "blue", cursor: "pointer" }} onClick={() => navigate("/admin/view-sales-booking",
+          {
+            state: { booking_status: row.booking_status }
+          }
+        )}>{row.totalSaleBookingCounts}</div>
+      },
+      width: 150,
+    },
+  ];
   const columns = [
     {
       name: "S.No",
@@ -360,17 +427,39 @@ const SalesDashboard = () => {
           )
       )}
 
+
+
       {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />}
 
+
+
       {loginUserRole == 1 && (
-        <View
-          title={"Top Bookings"}
-          data={data}
-          columns={columns}
-          isLoading={isLoading}
-          pagination={[10]}
-          tableName={"Top 20 Account Campaign Amount Wise"}
-        />
+        <>
+          <View
+            title={"Sales Booking Status Grid"}
+            data={salesBookingGridStat}
+            columns={bookingGrid}
+            isLoading={isLoading}
+            pagination
+            tableName={"Sales Booking Status Grid on dashboard"}
+          />
+          <View
+            title={"Sales Booking Status"}
+            data={salesBookingStat}
+            columns={booking}
+            isLoading={isLoading}
+            pagination
+            tableName={"Sales Booking Statuson dashboard"}
+          />
+          <View
+            title={"Top Bookings"}
+            data={data}
+            columns={columns}
+            isLoading={isLoading}
+            pagination={[10]}
+            tableName={"Top 20 Account Campaign Amount Wise"}
+          />
+        </>
       )}
     </div>
   );

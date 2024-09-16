@@ -8,9 +8,10 @@ import ApexCharts from "react-apexcharts"; // Import ApexCharts
 import BirthdayAndWorkAniverseryWFO from "./BirthdayAndWorkAniverseryWFO";
 import NewJoineeAndExitUsersWFO from "./NewJoineeAndExitUsersWFO";
 import DepartmentWiseMaleFemaleCountWFO from "./DepartmentWiseMaleFemaleCountWFO";
-import UserCountWithLpaWFOWFO from "./UserCountWithLPAWFO";
+import UserCountWithLPAWFO from "./UserCountWithLPAWFO";
 import AgeGrafWFO from "./AgeWiseGrafWFO";
 import MonthWiseJoinee from "./MonthWiseJoinee";
+import { motion } from "framer-motion";
 
 const UserDashPieChart = lazy(() => import("./UserDashPieChart"));
 
@@ -139,18 +140,26 @@ const UserDashboard = () => {
   // Helper function to render cards
   const renderCard = (title, count, link, icon) => (
     <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-12">
-      <div className="card text-center">
-        <Link to={`/admin/user-overview/${link}`}>
-          <div className="card-body pb20">
-            <div className={`iconBadge bg${title}Light`}>
-              <span>{icon}</span>
-            </div>
-            <h6 className="colorMedium">{title}</h6>
-            <h3 className="mt8">{count}</h3>
+  <motion.div  
+     className="box"
+     whileHover={{ scale: 1.1 }}
+     whileTap={{ scale: 0.8 }}
+     transition={{ type: "spring", stiffness: 400, damping: 17 }}
+  >
+    <div className="card text-center">
+      <Link to={`/admin/user-overview/${link}`}>
+        <div className="card-body pb20">
+          <div className={`iconBadge bg${title}Light`}>
+            <span>{icon}</span>
           </div>
-        </Link>
-      </div>
+          <h6 className="colorMedium">{title}</h6>
+          <h3 className="mt8">{count}</h3>
+        </div>
+      </Link>
     </div>
+  </motion.div>
+</div>
+
   );
 
   return (
@@ -175,7 +184,7 @@ const UserDashboard = () => {
       <DepartmentWiseMaleFemaleCountWFO />
 
       <div className="row">
-        <div className="col-md-6">
+        <div className="col">
           <div className="card">
             <div className="card-header">
               <h5 className="card-title">Active Users with Count</h5>
@@ -194,10 +203,11 @@ const UserDashboard = () => {
           <AgeGrafWFO />
         </div>
       </div>
+      
 
       {/* Bar and Pie Charts */}
       <div className="row">
-        <div className="col-md-6">
+        <div className="col">
           <div className="card">
             <div className="card-header">
               <h5 className="card-title">Departments with Count</h5>
@@ -220,7 +230,7 @@ const UserDashboard = () => {
       {/* User Count with LPA */}
       <div className="row">
         <div className="col">
-          <UserCountWithLpaWFOWFO />
+          <UserCountWithLPAWFO />
         </div>
       </div>
     </div>

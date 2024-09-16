@@ -62,7 +62,8 @@ const VendorOverview = () => {
   const [tabFilterData, setTabFilterData] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [platformCounts, setPlatformCounts] = useState([]);
-
+  const [stateDataS, setStateDataS] = useState([])
+  const [cityDataS, setCityDataS] = useState([])
   const { data: pageList } = useGetAllPageListQuery();
 
   const getData = () => {
@@ -77,9 +78,10 @@ const VendorOverview = () => {
       axios
         .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
         .then((res) => {
-          if (res.data[57].view_value === 1) {
-            setContextData(true);
-          }
+          // commenting this code for visible user creation wise data
+          // if (res.data[57].view_value === 1) {
+          //   setContextData(true);
+          // }
         });
     }
 
@@ -87,10 +89,18 @@ const VendorOverview = () => {
   }, []);
 
   useEffect(() => {
-    // console.log(vendorData?.data);
+    // if (vendorData) {
+    //   setFilterData(vendorData?.data);
+    //   setTabFilterData(vendorData?.data);
+    // }
     if (vendorData) {
-      setFilterData(vendorData?.data);
-      setTabFilterData(vendorData?.data);
+      if(decodedToken.role_id !== 1){
+        setFilterData(vendorData?.data.filter((item)=>item.created_by == decodedToken.id));
+        setTabFilterData(vendorData?.data.filter((item)=>item.created_by == decodedToken.id));
+      }else{
+        setFilterData(vendorData?.data);
+        setTabFilterData(vendorData?.data);
+      }
     }
   }, [vendorData]);
 
@@ -125,6 +135,52 @@ const VendorOverview = () => {
         setPageData(res.data.data);
       });
   };
+
+  useEffect(()=>{
+    function getUniqueStatesWithCounts() {
+      const stateData = {};
+      for (let i = 0; i < filterData.length; i++) {
+          const state = filterData[i].home_state;
+          const vendorName = filterData[i].vendor_name;
+  
+          if (state) {
+              if (!stateData[state]) {
+                  stateData[state] = {
+                      count: 1,
+                      filterData: [vendorName]
+                  };
+              } else {
+                  stateData[state].count++;
+                  stateData[state].filterData.push(vendorName);
+              }
+          }
+      }
+      setStateDataS(stateData);
+    }
+  
+    function getUniqueCitiesWithCounts() {
+      const cityData = {};
+      for (let i = 0; i < filterData.length; i++) {
+          const city = filterData[i].home_city;
+          const vendorName = filterData[i].vendor_name;
+  
+          if (city) {
+              if (!cityData[city]) {
+                  cityData[city] = {
+                      count: 1,
+                      filterData: [vendorName]
+                  };
+              } else {
+                  cityData[city].count++;
+                  cityData[city].filterData.push(vendorName);
+              }
+          }
+      }
+      setCityDataS(cityData);
+    }
+    getUniqueStatesWithCounts();
+    getUniqueCitiesWithCounts();
+  },[filterData])
 
   const columns = [
     {
@@ -543,24 +599,7 @@ const VendorOverview = () => {
               <h4 className="modal-title"></h4>
             </div>
             <div className="modal-body">
-              {/* <table className="table table-bordered">
-              <thead>
-                <tr>
-                  <th>Page name</th>
-                  <th>Ownership</th>
-                  <th>Followers</th>
-                </tr>
-              </thead>
-              <tbody>
-              {pageData && pageData.map((item) => (
-                <tr key={item.page_link}>
-                  <td><a href={item.page_link} target="blank">{item.page_name}</a></td>
-                  <td>{item.ownership_type}</td>
-                  <td>{item.followers_count}</td>
-                </tr>
-              ))}
-              </tbody>
-            </table>   */}
+              
               <DataTable
                 // title="Role Overview"
                 columns={columns}
@@ -596,6 +635,12 @@ const VendorOverview = () => {
           onClick={() => setActiveTab("Tab2")}
         >
           Statistics
+        </button>
+        <button
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
+        >
+          State/City Wise
         </button>
       </div>
 
@@ -812,6 +857,67 @@ const VendorOverview = () => {
                               {item.platform_name}
                             </h6>
                             <h6 className="mt4 fs_16">{item.count}</h6>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === "Tab3" && (
+          <div className="vendor-container">
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title">Vendor with State</h5>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  {Object.entries(stateDataS).map(([state, data]) => (
+                    <div key={state} className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                      <div
+                        className="card"
+                        key={state}
+                        // onClick={() => vendorWithCategories(state)}
+                      >
+                        <div className="card-body pb20 flexCenter colGap14">
+                          <div className="iconBadge small bgPrimaryLight m-0">
+                            <span></span>
+                          </div>
+                          <div>
+                            <h6 className="colorMedium">{state}</h6>
+                            <h6 className="mt4 fs_16">{data.count}</h6>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title">Vendor with City</h5>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  {Object.entries(cityDataS).map(([city, data]) => (
+                    <div key={city} className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                      <div
+                        className="card"
+                        key={city}
+                        // onClick={() => vendorWithCategories(city)}
+                      >
+                        <div className="card-body pb20 flexCenter colGap14">
+                          <div className="iconBadge small bgPrimaryLight m-0">
+                            <span></span>
+                          </div>
+                          <div>
+                            <h6 className="colorMedium">{city}</h6>
+                            <h6 className="mt4 fs_16">{data.count}</h6>
                           </div>
                         </div>
                       </div>

@@ -9,7 +9,6 @@ import { useGetAllPaymentUpdatesQuery } from "../../../Store/API/Sales/PaymentUp
 import { set } from "date-fns";
 import View from "../Account/View/View";
 import { useGetAllAccountQuery } from "../../../Store/API/Sales/SalesAccountApi";
-import { useGetAllSaleBookingQuery } from "../../../Store/API/Sales/SaleBookingApi";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import Tab from "../../../Tab/Tab";
@@ -40,11 +39,7 @@ const ViewPaymentUpdate = () => {
     isError: accountError,
     isLoading: accountLoading,
   } = useGetAllAccountQuery();
-  const {
-    data: allSaleBookingData,
-    isError: saleBookingError,
-    isLoading: saleBookingLoading,
-  } = useGetAllSaleBookingQuery();
+
   const {
     data: AllpaymentUpdateData,
     error: paymentUpdateError,
@@ -113,10 +108,9 @@ const ViewPaymentUpdate = () => {
       name: "Customer Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${
-            allAccountData?.find((data) => data?.account_id === row.account_id)
-              ?._id
-          }`}
+          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row.account_id)
+            ?._id
+            }`}
         >
           {row.account_name}
         </Link>

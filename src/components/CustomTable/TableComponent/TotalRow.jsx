@@ -29,10 +29,14 @@ const TotalRow = ({
     }, []);
 
     function calculateTotalAmount(func) {
+        let amounts;
+        if (typeof func !== 'function') {
 
+            amounts = unSortedData?.map((data) => data?.[func]);
 
-        let amounts = unSortedData.map((data) => func(data))
-
+        } else {
+            amounts = unSortedData?.map((data) => func(data))
+        }
 
         let total = 0;
 
@@ -91,7 +95,7 @@ const TotalRow = ({
                                         >
                                             {
                                                 column?.getTotal && (
-                                                    <p>{calculateTotalAmount(column?.renderRowCell)}</p>
+                                                    <p>{calculateTotalAmount(column?.renderRowCell || column.key)}</p>
                                                 )
                                             }
                                         </div>

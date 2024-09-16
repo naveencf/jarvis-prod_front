@@ -30,6 +30,9 @@ const ViewSaleBooking = () => {
     loginUserId = token.id;
   }
   const filterDate = useLocation().state;
+  const [stats, setStats] = useState("");
+
+
 
   const { toastAlert, toastError } = useGlobalContext();
   const { userContextData } = useAPIGlobalContext();
@@ -45,7 +48,7 @@ const ViewSaleBooking = () => {
     refetch: refetchSaleBooking,
     error: allSalebBookingError,
     isLoading: allSaleBookingLoading,
-  } = useGetAllSaleBookingQuery(loginUserId);
+  } = useGetAllSaleBookingQuery({ loginUserId, stats });
   const {
     data: allAccount,
     error: allAccountError,
@@ -66,7 +69,7 @@ const ViewSaleBooking = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [filterByIncentive, setFilterByIncentive] = useState("");
-  const [quickFiltring, setQuickFiltring] = useState("today");
+  const [quickFiltring, setQuickFiltring] = useState("");
 
 
   const handleDelete = async (rowId) => {
@@ -209,13 +212,18 @@ const ViewSaleBooking = () => {
   }
 
   useEffect(() => {
-    if (filterDate != null) {
-      setFromDate(filterDate.start.split("T")[0]);
-      setToDate(filterDate?.end?.split("T")[0]);
-      dataFiltter();
-    } else {
-      setFilteredData(allSaleBooking);
+    if (filterDate?.booking_status) {
+      setStats(filterDate.booking_status);
+      handelRemoveFiltter()
     }
+    else
+      if (filterDate != null) {
+        setFromDate(filterDate.start.split("T")[0]);
+        setToDate(filterDate?.end?.split("T")[0]);
+        dataFiltter();
+      } else {
+        setFilteredData(allSaleBooking);
+      }
   }, [filterDate, allSaleBooking, allAccountLoading]);
 
   function dataFiltter() {
@@ -442,6 +450,12 @@ const ViewSaleBooking = () => {
       name: "Incentive",
       renderRowCell: (row) =>
         row.incentive_status === "incentive" ? "Yes" : "No",
+      showCol: true,
+      width: 100,
+    },
+    {
+      key: "incentive_amount",
+      name: "Incentive Amount",
       showCol: true,
       width: 100,
     },
@@ -801,7 +815,6 @@ const ViewSaleBooking = () => {
               </>
             )
           }
-
           <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
             <button
               className="cmnbtn btn-primary"

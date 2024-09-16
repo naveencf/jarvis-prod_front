@@ -104,10 +104,10 @@ const BalancePaymentList = () => {
   const [invcDate, setInvcDate] = useState("");
 
   const accordionButtons = [
-    "All",
     "Oustanding Invoice",
     "Non Invoice Created",
-    "Approved",
+    "Approved", 
+    "All Tax Invoice",
   ];
 
   const token = sessionStorage.getItem("token");
@@ -171,7 +171,7 @@ const BalancePaymentList = () => {
       })
       .then((res) => {
         // Create a new array with transformed data
-        const transformedData = res?.data?.data.reduce((acc, object) => {
+        const transformedData = res?.data?.data?.reduce((acc, object) => {
           if (object?.salesInvoiceRequestData?.length > 0) {
             const invoices = object?.salesInvoiceRequestData.map((invoice) => ({
               ...invoice,
@@ -360,48 +360,60 @@ const BalancePaymentList = () => {
   const rejectedCount = datas?.filter(
     (item) => item.finance_refund_status === 2
   )?.length;
-  console.log(filterData, "filterData--->");
+
+
   const columns = [
     {
       width: 70,
       field: "sno",
       headerName: "S.No",
       valueGetter: (params) => {
+        // Apply the filter logic once
         const invcForCreated =
-          activeAccordionIndex === 0
-            ? filterData
-            : activeAccordionIndex === 1
-            ? filterData?.filter(
-                (invc) =>
-                  invc.invoice_type_id === "tax-invoice" &&
-                  invc.invoice_creation_status !== "pending"
-              )
-            : activeAccordionIndex === 2
-            ? filterData?.filter(
-                (invc) =>
-                  invc.invoice_type_id !== "tax-invoice" ||
-                  invc.invoice_creation_status === "pending"
-              )
-            : [];
+        activeAccordionIndex === 3
+        ?  filterData?.filter(
+          (invc) => invc.invoice_type_id !== "proforma")
+        : activeAccordionIndex === 0
+        ? filterData?.filter(
+            (invc) =>
+              invc.invoice_type_id === "tax-invoice" &&
+              invc.invoice_creation_status !== "pending" &&
+              invc.gst_status === true &&
+              invc.paid_amount <= invc.campaign_amount * 0.9
+          )
+        : activeAccordionIndex === 1
+        ? filterData?.filter(
+            (invc) =>
+              invc.invoice_type_id !== "tax-invoice" ||
+              invc.invoice_creation_status === "pending"
+          )
+        : []
+    
+        // Return the index for the S.No
         return invcForCreated.indexOf(params?.row) + 1;
       },
       renderCell: (params) => {
+        // Reuse the same filter logic
         const invcForCreated =
-          activeAccordionIndex === 0
-            ? filterData
-            : activeAccordionIndex === 1
-            ? filterData?.filter(
-                (invc) =>
-                  invc.invoice_type_id === "tax-invoice" &&
-                  invc.invoice_creation_status !== "pending"
-              )
-            : activeAccordionIndex === 2
-            ? filterData?.filter(
-                (invc) =>
-                  invc.invoice_type_id !== "tax-invoice" ||
-                  invc.invoice_creation_status === "pending"
-              )
-            : [];
+        activeAccordionIndex === 3
+        ?  filterData?.filter(
+          (invc) => invc.invoice_type_id !== "proforma")
+        : activeAccordionIndex === 0
+        ? filterData?.filter(
+            (invc) =>
+              invc.invoice_type_id === "tax-invoice" &&
+              invc.invoice_creation_status !== "pending" &&
+              invc.gst_status === true &&
+              invc.paid_amount <= invc.campaign_amount * 0.9
+          )
+        : activeAccordionIndex === 1
+        ? filterData?.filter(
+            (invc) =>
+              invc.invoice_type_id !== "tax-invoice" ||
+              invc.invoice_creation_status === "pending"
+          )
+        : []
+        // Render the serial number in the cell
         return <div>{invcForCreated.indexOf(params?.row) + 1}</div>;
       },
       sortable: true,
@@ -627,7 +639,8 @@ const BalancePaymentList = () => {
         </div>
       ),
     },
-    activeAccordionIndex == 0 && {
+    // activeAccordionIndex == 1 && 
+    {
       field: "Edit Action",
       headerName: "Edit Action",
       renderCell: (params) => (
@@ -699,7 +712,7 @@ const BalancePaymentList = () => {
 
   return (
     <div>
-      {activeAccordionIndex === 3 ? (
+      {activeAccordionIndex === 2 ? (
         ""
       ) : (
         <>
@@ -821,14 +834,15 @@ const BalancePaymentList = () => {
           )}
         </div>
         <div className="card-body thm_table fx-head">
-          {(activeAccordionIndex === 0 ||
-            activeAccordionIndex === 1 ||
-            activeAccordionIndex === 2) && (
+          {(activeAccordionIndex === 3 ||
+            activeAccordionIndex === 0 ||
+            activeAccordionIndex === 1) && (
             <DataGrid
               rows={
-                activeAccordionIndex === 0
-                  ? filterData
-                  : activeAccordionIndex === 1
+                activeAccordionIndex === 3
+                  ?  filterData?.filter(
+                    (invc) => invc.invoice_type_id !== "proforma")
+                  : activeAccordionIndex === 0
                   ? filterData?.filter(
                       (invc) =>
                         invc.invoice_type_id === "tax-invoice" &&
@@ -836,7 +850,7 @@ const BalancePaymentList = () => {
                         invc.gst_status === true &&
                         invc.paid_amount <= invc.campaign_amount * 0.9
                     )
-                  : activeAccordionIndex === 2
+                  : activeAccordionIndex === 1
                   ? filterData?.filter(
                       (invc) =>
                         invc.invoice_type_id !== "tax-invoice" ||
@@ -858,7 +872,7 @@ const BalancePaymentList = () => {
             />
           )}
 
-          {activeAccordionIndex === 3 && <ApprovedList />}
+          {activeAccordionIndex === 2 && <ApprovedList />}
         </div>
       </div>
 

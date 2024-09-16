@@ -27,7 +27,6 @@ const getFileIcon = (fileName) => {
 };
 
 const PendingInvoiceCustomerDeatils = () => {
-  console.log("HIIII---");
   const { id } = useParams();
   const { toastAlert } = useGlobalContext();
   const [gstNumClick, setGSTNumClick] = useState([]);
@@ -63,9 +62,11 @@ const PendingInvoiceCustomerDeatils = () => {
   }, []);
 
   const handleGSTNumberClick = async (data) => {
+    console.log(data?.document_no?.trim(),"data-->>-->>>")
+
     const payload = {
       flag: 2,
-      gstNo: data?.document_no,
+      gstNo: data?.document_no?.trim(),
     };
 
     await axios
@@ -82,6 +83,7 @@ const PendingInvoiceCustomerDeatils = () => {
         console.log(error, "ERROR---------------");
       });
   };
+
   console.log("gstNumClick:", gstNumClick);
   return (
     <div>

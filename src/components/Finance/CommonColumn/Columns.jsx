@@ -989,11 +989,11 @@ export const pendingApprovalColumn = ({
     field: "payment_mode",
     width: 180,
     renderCell: (params) => {
-      const pmData =
-        paymentModeArray.find((mode) => mode._id === params.row.payment_mode)
-          ?.payment_mode_name || "";
+      // const pmData =
+      //   paymentModeArray.find((mode) => mode._id === params.row.payment_mode)
+      //     ?.payment_mode_name || "";
 
-      return <div>{FormatString(pmData)} </div>;
+      return <div>{params.row.payment_mode_name} </div>;
     },
   },
   {
@@ -1497,14 +1497,14 @@ export const uniquePendingInvoiceAccountColumn = ({
   {
     headerName: "Account Name",
     field: "account_name",
-    width: 220,
+    width: 280,
     renderCell: (params) => (
       <a
         href="#"
         style={{ cursor: "pointer", color: "blue" }}
-        onClick={() => handleOpenSameCustomer(params.row.saleData.account_name)}
+        onClick={() => handleOpenSameCustomer(params?.row?.account_name)}
       >
-        {params.row.saleData.account_name}
+        {params?.row?.account_name}
         {/* <Link
             className="text-primary"
             to={`/admin/finance-pendinginvoice/customer-details/${params.row._id}`}
@@ -1773,6 +1773,7 @@ export const pendingInvoiceProformaColumns = ({
   proformaData = [],
   setOpenImageDialog,
   setViewImgSrc,
+  handleOpenEditFieldAction
 }) => [
   {
     width: 60,
@@ -1967,5 +1968,498 @@ export const pendingInvoiceProformaColumns = ({
     headerName: "Invoice Reason",
     width: 210,
     renderCell: (params) => params.row.invoice_action_reason,
+  },
+];
+
+export const  invoiceCreatedColumns = ({
+  filterDataInvoice = [],
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleOpenEditFieldAction
+}) =>  [
+  {
+    width: 60,
+    field: "s_no",
+    renderCell: (params, index) => (
+      <div>{[...filterDataInvoice].indexOf(params.row) + 1}</div>
+    ),
+    sortable: true,
+  },
+  {
+    width: 150,
+    headerName: "Sale Booking ID",
+    field: "sale_booking_id",
+    renderCell: (params, index) => <div>{params.row.sale_booking_id}</div>,
+  },
+  {
+    field: "cust_name",
+    headerName: "Account name",
+    width: 340,
+    renderCell: (params) => (
+      <div>{FormatString(params?.row?.saleData?.account_name) || ""}</div>
+    ),
+  },
+  {
+    headerName: "Sales Person name",
+    field: "user_name",
+    width: 220,
+    height: "200px",
+    renderCell: (params) => {
+      return <div>{FormatString(params.row.user_name) || ""} </div>;
+    },
+  },
+  {
+    field: "invoice_particular_name",
+    headerName: "Invoice Particular",
+    width: 200,
+    renderCell: (params) => {
+      return (
+        <div>
+          {" "}
+          {FormatString(params?.row?.saleData?.invoice_particular_name) || ""}
+        </div>
+      );
+    },
+  },
+  {
+    field: "invoice_file",
+    headerName: "Invoice",
+    width: 210,
+    renderCell: (params) => {
+      // Extract file extension and check if it's a PDF
+      const fileExtension = params.row.invoice_file_url
+        ?.split(".")
+        .pop()
+        .toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = params.row.invoice_file_url;
+
+      return isPdf ? (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={pdf}
+          style={{ width: "40px", height: "40px" }}
+          title="PDF Preview"
+        />
+      ) : (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={imgUrl}
+          alt="Invoice"
+          style={{ width: "100px", height: "100px" }}
+        />
+      );
+    },
+  },
+  {
+    field: "invoice_amount",
+    headerName: "Invoice Amount",
+    width: 200,
+    renderCell: (params) => params.row.saleData.invoice_amount,
+  },
+  {
+    field: "invoice_number",
+    headerName: "Invoice Number",
+    width: 200,
+    renderCell: (params) => params.row.invoice_number,
+  },
+  {
+    field: "invoice_uploaded_date",
+    headerName: "Invoice Date",
+    width: 200,
+    renderCell: (params) => params.row.invoice_uploaded_date,
+  },
+  {
+    field: "party_name",
+    headerName: "Party Name",
+    width: 210,
+    renderCell: (params) => FormatString(params.row.party_name),
+  },
+  {
+    field: "invoice_type_id",
+    headerName: "Invoice Type",
+    width: 200,
+    renderCell: (params) => FormatString(params.row.invoice_type_id),
+  },
+  {
+    field: "createdAt",
+    headerName: "Requested Date",
+    width: 190,
+    renderCell: (params) => (
+      <div style={{ whiteSpace: "normal" }}>
+        {moment(params.row.createdAt).format("DD/MM/YYYY")}
+      </div>
+    ),
+  },
+  {
+    headerName: "Campaign Amount",
+    field: "campaign_amount",
+    width: 210,
+    renderCell: (params) => params.row.saleData.campaign_amount,
+  },
+  {
+    headerName: "Reason",
+    field: "invoice_action_reason",
+    renderCell: (params) => FormatString(params.row.invoice_action_reason),
+  },
+  {
+    field: "Action",
+    headerName: "Action",
+    width: 180,
+    renderCell: (params) => (
+      <div>
+        <Button
+          variant="contained"
+          onClick={() => handleOpenEditFieldAction(params.row)}
+        >
+          Update Invoice
+        </Button>
+      </div>
+    ),
+  },
+];
+
+export const invoiceCreatedUniqueAccountsColumns = ({
+  uniqueCustomerInvoiceData = [],
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleOpenEditFieldAction,
+  handleOpenSameCustomer
+}) => [
+  {
+    field: "s_no",
+    headerName: "S.No",
+    renderCell: (params, index) => (
+      <div>{[...uniqueCustomerInvoiceData].indexOf(params.row) + 1}</div>
+    ),
+  },
+  {
+    headerName: "Account name",
+    field: "cust_name",
+    renderCell: (params) => (
+      <a
+        href="#"
+        style={{ cursor: "pointer", color: "blue" }}
+        onClick={() =>
+          handleOpenSameCustomer(params.row.saleData.account_name)
+        }
+      >
+        {params.row.saleData.account_name}
+      </a>
+    ),
+  },
+  {
+    headerName: "Sales Person name",
+    field: "user_name",
+    width: 220,
+    height: "200px",
+    renderCell: (params) => {
+      return <div>{params.row.user_name} </div>;
+    },
+  },
+  {
+    field: "invoice_particular_name",
+    headerName: "Invoice Particular",
+    width: 200,
+    renderCell: (params) => params.row.saleData.invoice_particular_name,
+  },
+  {
+    field: "invoice_file",
+    headerName: "Invoice",
+    width: 210,
+    renderCell: (params) => {
+      // Extract file extension and check if it's a PDF
+      const fileExtension = params.row.invoice_file_url
+        ?.split(".")
+        .pop()
+        .toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = params.row.invoice_file_url;
+
+      return isPdf ? (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={pdf}
+          style={{ width: "40px", height: "40px" }}
+          title="PDF Preview"
+        />
+      ) : (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={imgUrl}
+          alt="Invoice"
+          style={{ width: "100px", height: "100px" }}
+        />
+      );
+    },
+  },
+  {
+    field: "invoice_amount",
+    headerName: "Invoice Amount",
+    width: 200,
+    renderCell: (params) => params.row.saleData.invoice_amount,
+  },
+  {
+    field: "invoice_number",
+    headerName: "Invoice Number",
+    width: 200,
+    renderCell: (params) => params.row.invoice_number,
+  },
+  {
+    field: "invoice_uploaded_date",
+    headerName: "Invoice Date",
+    width: 200,
+    renderCell: (params) => params.row.invoice_uploaded_date,
+  },
+  {
+    field: "party_name",
+    headerName: "Party Name",
+    width: 210,
+    renderCell: (params) => params.row.party_name,
+  },
+  {
+    field: "invoice_type_id",
+    headerName: "Invoice Type",
+    width: 200,
+    renderCell: (params) => params.row.invoice_type_id,
+  },
+  {
+    field: "createdAt",
+    headerName: "Requested Date",
+    width: 190,
+    renderCell: (params) => (
+      <div style={{ whiteSpace: "normal" }}>
+      {moment(params.row.createdAt).format("DD/MM/YYYY")}
+      </div>
+    ),
+  },
+  {
+    headerName: "Campaign Amount",
+    field: "campaign_amount",
+    width: 210,
+    renderCell: (params) => params.row.saleData.campaign_amount,
+  },
+  {
+    headerName: "Download Invoice",
+    field: "download_invoice",
+    width: 210,
+    renderCell: (params) => (
+      <a
+        className="btn btn-primary"
+        href={params.row.invoice_file_url}
+        target="_blank"
+        rel="noreferrer"
+        download
+      >
+        Download
+      </a>
+    ),
+  },
+  {
+    headerName: "Reason",
+    field: "invoice_action_reason",
+    renderCell: (params) => params.row.invoice_action_reason,
+  },
+  {
+    field: "Action",
+    headerName: "Action",
+    renderCell: (params) => (
+      <div>
+        <Button
+          variant="contained"
+          onClick={() =>
+            handleOpenEditFieldAction(
+              params.row.sale_booking_id,
+              params.row.invoice_number,
+              params.row
+            )
+          }
+        >
+          Update Invoice
+        </Button>
+      </div>
+    ),
+  },
+];
+
+export const invoiceCreatedUniqueSalesExecutiveColumns =  ({
+  uniqueSalesExecutiveInvoiceData = [],
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleOpenEditFieldAction,
+  handleOpenSameSalesExecutive,
+}) => [
+  {
+    field: "s_no",
+    headerName: "S.No",
+    renderCell: (params, index) => (
+      <div>
+        {[...uniqueSalesExecutiveInvoiceData].indexOf(params.row.item) + 1}
+      </div>
+    ),
+  },
+  {
+    headerName: "Account Name",
+    field: "account_name",
+    renderCell: (params) => params.row.saleData.account_name,
+  },
+  {
+    field: "created_by",
+    headerName: "Sales Person Name",
+    renderCell: (params) => {
+      return (
+        <a
+          href="#"
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleOpenSameSalesExecutive(params.row.user_name)}
+        >
+          {params.row.user_name}
+        </a>
+      );
+    },
+  },
+  {
+    field: "invoice_particular_name",
+    headerName: "Invoice Particular",
+    width: 200,
+    renderCell: (params) => params.row.saleData.invoice_particular_name,
+  },
+  {
+    field: "invoice_file",
+    headerName: "Invoice",
+    width: 210,
+    renderCell: (params) => {
+      // Extract file extension and check if it's a PDF
+      const fileExtension = params.row.invoice_file_url
+        ?.split(".")
+        .pop()
+        .toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = params.row.invoice_file_url;
+
+      return isPdf ? (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={pdf}
+          style={{ width: "40px", height: "40px" }}
+          title="PDF Preview"
+        />
+      ) : (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={imgUrl}
+          alt="Invoice"
+          style={{ width: "100px", height: "100px" }}
+        />
+      );
+    },
+  },
+  {
+    field: "invoice_amount",
+    headerName: "Invoice Amount",
+    width: 200,
+    renderCell: (params) => params.row.saleData.invoice_amount,
+  },
+  {
+    field: "invoice_number",
+    headerName: "Invoice Number",
+    width: 200,
+    renderCell: (params) => params?.row?.invoice_number,
+  },
+  {
+    field: "invoice_uploaded_date",
+    headerName: "Invoice Date",
+    width: 200,
+    renderCell: (params) => params.row.invoice_uploaded_date,
+  },
+  {
+    field: "party_name",
+    headerName: "Party Name",
+    width: 210,
+    renderCell: (params) => params.row.party_name,
+  },
+  {
+    field: "invoice_type_id",
+    headerName: "Invoice Type",
+    width: 200,
+    renderCell: (params) => params.row.invoice_type_id,
+  },
+  {
+    field: "createdAt",
+    headerName: "Requested Date",
+    width: 190,
+    renderCell: (params) => (
+      <div style={{ whiteSpace: "normal" }}>
+        {moment(params.row.createdAt).format("DD/MM/YYYY")}
+      </div>
+    ),
+  },
+  {
+    headerName: "Campaign Amount",
+    field: "campaign_amount",
+    width: 210,
+    renderCell: (params) => params.row.saleData.campaign_amount,
+  },
+  {
+    headerName: "Download Invoice",
+    field: "download_invoice",
+    width: 210,
+    renderCell: (params) => (
+      <a
+        className="btn btn-primary"
+        href={params.row.invoice_file_url}
+        target="_blank"
+        rel="noreferrer"
+        download
+      >
+        Download
+      </a>
+    ),
+  },
+  {
+    headerName: "Reason",
+    field: "invoice_action_reason",
+    renderCell: (params) => params.row.invoice_action_reason,
+  },
+  {
+    field: "Action",
+    headerName: "Action",
+    renderCell: (params) => (
+      <div>
+        <Button
+          variant="contained"
+          onClick={() =>
+            handleOpenEditFieldAction(
+              params.row.sale_booking_id,
+              params.row.invoice_number,
+              params.row
+            )
+          }
+        >
+          Update Invoice
+        </Button>
+      </div>
+    ),
   },
 ];

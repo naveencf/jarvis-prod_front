@@ -1405,6 +1405,7 @@ const CreateSalesAccount = () => {
                 type="number"
                 fieldGrid={10}
                 value={turnover}
+                required={false}
                 onChange={(e) => setTurnover(e.target.value)}
                 placeholder="Enter last financial year turnover"
               />

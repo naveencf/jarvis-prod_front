@@ -330,11 +330,23 @@ const PageOverview = () => {
   };
 
   useEffect(() => {
+      // if (pageList) {
+      // setVendorTypes(pageList.data);
+      // setFilterData(pageList.data);
+      // calculateAndSetTotals(pageList.data)
+      // setTabFilterData(pageList.data)
     if (pageList) {
-      setVendorTypes(pageList.data);
-      setFilterData(pageList.data);
-      calculateAndSetTotals(pageList.data)
-      setTabFilterData(pageList.data)
+      if(decodedToken.role_id !== 1){
+        setVendorTypes(pageList.data.filter((item)=>item.created_by == decodedToken.id));
+        setFilterData(pageList.data.filter((item)=>item.created_by == decodedToken.id));
+        calculateAndSetTotals(pageList.data.filter((item)=>item.created_by == decodedToken.id))
+        setTabFilterData(pageList.data.filter((item)=>item.created_by == decodedToken.id))
+      }else{
+        setVendorTypes(pageList.data);
+        setFilterData(pageList.data);
+        calculateAndSetTotals(pageList.data)
+        setTabFilterData(pageList.data)
+      }
     }
   }, [pageList]);
 
@@ -435,7 +447,7 @@ const PageOverview = () => {
         column) => {
         return (
           <select className="form-select" value={row.preference_level} onChange={e => {
-            handelchange(e, row, column)
+            handelchange(e, index, column)
             handleLevelChange(e, setEditFlag, row)
           }} autoFocus>
             <option value="Level 1 (High)">Level 1 (High)</option>
@@ -445,16 +457,32 @@ const PageOverview = () => {
         );
       },
     },
-    { key: "page_status", name: "Status", width: 200, editable: true, renderEditCell: renderStatusEditCell },
+    { key: "page_status", name: "Status", width: 200, editable: true,
+      customEditElement: (row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column) => {
+        return (
+          <select className="form-select" value={row.page_status} onChange={e => {
+            handelchange(e, index, column)
+            handleStatusChange(e, setEditFlag, row)
+          }} autoFocus>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+            <option value="Disabled">Disabled</option>
+          </select>
+        );
+      }
+    },
     {
       key: "content_creation",
       name: "Content Creation",
       renderRowCell: (row) => {
         return row.content_creation != 0 ? row.content_creation : "";
       },
-      width: 200,
-
-      renderEditCell: renderContentEditCell
+      width: 200
     },
     // {
     //   field: "status",
@@ -621,8 +649,6 @@ const PageOverview = () => {
       renderRowCell: (row) => {
         return row.page_name_type != 0 ? row.page_name_type : "";
       },
-      editable: true,
-      renderEditCell: renderNameTypeEditCell
     },
     { key: "rate_type", name: "Rate Type", width: 200 },
     { key: "variable_type", name: "Variable Type", width: 200 },
@@ -1137,7 +1163,21 @@ const PageOverview = () => {
         return data ? data : "NA";
       },
       editable: true,
-      renderEditCell: renderProfileEditCell
+      customEditElement: (row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column) => {
+        return (
+          <>
+            <input type="number" value={row.profile_visit} autoFocus onChange={e=>{
+              handelchange(e, index, column)
+            }}/>
+            <button className="btn btn-success" onClick={(e)=>handleProfileChange(e,setEditFlag,row)}><SaveAsIcon /></button>
+          </>
+        );
+      }
     },
     // {
     //   field: "quater",
@@ -1260,99 +1300,48 @@ const PageOverview = () => {
       setEditFlag(false);
     }
   };
-  function renderLevelEditCell(params) {
 
-    return (
-      <select className="form-select" value={params.value} onChange={handleChange} autoFocus>
-        <option value="Level 1 (High)">Level 1 (High)</option>
-        <option value="Level 2 (Medium)">Level 2 (Medium)</option>
-        <option value="Level 3 (Low)">Level 3 (Low)</option>
-      </select>
-    );
-  }
+  const handleStatusChange = async (event, setEditFlag, row) => {
+    const newValue = event.target.value;
+    try {
+      await axios.put(`${baseUrl}v1/pageMaster/${row._id}`, {
+        // ...params.row,
+        page_status: newValue,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      toastAlert('Data Updated');
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+    finally {
+      setEditFlag(false);
+    }
+  };
 
-  function renderStatusEditCell(params) {
-    const handleChange = async (event) => {
-      const newValue = event.target.value;
-      try {
-        await axios.put(`${baseUrl}v1/pageMaster/${params.row._id}`, {
-          // ...params.row,
-          page_status: newValue,
-        }, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        toastAlert('Data Updated');
-      } catch (error) {
-        console.error('Error updating status:', error);
-      }
-    };
-
-    return (
-      <select className="form-select" value={params.value} onChange={handleChange} autoFocus>
-        <option value="Active">Active</option>
-        <option value="Inactive">Inactive</option>
-        <option value="Disabled">Disabled</option>
-      </select>
-    );
-  }
-
-  function renderContentEditCell(params) {
-    const handleChange = async (event) => {
-      const newValue = event.target.value;
-      try {
-        await axios.put(`${baseUrl}v1/pageMaster/${params.row._id}`, {
-          // ...params.row,
-          content_creation: newValue,
-        }, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        toastAlert('Data Updated');
-      } catch (error) {
-        console.error('Error updating status:', error);
-      }
-    };
-
-    return (
-      <select className="form-select" value={params.value} onChange={handleChange} autoFocus>
-        <option value="By Vendor">By Vendor</option>
-        <option value="By CF">By CF</option>
-        <option value="Both">Both</option>
-      </select>
-    );
-  }
-
-  function renderNameTypeEditCell(params) {
-    const handleChange = async (event) => {
-      const newValue = event.target.value;
-      try {
-        await axios.put(`${baseUrl}v1/pageMaster/${params.row._id}`, {
-          // ...params.row,
-          page_name_type: newValue,
-        }, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        toastAlert('Data Updated');
-      } catch (error) {
-        console.error('Error updating status:', error);
-      }
-    };
-
-    return (
-      <select className="form-select" value={params.value} onChange={handleChange} autoFocus>
-        <option value="Adult">Adult</option>
-        <option value="Non Adult">Non Adult</option>
-      </select>
-    );
-  }
+  const handleProfileChange = async (event, setEditFlag, row) => {
+    const newValue = Number(row.profile_visit);
+    try {
+      await axios.put(`${baseUrl}v1/page_states/${row.pageId}`, {
+        // ...params.row,
+        profile_visit: newValue,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      toastAlert('Data Updated');
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
+    finally {
+      setEditFlag(false);
+    }
+  };
 
   const pageDetailColumn = [
 
@@ -1387,42 +1376,6 @@ const PageOverview = () => {
   const pageHealthColumn = [
 
   ];
-
-  function renderProfileEditCell(params) {
-    const handleChange = async (event) => {
-      const newValue = event.target.value;
-      try {
-        await axios.put(`${baseUrl}v1/page_states/${params.row.pageId}`, {
-          // ...params.row,
-          profile_visit: Number(newValue),
-        }, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        });
-        toastAlert('Data Updated');
-        params.api.setEditCellValue({ id: params.row._id, field: 'profile_visit', value: newValue }, event);
-        params.api.setCellMode(params.row._id, 'profile_visit', 'view');
-        params.api.updateRows([{ ...params.row, profile_visit: newValue }]);
-      } catch (error) {
-        console.error('Error updating status:', error);
-      }
-    };
-
-    return (
-      <>
-        <input
-          type="number"
-          defaultValue={params.value}
-          onBlur={handleChange}
-          autoFocus
-          style={{ width: '65%' }}
-        />
-        <button className="btn btn-success" ><SaveAsIcon /></button>
-      </>
-    );
-  }
 
   // if(pageStatsAuth){
   //       dispatch(setShowPageHealthColumn(true));
@@ -1592,7 +1545,7 @@ const PageOverview = () => {
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_followers;
-        return (data ? data : '0');
+        return (data ? formatNumber(data) : '0');
       },
     },
     {
@@ -1602,7 +1555,7 @@ const PageOverview = () => {
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_stories;
-        return (data ? data : '0');
+        return (data ? `₹. ${data}` : '0');
       },
     },
     {
@@ -1612,7 +1565,7 @@ const PageOverview = () => {
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_posts;
-        return (data ? data : '0');
+        return (data ? `₹. ${data}` : '0');
       },
     }
   ];

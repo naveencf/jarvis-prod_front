@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import ReJoinReusable from "../../User/ReJoinReusable";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const NewJoineeAndExitUsersWFO = () => {
   const [newJoineeData, setNewJoineeData] = useState([]);
@@ -29,7 +30,7 @@ const NewJoineeAndExitUsersWFO = () => {
     });
   };
   const allWFHDExitUsers = () => {
-    axios.get(baseUrl + `get_exit_of_wfo_users`).then((res) => {
+    axios.get(baseUrl + `get_all_exit_users_of_wfo`).then((res) => {
       setAllExitUsers(res.data.data);
     });
   };
@@ -55,7 +56,7 @@ const NewJoineeAndExitUsersWFO = () => {
   };
   const getAllWFHDUsers = async () => {
     const res = await axios.get(baseUrl + "get_all_wfh_users");
-    const FinalResonse = res.data.data
+    const FinalResonse = res.data.data;
     setAllUsersData(FinalResonse);
   };
   useEffect(() => {
@@ -217,16 +218,24 @@ const NewJoineeAndExitUsersWFO = () => {
                       </h4>
                       <h5>{d.dept_name} - Indore</h5>
                     </div>
-                  <Link to={`/admin/user-update/${d.user_id}`}>
-                  
-                  <div className="icon-1">
-                    <i className="bi bi-pencil" />
-                  </div>
-                  
-                  </Link>
+                    <Link to={`/admin/user-update/${d.user_id}`}>
+                      <motion.div
+                        initial={{ scale: 1 }}
+                        whileHover={{ scale: 1.1, rotate: 360 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 20,
+                        }} 
+                      >
+                        <div className="icon-1">
+                          <i className="bi bi-pencil" />
+                        </div>
+                      </motion.div>
+                    </Link>
                   </div>
                 ))}
-                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -99,7 +99,7 @@ const VendorMaster = () => {
   const [userData, setUserData] = useState([]);
   const [userId, setUserId] = useState(230);
   const [company_id, setCompany_id] = useState("");
-
+  const [busiType, setBusiType] = useState('')
   const [getGstDetails] = useGstDetailsMutation();
 
   const [bankRows, setBankRows] = useState([
@@ -381,10 +381,56 @@ const VendorMaster = () => {
           docImage: doc.document_image_upload,
         };
       });
-      // console.log(doc, "doc");
-      setDocDetails(doc);
+      // setDocDetails(doc);
+
+      const staticDocs = [
+        {
+          docName: "GST",
+          docNumber: "",
+          document_image_upload: "",
+        },
+        {
+          docName: "Pan card",
+          docNumber: "",
+          document_image_upload: "",
+        },
+        {
+          docName: "Aadhar Card",
+          docNumber: "",
+          document_image_upload: "",
+        },
+        {
+          docName: "Driving License",
+          docNumber: "",
+          document_image_upload: "",
+        },
+      ];
+  
+      const existingDocNames = doc.map(d => d.docName);
+      const filteredStaticDocs = staticDocs.filter(staticDoc => 
+        !existingDocNames.includes(staticDoc.docName)
+      );
+      const combinedDocs = doc.concat(filteredStaticDocs);
+      setDocDetails(combinedDocs);
+
+      if(busiType !== ''){
+        let filteredDocs;
+        if (busiType === "Registered Business" || busiType === "Registered Business (Composition)") {
+          filteredDocs = combinedDocs;
+        } else if (busiType === "Unregistered Business") {
+          filteredDocs = combinedDocs.filter(doc => 
+            ["Pan card", "Driving License", "Aadhar Card"].includes(doc.docName)
+          );
+        } else if (busiType === "Individual") {
+          filteredDocs = combinedDocs.filter(doc => 
+            ["Driving License", "Aadhar Card"].includes(doc.docName)
+          );
+        }
+        setDocDetails(filteredDocs);
+      }
     }
-  }, [venodrDocuments]);
+  }, [venodrDocuments, busiType]);
+
   const addLink = () => {
     setWhatsappLink([
       ...whatsappLink,
@@ -396,15 +442,38 @@ const VendorMaster = () => {
     ]);
   };
   const addDocDetails = () => {
-    setDocDetails([
-      ...docDetails,
-      {
-        docName: "",
-        docNumber: "",
-        document_image_upload: "",
-      },
-    ]);
+      let newDocs = [];
+      if (busiType === "Registered Business" || busiType === "Registered Business (Composition)") {
+        newDocs = [
+          { docName: "GST", docNumber: "", document_image_upload: "" },
+          { docName: "Pan card", docNumber: "", document_image_upload: "" },
+          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
+          { docName: "Driving License", docNumber: "", document_image_upload: "" },
+        ];
+      } else if (busiType === "Unregistered Business") {
+        newDocs = [
+          { docName: "Pan card", docNumber: "", document_image_upload: "" },
+          { docName: "Driving License", docNumber: "", document_image_upload: "" },
+          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
+        ];
+      } else if (busiType === "Individual") {
+        newDocs = [
+          { docName: "Driving License", docNumber: "", document_image_upload: "" },
+          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
+        ];
+      }
+    
+      setDocDetails((prevDetails) => [
+        // ...prevDetails,
+        ...newDocs
+      ]);
   };
+
+  useEffect(()=>{
+    if(!_id){
+      addDocDetails()
+    }
+  },[busiType])
 
   const handleDocNameChange = (index, newValue) => {
     let doc = [...docDetails];
@@ -1007,6 +1076,124 @@ const VendorMaster = () => {
         </div>
         <div className="card-body pb4">
           <div className="row thm_form">
+            <div className="col-md-6 mb16">
+              <div className="form-group m0">
+                <label className="form-label">
+                  Business Type
+                </label>
+                <Select
+                  options={[
+                    "Registered Business",
+                    "Registered Business (Composition)",
+                    "Unregistered Business",
+                    "Individual" 
+                  ]
+                    .map((option) => ({
+                    label: option,
+                    value: option,
+                  }))}
+                  required={true}
+                  value={{
+                    value: busiType,
+                    label: busiType,
+                  }}
+                  onChange={(e) => {
+                    setBusiType(e.value);
+                  }}
+                ></Select>
+                {/* {!busiType && (
+                  <span style={{ color: "red", fontSize: "12px" }}>
+                    Please Select Business Type
+                  </span>
+                )} */}
+              </div>
+            </div>
+
+            <div className="col-md-6 mb16">
+              <div className="form-group m0">
+                <label className="form-label">
+                  NOTE:
+                </label>
+                {
+                  busiType === 'Registered Business' ? (
+                    <p>If Private Limited 2% TDS And If Not 1%.</p>
+                  ) : busiType === 'Registered Business (Composition)' ? (
+                    <p>If Private Limited 2% TDS And If Not 1%.</p>
+                  ) : busiType === 'Unregistered Business' ? (
+                    <p>1% TDS.</p>
+                  ) : busiType === 'Individual' ? (
+                    <p>
+                      Max Limit is 25k Per Bill. Total Year Limit is 100k. Please Choose
+                      Unregistered Business & Upload Pan If You Believe Transaction will cross
+                      above 100k.
+                    </p>
+                  ) : (
+                    <p>No TDS applicable for this business type.</p>
+                  )
+                }
+              </div>
+            </div>
+
+            {docDetails?.map((link, index) => (
+            <div className="row" key={index}>
+              <div className="col-md-3">
+                <label className="form-label">Document Name</label>
+                <Select
+                  className=""
+                  options={copyOptions.map((option) => ({
+                    value: option,
+                    label: option,
+                  }))}
+                  value={{
+                    value: link.docName,
+                    label: link.docName,
+                  }}
+                  onChange={(selectedOption) => {
+                    handleDocNameChange(index, selectedOption.value);
+                  }}
+                  required
+                />
+              </div>
+              <FieldContainer
+                key={index.docNumber}
+                label={`Document Number`}
+                fieldGrid={4}
+                value={link.docNumber}
+                // required={false}
+                onChange={(e) => handleDocNumberChange(index, e.target.value)}
+              />
+              <FieldContainer
+                key={index.docImage}
+                label={`Document Image`}
+                type="file"
+                accept={"image/*"}
+                fieldGrid={4}
+                // value={link.docImage}
+                onChange={(e) => handleDocImageChange(index, e)}
+              />
+              {/* {docDetails[index]?.docImage && (
+                <img
+                  className="profile-holder-1 mt-4"
+                  src={URL?.createObjectURL(docDetails[index]?.docImage)}
+                  alt="Selected"
+                  style={{ maxWidth: "50px", maxHeight: "50px" }}
+                />
+              )} */}
+              {/* <div className="row">
+                <div className="col-12">
+                  <div className="addBankRow">
+                    <Button onClick={removedocLink(index)}>
+                      <IconButton variant="contained" color="error">
+                        <RemoveCircleTwoToneIcon />
+                      </IconButton>
+                    </Button>
+                  </div>
+                </div>
+              </div> */}
+              <div className="row thm_form"></div>
+            </div>
+          ))}
+
             <div className="col-md-6 p0 mb16">
               <FieldContainer
                 label="Vendor Name "
@@ -1902,74 +2089,7 @@ const VendorMaster = () => {
 
             </div>
 
-          {docDetails?.map((link, index) => (
-            <div className="row" key={index}>
-              {/* <FieldContainer
-                key={index}
-                fieldGrid={4}
-                label={`Document Name`}
-                value={link.docName}
-                // required={true}
-                onChange={(e) => handleDocNameChange(index, e.target.value)}
-              /> */}
-              <div className="col-md-3">
-                <label className="form-label">Document Name</label>
-                <Select
-                  className=""
-                  options={copyOptions.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
-                  value={{
-                    value: link.docName,
-                    label: link.docName,
-                  }}
-                  onChange={(selectedOption) => {
-                    handleDocNameChange(index, selectedOption.value);
-                  }}
-                  required
-                />
-              </div>
-              <FieldContainer
-                key={index.docNumber}
-                label={`Document Number`}
-                fieldGrid={4}
-                value={link.docNumber}
-                // required={false}
-                onChange={(e) => handleDocNumberChange(index, e.target.value)}
-              />
-              <FieldContainer
-                key={index.docImage}
-                label={`Document Image`}
-                type="file"
-                accept={"image/*"}
-                fieldGrid={4}
-                // value={link.docImage}
-                onChange={(e) => handleDocImageChange(index, e)}
-              />
-              {/* {docDetails[index]?.docImage && (
-                <img
-                  className="profile-holder-1 mt-4"
-                  src={URL?.createObjectURL(docDetails[index]?.docImage)}
-                  alt="Selected"
-                  style={{ maxWidth: "50px", maxHeight: "50px" }}
-                />
-              )} */}
-              <div className="row">
-                <div className="col-12">
-                  <div className="addBankRow">
-                    <Button onClick={removedocLink(index)}>
-                      <IconButton variant="contained" color="error">
-                        <RemoveCircleTwoToneIcon />
-                      </IconButton>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-              <div className="row thm_form"></div>
-            </div>
-          ))}
-          <div className="row">
+          {/* <div className="row">
             <div className="col-12">
               <div className="addBankRow">
                 <Button onClick={addDocDetails}>
@@ -1980,7 +2100,7 @@ const VendorMaster = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {whatsappLink?.map((link, index) => (
               <>
