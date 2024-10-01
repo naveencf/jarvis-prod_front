@@ -11,6 +11,7 @@ const PointOfContact = ({
   departments,
   socialOptions,
 }) => {
+
   const handlePocChange = (index, key, value) => {
     const updatedPocs = pocs?.map((poc, pocIndex) =>
       pocIndex === index ? { ...poc, [key]: value } : poc
@@ -40,28 +41,30 @@ const PointOfContact = ({
     const updatedPocs = pocs.map((poc, pocIndex) =>
       pocIndex === index
         ? {
-            ...poc,
-            social_platforms: [
-              ...(poc.social_platforms || []),
-              { platform: null, link: "" },
-            ],
-          }
+          ...poc,
+          social_platforms: [
+            ...(poc.social_platforms || []),
+            { platform: null, link: "" },
+          ],
+        }
         : poc
     );
     setPocs(updatedPocs);
   };
 
   const handleSocialLinkChange = (pocIndex, linkIndex, key, value) => {
+
     const updatedPocs = pocs.map((poc, index) =>
       index === pocIndex
         ? {
-            ...poc,
-            social_platforms: poc.social_platforms.map((link, i) =>
-              i === linkIndex ? { ...link, [key]: value } : link
-            ),
-          }
+          ...poc,
+          social_platforms: poc.social_platforms.map((link, i) =>
+            i === linkIndex ? { ...link, [key]: value } : link
+          ),
+        }
         : poc
     );
+
     setPocs(updatedPocs);
   };
 
@@ -69,11 +72,11 @@ const PointOfContact = ({
     const updatedPocs = pocs.map((poc, index) =>
       index === pocIndex
         ? {
-            ...poc,
-            social_platforms: poc.social_platforms.filter(
-              (_, i) => i !== linkIndex
-            ),
-          }
+          ...poc,
+          social_platforms: poc.social_platforms.filter(
+            (_, i) => i !== linkIndex
+          ),
+        }
         : poc
     );
     setPocs(updatedPocs);
@@ -89,7 +92,7 @@ const PointOfContact = ({
       (option) =>
         !selectedValues.includes(option.value) ||
         pocs[pocIndex]?.social_platforms[linkIndex]?.platform?.value ===
-          option.value
+        option.value
     );
   };
 
@@ -229,7 +232,7 @@ const PointOfContact = ({
                         },
                       });
                     }}
-                    // required
+                  // required
                   />
                   {isValidPoc[index]?.department === "" && (
                     <div className="form-error">Please Enter Department</div>

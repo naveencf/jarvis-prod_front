@@ -1,46 +1,35 @@
 import { useEffect, useState } from "react";
 import FormContainer from "../../../AdminPanel/FormContainer";
-import axios, { AxiosHeaders } from "axios";
+import axios from "axios";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import pdf from "../../pdf-file.png";
 import logo from "../../../../../public/logo.png";
-import {
-  Autocomplete,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControlLabel,
-  TextField,
-  InputAdornment,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import DiscardConfirmation from "./Components/DiscardConfirmation";
 import jwtDecode from "jwt-decode";
 import ImageView from "../../ImageView";
 import { useGlobalContext } from "../../../../Context/Context";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import { baseUrl } from "../../../../utils/config";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
 import Badge from "@mui/material/Badge";
 import ShowDataModal from "./Components/ShowDataModal";
-import Checkbox from "@mui/material/Checkbox";
 import WhatsappAPI from "../../../WhatsappAPI/WhatsappAPI";
 import moment from "moment";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
-import Overview from "./Components/Overview";
 import PayVendorDialog from "././Components/PayVendorDialog";
 import { Link } from "react-router-dom";
 import CommonDialogBox from "./Components/CommonDialogBox";
 import BankDetailPendingPaymentDialog from "./Components/BankDetailPendingPaymentDialog";
 import PayThroughVendorDialog from "./Components/PayThroughVendorDialog";
 import BulkPayThroughVendorDialog from "./Components/BulkPayThroughVendorDialog";
+import OverviewContainedDialog from "./Components/OverviewContainedDialog";
+import PendingPaymentReqFilters from "./Components/PendingPaymentReqFilters";
+import {
+  pendingPaymentRequestColumns,
+  pendingPaymentUniqueVendorColumns,
+} from "../../CommonColumn/Columns";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
@@ -52,18 +41,12 @@ export default function PendingPaymentRequest() {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [payDialog, setPayDialog] = useState(false);
   const [rowData, setRowData] = useState({});
-  const [vendorName, setVendorName] = useState("");
   const [showDisCardModal, setShowDiscardModal] = useState(false);
   const [paymentAmout, setPaymentAmount] = useState("");
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
-  const [paymentDate, setPaymentDate] = useState(
-    dayjs(new Date()).add(5, "hours").add(30, "minutes").$d.toGMTString()
-  );
   const [userName, setUserName] = useState("");
   const [uniqueVendorCount, setUniqueVendorCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
@@ -71,9 +54,6 @@ export default function PendingPaymentRequest() {
   const [uniqueVendorData, setUniqueVendorData] = useState([]);
   const [sameVendorDialog, setSameVendorDialog] = useState(false);
   const [sameVendorData, setSameVendorData] = useState([]);
-  const [priorityFilter, setPriorityFilter] = useState("");
-  const [requestAmountFilter, setRequestAmountFilter] = useState("");
-  const [requestedAmountField, setRequestedAmountField] = useState("");
   const [bankDetail, setBankDetail] = useState(false);
   const [paymentHistory, setPaymentHistory] = useState(false);
   const [reminderData, setReminderData] = useState([]);
@@ -84,7 +64,6 @@ export default function PendingPaymentRequest() {
   const [phpRemainderData, setPhpRemainderData] = useState([]);
   const [historyType, setHistoryType] = useState("");
   const [historyData, setHistoryData] = useState([]);
-  const [TDSDeduction, setTDSDeduction] = useState(false);
   const [gstHold, setGstHold] = useState(false);
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [baseAmount, setBaseAmount] = useState(0);
@@ -99,7 +78,6 @@ export default function PendingPaymentRequest() {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [adjustAmount, setAdjustAmount] = useState("");
   // const [preview, setPreview] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
   const [overviewDialog, setOverviewDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [netAmount, setNetAmount] = useState("");
@@ -114,7 +92,7 @@ export default function PendingPaymentRequest() {
   };
 
   const getValidationCSSForRemainder = (params) => {
-    const reminder = phpRemainderData.filter(
+    const reminder = phpRemainderData?.filter(
       (item) => item.request_id == params.row.request_id
     );
     return reminder?.length > 2 ? "bg-danger" : "";
@@ -205,7 +183,7 @@ export default function PendingPaymentRequest() {
               );
             });
 
-            y.push(...c); // Merging the filtered items with items matching certain conditions
+            y.push(...c);
 
             let mergedArray = [...y, ...c];
 
@@ -318,15 +296,11 @@ export default function PendingPaymentRequest() {
   const convertDateToDDMMYYYY = (date) => {
     const date1 = new Date(date);
     const day = String(date1.getDate()).padStart(2, "0");
-    const month = String(date1.getMonth() + 1).padStart(2, "0"); // January is 0!
+    const month = String(date1.getMonth() + 1).padStart(2, "0");
     const year = date1.getFullYear();
 
     return `${day}/${month}/${year}`;
   };
-
-  // useEffect(() => {
-  //   handleCalculatePaymentAmount();
-  // }, [TDSPercentage, GSTHoldAmount, TDSDeduction, gstHold]);
 
   const handleGstHold = (e) => {
     setGstHold(e.target.checked);
@@ -347,149 +321,14 @@ export default function PendingPaymentRequest() {
     (total, item) => total + parseFloat(item?.balance_amount),
     0
   );
-
-  //req_id , paymeent_amou ,paydate , payby, screenshot , finance remark
-
   const handleDiscardClick = (e, row) => {
     e.preventDefault();
     setRowData(row);
     setShowDiscardModal(true);
-    // axios.delete(`${baseUrl}` + `delete_demo/${row._id}`).then(() => {
-    //   callApi();
-    // });
-  };
-
-  const handleDateFilter = () => {
-    const filterData = data.filter((item) => {
-      const date = new Date(item.request_date);
-      const fromDate1 = new Date(fromDate);
-      const toDate1 = new Date(toDate);
-      toDate1.setDate(toDate1.getDate() + 1);
-
-      // Date Range Filter
-      const dateFilterPassed =
-        !fromDate || !toDate || (date >= fromDate1 && date <= toDate1);
-
-      // Vender Name Filter
-      const vendorNameFilterPassed =
-        !vendorName ||
-        item.vendor_name.toLowerCase().includes(vendorName.toLowerCase());
-
-      // Priority Filter
-      const priorityFilterPassed =
-        !priorityFilter || item.priority === priorityFilter;
-
-      // Search Query Filter
-      const searchFilterPassed =
-        !search ||
-        Object.values(item).some(
-          (val) =>
-            typeof val === "string" &&
-            val.toLowerCase().includes(search.toLowerCase())
-        );
-
-      // Requested Amount Filter
-      const requestedAmountFilterPassed = () => {
-        const numericRequestedAmount = parseFloat(requestedAmountField);
-        switch (requestAmountFilter) {
-          case "greaterThan":
-            return +item.request_amount > numericRequestedAmount;
-          case "lessThan":
-            return +item.request_amount < numericRequestedAmount;
-          case "equalTo":
-            return +item.request_amount === numericRequestedAmount;
-          default:
-            return true;
-        }
-      };
-
-      const allFiltersPassed =
-        dateFilterPassed &&
-        vendorNameFilterPassed &&
-        priorityFilterPassed &&
-        searchFilterPassed &&
-        requestedAmountFilterPassed();
-
-      return allFiltersPassed;
-    });
-
-    setFilterData(filterData);
-    setPendingRequestCount(filterData.length);
-
-    // uniqye vendor count and data
-    const uniqueVendors = new Set(filterData.map((item) => item.vendor_name));
-    setUniqueVendorCount(uniqueVendors.size);
-    const uvData = [];
-    uniqueVendors.forEach((vendorName) => {
-      const vendorRows = filterData.filter(
-        (item) => item.vendor_name === vendorName
-      );
-      uvData.push(vendorRows[0]);
-    });
-    setUniqueVendorData(uvData);
-
-    // counts data
-
-    const nonGstCount = filterData.filter((gst) => gst.gstHold === "0");
-    setNonGstCount(nonGstCount.length);
-
-    const withInvoiceImage = filterData.filter(
-      (item) => item.invc_img && item.invc_img.length > 0
-    );
-    const withoutInvoiceImage = filterData.filter(
-      (item) => !item.invc_img || item.invc_img.length === 0
-    );
-    setInvoiceCount(withInvoiceImage.length);
-    setNonInvoiceCount(withoutInvoiceImage.length);
-  };
-
-  const handleClearDateFilter = () => {
-    setFilterData(data);
-    setFromDate("");
-    setToDate("");
-    setVendorName("");
-    setPriorityFilter("");
-    setRequestAmountFilter("");
-    setRequestedAmountField("");
-    setPendingRequestCount(data.length);
-    // unique vendor data
-    const uniqueVendors = new Set(data.map((item) => item.vendor_name));
-    setUniqueVendorCount(uniqueVendors.size);
-    const uvData = [];
-    uniqueVendors.forEach((vendorName) => {
-      const vendorRows = data.filter((item) => item.vendor_name === vendorName);
-      uvData.push(vendorRows[0]);
-    });
-    setUniqueVendorData(uvData);
-
-    // count data
-
-    const nonGstCount = data.filter((gst) => gst.gstHold === "0");
-    setNonGstCount(nonGstCount.length);
-
-    const withInvoiceImage = data.filter(
-      (item) => item.invc_img && item.invc_img.length > 0
-    );
-    const withoutInvoiceImage = data.filter(
-      (item) => !item.invc_img || item.invc_img.length === 0
-    );
-    setInvoiceCount(withInvoiceImage.length);
-    setNonInvoiceCount(withoutInvoiceImage.length);
-  };
-
-  const handleClosePayDialog = () => {
-    setPayDialog(false);
-    setPaymentMode("Razor Pay");
-    setPayRemark("");
-    setPayMentProof("");
-    setPaymentAmount("");
-    setNetAmount("");
-    setTDSDeduction(false);
-    setGstHold(false);
   };
 
   const handlePayClick = (e, row) => {
-    e.preventDefault();
+    e?.preventDefault();
 
     let x = phpRemainderData.filter(
       (item) => item?.request_id == row?.request_id
@@ -531,10 +370,6 @@ export default function PendingPaymentRequest() {
   const handleOpenOverview = () => {
     setOverviewDialog(true);
   };
-
-  const handleCloseOverview = () => {
-    setOverviewDialog(false);
-  };
   // --------------------------------------------
   const handleOpenSameVender = (vendorName) => {
     setSameVendorDialog(true);
@@ -542,14 +377,11 @@ export default function PendingPaymentRequest() {
     const sameNameVendors = data.filter(
       (item) => item.vendor_name === vendorName
     );
-    setSameVendorData(sameNameVendors);
+    setFilterData(sameNameVendors);
+    handleCloseUniqueVendor();
   };
 
-  const handleCloseSameVender = () => {
-    setSameVendorDialog(false);
-  };
   // Bank Details:-
-
   const handleOpenBankDetail = (row) => {
     let x = [];
     x.push(row);
@@ -809,146 +641,6 @@ export default function PendingPaymentRequest() {
       },
     },
   ];
-  // same Vender columns:-
-  const sameVenderColumns = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex =
-          activeAccordionIndex == 0
-            ? sameVendorData.indexOf(params.row)
-            : activeAccordionIndex == 1
-            ? sameVendorData.filter((d) => d.status === "3").indexOf(params.row)
-            : sameVendorData
-                .filter((d) => d.status === "0")
-                .indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
-      // width: "auto",
-      width: 250,
-      renderCell: (params) => {
-        return params.row.vendorName;
-      },
-    },
-    {
-      field: "request_amount",
-      headerName: "Requested Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
-      },
-    },
-    {
-      field: "balance_amount",
-      headerName: "Balance Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.balance_amount}</p>;
-      },
-    },
-    {
-      field: "Action",
-      headerName: "Action",
-      width: 250,
-      renderCell: (params) => {
-        return (
-          <div className="flexCenter colGap8">
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => handlePayClick(e, params.row)}
-            >
-              Pay
-            </button>
-            <button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={(e) => handleDiscardClick(e, params.row)}
-            >
-              Discard
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
-  // unique vender column :-
-  const uniqueVendorColumns = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex =
-          activeAccordionIndex == 0
-            ? uniqueVendorData.indexOf(params.row)
-            : activeAccordionIndex == 1
-            ? uniqueVendorData
-                .filter((d) => d.status === "3")
-                .indexOf(params.row)
-            : uniqueVendorData
-                .filter((d) => d.status === "0")
-                .indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
-      width: 250,
-      renderCell: (params) => {
-        return (
-          <a
-            href="#"
-            style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => handleOpenSameVender(params.row.vendor_name)}
-          >
-            {params.row.vendor_name}
-          </a>
-        );
-      },
-    },
-    {
-      field: "total_amount",
-      headerName: "Total Amount",
-      width: 150,
-      renderCell: ({ row }) => {
-        const sameVendor = filterData.filter(
-          (e) => e.vendor_name === row.vendor_name
-        );
-
-        const reduceAmt = sameVendor.reduce(
-          (a, b) => a + 1 * b.request_amount,
-          0
-        );
-
-        return <p> &#8377; {reduceAmt}</p>;
-      },
-    },
-    {
-      field: "balance_amount",
-      headerName: "Balance Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.balance_amount}</p>;
-      },
-    },
-    {
-      field: "outstandings",
-      headerName: "OutStanding ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
-      },
-    },
-  ];
-
   const getStatusText = (status) => {
     switch (status) {
       case "0":
@@ -993,518 +685,6 @@ export default function PendingPaymentRequest() {
 
     return totalFY;
   };
-  const columns = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 70,
-      editable: false,
-      valueGetter: (params) => filterData.indexOf(params.row) + 1,
-      renderCell: (params) => {
-        // const rowIndex = filterData.indexOf(params.row);
-        const rowIndex =
-          activeAccordionIndex == 0
-            ? filterData.indexOf(params.row)
-            : activeAccordionIndex == 1
-            ? filterData.filter((d) => d.status === "3").indexOf(params.row)
-            : filterData.filter((d) => d.status === "0").indexOf(params.row);
-
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      field: "invc_img",
-      headerName: "Invoice Image",
-      renderCell: (params) => {
-        if (!params.row.invc_img) {
-          return "No Image";
-        }
-        // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.invc_img
-          .split(".")
-          .pop()
-          .toLowerCase();
-        const isPdf = fileExtension === "pdf";
-
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
-
-        return isPdf ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={pdf}
-            style={{ width: "40px", height: "40px" }}
-            title="PDF Preview"
-          />
-        ) : (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={imgUrl}
-            alt="Invoice"
-            style={{ width: "100px", height: "100px" }}
-          />
-        );
-      },
-      width: 130,
-    },
-    {
-      field: "zoho_status",
-      headerName: "Zoho Status",
-      width: 130,
-      editable: false,
-      valueGetter: (params) => filterData.indexOf(params.row) + 1,
-      renderCell: (params) => {
-        return <div>{params.row.zoho_status === "1" ? "Uploaded" : ""}</div>;
-      },
-    },
-    {
-      field: "invc_no",
-      headerName: "Invoice Number",
-      width: 150,
-      renderCell: (params) => {
-        return <div>{params.row.invc_no}</div>;
-      },
-    },
-    {
-      field: "invc_Date",
-      headerName: "Invoice Date",
-      width: 150,
-      renderCell: (params) => {
-        new Date(params.row.invc_Date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.invc_Date).toLocaleTimeString("en-IN");
-      },
-    },
-
-    {
-      field: "request_date",
-      headerName: "Requested Date",
-      width: 150,
-      renderCell: (params) => {
-        new Date(params.row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.request_date).toLocaleTimeString("en-IN");
-      },
-    },
-    {
-      field: "name",
-      headerName: "Requested By",
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <>
-            <span>{params.row.name}</span> &nbsp;{" "}
-          </>
-        );
-      },
-    },
-    {
-      field: "Reminder",
-      headerName: "Reminder",
-      width: 150,
-      valueGetter: (params) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == params.row.request_id
-        );
-        return reminder.length;
-      },
-      renderCell: (params) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == params.row.request_id
-        );
-
-        return (
-          <>
-            <span>
-              {reminder.length > 0 ? (
-                <Badge badgeContent={reminder.length} color="primary">
-                  <NotificationsActiveTwoToneIcon
-                    onClick={() => handleRemainderModal(reminder)}
-                  />
-                </Badge>
-              ) : (
-                0
-              )}
-            </span>
-          </>
-        );
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
-      width: 200,
-      renderCell: (params) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {/* Hold for confirmation of sourabh sir */}
-            <Button
-              disabled={
-                params.row.payment_details
-                  ? !params.row.payment_details.length > 0
-                  : true
-              }
-              onClick={() => handleOpenBankDetail(params.row)}
-            >
-              <AccountBalanceIcon style={{ fontSize: "25px" }} />
-            </Button>
-            <a
-              style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
-              onClick={() => handleOpenSameVender(params.row.vendor_name)}
-            >
-              {params.row.vendor_name}
-            </a>
-          </div>
-        );
-      },
-    },
-    {
-      field: "page_name",
-      headerName: "Page Name",
-      width: 150,
-    },
-    {
-      field: "payment_cycle",
-      headerName: "Payment Cycle",
-      width: 150,
-    },
-    {
-      field: "total_paid",
-      headerName: "Total Paid",
-      width: 150,
-      valueGetter: (params) => {
-        const totalPaid = nodeData
-          .filter(
-            (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-          )
-          .reduce((acc, item) => acc + +item.payment_amount, 0);
-        return totalPaid;
-      },
-      renderCell: (params) => {
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-          .length > 0 ? (
-          <span className="row ml-2 ">
-            <h5
-              onClick={() => handleOpenPaymentHistory(params.row, "TP")}
-              style={{ cursor: "pointer" }}
-              className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-            >
-              {/* Total Paid */}
-              {nodeData
-                .filter(
-                  (e) =>
-                    e.vendor_name === params.row.vendor_name && e.status == 1
-                )
-                .reduce((acc, item) => acc + +item.payment_amount, 0)}
-            </h5>
-          </span>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      field: "F.Y",
-      headerName: "F.Y",
-      width: 150,
-      valueGetter: (params) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-
-        const dataFY = nodeData.filter((e) => {
-          const paymentDate = new Date(e?.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e?.vendor_name === params?.row?.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2 &&
-            e.status !== 3
-          );
-        });
-
-        const totalFY = dataFY.reduce(
-          (acc, item) => acc + parseFloat(item.payment_amount),
-          0
-        );
-
-        return totalFY;
-      },
-      renderCell: (params) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-        const dataFY = nodeData.filter((e) => {
-          const paymentDate = new Date(e.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2 &&
-            e.status !== 3
-          );
-        });
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-          .length > 0 ? (
-          <h5
-            onClick={() => handleOpenPaymentHistory(params.row, "FY")}
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            {/* Financial Year */}
-
-            {dataFY.reduce(
-              (acc, item) => acc + parseFloat(item.payment_amount),
-              0
-            )}
-          </h5>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      field: "Pan Img",
-      headerName: "Pan Img",
-      valueGetter: (params) =>
-        params.row.pan_img.includes("uploads") ? params.row.pan_img : "NA",
-      renderCell: (params) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${params.row.pan_img}`;
-        return params.row.pan_img.includes("uploads") ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(ImgUrl);
-            }}
-            src={ImgUrl}
-            alt="Pan"
-            style={{ width: "40px", height: "40px" }}
-          />
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "pan",
-      headerName: "Pan",
-      width: 150,
-    },
-    {
-      field: "gst",
-      headerName: "GST",
-      width: 200,
-    },
-    {
-      field: "remark_audit",
-      headerName: "Remark",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
-      },
-    },
-    {
-      field: "priority",
-      headerName: "Priority",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
-      },
-    },
-    {
-      field: "request_amount",
-      headerName: "Requested Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
-      },
-    },
-    {
-      field: "paid_amount",
-      headerName: "Paid Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.paid_amount}</p>;
-      },
-    },
-    {
-      field: "balance_amount",
-      headerName: "Balance Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.balance_amount}</p>;
-      },
-    },
-    {
-      field: "base_amount",
-      headerName: "Base Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount ? (
-          <p> &#8377; {params.row.base_amount}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "gst_amount",
-      headerName: "GST Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount ? (
-          <p>&#8377; {params.row.gst_amount}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "outstandings",
-      headerName: "OutStanding ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
-      },
-    },
-    {
-      field: "TDSDeduction",
-      headerName: "TDS Deducted ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.TDSDeduction === "1" ? "Yes" : "No"}</p>;
-      },
-    },
-    {
-      field: "aging",
-      headerName: "Aging",
-      width: 150,
-      // valueGetter: (params) => {
-      //   const hours = calculateHours(params.row.request_date, new Date());
-      //   const days = Math.round(hours / 24);
-      //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
-      //   return `${days} Days`;
-      // },
-      renderCell: (params) => (
-        <p>
-          {params.row.aging}
-          Days
-        </p>
-      ),
-    },
-    // {
-    //   field: "aging",
-    //   headerName: "Aging",
-    //   width: 150,
-
-    //   renderCell: (params) => {
-    //     // const paymentDate = nodeData.filter(
-    //     //   (dateData) => dateData.request_id === params.row.request_id
-    //     // );
-    //     return (
-    //       <p>
-    //         {" "}
-    //         {Math.round(
-    //           (
-    //             calculateHours(params.row.request_date, new Date()) / 24
-    //           ).toFixed(1)
-    //         )}
-    //         Days
-    //       </p>
-    //     );
-    //   },
-    // },
-    {
-      field: "Status",
-      headerName: "Status",
-      width: 150,
-      valueGetter: (params) => getStatusText(params.row.status),
-      renderCell: (params) => (
-        <div>
-          {params.row.status === "0"
-            ? "Pending"
-            : params.row.status === "1"
-            ? "Paid"
-            : params.row.status === "2"
-            ? "Discard"
-            : params.row.status === "3"
-            ? "Partial"
-            : ""}
-        </div>
-      ),
-    },
-    {
-      field: "Action",
-      headerName: "Action",
-      width: 400,
-      renderCell: (params) => {
-        return (
-          <div className="flexCenter colGap8">
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => handlePayClick(e, params.row)}
-            >
-              Pay
-            </button>
-            <button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={(e) => handleDiscardClick(e, params.row)}
-            >
-              Discard
-            </button>
-            <button className="btn cmnbtn btn_sm btn-success">
-              <Link
-                to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${params.row.request_id}`}
-              >
-                Transaction List
-              </Link>
-            </button>
-            <button
-              className="btn btn-primary cmnbtn btn_sm "
-              onClick={(e) => handleZohoStatusUpload(e)}
-            >
-              Zoho Uploaded
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
 
   const filterDataBasedOnSelection = (apiData) => {
     const now = moment();
@@ -1739,26 +919,16 @@ export default function PendingPaymentRequest() {
       )
       .then((res) => {
         console.log(res, "response zoho status");
+        if (res) {
+          toastAlert("Invoice File Uploaded On Zoho Successfully");
+          callApi();
+        }
       })
       .catch((error) => {
         console.log("Error while getting reminder data");
       });
   };
 
-  function CustomColumnMenu(props) {
-    return (
-      <GridColumnMenu
-        {...props}
-        slots={{
-          columnMenuColumnsItem: null,
-        }}
-      />
-    );
-  }
-
-  const openImgDialog = () => {
-    setOpenDialog(true);
-  };
   const handleOpenPayThroughVendor = () => {
     setPayThroughVendor(true);
   };
@@ -1768,403 +938,16 @@ export default function PendingPaymentRequest() {
 
   useEffect(() => {
     const initialAdjustmentAmt = netAmount - paymentAmout;
-    const formattedAdjustmentAmt = initialAdjustmentAmt.toFixed(1);
+    const formattedAdjustmentAmt = initialAdjustmentAmt?.toFixed(1);
     setAdjustAmount(formattedAdjustmentAmt);
   }, [rowData, paymentAmout]);
 
-  const tableActions = [
-    {
-      label: "s_no",
-      header: "S.NO",
-      action: (row) => {
-        const rowIndex =
-          activeAccordionIndex == 0
-            ? filterData.indexOf(row)
-            : activeAccordionIndex == 1
-            ? filterData.filter((d) => d.status === "3").indexOf(row)
-            : filterData.filter((d) => d.status === "0").indexOf(row);
+  const handleClearSameRecordFilter = (e) => {
+    e.preventDefault();
+    setFilterData(data);
+  };
 
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      label: "invc_img",
-      header: "Invoice Image",
-      action: (row) => {
-        if (!row.invc_img) {
-          return "No Image";
-        }
-        // Extract file extension and check if it's a PDF
-        const fileExtension = row.invc_img.split(".").pop().toLowerCase();
-        const isPdf = fileExtension === "pdf";
-
-        const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
-
-        return isPdf ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={pdf}
-            style={{ width: "40px", height: "40px" }}
-            title="PDF Preview"
-          />
-        ) : (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={imgUrl}
-            alt="Invoice"
-            style={{ width: "100px", height: "100px" }}
-          />
-        );
-      },
-    },
-    {
-      label: "invc_Date",
-      header: "Invoice Date",
-      action: (row) => {
-        new Date(row.invc_Date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(row.invc_Date).toLocaleTimeString("en-IN");
-      },
-    },
-
-    {
-      label: "request_date",
-      header: "Requested Date",
-      action: (row) => {
-        new Date(row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(row.request_date).toLocaleTimeString("en-IN");
-      },
-    },
-    {
-      label: "name",
-      header: "Requested By",
-      action: (row) => {
-        return (
-          <>
-            <span>{row.name}</span> &nbsp;{" "}
-          </>
-        );
-      },
-    },
-    {
-      label: "Reminder",
-      header: "Reminder",
-      // valueGetter: (params) => {
-      //   const reminder = phpRemainderData.filter(
-      //     (item) => item.request_id == params.row.request_id
-      //   );
-      //   return reminder.length;
-      // },
-      action: (row) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == row.request_id
-        );
-
-        return (
-          <>
-            <span>
-              {reminder.length > 0 ? (
-                <Badge badgeContent={reminder?.length} color="primary">
-                  <NotificationsActiveTwoToneIcon
-                    onClick={() => handleRemainderModal(reminder)}
-                  />
-                </Badge>
-              ) : (
-                0
-              )}
-            </span>
-          </>
-        );
-      },
-    },
-    {
-      label: "vendor_name",
-      header: "Vendor Name",
-      action: (row) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {/* Hold for confirmation of sourabh sir */}
-            <Button
-              disabled={
-                row.payment_details ? !row.payment_details.length > 0 : true
-              }
-              onClick={() => handleOpenBankDetail(row)}
-            >
-              <AccountBalanceIcon style={{ fontSize: "25px" }} />
-            </Button>
-            <a
-              style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
-              onClick={() => handleOpenSameVender(row.vendor_name)}
-            >
-              {row.vendor_name}
-            </a>
-          </div>
-        );
-      },
-    },
-    {
-      label: "total_paid",
-      header: "Total Paid",
-      // valueGetter: (params) => {
-      //   const totalPaid = nodeData
-      //     .filter(
-      //       (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-      //     )
-      //     .reduce((acc, item) => acc + +item.payment_amount, 0);
-      //   return totalPaid;
-      // },
-      action: (row) => {
-        return nodeData.filter((e) => e.vendor_name === row.vendor_name)
-          .length > 0 ? (
-          <span className="row ml-2 ">
-            <h5
-              onClick={() => handleOpenPaymentHistory(row, "TP")}
-              style={{ cursor: "pointer" }}
-              className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-            >
-              {/* Total Paid */}
-              {nodeData
-                .filter(
-                  (e) => e.vendor_name === row.vendor_name && e.status == 1
-                )
-                .reduce((acc, item) => acc + +item.payment_amount, 0)}
-            </h5>
-          </span>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      label: "F.Y",
-      header: "F.Y",
-      // valueGetter: (row) => {
-      //   const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-      //   const currentYear = new Date().getFullYear();
-      //   const startDate = new Date(
-      //     `04/01/${
-      //       isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-      //     }`
-      //   );
-      //   const endDate = new Date(
-      //     `03/31/${
-      //       isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-      //     }`
-      //   );
-
-      //   const dataFY = nodeData.filter((e) => {
-      //     const paymentDate = new Date(e?.request_date);
-      //     return (
-      //       paymentDate >= startDate &&
-      //       paymentDate <= endDate &&
-      //       e?.vendor_name === params?.row?.vendor_name &&
-      //       e.status !== 0 &&
-      //       e.status !== 2 &&
-      //       e.status !== 3
-      //     );
-      //   });
-
-      //   const totalFY = dataFY.reduce(
-      //     (acc, item) => acc + parseFloat(item.payment_amount),
-      //     0
-      //   );
-
-      //   return totalFY;
-      // },
-      action: (row) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-        const dataFY = nodeData.filter((e) => {
-          const paymentDate = new Date(e.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e.vendor_name === row.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2 &&
-            e.status !== 3
-          );
-        });
-        return nodeData.filter((e) => e.vendor_name === row.vendor_name)
-          .length > 0 ? (
-          <h5
-            onClick={() => handleOpenPaymentHistory(row, "FY")}
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            {/* Financial Year */}
-
-            {dataFY.reduce(
-              (acc, item) => acc + parseFloat(item.payment_amount),
-              0
-            )}
-          </h5>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      label: "Pan Img",
-      header: "Pan Img",
-      // valueGetter: (params) =>
-      //   params.row.pan_img.includes("uploads") ? params.row.pan_img : "NA",
-      action: (row) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${row.pan_img}`;
-        return row.pan_img.includes("uploads") ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(ImgUrl);
-            }}
-            src={ImgUrl}
-            alt="Pan"
-            style={{ width: "40px", height: "40px" }}
-          />
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      label: "request_amount",
-      header: "Requested Amount",
-      action: (row) => {
-        return <p> &#8377; {row.request_amount}</p>;
-      },
-    },
-    {
-      label: "paid_amount",
-      header: "Paid Amount",
-      action: (row) => {
-        return <p> &#8377; {row.paid_amount}</p>;
-      },
-    },
-    {
-      label: "balance_amount",
-      header: "Balance Amount",
-      action: (row) => {
-        return <p> &#8377; {row.balance_amount}</p>;
-      },
-    },
-    {
-      label: "base_amount",
-      header: "Base Amount",
-      action: (row) => {
-        return row.base_amount ? <p> &#8377; {row.base_amount}</p> : "NA";
-      },
-    },
-    {
-      label: "gst_amount",
-      header: "GST Amount",
-      action: (row) => {
-        return row.gst_amount ? <p>&#8377; {row.gst_amount}</p> : "NA";
-      },
-    },
-    {
-      label: "outstandings",
-      header: "OutStanding ",
-      action: (row) => {
-        return <p> &#8377; {row.outstandings}</p>;
-      },
-    },
-    {
-      label: "TDSDeduction",
-      header: "TDS Deducted ",
-      action: (row) => {
-        return <p> &#8377; {row.TDSDeduction === "1" ? "Yes" : "No"}</p>;
-      },
-    },
-    {
-      label: "aging",
-      header: "Aging",
-      // valueGetter: (params) => {
-      //   const hours = calculateHours(params.row.request_date, new Date());
-      //   const days = Math.round(hours / 24);
-      //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
-      //   return `${days} Days`;
-      // },
-      action: (row) => (
-        <p>
-          {row.aging}
-          Days
-        </p>
-      ),
-    },
-    {
-      label: "Status",
-      header: "Status",
-      // valueGetter: (params) => getStatusText(params.row.status),
-      action: (row) => (
-        <div>
-          {row.status === "0"
-            ? "Pending"
-            : row.status === "1"
-            ? "Paid"
-            : row.status === "2"
-            ? "Discard"
-            : row.status === "3"
-            ? "Partial"
-            : ""}
-        </div>
-      ),
-    },
-    {
-      label: "Action",
-      header: "Action",
-      action: (row) => {
-        return (
-          <div className="flexCenter colGap8">
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => handlePayClick(e, row)}
-            >
-              Pay
-            </button>
-            <button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={(e) => handleDiscardClick(e, row)}
-            >
-              Discard
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
-  console.log(
-    isZohoStatusFileUploaded,
-    "isZohoStatusFileUploaded-->>",
-    filterData,
-    "filterData---"
-  );
+  console.log(filterData, uniqueVendorData, "data--->>>------>>>--------->>>");
 
   return (
     <div>
@@ -2215,215 +998,52 @@ export default function PendingPaymentRequest() {
         data={historyData}
         columnsData={paymentDetailColumns}
       />
-      {/* Same Vendor Dialog Box */}
-      <CommonDialogBox
-        dialog={sameVendorDialog}
-        handleCloseDialog={handleCloseSameVender}
-        activeAccordionIndex={activeAccordionIndex}
-        data={sameVendorData}
-        columnsData={sameVenderColumns}
-      />
       {/* Unique Vendor Dialog Box */}
       <CommonDialogBox
         dialog={uniqueVenderDialog}
         handleCloseDialog={handleCloseUniqueVendor}
         activeAccordionIndex={activeAccordionIndex}
         data={uniqueVendorData}
-        columnsData={uniqueVendorColumns}
+        columnsData={pendingPaymentUniqueVendorColumns({
+          activeAccordionIndex,
+          uniqueVendorData,
+          handleOpenSameVender,
+          filterData,
+        })}
       />
       {/* Overview Dialog Box */}
-      <Dialog
-        open={overviewDialog}
-        onClose={handleCloseOverview}
-        fullWidth={"md"}
-        maxWidth={"md"}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>Overview</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseOverview}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          <Overview data={filterData} columns={columns} />
-        </DialogContent>
-      </Dialog>
+      <OverviewContainedDialog
+        setOverviewDialog={setOverviewDialog}
+        overviewDialog={overviewDialog}
+        filterData={filterData}
+        columns={pendingPaymentRequestColumns({
+          activeAccordionIndex,
+          filterData,
+          setOpenImageDialog,
+          setViewImgSrc,
+          phpRemainderData,
+          handleRemainderModal,
+          handleOpenBankDetail,
+          handleOpenSameVender,
+          handleOpenPaymentHistory,
+          getStatusText,
+          handlePayClick,
+          handleDiscardClick,
+          handleZohoStatusUpload,
+          nodeData,
+        })}
+      />
 
-      <div className="row">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-header flexCenterBetween">
-              <h5 className="card-title">Search by filter</h5>
-
-              <div className="flexCenter colGap12">
-                <div className="form-group flexCenter colGap8">
-                  <label className="w-100 m0">Select Date Range:</label>
-                  <select
-                    className="form-control form_sm"
-                    value={dateFilter}
-                    onChange={(e) => setDateFilter(e.target.value)}
-                  >
-                    <option value="">All</option>
-                    <option value="today">Today</option>
-                    {/* <option value="last7Days">Last 7 Days</option> */}
-                    <option value="last30Days">Last 30 Days</option>
-                    <option value="thisWeek">This Week</option>
-                    <option value="lastWeek">Last Week</option>
-                    <option value="currentMonth">Current Month</option>
-                    {/* <option value="nextMonth">Next Month</option> */}
-                    <option value="currentQuarter">This Quarter</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="card-body pb4">
-              <div className="row thm_form">
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>Vendor Name</label>
-                    <Autocomplete
-                      value={vendorName}
-                      onChange={(event, newValue) => setVendorName(newValue)}
-                      options={vendorNameList?.map((e) => {
-                        return e;
-                      })}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          label="Vendor Name"
-                          type="text"
-                          variant="outlined"
-                          InputProps={{
-                            ...params.InputProps,
-                            className: "form-control", // Apply Bootstrap's form-control class
-                          }}
-                          style={{
-                            borderRadius: "0.25rem",
-                            transition:
-                              "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
-                            "&:focus": {
-                              borderColor: "#80bdff",
-                              boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>From Date</label>
-                    <input
-                      value={fromDate}
-                      type="date"
-                      className="form-control"
-                      onChange={(e) => setFromDate(e.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>To Date</label>
-                    <input
-                      value={toDate}
-                      type="date"
-                      className="form-control"
-                      onChange={(e) => {
-                        setToDate(e.target.value);
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>Priority</label>
-                    <select
-                      value={priorityFilter}
-                      className="form-control"
-                      onChange={(e) => setPriorityFilter(e.target.value)}
-                    >
-                      <option value="">Select Priority</option>
-                      <option value="Medium">Medium</option>
-                      <option value="Low">Low</option>
-                      <option value="High">High</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>Request Amount Filter</label>
-                    <select
-                      value={requestAmountFilter}
-                      className="form-control"
-                      onChange={(e) => setRequestAmountFilter(e.target.value)}
-                    >
-                      <option value="">Select Amount</option>
-                      <option value="greaterThan">Greater Than</option>
-                      <option value="lessThan">Less Than</option>
-                      <option value="equalTo">Equal To</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="col-md-4 col-sm-12">
-                  <div className="form-group">
-                    <label>Requested Amount</label>
-                    <input
-                      value={requestedAmountField}
-                      type="number"
-                      placeholder="Request Amount"
-                      className="form-control"
-                      onChange={(e) => {
-                        setRequestedAmountField(e.target.value);
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="card-footer">
-              <div className="flexCenter colGap16">
-                <Button
-                  variant="contained"
-                  onClick={handleDateFilter}
-                  className="btn cmnbtn btn-primary"
-                >
-                  <i className="fas fa-search"></i> Search
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleClearDateFilter}
-                  className="btn cmnbtn btn-secondary"
-                >
-                  Clear
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleOpenOverview}
-                  className="btn cmnbtn btn-primary"
-                >
-                  Overview
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PendingPaymentReqFilters
+        setDateFilter={setDateFilter}
+        dateFilter={dateFilter}
+        data={data}
+        setVendorNameList={setVendorNameList}
+        vendorNameList={vendorNameList}
+        setOverviewDialog={setOverviewDialog}
+        setFilterData={setFilterData}
+        handleOpenOverview={handleOpenOverview}
+      />
 
       <>
         <div className="tab">
@@ -2455,6 +1075,12 @@ export default function PendingPaymentRequest() {
                 </Button>
               )}
               <Button
+                className="btn cmnbtn btn_sm btn-secondary ms-2"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </Button>
+              {/* <Button
                 className="btn btn-success cmnbtn btn_sm ms-2"
                 variant="contained"
                 color="primary"
@@ -2471,32 +1097,39 @@ export default function PendingPaymentRequest() {
                 onClick={handleOpenBulkPayThroughVendor}
               >
                 Bulk Pay Through Vendor
-              </Button>
+              </Button>? */}
             </div>
           </div>
           <div className="card-body thm_table fx-head">
-            {activeAccordionIndex === 0 && (
-              // <TableData
-              //   tableName="Pending Payment Request Table"
-              //   tableFields={[
-              //     "invc_no",
-              //     "page_name",
-              //     "payment_cycle",
-              //     "gst",
-              //     "remark_audit",
-              //     "priority",
-              //   ]}
-              //   getData={callApi}
-              //   setData={setData}
-              //   setFilterData={setFilterData}
-              //   datas={data}
-              //   filterData={filterData}
-              //   tableActions={tableActions}
-              //   tableApi="phpvendorpaymentrequest"
-              // />
+            {(activeAccordionIndex === 0 ||
+              activeAccordionIndex === 1 ||
+              activeAccordionIndex === 2) && (
               <DataGrid
-                rows={filterData}
-                columns={columns}
+                rows={
+                  activeAccordionIndex === 0
+                    ? filterData
+                    : activeAccordionIndex === 1
+                    ? filterData?.filter((d) => d.status === "3")
+                    : activeAccordionIndex === 2
+                    ? filterData?.filter((d) => d.status === "0")
+                    : []
+                }
+                columns={pendingPaymentRequestColumns({
+                  activeAccordionIndex,
+                  filterData,
+                  setOpenImageDialog,
+                  setViewImgSrc,
+                  phpRemainderData,
+                  handleRemainderModal,
+                  handleOpenBankDetail,
+                  handleOpenSameVender,
+                  handleOpenPaymentHistory,
+                  getStatusText,
+                  handlePayClick,
+                  handleDiscardClick,
+                  handleZohoStatusUpload,
+                  nodeData,
+                })}
                 pageSize={5}
                 rowsPerPageOptions={[5]}
                 h
@@ -2524,70 +1157,6 @@ export default function PendingPaymentRequest() {
                 maxWidth={"md"}
                 setViewImgDialog={setOpenImageDialog}
                 openImageDialog={openImageDialog}
-              />
-            )}
-
-            {activeAccordionIndex === 1 && (
-              <DataGrid
-                rows={filterData?.filter((d) => d.status === "3")}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                h
-                getRowClassName={getValidationCSSForRemainder}
-                slots={{ toolbar: GridToolbar }}
-                checkboxSelection
-                disableSelectionOnClick
-                disableColumnMenu
-                getRowId={(row) => row?.request_id}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                onRowSelectionModelChange={(rowIds) => {
-                  handleRowSelectionModelChange(rowIds);
-                }}
-                rowSelectionModel={rowSelectionModel}
-              />
-            )}
-            {openImageDialog && (
-              <ImageView
-                viewImgSrc={viewImgSrc}
-                fullWidth={true}
-                maxWidth={"md"}
-                setViewImgDialog={setOpenImageDialog}
-              />
-            )}
-            {activeAccordionIndex === 2 && (
-              <DataGrid
-                rows={filterData?.filter((d) => d.status === "0")}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                getRowClassName={getValidationCSSForRemainder}
-                slots={{ toolbar: GridToolbar }}
-                checkboxSelection
-                disableSelectionOnClick
-                disableColumnMenu
-                getRowId={(row) => row?.request_id}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                onRowSelectionModelChange={(rowIds) => {
-                  handleRowSelectionModelChange(rowIds);
-                }}
-                rowSelectionModel={rowSelectionModel}
-              />
-            )}
-            {openImageDialog && (
-              <ImageView
-                viewImgSrc={viewImgSrc}
-                fullWidth={true}
-                maxWidth={"md"}
-                setViewImgDialog={setOpenImageDialog}
               />
             )}
           </div>

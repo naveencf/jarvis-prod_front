@@ -1,12 +1,13 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useGlobalContext } from "../../../Context/Context";
-import FieldContainer from "../FieldContainer";
-import FormContainer from "../FormContainer";
-import { baseUrl } from "../../../utils/config";
-import jwtDecode from "jwt-decode";
-import { Navigate, useNavigate } from "react-router";
-import Select from "react-select";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useGlobalContext } from '../../../Context/Context';
+import FieldContainer from '../FieldContainer';
+import FormContainer from '../FormContainer';
+import { baseUrl } from '../../../utils/config';
+import jwtDecode from 'jwt-decode';
+import { Navigate, useNavigate } from 'react-router';
+import {Link} from 'react-router-dom';
+import Select from 'react-select';
 import {
   Autocomplete,
   Box,
@@ -16,15 +17,15 @@ import {
   IconButton,
   Stack,
   TextField,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { useDispatch, useSelector } from "react-redux";
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   handleChangeVendorInfoModal,
   setModalType,
   setShowAddVendorModal,
-} from "./../../Store/VendorMaster";
-import AddVendorModal from "./AddVendorModal";
+} from './../../Store/VendorMaster';
+import AddVendorModal from './AddVendorModal';
 import {
   useAddCompanyDataMutation,
   useAddVendorDocumentMutation,
@@ -38,25 +39,27 @@ import {
   useGetVendorDocumentByVendorDetailQuery,
   useGetVendorWhatsappLinkTypeQuery,
   useUpdateVenodrMutation,
-} from "../../Store/reduxBaseURL";
+  useGetAllVendorQuery,
+} from '../../Store/reduxBaseURL';
 
-import VendorTypeInfoModal from "./VendorTypeInfoModal";
-import AddCircleTwoToneIcon from "@mui/icons-material/AddCircleTwoTone";
-import RemoveCircleTwoToneIcon from "@mui/icons-material/RemoveCircleTwoTone";
-import { useParams } from "react-router";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
-import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
-import { useGstDetailsMutation } from "../../Store/API/Sales/GetGstDetailApi";
-import formatString from "../Operation/CampaignMaster/WordCapital";
+import VendorTypeInfoModal from './VendorTypeInfoModal';
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import RemoveCircleTwoToneIcon from '@mui/icons-material/RemoveCircleTwoTone';
+import { useParams } from 'react-router';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import IndianStatesMui from '../../ReusableComponents/IndianStatesMui';
+import IndianCitiesMui from '../../ReusableComponents/IndianCitiesMui';
+import { useGstDetailsMutation } from '../../Store/API/Sales/GetGstDetailApi';
+import formatString from '../Operation/CampaignMaster/WordCapital';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PreviewModal from './Vendor/PreviewModal';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
   const { data: countries, isLoading: isCountriesLoading } =
     useGetCountryCodeQuery();
 
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
@@ -65,53 +68,55 @@ const VendorMaster = () => {
   const isVendorModalOpen = useSelector(
     (state) => state.vendorMaster.showVendorInfoModal
   );
-
+  const [forPhp, setForPhp] = useState([])
+  const [vendorData, setVendorData] = useState([])
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const [isFormSubmitting2, setIsFormSubmitting2] = useState(false);
-  const [vendorName, setVendorName] = useState("");
-  const [countryCode, setCountryCode] = useState("91");
+  const [vendorName, setVendorName] = useState('');
+  const [countryCode, setCountryCode] = useState('91');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [mobile, setMobile] = useState("");
-  const [altMobile, setAltMobile] = useState("");
-  const [email, setEmail] = useState("");
-  const [gst, setGst] = useState("");
-  const [compName, setCompName] = useState("");
-  const [compAddress, setCompAddress] = useState("");
-  const [compCity, setCompCity] = useState("");
-  const [compPin, setCompPin] = useState("");
-  const [compState, setCompState] = useState("");
-  const [limit, setLimit] = useState("");
-  const [homeAddress, setHomeAddress] = useState("");
-  const [homeCity, setHomeCity] = useState("");
-  const [homePincode, setHomePincode] = useState("");
-  const [otherCountry, setOtherCountry] = useState("");
-  const [homeState, setHomeState] = useState("");
-  const [typeId, setTypeId] = useState("");
-  const [platformId, setPlatformId] = useState("");
-  const [cycleId, setCycleId] = useState("");
+  const [mobile, setMobile] = useState('');
+  const [altMobile, setAltMobile] = useState('');
+  const [email, setEmail] = useState('');
+  const [gst, setGst] = useState('');
+  const [compName, setCompName] = useState('');
+  const [compAddress, setCompAddress] = useState('');
+  const [compCity, setCompCity] = useState('');
+  const [compPin, setCompPin] = useState('');
+  const [compState, setCompState] = useState('');
+  const [limit, setLimit] = useState('');
+  const [homeAddress, setHomeAddress] = useState('');
+  const [homeCity, setHomeCity] = useState('');
+  const [homePincode, setHomePincode] = useState('');
+  const [otherCountry, setOtherCountry] = useState('');
+  const [homeState, setHomeState] = useState('');
+  const [typeId, setTypeId] = useState('');
+  const [platformId, setPlatformId] = useState('');
+  const [cycleId, setCycleId] = useState('');
   const [emailIsInvalid, setEmailIsInvalid] = useState(false);
-  const [vendorCategory, setVendorCategory] = useState("Theme Page");
+  const [vendorCategory, setVendorCategory] = useState('Theme Page');
   const [whatsappLink, setWhatsappLink] = useState([]);
   const [docDetails, setDocDetails] = useState([]);
   const [sameAsPrevious, setSameAsPrevious] = useState(false);
   const [mobileValid, setMobileValid] = useState(false);
   const [userData, setUserData] = useState([]);
   const [userId, setUserId] = useState(230);
-  const [company_id, setCompany_id] = useState("");
-  const [busiType, setBusiType] = useState('')
+  const [company_id, setCompany_id] = useState('');
+  const [busiType, setBusiType] = useState('');
   const [getGstDetails] = useGstDetailsMutation();
-
+  const [openPreviewModal, setOpenPreviewModal] = useState(false);
+  const [previewData, setPreviewData] = useState({});
   const [bankRows, setBankRows] = useState([
     {
-      payment_method: "666856874366007df1dfacde", // setting bank default to dropdown
+      payment_method: '666856874366007df1dfacde', // setting bank default to dropdown
       // payment_method: "",
-      bank_name: "",
-      account_type: "",
-      account_number: "",
-      ifcs: "",
-      upi_id: "",
-      registered_number: "",
+      bank_name: '',
+      account_type: '',
+      account_number: '',
+      ifcs: '',
+      upi_id: '',
+      registered_number: '',
     },
   ]);
   const [validator, setValidator] = useState({
@@ -135,6 +140,8 @@ const VendorMaster = () => {
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
 
+  const { data: allVendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
+
   const { data: platformData } = useGetPmsPlatformQuery();
 
   const { data: payData } = useGetPmsPaymentMethodQuery();
@@ -147,10 +154,13 @@ const VendorMaster = () => {
   const { data: bankNameData } = useGetBankNameDetailQuery();
   const bankName = bankNameData?.data;
 
-  const [addVendor]=useAddVendorMutation();
-  const [addCompanyData]=useAddCompanyDataMutation();
-  const[addVendorDocument]=useAddVendorDocumentMutation();
-  const [updateVendor]=useUpdateVenodrMutation();
+  const [addVendor] = useAddVendorMutation();
+  const [addCompanyData] = useAddCompanyDataMutation();
+  const [addVendorDocument] = useAddVendorDocumentMutation();
+  const [updateVendor] = useUpdateVenodrMutation();
+  const [dob, setDob] = useState('');
+  const [messageColor, setMessageColor] = useState('');
+  const [existError, setExistError] = useState('');
 
   useEffect(() => {
     if (gst?.length === 15) {
@@ -159,80 +169,74 @@ const VendorMaster = () => {
           if (response?.data && response?.data?.success) {
             const { data } = response?.data;
             setCompName(data?.legal_business_name);
-            setCompAddress(data?.principal_place_of_business?.split(",")?.[0]);
-            const addressParts = data?.principal_place_of_business?.split(",");
+            setCompAddress(data?.principal_place_of_business?.split(',')?.[0]);
+            const addressParts = data?.principal_place_of_business?.split(',');
             setCompCity(addressParts[2]);
             setCompPin(addressParts[7]);
             setCompState(addressParts[2]);
-            setLimit("");
+            setLimit('');
           } else {
-            setCompName("");
-            setCompAddress("");
-            setCompCity("");
-            setCompPin("");
-            setCompState("");
-            setLimit("");
+            setCompName('');
+            setCompAddress('');
+            setCompCity('');
+            setCompPin('');
+            setCompState('');
+            setLimit('');
           }
         })
         .catch((error) => {
-          console.error("Error fetching GST details:", error);
+          console.error('Error fetching GST details:', error);
         });
     }
   }, [gst, getGstDetails]);
 
-  const handleRemarkChange = (i, value) => {
-    const remark = [...whatsappLink];
-    remark[i].remark = value;
-    setWhatsappLink(remark);
-  };
-
   const handleAddVendorTypeClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("Vendor"));
+    dispatch(setModalType('Vendor'));
   };
 
   const handleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("Vendor"));
+    dispatch(setModalType('Vendor'));
   };
 
   const handleAddPlatformClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("Platform"));
+    dispatch(setModalType('Platform'));
   };
 
   const handlePlatformInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("Platform"));
+    dispatch(setModalType('Platform'));
   };
 
   const handleAddPaymentMethodClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("PaymentMethod"));
+    dispatch(setModalType('PaymentMethod'));
   };
 
   const handlePaymentMethodInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("PaymentMethod"));
+    dispatch(setModalType('PaymentMethod'));
   };
 
   const handleAddPayCycleClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("PayCycle"));
+    dispatch(setModalType('PayCycle'));
   };
 
   const handlePayCycleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("PayCycle"));
+    dispatch(setModalType('PayCycle'));
   };
   // Bank Name:-=> {
   const handleAddBankNameClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("BankName"));
+    dispatch(setModalType('BankName'));
   };
   const handleBankNameInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("BankName"));
+    dispatch(setModalType('BankName'));
   };
 
   const handleAccountTypeChange = (e, i) => {
@@ -242,14 +246,14 @@ const VendorMaster = () => {
   };
 
   const handleAccountNoChange = (e, i) => {
-    if (e.target.value.length > 20) return;
+    if (e.target.value?.length > 20) return;
     const updatedRows = [...bankRows];
     updatedRows[i].account_number = e.target.value;
     setBankRows(updatedRows);
   };
 
   const handleIFSCChange = (e, i) => {
-    if (e.target.value.length > 11) return;
+    if (e.target.value?.length > 11) return;
     const updatedRows = [...bankRows];
     updatedRows[i].ifcs = e.target.value;
     setBankRows(updatedRows);
@@ -262,7 +266,7 @@ const VendorMaster = () => {
   };
 
   const handleRegisteredMobileChange = (e, i) => {
-    if (e.target.value.length > 10) {
+    if (e.target.value?.length > 10) {
       return;
     }
     const updatedRows = [...bankRows];
@@ -278,19 +282,19 @@ const VendorMaster = () => {
 
   const handleAddWhatsappGroupLinkTypeClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType("WhatsappLinkType"));
+    dispatch(setModalType('WhatsappLinkType'));
   };
 
   const handleWhatsappGroupLinkTypeInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType("WhatsappLinkType"));
+    dispatch(setModalType('WhatsappLinkType'));
   };
 
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(_id);
 
   useEffect(() => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + 'get_all_users').then((res) => {
       setUserData(res.data.data);
     });
 
@@ -299,11 +303,12 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/vendor/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         })
         .then((res) => {
           const data = res.data.data;
+          setVendorData(data)
           setUserId(data?.closed_by);
           setVendorName(data?.vendor_name);
           setCountryCode(data?.country_code);
@@ -324,26 +329,29 @@ const VendorMaster = () => {
           setPlatformId(data?.vendor_platform);
           setCycleId(data?.pay_cycle);
           setHomePincode(data?.home_pincode);
-          setVendorCategory(data?.vendor_category??"Theme Page");
+          setVendorCategory(data?.vendor_category ?? 'Theme Page');
+          setDob(data?.dob)
         });
 
       axios
         .get(baseUrl + `v1/bank_details_by_vendor_id/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Adjust content type as needed
+            'Content-Type': 'application/json', // Adjust content type as needed
           },
         })
         .then((res) => {
           const data = res.data.data;
           setBankRows(data);
+          const extractForPhp = bankRows?.find(item => item.payment_method === '666856874366007df1dfacde');
+          setForPhp(extractForPhp)
         });
 
       axios
         .get(baseUrl + `v1/vendor_group_link_vendor_id/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Adjust content type as needed
+            'Content-Type': 'application/json', // Adjust content type as needed
           },
         })
         .then((res) => {
@@ -355,7 +363,7 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/company_name_wise_vendor/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Adjust content type as needed
+            'Content-Type': 'application/json', // Adjust content type as needed
           },
         })
         .then((res) => {
@@ -385,45 +393,48 @@ const VendorMaster = () => {
 
       const staticDocs = [
         {
-          docName: "GST",
-          docNumber: "",
-          document_image_upload: "",
+          docName: 'GST',
+          docNumber: '',
+          document_image_upload: '',
         },
         {
-          docName: "Pan card",
-          docNumber: "",
-          document_image_upload: "",
+          docName: 'Pan Card',
+          docNumber: '',
+          document_image_upload: '',
         },
         {
-          docName: "Aadhar Card",
-          docNumber: "",
-          document_image_upload: "",
+          docName: 'Aadhar Card',
+          docNumber: '',
+          document_image_upload: '',
         },
         {
-          docName: "Driving License",
-          docNumber: "",
-          document_image_upload: "",
+          docName: 'Driving License',
+          docNumber: '',
+          document_image_upload: '',
         },
       ];
-  
-      const existingDocNames = doc.map(d => d.docName);
-      const filteredStaticDocs = staticDocs.filter(staticDoc => 
-        !existingDocNames.includes(staticDoc.docName)
+
+      const existingDocNames = doc.map((d) => d.docName);
+      const filteredStaticDocs = staticDocs.filter(
+        (staticDoc) => !existingDocNames.includes(staticDoc.docName)
       );
       const combinedDocs = doc.concat(filteredStaticDocs);
       setDocDetails(combinedDocs);
 
-      if(busiType !== ''){
+      if (busiType !== '') {
         let filteredDocs;
-        if (busiType === "Registered Business" || busiType === "Registered Business (Composition)") {
+        if (
+          busiType === 'Registered Business' ||
+          busiType === 'Registered Business (Composition)'
+        ) {
           filteredDocs = combinedDocs;
-        } else if (busiType === "Unregistered Business") {
-          filteredDocs = combinedDocs.filter(doc => 
-            ["Pan card", "Driving License", "Aadhar Card"].includes(doc.docName)
+        } else if (busiType === 'Unregistered Business') {
+          filteredDocs = combinedDocs.filter((doc) =>
+            ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName)
           );
         } else if (busiType === "Individual") {
           filteredDocs = combinedDocs.filter(doc => 
-            ["Driving License", "Aadhar Card"].includes(doc.docName)
+            ["Driving License", "Aadhar Card", "Pan Card"].includes(doc.docName)
           );
         }
         setDocDetails(filteredDocs);
@@ -435,45 +446,74 @@ const VendorMaster = () => {
     setWhatsappLink([
       ...whatsappLink,
       {
-        link: "",
-        remark: "",
-        type: "",
+        link: '',
+        remark: '',
+        type: '',
       },
     ]);
   };
-  const addDocDetails = () => {
-      let newDocs = [];
-      if (busiType === "Registered Business" || busiType === "Registered Business (Composition)") {
-        newDocs = [
-          { docName: "GST", docNumber: "", document_image_upload: "" },
-          { docName: "Pan card", docNumber: "", document_image_upload: "" },
-          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
-          { docName: "Driving License", docNumber: "", document_image_upload: "" },
-        ];
-      } else if (busiType === "Unregistered Business") {
-        newDocs = [
-          { docName: "Pan card", docNumber: "", document_image_upload: "" },
-          { docName: "Driving License", docNumber: "", document_image_upload: "" },
-          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
-        ];
-      } else if (busiType === "Individual") {
-        newDocs = [
-          { docName: "Driving License", docNumber: "", document_image_upload: "" },
-          { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
-        ];
-      }
-    
-      setDocDetails((prevDetails) => [
-        // ...prevDetails,
-        ...newDocs
-      ]);
+
+  const addMoreDocDetails = () => {
+    setDocDetails([
+      ...docDetails,
+      {
+        docName: "",
+        docNumber: "",
+        document_image_upload: "",
+      },
+    ]);
   };
 
-  useEffect(()=>{
-    if(!_id){
-      addDocDetails()
+  const addDocDetails = () => {
+    let newDocs = [];
+    if (
+      busiType === 'Registered Business' ||
+      busiType === 'Registered Business (Composition)'
+    ) {
+      newDocs = [
+        { docName: 'GST', docNumber: '', document_image_upload: '' },
+        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
+        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
+        {
+          docName: 'Driving License',
+          docNumber: '',
+          document_image_upload: '',
+        },
+        
+      ];
+    } else if (busiType === 'Unregistered Business') {
+      newDocs = [
+        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
+        {
+          docName: 'Driving License',
+          docNumber: '',
+          document_image_upload: '',
+        },
+        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
+      ];
+    } else if (busiType === 'Individual') {
+      newDocs = [
+        {
+          docName: 'Driving License',
+          docNumber: '',
+          document_image_upload: '',
+        },
+        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
+        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
+      ];
     }
-  },[busiType])
+
+    setDocDetails((prevDetails) => [
+      // ...prevDetails,
+      ...newDocs,
+    ]);
+  };
+
+  useEffect(() => {
+    if (!_id) {
+      addDocDetails();
+    }
+  }, [busiType]);
 
   const handleDocNameChange = (index, newValue) => {
     let doc = [...docDetails];
@@ -485,19 +525,21 @@ const VendorMaster = () => {
     let doc = [...docDetails];
     let docName = doc[i].docName;
     let maxLength = 12;
-  
-    if (docName === 'Pan card') {
+
+    let capitalizedValue = value.toUpperCase();
+
+    if (docName === 'Pan Card') {
       maxLength = 11;
     } else if (docName === 'GST') {
       maxLength = 15;
-    } else if (docName === 'Aadhar Card'){
+    } else if (docName === 'Aadhar Card') {
       maxLength = 16;
     }
-    if (value.length > maxLength) {
+    if (capitalizedValue.length > maxLength) {
       alert(`Document Number for ${docName} cannot exceed ${maxLength} digits`);
       return;
-    }  
-    doc[i].docNumber = value;
+    }
+    doc[i].docNumber = capitalizedValue;
     setDocDetails(doc);
   };
 
@@ -520,13 +562,13 @@ const VendorMaster = () => {
     setBankRows([
       ...bankRows,
       {
-        payment_method: "",
-        bank_name: "",
-        account_type: "",
-        account_number: "",
-        ifcs: "",
-        upi_id: "",
-        registered_number: "",
+        payment_method: '',
+        bank_name: '',
+        account_type: '',
+        account_number: '',
+        ifcs: '',
+        upi_id: '',
+        registered_number: '',
       },
     ]);
   };
@@ -550,12 +592,12 @@ const VendorMaster = () => {
       setValidator((prev) => ({ ...prev, mobile: false }));
     }
 
-    if (newContact.length <= 10) {
+    if (newContact?.length <= 10) {
       if (
-        newContact === "" ||
-        (newContact.length === 1 && parseInt(newContact) < 6)
+        newContact === '' ||
+        (newContact?.length === 1 && parseInt(newContact) < 6)
       ) {
-        setMobile("");
+        setMobile('');
         setMobileValid(false);
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
@@ -573,18 +615,18 @@ const VendorMaster = () => {
       }
     }
     setisContactTouched1(true);
-    if (newContact.length < 10) {
+    if (newContact?.length < 10) {
       setMobileValid(false);
     }
   };
   const handleAlternateMobileNumSet = (e, setState) => {
     const newContact = e.target.value;
-    if (newContact.length <= 10) {
+    if (newContact?.length <= 10) {
       if (
-        newContact === "" ||
-        (newContact.length === 1 && parseInt(newContact) < 6)
+        newContact === '' ||
+        (newContact?.length === 1 && parseInt(newContact) < 6)
       ) {
-        setState("");
+        setState('');
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
           altMobile: true,
@@ -605,24 +647,24 @@ const VendorMaster = () => {
       setValidator((prev) => ({ ...prev, email: false }));
     }
     setState(e.target.value);
-    if (re.test(e.target.value) || e.target.value === "") {
+    if (re.test(e.target.value) || e.target.value === '') {
       return setEmailIsInvalid(false);
     }
     return setEmailIsInvalid(true);
   };
 
-  const redirectAfterVendor = (resID) =>{
+  const redirectAfterVendor = (resID) => {
     const sendingId = {
-      _id: resID
+      _id: resID,
     };
     const queryParams = new URLSearchParams(sendingId).toString();
-    navigate(`/admin/pms-page-master?${queryParams}`)
-  }
+    navigate(`/admin/pms-page-master?${queryParams}`);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!vendorName || vendorName == "" || vendorName == null) {
+    if (!vendorName || vendorName == '' || vendorName == null) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
     // if (!countryCode) {
@@ -658,7 +700,7 @@ const VendorMaster = () => {
       !platformId ||
       !cycleId
     ) {
-      toastError("Please fill all the mandatory fields");
+      toastError('Please fill all the mandatory fields');
       return;
     }
     const formData = {
@@ -685,163 +727,16 @@ const VendorMaster = () => {
       bank_details: bankRows,
       vendorLinks: whatsappLink,
       closed_by: userId,
+      dob: dob
     };
-
-    if (!_id) {
-      setIsFormSubmitting(true);
-      // await axios
-      //   .post(baseUrl + "v1/vendor", formData, {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json", 
-      //     },
-      //   })
-      addVendor(formData)
-        .then((res) => {
-          setIsFormSubmitted(true);
-          toastAlert("Data Submitted Successfully");
-          setIsFormSubmitting(false);
-          const resID = res.data.data._id;
-          // redirectAfterVendor(resID)
-          // axios.post(
-          //   baseUrl + "v1/company_name",
-          //   {
-          //     vendor_id: resID,
-          //     company_name: compName,
-          //     address: compAddress,
-          //     city: compCity,
-          //     pincode: compPin,
-          //     state: compState,
-          //     threshold_limit: limit,
-          //     created_by: userID,
-          //   },
-          //   {
-          //     headers: {
-          //       Authorization: `Bearer ${token}`,
-          //     },
-          //   }
-          // );
-          addCompanyData(  {   vendor_id: resID,
-            company_name: compName,
-            address: compAddress,
-            city: compCity,
-            pincode: compPin,
-            state: compState,
-            threshold_limit: limit,
-            created_by: userID,
-          }).then((res) => {  
-            // console.log(res.data, "res");
-            // toastAlert("company name added successfully")
-          }).catch((err) => {
-            toastError(err.message);
-          });
-
-          for (let i = 0; i < docDetails.length; i++) {
-            const formData = new FormData();
-            formData.append("vendor_id", resID);
-            formData.append("document_name", docDetails[i].docName);
-            formData.append("document_no", docDetails[i].docNumber);
-            formData.append("document_image_upload", docDetails[i].docImage);
-            // axios
-            //   .post(baseUrl + "v1/document_detail", formData, {
-            //     headers: {
-            //       "Content-Type": "multipart/form-data",
-            //       Authorization: `Bearer ${token}`,
-            //     },
-            //   })
-            //   .catch((err) => {
-            //     console.log(err.message, "err")
-            //     toastError(err.message);
-            //   });
-            addVendorDocument(formData).then((res) => {
-              // toastAlert("Document added successfully")
-            }
-            ).catch((err) => {
-              toastError(err.message);
-            }
-            );
-          }
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting(false);
-        });
-    } else {
-      setIsFormSubmitting(true);
-      // axios
-      //   .put(baseUrl + `v1/vendor/${_id}`, formData, {
-      //     headers: {
-      //       Authorization: `Bearer ${token}`,
-      //       "Content-Type": "application/json", 
-      //     },
-      //   })
-      formData._id=_id
-      updateVendor(formData).unwrap()
-        .then(() => {
-
-          toastAlert("Data Updated Successfully");
-          // console.log("Vendor updated")
-          for (let i = 0; i < docDetails?.length; i++) {
-            const formData = new FormData();
-
-            formData.append("document_name", docDetails[i].docName);
-            formData.append("document_no", docDetails[i].docNumber);
-            formData.append("document_image_upload", docDetails[i].docImage);
-            axios
-              .put(
-                baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`,
-                formData,
-                {
-                  headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
-              .catch((err) => {
-                toastError(err.message);
-              });
-          }
-          if (company_id) {
-          axios
-            .put(
-              baseUrl + `v1/company_name/${company_id}`,
-              {
-                company_name: compName,
-                address: compAddress,
-                city: compCity,
-                pincode: compPin,
-                state: compState,
-                threshold_limit: limit,
-                created_by: userID,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-            .then((res) => {
-            })
-            .catch((err) => {
-              toastError(err.message);
-            });
-          }
-          setIsFormSubmitted(true);
-          setIsFormSubmitting(false);
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting(false);
-          console.log(err, "err");
-        });
-    }
+    setPreviewData(formData);
+    setOpenPreviewModal(true);
   };
 
   const handleSubmitNew = async (e) => {
     e.preventDefault();
 
-    if (!vendorName || vendorName == "" || vendorName == null) {
+    if (!vendorName || vendorName == '' || vendorName == null) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
     if (!mobile) {
@@ -865,7 +760,7 @@ const VendorMaster = () => {
       !platformId ||
       !cycleId
     ) {
-      toastError("Please fill all the mandatory fields");
+      toastError('Please fill all the mandatory fields');
       return;
     }
     const formData = {
@@ -892,6 +787,7 @@ const VendorMaster = () => {
       bank_details: bankRows,
       vendorLinks: whatsappLink,
       closed_by: userId,
+      dob: dob
     };
 
     if (!_id) {
@@ -899,11 +795,12 @@ const VendorMaster = () => {
 
       addVendor(formData)
         .then((res) => {
-          toastAlert("Data Submitted Successfully");
+          toastAlert('Data Submitted Successfully');
           const resID = res.data.data._id;
-          redirectAfterVendor(resID)
-          
-          addCompanyData(  {   vendor_id: resID,
+          redirectAfterVendor(resID);
+
+          addCompanyData({
+            vendor_id: resID,
             company_name: compName,
             address: compAddress,
             city: compCity,
@@ -911,26 +808,28 @@ const VendorMaster = () => {
             state: compState,
             threshold_limit: limit,
             created_by: userID,
-          }).then((res) => {  
-            // console.log(res.data, "res");
-          }).catch((err) => {
-            toastError(err.message);
-          });
-
-          for (let i = 0; i < docDetails.length; i++) {
-            const formData = new FormData();
-            formData.append("vendor_id", resID);
-            formData.append("document_name", docDetails[i].docName);
-            formData.append("document_no", docDetails[i].docNumber);
-            formData.append("document_image_upload", docDetails[i].docImage);
-            
-            addVendorDocument(formData).then((res) => {
-              // toastAlert("Document added successfully")
-            }
-            ).catch((err) => {
+          })
+            .then((res) => {
+              // console.log(res.data, "res");
+            })
+            .catch((err) => {
               toastError(err.message);
-            }
-            );
+            });
+
+          for (let i = 0; i < docDetails?.length; i++) {
+            const formData = new FormData();
+            formData.append('vendor_id', resID);
+            formData.append('document_name', docDetails[i].docName);
+            formData.append('document_no', docDetails[i].docNumber);
+            formData.append('document_image_upload', docDetails[i].docImage);
+
+            addVendorDocument(formData)
+              .then((res) => {
+                // toastAlert("Document added successfully")
+              })
+              .catch((err) => {
+                toastError(err.message);
+              });
           }
         })
         .catch((err) => {
@@ -940,24 +839,24 @@ const VendorMaster = () => {
     } else {
       setIsFormSubmitting2(true);
 
-      formData._id=_id
-      updateVendor(formData).unwrap()
+      formData._id = _id;
+      updateVendor(formData)
+        .unwrap()
         .then(() => {
-
-          toastAlert("Data Updated Successfully");
+          toastAlert('Data Updated Successfully');
           for (let i = 0; i < docDetails?.length; i++) {
             const formData = new FormData();
 
-            formData.append("document_name", docDetails[i].docName);
-            formData.append("document_no", docDetails[i].docNumber);
-            formData.append("document_image_upload", docDetails[i].docImage);
+            formData.append('document_name', docDetails[i].docName);
+            formData.append('document_no', docDetails[i].docNumber);
+            formData.append('document_image_upload', docDetails[i].docImage);
             axios
               .put(
                 baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`,
                 formData,
                 {
                   headers: {
-                    "Content-Type": "multipart/form-data",
+                    'Content-Type': 'multipart/form-data',
                     Authorization: `Bearer ${token}`,
                   },
                 }
@@ -967,29 +866,28 @@ const VendorMaster = () => {
               });
           }
           if (company_id) {
-          axios
-            .put(
-              baseUrl + `v1/company_name/${company_id}`,
-              {
-                company_name: compName,
-                address: compAddress,
-                city: compCity,
-                pincode: compPin,
-                state: compState,
-                threshold_limit: limit,
-                created_by: userID,
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
+            axios
+              .put(
+                baseUrl + `v1/company_name/${company_id}`,
+                {
+                  company_name: compName,
+                  address: compAddress,
+                  city: compCity,
+                  pincode: compPin,
+                  state: compState,
+                  threshold_limit: limit,
+                  created_by: userID,
                 },
-              }
-            )
-            .then((res) => {
-            })
-            .catch((err) => {
-              toastError(err.message);
-            });
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              )
+              .then((res) => {})
+              .catch((err) => {
+                toastError(err.message);
+              });
           }
           setIsFormSubmitted(true);
           setIsFormSubmitting2(false);
@@ -997,7 +895,92 @@ const VendorMaster = () => {
         .catch((err) => {
           toastError(err.message);
           setIsFormSubmitting2(false);
-          console.log(err, "err");
+          console.log(err, 'err');
+        });
+    }
+  };
+
+  const handleFinalSubmit = async() => {
+    setOpenPreviewModal(false);
+
+    if (!_id) {
+      setIsFormSubmitting(true);
+      addVendor(previewData)
+        .then((res) => {
+          setIsFormSubmitted(true);
+          toastAlert('Data Submitted Successfully');
+          setIsFormSubmitting(false);
+          const resID = res.data.data._id;
+
+          // Add company data and documents (same as original logic)
+          addCompanyData({
+            vendor_id: resID,
+            company_name: compName,
+            address: compAddress,
+            city: compCity,
+            pincode: compPin,
+            state: compState,
+            threshold_limit: limit,
+            created_by: userID,
+          })
+            .then((res) => {
+              // Handle successful company data submission
+            })
+            .catch((err) => {
+              toastError(err.message);
+            });
+
+          for (let i = 0; i < docDetails?.length; i++) {
+            const formData = new FormData();
+            formData.append('vendor_id', resID);
+            formData.append('document_name', docDetails[i].docName);
+            formData.append('document_no', docDetails[i].docNumber);
+            formData.append('document_image_upload', docDetails[i].docImage);
+
+            addVendorDocument(formData)
+              .then((res) => {
+                // Handle successful document submission
+              })
+              .catch((err) => {
+                toastError(err.message);
+              });
+          }
+        })
+        .catch((err) => {
+          toastError(err.message);
+          setIsFormSubmitting(false);
+        });
+    } else {
+      // Handle vendor update logic (same as original logic)
+      setIsFormSubmitting(true);
+      previewData._id = _id;
+
+      const formData = new FormData();
+      formData.append('vendor_id', vendorData.vendor_id);
+      formData.append('mobile', vendorData.mobile);
+      formData.append('alternate_mobile', vendorData.alternate_mobile);
+      formData.append('account_type', forPhp?.account_type);
+      formData.append('account_no', forPhp?.account_number);
+      formData.append('ifcs', forPhp?.ifcs);
+      formData.append('bank_name', forPhp?.bank_name);
+      formData.append('vendor_name', vendorData.vendor_name);
+
+      await axios.put(
+        'https://purchase.creativefuel.io/webservices/RestController.php?view=updatevendor',
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+
+      updateVendor(previewData)
+        .unwrap()
+        .then(() => {
+          toastAlert('Data Updated Successfully');
+          setIsFormSubmitted(true);
+          setIsFormSubmitting(false);
+        })
+        .catch((err) => {
+          toastError(err.message);
+          setIsFormSubmitting(false);
         });
     }
   };
@@ -1012,30 +995,33 @@ const VendorMaster = () => {
       setCompState(homeState);
       setCompPin(homePincode);
     } else {
-      setCompAddress("");
-      setCompCity("");
-      setCompPin("");
-      setCompState("");
+      setCompAddress('');
+      setCompCity('');
+      setCompPin('');
+      setCompState('');
     }
   };
 
-  const docOptions = ["Pan card", "GST", "Aadhar Card", "Driving License"];
+  const docOptions = ['Pan Card', 'GST', 'Aadhar Card', 'Driving License'];
   // const copyOptions= docOptions;
   const [copyOptions, setCopyOptions] = useState(docOptions);
 
   useEffect(() => {
-    let data = docOptions.filter((e) => {
-      return !docDetails.map((e) => e.docName).includes(e);
-    });
-    setCopyOptions(data);
-  }, [docDetails.map((e) => e.docName)]);
+    const docNames = docDetails.map((e) => e.docName);
+    const filteredData = docOptions.filter(
+      (option) => !docNames.includes(option)
+    );
+    setCopyOptions(filteredData);
+  }, [docDetails]);
 
-  const handlepincode = async(event) => {
+  const handlepincode = async (event) => {
     const newValue = event.target.value;
     setHomePincode(newValue);
 
     try {
-      const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${newValue}`
+      );
       const data = response.data;
 
       if (data[0].Status === 'Success') {
@@ -1043,7 +1029,29 @@ const VendorMaster = () => {
         setHomeState(postOffice.State);
         setHomeCity(postOffice.District);
       } else {
-        console.log('Invalid Pincode')
+        console.log('Invalid Pincode');
+      }
+    } catch (error) {
+      console.log('Error fetching details.');
+    }
+  };
+
+  const handleCompPincode = async (event) => {
+    const newValue = event.target.value;
+    setCompPin(newValue);
+
+    try {
+      const response = await axios.get(
+        `https://api.postalpincode.in/pincode/${newValue}`
+      );
+      const data = response.data;
+
+      if (data[0].Status === 'Success') {
+        const postOffice = data[0].PostOffice[0];
+        setCompState(postOffice.State);
+        setCompCity(postOffice.District);
+      } else {
+        console.log('Invalid Pincode');
       }
     } catch (error) {
       console.log('Error fetching details.');
@@ -1056,39 +1064,67 @@ const VendorMaster = () => {
 
   const goBack = () => {
     navigate(-1);
+  };
+
+  const setVendorNameFun = (e) =>{
+    setVendorName(e); 
+    const checkVendorExist = allVendorData.data.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
+    if(checkVendorExist == undefined){
+      setExistError('Vendor Is Not Exist, You Can Use This')
+      setMessageColor('green');
+    }else{
+      setExistError('Vendor Is Already Exist, Enter Another One Or ')
+      setMessageColor('red');
+    }
   }
 
   return (
     <>
       <FormContainer
-        mainTitle={_id ? "Edit Vendor Master" : "Add Vendor Master"}
+        mainTitle={_id ? 'Edit Vendor Master' : 'Add Vendor Master'}
         link={true}
-        title={_id ? "Edit Vendor Master" : "Vendor Details"}
+        title={_id ? 'Edit Vendor Master' : 'Vendor Details'}
         // handleSubmit={handleSubmit}
         submitButton={false}
       ></FormContainer>
-      <div style={{backgroundColor:'#52b2d6',width:'3%',padding:'7px',marginBottom:'10px',cursor:'pointer'}}>
+      <div
+        style={{
+          backgroundColor: '#52b2d6',
+          width: '3%',
+          padding: '7px',
+          marginBottom: '10px',
+          cursor: 'pointer',
+        }}
+      >
         <ArrowBackIcon onClick={goBack} />
       </div>
+      <PreviewModal
+        open={openPreviewModal}
+        onClose={() => setOpenPreviewModal(false)}
+        previewData={previewData}
+        bankRows={bankRows}
+        payData={payData}
+        bankName={bankName}
+        docDetails={docDetails}
+        handleFinalSubmit={handleFinalSubmit}
+      />
       <div className="card">
         <div className="card-header">
           <h5 className="card-title">Add Vendor Master</h5>
         </div>
+
         <div className="card-body pb4">
           <div className="row thm_form">
             <div className="col-md-6 mb16">
               <div className="form-group m0">
-                <label className="form-label">
-                  Business Type
-                </label>
+                <label className="form-label">Business Type</label>
                 <Select
                   options={[
-                    "Registered Business",
-                    "Registered Business (Composition)",
-                    "Unregistered Business",
-                    "Individual" 
-                  ]
-                    .map((option) => ({
+                    'Registered Business',
+                    'Registered Business (Composition)',
+                    'Unregistered Business',
+                    'Individual',
+                  ].map((option) => ({
                     label: option,
                     value: option,
                   }))}
@@ -1111,88 +1147,147 @@ const VendorMaster = () => {
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
-                <label className="form-label">
-                  NOTE:
-                </label>
-                {
-                  busiType === 'Registered Business' ? (
-                    <p>If Private Limited 2% TDS And If Not 1%.</p>
-                  ) : busiType === 'Registered Business (Composition)' ? (
-                    <p>If Private Limited 2% TDS And If Not 1%.</p>
-                  ) : busiType === 'Unregistered Business' ? (
-                    <p>1% TDS.</p>
-                  ) : busiType === 'Individual' ? (
-                    <p>
-                      Max Limit is 25k Per Bill. Total Year Limit is 100k. Please Choose
-                      Unregistered Business & Upload Pan If You Believe Transaction will cross
-                      above 100k.
-                    </p>
-                  ) : (
-                    <p>No TDS applicable for this business type.</p>
-                  )
-                }
+                <label className="form-label">NOTE:</label>
+                {busiType === 'Registered Business' ? (
+                  <p>If Private Limited 2% TDS And If Not 1%.</p>
+                ) : busiType === 'Registered Business (Composition)' ? (
+                  <p>If Private Limited 2% TDS And If Not 1%.</p>
+                ) : busiType === 'Unregistered Business' ? (
+                  <p>1% TDS.</p>
+                ) : busiType === 'Individual' ? (
+                  <p>
+                    Max Limit is 25k Per Bill. Total Year Limit is 100k. Please
+                    Choose Unregistered Business & Upload Pan If You Believe
+                    Transaction will cross above 100k.
+                  </p>
+                ) : (
+                  <p>No TDS applicable for this business type.</p>
+                )}
               </div>
             </div>
 
             {docDetails?.map((link, index) => (
-            <div className="row" key={index}>
-              <div className="col-md-3">
-                <label className="form-label">Document Name</label>
-                <Select
-                  className=""
-                  options={copyOptions.map((option) => ({
-                    value: option,
-                    label: option,
-                  }))}
-                  value={{
-                    value: link.docName,
-                    label: link.docName,
-                  }}
-                  onChange={(selectedOption) => {
-                    handleDocNameChange(index, selectedOption.value);
-                  }}
-                  required
+              <div className="row" key={index}>
+                <div className="col-md-3">
+                  <label className="form-label">Document Name</label>
+                  {docDetails.length == 5 ? (
+                      <input
+                        type="text"
+                        value={link.docName}
+                        onChange={(e) => handleDocNameChange(index, e.target.value)}
+                        className="form-control"
+                        required
+                      />
+                      ) : (
+                      <Select
+                        className=""
+                        options={copyOptions?.map((option) => ({
+                          value: option,
+                          label: option,
+                        }))}
+                        value={{
+                          value: link.docName,
+                          label: link.docName,
+                        }}
+                        onChange={(selectedOption) => {
+                          handleDocNameChange(index, selectedOption.value);
+                        }}
+                        required
+                      />
+                  )}
+                </div>
+                <FieldContainer
+                  key={index.docNumber}
+                  label={`Document Number`}
+                  fieldGrid={4}
+                  value={link.docNumber}
+                  // required={false}
+                  onChange={(e) => handleDocNumberChange(index, e.target.value)}
                 />
+                <FieldContainer
+                  key={index.docImage}
+                  label={`Document Image`}
+                  type="file"
+                  accept={'image/*'}
+                  fieldGrid={4}
+                  // value={link.docImage}
+                  onChange={(e) => handleDocImageChange(index, e)}
+                />
+                {/* <div className="row">
+                  <div className="col-12">
+                    <div className="addBankRow">
+                      <Button onClick={removedocLink(index)}>
+                        <IconButton variant="contained" color="error">
+                          <RemoveCircleTwoToneIcon />
+                        </IconButton>
+                      </Button>
+                    </div>
+                  </div>
+                </div> */}
+                <div className="row thm_form"></div>
               </div>
-              <FieldContainer
-                key={index.docNumber}
-                label={`Document Number`}
-                fieldGrid={4}
-                value={link.docNumber}
-                // required={false}
-                onChange={(e) => handleDocNumberChange(index, e.target.value)}
-              />
-              <FieldContainer
-                key={index.docImage}
-                label={`Document Image`}
-                type="file"
-                accept={"image/*"}
-                fieldGrid={4}
-                // value={link.docImage}
-                onChange={(e) => handleDocImageChange(index, e)}
-              />
-              {/* {docDetails[index]?.docImage && (
-                <img
-                  className="profile-holder-1 mt-4"
-                  src={URL?.createObjectURL(docDetails[index]?.docImage)}
-                  alt="Selected"
-                  style={{ maxWidth: "50px", maxHeight: "50px" }}
-                />
-              )} */}
-              {/* <div className="row">
-                <div className="col-12">
-                  <div className="addBankRow">
-                    <Button onClick={removedocLink(index)}>
-                      <IconButton variant="contained" color="error">
-                        <RemoveCircleTwoToneIcon />
-                      </IconButton>
-                    </Button>
+            ))}
+
+            <div className="row">
+              <div className="col-12">
+                <div className="addBankRow">
+                  <Button onClick={addMoreDocDetails}>
+                    <IconButton variant="contained" color="primary">
+                      <AddCircleTwoToneIcon />
+                    </IconButton>
+                    Add Document
+                  </Button>
+                </div>
+              </div>
+            </div>
+            
+            {busiType === "Individual" ? '' : (
+              <>
+                <div className="card-header">Company Details</div>
+                <div className="card-body row">
+                  <FieldContainer
+                    label="Company Name"
+                    value={compName}
+                    required={false}
+                    onChange={(e) => setCompName(e.target.value)}
+                  />
+
+                  <FieldContainer
+                    label="Company Address"
+                    value={compAddress}
+                    required={false}
+                    onChange={(e) => setCompAddress(e.target.value)}
+                  />
+
+                  <FieldContainer
+                    label="Company City"
+                    value={compCity}
+                    required={false}
+                    onChange={(e) => setCompCity(e.target.value)}
+                  />
+
+                  <FieldContainer
+                    label="Company Pincode"
+                    value={compPin}
+                    required={false}
+                    maxLength={6}
+                    onChange={handleCompPincode}
+                    // onChange={(e) => {
+                    //   if (isNaN(e.target.value)) return;
+                    //   setCompPin(e.target.value);
+                    // }}
+                  />
+
+                  <div className="form-group col-6 mt-3">
+                    <label htmlFor="">Company State</label>
+                    <IndianStatesMui
+                      selectedState={compState}
+                      onChange={(option) => setCompState(option ? option : null)}
+                    />
                   </div>
                 </div>
-              </div> */}
-              <div className="row thm_form"></div>
-            </div>
-          ))}
+              </>
+            )}
 
             <div className="col-md-6 p0 mb16">
               <FieldContainer
@@ -1202,26 +1297,35 @@ const VendorMaster = () => {
                 astric={true}
                 required={true}
                 onChange={(e) => {
-                  setVendorName(e.target.value);
+                  // setVendorName(e.target.value);
+                  setVendorNameFun(e.target.value);
                   if (e.target.value) {
                     setValidator((prev) => ({ ...prev, vendorName: false }));
                   }
                 }}
               />
               {validator.vendorName && (
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   Please enter vendor name
                 </span>
+              )}
+              {existError && (
+                <>
+                <small style={{ color: messageColor }}>
+                  {existError}
+                </small>
+                {messageColor == 'red' ? <Link to='/admin/pms-page-master' style={{color:'blue'}}> Add Page</Link> : ''}
+                </>
               )}
             </div>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
                   {/* Vendor Category <sup style={{ color: "red" }}>*</sup> */}
-                  Profile Type <sup style={{ color: "red" }}>*</sup>
+                  Profile Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
-                  options={["Theme Page", "Influencer"].map((option) => ({
+                  options={['Theme Page', 'Influencer'].map((option) => ({
                     label: option,
                     value: option,
                   }))}
@@ -1235,7 +1339,7 @@ const VendorMaster = () => {
                   }}
                 ></Select>
                 {validator.vendorCategory && (
-                  <span style={{ color: "red", fontSize: "12px" }}>
+                  <span style={{ color: 'red', fontSize: '12px' }}>
                     Please select vendor category
                   </span>
                 )}
@@ -1255,71 +1359,17 @@ const VendorMaster = () => {
                 }}
               />
               {validator.mobile && (
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   Please enter mobile number
                 </span>
               )}
-              {/* {mobileValid && (
-        <div className="form-group col-6">
-          <label className="form-label">
-            Vendor Category <sup style={{ color: "red" }}>*</sup>
-          </label>
-          <Select
-            options={["Theme Page", "influencer"].map((option) => ({
-              label: option,
-              value: option,
-            }))}
-            required={true}
-            value={{
-              value: vendorCategory,
-              label: vendorCategory,
-            }}
-            onChange={(e) => {
-              setVendorCategory(e.value);
-            }}
-          ></Select>
-          {validator.vendorCategory && (
-            <span style={{ color: "red", fontSize: "12px" }}>
-              Please select vendor category
-            </span>
-          )}
-        </div>
-
-        <div className="col-6">
-          <FieldContainer
-            label="Mobile"
-            fieldGrid={12}
-            value={mobile}
-            astric
-            type="number"
-            required={true}
-            onChange={(e) => {
-              handleMobileNumSet(e);
-              // handleMobileValidate();
-            }}
-          />
-          {validator.mobile && (
-            <span style={{ color: "red", fontSize: "12px" }}>
-              Please enter mobile number
-            </span>
-          )}
-          {/* {mobileValid && (
-            <span style={{ color: "red", fontSize: "12px" }}>
-              Please enter valid mobile number
-            </span>
-          )} */}
-              {/* {
-            <span style={{ color: "red", fontSize: "12px" }}>
-              {mandatoryFieldsEmpty.mobile && "Please enter mobile number"}
-            </span>
-          } */}
 
               {
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   {!validator.mobile &&
                     isContactTouched1 &&
                     !mobileValid &&
-                    "Please enter valid mobile number"}
+                    'Please enter valid mobile number'}
                 </span>
               }
             </div>
@@ -1333,9 +1383,9 @@ const VendorMaster = () => {
                 onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)}
               />
               {
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   {mandatoryFieldsEmpty.altMobile &&
-                    "Please enter alternate mobile"}
+                    'Please enter alternate mobile'}
                 </span>
               }
             </div>
@@ -1360,16 +1410,10 @@ const VendorMaster = () => {
                 </span>
               )} */}
             </div>
-            {/* <FieldContainer
-          label="Personal Address"
-          value={perAddress}
-          required={false}
-          onChange={(e) => setPerAddress(e.target.value)}
-        /> */}
 
             <div className="form-group col-6">
               <label className="form-label">
-                Vendor Type <sup style={{ color: "red" }}>*</sup>
+                Vendor Type <sup style={{ color: 'red' }}>*</sup>
               </label>
               <Select
                 options={
@@ -1386,7 +1430,7 @@ const VendorMaster = () => {
                     (!typeLoading &&
                       typeData.data?.find((role) => role._id == typeId)
                         ?.type_name) ||
-                    "",
+                    '',
                 }}
                 onChange={(e) => {
                   setTypeId(e.value);
@@ -1412,7 +1456,7 @@ const VendorMaster = () => {
                 <RemoveRedEyeIcon />
               </IconButton>
               {validator.typeId && (
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   Please select vendor type
                 </span>
               )}
@@ -1420,7 +1464,7 @@ const VendorMaster = () => {
 
             <div className="form-group col-6">
               <label className="form-label">
-                Platform <sup style={{ color: "red" }}>*</sup>
+                Platform <sup style={{ color: 'red' }}>*</sup>
               </label>
               <Select
                 options={platformData?.data?.map((option) => ({
@@ -1432,7 +1476,7 @@ const VendorMaster = () => {
                   value: platformId,
                   label:
                     platformData?.data?.find((role) => role._id == platformId)
-                      ?.platform_name || "",
+                      ?.platform_name || '',
                 }}
                 onChange={(e) => {
                   setPlatformId(e.value);
@@ -1459,66 +1503,17 @@ const VendorMaster = () => {
                 <RemoveRedEyeIcon />
               </IconButton>
               {validator.platformId && (
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   Please select platform
                 </span>
               )}
             </div>
 
-            {/* <div className="form-group col-6">
-              <label className="form-label">
-                Payment Method <sup style={{ color: "red" }}>*</sup>
-              </label>
-              <Select
-                options={payData?.map((option) => ({
-                  value: option._id,
-                  label: option.payMethod_name,
-                }))}
-                required={true}
-                value={{
-                  value: payId,
-                  label:
-                    payData?.find((role) => role._id == payId)
-                      ?.payMethod_name || "",
-                }}
-                onChange={(e) => {
-                  setPayId(e.value);
-                  // setShowBankName(e.value === "specific_payment_method_id"); // Set condition for showing bank name
-
-                  if (e.value) {
-                    setValidator((prev) => ({ ...prev, payId: false }));
-                  }
-                }}
-              ></Select>
-
-              <IconButton
-                onClick={handleAddPaymentMethodClick}
-                variant="contained"
-                color="primary"
-                aria-label="Add Payment Method.."
-              >
-                <AddIcon />
-              </IconButton>
-              <IconButton
-                onClick={handlePaymentMethodInfoClick}
-                variant="contained"
-                color="primary"
-                aria-label="Payment Method Info.."
-              >
-                <RemoveRedEyeIcon />
-              </IconButton>
-              {validator.payment_method && (
-                <span style={{ color: "red", fontSize: "12px" }}>
-                  Please select payment method
-                </span>
-              )}
-            </div> */}
-
             {bankRows?.map((row, i) => (
               <>
                 <div className="form-group col-6">
                   <label className="form-label">
-                    Payment Method <sup style={{ color: "red" }}>*</sup>
+                    Payment Method <sup style={{ color: 'red' }}>*</sup>
                   </label>
                   <Select
                     options={payData?.map((option) => ({
@@ -1535,7 +1530,7 @@ const VendorMaster = () => {
                       label:
                         payData?.find(
                           (role) => role._id == bankRows[i].payment_method
-                        )?.payMethod_name || "",
+                        )?.payMethod_name || '',
                     }}
                     onChange={(e) => {
                       // setPayId(e.value);
@@ -1566,13 +1561,13 @@ const VendorMaster = () => {
                     <RemoveRedEyeIcon />
                   </IconButton>
                   {validator.payment_method && (
-                    <span style={{ color: "red", fontSize: "12px" }}>
+                    <span style={{ color: 'red', fontSize: '12px' }}>
                       Please select payment method
                     </span>
                   )}
                 </div>
 
-                {bankRows[i].payment_method == "666856874366007df1dfacde" && (
+                {bankRows[i].payment_method == '666856874366007df1dfacde' && (
                   <>
                     <div className="form-group col-6">
                       <label className="form-label">
@@ -1587,16 +1582,16 @@ const VendorMaster = () => {
                         required={true}
                         value={{
                           // value: bankNameId,
-                          value: bankRows[i].bank_name,
+                          value: bankRows[i]._id,
                           label:
                             // bankName?.find((role) => role._id == bankNameId)
                             bankName?.find(
-                              (role) => role._id == bankRows[i].bank_name
-                            )?.bank_name || "",
+                              (role) => role.bank_name == bankRows[i].bank_name
+                            )?.bank_name || '',
                         }}
                         onChange={(e) => {
                           // setBankNameId(e.value);
-                          bankRows[i].bank_name = e.value;
+                          bankRows[i].bank_name = e.label;
                           if (e.value) {
                             setValidator((prev) => ({
                               ...prev,
@@ -1626,7 +1621,7 @@ const VendorMaster = () => {
                     <div className="form-group col-6">
                       <label className="form-label">Account Type</label>
                       <Select
-                        options={["Savings", "Current"].map((option) => ({
+                        options={['Savings', 'Current'].map((option) => ({
                           label: option,
                           value: option,
                         }))}
@@ -1658,7 +1653,7 @@ const VendorMaster = () => {
                     />
                   </>
                 )}
-                {bankRows[i].payment_method == "666856754366007df1dfacd2" && (
+                {bankRows[i].payment_method == '666856754366007df1dfacd2' && (
                   <FieldContainer
                     required={false}
                     label="UPI ID "
@@ -1667,10 +1662,10 @@ const VendorMaster = () => {
                   />
                 )}
 
-                {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
-                  bankRows[i].payment_method == "666856624366007df1dfacc8") && (
+                {(bankRows[i].payment_method == '66681c3c4366007df1df1481' ||
+                  bankRows[i].payment_method == '666856624366007df1dfacc8') && (
                   <FieldContainer
-                    label={"Registered Mobile Number"}
+                    label={'Registered Mobile Number'}
                     value={bankRows[i].registered_number}
                     required={false}
                     type="number"
@@ -1697,34 +1692,28 @@ const VendorMaster = () => {
                 {/* <AddCircleTwoToneIcon /> */}
                 <h5>Add Another Bank Details</h5>
               </IconButton>
-              {/* {bankRows.length > 1 && (
-            <IconButton
-              onClick={handleRemoveBankInfoRow}
-              variant="contained"
-              color="primary"
-            >
-              <RemoveCircleTwoToneIcon />
-            </IconButton>
-          )} */}
             </div>
 
             <div className="form-group col-6">
               <label className="form-label">
-                PayCycle <sup style={{ color: "red" }}>*</sup>
+                PayCycle <sup style={{ color: 'red' }}>*</sup>
               </label>
               <Select
-                options={cycleData?.map((option) => ({
-                  value: option._id,
-                  label: option.cycle_name,
-                  createdAt: option.createdAt,
-                }))
-                .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))}
+                options={cycleData
+                  ?.map((option) => ({
+                    value: option._id,
+                    label: option.cycle_name,
+                    createdAt: option.createdAt,
+                  }))
+                  .sort(
+                    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                  )}
                 required={true}
                 value={{
                   value: cycleId,
                   label:
                     cycleData?.find((role) => role._id === cycleId)
-                      ?.cycle_name || "",
+                      ?.cycle_name || '',
                 }}
                 onChange={(e) => {
                   setCycleId(e.value);
@@ -1750,7 +1739,7 @@ const VendorMaster = () => {
                 <RemoveRedEyeIcon />
               </IconButton>
               {validator.cycleId && (
-                <span style={{ color: "red", fontSize: "12px" }}>
+                <span style={{ color: 'red', fontSize: '12px' }}>
                   Please select pay cycle
                 </span>
               )}
@@ -1768,7 +1757,7 @@ const VendorMaster = () => {
                   value: userId,
                   label:
                     userData.find((user) => user.user_id === userId)
-                      ?.user_name || "",
+                      ?.user_name || '',
                 }}
                 onChange={(e) => {
                   setUserId(e.value);
@@ -1778,130 +1767,68 @@ const VendorMaster = () => {
               />
             </div>
 
-            <div className="col-md-6">
-            <FieldContainer
+            <div className="col-md-6 threshold_style" style={{display:'flex'}}>
+              <FieldContainer
                 label="Threshold Limit"
                 value={limit}
                 type="number"
                 required={false}
                 onChange={(e) => setLimit(e.target.value)}
-            />
-            <div style={{display: "flex"}}>
-                <p className="vendor_threshold" onClick={() => setLimit(100)}>100</p>
-                <p className="vendor_threshold" onClick={() => setLimit(500)}>500</p>
-                <p className="vendor_threshold" onClick={() => setLimit(1000)}>1000</p>
-            </div>
-            </div>
-
-            {/* <FieldContainer
-              label="PAN"
-              value={pan}
-              cols={12}
-              required={false}
-              onChange={handlePanChange}
-            />
-            <div className="col-6 flex-row gap-2">
-              <FieldContainer
-                type="file"
-                label="PAN Image"
-                fieldGrid={panImage ? 10 : ""}
-                required={false}
-                onChange={(e) => setPanImage(e.target.files[0])}
               />
-
-              {panImage && !_id && (
-                <img
-                  className="mt-4"
-                  src={URL.createObjectURL(panImage)}
-                  alt="pan"
-                  style={{ width: "50px", height: "50px" }}
-                />
-              )}
-              {panImage && _id && (
-                <img
-                  className="mt-4"
-                  src={panImage}
-                  alt="pan"
-                  style={{ width: "50px", height: "50px" }}
-                />
-              )}
-            </div> */}
-
-            {/* <div className="form-group col-6">
-              <label className="form-label">GST Applicable</label>
-              <Select
-                options={gstOptions.map((option) => ({
-                  value: option.value,
-                  label: option.label,
-                }))}
-                required={true}
-                value={{
-                  value: gstApplicable,
-                  label:
-                    gstOptions.find((role) => role.value === gstApplicable)
-                      ?.label || "",
-                }}
-                onChange={(e) => {
-                  setGstApplicable(e.value);
-                }}
-              ></Select>
+              <div style={{ display: 'flex' }}>
+                <p className="vendor_threshold" onClick={() => setLimit(50000)}>
+                  50K
+                </p>
+                <p className="vendor_threshold" onClick={() => setLimit(100000)}>
+                  100K
+                </p>
+                <p className="vendor_threshold" onClick={() => setLimit(200000)}>
+                  200K
+                </p>
+              </div>
             </div>
-
-            {gstApplicable == "Yes" && (
-              <>
-                {" "}
-                <FieldContainer
-                  label="GST"
-                  value={gst}
-                  required={gstApplicable == "Yes" ? true : false}
-                  onChange={(e) => setGst(e.target.value.toUpperCase())}
-                />
-                <div className="col-6 flex-row gap-2">
-                  <FieldContainer
-                    type="file"
-                    label="GST Image"
-                    fieldGrid={gstImage ? 10 : ""}
-                    required={false}
-                    onChange={(e) => setGstImage(e.target.files[0])}
-                  />
-                  {gstImage && !_id && (
-                    <img
-                      className="mt-4"
-                      src={URL.createObjectURL(gstImage)}
-                      alt="gst"
-                      style={{ width: "50px", height: "50px" }}
-                    />
-                  )}{" "}
-                  {gstImage && _id && (
-                    <img
-                      className="mt-4"
-                      src={gstImage}
-                      alt="gst"
-                      style={{ width: "100px", height: "100px" }}
-                    />
-                  )}
-                </div>
-              </>
-            )} */}
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Is GST Available ? <sup style={{ color: "red" }}>*</sup>
+                  Is GST Available ? <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />Yes
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
+                      Yes
                     </label>
                   </div>
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />No
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
+                      No
                     </label>
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="col-md-6">
+              <label className="form-label"> DOB </label>
+              <input 
+                type="date" 
+                className="form-control" 
+                max={new Date().toISOString().split('T')[0]} 
+                required="false"
+                onChange={(e)=>setDob(e.target.value)}
+              />
             </div>
 
             <div className="card-header">Personal Details</div>
@@ -1937,7 +1864,7 @@ const VendorMaster = () => {
                   renderOption={(props, option) => (
                     <Box
                       component="li"
-                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
                       {...props}
                     >
                       <img
@@ -1946,7 +1873,7 @@ const VendorMaster = () => {
                           width: 20,
                           height: 20,
                           borderRadius: 1,
-                          objectFit: "cover",
+                          objectFit: 'cover',
                           marginRight: 1,
                         }}
                         srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
@@ -1963,32 +1890,20 @@ const VendorMaster = () => {
                       // label="Choose a country"
                       inputProps={{
                         ...params.inputProps,
-                        autoComplete: "new-password", // disable autocomplete and autofill
+                        autoComplete: 'new-password', // disable autocomplete and autofill
                       }}
                     />
                   )}
                 />
-                {/* {validator.countryCode && (
-                  <span style={{ color: "red", fontSize: "12px" }}>
-                    Please select country code
-                  </span>
-                )} */}
               </div>
               <FieldContainer
                 label="PinCode"
                 value={homePincode}
                 maxLength={6}
                 required={false}
-                // onChange={(e) => {
-                //   const value = e.target.value;
-                //   if (/^\d{0,6}$/.test(value)) {
-                //     setHomePincode(value);
-                //   }
-                // }}
-                // setHomePincode(e.target.value)}
                 onChange={handlepincode}
               />
-              {countryCode == "91" ? (
+              {countryCode == '91' ? (
                 <div className=" row">
                   <div className="form-group col-6">
                     <label className="form-label">Home State</label>
@@ -2026,7 +1941,7 @@ const VendorMaster = () => {
                 required={false}
                 onChange={(e) => setHomeAddress(e.target.value)}
               />
-              
+
               <FormControlLabel
                 control={
                   <Checkbox
@@ -2040,69 +1955,7 @@ const VendorMaster = () => {
               />
             </div>
 
-            <div className="card-header">Company Details</div>
-            <div className="card-body row">
-              <FieldContainer
-                label="Company Name"
-                value={compName}
-                required={false}
-                onChange={(e) => setCompName(e.target.value)}
-              />
-
-              <FieldContainer
-                label="Company Address"
-                value={compAddress}
-                required={false}
-                onChange={(e) => setCompAddress(e.target.value)}
-              />
-
-              <FieldContainer
-                label="Company City"
-                value={compCity}
-                required={false}
-                onChange={(e) => setCompCity(e.target.value)}
-              />
-
-              <FieldContainer
-                label="Company Pincode"
-                value={compPin}
-                required={false}
-                maxLength={6}
-                onChange={(e) => {
-                  if (isNaN(e.target.value)) return;
-                  setCompPin(e.target.value);
-                }}
-              />
-              {/* <FieldContainer
-                label="Company State"
-                value={compState}
-                required={false}
-                onChange={(e) => setCompState(e.target.value)}
-              /> */}
-              <div className="form-group col-6 mt-3">
-                <label htmlFor="">Company State</label>
-                <IndianStatesMui
-                  selectedState={compState}
-                  onChange={(option) => setCompState(option ? option : null)}
-                />
-              </div>
-
-            </div>
-
-          {/* <div className="row">
-            <div className="col-12">
-              <div className="addBankRow">
-                <Button onClick={addDocDetails}>
-                  <IconButton variant="contained" color="primary">
-                    <AddCircleTwoToneIcon />
-                  </IconButton>
-                  Add Document
-                </Button>
-              </div>
-            </div>
-          </div> */}
-
-          {whatsappLink?.map((link, index) => (
+            {whatsappLink?.map((link, index) => (
               <>
                 <div className="col-6">
                   <FieldContainer
@@ -2114,16 +1967,6 @@ const VendorMaster = () => {
                     onChange={(e) => handleLinkChange(index, e.target.value)}
                   />
                 </div>
-                {/* <div className="col-md-4 p0 mb16">
-                  <FieldContainer
-                    key={index.remark}
-                    label={`Group Purpose`}
-                    fieldGrid={12}
-                    value={link.remark}
-                    required={false}
-                    onChange={(e) => handleRemarkChange(index, e.target.value)}
-                  />
-                </div> */}
                 <div className="col-md-4 mb16">
                   <div className="form-group m0">
                     <label className="form-label">Type</label>
@@ -2140,7 +1983,7 @@ const VendorMaster = () => {
                           label:
                             whatsappLinkType?.data?.find(
                               (role) => role._id === link.type
-                            )?.link_type || "",
+                            )?.link_type || '',
                         }}
                         onChange={(e) => {
                           let updatedLinks = [...whatsappLink];
@@ -2150,7 +1993,7 @@ const VendorMaster = () => {
                       />
                       {index == 0 && (
                         <>
-                          {" "}
+                          {' '}
                           <IconButton
                             onClick={handleAddWhatsappGroupLinkTypeClick}
                             variant="contained"
@@ -2171,7 +2014,7 @@ const VendorMaster = () => {
                       )}
                     </div>
                   </div>
-                </div>{" "}
+                </div>{' '}
                 <div className="row">
                   <div className="col-12">
                     <div className="addBankRow">
@@ -2203,27 +2046,35 @@ const VendorMaster = () => {
           <div className="row thm_form"></div>
         </div>
         <div className="card-footer">
-          <div style={{display:'flex'}}>
-          <Stack direction="row" spacing={2}>
-            <Button
-              className="btn cmnbtn btn-primary"
-              onClick={handleSubmit}
-              variant="contained"
-              disabled={isFormSubmitting}
-            >
-              {isFormSubmitting ? "Submitting..." : _id ? "Update" : "Submit"}
-            </Button>
-          </Stack>
-          <Stack direction="row" spacing={2} style={{marginLeft:'5px'}}>
-            <Button
-              className="btn cmnbtn btn-info"
-              onClick={handleSubmitNew}
-              variant="contained"
-              disabled={isFormSubmitting2}
-            >
-              {isFormSubmitting2 ? "Submitting..." : _id ? "Update" : "Add New Profile"}
-            </Button>
-          </Stack>
+          <div style={{ display: 'flex' }}>
+            <Stack direction="row" spacing={2}>
+              <Button
+                className="btn cmnbtn btn-primary"
+                onClick={handleSubmit}
+                variant="contained"
+                disabled={isFormSubmitting}
+              >
+                {isFormSubmitting ? 'Submitting...' : _id ? 'Update' : 'Submit'}
+              </Button>
+            </Stack>
+            {_id ? (
+              ''
+            ) : (
+              <Stack direction="row" spacing={2} style={{ marginLeft: '5px' }}>
+                <Button
+                  className="btn cmnbtn btn-info"
+                  onClick={handleSubmitNew}
+                  variant="contained"
+                  disabled={isFormSubmitting2}
+                >
+                  {isFormSubmitting2
+                    ? 'Submitting...'
+                    : _id
+                    ? 'Update'
+                    : 'Add New Profile'}
+                </Button>
+              </Stack>
+            )}
           </div>
         </div>
       </div>

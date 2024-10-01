@@ -52,8 +52,8 @@ const PayThroughVendorDialog = (props) => {
         remarks: "Testing transaction",
       };
 
-      const payResponse = await axios.post(
-        "/api/payouts/v2/payments/banks",
+      const payResponse = await axios?.post(
+        baseUrl + `create_payout`,
         paymentPayload,
         {
           headers: {

@@ -28,6 +28,7 @@ import SalesInvoiceEditAction from "../Outstanding/Sales/Dialog/SalesInvoiceEdit
 import BalancePaymentListFilter from "../Outstanding/Sales/BalancePaymentListFilter";
 import TDSDialog from "../Outstanding/Sales/Dialog/TDSDialog";
 import DialogforBalancePaymentUpdate from "../Outstanding/Sales/Dialog/DialogforBalancePaymentUpdate";
+import { outstandingColumns } from "../../CommonColumn/Columns";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -194,20 +195,6 @@ const BalancePaymentList = () => {
           } else {
             const tempObject = {
               ...object,
-              // account_id: object.account_id,
-              // sale_booking_date: object.sale_booking_date,
-              // campaign_amount: object.campaign_amount,
-              // base_amount: object.base_amount,
-              // balance_payment_ondate: object.balance_payment_ondate,
-              // gst_status: object.gst_status,
-              // created_by: object.created_by,
-              // createdAt: object.createdAt,
-              // updatedAt: object.updatedAt,
-              // sale_booking_id: object.sale_booking_id,
-              // url: object.url,
-              // account_name: object.account_name,
-              // created_by_name: object.created_by_name,
-              // paid_amount: object.paid_amount,
             };
             acc?.push(tempObject);
           }
@@ -288,18 +275,6 @@ const BalancePaymentList = () => {
     setImageModalOpen(true);
   };
 
-  const convertDateToDDMMYYYY = (dateString) => {
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-      return "Invalid Date";
-    }
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // January is 0!
-    const year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  };
-
   function calculateAging(date1, date2) {
     const oneHour = 60 * 60 * 1000; // minutes * seconds * milliseconds
     const firstDate = new Date(date1);
@@ -360,301 +335,6 @@ const BalancePaymentList = () => {
   const rejectedCount = datas?.filter(
     (item) => item.finance_refund_status === 2
   )?.length;
-
-
-  const columns = [
-    {
-      width: 70,
-      field: "sno",
-      headerName: "S.No",
-      valueGetter: (params) => {
-        // Apply the filter logic once
-        const invcForCreated =
-        activeAccordionIndex === 3
-        ?  filterData?.filter(
-          (invc) => invc.invoice_type_id !== "proforma")
-        : activeAccordionIndex === 0
-        ? filterData?.filter(
-            (invc) =>
-              invc.invoice_type_id === "tax-invoice" &&
-              invc.invoice_creation_status !== "pending" &&
-              invc.gst_status === true &&
-              invc.paid_amount <= invc.campaign_amount * 0.9
-          )
-        : activeAccordionIndex === 1
-        ? filterData?.filter(
-            (invc) =>
-              invc.invoice_type_id !== "tax-invoice" ||
-              invc.invoice_creation_status === "pending"
-          )
-        : []
-    
-        // Return the index for the S.No
-        return invcForCreated.indexOf(params?.row) + 1;
-      },
-      renderCell: (params) => {
-        // Reuse the same filter logic
-        const invcForCreated =
-        activeAccordionIndex === 3
-        ?  filterData?.filter(
-          (invc) => invc.invoice_type_id !== "proforma")
-        : activeAccordionIndex === 0
-        ? filterData?.filter(
-            (invc) =>
-              invc.invoice_type_id === "tax-invoice" &&
-              invc.invoice_creation_status !== "pending" &&
-              invc.gst_status === true &&
-              invc.paid_amount <= invc.campaign_amount * 0.9
-          )
-        : activeAccordionIndex === 1
-        ? filterData?.filter(
-            (invc) =>
-              invc.invoice_type_id !== "tax-invoice" ||
-              invc.invoice_creation_status === "pending"
-          )
-        : []
-        // Render the serial number in the cell
-        return <div>{invcForCreated.indexOf(params?.row) + 1}</div>;
-      },
-      sortable: true,
-    },
-    {
-      field: "sale_booking_id",
-      headerName: "Booking Id",
-      renderCell: (params) => <div>{params.row.sale_booking_id}</div>,
-    },
-    {
-      field: "aging",
-      headerName: "Aging",
-      valueGetter: (params) => {
-        const hours = calculateAging(params.row.sale_booking_date, new Date());
-        const days = Math.round(hours / 24);
-        return `${days} Days`;
-      },
-      renderCell: (params) => {
-        const hours = calculateAging(params.row.sale_booking_date, new Date());
-        const days = Math.round(hours / 24);
-        return `${days} Days`;
-      },
-    },
-    {
-      field: "account_name",
-      headerName: "Account Name",
-      width: 320,
-      renderCell: (params) => FormatString(params.row.account_name),
-      sortable: true,
-    },
-    {
-      field: "created_by_name",
-      headerName: "Sales Executive Name",
-      width: 190,
-      fieldName: "username",
-      renderCell: (params) => FormatString(params.row.created_by_name),
-    },
-    {
-      field: "party_name",
-      headerName: "Party Name",
-      width: 210,
-      renderCell: (params) => FormatString(params.row.party_name),
-    },
-    {
-      field: "invoice_number",
-      headerName: "Invoice Number",
-      width: 190,
-      // renderCell: (params) => {
-      //   const salesInvoiceData = params?.row?.salesInvoiceRequestData[0];
-      //   return salesInvoiceData?.invoice_number || "";
-      // },
-    },
-    {
-      field: "invoice_uploaded_date",
-      headerName: "Invoice Date",
-      width: 190,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "normal" }}>
-          {convertDateToDDMMYYYY(params.row.invoice_uploaded_date)}
-        </div>
-      ),
-    },
-    {
-      field: "balance_payment_ondate",
-      headerName: "Expected Payment Receive Date",
-      width: 190,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "normal" }}>
-          {convertDateToDDMMYYYY(params.row.balance_payment_ondate)}
-        </div>
-      ),
-    },
-    {
-      field: "sale_booking_date",
-      headerName: "Sale Booking Date",
-      width: 190,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "normal" }}>
-          {convertDateToDDMMYYYY(params.row.sale_booking_date)}
-        </div>
-      ),
-    },
-    {
-      field: "campaign_amount",
-      headerName: "Campaign Amount",
-      width: 190,
-      renderCell: (params) => params.row.campaign_amount,
-    },
-    {
-      field: "paid_amount",
-      headerName: "Paid Amount",
-      width: 190,
-      renderCell: (params) => (
-        <div style={{ whiteSpace: "normal" }}>
-          {params.row.paid_amount ? params.row.paid_amount : 0}
-        </div>
-      ),
-    },
-    {
-      field: "Balance Amount",
-      headerName: "Balance Amount",
-      valueGetter: (params) => {
-        return params.row.campaign_amount - params.row.paid_amount || 0;
-      },
-
-      renderCell: (params) =>
-        params.row.campaign_amount - params.row.paid_amount || 0,
-    },
-    {
-      field: "base_amount",
-      headerName: "Base Amount",
-      renderCell: (params) => params.row.base_amount,
-    },
-    {
-      field: "gst_status",
-      headerName: "GST",
-      renderCell: (params) =>
-        params.row.gst_status === true ? "GST" : "Non GST",
-    },
-    {
-      field: "invoice_file",
-      headerName: "Screen Shot",
-      width: 190,
-      renderCell: (params) => {
-        const invoiceData =
-          params?.row?.invoice_file !== "" ? params.row.invoice_file : null;
-        const imgUrl = `${params.row.url}/${invoiceData}`;
-
-        return invoiceData ? (
-          invoiceData?.endsWith(".pdf") ? (
-            <img
-              src={pdf}
-              onClick={() => {
-                setViewImgSrc(imgUrl);
-                setViewImgDialog(true);
-              }}
-              style={{ width: "40px", height: "40px" }}
-              alt="PDF Icon"
-            />
-          ) : invoiceData?.endsWith(".xls") ||
-            invoiceData?.endsWith(".xlsx") ? (
-            <img
-              src={pdf}
-              onClick={() => {
-                setViewImgSrc(imgUrl);
-                setViewImgDialog(true);
-              }}
-              style={{ width: "40px", height: "40px" }}
-              alt="PDF Icon"
-            />
-          ) : (
-            <>
-              <img
-                onClick={() => {
-                  setViewImgSrc(imgUrl);
-                  setViewImgDialog(true);
-                }}
-                src={imgUrl}
-                alt="payment screenshot"
-                style={{ width: "50px", height: "50px" }}
-              />
-            </>
-          )
-        ) : (
-          "No Image"
-        );
-      },
-    },
-    // <img
-    //   src={pdf}
-    //   onClick={() => {
-    //     setViewImgSrc(imgUrl);
-    //     setViewImgDialog(true);
-    //   }}
-    //   style={{ width: "40px", height: "40px" }}
-    //   alt="PDF Icon"
-    // />
-
-    activeAccordionIndex == 0 && {
-      field: "status",
-      headerName: "Status",
-      width: 190,
-      renderCell: (params) => (
-        <button
-          className="btn cmnbtn btn_sm btn-outline-primary"
-          onClick={(e) => handleImageClick(e, params.row)}
-        >
-          Balance Update
-        </button>
-      ),
-    },
-    activeAccordionIndex == 0 && {
-      field: "Action",
-      headerName: "Action",
-      width: 190,
-      renderCell: (params) => (
-        <div className="flex-row">
-          {params.row.gst_status === false ? (
-            <button
-              variant="contained"
-              autoFocus
-              className="icon-1"
-              title="Discard"
-              onClick={(e) => handleDiscardOpenDialog(e, params.row)}
-            >
-              <i className="bi bi-trash"></i>
-            </button>
-          ) : (
-            ""
-          )}
-          <Link
-            to={`/admin/finance-transaction-list/${params.row.sale_booking_id}`}
-            className="link-primary"
-          >
-            {params.row.paid_amount > 0 ? (
-              <button className="icon-1" title="Transaction History">
-                <i className="bi bi-file-earmark-text-fill"></i>
-              </button>
-            ) : (
-              ""
-            )}
-          </Link>
-        </div>
-      ),
-    },
-    // activeAccordionIndex == 1 && 
-    {
-      field: "Edit Action",
-      headerName: "Edit Action",
-      renderCell: (params) => (
-        <div>
-          <Button
-            variant="contained"
-            onClick={() => handleOpenEditAction(params?.row)}
-          >
-            Edit
-          </Button>
-        </div>
-      ),
-    },
-  ];
 
   // accordin function:-
   const handleAccordionButtonClick = (index) => {
@@ -858,7 +538,16 @@ const BalancePaymentList = () => {
                     )
                   : []
               }
-              columns={columns}
+              columns={outstandingColumns({
+                filterData,
+                calculateAging,
+                setViewImgSrc,
+                setViewImgDialog,
+                handleImageClick,
+                handleDiscardOpenDialog,
+                handleOpenEditAction,
+                activeAccordionIndex 
+              })}
               pageSize={5}
               rowsPerPageOptions={[5]}
               disableSelectionOnClick
@@ -868,7 +557,7 @@ const BalancePaymentList = () => {
                   showQuickFilter: true,
                 },
               }}
-              getRowId={(row) => row._id}
+              getRowId={(row) => row?._id}
             />
           )}
 

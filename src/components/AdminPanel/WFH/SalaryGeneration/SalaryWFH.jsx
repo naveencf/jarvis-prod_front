@@ -250,7 +250,7 @@ const SalaryWFH = () => {
   useEffect(() => {
     
     const sumMonth = data?.reduce(
-      (acc, obj) => acc + parseFloat(obj.total_salary),
+      (acc, obj) => acc + parseFloat(obj.toPay),
       0
     );
     const sumSalary = data?.reduce(
@@ -773,39 +773,69 @@ const SalaryWFH = () => {
   //     });
   // }
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+// async function handleBulkSendToFinance() {
+//     setIsButtonDisabled(true); 
+
+//     try {
+//         const sendToFinancePromises = selectedRows.map(async (row) => {
+//           console.log(selectedRows , 'row select')
+
+//             // Post request to add to finance
+//             // await axios.post(`${baseUrl}add_finance`, {
+//             //     attendence_id: row.attendence_id,
+//             // });
+
+//             // Put request to update salary
+//             // await axios.put(`${baseUrl}update_salary`, {
+//             //     attendence_id: row.attendence_id,
+//             //     sendToFinance: 1,
+//             //     month: row.month,
+//             // });
+//             await axios.put(`${baseUrl}update_all_salary_with_finance`, {
+//                 attendence_id: row.attendence_id,
+//                 sendToFinance: 1,
+//             });
+//         });
+
+//         // Wait for all promises to be resolved
+//         await Promise.all(sendToFinancePromises);
+
+//         handleSubmit();
+//         setSelectedRows([]);
+//         toastAlert("All selected rows have been sent to Finance successfully.");
+//     } catch (error) {
+//         console.error("Error sending data to finance:", error);
+//         toastAlert("An error occurred while sending data to Finance."); 
+//     } finally {
+//         setIsButtonDisabled(false);  
+//     }
+// }
 async function handleBulkSendToFinance() {
-    setIsButtonDisabled(true); 
+  setIsButtonDisabled(true); 
 
-    try {
-        const sendToFinancePromises = selectedRows.map(async (row) => {
-            console.log(row, 'row is here ok');
+  try {
+      // Collect all selected attendance_ids
+      const attendanceIds = selectedRows.map(row => row.attendence_id);
 
-            // Post request to add to finance
-            await axios.post(`${baseUrl}add_finance`, {
-                attendence_id: row.attendence_id,
-            });
+      console.log(attendanceIds, 'Selected attendance IDs');
 
-            // Put request to update salary
-            await axios.put(`${baseUrl}update_salary`, {
-                attendence_id: row.attendence_id,
-                sendToFinance: 1,
-                month: row.month,
-            });
-        });
+      // Put request to update all salaries at once with finance
+      await axios.put(`${baseUrl}update_all_salary_with_finance`, {
+          attendence_ids: attendanceIds, // Send all IDs in an array
+          sendToFinance: 1,
+      });
 
-        // Wait for all promises to be resolved
-        await Promise.all(sendToFinancePromises);
-
-        handleSubmit();
-        setSelectedRows([]);
-        toastAlert("All selected rows have been sent to Finance successfully.");
-    } catch (error) {
-        console.error("Error sending data to finance:", error);
-        toastAlert("An error occurred while sending data to Finance."); // Show error message
-    } finally {
-        setIsButtonDisabled(false);  // Optionally, re-enable the button after all operations are complete
-    }
+      handleSubmit();
+      setSelectedRows([]); // Clear selected rows after successful submission
+      toastAlert("All selected rows have been sent to Finance successfully.");
+  } catch (error) {
+      console.error("Error sending data to finance:", error);
+      toastAlert("An error occurred while sending data to Finance."); // Show error message
+  } finally {
+      setIsButtonDisabled(false);  // Re-enable the button after all operations are complete
+  }
 }
+
 
 
   const pdfTemplate = () => (
@@ -990,8 +1020,8 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "Work Days",
-      // cell: () => workDaysLastDate ,
-      cell: (row) => row.present_days,
+      cell: () => workDaysLastDate ,
+      // cell: (row) => row.present_days,
     },
     {
       name: "Month",
@@ -1008,7 +1038,7 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "Present Days",
-      cell: (row) => Number(row.present_days) - Number(row.noOfabsent),
+      cell: (row) => Number(row.present_days),
       width: "120px",
     },
     {
@@ -1545,7 +1575,7 @@ async function handleBulkSendToFinance() {
                 <div className="salary_dtlCard_info">
                   <ul>
                   <li>
-                      <span>Total Amount</span>
+                      <span>Total Salary</span>
                       {thisMonthSalary}
                     </li>
                     <li className="bold">
@@ -1561,15 +1591,15 @@ async function handleBulkSendToFinance() {
                       <span>Total Deductions</span>
 
                       {thisMonthTotalDeductions}
-                    </li>
+                    </li> */}
                     <li>
                       <span>Total TDS Deducted</span>
                       {thisMonthTDS}
-                    </li> */}
+                    </li>
                     {/* <hr /> */}
                     {/* <li className="bold">
-                      <span >Total Payroll Cost</span>
-                      {thisMonthTotalSalary + thisMonthTotalBonus}
+                      <span >Total </span>
+                      {(thisMonthTotalSalary + thisMonthTDS)}
                     </li> */}
                   </ul>
                 </div>

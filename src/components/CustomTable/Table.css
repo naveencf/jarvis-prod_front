@@ -390,8 +390,21 @@ th .table-header {
   padding: 0px 0px;
   overflow-y: scroll;
 
+  .dragging {
+    pointer-events: none;
+    touch-action: none;
+    -ms-touch-action: none;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+  }
 
+  .container_drag {
+    display: flex;
+    flex-direction: column;
+    gap: 10px 0px;
+    padding: 10px 0px;
+  }
 
+  #tempDiv,
   .editui {
     position: relative;
     display: flex;

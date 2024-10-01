@@ -281,7 +281,7 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                 <View style={styles.section}>
                     <View style={styles.section}>
                         <View style={{ display: "flex", flexWrap: "wrap", flexDirection: "row" }}>
-                            <Text>We take immense pleasure in offering you the position of </Text> <Text style={{ fontFamily: "MB" }}>Social Media Associate</Text><Text>, with</Text><Text style={{ fontFamily: "MB" }}> Creativefuel </Text ><Text style={{ fontFamily: "MB" }}>Private</Text> <Text style={{ fontFamily: "MB" }}>Limited </Text> <Text>(the ‘Company’). Your employment with Company will be governed by terms and conditions as deta-</Text> <Text>iled in Annexure A (effective from joining date), and the other documents listed as annexures in this Appointment Letter.</Text> <Text> </Text>
+                            <Text>We take immense pleasure in offering you the position of </Text> <Text style={{ fontFamily: "MB" }}>{allUserData?.designation_name}</Text><Text>, with</Text><Text style={{ fontFamily: "MB" }}> Creativefuel </Text ><Text style={{ fontFamily: "MB" }}>Private</Text> <Text style={{ fontFamily: "MB" }}>Limited </Text> <Text>(the ‘Company’). Your employment with Company will be governed by terms and conditions as deta-</Text> <Text>iled in Annexure A (effective from joining date), and the other documents listed as annexures in this Appointment Letter.</Text> <Text> </Text>
                         </View>
                     </View>
 

@@ -297,6 +297,7 @@ function ExecutionPending() {
   useEffect(() => {
     fetchData();
   }, []);
+
   useEffect(() => {
     setTimeout(() => {
       executionAPI();
@@ -327,21 +328,19 @@ function ExecutionPending() {
 
   let executionAPI = () => {
     axios
-      .get(`${baseUrl}sales/sales_booking_execution?status=${apiStatus}`, {
+      .get(`${baseUrl}sales/sales_booking_execution`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
 
       .then((res) => {
-        setSaimyualCamp(res?.data?.data);
-        console.log(res?.data?.dada);
-        setData(
-          // res?.data?.filter(
-          //   (ele) => ele?.execution_status == "sent_for_execution"
-          // )
-          res?.data?.data
+        const pendingData = res?.data?.data?.filter(
+          (ele) => ele.execution_status === "sent_for_execution"
         );
+        setSaimyualCamp(pendingData);
+        // setSaimyualCamp(res?.data?.data);
+        setData(res?.data?.data);
         setFilterData(res?.data?.data.reverse());
       });
   };
@@ -350,9 +349,12 @@ function ExecutionPending() {
     executionAPI();
   }, []);
 
-  useEffect(() => {
-    executionAPI();
-  }, [apiStatus]);
+  const handleFilter = (status) => {
+    setSaimyualCamp(
+      data?.filter((element) => element.execution_status === status)
+    );
+    setApiStatus(status);
+  };
 
   const handleViewClick = (id) => {
     const selected = data.find((ele) => ele.sale_booking_id == id);
@@ -922,6 +924,7 @@ function ExecutionPending() {
           },
         },
   ];
+
   return (
     <>
       {confirmation && (
@@ -999,47 +1002,63 @@ function ExecutionPending() {
                   // setData(
                   //   filterData.filter((ele) => ele.execution_status == 1)
                   // );
-                  setApiStatus("sent_for_execution");
+                  handleFilter("sent_for_execution");
                 }}
               >
                 Pending{" "}
-                {filterData.filter((ele) => ele.execution_status == 1).length}
+                {
+                  filterData?.filter(
+                    (ele) => ele.execution_status == "sent_for_execution"
+                  ).length
+                }
               </Button>
               <Button
                 onClick={() => {
                   // setData(
                   //   filterData.filter((ele) => ele.execution_status == 2)
                   // );
-                  setApiStatus("execution_accepted");
+                  handleFilter("execution_accepted");
                   // console.log(
                   //   filterData.filter((ele) => ele.execution_status == 2)
                   // );
                 }}
               >
                 In Progress{" "}
-                {filterData.filter((ele) => ele.execution_status == 2).length}
+                {
+                  filterData?.filter(
+                    (ele) => ele.execution_status == "execution_accepted"
+                  )?.length
+                }
               </Button>
               <Button
                 onClick={() => {
                   // setData(
                   //   filterData.filter((ele) => ele.execution_status == 3)
                   // );
-                  setApiStatus("execution_completed");
+                  handleFilter("execution_completed");
                 }}
               >
                 Completed{" "}
-                {filterData.filter((ele) => ele.execution_status == 3).length}
+                {
+                  filterData?.filter(
+                    (ele) => ele.execution_status == "execution_completed"
+                  )?.length
+                }
               </Button>
               <Button
                 onClick={() => {
                   // setData(
                   //   filterData.filter((ele) => ele.execution_status == 4)
                   // );
-                  setApiStatus("execution_rejected");
+                  handleFilter("execution_rejected");
                 }}
               >
                 Rejected{" "}
-                {filterData.filter((ele) => ele.execution_status == 4).length}
+                {
+                  filterData?.filter(
+                    (ele) => ele.execution_status == "execution_rejected"
+                  )?.length
+                }
               </Button>
               <Button
                 onClick={() => {
@@ -1049,15 +1068,15 @@ function ExecutionPending() {
                   //       ele.execution_status == 5 || ele.execution_status == 6
                   //   )
                   // );
-                  setApiStatus("execution_paused");
+                  handleFilter("execution_paused");
                 }}
               >
                 Hold{" "}
                 {
-                  filterData.filter(
-                    (ele) =>
-                      ele.execution_status == 5 || ele.execution_status == 6
-                  ).length
+                  filterData?.filter(
+                    (ele) => ele.execution_status == "execution_paused"
+                    // || ele.execution_status == 6
+                  )?.length
                 }
               </Button>
             </div>

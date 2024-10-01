@@ -222,6 +222,15 @@ const DepartmentOverview = () => {
           Major Department
         </button>
       </Link>
+
+      <Link to="/admin/designation-overview">
+                <button
+                  type="button"
+                   className="btn btn_sm cmnbtn btn-outline-primary btn-sm mb-4 ml-2"
+                >
+                  Designation
+                </button>
+              </Link>
       </div>
 
       <div className="card">

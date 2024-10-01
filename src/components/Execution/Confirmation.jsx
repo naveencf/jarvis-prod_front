@@ -22,7 +22,7 @@ const Confirmation = ({
   setReload,
   status,
 }) => {
-  const { toastAlert, toastError } = useGlobalContext();
+  const { toastError } = useGlobalContext();
   const [open, setOpen] = useState(confirmation);
   const [data, setData] = useState(rowData);
   const [token, setToken] = useState("");

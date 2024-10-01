@@ -32,8 +32,6 @@ export default function PageDateWiseStatus({
         endDate: endDate,
       })
       .then((res) => {
-        // console.log(res.data.data, "getCreatorOverallReport");
-        console.log(res.data.data,'new data');
         setCreatorProgress(res.data.data);
       });
   }, [startDate, endDate]);

@@ -5,7 +5,9 @@ import { Route, Routes } from "react-router-dom";
 import { baseUrl } from "../../utils/config";
 import Loader from "../Finance/Loader/Loader";
 import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
+import Profile from "../Pantry/UserPanel/Profile/Profile";
 
+const ViewSalesPoc = lazy(() => import("../CustomTable/TableComponent/ViewSalesPoc"));
 const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./User/UserMaster"));
@@ -641,6 +643,9 @@ const PaymentDoneTransactionList = lazy(() =>
 );
 const PageStats = lazy(() => import("./PageMS/PageStats"));
 const PlanMaking = lazy(() => import("../AdminPanel/PageMS/PlanMaking"));
+const PlanUpload = lazy(() =>
+  import("../AdminPanel/Inventory/Plan-upload/index")
+);
 const CreateDocumentType = lazy(() =>
   import("./Sales/Account/CreateDocumentType")
 );
@@ -728,6 +733,7 @@ const MajorDepartmentUpdate = lazy(() =>
 const AllAssignedCategory = lazy(() =>
   import("../SuperTracker/CommunityManagement/AllAssignedCategory")
 );
+const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
 
 const Admin = () => {
   const [contextData, setData] = useState([]);
@@ -817,8 +823,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -827,6 +833,11 @@ const Admin = () => {
                         contextData[0] &&
                         contextData[0].view_value === 1 && (
                           <>
+
+                            <Route
+                              path="/user-profile"
+                              element={<Profile />}
+                            />
                             <Route
                               path="/user-overview/:id"
                               element={<UserOverview />}
@@ -851,10 +862,10 @@ const Admin = () => {
                               path="/user-hierarchy"
                               element={<UserHierarchy />}
                             />
-                            <Route
+                            {/* <Route
                               path="/user-single/:id"
                               element={<UserSingle />}
-                            />
+                            /> */}
                             <Route
                               path="/user-graph"
                               element={<UserGraphs />}
@@ -877,6 +888,7 @@ const Admin = () => {
                             />
                           </>
                         )}
+                      <Route path="/user-single/:id" element={<UserSingle />} />
                     </>
 
                     {/* Attendence  */}
@@ -1887,6 +1899,7 @@ const Admin = () => {
                       element={<VendorMaster />}
                     />
                     <Route path="/pms-plan-making" element={<PlanMaking />} />
+                    <Route path="/pms-plan-upload" element={<PlanUpload />} />
                     <Route
                       path="/pms-vendor-master/:_id"
                       element={<VendorMaster />}
@@ -1977,7 +1990,7 @@ const Admin = () => {
                       element={<SalesServicesOverview />}
                     />
 
-                    {/* Sales  harshal start*/}
+                    {/* Sales  Pratyush start*/}
                     <Route
                       path="/create-credit-reason-approval"
                       element={<CreditApprovalReasonCreate />}
@@ -2013,6 +2026,14 @@ const Admin = () => {
                     <Route
                       path="/sales-user-incentve"
                       element={<UserIncentive />}
+                    />
+                    <Route
+                      path="/sales-user-report"
+                      element={<SalesReport />}
+                    />
+                    <Route
+                      path="/Sales-Point-Of-Contact"
+                      element={<ViewSalesPoc />}
                     />
                     <Route
                       path="/create-payment-mode"
@@ -2122,7 +2143,7 @@ const Admin = () => {
                       element={<ViewTargetCompetition />}
                     />
 
-                    {/* Sales Harshal end */}
+                    {/* Sales Pratyush end */}
                     <Route
                       path="/sales-incentive-create"
                       element={<IncentiveCreate />}
@@ -2197,41 +2218,41 @@ const Admin = () => {
                             element={<CommunityManager />}
                           />
 
-                        <Route
-                          path="/instaapi/community/manager/:creatorName"
-                          element={<CommunityPageView />}
-                        />
-                        <Route
-                          path="/instaapi/community/user"
-                          element={<CommunityUser />}
-                        />
-                         <Route
-                          path="/instaapi/community/allAssignedcategory"
-                          element={<AllAssignedCategory />}
-                        />
-                        <Route
-                          path="/instaapi/community/managerView"
-                          element={<CommunityManagerView />}
-                        />
-                        <Route
-                          path="/instaapi/community/categoryWise/pagesHistoey"
-                          element={<CategoryWisePagesHistoey />}
-                        />
-                        <Route
-                          path="/instaapi/community/meetingPage"
-                          element={<MeetingPagesOverView />}
-                        />
-                        <Route
-                          path="/instaapi/community/overviewMeetingVia"
-                          element={<OverviewMeetingVia />}
-                        />
-                      </>
-                    )}
-                </Route>
-              </Routes>
+                          <Route
+                            path="/instaapi/community/manager/:creatorName"
+                            element={<CommunityPageView />}
+                          />
+                          <Route
+                            path="/instaapi/community/user"
+                            element={<CommunityUser />}
+                          />
+                          <Route
+                            path="/instaapi/community/allAssignedcategory"
+                            element={<AllAssignedCategory />}
+                          />
+                          <Route
+                            path="/instaapi/community/managerView"
+                            element={<CommunityManagerView />}
+                          />
+                          <Route
+                            path="/instaapi/community/categoryWise/pagesHistoey"
+                            element={<CategoryWisePagesHistoey />}
+                          />
+                          <Route
+                            path="/instaapi/community/meetingPage"
+                            element={<MeetingPagesOverView />}
+                          />
+                          <Route
+                            path="/instaapi/community/overviewMeetingVia"
+                            element={<OverviewMeetingVia />}
+                          />
+                        </>
+                      )}
+                  </Route>
+                </Routes>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </Suspense>
     </>

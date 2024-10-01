@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Dropdown from "./Dropdown";
 import "../Table.css";
 import * as XLSX from "xlsx";
 import Modal from "react-modal";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
-import { Log } from "@phosphor-icons/react";
 
 
 const TableToolkit = ({
@@ -41,6 +40,7 @@ const TableToolkit = ({
   setColumns,
   originalData1,
 }) => {
+  const containerRef = useRef(null);
   const [ModalOpen, setModalOpen] = useState(false);
   const [filterName, setFilterName] = useState("");
   const [filterList, setFilterList] = useState(apiFilters);
@@ -73,15 +73,18 @@ const TableToolkit = ({
     }
     setApplyFlag(!applyFlag);
   };
+
+
   useEffect(() => {
     setFilterList(apiFilters);
   }, [apiFilters]);
+
+
   useEffect(() => {
     setCheckedState(new Array(filterList?.length).fill(false));
   }, [filterList]);
-  const handleCloseModal = () => {
-    setModalOpen(true);
-  };
+
+
   useEffect(() => {
     const selectedRowData = selectedRowsIndex?.map((index) => data[index]);
     if (JSON.stringify(selectedRowData) !== JSON.stringify(selectedRowsData)) {
@@ -89,9 +92,33 @@ const TableToolkit = ({
     }
   }, [selectedRowsIndex]);
 
+
+  const handleCloseModal = () => {
+    setModalOpen(true);
+  };
+
   const onDragStart = (e, index) => {
     e.dataTransfer.setData("dragged", index);
     e.dataTransfer.effectAllowed = "move";
+    // const container = containerRef.current;
+    // const items = [...container.childNodes];
+    // const dragItem = items[index];
+    // const rect = dragItem.getBoundingClientRect();
+    // dragItem.style.position = "fixed";
+    // dragItem.style.top = `${rect.top}px`;
+    // dragItem.style.left = `${rect.left}px`;
+    // dragItem.style.width = `${rect.width}px`;
+    // dragItem.style.height = `${rect.height}px`;
+    // dragItem.style.zIndex = 5000;
+    // dragItem.style.cursor = "grabbing";
+
+    // const div = document.createElement("div");
+    // div.id = "tempDiv";
+
+    // div.style.pointerEvents = "none";
+    // container.appendChild(div);
+
+
   };
 
   const onDragOver = (e) => {
@@ -120,6 +147,8 @@ const TableToolkit = ({
     //   });
     setColumns(newColumns);
   };
+
+
   async function handleSave() {
     const arrayOfColumnsName = columnsheader.map((column, index) => ({
       name: column.name,
@@ -136,7 +165,10 @@ const TableToolkit = ({
       .catch((error) => {
         console.error("Error editing dynamic table data:", error);
       });
+
   }
+
+
   const cloudInvader = async (tag, index) => {
     let Payload;
     if (tag !== "delete") {
@@ -172,6 +204,7 @@ const TableToolkit = ({
       console.error(error);
     }
   };
+
 
   const handleExport = () => {
 
@@ -217,8 +250,28 @@ const TableToolkit = ({
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+    const range = XLSX.utils.decode_range(worksheet["!ref"]);
+    const headerRow = range.s.r;
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const address = XLSX.utils.encode_cell({ c: C, r: headerRow });
+
+      // if (!worksheet[address]) continue;
+      worksheet[address].s = {
+        font: { bold: true, color: { rgb: "#fff" } },
+        alignment: { horizontal: "center", vertical: "center" },
+        fill: { fgColor: { rgb: "#000" } },
+        border: {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        },
+      };
+    }
+
     XLSX.writeFile(workbook, fileName);
   };
+
 
   return (
     <div className="table-toolkit">
@@ -296,6 +349,7 @@ const TableToolkit = ({
           tableref={tableref}
           btnHtml={<button className="dropdown-btn">Column</button>}
         >
+
           <div className="w-100 sb">
             <div></div>
             <div className="flex-row gap-2">
@@ -304,22 +358,25 @@ const TableToolkit = ({
             </div>
           </div>
           <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}>
-            {dragFlag && (<span>
-              <p>:</p>
-              <p>:</p>
-              <p>:</p>
-              <p>:</p>
-            </span>)}
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id="flexSwitchCheckDefault"
-              checked={visibleColumns?.some((column) => column)}
-              onChange={(e) => {
-                setVisibleColumns(visibleColumns?.map(() => e.target.checked));
-                setInvadeFlag(true);
-              }}
-            />
+            {dragFlag && (<>
+              <span>
+                <p>:</p>
+                <p>:</p>
+                <p>:</p>
+                <p>:</p>
+              </span>
+              <input
+                className="form-check-input"
+                type="checkbox"
+                id="flexSwitchCheckDefault"
+                checked={visibleColumns?.some((column) => column)}
+                onChange={(e) => {
+                  setVisibleColumns(visibleColumns?.map(() => e.target.checked));
+
+                }}
+              />
+            </>
+            )}
             <label
               className="form-check-label"
               htmlFor="flexSwitchCheckDefault"
@@ -327,36 +384,41 @@ const TableToolkit = ({
               Show/Hide All
             </label>
           </div>
-
-          {columnsheader?.map((column, index) => (
-            <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
-              key={index}
-              draggable={dragFlag}
-              onDragStart={(e) => onDragStart(e, index)}
-              onDragOver={onDragOver}
-              onDrop={(e) => onDrop(e, index)}
-            >
-              {dragFlag && (<span>
-                <p>:</p>
-                <p>:</p>
-                <p>:</p>
-                <p>:</p>
-              </span>)}
-              <input
-                className="form-check-input"
-                id={`flexSwitchCheckDefault${index}`}
-                type="checkbox"
-                checked={visibleColumns?.[index]}
-                onChange={() => toggleColumnVisibility(index)}
-              />
-              <label
-                className="form-check-label"
-                htmlFor={"flexSwitchCheckDefault" + index}
+          <div className="container_drag" ref={containerRef}>
+            {columnsheader?.map((column, index) => (
+              <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
+                key={index}
+                draggable={dragFlag}
+                onDragStart={(e) => onDragStart(e, index)}
+                onDragOver={onDragOver}
+                onDrop={(e) => onDrop(e, index)}
               >
-                {column.name}
-              </label>
-            </div>
-          ))}
+                {dragFlag && (
+                  <>
+                    <span>
+                      <p>:</p>
+                      <p>:</p>
+                      <p>:</p>
+                      <p>:</p>
+                    </span>
+                    <input
+                      className="form-check-input"
+                      id={`flexSwitchCheckDefault${index}`}
+                      type="checkbox"
+                      checked={visibleColumns?.[index]}
+                      onChange={() => toggleColumnVisibility(index)}
+                    />
+                  </>
+                )}
+                <label
+                  className="form-check-label"
+                  htmlFor={"flexSwitchCheckDefault" + index}
+                >
+                  {column.name}
+                </label>
+              </div>
+            ))}
+          </div>
         </Dropdown>
         <button className="tool-btn" onClick={() => handleExport()}>
           Export

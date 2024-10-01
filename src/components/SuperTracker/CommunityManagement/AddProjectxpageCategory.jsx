@@ -9,14 +9,14 @@ import { useState } from "react";
 import { Autocomplete, Grid, Stack, TextField } from "@mui/material";
 import axios from "axios";
 
-export default function AddProjectxpageCategory({reloadpagecategory,setReloadpagecategory}) {
- 
-
+export default function AddProjectxpageCategory({
+  reloadpagecategory,
+  setReloadpagecategory,
+}) {
   const [open, setOpen] = useState(false);
   const [scroll, setScroll] = useState("paper");
   const [projectxpageCategoryName, setProjectxpageCategoryName] = useState("");
 
- 
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
     setScroll(scrollType);
@@ -26,18 +26,16 @@ export default function AddProjectxpageCategory({reloadpagecategory,setReloadpag
     setOpen(false);
   };
 
-
   const handleRegister = () => {
     // //console.log(brandCategoryname.brandCategory_id, brandcatsubname);
     try {
       axios
         .post("https://insights.ist:8080/api//projectxpagecategory", {
           category_name: projectxpageCategoryName,
-     
         })
         .then((res) => {
-            setReloadpagecategory(!reloadpagecategory);
-        //  console.log(res,"res")
+          setReloadpagecategory(!reloadpagecategory);
+          //  console.log(res,"res")
         });
     } catch (error) {
       console.log(error);
@@ -47,7 +45,13 @@ export default function AddProjectxpageCategory({reloadpagecategory,setReloadpag
 
   return (
     <>
-      <Button variant="outlined" onClick={handleClickOpen("paper")}>+</Button>
+      <Button
+        className="btn cmnbtn btn-outline-primary input_iconbtn"
+        variant="outlined"
+        onClick={handleClickOpen("paper")}
+      >
+        +
+      </Button>
 
       <Dialog
         open={open}
@@ -60,21 +64,15 @@ export default function AddProjectxpageCategory({reloadpagecategory,setReloadpag
           Register New Page Category
         </DialogTitle>
         <DialogContent dividers={scroll === "paper"}>
-          <DialogContentText
-            id="scroll-dialog-description"
-        
-            tabIndex={-1}
-          >
+          <DialogContentText id="scroll-dialog-description" tabIndex={-1}>
             <Grid container>
               <Stack sx={{ width: 400, height: 400 }} spacing={2}>
-         
                 <TextField
                   id="outlined-read-only-input"
                   label={"Page Category Name"}
                   // value={textfieldValue[i]}
                   onChange={(e) => setProjectxpageCategoryName(e.target.value)}
                 />
-               
               </Stack>
             </Grid>
           </DialogContentText>

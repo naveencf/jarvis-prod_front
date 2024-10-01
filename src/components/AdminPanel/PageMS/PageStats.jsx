@@ -416,6 +416,7 @@ export default function PageStats() {
 
   return (
     <>
+      {/* this component is for adding/updating stats for page  */}
       <div className="stateHistoryWrapper">
         <FormControl
           component={"form"}

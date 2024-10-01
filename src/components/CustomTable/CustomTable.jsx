@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
-import "./Table.css";
-import PaginationComp from "./TableComponent/PaginationComp";
-import TableToolkit from "./TableComponent/TableToolkit";
-import RenderedTable from "./TableComponent/RenderedTable";
-import { baseUrl } from "../../utils/config";
-import jwtDecode from "jwt-decode";
-import axios from "axios";
-import TotalRow from "./TableComponent/TotalRow";
+import React, { useEffect, useRef, useState } from 'react';
+import './Table.css';
+import PaginationComp from './TableComponent/PaginationComp';
+import TableToolkit from './TableComponent/TableToolkit';
+import RenderedTable from './TableComponent/RenderedTable';
+import { baseUrl } from '../../utils/config';
+import jwtDecode from 'jwt-decode';
+import axios from 'axios';
+import TotalRow from './TableComponent/TotalRow';
 // note: sync the table pagination and  sorted rows
 
 const CustomTable = ({
@@ -18,9 +18,10 @@ const CustomTable = ({
   rowSelectable,
   tableName,
   showTotal = false,
-  selectedData = (selecteddata) => { return selecteddata; },
+  selectedData = (selecteddata) => {
+    return selecteddata;
+  },
 }) => {
-
 
   const tableref = useRef();
   const headref = useRef();
@@ -33,8 +34,8 @@ const CustomTable = ({
   );
   const [originalData, setOriginalData] = useState(data);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sortKey, setSortKey] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortKey, setSortKey] = useState('');
+  const [sortDirection, setSortDirection] = useState('asc');
   const [ascFlag, setAscFlag] = useState(columns?.map(() => true));
   const [visibleColumns, setVisibleColumns] = useState(
     columns.map((column) =>
@@ -49,7 +50,7 @@ const CustomTable = ({
       column.editable === undefined ? false : column.editable
     )
   );
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [sortedData, setSortedData] = useState([]);
   const [unSortedData, setUnSortedData] = useState([]);
   const [invadeFlag, setInvadeFlag] = useState(false);
@@ -58,16 +59,16 @@ const CustomTable = ({
   const [filterCondition, setFilterCondition] = useState(
     columns.map((col) => ({
       colName: col.key,
-      key: "none",
-      value1: "",
-      value2: "",
+      key: 'none',
+      value1: '',
+      value2: '',
     }))
   );
   // Initialize selectedId for each column
   const [selectedId, setSelectedId] = useState(columnsheader.map(() => []));
   const [applyFlag, setApplyFlag] = useState(false);
 
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
   let pagination = Pagination?.length > 0 ? Pagination : [100, 50, 10];
@@ -75,9 +76,7 @@ const CustomTable = ({
   useEffect(() => {
     if (pagination.findIndex((item) => item === data.length) === -1)
       pagination.push(data.length);
-
   }, [data]);
-
 
   useEffect(() => {
     selectedData(selectedRowsData);
@@ -104,7 +103,7 @@ const CustomTable = ({
     none: () => true,
 
     isExactly: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue?.toLowerCase().trim() === value1?.toLowerCase().trim();
       } else {
         return itemValue?.toString().trim() === value1?.trim();
@@ -112,13 +111,13 @@ const CustomTable = ({
     },
 
     isEmpty: (itemValue) => {
-      return itemValue?.toString() == "";
+      return itemValue?.toString() == '';
     },
 
-    isNotEmpty: (itemValue) => itemValue?.toString() != "",
+    isNotEmpty: (itemValue) => itemValue?.toString() != '',
 
     contains: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue?.toLowerCase().includes(value1?.toLowerCase());
       } else {
         return itemValue
@@ -129,7 +128,7 @@ const CustomTable = ({
     },
 
     doesNotContain: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return !itemValue?.toLowerCase().includes(value1?.toLowerCase());
       } else {
         return !itemValue
@@ -140,7 +139,7 @@ const CustomTable = ({
     },
 
     startsWith: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue?.startsWith(value1);
       } else {
         return itemValue?.toString().startsWith(value1);
@@ -148,7 +147,7 @@ const CustomTable = ({
     },
 
     endsWith: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue?.endsWith(value1);
       } else {
         return itemValue?.toString().endsWith(value1);
@@ -165,7 +164,7 @@ const CustomTable = ({
     lessThanOrEqualTo: (itemValue, value1) => itemValue <= parseInt(value1, 10),
 
     equalTo: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue === value1;
       } else {
         return itemValue == parseInt(value1, 10);
@@ -173,7 +172,7 @@ const CustomTable = ({
     },
 
     notEqualTo: (itemValue, value1) => {
-      if (typeof itemValue === "string") {
+      if (typeof itemValue === 'string') {
         return itemValue === value1;
       } else {
         return itemValue == parseInt(value1, 10);
@@ -187,16 +186,13 @@ const CustomTable = ({
       itemValue <= parseInt(value1, 10) || itemValue >= parseInt(value2, 10),
   };
 
-
-
-
   useEffect(() => {
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
         const conditionCheck = filterCondition.every((condition) => {
           const { key, value1, value2, colName } = condition;
-          if (key === "none") return true; // Skip if no filter is applied or field is not specified
+          if (key === 'none') return true; // Skip if no filter is applied or field is not specified
           const filterFunc = filterFunctions[key];
 
           return filterFunc(item[colName], value1, value2);
@@ -221,9 +217,6 @@ const CustomTable = ({
     setUnSortedData(filterData());
   }, [applyFlag]);
 
-
-
-
   // useEffect(() => {
   //   const filterData = () => {
   //     return originalData.filter((item) => {
@@ -243,19 +236,14 @@ const CustomTable = ({
     setVisibleColumns(
       visibleColumns?.map((visible, i) => (i === index ? !visible : visible))
     );
-    setInvadeFlag(true);
+
   };
-
-
 
   useEffect(() => {
     if (invadeFlag) {
       cloudInvader();
     }
   }, [invadeFlag]);
-
-
-
 
   useEffect(() => {
     setSortedData(
@@ -267,9 +255,6 @@ const CustomTable = ({
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery]);
-
-
-
 
   const createTable = async () => {
     const arrayOfColumnsName = columnsheader.map((column) => ({
@@ -290,7 +275,6 @@ const CustomTable = ({
     }
   };
 
-
   useEffect(() => {
     // const isTableCreated = localStorage.getItem(
     //   `isTableCreated_${tableName + loginUserId}`
@@ -301,15 +285,12 @@ const CustomTable = ({
     // }
   }, [tableName]);
 
-
   // useEffect(() => {
 
   //   if (data.length > 0) {
   //     createTable();
   //   }
   // }, [data]);
-
-
 
   async function cloudInvader() {
     const arrayofvisiblecolumns = columnsheader?.map((column, index) => ({
@@ -329,8 +310,6 @@ const CustomTable = ({
     }
   }
 
-
-
   useEffect(() => {
     const fetchCreatedTable = async () => {
       try {
@@ -347,8 +326,6 @@ const CustomTable = ({
     };
     fetchCreatedTable();
   }, [loginUserId, tableName]);
-
-
 
   useEffect(() => {
     const getIndex = (colName) =>
@@ -387,8 +364,6 @@ const CustomTable = ({
     );
   }, [dataLoading, columns, apiColumns]);
 
-
-
   useEffect(() => {
     setSortedData(
       pagination
@@ -399,8 +374,6 @@ const CustomTable = ({
         : unSortedData
     );
   }, [unSortedData]);
-
-
 
   function renderSort() {
     let unSortData;
@@ -440,29 +413,25 @@ const CustomTable = ({
       const val1 = getValue(a);
       const val2 = getValue(b);
 
-      if (dataType === "string") {
+      if (dataType === 'string') {
         compareValue = val1?.trim()?.localeCompare(val2?.trim());
-      } else if (dataType === "number") {
+      } else if (dataType === 'number') {
         compareValue = val1 - val2;
       }
 
       return compareValue;
     });
 
-    if (sortDirection !== "asc") {
+    if (sortDirection !== 'asc') {
       unSortData.reverse();
     }
     setSortedData(unSortData);
     setUnSortedData(unSortData);
   }
 
-
-
   useEffect(() => {
     renderSort();
   }, [sortKey, sortDirection]);
-
-
 
   return (
     <div className="table-pagination-container">
@@ -498,6 +467,7 @@ const CustomTable = ({
         setColumns={setColumns}
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
+
       />
 
       <div className="table-container" ref={tableref}>
@@ -545,7 +515,17 @@ const CustomTable = ({
         />
       </div>
 
-      {showTotal && <TotalRow columnsheader={columnsheader} unSortedData={unSortedData} visibleColumns={visibleColumns} rowSelectable={rowSelectable} headref={headref} tableref={tableref} applyFlag={applyFlag} />}
+      {showTotal && (
+        <TotalRow
+          columnsheader={columnsheader}
+          unSortedData={unSortedData}
+          visibleColumns={visibleColumns}
+          rowSelectable={rowSelectable}
+          headref={headref}
+          tableref={tableref}
+          applyFlag={applyFlag}
+        />
+      )}
       <PaginationComp
         data={unSortedData}
         Pagination={pagination}
@@ -557,7 +537,6 @@ const CustomTable = ({
         columnsheader={columnsheader}
         isPagination={Pagination}
       />
-
     </div>
   );
 };

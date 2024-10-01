@@ -99,14 +99,17 @@ function CommunityHeader({
     if (value) {
       const selectedCategoryObject = pagecategory.find(
         (category) =>
-          `${category.category_name} - (${filteredPageCategory[category.category_id] || 0})` === value ||
+          `${category.category_name} - (${
+            filteredPageCategory[category.category_id] || 0
+          })` === value ||
           category.category_name.toLowerCase() === value.toLowerCase()
       );
 
       if (selectedCategoryObject) {
         const filteredRows = allRows.filter(
           (record) =>
-            record.projectxRecord?.pageCategoryId === selectedCategoryObject.category_id
+            record.projectxRecord?.pageCategoryId ===
+            selectedCategoryObject.category_id
         );
 
         // Only set filtered rows if rowSelectionModel is empty
@@ -170,60 +173,71 @@ function CommunityHeader({
       : pagecategory.map((ele) => ele.category_name);
 
   return (
-    <Stack direction="row" justifyContent="space-evenly" sx={{ mt: 2 }}>
-      <Badge badgeContent={allRows.length} color="secondary">
-        <Button onClick={handleAllTeam} variant="outlined">
-          All 
-        </Button>
-      </Badge>
-      <Badge badgeContent={teamCreated?.teamCount} color="success">
-        <Button onClick={handleCreatedTeam} variant="outlined">
-           Created
-        </Button>
-      </Badge>
-      <Badge
-        badgeContent={allRows.length - teamCreated?.teamCount}
-        color="error"
-      >
-        <Button onClick={handlePendingTeam} variant="outlined">
-           Pending
-        </Button>
-      </Badge>
-      <Autocomplete
-        disablePortal
-        id="combo-box-demo"
-        options={options}
-        // options={pagecategory.map((ele) => ele.category_name)}
-        sx={{ width: 200 }}
-        // onClear={handleCategoryClear}
-        onInputChange={handleCategoryChange}
-        renderInput={(params) => (
-          <TextField size="small" {...params} label="Category" />
-        )}
-      />
+    <>
+      <div className="flexCenterBetween w-100">
+        <div className="flexCenter colGap8">
+          <Button
+            className="btn cmnbtn btn-outline-primary"
+            onClick={handleAllTeam}
+            variant="outlined"
+          >
+            <span className="badgeNum">{allRows.length}</span> All
+          </Button>
+          <Button
+            className="btn cmnbtn btn-outline-success"
+            onClick={handleCreatedTeam}
+            variant="outlined"
+          >
+            <span className="badgeNum">{teamCreated?.teamCount}</span> Created
+          </Button>
+          <Button
+            className="btn cmnbtn btn-outline-warning"
+            onClick={handlePendingTeam}
+            variant="outlined"
+          >
+            <span className="badgeNum">
+              {allRows.length - teamCreated?.teamCount}
+            </span>
+            Pending
+          </Button>
+        </div>
+        <div className="thm_form flexCenter colGap8">
+          <Autocomplete
+            disablePortal
+            id="combo-box-demo"
+            options={options}
+            // options={pagecategory.map((ele) => ele.category_name)}
+            sx={{ width: 200 }}
+            // onClear={handleCategoryClear}
+            onInputChange={handleCategoryChange}
+            renderInput={(params) => <TextField {...params} label="Category" />}
+          />
 
-      <AddProjectxpageCategory
-        setReloadpagecategory={setReloadpagecategory}
-        reloadpagecategory={reloadpagecategory}
-      />
-      {teamCreated?.totalCor > 0 && (
-        <Chip
-          sx={{ mt: 1 }}
-          label={`COR : ${formatNumber(teamCreated?.totalCor)}`}
-        />
-      )}
-      {teamCreated?.totalPaidPost > 0 && (
-        <Chip
-          sx={{ mt: 1 }}
-          label={`Paid-Post : ${formatNumber(teamCreated?.totalPaidPost)}`}
-        />
-      )}
-      {rowSelectionModel.length > 0 && (
-        <Button onClick={handleUpdateCategory} variant="outlined">
-          Update-Category
-        </Button>
-      )}
-    </Stack>
+          <AddProjectxpageCategory
+            setReloadpagecategory={setReloadpagecategory}
+            reloadpagecategory={reloadpagecategory}
+          />
+        </div>
+        <div className="flexCenter colGap8">
+          {teamCreated?.totalCor > 0 && (
+            <Chip label={`COR : ${formatNumber(teamCreated?.totalCor)}`} />
+          )}
+          {teamCreated?.totalPaidPost > 0 && (
+            <Chip
+              label={`Paid-Post : ${formatNumber(teamCreated?.totalPaidPost)}`}
+            />
+          )}
+          {rowSelectionModel.length > 0 && (
+            <Button
+              className="btn btn_sm  cmnbtn btn-primary"
+              onClick={handleUpdateCategory}
+            >
+              Update-Category
+            </Button>
+          )}
+        </div>
+      </div>
+    </>
   );
 }
 

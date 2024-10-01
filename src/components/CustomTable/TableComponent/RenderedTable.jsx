@@ -158,7 +158,7 @@ const RenderedTable = ({
   // Sync selectedId with colSearch
   useEffect(() => {
     // Create a new array of column search criteria based on selectedId
-    const newColSearch = columnsheader.map((column, index) => {
+    const newColSearch = columnsheader?.map((column, index) => {
       if (!visibleColumns[index]) return []; // Skip invisible columns
 
       return selectedId[index].map((value) => ({

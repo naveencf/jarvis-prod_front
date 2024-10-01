@@ -7,26 +7,52 @@ const TotalRow = ({
 
     const copyref = useRef(null);
     const col = headref?.current?.childNodes;
+
+
     const syncScroll = (source, target) => {
         target.current.scrollLeft = source.current.scrollLeft;
     };
+
+
     useEffect(() => {
         const scroll1 = copyref?.current;
         const scroll2 = tableref?.current;
 
-        // Add scroll event listeners to both scrollable divs
         const handleScroll1 = () => syncScroll(copyref, tableref);
         const handleScroll2 = () => syncScroll(tableref, copyref);
 
         scroll1.addEventListener('scroll', handleScroll1);
         scroll2.addEventListener('scroll', handleScroll2);
 
-        // Cleanup event listeners on unmount
         return () => {
             scroll1.removeEventListener('scroll', handleScroll1);
             scroll2.removeEventListener('scroll', handleScroll2);
         };
     }, []);
+
+    function getRenderableIndexes(index) { // This function is used to get the index of the visible columns to calculate the width of the column and sync the column width with the header
+        let count = 0;
+        for (let i = 0; i < index; i++) {
+            if (visibleColumns[i]) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    function formatToIndianNumberingSystem(number) {
+        if (number >= 10000000) {
+            // Convert to crore
+            return (number / 10000000).toFixed(2) + ' Cr';
+        } else if (number >= 100000) {
+            // Convert to lakh
+            return (number / 100000).toFixed(2) + ' L';
+        } else {
+            // Return the number as is if it's less than 1 lakh
+            return number.toString();
+        }
+    }
+
 
     function calculateTotalAmount(func) {
         let amounts;
@@ -81,21 +107,27 @@ const TotalRow = ({
                             </th>
                         )}
                         {columnsheader.map((column, index) => (
-                            visibleColumns?.[index] && (
+                            (visibleColumns[index] &&
+
                                 <th
                                     key={index}
 
                                     style={{
-                                        width: `${col?.[index]?.getBoundingClientRect()?.width}px`,
+                                        width: `${col?.[getRenderableIndexes(index)]?.getBoundingClientRect()?.width}px`,
                                     }}
                                 >
-                                    <div className="table-header">
+                                    <div className="table-header"
+                                        style={{
+                                            width: `${col?.[getRenderableIndexes(index)]?.childNodes?.[0]?.offsetWidth}px`,
+                                        }}
+                                    >
                                         <div
                                             className="header-title"
+                                            title={calculateTotalAmount(column?.renderRowCell || column.key)}
                                         >
                                             {
-                                                column?.getTotal && (
-                                                    <p>{calculateTotalAmount(column?.renderRowCell || column.key)}</p>
+                                                (column?.getTotal && visibleColumns[index]) && (
+                                                    <p>{formatToIndianNumberingSystem(calculateTotalAmount(column?.renderRowCell || column.key))}</p>
                                                 )
                                             }
                                         </div>
@@ -132,4 +164,4 @@ const TotalRow = ({
     )
 }
 
-export default TotalRow
+export default TotalRow;

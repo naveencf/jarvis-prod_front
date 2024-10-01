@@ -1,29 +1,10 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Link, Navigate } from "react-router-dom";
-import jwtDecode from "jwt-decode";
 import FormContainer from "../../../AdminPanel/FormContainer";
 import { useGlobalContext } from "../../../../Context/Context";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-// import DataTable from "react-data-table-component";
-import {
-  Autocomplete,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-} from "@mui/material";
-import { get } from "jquery";
 import ImageView from "../../ImageView";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { baseUrl } from "../../../../utils/config";
-import pdfImg from "../../pdf-file.png";
-import { Button } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import { set } from "date-fns";
-import moment from "moment";
-import { useGetPaymentModeQuery } from "../../../Store/API/Finance/FinancePaymentModeApi";
 import PendingApprovalStatusDialog from "./Components/PendingApprovalStatusDialog";
 import {
   pendingApprovalColumn,
@@ -58,20 +39,18 @@ const PendingApprovalUpdate = () => {
   const [nonGstCount, setNonGstCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState("");
-  const [reason, setReason] = useState("");
   const [statusDialog, setStatusDialog] = useState(false);
   const [reasonField, setReasonField] = useState(false);
   const [paymentModeArray, setPaymentModeArray] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
 
   const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
 
   const handleCopyDetail = (detail) => {
-    navigator.clipboard.writeText(detail);
-    toastAlert("Detail copied");
+    navigator.clipboard
+      .writeText(detail)
+      .then(() => toastAlert("Detail copied"));
   };
-
   const handleStatusChange = async (row, selectedStatus) => {
     setSelectedRow(row);
     if (selectedStatus) {
@@ -83,39 +62,33 @@ const PendingApprovalUpdate = () => {
         "Are you sure you want to approve this Payment?"
       );
       if (!userConfirmed) {
-        return; // Exit the function if the user cancels the confirmation
+        return;
       }
-      // confirm("Are you sure you want to submit this data?");
-      {
-        const payload = {
-          payment_approval_status: selectedStatus,
-          action_reason: reasonField,
-          payment_amount: row?.payment_amount,
-        };
+      const payload = {
+        payment_approval_status: selectedStatus,
+        action_reason: reasonField,
+        payment_amount: row?.payment_amount,
+      };
 
-        await axios
-          .put(
-            baseUrl + `sales/finance_approval_payment_update/${row?._id}`,
-            payload,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res.status === 200) {
-              toastAlert("Status Approved Successfully");
-            }
-          })
-          .catch((err) => {
-            toastAlert("Status Approval Failed");
-          })
-          .finally(() => {
-            getData();
-            setStatus("");
-          });
-        setStatus(selectedStatus);
+      try {
+        const res = await axios.put(
+          `${baseUrl}sales/finance_approval_payment_update/${row?._id}`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (res.status === 200) {
+          toastAlert("Status Approved Successfully");
+        }
+      } catch (error) {
+        toastAlert("Status Approval Failed");
+      } finally {
+        getData();
+        setStatus("");
         setIsFormSubmitted(true);
       }
     } else {
@@ -123,64 +96,72 @@ const PendingApprovalUpdate = () => {
     }
   };
 
-  const handlePaymentModeData = () => {
-    axios
-      .get(baseUrl + "sales/payment_mode", {
+  const handlePaymentModeData = async () => {
+    try {
+      const { data } = await axios.get(`${baseUrl}sales/payment_mode`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      })
-      .then((res) => {
-        setPaymentModeArray(res?.data?.data);
-      })
-      .catch((error) =>
-        console.log(error, "Error While getting payment mode data")
-      );
-  };
-  const getData = () => {
-    setLoading(true);
-    axios
-      .get(baseUrl + `sales/payment_update?status=pending`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        const resData = res?.data?.data;
-        const accData = resData?.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-
-        setData(accData);
-        setFilterData(accData);
-        setLoading(false);
-        calculateUniqueData(accData);
-
-        const nonGstCount = accData?.filter(
-          (gst) => gst.gst_status === "false"
-        );
-        setNonGstCount(nonGstCount.length);
-
-        const withInvoiceImage = accData?.filter(
-          (item) =>
-            item.payment_screenshot && item.payment_screenshot.length > 0
-        );
-        const withoutInvoiceImage = accData?.filter(
-          (item) =>
-            !item.payment_screenshot || item.payment_screenshot.length === 0
-        );
-        setInvoiceCount(withInvoiceImage.length);
-        setNonInvoiceCount(withoutInvoiceImage.length);
-
-        const dateFilterData = CommonFilterFunction(accData, dateFilter);
-        setFilterData(dateFilterData);
       });
+      setPaymentModeArray(data?.data);
+    } catch (error) {
+      console.error("Error while getting payment mode data", error);
+    }
   };
+
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}sales/payment_update?status=pending`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const sortedData =
+        data?.data?.sort(
+          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+        ) || [];
+
+      setData(sortedData);
+      setFilterData(sortedData);
+      calculateUniqueData(sortedData);
+
+      // Non-GST count
+      const nonGstCount = sortedData.filter(
+        (item) => item.gst_status === "false"
+      ).length;
+      setNonGstCount(nonGstCount);
+
+      // Invoice image counts
+      const withInvoiceImage = sortedData.filter(
+        (item) => item.payment_screenshot?.length > 0
+      );
+      const withoutInvoiceImage = sortedData.filter(
+        (item) => !item.payment_screenshot?.length
+      );
+
+      setInvoiceCount(withInvoiceImage.length);
+      setNonInvoiceCount(withoutInvoiceImage.length);
+
+      // Apply date filter
+      const dateFilteredData = CommonFilterFunction(sortedData, dateFilter);
+      setFilterData(dateFilteredData);
+    } catch (error) {
+      console.error("Error fetching payment update data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName) => {
-      return data?.reduce((acc, curr) => {
+      return data.reduce((acc, curr) => {
         const key = curr[keyName];
         if (!acc[key]) {
           acc[key] = {
@@ -189,31 +170,32 @@ const PendingApprovalUpdate = () => {
             base_amount: 0,
             gst_amount: 0,
             payment_amount: 0,
+            balance_amount: 0,
           };
         }
         acc[key].campaign_amount += curr.campaign_amount;
         acc[key].base_amount += curr.base_amount;
         acc[key].gst_amount += curr.gst_amount;
         acc[key].payment_amount += curr.payment_amount;
-        const balanceAmount = curr.campaign_amount - curr.payment_amount;
-        acc[key].balance_amount += balanceAmount;
-        // params.row.campaign_amount - params.row.payment_amount
+        acc[key].balance_amount += curr.campaign_amount - curr.payment_amount;
 
         return acc;
       }, {});
     };
 
-    // Aggregate data by account name:-
-    const aggregatedAccountData = aggregateData(sortedData, "account_name");
-    const uniqueAccData = Object.values(aggregatedAccountData);
-    setUniqueCustomerData(uniqueAccData);
-    setUniqueCustomerCount(uniqueAccData?.length);
+    // Aggregate data by account name
+    const uniqueCustomerData = Object.values(
+      aggregateData(sortedData, "account_name")
+    );
+    setUniqueCustomerData(uniqueCustomerData);
+    setUniqueCustomerCount(uniqueCustomerData.length);
 
-    // Aggregate data by sales executive name :-
-    const aggregatedSalesExData = aggregateData(sortedData, "created_by_name");
-    const uniqueSalesExData = Object.values(aggregatedSalesExData);
+    // Aggregate data by sales executive name
+    const uniqueSalesExData = Object.values(
+      aggregateData(sortedData, "created_by_name")
+    );
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData.length);
   };
 
   useEffect(() => {
@@ -221,63 +203,72 @@ const PendingApprovalUpdate = () => {
     handlePaymentModeData();
   }, [dateFilter]);
 
+  // Optimized search filter with RegExp for case-insensitive matching
   useEffect(() => {
-    const result = datas?.filter((d) => {
-      return d.sales_executive_name?.toLowerCase().match(search?.toLowerCase());
-    });
+    if (!search) {
+      setFilterData(datas);
+      return;
+    }
+    const result = datas?.filter((d) =>
+      new RegExp(search, "i").test(d?.sales_executive_name)
+    );
     setFilterData(result);
-  }, [search]);
+  }, [search, datas]);
 
-  const handleOpenUniqueAccountClick = () => {
-    setUniqueCustomerDialog(true);
-  };
+  // Open unique customer dialog
+  const handleOpenUniqueAccountClick = () => setUniqueCustomerDialog(true);
 
-  const handleOpenUniqueSalesExecutive = () => {
+  // Open unique sales executive dialog
+  const handleOpenUniqueSalesExecutive = () =>
     setUniqueSalesExecutiveDialog(true);
-  };
 
+  // Open filtered accounts by account name
   const handleOpenSameAccounts = (accName) => {
-    setSameCustomerDialog(true);
-
-    const sameNameCustomers = datas.filter(
+    const sameNameCustomers = datas?.filter(
       (item) => item?.account_name === accName
     );
     setFilterData(sameNameCustomers);
+    setSameCustomerDialog(true);
     setUniqueCustomerDialog(false);
   };
+
+  // Open filtered sales executives by name
   const handleOpenSameSalesExecutive = (salesEName) => {
     const sameNameSalesExecutive = datas?.filter(
-      (item) => item.created_by_name === salesEName
+      (item) => item?.created_by_name === salesEName
     );
     setFilterData(sameNameSalesExecutive);
     setUniqueSalesExecutiveDialog(false);
+    setSameCustomerDialog(true);
   };
-  // Clear Button Action For Table
+
+  // Clear filtered records
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
     setFilterData(datas);
   };
 
   // Function to calculate total requested amount and counts
-  const calculateTotalsAndCounts = (data) => {
-    const requestedAmountTotal = data?.reduce(
-      (total, item) => total + parseFloat(item.payment_amount) || 0,
-      0
+  const calculateTotalsAndCounts = (data = []) => {
+    return data.reduce(
+      (totals, item) => {
+        const paymentAmount = parseFloat(item.payment_amount) || 0;
+        totals.requestedAmountTotal += paymentAmount;
+
+        if (item.payment_approval_status === "pending") {
+          totals.pendingCount += 1;
+        }
+
+        return totals;
+      },
+      { requestedAmountTotal: 0, pendingCount: 0 }
     );
-
-    const pendingCount = data?.filter(
-      (item) => item.payment_approval_status === "pending"
-    )?.length;
-
-    return { requestedAmountTotal, pendingCount };
   };
 
   const { requestedAmountTotal, pendingCount } =
     calculateTotalsAndCounts(filterData);
 
-  const handleCloseStatusDialog = () => {
-    setStatusDialog(false);
-  };
+  const handleCloseStatusDialog = () => setStatusDialog(false);
 
   return (
     <div>

@@ -1,0 +1,169 @@
+import React, { useState } from "react";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+} from "@mui/material";
+import * as XLSX from "xlsx";
+import { useGlobalContext } from '../../../../../Context/Context';
+import { baseUrl } from '../../../../../utils/config';
+import axios from 'axios';
+const storedToken = sessionStorage.getItem('token');
+
+const UploadBulkVendorPages = ({getRowData}) => {
+  const [open, setOpen] = useState(false);
+  const [rows, setRows] = useState([]);
+  const [fileName, setFileName] = useState("");
+  const [file, setFile] = useState(null); 
+  const { toastAlert, toastError } = useGlobalContext();
+
+  const handleUpload = (event) => {
+    if(getRowData.length === 0){
+      toastError('Please select at least one vendor');
+      return;
+    }
+    
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);  
+      setFileName(selectedFile.name);
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: "array" });
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+        const headers = jsonData[0];
+        const contentRows = jsonData.slice(1);
+
+        const formattedRows = contentRows.map((row) =>
+          headers.reduce((acc, header, index) => {
+            acc[header] = row[index];
+            return acc;
+          }, {})
+        );
+        
+        setRows(formattedRows);
+        setOpen(true);
+      };
+      reader.readAsArrayBuffer(selectedFile);
+      event.target.value = null;
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setRows([]);
+    setFile(null); 
+  };
+
+  const handleSubmit = async() => {
+    if(getRowData.length <= 2){
+      toastError('Please select maximum 1 vendor');
+      return;
+    }
+
+    const formdata = new FormData();
+    formdata.append('vendor_id', getRowData[0]._id);
+    formdata.append('bulk_vendor_excel', file);  
+    formdata.append('category_id', ''); 
+
+    try {
+      const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+          'Content-Type': 'multipart/form-data', 
+        },
+      });
+      console.log(res);
+    } catch (error) {
+      console.error(error);
+    }
+
+    setOpen(false);
+  };
+
+  const downloadTemplate = () => {
+    const headers = [
+      ["pagename", "story", "post", "both", "m_story", "m_post", "m_both", "reel", "carousel"],
+    ];
+
+    const ws = XLSX.utils.aoa_to_sheet(headers);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Template");
+
+    XLSX.writeFile(wb, "vendor_pages_template.xlsx");
+  };
+
+  return (
+    <>
+      {/* Button to download the template */}
+      <Button
+        onClick={downloadTemplate}
+        className="btn cmnbtn btn_sm btn-outline-primary"
+      >
+        Download Template
+      </Button>
+
+      {/* Button to upload the Excel file */}
+      <Button component="label" className="btn cmnbtn btn_sm btn-outline-primary">
+        Upload Bulk-Vendor-Pages
+        <input type="file" accept=".xlsx, .xls" hidden onChange={handleUpload} />
+      </Button>
+
+      {/* Dialog to preview the uploaded data */}
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle>Preview: {fileName}</DialogTitle>
+        <DialogContent>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Pagename</TableCell>
+                <TableCell>Story</TableCell>
+                <TableCell>Post</TableCell>
+                <TableCell>Both</TableCell>
+                <TableCell>Million-Story</TableCell>
+                <TableCell>Million-Post</TableCell>
+                <TableCell>Million-Both</TableCell>
+                <TableCell>Reel</TableCell>
+                <TableCell>Carousel</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell>{row.pagename}</TableCell>
+                  <TableCell>{row.story}</TableCell>
+                  <TableCell>{row.post}</TableCell>
+                  <TableCell>{row.both}</TableCell>
+                  <TableCell>{row.m_story}</TableCell>
+                  <TableCell>{row.m_post}</TableCell>
+                  <TableCell>{row.m_both}</TableCell>
+                  <TableCell>{row.reel}</TableCell>
+                  <TableCell>{row.carousel}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleSubmit} variant="contained">
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default UploadBulkVendorPages;

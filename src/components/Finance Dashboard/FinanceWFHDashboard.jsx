@@ -285,7 +285,7 @@ export default function FinanceWFHDashboard() {
         row.account_no,
       "BENE_IFSC IFSC code of Beneficiary (Enter ICIC0000011 for FT; Alphanumeric only; No special characters)":
         row.ifsc_code,
-      "AMOUNT Numeric value with decimal up to 2 places": row.toPay,
+      "AMOUNT Numeric value with decimal up to 2 places": row.toPay?.toFixed(0),
       "DEBIT_NARR 30 Alphanumeric Characters; No special characters allowed":
         row.user_name,
       "CREDIT_NARR 30 Alphanumeric Characters; No special characters allowed":
@@ -626,7 +626,8 @@ export default function FinanceWFHDashboard() {
       field: "salary",
       width: 150,
       renderCell: (params) => {
-        return <div>{`${params.row.total_salary}  ₹`} </div>;
+        // return <div>{`${params.row.total_salary?.toFixed(0)}  ₹`} </div>;
+        return <div>{`${params.row.salary?.toFixed(0)}  ₹`} </div>;
       },
     },
     {
@@ -634,7 +635,7 @@ export default function FinanceWFHDashboard() {
       field: "net_salary",
       width: 150,
       renderCell: (params) => {
-        return <div>{params.row.net_salary}</div>;
+        return <div>{params.row.net_salary?.toFixed(0)}</div>;
       },
     },
     {
@@ -650,7 +651,7 @@ export default function FinanceWFHDashboard() {
       field: "to_pay",
       width: 150,
       renderCell: (params) => {
-        return <div>{`${params.row.toPay}  ₹`}</div>;
+        return <div>{`${params.row.toPay?.toFixed(0)}  ₹`}</div>;
       },
     },
     {
@@ -1019,7 +1020,7 @@ export default function FinanceWFHDashboard() {
         <DataGrid
           rows={filterData?.filter((item) => item.status_ === 0)}
           columns={pendingColumns}
-          getRowId={(row) => row.id}
+          getRowId={(row) => row._id}
           initialState={{
             pagination: {
               paginationModel: {

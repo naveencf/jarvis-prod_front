@@ -175,7 +175,7 @@ const UserDashboard = () => {
         {renderCard("All Users", userData.length, "Active", <UsersThree weight="duotone" />)}
         {renderCard("WFO", wFOCount.length, "WFO", <BuildingOffice color="var(--secondary)" />)}
         {renderCard("WFH", wFhCount.length, "WFH", <HouseLine className="bgTertiaryLight" />)}
-        {renderCard("WFHD", wfhdCount.length, "WFHD", <BuildingOffice className="bgSuccessLight" />)}
+        {renderCard("WFHD", wfhdCount.length, "WFHD", <BuildingOffice className="bgSuccessLight" color="var(--success)" />)}
       </div>
 
       {/* Birthday & Work-Anniversary, New Joinees and Exits */}
@@ -203,7 +203,7 @@ const UserDashboard = () => {
           <AgeGrafWFO />
         </div>
       </div>
-      
+        
 
       {/* Bar and Pie Charts */}
       <div className="row">
