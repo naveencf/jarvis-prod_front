@@ -14,7 +14,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Loader from "../../../../Finance/Loader/Loader";
 
-const SalesBookingDetails = ({ SingleAccount }) => {
+const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
@@ -40,7 +40,11 @@ const SalesBookingDetails = ({ SingleAccount }) => {
     loginUserId,
     { skip: !SingleAccount?.account_id }
   );
-
+  useEffect(() => {
+    if (SalesData) {
+      setSalesLength(SalesData.length);
+    }
+  }, [SalesData]);
   async function getAllUserData() {
     setUserLoading(true);
     try {

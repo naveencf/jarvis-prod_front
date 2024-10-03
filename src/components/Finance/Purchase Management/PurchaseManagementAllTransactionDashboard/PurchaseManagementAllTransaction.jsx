@@ -17,12 +17,11 @@ import pdf from "../../pdf-file.png";
 import { baseUrl } from "../../../../utils/config";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import PaymentHistoryDialog from "../../../PaymentHistory/PaymentHistoryDialog";
-
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import { useGlobalContext } from "../../../../Context/Context";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
-import ShowDataModal from "../../Purchase Management/PendingPaymentRequest/Components/ShowDataModal";
+import ShowDataModal from "../PendingPaymentRequest/Components/ShowDataModal";
 import jwtDecode from "jwt-decode";
 import moment from "moment";
 import jsPDF from "jspdf";

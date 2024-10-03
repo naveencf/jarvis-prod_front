@@ -23,6 +23,7 @@ import Loader from "../../../../Finance/Loader/Loader";
 const AccountInfo = () => {
   const [pocCount, setPocCount] = useState(0);
   const [docCount, setDocCount] = useState(0);
+  const [salesLength, setSalesLength] = useState(0);
   const account = useParams();
   const navigate = useNavigate();
   const {
@@ -38,7 +39,7 @@ const AccountInfo = () => {
     }
   };
   return (
-    <div className="AccountInfo"> 
+    <div className="AccountInfo">
       {SingleAccountLoading && <Loader />}
       <div className="sales-sidebar">
         <div className="topbarBrand-1">
@@ -85,7 +86,9 @@ const AccountInfo = () => {
                 <i className="ph">
                   <ChartLineUp weight="duotone" />
                 </i>
-                <span>Sales</span>
+                <span>Sales
+                  <span className="badgeNum">{salesLength}</span>
+                </span>
               </div>
             </div>
             <div className="nav-item nav-item-single">
@@ -162,7 +165,7 @@ const AccountInfo = () => {
         </section>
 
         <section id="SalesView">
-          <SalesBookingDetails SingleAccount={SingleAccount} />
+          <SalesBookingDetails SingleAccount={SingleAccount} setSalesLength={setSalesLength} />
         </section>
 
         <section id="DocumentsView">

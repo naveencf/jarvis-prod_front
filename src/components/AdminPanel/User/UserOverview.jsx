@@ -19,12 +19,15 @@ import Swal from "sweetalert2";
 import { baseUrl } from "../../../utils/config";
 import Loader from "../../Finance/Loader/Loader";
 import ReJoinReusable from "./ReJoinReusable";
+import View from "../Sales/Account/View/View";
+import { constant } from "../../../utils/constants";
 
 const UserOverview = () => {
   const { id } = useParams();
   const whatsappApi = WhatsappAPI();
   const { toastAlert } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(2);
+  const [isLoading, setLoadingUser] = useState(false);
 
   const [search, setSearch] = useState("");
   const [datas, setDatas] = useState([]);
@@ -196,7 +199,7 @@ const UserOverview = () => {
           const decodedToken = jwtDecode(token1);
           const deptId = decodedToken.dept_id;
           const userRole = decodedToken.role_id;
-          const onboardStatus = decodedToken.onboard_status
+          const onboardStatus = decodedToken.onboard_status;
           if (userRole !== 1 && deptId == 36 && onboardStatus == 1) {
             window.open("/admin/sales-dashboard", "_blank");
           } else {
@@ -211,6 +214,7 @@ const UserOverview = () => {
 
   async function getData() {
     try {
+      setLoadingUser(true);
       const response = await axios.get(baseUrl + "get_all_users");
       const data = response.data.data;
 
@@ -233,6 +237,7 @@ const UserOverview = () => {
       throw new Error(error);
     } finally {
       setLoading(false);
+      setLoadingUser(false);
     }
   }
 
@@ -357,135 +362,123 @@ const UserOverview = () => {
     return string?.charAt(0)?.toUpperCase() + string?.slice(1);
   };
 
-  const columns = [
+  const Columns = [
     {
-      field: "id",
-      headerName: "S.No",
-      width: 70,
-      valueGetter :(params) =>{params.row.id + 1},
-      renderCell: (params) => <div>{params.row.id + 1}</div>,
-    },
-    {
-      field: "user_name",
-      headerName: "Employee Name",
-      width: 120,
-      renderCell: (params) => (
-        <Link
-          to={`/admin/user-single/${params.row.user_id}`}
-          style={{ color: "blue" }}
-        >
-          {params.row.user_name}
-        </Link>
-      ),
-      sortable: true,
-    },
-    {
-      field: "user_id",
-      headerName: "Employee ID",
-      width: 130,
-      sortable: true,
-    },
-    {
-      field: "user_login_id",
-      headerName: "Login ID",
-      width: 180,
-      sortable: true,
-      renderCell: (params) => (
-        <span>{capitalizeFirstLetter(params.value)}</span>
-      ),
-    },
-    {
-      field: "Role_name",
-      headerName: "Role",
-      width: 100,
-      sortable: true,
-    },
-    // {
-    //   field: "percentage_filled",
-    //   headerName: "Profile Status",
-    //   width: 110,
-    //   sortable: true,
-    // },
-    {
-      field: "dept_id",
-      headerName: "Major Department",
-      width: 220,
-      sortable: true,
-      valueGetter :(params) => {
-        const department = departmentData.find(
-          (d) => d.dept_id === params.row.dept_id
-        );
-        return department ? department.major_dept_name : "N/A";
-      },
-      renderCell: (params) => {
-        const department = departmentData.find(
-          (d) => d.dept_id === params.row.dept_id
-        );
-        return department ? department.major_dept_name : "N/A";
-      },
-    },
-    {
-      field: "department_name",
-      headerName: "Department",
-      width: 190,
-      sortable: true,
-    },
-    
-    
-    {
-      field: "designation_name",
-      headerName: "Designation",
-      width: 180,
-      sortable: true,
+      key: "Serial_no",
+      name: "S.NO",
+      renderRowCell: (row, index) => index + 1,
+      width: 20,
     },
 
     {
-      field: "job_type",
-      headerName: "Job Type",
-      width: 120,
+      key: "user_name",
+      name: "Employee Name",
+      renderRowCell: (row) => (
+        <Link
+          to={`/admin/user-single/${row.user_id}`}
+          style={{ color: "blue" }}
+        >
+          {row.user_name}
+        </Link>
+      ),
+      width: 100,
+    },
+    {
+      key: "user_id",
+      name: "Employee ID",
+      width: 100,
+    },
+    {
+      key: "user_login_id",
+      name: "Login ID",
+      renderRowCell: (row) => (
+        <span>{capitalizeFirstLetter(row.user_login_id)}</span>
+      ),
+      width: 100,
       sortable: true,
     },
-    { field: "PersonalNumber", headerName: "Personal Contact", width: 150 },
-    { field: "user_email_id", headerName: "Email", width: 230 },
-    { field: "created_by_name", headerName: "Created by Name", width: 200 },
     {
-      field: "created_At",
-      renderCell: (params, index) => (
-        <div>{convertDateToDDMMYYYY(params.row.created_At)} </div>
-      ),
-      headerName: "Creation Date",
-      width: 150,
+      key: "Role_name",
+      name: "Role",
+      width: 100,
     },
     {
-      field: "user_status",
-      headerName: "Status",
+      key: "Major Department",
+      name: "Major Department",
+      renderRowCell: (row) => {
+        const department = departmentData.find(
+          (d) => d.dept_id === row.dept_id
+        );
+        return department ? department.major_dept_name : "N/A";
+      },
       width: 100,
-      renderCell: (params) => (
+      sortable: true,
+    },
+    {
+      key: "department_name",
+      name: "Department",
+      width: 100,
+    },
+    {
+      key: "designation_name",
+      name: "Designation",
+      width: 100,
+    },
+    {
+      key: "job_type",
+      name: "Job Type",
+      width: 100,
+    },
+    {
+      key: "PersonalNumber",
+      name: "Personal Contact",
+      width: 100,
+    },
+    {
+      key: "user_email_id",
+      name: "Email",
+      width: 100,
+    },
+    {
+      key: "created_by_name",
+      name: "Created by Name",
+      width: 100,
+    },
+    {
+      key: "created_At",
+      name: "Creation Date",
+      renderRowCell: (row) => (
+        <div>{convertDateToDDMMYYYY(row.created_At)} </div>
+      ),
+      width: 100,
+      sortable: true,
+    },
+    {
+      key: "user_status",
+      name: "Status",
+      renderRowCell: (row) => (
         <>
-          {params.row.user_status === "Active" ? (
+          {row.user_status === "Active" ? (
             <span className="badge badge-success">Active</span>
-          ) : params.row.user_status === "Exit" ||
-            params.row.user_status === "On Leave" ? (
-            <span className="badge badge-warning">
-              {params.row.user_status}
-            </span>
-          ) : params.row.user_status === "Resign" ? (
+          ) : row.user_status === "Exit" || row.user_status === "On Leave" ? (
+            <span className="badge badge-warning">{row.user_status}</span>
+          ) : row.user_status === "Resign" ? (
             <span className="badge badge-danger">Resigned</span>
+          ) : row.user_status === "Bot" ? (
+            <span className="badge badge-danger">Bot(Testing)</span>
           ) : null}
         </>
       ),
+      width: 100,
+      sortable: true,
     },
     {
-      field: "auth",
-      headerName: "Auth",
-
-      width: 90,
-      renderCell: (params) => (
+      key: "auth",
+      name: "Auth",
+      renderRowCell: (row) => (
         <>
-          {contextData &&
-            contextData[0] &&
-            contextData[3].update_value === 1 && (
-              <Link to={`/admin/user-auth-detail/${params.row.user_id}`}>
+          {roleToken == constant.CONST_ADMIN_ROLE &&(
+              <Link to={`/admin/user-auth-detail/${row.user_id}`}>
                 <button
                   className="btn cmnbtn btn_sm btn-outline-primary"
                   variant="outline"
@@ -497,63 +490,64 @@ const UserOverview = () => {
             )}
         </>
       ),
+      width: 100,
     },
     // {
-    //   field: "kra",
-    //   headerName: "KRA",
-    //   width: 90,
-    //   renderCell: (params) => (
-    //     <>
-    //       {contextData &&
-    //         contextData[0] &&
+    //     key: "kra",
+    //     name: "KRA",
+    //     renderRowCell: (row) => (
+    //       <>
+    //             {contextData &&
+    //          contextData[0] &&
     //         contextData[3].update_value === 1 && (
     //           <button
     //             className="btn cmnbtn btn_sm btn-outline-primary"
-    //             onClick={() => handleKRA(params.row.user_id)}
+    //             onClick={() => handleKRA(row.user_id)}
     //           >
     //             KRA
-    //           </button>
-    //         )}
-    //     </>
-    //   ),
-    // },
+    //            </button>
+    //          )}
+    //       </>
+    //     ),
+    //     width: 100,
+    //   },
+
     {
-      field: "log",
-      headerName: "Log",
-      width: 80,
-      renderCell: (params) => (
+      key: "log",
+      name: "Log",
+      renderRowCell: (row) => (
         <Button
           variant="outlined"
           className="btn cmnbtn btn_sm btn-outline-primary"
           startIcon={<RiLoginBoxLine />}
           onClick={() =>
-            handleLogin(
-              params.row.user_id,
-              params.row.user_login_id,
-              params.row.user_login_password
-            )
+            handleLogin(row.user_id, row.user_login_id, row.user_login_password)
           }
         ></Button>
       ),
+      width: 100,
+      sortable: true,
     },
     // {
-    //   field: "transfer_res",
-    //   headerName: "Transfer Res",
-    //   width: 110,
-    //   renderCell: (params) => (
-    //     <button
+    //     key: "transfer_res",
+    //     name: "Transfer Res",
+    //     renderRowCell: (row) =>
+    //           <button
     //       className="btn cmnbtn btn_sm btn-outline-danger"
-    //       onClick={() => handleTransfer(params.row.user_id)}
+    //       onClick={() => handleTransfer(row.user_id)}
     //     >
     //       Transfer
-    //     </button>
-    //   ),
-    // },
+    //     </button>,
+    //     width: 100,
+    //     sortable: true,
+    //   },
+
     {
-      field: "separation",
-      headerName: "Separation",
-      width: 100,
-      renderCell: (params) => (
+      key: "separation",
+      name: "Separation",
+      renderRowCell: (row) => (
+        <>
+        {row.user_id !== 889 && (
         <button
           className="btn cmnbtn btn_sm btn-outline-primary"
           data-toggle="modal"
@@ -563,94 +557,100 @@ const UserOverview = () => {
           color="primary"
           onClick={() =>
             handleSeprationReason(
-              params.row.user_id,
-              params.row.user_name,
-              params.row.user_contact_no
+              row.user_id,
+              row.user_name,
+              row.user_contact_no
             )
           }
         >
           Sep
         </button>
+      )} 
+      </>
       ),
+      width: 100,
+      sortable: true,
     },
 
     // {
-    //   field: "Summary",
-    //   headerName: "Summary",
-    //   width: 100,
-    //   renderCell: (params) => (
+    //   key: "Summary",
+    //   name: "Summary",
+    //   renderRowCell: (row) =>
     //     <button
-    //       className="btn cmnbtn btn_sm btn-outline-secondary"
-    //       variant="contained"
-    //       color="warning"
-    //       onClick={() => handleUpdateSummary(params.row.user_id)}
-    //     >
-    //       Summary
-    //     </button>
-    //   ),
+    //   className="btn cmnbtn btn_sm btn-outline-secondary"
+    //   variant="contained"
+    //   color="warning"
+    //   onClick={() => handleUpdateSummary(row.user_id)}
+    // >
+    //   Summary
+    // </button>
+    //       ,
+    //   width: 100,
+    //   sortable: true,
     // },
-
     {
-      field: "actions",
-      headerName: "Action",
-      width: 100,
-      renderCell: (params) => (
-        <>
+      key: "Action_edits",
+      name: "Actions",
+      renderRowCell: (row) => (
+        <div className="flex-row">
           {contextData &&
             contextData[0] &&
-            contextData[0].update_value === 1 && (
-              <Link to={`/admin/user-update/${params.row.user_id}`}>
+            contextData[0].update_value === 1 &&
+            row.user_id !== 889 && ( 
+              <Link to={`/admin/user-update/${row.user_id}`}>
                 <div className="icon-1">
                   <i className="bi bi-pencil" />
                 </div>
               </Link>
             )}
+
           {/* {contextData &&
             contextData[0] &&
             contextData[0].delete_flag_value === 1 && (
               <div
                 className="icon-1"
-                onClick={() => handleDelete(params.row.user_id)}
+                onClick={() => handleDelete(row.user_id)}
               >
                 <i className="bi bi-trash" />
               </div>
             )} */}
-        </>
+        </div>
       ),
+      width: 100,
     },
-
     {
-      field: "Re-Join",
-      headerName: "Re-Join",
-      // width: 100,
-      renderCell: (params) =>
-        params.row.user_status === "Exit" && (
+      key: "Re-Join",
+      name: "Re-Join",
+      renderRowCell: (row) =>
+        row.user_status === "Exit" && (
           <button
             className="btn cmnbtn btn_sm btn-outline-danger"
-            onClick={() => handleReJoin(params.row.user_id)}
+            onClick={() => handleReJoin(row.user_id)}
           >
             Re-Join
           </button>
         ),
+      width: 100,
+      sortable: true,
     },
-
     // {
-    //   field: "User Map",
-    //   headerName: "User Map",
-    //   width: 100,
-    //   renderCell: (params) => (
+    //   key: "User Map",
+    //   name: "User Map",
+    //   renderRowCell: (row) =>
     //     <Button
-    //       className="btn btn-success"
-    //       data-toggle="modal"
-    //       data-target="#mapModal"
-    //       size="small"
-    //       variant="contained"
-    //       color="success"
-    //       onClick={() => setMap1(params.row)}
-    //     >
-    //       Open Map
-    //     </Button>
-    //   ),
+    //   className="btn btn-success"
+    //   data-toggle="modal"
+    //   data-target="#mapModal"
+    //   size="small"
+    //   variant="contained"
+    //   color="success"
+    //   onClick={() => setMap1(row)}
+    // >
+    //   Open Map
+    // </Button>
+    //         ,
+    //   width: 100,
+    //   sortable: true,
     // },
   ];
 
@@ -775,14 +775,14 @@ const UserOverview = () => {
               Hobbies
             </button>
           </Link>
-          <Link to="/admin/reason">
+          {/* <Link to="/admin/reason">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Reason
             </button>
-          </Link>
+          </Link> */}
           <Link to="/admin/role-overview">
             <button type="button" className="btn btn-outline-primary btn-sm">
-              User Roles
+              Roles
             </button>
           </Link>
 
@@ -793,7 +793,7 @@ const UserOverview = () => {
               </button>
             </Link>
           )}
-          {contextData &&
+          {/* {contextData &&
             contextData[10] &&
             contextData[10].view_value === 1 && (
               <Link to="/admin/designation-overview">
@@ -804,9 +804,9 @@ const UserOverview = () => {
                   Designation
                 </button>
               </Link>
-            )}
+            )} */}
 
-          {contextData &&
+          {/* {contextData &&
             contextData[18] &&
             contextData[18].insert_value === 1 && (
               <Link to="/admin/pre-onboarding">
@@ -814,7 +814,7 @@ const UserOverview = () => {
                   Add Pre Onboarding
                 </button>
               </Link>
-            )}
+            )} */}
           {contextData &&
             contextData[0] &&
             contextData[0].insert_value === 1 && (
@@ -823,7 +823,7 @@ const UserOverview = () => {
                   type="button"
                   className="btn btn-outline-primary btn-sm"
                 >
-                  Add New User
+                  Add User
                 </button>
               </Link>
             )}
@@ -862,165 +862,111 @@ const UserOverview = () => {
         </div>
       </div>
 
-      {isloading ? (
-        <Loader />
-      ) : (
-        //  Active inActive toggle button here
-        <>
-          <div className="tab mt16">
-            <button
-              className={`named-tab ${activeButton === 1 ? "active-tab" : ""}`}
-              onClick={() => handleRadioChange(1)}
-            >
-              All
-            </button>
-            <button
-              className={`named-tab ${activeButton === 2 ? "active-tab" : ""}`}
-              onClick={() => handleRadioChange(2)}
-            >
-              Active
-            </button>
-            <button
-              className={`named-tab ${activeButton === 3 ? "active-tab" : ""}`}
-              onClick={() => handleRadioChange(3)}
-            >
-              Exit
-            </button>
-          </div>
-          {/* <div className="pack w-100 justify-content-end d-flex p-2 ">
-            <div
-              className="btn-group ml-3 mb-1"
-              role="group"
-              aria-label="Basic radio toggle button group"
-            >
-              <input
-                type="radio"
-                className="btn-check"
-                name="btnradio"
-                id="btnradio1"
-                checked={activeButton === 1}
-                onChange={() => handleRadioChange(1)}
-              />
-              <label
-                className="btn btn-outline-info"
-                style={{
-                  borderTopRightRadius: "20pxpx",
-                  borderBottomRightRadius: "20px",
-                }}
-                htmlFor="btnradio1"
-              >
-                All
-              </label>
+      {/* //  Active inActive toggle button here */}
+      <>
+        <div className="tab mt16">
+          <button
+            className={`named-tab ${activeButton === 1 ? "active-tab" : ""}`}
+            onClick={() => handleRadioChange(1)}
+          >
+            All
+          </button>
+          <button
+            className={`named-tab ${activeButton === 2 ? "active-tab" : ""}`}
+            onClick={() => handleRadioChange(2)}
+          >
+            Active
+          </button>
+          <button
+            className={`named-tab ${activeButton === 3 ? "active-tab" : ""}`}
+            onClick={() => handleRadioChange(3)}
+          >
+            Exit
+          </button>
+        </div>
 
-              <input
-                type="radio"
-                className="btn-check"
-                name="btnradio"
-                id="btnradio2"
-                checked={activeButton === 2}
-                onChange={() => handleRadioChange(2)}
-              />
-              <label className="btn btn-outline-info" htmlFor="btnradio2">
-                Active
-              </label>
-
-              <input
-                type="radio"
-                className="btn-check"
-                name="btnradio"
-                id="btnradio3"
-                checked={activeButton === 3}
-                onChange={() => handleRadioChange(3)}
-              />
-              <label className="btn btn-outline-info" htmlFor="btnradio3">
-                Exit
-              </label>
-            </div>
-          </div> */}
-          <div className="card">
-            <div className="card-body">
-              <div className="row thm_form">
-                <div className="form-group col-3">
-                  <label className="form-label">Department Name</label>
-                  <Select
-                    options={[
-                      { value: "", label: "All" },
-                      ...departmentData.map((option) => ({
-                        value: option.dept_id,
-                        label: option.dept_name,
-                      })),
-                    ]}
-                    value={
-                      departmentFilter === ""
-                        ? { value: "", label: "All" }
-                        : {
-                            value: departmentFilter,
-                            label:
-                              departmentData.find(
-                                (dept) => dept.dept_id === departmentFilter
-                              )?.dept_name || "Select...",
-                          }
+        <div className="card">
+          <div className="card-body">
+            <div className="row thm_form">
+              <div className="form-group col-3">
+                <label className="form-label">Department Name</label>
+                <Select
+                  options={[
+                    { value: "", label: "All" },
+                    ...departmentData.map((option) => ({
+                      value: option.dept_id,
+                      label: option.dept_name,
+                    })),
+                  ]}
+                  value={
+                    departmentFilter === ""
+                      ? { value: "", label: "All" }
+                      : {
+                          value: departmentFilter,
+                          label:
+                            departmentData.find(
+                              (dept) => dept.dept_id === departmentFilter
+                            )?.dept_name || "Select...",
+                        }
+                  }
+                  onChange={(selectedOption) => {
+                    const selectedValue = selectedOption
+                      ? selectedOption.value
+                      : "";
+                    setDepartmentFilter(selectedValue);
+                    if (selectedValue === "") {
+                      getData();
                     }
-                    onChange={(selectedOption) => {
-                      const selectedValue = selectedOption
-                        ? selectedOption.value
-                        : "";
-                      setDepartmentFilter(selectedValue);
-                      if (selectedValue === "") {
-                        getData();
-                      }
-                    }}
-                    required
-                  />
-                </div>
+                  }}
+                  required
+                />
+              </div>
 
-                <div className="form-group col-3">
-                  <label className="form-label">Designation</label>
-                  <Select
-                    options={[
-                      { value: "", label: "All" },
-                      ...designationData.map((option) => ({
-                        value: option.desi_id,
-                        label: option.desi_name,
-                      })),
-                    ]}
-                    value={
-                      designationFilter === ""
-                        ? { value: "", label: "All" }
-                        : {
-                            value: designationFilter,
-                            label:
-                              designationData.find(
-                                (option) => option.desi_id === designationFilter
-                              )?.desi_name || "Select...",
-                          }
+              <div className="form-group col-3">
+                <label className="form-label">Designation</label>
+                <Select
+                  options={[
+                    { value: "", label: "All" },
+                    ...designationData.map((option) => ({
+                      value: option.desi_id,
+                      label: option.desi_name,
+                    })),
+                  ]}
+                  value={
+                    designationFilter === ""
+                      ? { value: "", label: "All" }
+                      : {
+                          value: designationFilter,
+                          label:
+                            designationData.find(
+                              (option) => option.desi_id === designationFilter
+                            )?.desi_name || "Select...",
+                        }
+                  }
+                  onChange={(selectedOption) => {
+                    const newValue = selectedOption ? selectedOption.value : "";
+                    setDesignationFilter(newValue);
+                    if (newValue === "") {
+                      designationAPI();
                     }
-                    onChange={(selectedOption) => {
-                      const newValue = selectedOption
-                        ? selectedOption.value
-                        : "";
-                      setDesignationFilter(newValue);
-                      if (newValue === "") {
-                        designationAPI();
-                      }
-                    }}
-                    required
-                  />
-                </div>
+                  }}
+                  required
+                />
+              </div>
 
-                <div className="form-group col-3">
-                  <label className="form-label">Job Type</label>
-                  <Select
-                    value={jobTypeOptions.find(
-                      (option) => option.value === jobType
-                    )}
-                    onChange={(selectedOption) => {
-                      setJobType(selectedOption.value);
-                    }}
-                    options={jobTypeOptions}
-                  />
-                </div>
-                <div className="form-group col-3">
+              <div className="form-group col-3">
+                <label className="form-label">Job Type</label>
+                <Select
+                  value={jobTypeOptions.find(
+                    (option) => option.value === jobType
+                  )}
+                  onChange={(selectedOption) => {
+                    setJobType(selectedOption.value);
+                  }}
+                  options={jobTypeOptions}
+                />
+              </div>
+              {/* <div className="form-group col-3">
                   <FieldContainer
                     fieldGrid={12}
                     label="Search"
@@ -1028,16 +974,16 @@ const UserOverview = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
-                </div>
-              </div>
+                </div> */}
             </div>
           </div>
-          <div className="card">
-            <div
-              className="data_tbl card-body thm_table"
-              style={{ height: "64vh", width: "100%" }}
-            >
-              <DataGrid
+        </div>
+        <div className="">
+          <div
+            className=" "
+            // style={{ height: "64vh", width: "100%" }}
+          >
+            {/* <DataGrid
                 rows={filterdata.map((data, index) => ({ ...data, id: index }))}
                 columns={columns}
                 pageSize={10}
@@ -1048,11 +994,19 @@ const UserOverview = () => {
                 slots={{
                   toolbar: GridToolbar,
                 }}
-              />
-            </div>
+              /> */}
+            <View
+              columns={Columns}
+              data={filterdata}
+              isLoading={isLoading}
+              title={"User Overview"}
+              // rowSelectable={true}
+              pagination={[100, 200]}
+              tableName={"User Overview"}
+            />
           </div>
-        </>
-      )}
+        </div>
+      </>
 
       {/* Modal here  */}
       <div
@@ -1219,15 +1173,14 @@ const UserOverview = () => {
                   onChange={(e) => setSeparationReinstateDate(e.target.value)}
                 />
               )}
-             
-              
+
               {/* {separationStatus == "Resigned" && ( */}
-                <FieldContainer
-                  label="Resignation Date"
-                  type="date"
-                  value={separationResignationDate}
-                  onChange={(e) => setSeparationResignationDate(e.target.value)}
-                />
+              <FieldContainer
+                label="Resignation Date"
+                type="date"
+                value={separationResignationDate}
+                onChange={(e) => setSeparationResignationDate(e.target.value)}
+              />
               {/* )} */}
             </div>
             <div className="modal-footer">

@@ -169,6 +169,10 @@ const ViewSaleBooking = () => {
   const closeModal = () => {
     setExecutionModal(false);
   };
+  const incentiveFilterOption = [
+    { value: "un-earned", label: "Un-Earned" },
+    { value: "earned", label: "Earned" },
+  ]
 
   const renderModalComponent = (modalComp) => {
     switch (modalComp) {
@@ -321,7 +325,7 @@ const ViewSaleBooking = () => {
     {
       key: "campaign_amount",
       name: "Campaign Amount / Net Amount",
-      renderRowCell: (row) => row.campaign_amount + "₹",
+      renderRowCell: (row) => row.campaign_amount,
       showCol: true,
       width: 100,
       getTotal: true,
@@ -350,7 +354,7 @@ const ViewSaleBooking = () => {
     {
       key: "base_amount",
       name: "Base Amount",
-      renderRowCell: (row) => row.base_amount + "₹",
+      renderRowCell: (row) => row.base_amount,
       showCol: true,
       width: 100,
       getTotal: true,
@@ -387,7 +391,7 @@ const ViewSaleBooking = () => {
     {
       key: "gst_amount",
       name: "GST Amount",
-      renderRowCell: (row) => (row.gst_amount ? row.gst_amount : 0) + "₹",
+      renderRowCell: (row) => row.gst_amount,
       showCol: true,
       width: 100,
       getTotal: true,
@@ -397,7 +401,7 @@ const ViewSaleBooking = () => {
       compare: true,
       name: "Approved Amount",
       renderRowCell: (row) =>
-        row.approved_amount ? row.approved_amount + "₹" : "0₹",
+        row.approved_amount,
       width: 100,
       getTotal: true,
 
@@ -421,9 +425,9 @@ const ViewSaleBooking = () => {
       key: "requested_amount",
       name: "Requested Amount",
       renderRowCell: (row) =>
-        row?.requested_amount ? row.requested_amount + "₹" : "0 ₹",
+        row?.requested_amount,
       colorRow: (row) => {
-        if (row?.approved_amount > 0) {
+        if (row?.incentive_earning_status === "earned") {
           return "#c4fac4";
         } else {
           return "#ffff008c";
@@ -438,9 +442,7 @@ const ViewSaleBooking = () => {
       key: "Outstanding_Amount",
       name: "Outstanding Amount",
       renderRowCell: (row) =>
-        row.campaign_amount - row.requested_amount
-          ? (row.campaign_amount - row.approved_amount).toFixed(2) + "₹"
-          : "0",
+        row.campaign_amount - row.approved_amount,
       width: 100,
       getTotal: true,
       compare: true,
@@ -609,14 +611,14 @@ const ViewSaleBooking = () => {
       width: 100,
       renderRowCell: (row) => (
         <div className="flex-row">
-          <Link
+          {row.incentive_earning_status === "un-earned" && <Link
             title="Edit sale booking"
             to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
           >
             <div className="icon-1">
               <i class="bi bi-pencil" />
             </div>
-          </Link>
+          </Link>}
 
           {loginUserRole == 1 && (
             <button
@@ -771,17 +773,9 @@ const ViewSaleBooking = () => {
           <CustomSelect
             label="Incentive Status"
             fieldGrid={4}
-            dataArray={allSaleBooking?.filter(
-              (value, index, self) =>
-                index ===
-                self?.findIndex(
-                  (t) =>
-                    t.incentive_earning_status ===
-                    value.incentive_earning_status
-                )
-            )}
-            optionId="incentive_earning_status"
-            optionLabel="incentive_earning_status"
+            dataArray={incentiveFilterOption}
+            optionId="value"
+            optionLabel="label"
             selectedId={filterByIncentive}
             setSelectedId={setFilterByIncentive}
           />

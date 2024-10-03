@@ -36,3 +36,14 @@
     border: none;
     outline: none;
   }
+  .count-btn-plan-making{
+    border: none;
+    padding: 0.3rem;
+    background-color: transparent;
+    color: blue;
+    text-decoration: underline;
+  }
+  .list-container-plan-making{
+    border: 1px solid lightgray;
+
+  }

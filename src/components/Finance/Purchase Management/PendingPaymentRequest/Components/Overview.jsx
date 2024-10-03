@@ -10,7 +10,6 @@ import {
   TextField,
   InputAdornment,
 } from "@mui/material";
-// import pdf from "./pdf-file.png";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -20,39 +19,6 @@ const Overview = (props) => {
   const [overviewListData, setOverviewListData] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
-
-  // const filterData = () => {
-  //   switch (selectedRange) {
-  //     case "0-10k":
-  //       setFilteredData(
-  //         pendingReqData?.filter((data) => data?.balance_amount <= 10000)
-  //       );
-  //       break;
-  //     case "10k-50k":
-  //       setFilteredData(
-  //         pendingReqData?.filter(
-  //           (data) =>
-  //             data?.balance_amount > 10000 && data?.balance_amount <= 50000
-  //         )
-  //       );
-  //       break;
-  //     case "50k-100k":
-  //       setFilteredData(
-  //         pendingReqData?.filter(
-  //           (data) =>
-  //             data?.balance_amount > 50000 && data?.balance_amount <= 100000
-  //         )
-  //       );
-  //       break;
-  //     case "100k-above":
-  //       setFilteredData(
-  //         pendingReqData?.filter((data) => data?.balance_amount > 100000)
-  //       );
-  //       break;
-  //     default:
-  //       setFilteredData(pendingReqData);
-  //   }
-  // };
 
   const calculateTotalAmount = (data) => {
     return data?.reduce(
@@ -344,6 +310,84 @@ const Overview = (props) => {
                   {calculateTotalAmount(
                     data?.filter((item) => item.balance_amount >= 100000)
                   )}
+                </td>
+              </tr>
+              <tr>
+                <td style={{ color: "#bfbfbf" }}>Total</td>
+                <td>
+                  <a
+                    style={{
+                      cursor: "pointer",
+                      marginRight: "20px",
+                      color: "#bfbfbf",
+                    }}
+                  >
+                    {/* Total count by summing up filtered lengths */}
+                    {[
+                      data?.filter((item) => item.balance_amount <= 10000)
+                        .length,
+                      data?.filter(
+                        (item) =>
+                          item.balance_amount >= 10000 &&
+                          item.balance_amount <= 20000
+                      ).length,
+                      data?.filter(
+                        (item) =>
+                          item.balance_amount >= 20000 &&
+                          item.balance_amount <= 30000
+                      ).length,
+                      data?.filter(
+                        (item) =>
+                          item.balance_amount >= 30000 &&
+                          item.balance_amount <= 40000
+                      ).length,
+                      data?.filter(
+                        (item) =>
+                          item.balance_amount >= 40000 &&
+                          item.balance_amount <= 50000
+                      ).length,
+                      data?.filter(
+                        (item) =>
+                          item.balance_amount >= 50000 &&
+                          item.balance_amount <= 100000
+                      ).length,
+                      data?.filter((item) => item.balance_amount >= 100000)
+                        .length,
+                    ].reduce((acc, curr) => acc + curr, 0)}
+                  </a>
+                </td>
+                <td style={{ color: "#bfbfbf" }}>
+                  {" "}
+                  {/* Total amount by summing up the amounts from each condition */}
+                  {calculateTotalAmount([
+                    ...data?.filter((item) => item.balance_amount <= 10000),
+                    ...data?.filter(
+                      (item) =>
+                        item.balance_amount >= 10000 &&
+                        item.balance_amount <= 20000
+                    ),
+                    ...data?.filter(
+                      (item) =>
+                        item.balance_amount >= 20000 &&
+                        item.balance_amount <= 30000
+                    ),
+                    ...data?.filter(
+                      (item) =>
+                        item.balance_amount >= 30000 &&
+                        item.balance_amount <= 40000
+                    ),
+                    ...data?.filter(
+                      (item) =>
+                        item.balance_amount >= 40000 &&
+                        item.balance_amount <= 50000
+                    ),
+                    ...data?.filter(
+                      (item) =>
+                        item.balance_amount >= 50000 &&
+                        item.balance_amount <= 100000
+                    ),
+                    ...data?.filter((item) => item.balance_amount >= 100000),
+                  ])}
                 </td>
               </tr>
             </tbody>

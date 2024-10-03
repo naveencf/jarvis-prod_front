@@ -77,7 +77,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -125,7 +125,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -163,7 +163,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold doc.setTextColor('#3742FA');
@@ -256,7 +256,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -310,7 +310,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const invoicetable = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -346,7 +346,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 140);
     doc.text('TDS', doc.internal.pageSize.width - 70, 150);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 140); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 150); // Black color and bold
@@ -443,7 +443,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -502,7 +502,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -540,7 +540,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -595,7 +595,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -690,7 +690,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -728,7 +728,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -781,7 +781,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -876,7 +876,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary],
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)],
 
     ]; // Table data
 
@@ -914,7 +914,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -970,7 +970,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -1065,7 +1065,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -1103,7 +1103,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -1200,7 +1200,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -1253,7 +1253,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -1291,7 +1291,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -1386,7 +1386,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -1439,7 +1439,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -1477,7 +1477,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -1572,7 +1572,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -1628,7 +1628,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -1667,7 +1667,7 @@ export const Template = {
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
 
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold
@@ -1758,7 +1758,7 @@ export const Template = {
     const invoiceDate = getLastDateOfMonth(data?.month);
     const email = data?.user_email_id;
     const phone = "Contact No: "+data?.user_contact_no;
-    const name = data?.beneficiary_name;
+    const name = data?.user_name;
     const block = data?.permanent_address;
     const statecity = data?.permanent_city + " , " + data?.permanent_state;
     const pincode1 = (data?.permanent_pin_code || "").toString();
@@ -1814,7 +1814,7 @@ export const Template = {
 
     const headers = [['Description', 'Price', 'Total']]; // Table headers
     const coldata = [
-      [data?.billing_header_name, data?.net_salary, data?.net_salary]
+      [data?.billing_header_name, data?.net_salary?.toFixed(0), data?.net_salary?.toFixed(0)]
 
     ]; // Table data
 
@@ -1852,7 +1852,7 @@ export const Template = {
     doc.text('Sub Total:', doc.internal.pageSize.width - 70, 110 + 25 * coldata.length);
     doc.text('TDS', doc.internal.pageSize.width - 70, 120 + 25 * coldata.length);
     doc.setTextColor("#505050")
-    const subtotal = data?.net_salary;
+    const subtotal = data?.net_salary?.toFixed(0);
     const tds_deduction = data?.tds_deduction;
     doc.text(subtotal.toString(), handelrightalign(subtotal.toString(), 12), 110 + 25 * coldata.length); // Black color and bold
     doc.text(tds_deduction.toString(), handelrightalign(tds_deduction.toString(), 12), 120 + 25 * coldata.length); // Black color and bold doc.setTextColor('#3742FA');

@@ -7,9 +7,10 @@ import { Accordion } from "@mui/material";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import View from "./Account/View/View";
+import { useEffect } from "react";
+import { Log } from "@phosphor-icons/react";
 
 const TargetCard = ({ data, totalSaleAmountDateWise }) => {
-
   const loginUserRole = getDecodedToken().role_id;
   const finalTargetAmount = data?.target_amount || 0;
 
@@ -18,31 +19,54 @@ const TargetCard = ({ data, totalSaleAmountDateWise }) => {
       ? totalSaleAmountDateWise[0]?.totalCampaignAmount
       : 0;
   const columns = [
-    { key: "S.no", name: "S.no", renderRowCell: (row, index) => index + 1, width: 70, },
-    { key: "campaignAmount", name: "Sales Amount", width: 200, },
-    { key: "sales_executive_name", name: "Sales Executive Name", width: 200, },
-    { key: "totalSaleBookingCounts", name: "Total Sale Booking Counts", width: 200, },
     {
-      key: "Contribution", name: "Contribution", renderRowCell: (row) => {
-        return `${((row.campaignAmount / currentSaleAmount) * 100).toFixed(2)}%`
-      }, width: 200, compare: true
+      key: "S.no",
+      name: "S.no",
+      renderRowCell: (row, index) => index + 1,
+      width: 70,
     },
-
+    { key: "campaignAmount", name: "Sales Amount", width: 200 },
+    { key: "sales_executive_name", name: "Sales Executive Name", width: 200 },
+    {
+      key: "totalSaleBookingCounts",
+      name: "Total Sale Booking Counts",
+      width: 200,
+    },
+    {
+      key: "Contribution",
+      name: "Contribution",
+      renderRowCell: (row) => {
+        return `${((row.campaignAmount / finalTargetAmount) * 100).toFixed(
+          2
+        )}%`;
+      },
+      width: 200,
+      compare: true,
+    },
   ];
+
+  function updateProgress(percent) {
+    console.log("percent", percent);
+
+    document.documentElement.style.setProperty('--LinearProgress-percent', percent);
+  }
+
+  useEffect(() => {
+    updateProgress((currentSaleAmount / finalTargetAmount) * 100);
+  }
+    , [currentSaleAmount, finalTargetAmount]);
+
 
   return (
     <div className="row">
       <div className="col-12">
-        <div className="card target-card">
+        <div className="card cardAccordion target-card">
           <div className="card-header">
             <h5 className="card-title">{data?.competition_name || "N/A"}</h5>
           </div>
           <Accordion>
-            <AccordionSummary
-              aria-controls="panel1-content"
-              id="panel1-header"
-            >
-              <div className="card-body">
+            <AccordionSummary aria-controls="panel1-content" id="panel1-header">
+              <div className="card-body pl0 pr0">
                 <div className="saletargetWrapper">
                   {loginUserRole === 1 && (
                     <div className="saletargetHead">
@@ -67,7 +91,10 @@ const TargetCard = ({ data, totalSaleAmountDateWise }) => {
                     <h5>
                       Completed:{" "}
                       <span>
-                        {((currentSaleAmount / finalTargetAmount) * 100).toFixed(2)}{" "}
+                        {(
+                          (currentSaleAmount / finalTargetAmount) *
+                          100
+                        ).toFixed(2)}{" "}
                         %
                       </span>
                     </h5>
@@ -89,7 +116,6 @@ const TargetCard = ({ data, totalSaleAmountDateWise }) => {
                     </div>
                     <LinearProgress
                       variant="determinate"
-
                       value={(currentSaleAmount / finalTargetAmount) * 100}
                     />
                   </div>
@@ -104,14 +130,10 @@ const TargetCard = ({ data, totalSaleAmountDateWise }) => {
                 title={"Sales User Contribution"}
                 tableName={"Sales User Contribution in dashboard"}
                 isLoading={false}
-                component={
-                  buttonTab
-                }
+                component={buttonTab}
               />
             </AccordionDetails>
           </Accordion>
-
-
         </div>
       </div>
     </div>
@@ -123,7 +145,7 @@ function buttonTab() {
     <div className="icon-1">
       <i className="bi bi-trash"></i>
     </div>
-  )
+  );
 }
 
 export default TargetCard;

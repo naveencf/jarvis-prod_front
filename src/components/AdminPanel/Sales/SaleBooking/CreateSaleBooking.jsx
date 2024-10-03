@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 import { useGlobalContext } from "../../../../Context/Context";
@@ -33,12 +33,13 @@ import {
 } from "../../../Store/API/Sales/CreditApprovalApi";
 
 import CampaignModal from "./CampaignModal";
-import { set } from "date-fns";
 import Loader from "../../../Finance/Loader/Loader";
 import EditCampaign from "./EditCampaign";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import convertNumberToIndianString from "../../../../utils/convertNumberToIndianString";
 import SalesSubmitDialog from "./SalesSubmitDialog";
+import ShareIncentive from "../Account/ShareIncentive";
+import FetchSheet from "./FetchSheet";
 
 const todayDate = new Date().toISOString().split("T")[0];
 
@@ -123,11 +124,12 @@ const CreateSaleBooking = () => {
   const [balancePayDate, setBalancePayDate] = useState("");
   // const [executiveSelfCredit, setExecutiveSelfCredit] = useState(false);
   const [excelFile, setExcelFile] = useState(null);
-  const [fileName, setFileName] = useState("");
   const [incentiveCheck, setIncentiveCheck] = useState(false);
   const [recServices, setRecServices] = useState([]);
   const [gstAvailable, setGstAvailable] = useState();
-  const [campaignModal, setCampaignModal] = useState(false);
+  const [modalContentType, setModalContentType] = useState(false);
+  const [incentiveSharing, setIncentiveSharing] = useState([]);
+  const [planLink, setPlanLink] = useState("");
   const [isValidRec, setIsValidRec] = useState([
     {
       sale_booking_id: false,
@@ -182,7 +184,6 @@ const CreateSaleBooking = () => {
   ];
   const logToken = sessionStorage.getItem("token");
 
-  console.log(salesdata, "harshal");
   const {
     data: singleDocumentOverviewData,
     error: singleDocumentOverviewError,
@@ -210,7 +211,7 @@ const CreateSaleBooking = () => {
     };
 
     fetchcampaign();
-  }, [campaignModal, allCreditApprovals]);
+  }, [modalContentType, allCreditApprovals]);
 
   useEffect(() => {
     if (gstData) {
@@ -393,6 +394,8 @@ const CreateSaleBooking = () => {
     return errors;
   };
 
+
+
   useEffect(() => {
     if (
       singleDocumentOverviewData?.data?.length > 0 &&
@@ -541,6 +544,7 @@ const CreateSaleBooking = () => {
         return;
       }
       const formData = new FormData();
+      formData.append("plan_link", planLink);
       formData.append("account_id", selectedAccount);
       formData.append("sale_booking_date", bookingDate);
       formData.append("base_amount", baseAmount);
@@ -586,6 +590,8 @@ const CreateSaleBooking = () => {
         return;
       }
 
+      (incentiveSharing.length > 0) ? (formData.append("is_incentive_sharing", true), formData.append("incentiveSharingArray", JSON.stringify(incentiveSharing))) : formData.append("is_incentive_sharing", false);
+
       if (editId === undefined) {
         formData.append("created_by", loginUserId);
         formData.append("record_services", JSON.stringify(recServices));
@@ -608,6 +614,9 @@ const CreateSaleBooking = () => {
         await updateRecordServices({
           id: editId,
           record_services: recServices,
+          is_incentive_sharing: incentiveSharing.length > 1,
+          incentiveSharingArray: incentiveSharing,
+          old_sales_booking_created_by: salesdata.created_by,
           updated_by: loginUserId,
         }).unwrap();
       }
@@ -616,7 +625,7 @@ const CreateSaleBooking = () => {
         `Sale booking ${editId ? "updated" : "created"} successfully.`
       );
       setSubmitDialog(true);
-      openModal();
+      openModal("SalesSumitDialog");
 
       // if (selectedPaymentStatus?.value === "sent_for_payment_approval") {
       //   navigate(`/admin/create-payment-update/0`, {
@@ -681,13 +690,14 @@ const CreateSaleBooking = () => {
     ]);
   };
 
-  const openModal = () => {
-    setCampaignModal(true);
+  const openModal = (contentType) => {
+    setModalContentType(contentType);
   };
 
   const closeModal = () => {
-    setCampaignModal(false);
+    setModalContentType(null);
   };
+
   useEffect(() => {
     if (selectedBrand !== null) {
       setIsValidate((prev) => ({ ...prev, selectedBrand: false }));
@@ -719,12 +729,53 @@ const CreateSaleBooking = () => {
     load = true;
   else load = false;
 
+  const renderModalContent = () => {
+    switch (modalContentType) {
+      case "SheetLink":
+        return <FetchSheet closeModal={closeModal} setExcelFile={setExcelFile} excelFile={excelFile} setPlanLink={setPlanLink} />;
+      case "ShareIncentive":
+        return <ShareIncentive setIncentiveSharing={setIncentiveSharing} incentiveSharing={incentiveSharing} closeModal={closeModal} />;
+      case "SalesSumitDialog":
+        return (
+          <SalesSubmitDialog
+            response={"Success"}
+            selectedPaymentStatus={selectedPaymentStatus}
+            id={editId}
+            setSubmitDialog={setSubmitDialog}
+            closeModal={closeModal}
+            newSaleBookingData={newSaleBookingData}
+          />
+        );
+
+      case "CampaignModal":
+        return (
+          <CampaignModal
+            loginUserId={loginUserId}
+            selectedBrand={selectedBrand}
+            setCampaignName={setCampaignName}
+            allBrands={allBrands}
+            closeModal={closeModal}
+          />
+        );
+
+      case "EditCampaign":
+        return (
+          <EditCampaign
+            loginUserId={loginUserId}
+            campaignList={campaignList}
+            campaignName={campaignName}
+            closeModal={closeModal}
+          />
+        );
+    }
+  };
+
   return (
     <>
       {load && <Loader />}
       <Modal
         className="salesModal"
-        isOpen={campaignModal}
+        isOpen={modalContentType}
         onRequestClose={closeModal}
         contentLabel="modal"
         preventScroll={true}
@@ -751,38 +802,15 @@ const CreateSaleBooking = () => {
           },
         }}
       >
-        {submitDialog && (
-          <SalesSubmitDialog
-            response={"Success"}
-            selectedPaymentStatus={selectedPaymentStatus}
-            id={editId}
-            setSubmitDialog={setSubmitDialog}
-            closeModal={closeModal}
-            newSaleBookingData={newSaleBookingData}
-          />
-        )}
-        {!editId && !submitDialog ? (
-          <CampaignModal
-            loginUserId={loginUserId}
-            selectedBrand={selectedBrand}
-            setCampaignName={setCampaignName}
-            allBrands={allBrands}
-            closeModal={closeModal}
-          />
-        ) : (
-          !submitDialog && (
-            <EditCampaign
-              loginUserId={loginUserId}
-              selectecamp
-              campaignList={campaignList}
-              campaignName={campaignName}
-              closeModal={closeModal}
-            />
-          )
-        )}
+        <div className="d-flex">
+          <div className="icon-1 flex-end" onClick={() => closeModal()}>
+            <i class="bi bi-x" />
+          </div>
+        </div>
+        {renderModalContent()}
       </Modal>
-      <FormContainer mainTitle="Sale Booking" link={true} />
 
+      <FormContainer mainTitle="Sale Booking" link={true} />
       {/* <div className="w-100">
         <div className="card gstinfo-card flex-row sb">
           {gstLoading && <p>Loading...</p>}
@@ -860,7 +888,7 @@ const CreateSaleBooking = () => {
                   disabled={
                     (account_info?.state &&
                       account_info?.state?.account_data?.account_type_name !==
-                        "Agency") ||
+                      "Agency") ||
                     allAccounts?.find(
                       (item) => item?.account_id == selectedAccount
                     )?.account_type_name !== "Agency"
@@ -906,7 +934,9 @@ const CreateSaleBooking = () => {
                     title="edit"
                     type="button"
                     className="btn cmn btn_sm btn btn-primary mt-4 "
-                    onClick={() => openModal(true)}
+                    onClick={() =>
+                      openModal(editId ? "EditCampaign" : "CampaignModal")
+                    }
                   >
                     {editId ? <i className="bi bi-pencil" /> : "+"}
                   </button>
@@ -993,6 +1023,18 @@ const CreateSaleBooking = () => {
               {isValidate.baseAmount && (
                 <div className="form-error">Please enter Base Amount</div>
               )}
+
+              {/* <div className="col-md-6 flex-row">
+                <button
+                  type="button"
+                  className="btn cmnbtn btn-primary"
+                  onClick={() => {
+                    openModal("ShareIncentive");
+                  }}
+                >
+                  Share Incentive
+                </button>
+              </div> */}
 
               <div className="form-group ml-4 sb form-sub d-flex">
                 <input
@@ -1196,6 +1238,18 @@ const CreateSaleBooking = () => {
                 </label>
               </div>
             </div>
+            {/* sheet link  */}
+            {/* <div className="col-md-6 flex-row pb-3">
+              <button
+                type="button"
+                className="btn cmnbtn btn-primary"
+                onClick={() => {
+                  openModal("SheetLink");
+                }}
+              >
+                Upload Sheet Link
+              </button>
+            </div> */}
           </div>
         </div>
 

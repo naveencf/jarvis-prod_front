@@ -16,6 +16,7 @@ import {
 } from "@phosphor-icons/react";
 import { constant } from "../../../utils/constants";
 import ExenseManagement from "./ExenseManagementSidebarLinks";
+import { RiOrganizationChart } from "react-icons/ri";
 
 const SidebarLinks = () => {
   const [contextData, setData] = useState([]);
@@ -598,122 +599,120 @@ const SidebarLinks = () => {
             {/* {isAssetNotifierVisible && ( */}
             {/* )} */}
 
-            {/* PREONBOARDING START*/}
-            {isOnboardingVisible && (
-              <li className="nav-item">
-                <Link
-                  className="nav-btn nav-link collapsed"
-                  data-toggle="collapse"
-                  data-target="#collapseFive"
-                  aria-expanded="true"
-                  aria-controls="collapseFive"
-                >
-                  <i className="bi bi-dash"></i>
-                  <span>Org</span>
-                </Link>
-                <div
-                  id="collapseFive"
-                  className="collapse"
-                  aria-labelledby="headingTwo"
-                  data-parent="#accordionSidebar"
-                >
-                  <div className="internal collapse-inner">
-                    {contextData &&
-                      contextData[18] &&
-                      contextData[18].view_value === 1 && (
-                        <NavLink
-                          className="collapse-item"
-                          to="/admin/pre-onboarding"
-                        >
-                          <i className="bi bi-dot"></i> Add Pre Onboarding
-                        </NavLink>
-                      )}
-
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboarding-overview"
-                      >
-                        <i className="bi bi-dot"></i> Overview
-                      </NavLink>
-                    )}
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboard-extend-date-overview"
-                      >
-                        <i className="bi bi-dot"></i> Extend Date Overview
-                      </NavLink>
-                    )}
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboard-coc-master"
-                      >
-                        <i className="bi bi-dot"></i> Coc Master
-                      </NavLink>
-                    )}
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboard-coc-overview"
-                      >
-                        <i className="bi bi-dot"></i> Coc Overview
-                      </NavLink>
-                    )}
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboard-user-login-history"
-                      >
-                        <i className="bi bi-dot"></i> Login History
-                      </NavLink>
-                    )}
-                    {contextData && contextData[18]?.view_value == 1 && (
-                      <NavLink
-                        className="collapse-item"
-                        to="/admin/pre-onboard-all-notifications"
-                      >
-                        <i className="bi bi-dot"></i> All Notifications
-                      </NavLink>
-                    )}
-
-                    <NavLink
-                      className="collapse-item"
-                      to="/admin/preonboarding-documents-overview"
-                    >
-                      <i className="bi bi-dot"></i> Documents
-                    </NavLink>
-
-                    {contextData &&
-                      contextData[20] &&
-                      contextData[20].insert_value === 1 && (
-                        <NavLink
-                          className="collapse-item"
-                          to="/admin/announcement-post"
-                        >
-                          <i className="bi bi-dot"></i> Announcement Post
-                        </NavLink>
-                      )}
-                    {contextData &&
-                      contextData[21] &&
-                      contextData[21].view_value === 1 && (
-                        <NavLink
-                          className="collapse-item"
-                          to="/admin/announcement-view"
-                        >
-                          <i className="bi bi-dot"></i> Announcement View
-                        </NavLink>
-                      )}
-                  </div>
-                </div>
-              </li>
-            )}
             {/* PREOBOARDING END*/}
           </div>
         </li>
       )}
+      {/* PREONBOARDING START*/}
+      {isOnboardingVisible && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapseFive"
+            aria-expanded="true"
+            aria-controls="collapseFive"
+          >
+            {/* <RiOrganizationChart /> */}
+            <i class="fa-solid fa-sitemap"></i>
 
+            <span>Org</span>
+          </Link>
+          <div
+            id="collapseFive"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className="internal collapse-inner">
+              {contextData &&
+                contextData[18] &&
+                contextData[18].view_value === 1 && (
+                  <NavLink className="collapse-item" to="/admin/pre-onboarding">
+                    <i className="bi bi-dot"></i> Add Pre Onboarding
+                  </NavLink>
+                )}
+
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboarding-overview"
+                >
+                  <i className="bi bi-dot"></i> Overview
+                </NavLink>
+              )}
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboard-extend-date-overview"
+                >
+                  <i className="bi bi-dot"></i> Extend Date Overview
+                </NavLink>
+              )}
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboard-coc-master"
+                >
+                  <i className="bi bi-dot"></i> Coc Master
+                </NavLink>
+              )}
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboard-coc-overview"
+                >
+                  <i className="bi bi-dot"></i> Coc Overview
+                </NavLink>
+              )}
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboard-user-login-history"
+                >
+                  <i className="bi bi-dot"></i> Login History
+                </NavLink>
+              )}
+              {contextData && contextData[18]?.view_value == 1 && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pre-onboard-all-notifications"
+                >
+                  <i className="bi bi-dot"></i> All Notifications
+                </NavLink>
+              )}
+
+              <NavLink
+                className="collapse-item"
+                to="/admin/preonboarding-documents-overview"
+              >
+                <i className="bi bi-dot"></i> Documents
+              </NavLink>
+
+              {contextData &&
+                contextData[20] &&
+                contextData[20].insert_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/announcement-post"
+                  >
+                    <i className="bi bi-dot"></i> Announcement Post
+                  </NavLink>
+                )}
+              {contextData &&
+                contextData[21] &&
+                contextData[21].view_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/announcement-view"
+                  >
+                    <i className="bi bi-dot"></i> Announcement View
+                  </NavLink>
+                )}
+            </div>
+          </div>
+        </li>
+      )}
       {/* PAYOUT HR / MANAGER ACCOUNTS  END*/}
 
       {/* OPERATIONS */}

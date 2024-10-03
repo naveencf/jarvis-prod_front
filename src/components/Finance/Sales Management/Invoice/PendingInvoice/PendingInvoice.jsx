@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -49,23 +49,24 @@ const PendingInvoice = ({
 
   const token = sessionStorage.getItem("token");
 
-  // const handleGetFormData =
-  const getData = async () => {
-    await axios
-      .get(baseUrl + `sales/invoice_request?status=pending`, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        const mergedData = res?.data?.data?.map((item) => {
-          // Find the user data based on created_by field
-          const userData =
-            usersDataContext &&
-            usersDataContext?.find(
-              (user) => user?.user_id === item?.created_by
-            );
+  const getData = useCallback(async () => {
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}sales/invoice_request?status=pending`,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (data?.data) {
+        // Merging user data with invoice data
+        const mergedData = data?.data?.map((item) => {
+          const userData = usersDataContext?.find(
+            (user) => user?.user_id === item?.created_by
+          );
           return {
             ...item,
             user_name: userData?.user_name || null,
@@ -73,91 +74,104 @@ const PendingInvoice = ({
           };
         });
 
-        const sortData = mergedData?.sort(
+        // Sorting data by date
+        const sortedData = mergedData.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
-        setData(sortData);
-        setFilterData(sortData);
-        calculateUniqueData([...sortData]);
-        calculateTotals([...sortData]);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
+        setData(sortedData);
+        setFilterData(sortedData);
+        calculateUniqueData(sortedData); // Passing directly, no need to spread
+        calculateTotals(sortedData);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }, [token, usersDataContext]);
 
   const calculateUniqueData = (sortedData) => {
-    const aggregateData = (data, keyName) => {
-      return data?.reduce((acc, curr) => {
-        const key = curr[keyName];
-        console.log(curr,"CURRENT VALUE ----->>>>>>>")
-        if (!acc[key]) {
-          console.log(acc[key],"CURRENT VALUE ----->>>>>>>")
-          acc[key] = {
-            account_name: curr?.account_name ||"",
-            user_name: curr?.user_name,
-            saleData: {
-              campaign_amount: 0,
-              base_amount: 0,
-              gst_amount: 0,
-            },
-            invoice_amount: 0,
-          };
-        }
-  
-        acc[key].saleData.campaign_amount += curr?.saleData?.campaign_amount ?? 0;
-        acc[key].saleData.base_amount += curr?.saleData?.base_amount ?? 0;
-        acc[key].invoice_amount += curr?.invoice_amount ?? 0;
-        acc[key].saleData.gst_amount += curr?.saleData?.gst_amount ?? 0;
-  
+    const aggregateData = (data, keyName, isAccountName) =>
+      data.reduce((acc, curr) => {
+        // Determine key based on account_name or user_name
+        const key = isAccountName
+          ? curr?.saleData?.account_name
+          : curr?.[keyName];
+
+        if (!key) return acc; // Skip if key is missing
+
+        // Initialize or update the accumulator entry
+        const existingEntry = acc[key] || {
+          account_name: curr?.saleData?.account_name || "",
+          user_name: curr?.user_name || "",
+          saleData: {
+            campaign_amount: 0,
+            base_amount: 0,
+            gst_amount: 0,
+          },
+          invoice_amount: 0,
+        };
+
+        // Accumulate amounts using optional chaining and nullish coalescing
+        existingEntry.saleData.campaign_amount +=
+          curr?.saleData?.campaign_amount ?? 0;
+        existingEntry.saleData.base_amount += curr?.saleData?.base_amount ?? 0;
+        existingEntry.saleData.gst_amount += curr?.saleData?.gst_amount ?? 0;
+        existingEntry.invoice_amount += curr?.invoice_amount ?? 0;
+
+        acc[key] = existingEntry; // Update accumulator
+
         return acc;
       }, {});
-    };
-  
-    // Aggregate data by account name
-    const aggregatedAccountData = aggregateData(sortedData, "account_name");
-    const uniqueAccData = Object.values(aggregatedAccountData);
-    setUniqueCustomerData(uniqueAccData);
-    setUniqueCustomerCount(uniqueAccData?.length);
-  
-    // Aggregate data by sales executive name
-    const aggregatedSalesExData = aggregateData(sortedData, "user_name");
-    const uniqueSalesExData = Object.values(aggregatedSalesExData);
-    setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
-  };
-  console.log(uniqueCustomerData,"unique customer data-->>")
 
-  const handleGetProforma = () => {
-    axios
-      .get(
-        baseUrl +
-          `sales/invoice_request/?status=uploaded&invoice_type_id=proforma`,
+    // Aggregate data by account name and set state
+    const uniqueAccData = Object.values(
+      aggregateData(sortedData, "account_name", true)
+    );
+    setUniqueCustomerData(uniqueAccData);
+    setUniqueCustomerCount(uniqueAccData.length);
+
+    // Aggregate data by sales executive name and set state
+    const uniqueSalesExData = Object.values(
+      aggregateData(sortedData, "user_name", false)
+    );
+    setUniqueSalesExecutiveData(uniqueSalesExData);
+    setUniqueSalesExecutiveCount(uniqueSalesExData.length);
+  };
+
+  const handleGetProforma = async () => {
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}sales/invoice_request/?status=uploaded&invoice_type_id=proforma`,
         {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${token}`,
           },
         }
-      )
-      .then((res) => {
-        const mergedData = res?.data?.data.map((item) => {
-          // Find the user data based on created_by field
+      );
+
+      if (data?.data) {
+        // Merging user data with proforma data
+        const mergedData = data.data.map((item) => {
           const userData = usersDataContext?.find(
-            (user) => user?.user_id === item?.created_by
+            (user) => user.user_id === item.created_by
           );
-          // Merge user data into the current item
           return {
             ...item,
-            user_name: userData?.user_name || null, // Add user data or null if not found
+            user_name: userData?.user_name || null,
           };
         });
-        const sortData = mergedData?.sort(
+
+        // Sorting data by creation date
+        const sortedData = mergedData.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
-        setProformaData(sortData);
-      });
+
+        setProformaData(sortedData);
+      }
+    } catch (error) {
+      console.error("Error fetching proforma data:", error);
+    }
   };
 
   const handleClearSameRecordFilter = (e) => {
@@ -218,14 +232,13 @@ const PendingInvoice = ({
   const handleOpenSameCustomer = (custName) => {
     setSameCustomerDialog(true);
 
-    const sameNameCustomers = datas?.filter(
-      (item) => item.saleData.account_name === custName
+    const sameNameAccounts = datas?.filter(
+      (item) => item?.account_name === custName
     );
 
-    setFilterData(sameNameCustomers);
+    setFilterData(sameNameAccounts);
     handleCloseUniqueCustomer();
   };
-
   // For Sales Executive
   const handleOpenUniqueSalesExecutive = () => {
     setUniqueSalesExecutiveDialog(true);
@@ -237,7 +250,7 @@ const PendingInvoice = ({
 
   const handleOpenSameSalesExecutive = (salesEName) => {
     const sameNameSalesExecutive = datas?.filter(
-      (item) => item.user_name === salesEName
+      (item) => item?.user_name === salesEName
     );
 
     setFilterData(sameNameSalesExecutive);
@@ -346,7 +359,6 @@ const PendingInvoice = ({
           </div>
         </div>
         <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-          {/* <div className="tab-content"> */}
           <div>
             <DataGrid
               rows={filterData}

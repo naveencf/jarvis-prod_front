@@ -34,7 +34,7 @@ const Designation = () => {
     axios.get(baseUrl + "get_all_departments").then((res) => {
       getDepartmentData(res.data);
     });
-  })
+  },[])
 
   function subDepartmentDatas() {
     if (departmentName) {

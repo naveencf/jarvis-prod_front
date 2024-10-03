@@ -1,15 +1,4 @@
-import {
-  Autocomplete,
-  Avatar,
-  Badge,
-  Box,
-  Button,
-  ButtonGroup,
-  Skeleton,
-  Stack,
-  Tab,
-  TextField,
-} from "@mui/material";
+import { Avatar, Button, Tab } from "@mui/material";
 import {
   DataGrid,
   GridToolbarContainer,
@@ -18,13 +7,14 @@ import {
   GridToolbarFilterButton,
   GridToolbarExport,
 } from "@mui/x-data-grid";
-import clsx from "clsx";
 import { useState, useEffect, useContext, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-// import LogoLoader from "../../InstaApi.jsx/LogoLoader";
 import CommunityTeamCreation from "./CommunityTeamCreation";
-import { ApiContextData, useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
+import {
+  ApiContextData,
+  useAPIGlobalContext,
+} from "../../AdminPanel/APIContext/APIContext";
 import formatString from "../../../utils/formatString";
 import CommunityHeader from "./CommunityHeader";
 import { formatNumber } from "../../../utils/formatNumber";
@@ -32,11 +22,10 @@ import TableSkeleton from "../../CommonTool/TableSkeleton";
 import DatePickerCf from "../../CommonTool/DatePickerCf";
 import { TabContext, TabList } from "@mui/lab";
 import dayjs from "dayjs";
-import { formatDate } from "../../../utils/formatDate";
 import { formatUTCDate } from "../../../utils/formatUTCDate";
 import CommunityReport from "./CommunityReport";
 import jwtDecode from "jwt-decode";
-import DownloadIcon from '@mui/icons-material/Download';
+import DownloadIcon from "@mui/icons-material/Download";
 // import { CommunityHomeColumn } from "./CommunityColumns";
 
 function CustomToolbar({
@@ -52,7 +41,6 @@ function CustomToolbar({
 }) {
   const { userContextData } = useContext(ApiContextData);
   const handleTeam = useCallback(async () => {
-
     if (rowSelectionModel.length === 0) {
       alert("Please select the Page first.");
       return;
@@ -150,7 +138,7 @@ function CommunityHome() {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
-  const { contextData } = useAPIGlobalContext()
+  const { contextData } = useAPIGlobalContext();
   const navigate = useNavigate();
   const { userContextData } = useContext(ApiContextData);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
@@ -181,7 +169,9 @@ function CommunityHome() {
 
   const getCommunityManagerCategory = async () => {
     try {
-      const res = await axios.get(`https://insights.ist:8080/api/v1/community/category_manager_by_user/${loginUserId}`);
+      const res = await axios.get(
+        `https://insights.ist:8080/api/v1/community/category_manager_by_user/${loginUserId}`
+      );
       setCommunityManagerCategory(res.data.data);
     } catch (error) {
       console.error("Error fetching community manager category:", error);
@@ -213,7 +203,6 @@ function CommunityHome() {
       console.error("Error fetching Data: ", error);
     }
   };
-
 
   const fetchCategory = async () => {
     try {
@@ -250,13 +239,36 @@ function CommunityHome() {
     } catch (error) {
       console.error("Error fetching data: ", error);
     }
-    getCommunityManagerCategory()
+    getCommunityManagerCategory();
   }, []);
-
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+    S_No: false,
+    avatar: true,
+    logoDownload: true,
+    creatorName: true,
+    projectxRecord: true,
+    teammanager: true,
+    status: false,
+    Date: true,
+    teamtype: true,
+    teamcount: false,
+    teamcost: false,
+    followersCount: false,
+    followingCount: false,
+    mediaCount: true,
+    yesterdaypost: true,
+    yesterdayFollowerGrowth: true,
+    followerdiff: true,
+    followerStartdate: true,
+    followerEnddate: true,
+    Image: false,
+    Carousel: false,
+    Reel: false,
+  });
   const columns = [
     {
       field: "sno",
-      headerName: "S_No",
+      headerName: "S No",
       width: 70,
       valueGetter: (params) => rows.indexOf(params.row),
       renderCell: (params) => {
@@ -276,6 +288,7 @@ function CommunityHome() {
         const instagramProfileUrl = `https://www.instagram.com/${params.row.creatorName}/`;
         return (
           <Link
+            className="ml-auto mr-auto"
             to={instagramProfileUrl}
             target="_blank"
             rel="noopener noreferrer"
@@ -290,18 +303,22 @@ function CommunityHome() {
     {
       field: "logoDownload",
       headerName: "Logo Download",
-      width: 110,
+      width: 140,
       renderCell: (params) => {
         const logoUrl = `https://storage.googleapis.com/insights_backend_bucket/cr/${params.row.creatorName.toLowerCase()}.jpeg`;
         return (
           <a
+            className="ml-auto mr-auto"
             href={logoUrl}
             download={`${params.row.creatorName}_logo.jpeg`}
-            style={{ textDecoration: 'none' }}
+            style={{ textDecoration: "none" }}
           >
-            <Button variant="outlined" color="primary">
+            {/* <Button className="btn tableIconBtn btn_sm" variant="outlined">
               <DownloadIcon />
-            </Button>
+            </Button> */}
+            <button className="icon-1">
+              <DownloadIcon />
+            </button>
           </a>
         );
       },
@@ -348,24 +365,35 @@ function CommunityHome() {
         )?.user_name || "N/A",
     },
     {
-      field: 'status',
-      headerName: 'Status',
+      field: "status",
+      headerName: "Status",
       width: 200,
       renderCell: (params) => {
         const status = params.row.projectxRecord.page_status;
 
         if (status == 1) {
-          return <Button variant="outlined" color="warning">Private</Button>;
+          return (
+            <Button className="statusBadge" color="info">
+              Private
+            </Button>
+          );
         } else if (status == 2) {
-          return <Button variant="outlined" color="success">Disabled</Button>;
+          return (
+            <Button className="statusBadge" color="error">
+              Disabled
+            </Button>
+          );
         } else if (status == 3) {
-          return <Button variant="outlined" color="error">Active</Button>;
+          return (
+            <Button className="statusBadge" color="success">
+              Active
+            </Button>
+          );
         } else {
-          return 'N/A';
+          return "N/A";
         }
       },
-    }
- ,
+    },
     {
       field: "Date ",
       headerName: "Date",
@@ -387,8 +415,8 @@ function CommunityHome() {
           params.row.teamInfo?.team?.team_count > 1
             ? "Team"
             : params.row.teamInfo?.team?.team_count == 1
-              ? "Individual"
-              : "Team Not Created";
+            ? "Individual"
+            : "Team Not Created";
         return pageType;
       },
     },
@@ -528,13 +556,37 @@ function CommunityHome() {
       },
     },
     {
-      field: 'Image', headerName: 'Image ', width: 110, valueGetter: (params) => params.row.postTypes[0]?.count ? params.row.postTypes[0]?.count : "-",
+      field: "Image",
+      headerName: "Static",
+      width: 110,
+      renderCell: (params) => {
+        const imagePost = params.row.postTypes?.find(
+          (post) => post.type === "IMAGE"
+        );
+        return imagePost?.count || "-";
+      },
     },
     {
-      field: 'Carousel', headerName: 'Carousel ', width: 110, valueGetter: (params) => params.row.postTypes[1]?.count ? params.row.postTypes[1]?.count : "-",
+      field: "Carousel",
+      headerName: "Carousel",
+      width: 110,
+      renderCell: (params) => {
+        const carouselPost = params.row.postTypes?.find(
+          (post) => post.type === "CAROUSEL"
+        );
+        return carouselPost?.count || "-";
+      },
     },
     {
-      field: 'Reel', headerName: 'Reel ', width: 110, valueGetter: (params) => params.row.postTypes[2]?.count ? params.row.postTypes[2]?.count : "-",
+      field: "Reel",
+      headerName: "Reel",
+      width: 110,
+      renderCell: (params) => {
+        const reelPost = params.row.postTypes?.find(
+          (post) => post.type === "REEL"
+        );
+        return reelPost?.count || "-";
+      },
     },
   ];
 
@@ -578,8 +630,6 @@ function CommunityHome() {
       // Yesterday
       setStartDate(new Date(now.setDate(now.getDate() - 1))); // Yesterday
       setEndDate(new Date(now.setDate(now.getDate()))); // Today (end of day)
-      //  console.log((new Date(now.setDate(now.getDate() - 1))),"Start Date");
-      // console.log((new Date(now.setDate(now.getDate()+1 ))),"End Date");
     } else if (newValue === 9) {
       // Yesterday
       setStartDate(null); // Yesterday
@@ -601,74 +651,102 @@ function CommunityHome() {
     <div className="workWrapper">
       {allRows.length > 0 ? (
         <>
-          <ButtonGroup variant="outlined" sx={{ mb: 1 }} aria-label="Basic button group">
-            <Button onClick={() => setReportView(false)}> Pages </Button>
-            <Button onClick={() => setReportView(true)}>Overview</Button>
-            <Button onClick={() => navigate("/admin/instaapi/community/user")}>
-              {" "}
-              Users
-            </Button>
-            <Button onClick={() => navigate("/admin/instaapi/community/managerView")}>
-              {" "}
-              Manager View
-            </Button>
-          </ButtonGroup>
-
-          {!reportView ? (
-            <div className="card">
-              {contextData && contextData[0] && contextData[0].view_value == 1 && (
-
-                <CommunityHeader
-                  setRows={setRows}
-                  rows={rows}
-                  allRows={allRows}
-                  reload={reload}
-                  setReload={setReload}
-                  pagecategory={pagecategory}
-                  rowSelectionModel={rowSelectionModel}
-                  projectxpages={projectxpages}
-                  setReloadpagecategory={setReloadpagecategory}
-                  reloadpagecategory={reloadpagecategory}
+          <div className="action_heading">
+            <div className="form-heading">
+              <h2 className="mb0 mt-1">Community Overview</h2>
+            </div>
+            <div className="action_btns">
+              <Button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() => setReportView(false)}
+              >
+                Pages
+              </Button>
+              <Button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() => setReportView(true)}
+              >
+                Overview
+              </Button>
+              <Button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() => navigate("/admin/instaapi/community/user")}
+              >
+                Users
+              </Button>
+              <Button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() =>
+                  navigate("/admin/instaapi/community/managerView")
+                }
+              >
+                Manager View
+              </Button>
+            </div>
+          </div>
+          <div className="card mt24 mb0">
+            <TabContext value={overViewvalue}>
+              <div className="card-body pt20 pb16 flex_center_between border-bottom-0">
+                <h5 className="cardHeaderTitle">
+                  Page Overview From : <br />
+                  <small>
+                    <b>
+                      {formatUTCDate(startDate)} To : {formatUTCDate(endDate)}
+                    </b>
+                  </small>
+                </h5>
+                <TabList
+                  className="pgTab tabSM"
+                  onChange={handleOverViewChange}
+                  aria-label="lab API tabs example"
+                >
+                  {/* <Tab label="All" value={9} /> */}
+                  <Tab label="Yesterday" value={0} />
+                  <Tab label="This Week" value={1} />
+                  <Tab label="This Month" value={2} />
+                  <Tab label="This Year" value={3} />
+                  {/* <Tab label="Yesterday" value={8} /> */}
+                  <Tab label="Last Week" value={4} />
+                  <Tab label="Last Month" value={5} />
+                  <Tab label="Quaterly" value={10} />
+                  <Tab label="Half Yearly" value={11} />
+                  <Tab label="Last Year" value={6} />
+                  <Tab label="Custom" value={7} />
+                </TabList>
+              </div>
+              {overViewvalue == 7 && (
+                <DatePickerCf
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+                  minSelectableDate={minSelectableDate}
                 />
               )}
-              <div>
-                <TabContext value={overViewvalue}>
-                  <div className="card-header flex_center_between">
-                    <h5 className="cardHeaderTitle">
-                      Page Overview From : {formatUTCDate(startDate)} To :{" "}
-                      {formatUTCDate(endDate)}{" "}
-                    </h5>
-                    <TabList
-                      className="tabSM"
-                      onChange={handleOverViewChange}
-                      aria-label="lab API tabs example"
-                    >
-                      {/* <Tab label="All" value={9} /> */}
-                      <Tab label="Yesterday" value={0} />
-                      <Tab label="This Week" value={1} />
-                      <Tab label="This Month" value={2} />
-                      <Tab label="This Year" value={3} />
-                      {/* <Tab label="Yesterday" value={8} /> */}
-                      <Tab label="Last Week" value={4} />
-                      <Tab label="Last Month" value={5} />
-                      <Tab label="Quaterly" value={10} />
-                      <Tab label="Half Yearly" value={11} />
-                      <Tab label="Last Year" value={6} />
-                      <Tab label="Custom" value={7} />
-                    </TabList>
-                  </div>
-                  {overViewvalue == 7 && (
-                    <DatePickerCf
-                      startDate={startDate}
-                      setStartDate={setStartDate}
-                      endDate={endDate}
-                      setEndDate={setEndDate}
-                      minSelectableDate={minSelectableDate}
+            </TabContext>
+          </div>
+          {!reportView ? (
+            <div className="mt20">
+              <div className="card-header pt20 pb20">
+                {contextData &&
+                  contextData[0] &&
+                  contextData[0].view_value == 1 && (
+                    <CommunityHeader
+                      setRows={setRows}
+                      rows={rows}
+                      allRows={allRows}
+                      reload={reload}
+                      setReload={setReload}
+                      pagecategory={pagecategory}
+                      rowSelectionModel={rowSelectionModel}
+                      projectxpages={projectxpages}
+                      setReloadpagecategory={setReloadpagecategory}
+                      reloadpagecategory={reloadpagecategory}
                     />
                   )}
-                </TabContext>
               </div>
-              <Stack>
+
+              <div>
                 {openTeam && (
                   <CommunityTeamCreation
                     rowSelectionModel={rowSelectionModel}
@@ -690,40 +768,46 @@ function CommunityHome() {
                     teamDetail={teamDetail}
                   />
                 )}
-              </Stack>
-              <div className="card-header flex_center_between">
-                <DataGrid
-                  rows={rows}
-                  columns={columns}
-                  // columns={CommunityHomeColumn}
-                  getRowId={(row) => row.creatorName}
-                  initialState={{
-                    pagination: { paginationModel: { pageSize: 100 } },
-                  }}
-                  slots={{ toolbar: CustomToolbar }}
-                  slotProps={{
-                    panel: { anchorEl: filterButtonEl },
-                    toolbar: {
-                      setFilterButtonEl,
-                      setOpenTeam,
-                      rowSelectionModel,
-                      setLeft,
-                      setRight,
-                      setSelectedManager,
-                      setUserNumbers,
-                      setEditMode,
-                      setTeamDetail,
-                    },
-                  }}
-                  pageSizeOptions={[10, 25, 50, 100]}
-                  checkboxSelection
-                  filterModel={filterModel}
-                  onFilterModelChange={(model) => setFilterModel(model)}
-                  onRowSelectionModelChange={(newRowSelectionModel) =>
-                    setRowSelectionModel(newRowSelectionModel)
-                  }
-                  rowSelectionModel={rowSelectionModel}
-                />
+              </div>
+              <div className="card-body p0 flex_center_between table table-responsive">
+                <div className="thmTable">
+                  <DataGrid
+                    rows={rows}
+                    columns={columns}
+                    // columns={CommunityHomeColumn}
+                    getRowId={(row) => row.creatorName}
+                    initialState={{
+                      pagination: { paginationModel: { pageSize: 100 } },
+                    }}
+                    slots={{ toolbar: CustomToolbar }}
+                    slotProps={{
+                      panel: { anchorEl: filterButtonEl },
+                      toolbar: {
+                        setFilterButtonEl,
+                        setOpenTeam,
+                        rowSelectionModel,
+                        setLeft,
+                        setRight,
+                        setSelectedManager,
+                        setUserNumbers,
+                        setEditMode,
+                        setTeamDetail,
+                      },
+                    }}
+                    pageSizeOptions={[10, 25, 50, 100]}
+                    checkboxSelection
+                    filterModel={filterModel}
+                    onFilterModelChange={(model) => setFilterModel(model)}
+                    onRowSelectionModelChange={(newRowSelectionModel) =>
+                      setRowSelectionModel(newRowSelectionModel)
+                    }
+                    rowSelectionModel={rowSelectionModel}
+                    columnVisibilityModel={columnVisibilityModel}
+                    onColumnVisibilityModelChange={(newModel) =>
+                      setColumnVisibilityModel(newModel)
+                    }
+                  />
+                </div>
               </div>
             </div>
           ) : (

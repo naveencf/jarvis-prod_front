@@ -29,6 +29,8 @@ function PageGrowthViewAll({
   creatorProgress,
   setCreatorProgress,
 }) {
+
+  console.log(creatorProgress,' creatorProgress new data');
   const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
     [`& .${gridClasses.row}.even`]: {
       backgroundColor: theme.palette.grey[200],
@@ -114,7 +116,21 @@ function PageGrowthViewAll({
       headerName: "Posted",
       width: 150,
     },
-    
+    {
+      field: "todayReelCount",
+      headerName: "Reel",
+      width: 150,
+    },
+    {
+      field: "todayStaticPostCount",
+      headerName: "Static",
+      width: 150,
+    },
+    {
+      field: "todayStoryCount",
+      headerName: "Story",
+      width: 150,
+    },
   ];
 
   const formatString = (s) => {

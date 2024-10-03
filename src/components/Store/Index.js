@@ -33,6 +33,8 @@ import IncentivePlanApi from "./API/Sales/IncentivePlanApi";
 import InvoiceParticularApi from "./API/Sales/InvoiceParticularApi";
 import DepartmentApi from "./API/Sales/DepartmentApi";
 import TargetCompetitionApi from "./API/Sales/TargetCompetitionApi";
+import SalePocApi from "./API/Sales/SalesPocApi";
+import SalesReportApi from "./API/Sales/SalesReportApi";
 
 const store = configureStore({
   reducer: {
@@ -69,6 +71,8 @@ const store = configureStore({
     [InvoiceParticularApi.reducerPath]: InvoiceParticularApi.reducer,
     [DepartmentApi.reducerPath]: DepartmentApi.reducer,
     [TargetCompetitionApi.reducerPath]: TargetCompetitionApi.reducer,
+    [SalePocApi.reducerPath]: SalePocApi.reducer,
+    [SalesReportApi.reducerPath]: SalesReportApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -99,7 +103,9 @@ const store = configureStore({
       .concat(IncentivePlanApi.middleware)
       .concat(InvoiceParticularApi.middleware)
       .concat(DepartmentApi.middleware)
-      .concat(TargetCompetitionApi.middleware),
+      .concat(TargetCompetitionApi.middleware)
+      .concat(SalePocApi.middleware)
+      .concat(SalesReportApi.middleware),
 });
 setupListeners(store.dispatch);
 

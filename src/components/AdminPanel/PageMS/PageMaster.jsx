@@ -1,23 +1,23 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useGlobalContext } from "../../../Context/Context";
-import FieldContainer from "../FieldContainer";
-import FormContainer from "../FormContainer";
-import { baseUrl } from "../../../utils/config";
-import jwtDecode from "jwt-decode";
-import { Navigate, useLocation } from "react-router";
-import Select, {components} from "react-select";
-import "./Tagcss.css";
-import { IconButton, Stack } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import InfoIcon from "@mui/icons-material/Info";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useGlobalContext } from '../../../Context/Context';
+import FieldContainer from '../FieldContainer';
+import FormContainer from '../FormContainer';
+import { baseUrl } from '../../../utils/config';
+import jwtDecode from 'jwt-decode';
+import { useLocation } from 'react-router';
+import Select, { components } from 'react-select';
+import './Tagcss.css';
+import { IconButton, Stack } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import InfoIcon from '@mui/icons-material/Info';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   setModalType,
   setOpenShowAddModal,
   setOpenShowPageInfoModal,
-} from "../../Store/PageMaster";
-import PageAddMasterModal from "./PageAddMasterModal";
+} from '../../Store/PageMaster';
+import PageAddMasterModal from './PageAddMasterModal';
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
@@ -25,27 +25,27 @@ import {
   useGetOwnershipTypeQuery,
   useGetPageByIdQuery,
   useGetPlatformPriceQuery,
-} from "../../Store/PageBaseURL";
-import PageInfoModal from "./PageInfoModal";
+} from '../../Store/PageBaseURL';
+import PageInfoModal from './PageInfoModal';
 import {
   handleChangeVendorInfoModal,
   setShowAddVendorModal,
   setModalType as setVendorModalType,
-} from "../../Store/VendorMaster";
-import VendorTypeInfoModal from "./VendorTypeInfoModal";
-import AddVendorModal from "./AddVendorModal";
+} from '../../Store/VendorMaster';
+import VendorTypeInfoModal from './VendorTypeInfoModal';
+import AddVendorModal from './AddVendorModal';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
-} from "../../Store/reduxBaseURL";
-import { useParams, useNavigate } from "react-router";
+} from '../../Store/reduxBaseURL';
+import { useParams, useNavigate } from 'react-router';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import formatString from "../Operation/CampaignMaster/WordCapital";
+import formatString from '../Operation/CampaignMaster/WordCapital';
 
 const PageMaster = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const queryParams = new URLSearchParams(location.search);
   const vendorDetails = {
     _id: queryParams.get('_id'),
@@ -59,43 +59,43 @@ const PageMaster = () => {
     (state) => state.pageMaster.showInfoModal
   );
 
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
   const { toastAlert, toastError } = useGlobalContext();
-  const [pageName, setPageName] = useState("");
-  const [link, setLink] = useState("");
+  const [pageName, setPageName] = useState('');
+  const [link, setLink] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [platformId, setPlatformId] = useState("666818824366007df1df1319");
+  const [platformId, setPlatformId] = useState('666818824366007df1df1319');
 
-  const [primary, setPrimary] = useState({ value: "Yes", label: "Yes" });
+  const [primary, setPrimary] = useState({ value: 'Yes', label: 'Yes' });
 
-  const [categoryId, setCategoryId] = useState("");
+  const [categoryId, setCategoryId] = useState('');
   const [tag, setTag] = useState([]);
-  const [pageLevel, setPageLevel] = useState("");
-  const [pageStatus, setPageStatus] = useState("Active");
+  const [pageLevel, setPageLevel] = useState('');
+  // const [pageStatus, setPageStatus] = useState('Active');
+  const [pageStatus, setPageStatus] = useState(0);
   const [userData, setUserData] = useState([]);
-  const [closeBy, setCloseBy] = useState("");
-  const [pageType, setPageType] = useState("Non Adult");
-  const [content, setContent] = useState("By CF");
-  const [ownerType, setOwnerType] = useState("66ab43f41068e2b9eea495a9");
-  const [vendorId, setVendorId] = useState("");
-  const [followCount, setFollowCount] = useState("");
-  const [profileId, setProfileId] = useState("");
+  const [closeBy, setCloseBy] = useState('');
+  const [pageType, setPageType] = useState('Non Adult');
+  const [content, setContent] = useState('By CF');
+  const [ownerType, setOwnerType] = useState('66ab43f41068e2b9eea495a9');
+  const [vendorId, setVendorId] = useState('');
+  const [followCount, setFollowCount] = useState('');
+  const [profileId, setProfileId] = useState('');
   const [platformActive, setPlatformActive] = useState();
-  const [rate, setRate] = useState("");
-  const [description, setDescription] = useState("");
+  const [rate, setRate] = useState('');
+  const [description, setDescription] = useState('');
   const [priceTypeList, setPriceTypeList] = useState([]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [activeTab, setActiveTab] = useState('666818824366007df1df1319');
   const [singleVendor, setSingleVendor] = useState({});
-  const [verified, setVerified] = useState(null);
 
-  const [rateType, setRateType] = useState({ value: "Fixed", label: "Fixed" });
+  const [rateType, setRateType] = useState({ value: 'Fixed', label: 'Fixed' });
   const [variableType, setVariableType] = useState({
-    value: "Per Thousand",
-    label: "Per Thousand",
+    value: 'Per Thousand',
+    label: 'Per Thousand',
   });
 
   const [validateFields, setValidateFields] = useState({
@@ -125,7 +125,7 @@ const PageMaster = () => {
     setVariableType(selectedOption);
   };
   const [rowCount, setRowCount] = useState([
-    { page_price_type_id: "", price: "" },
+    { page_price_type_id: '', price: '' },
   ]);
 
   const dispatch = useDispatch();
@@ -145,13 +145,15 @@ const PageMaster = () => {
   const vendorData = vendor?.data || [];
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
-  const { refetch: refetchPageList } = useGetAllPageListQuery();
+  const { refetch: refetchPageList, data: pageList } = useGetAllPageListQuery();
 
   const { data: platformPriceData, isLoading: isPriceLoading } =
     useGetPlatformPriceQuery();
 
   const [showAll, setShowAll] = useState(true)
   const optionsToShow = showAll ? userData : userData.slice(0, 5);
+  const [existError, setExistError] = useState('')
+  const [messageColor, setMessageColor] = useState('')
 
   useEffect(() => {
     if (!singlePageLoading && pageMast_id) {
@@ -162,9 +164,9 @@ const PageMaster = () => {
 
       setPageLevel(singlePageData?.preference_level);
       if (singlePageData.status == 1) {
-        setPageStatus("Active");
+        setPageStatus('Active');
       } else {
-        setPageStatus("Inactive");
+        setPageStatus('Inactive');
       }
       setCloseBy(singlePageData?.page_closed_by);
       setPageType(singlePageData?.page_name_type);
@@ -213,15 +215,15 @@ const PageMaster = () => {
 
       setRowCount([
         {
-          page_price_type_id: "667e6c7412fbbf002179f6d6",
+          page_price_type_id: '667e6c7412fbbf002179f6d6',
           price: post,
         },
         {
-          page_price_type_id: "667e6c9112fbbf002179f72c",
+          page_price_type_id: '667e6c9112fbbf002179f72c',
           price: story,
         },
         {
-          page_price_type_id: "667e6c9c12fbbf002179f72f",
+          page_price_type_id: '667e6c9c12fbbf002179f72f',
           price: both_,
         },
       ]);
@@ -242,7 +244,9 @@ const PageMaster = () => {
       let data = priceTypeList?.filter(
         (e) => !rowCount.map((row) => row.page_price_type_id).includes(e._id)
       );
-      const updatedPrices = data.filter((item)=> item.platfrom_id == platformId)
+      const updatedPrices = data.filter(
+        (item) => item.platfrom_id == platformId
+      );
       setFilterPriceTypeList(updatedPrices);
     }
   }, [rowCount, priceTypeList, platformId]);
@@ -252,7 +256,7 @@ const PageMaster = () => {
       setPriceTypeList(platformPriceData);
       setFilterPriceTypeList(platformPriceData);
     } else {
-      console.log("Condition not met");
+      console.log('Condition not met');
     }
   }, [platformPriceData, isPriceLoading]);
 
@@ -268,51 +272,47 @@ const PageMaster = () => {
   // }, [priceData]);
 
   const PageLevels = [
-    { value: "Level 1 (High)", label: "Level 1 (High)" },
-    { value: "Level 2 (Medium)", label: "Level 2 (Medium)" },
-    { value: "Level 3 (Low)", label: "Level 3 (Low)" },
+    { value: 'Level 1 (High)', label: 'Level 1 (High)' },
+    { value: 'Level 2 (Medium)', label: 'Level 2 (Medium)' },
+    { value: 'Level 3 (Low)', label: 'Level 3 (Low)' },
   ];
 
   const PageStatus = [
-    { value: "Active", label: "Active" },
-    { value: "Inactive", label: "Inactive" },
-    { value: "Disabled", label: "Disabled" },
+    { value: 0, label: 'Active' },
+    { value: 1, label: 'Inactive' },
+    { value: 2, label: 'Disabled' },
+    { value: 3, label: 'Semiactive' },
   ];
 
   const PageTypes = [
-    { value: "Non Adult", label: "Non Adult" },
-    { value: "Adult", label: "Adult" },
+    { value: 'Non Adult', label: 'Non Adult' },
+    { value: 'Adult', label: 'Adult' },
   ];
 
   const Contents = [
-    { value: "By Vendor", label: "By Vendor" },
-    { value: "By CF", label: "By CF" },
-    { value: "Both", label: "Both" },
-  ];
-
-  const ProfileTypeData = [
-    { value: "Theme", label: "Theme" },
-    { value: "Influencer", label: "Influencer" },
+    { value: 'By Vendor', label: 'By Vendor' },
+    { value: 'By CF', label: 'By CF' },
+    { value: 'Both', label: 'Both' },
   ];
 
   const handleAddProfileTypeClick = () => {
     dispatch(setOpenShowAddModal());
-    dispatch(setModalType("Profile Type"));
+    dispatch(setModalType('Profile Type'));
   };
 
   const handleProfileTypeInfoClick = () => {
     dispatch(setOpenShowPageInfoModal());
-    dispatch(setModalType("Profile Type Info"));
+    dispatch(setModalType('Profile Type Info'));
   };
 
   const handleAddPlatformClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setVendorModalType("Platform"));
+    dispatch(setVendorModalType('Platform'));
   };
 
   const handlePlatformInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setVendorModalType("Platform"));
+    dispatch(setVendorModalType('Platform'));
   };
 
   const handleOpenPageModal = (type) => {
@@ -331,10 +331,10 @@ const PageMaster = () => {
 
   const getData = () => {
     axios
-      .get(baseUrl + "get_all_users", {
+      .get(baseUrl + 'get_all_users', {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // Adjust content type as needed
+          'Content-Type': 'application/json', // Adjust content type as needed
         },
       })
       .then((res) => {
@@ -353,76 +353,48 @@ const PageMaster = () => {
   const handlePrimaryChange = (selectedOption) => {
     setPrimary(selectedOption);
   };
-  // useEffect(() => {
-  // if (platformId) {
-  //   setPriceTypeList([]);
-  //   let priceData = platformData.find((role) => role._id == platformId)?._id;
-  //   axios
-  //     .get(baseUrl + `v1/pagePriceTypesForPlatformId/${priceData}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json", // Adjust content type as needed
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setPriceTypeList(res.data.data);
-  //       setFilterPriceTypeList(res.data.data);
-  //     });
-  // }
+  
 
-  //   axios
-  //     .get(baseUrl + `v1/pagePriceType`, {
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //         "Content-Type": "application/json", // Adjust content type as needed
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setPriceTypeList(res.data.data);
-  //       setFilterPriceTypeList(res?.data?.data);
-  //     });
-  // }, []);
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (pageName === "") {
+    if (pageName === '') {
       setValidateFields((prev) => ({ ...prev, pageName: true }));
     }
-    if (link === "") {
+    if (link === '') {
       setValidateFields((prev) => ({ ...prev, link: true }));
     }
-    if (platformId === "") {
+    if (platformId === '') {
       setValidateFields((prev) => ({ ...prev, platformId: true }));
     }
-    if (categoryId === "") {
+    if (categoryId === '') {
       setValidateFields((prev) => ({ ...prev, categoryId: true }));
     }
-    if (pageLevel === "") {
+    if (pageLevel === '') {
       setValidateFields((prev) => ({ ...prev, pageLevel: true }));
     }
-    if (pageStatus === "") {
+    if (pageStatus === '') {
       setValidateFields((prev) => ({ ...prev, pageStatus: true }));
     }
-    if (closeBy === "") {
+    if (closeBy === '') {
       setValidateFields((prev) => ({ ...prev, closeBy: true }));
     }
-    if (pageType === "") {
+    if (pageType === '') {
       setValidateFields((prev) => ({ ...prev, pageType: true }));
     }
-    if (content === "") {
+    if (content === '') {
       setValidateFields((prev) => ({ ...prev, content: true }));
     }
-    if (ownerType === "") {
+    if (ownerType === '') {
       setValidateFields((prev) => ({ ...prev, ownerType: true }));
     }
-    if (vendorId === "") {
+    if (vendorId === '') {
       setValidateFields((prev) => ({ ...prev, vendorId: true }));
     }
-    if (followCount === "") {
+    if (followCount === '') {
       setValidateFields((prev) => ({ ...prev, followCount: true }));
     }
-    if (profileId === "") {
+    if (profileId === '') {
       setValidateFields((prev) => ({ ...prev, profileId: true }));
     }
     if (platformActive?.length == 0 || platformActive == null) {
@@ -431,38 +403,41 @@ const PageMaster = () => {
     // if (rate === "") {
     //   setValidateFields((prev) => ({ ...prev, rate: true }));
     // }
-    if (description === "") {
+    if (description === '') {
       setValidateFields((prev) => ({ ...prev, description: true }));
     }
-    if (rateType === "") {
+    if (rateType === '') {
       setValidateFields((prev) => ({ ...prev, rateType: true }));
     }
     // if (tag.length == 0) {
     //   setValidateFields((prev) => ({ ...prev, tag: true }));
     // }
 
+    // because db saving label not id of ownership
+    const convertOwnerIdToLabel = ownerShipData?.find((role) => role._id == ownerType)?.company_type_name || '';
+
     if (
-      pageName === "" ||
-      link === "" ||
-      platformId === "" ||
-      categoryId === "" ||
-      pageLevel === "" ||
-      pageStatus === "" ||
-      closeBy === "" ||
-      pageType === "" ||
-      content === "" ||
-      ownerType === "" ||
-      vendorId === "" ||
-      followCount === "" ||
-      profileId === "" ||
+      pageName === '' ||
+      link === '' ||
+      platformId === '' ||
+      categoryId === '' ||
+      pageLevel === '' ||
+      pageStatus === '' ||
+      closeBy === '' ||
+      pageType === '' ||
+      content === '' ||
+      ownerType === '' ||
+      vendorId === '' ||
+      followCount === '' ||
+      profileId === '' ||
       platformActive?.length == 0 ||
       // rate === "" ||
-      rateType === "" ||
+      rateType === '' ||
       // tag.length == 0 ||
-      (rateType.value == "Variable" && variableType === "") ||
-      rowCount.some((e) => e.page_price_type_id === "" || e.price === "")
+      (rateType.value == 'Variable' && variableType === '') ||
+      rowCount.some((e) => e.page_price_type_id === '' || e.price === '')
     ) {
-      return toastError("Please Fill All Required Fields");
+      return toastError('Please Fill All Required Fields');
     }
     // console.warn("NO ERROR");
     // return
@@ -473,12 +448,14 @@ const PageMaster = () => {
       page_category_id: categoryId,
       tags_page_category: tag.map((e) => e.value),
       preference_level: pageLevel,
-      page_status: pageStatus,
-      status: pageStatus == "Active" ? 1 : 0,
+      page_mast_status: pageStatus,
+      // page_status: pageStatus == 'Active' ? 1 : 0,
+      // status: pageStatus == 'Active' ? 1 : 0,
       page_closed_by: closeBy,
       page_name_type: pageType,
       content_creation: content,
-      ownership_type: ownerType,
+      // ownership_type: ownerType,
+      ownership_type: convertOwnerIdToLabel,
       vendor_id: vendorId,
       followers_count: followCount,
       page_profile_type_id: profileId,
@@ -487,66 +464,72 @@ const PageMaster = () => {
       description: description,
       created_by: userID,
       rate_type: rateType.value,
-      variable_type: rateType.value == "Variable" ? variableType.value : null,
+      variable_type: rateType.value == 'Variable' ? variableType.value : null,
       page_price_multiple: rowCount,
 
       primary_page: primary.value,
       post:
-        rowCount.find((e) => e.page_price_type_id == "667e6c7412fbbf002179f6d6")
+        rowCount.find((e) => e.page_price_type_id == '667e6c7412fbbf002179f6d6')
           ?.price ?? 0,
       story:
-        rowCount.find((e) => e.page_price_type_id == "667e6c9112fbbf002179f72c")
+        rowCount.find((e) => e.page_price_type_id == '667e6c9112fbbf002179f72c')
           ?.price ?? 0,
       both_:
-        rowCount.find((e) => e.page_price_type_id == "667e6c9c12fbbf002179f72f")
+        rowCount.find((e) => e.page_price_type_id == '667e6c9c12fbbf002179f72f')
           ?.price ?? 0,
     };
     if (pageMast_id) {
       payload.last_updated_by = userID;
       delete payload.created_by;
-      return axios
+      return await axios
         .put(`${baseUrl}v1/pageMaster/${pageMast_id}`, payload, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         })
         .then(() => {
           refetchPageList();
-          toastAlert(" Data Updated Successfully");
+          toastAlert(' Data Updated Successfully');
           setIsFormSubmitted(true);
         })
         .catch((error) => {
           toastError(error.response.data.message);
         });
     } else {
-      return axios
-        .post(baseUrl + "v1/pageMaster", payload, {
+      return await axios
+        .post(baseUrl + 'v1/pageMaster', payload, {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         })
         .then(() => {
           refetchPageList();
           setIsFormSubmitted(true);
-          toastAlert(" Data Submitted Successfully");
+          toastAlert(' Data Submitted Successfully');
         })
         .catch((error) => {
-          toastError(error.response.data.message);
+          const errorMessage = error.response.data.message;
+          if (errorMessage.includes("E11000")) {
+            toastError("Duplicate Page Name.");
+          } else {
+            toastError(errorMessage);
+          }
+          // toastError(error.response.data.message);
         });
     }
   };
 
   if (isFormSubmitted) {
     // return <Navigate to="/admin/pms-page-overview" />;
-    return navigate('/admin/pms-page-overview')
+    return navigate('/admin/pms-page-overview');
   }
 
   const addPriceRow = () => {
     setRowCount((rowCount) => [
       ...rowCount,
-      { page_price_type_id: "", price: "" },
+      { page_price_type_id: '', price: '' },
     ]);
   };
 
@@ -568,7 +551,7 @@ const PageMaster = () => {
 
   const handlePriceChange = (e, index) => {
     if (
-      e.target.value !== "" &&
+      e.target.value !== '' &&
       (e.target.value < 0 || isNaN(e.target.value))
     ) {
       return;
@@ -578,7 +561,7 @@ const PageMaster = () => {
     setRowCount(newRowCount);
   };
   const calculateFollowerCount = (index) => {
-    const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
+    const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
   };
 
@@ -590,10 +573,10 @@ const PageMaster = () => {
         {!showAll && userData.length > 5 && (
           <div
             style={{
-              padding: "10px",
-              textAlign: "center",
-              cursor: "pointer",
-              color: "#007bff",
+              padding: '10px',
+              textAlign: 'center',
+              cursor: 'pointer',
+              color: '#007bff',
             }}
             onClick={() => setShowAll(true)}
           >
@@ -603,28 +586,33 @@ const PageMaster = () => {
       </components.MenuList>
     );
   };
-  
+
   const getInitialValue = () => {
     const initialId = vendorId || vendorDetails._id;
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
-    return initialVendor ? { value: initialVendor._id, label: initialVendor.vendor_name } : null;
+    return initialVendor
+      ? { value: initialVendor._id, label: initialVendor.vendor_name }
+      : null;
   };
 
   useEffect(() => {
-    const fetchData = async() => {
+    const fetchData = async () => {
       try {
         const getData = await axios.get(`${baseUrl}v1/vendor/${vendorId}`, {
           headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${sessionStorage.getItem('token')}`,
           },
         });
-        setSingleVendor(getData?.data?.data)
-        setCloseBy(getData?.data?.data?.closed_by)
+        setSingleVendor(getData?.data?.data);
+        setCloseBy(getData?.data?.data?.closed_by);
 
-        const matchedProfile = profileData?.data.find(profile => profile?.profile_type == getData?.data?.data?.vendor_category);
-        setProfileId(matchedProfile?._id)
+        const matchedProfile = profileData?.data.find(
+          (profile) =>
+            profile?.profile_type == getData?.data?.data?.vendor_category
+        );
+        setProfileId(matchedProfile?._id);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
       }
     };
     fetchData();
@@ -632,39 +620,81 @@ const PageMaster = () => {
 
   const goBack = () => {
     navigate(-1);
+  };
+
+  const getPageFollowers = (value) => {
+    const payload = {
+      "creators": [value],
+      "department": "65c38781c52b3515f77b0815",
+      "userId": 111111
+    };
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
+  
+    axios.post(`https://insights.ist:8080/api/v1/creators_details_v3`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    })
+    .then((result) => {
+      setFollowCount(result?.data?.data[0]?.creatorDetails?.followers);
+    })
+    .catch((error) => {
+      console.error('Error fetching followers:', error);
+    });
   }
 
+  const setPageNameFun = (e) =>{
+    setPageName(e);
+    const checkPageExist = pageList.data.find((item)=> item.page_name.toLowerCase() == e.toLowerCase());
+    if(checkPageExist == undefined){
+      setExistError('Page Is Not Exist, You Can Use This')
+      setMessageColor('green');
+    }else{
+      setExistError('Page Is Already Exist, Enter Another One')
+      setMessageColor('red');
+    }
+  }
+ 
   return (
     <>
       <FormContainer
-        mainTitle={!pageMast_id ? "Profile Master" : ""}
+        mainTitle={!pageMast_id ? 'Profile Master' : ''}
         link={true}
         // handleSubmit={handleSubmit}
         submitButton={false}
       />
-      <div style={{backgroundColor:'#52b2d6',width:'3%',padding:'7px',marginBottom:'10px',cursor:'pointer'}}>
+      <div
+        style={{
+          backgroundColor: '#52b2d6',
+          width: '3%',
+          padding: '7px',
+          marginBottom: '10px',
+          cursor: 'pointer',
+        }}
+      >
         <ArrowBackIcon onClick={goBack} />
       </div>
-      <div className="parent_of_tab" style={{display:'flex'}}>
-        {
-          platformData?.map((item)=>(
-            <div key={item._id} className="tabs">
-              <button
-                className={activeTab === item._id ? 'active btn btn-info' : 'btn btn-link'}
-                onClick={() => {
-                  setActiveTab(item._id)
-                  setPlatformId(item._id)
-                  setRowCount([{ page_price_type_id: "", price: "" }])
-                }}
-              >
-                {item.platform_name}
-              </button>
-            </div>
-          ))
-        }
+      <div className="parent_of_tab" style={{ display: 'flex' }}>
+        {platformData?.map((item) => (
+          <div key={item._id} className="tabs">
+            <button
+              className={
+                activeTab === item._id ? 'active btn btn-info' : 'btn btn-link'
+              }
+              onClick={() => {
+                setActiveTab(item._id);
+                setPlatformId(item._id);
+                setRowCount([{ page_price_type_id: '', price: '' }]);
+              }}
+            >
+              {item.platform_name}
+            </button>
+          </div>
+        ))}
       </div>
 
-      <div className={!pageMast_id ? "card" : ""}>
+      <div className={!pageMast_id ? 'card' : ''}>
         {!pageMast_id && (
           <div className="card-header">
             <h5 className="card-title">Profile Master</h5>
@@ -672,12 +702,12 @@ const PageMaster = () => {
         )}
         <div className="card-body pb4">
           <div className="row thm_form">
-          <div className="col-md-6 mb16">
+            <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Vendor <sup style={{ color: "red" }}>*</sup>
+                  Vendor <sup style={{ color: 'red' }}>*</sup>
                 </label>
-                 <Select
+                <Select
                   options={vendorData.map((option) => ({
                     value: option._id,
                     label: formatString(option.vendor_name),
@@ -695,7 +725,7 @@ const PageMaster = () => {
                   }}
                 />
                 {validateFields.vendorId && (
-                  <small style={{ color: "red" }}>Please select Vendor</small>
+                  <small style={{ color: 'red' }}>Please select Vendor</small>
                 )}
               </div>
             </div>
@@ -703,7 +733,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Platform <sup style={{ color: "red" }}>*</sup>
+                  Platform <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <Select
@@ -717,7 +747,7 @@ const PageMaster = () => {
                       value: platformId,
                       label:
                         platformData.find((role) => role._id === platformId)
-                          ?.platform_name || "",
+                          ?.platform_name || '',
                     }}
                     onChange={(e) => {
                       setPlatformId(e.value);
@@ -747,7 +777,7 @@ const PageMaster = () => {
                   </IconButton>
                 </div>
                 {validateFields.platformId && (
-                  <small style={{ color: "red" }}>Please select Platform</small>
+                  <small style={{ color: 'red' }}>Please select Platform</small>
                 )}
               </div>
             </div>
@@ -755,17 +785,29 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Is Profile Verified ? <sup style={{ color: "red" }}>*</sup>
+                  Is Profile Verified ? <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />Yes
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
+                      Yes
                     </label>
                   </div>
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />No
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
+                      No
                     </label>
                   </div>
                 </div>
@@ -775,7 +817,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Profile Type <sup style={{ color: "red" }}>*</sup>
+                  Profile Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <Select
@@ -840,7 +882,7 @@ const PageMaster = () => {
                   </IconButton>
                 </div>
                 {validateFields.profileId && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please select Profile Type
                   </small>
                 )}
@@ -849,7 +891,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Profile Status <sup style={{ color: "red" }}>*</sup>
+                  Profile Status <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   name="Profile status"
@@ -871,7 +913,7 @@ const PageMaster = () => {
                   }}
                 />
                 {validateFields.pageStatus && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please select Profile Status
                   </small>
                 )}
@@ -880,7 +922,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Category <sup style={{ color: "red" }}>*</sup>
+                  Category <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <Select
@@ -895,7 +937,7 @@ const PageMaster = () => {
                       value: categoryId,
                       label:
                         categoryData.find((role) => role._id === categoryId)
-                          ?.page_category || "",
+                          ?.page_category || '',
                     }}
                     onChange={(e) => {
                       setCategoryId(e.value);
@@ -908,7 +950,7 @@ const PageMaster = () => {
                     }}
                   />
                   <IconButton
-                    onClick={handleOpenPageModal("Category")}
+                    onClick={handleOpenPageModal('Category')}
                     variant="contained"
                     color="primary"
                     aria-label="Add Platform.."
@@ -916,7 +958,7 @@ const PageMaster = () => {
                     <AddIcon />
                   </IconButton>
                   <IconButton
-                    onClick={handleOpenInfoModal("Category Info")}
+                    onClick={handleOpenInfoModal('Category Info')}
                     variant="contained"
                     color="primary"
                     aria-label="Platform Info.."
@@ -925,14 +967,14 @@ const PageMaster = () => {
                   </IconButton>
                 </div>
                 {validateFields.categoryId && (
-                  <small style={{ color: "red" }}>Please select Category</small>
+                  <small style={{ color: 'red' }}>Please select Category</small>
                 )}
               </div>
             </div>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Tags 
+                  Tags
                   {/* <sup style={{ color: "red" }}>*</sup> */}
                 </label>
                 <Select
@@ -964,18 +1006,21 @@ const PageMaster = () => {
                 value={pageName}
                 required={true}
                 onChange={(e) => {
-                  setPageName(e.target.value);
-
+                  // setPageName(e.target.value);
+                  setPageNameFun(e.target.value);
+                  getPageFollowers(e.target.value);
                   if (e.target.value) {
                     if (
                       platformData.some(
                         (e) =>
-                          e.platform_name.toLowerCase() === "instagram" &&
+                          e.platform_name.toLowerCase() === 'instagram' &&
                           e._id === platformId
                       )
                     ) {
-                      setLink(()=>`https://www.instagram.com/${e.target.value}/`);
-                      if(link){
+                      setLink(
+                        () => `https://www.instagram.com/${e.target.value}/`
+                      );
+                      if (link) {
                         setValidateFields((prev) => ({ ...prev, link: false }));
                       }
                     }
@@ -984,8 +1029,9 @@ const PageMaster = () => {
                 }}
               />
               {validateFields.pageName && (
-                <small style={{ color: "red" }}>Please Fill Profile Name</small>
+                <small style={{ color: 'red' }}>Please Fill Profile Name</small>
               )}
+              {existError && (<small style={{ color: messageColor }}>{existError}</small>)}
             </div>
             <div className="col-md-6 p0 mb16">
               <FieldContainer
@@ -1003,7 +1049,7 @@ const PageMaster = () => {
                 }}
               />
               {validateFields.link && (
-                <small style={{ color: "red" }}>Please Fill Link</small>
+                <small style={{ color: 'red' }}>Please Fill Link</small>
               )}
             </div>
             <div className="col-md-6 p0 mb16">
@@ -1016,7 +1062,7 @@ const PageMaster = () => {
                 required={true}
                 onChange={(e) => {
                   if (
-                    e.target.value !== "" &&
+                    e.target.value !== '' &&
                     (e.target.value < 0 || isNaN(e.target.value))
                   ) {
                     return;
@@ -1032,7 +1078,7 @@ const PageMaster = () => {
               />
               <small className="ml-3">{formatNumber(followCount)}</small>
               {validateFields.followCount && (
-                <small style={{ color: "red" }}>
+                <small style={{ color: 'red' }}>
                   Please Fill Followers Count
                 </small>
               )}
@@ -1040,7 +1086,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Preference Level <sup style={{ color: "red" }}>*</sup>
+                  Preference Level <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   name="Profile level"
@@ -1062,7 +1108,7 @@ const PageMaster = () => {
                   }}
                 />
                 {validateFields.pageLevel && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please select Preference Level
                   </small>
                 )}
@@ -1071,7 +1117,7 @@ const PageMaster = () => {
             <div className="col-md-6 p0 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Ownership Type<sup style={{ color: "red" }}>*</sup>
+                  Ownership Type<sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   className="w-100"
@@ -1084,10 +1130,10 @@ const PageMaster = () => {
                     value: ownerType,
                     label:
                       ownerShipData?.find((role) => role._id === ownerType)
-                        ?.company_type_name || "",
+                        ?.company_type_name || '',
                   }}
                   onChange={(e) => {
-                    setOwnerType(e.label);
+                    setOwnerType(e.value);
                     if (e.value) {
                       setValidateFields((prev) => ({
                         ...prev,
@@ -1098,7 +1144,7 @@ const PageMaster = () => {
                 />
               </div>
               {validateFields.ownerType && (
-                <small style={{ color: "red" }}>
+                <small style={{ color: 'red' }}>
                   Please Select Ownership Type
                 </small>
               )}
@@ -1106,10 +1152,10 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Primary <sup style={{ color: "red" }}>*</sup>
+                  Primary <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
-                  options={["No", "Yes"].map((option) => ({
+                  options={['No', 'Yes'].map((option) => ({
                     value: option,
                     label: option,
                   }))}
@@ -1121,7 +1167,7 @@ const PageMaster = () => {
                   onChange={handlePrimaryChange}
                 />
                 {validateFields.primary && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please Fill Primary Type
                   </small>
                 )}
@@ -1151,7 +1197,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Close By <sup style={{ color: "red" }}>*</sup>
+                  Close By <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   // components={{ MenuList }}
@@ -1163,7 +1209,11 @@ const PageMaster = () => {
                   value={{
                     value: singleVendor.closed_by || closeBy,
                     label:
-                      userData.find((role) => role.user_id == singleVendor.closed_by || role.user_id == closeBy)?.user_name || "",
+                      userData.find(
+                        (role) =>
+                          role.user_id == singleVendor.closed_by ||
+                          role.user_id == closeBy
+                      )?.user_name || '',
                   }}
                   onChange={(e) => {
                     setCloseBy(e.value);
@@ -1176,14 +1226,14 @@ const PageMaster = () => {
                   }}
                 />
                 {validateFields.closeBy && (
-                  <small style={{ color: "red" }}>Please select Close By</small>
+                  <small style={{ color: 'red' }}>Please select Close By</small>
                 )}
               </div>
             </div>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Content Creation <sup style={{ color: "red" }}>*</sup>
+                  Content Creation <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   name="Content creation"
@@ -1203,7 +1253,7 @@ const PageMaster = () => {
                   }}
                 />
                 {validateFields.content && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please select Content Creation
                   </small>
                 )}
@@ -1212,7 +1262,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Platform Active On <sup style={{ color: "red" }}>*</sup>
+                  Platform Active On <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   required={true}
@@ -1233,7 +1283,7 @@ const PageMaster = () => {
                   }}
                 ></Select>
                 {validateFields.platformActive && (
-                  <small style={{ color: "red" }}>
+                  <small style={{ color: 'red' }}>
                     Please select Platform Active On
                   </small>
                 )}
@@ -1242,7 +1292,7 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Profile Name Type <sup style={{ color: "red" }}>*</sup>
+                  Profile Name Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   name="profile name type"
@@ -1263,7 +1313,7 @@ const PageMaster = () => {
                 />
                 {
                   validateFields.pageType && (
-                    <small style={{ color: "red" }}>
+                    <small style={{ color: 'red' }}>
                       Please select Profile Name Type
                     </small>
                   ) // Page Name Type
@@ -1280,7 +1330,7 @@ const PageMaster = () => {
                 required={true}
                 onChange={(e) => {
                   if (
-                    e.target.value !== "" &&
+                    e.target.value !== '' &&
                     (e.target.value < 0 || isNaN(e.target.value))
                   ) {
                     return;
@@ -1344,10 +1394,10 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Rate Type <sup style={{ color: "red" }}>*</sup>
+                  Rate Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
-                  options={["Fixed", "Variable"].map((option) => ({
+                  options={['Fixed', 'Variable'].map((option) => ({
                     value: option,
                     label: option,
                   }))}
@@ -1361,13 +1411,13 @@ const PageMaster = () => {
               </div>
             </div>
             <div className="col-md-6 mb16">
-              {rateType.label == "Variable" && (
+              {rateType.label == 'Variable' && (
                 <div className="form-group m0">
                   <label className="form-label">
-                    Variable Type <sup style={{ color: "red" }}>*</sup>
+                    Variable Type <sup style={{ color: 'red' }}>*</sup>
                   </label>
                   <Select
-                    options={["Per Thousand", "Per Million"].map((option) => ({
+                    options={['Per Thousand', 'Per Million'].map((option) => ({
                       value: option,
                       label: option,
                     }))}
@@ -1388,7 +1438,7 @@ const PageMaster = () => {
                 <div key={index} className="col-md-6">
                   <div className="form-group m0">
                     <label className="form-label">
-                      Price Type <sup style={{ color: "red" }}>*</sup>
+                      Price Type <sup style={{ color: 'red' }}>*</sup>
                     </label>
                     <div className="input-group inputAddGroup">
                       <Select
@@ -1436,9 +1486,9 @@ const PageMaster = () => {
                     onChange={(e) => handlePriceChange(e, index)}
                     value={rowCount[index].price}
                   />
-                  {rateType.label == "Variable" && (
-                    <p className="ml-3" style={{ color: "blue" }}>
-                      This Profile Cost = {"  Rs "}{" "}
+                  {rateType.label == 'Variable' && (
+                    <p className="ml-3" style={{ color: 'blue' }}>
+                      This Profile Cost = {'  Rs '}{' '}
                       {calculateFollowerCount(index.toFixed(0))}
                     </p>
                   )}
@@ -1483,7 +1533,7 @@ const PageMaster = () => {
               type="submit"
               onClick={handleSubmit}
             >
-              {pageMast_id ? "Update" : "Submit"}
+              {pageMast_id ? 'Update' : 'Submit'}
             </button>
           </Stack>
         </div>

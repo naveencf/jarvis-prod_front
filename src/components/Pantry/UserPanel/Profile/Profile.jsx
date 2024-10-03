@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import UserNav from "../UserNav";
 import imageTest1 from "../../../../assets/img/product/Avtrar1.png";
 import { baseUrl } from "../../../../utils/config";
+// import GoogleSheetDownloader from "./googlesheet";
 
 const Profile = () => {
   const [selectedResponsibilityId, setSelectedResponsibilityId] =
@@ -19,16 +20,18 @@ const Profile = () => {
 
   function handleGetData() {
     axios
-      .get(`${baseUrl}`+`get_single_user/${loginUserId}`)
+      .get(`${baseUrl}` + `get_single_user/${loginUserId}`)
       .then((res) => {
         setUserData(res.data);
         // console.log(res.data, "user data");
       });
   }
 
+  console.log(userData, 'profile')
+
   function responsibilityAPI() {
     axios
-      .post(`${baseUrl}`+`get_user_job_responsibility`, {
+      .post(`${baseUrl}` + `get_user_job_responsibility`, {
         user_id: Number(loginUserId),
       })
       .then((res) => {
@@ -43,11 +46,11 @@ const Profile = () => {
 
   const handleProfileUpdate = () => {
     const formData = new FormData();
-    formData.append("id", loginUserId);
+    formData.append("user_id", loginUserId);
     formData.append("image", profileUpdate);
     axios
       // .put(baseUrl+"update_user", formData, {
-      .put(baseUrl+"userimageupdate", formData, {
+      .put(baseUrl + "update_user", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -59,7 +62,8 @@ const Profile = () => {
 
   return (
     <>
-      <UserNav />
+      {/* <GoogleSheetDownloader/> */}
+
       <div className="section product_section profile_section section_padding">
         <div className="container">
           <div className="row">
@@ -77,24 +81,24 @@ const Profile = () => {
                   <div className="profile_img_box">
                     <div className="profile_img">
                       {/* {console.log(userData.downloadableUrl, "user data on jsx")} */}
-                      {userData?.downloadableUrl == null ? (
+                      {userData?.image_url == null ? (
                         <img
                           src={imageTest1}
                           style={{
-                            height: "40px",
+                            height: "70px",
                             borderRadius: "50%",
-                            width: "40px",
+                            width: "70px",
                           }}
                         />
                       ) : (
                         <img
                           className="img-profile ,w-25"
-                          src={userData.downloadableUrl}
+                          src={userData.image_url}
                           alt="user"
                           style={{
-                            height: "40px",
+                            height: "70px",
                             borderRadius: "50%",
-                            width: "40px",
+                            width: "70px",
                           }}
                         />
                       )}
@@ -133,6 +137,10 @@ const Profile = () => {
                     <div className="profile_data_box_body">
                       <ul>
                         <li>
+                          <span>Role</span>
+                          {userData.Role_name}
+                        </li>
+                        <li>
                           <span>Email</span>
                           {userData.user_email_id}
                         </li>
@@ -153,6 +161,10 @@ const Profile = () => {
                           {userData.department_name}
                         </li>
                         <li>
+                          <span>Designation</span>
+                          {userData.designation_name}
+                        </li>
+                        <li>
                           <span>Created by</span>
                           {userData.created_by}
                         </li>
@@ -161,7 +173,7 @@ const Profile = () => {
                   </div>
                   {/* profile info End  */}
 
-                  <div className="responsibility_main_box">
+                  {/* <div className="responsibility_main_box">
                     <div className="">
                       <div className="responsibility_s_box">
                         <div className="profile_data_box_head">
@@ -243,15 +255,18 @@ const Profile = () => {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </>
   );
 };
 
 export default Profile;
+
+

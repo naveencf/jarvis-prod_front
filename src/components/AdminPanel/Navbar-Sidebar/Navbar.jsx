@@ -374,10 +374,12 @@ const Navbar = () => {
                 </div> */}
               </div>
               <div className="pack">
-                <div className="pro-btn">
-                  <i class="bi bi-person"></i>
-                  <p>My profile</p>
-                </div>
+                <Link to="/admin/user-profile">
+                  <div className="pro-btn">
+                    <i class="bi bi-person"></i>
+                    <p>My profile</p>
+                  </div>
+                </Link>
                 <Link to="/admin/user-timeline">
                   <div className="pro-btn">
                     <i class="bi bi-gear"></i>

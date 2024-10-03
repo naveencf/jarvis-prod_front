@@ -9,7 +9,7 @@ export default function BankExcelConverter(BankData) {
       row.account_no,
     "IFSC Code (Mandatory) 11 digit code of the beneficiary’s bank account. Eg. HDFC0004277":
       row.ifsc_code,
-    "Payout Amount (Mandatory) Amount should be in rupees": row.toPay,
+    "Payout Amount (Mandatory) Amount should be in rupees": row.toPay?.toFixed(0),
     "Phone Number (Optional)": row.user_contact_no,
     "Email ID (Optional)": row.user_email_id,
     "Contact Reference ID (Optional) Eg: Employee ID or Customer ID":

@@ -321,7 +321,7 @@ const OfferLetter = ({ allUserData, image64 }) => {
           <View style={styles.section}>
             <Text style={styles.points} >3) Probation Period:</Text>
             <Text>
-              Both parties agree to a probationary period of three months,
+              Both parties agree to a probationary period of six months,
               during which either party may terminate the employment
               relationship with a notice period of 7 days. This period is
               intended to allow both you and Creativefuel to assess the mutual

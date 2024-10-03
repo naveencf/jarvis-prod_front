@@ -1,20 +1,19 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
-import { useNavigate } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
-import { Typography } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setShowPageHealthColumn,
-} from "../../Store/PageOverview";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/config';
+import { Link, useNavigate } from 'react-router-dom';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import { Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import jwtDecode from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
+import { setPlatform, setShowPageHealthColumn } from '../../Store/PageOverview';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
-} from "../../Store/reduxBaseURL";
+  useGetAllVendorTypeQuery,
+} from '../../Store/reduxBaseURL';
 import {
   useGetAllCitiesQuery,
   useGetAllPageCategoryQuery,
@@ -23,8 +22,11 @@ import {
   useGetOwnershipTypeQuery,
   useGetPageStateQuery,
   useGetpagePriceTypeQuery,
-} from "../../Store/PageBaseURL";
+} from '../../Store/PageBaseURL';
 import Checkbox from '@mui/material/Checkbox';
+import PlanStatics from './PlanStatics';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const PlanMaking = () => {
   const {
@@ -35,20 +37,27 @@ const PlanMaking = () => {
   const { data: pageStates } = useGetPageStateQuery();
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState('Tab1');
-
+  const [activeTabPlatfrom, setActiveTabPlatform] = useState(
+    '666818824366007df1df1319'
+  );
   const [filterData, setFilterData] = useState([]);
   const [user, setUser] = useState();
+  const [toggleShowBtn, setToggleShowBtn] = useState();
   const [progress, setProgress] = useState(10);
   const [contextData, setContextData] = useState(false);
   const [pageUpdateAuth, setPageUpdateAuth] = useState(false);
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
-  
-  const storedToken = sessionStorage.getItem("token");
+  const [pageCategoryCount, setPageCategoryCount] = useState({});
+  const [showOwnPage, setShowOwnPage] = useState(false);
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
+  const { data: vendorTypeData } = useGetAllVendorTypeQuery();
+  const typeData = vendorTypeData?.data;
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [postPerPageValues, setPostPerPageValues] = useState({});
   const [storyPerPageValues, setStoryPerPageValues] = useState({});
@@ -73,7 +82,7 @@ const PlanMaking = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
-  
+
   useEffect(() => {
     if (userID && !contextData) {
       axios
@@ -103,7 +112,7 @@ const PlanMaking = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + 'get_all_users').then((res) => {
       setUser(res.data.data);
       setProgress(70);
     });
@@ -118,7 +127,7 @@ const PlanMaking = () => {
       const initialCostPerPostValues = {};
       const initialCostPerStoryValues = {};
       const initialCostPerBothValues = {};
-      pageList.data.forEach(page => {
+      pageList?.data?.forEach((page) => {
         initialPostValues[page._id] = 0;
         initialStoryValues[page._id] = 0;
         initialCostPerPostValues[page._id] = page.m_post_price || 0;
@@ -146,19 +155,72 @@ const PlanMaking = () => {
       ...showTotalCost,
       [row._id]: event.target.checked,
     });
+
+    // to add 1 in post checking on checkbox
+    if (
+      event.target.checked &&
+      (!postPerPageValues[row._id] || postPerPageValues[row._id] === 0)
+    ) {
+      const updatedPostValues = {
+        ...postPerPageValues,
+        [row._id]: 1,
+      };
+      setPostPerPageValues(updatedPostValues);
+
+      calculateTotalCost(
+        row._id,
+        1,
+        storyPerPageValues[row._id],
+        costPerPostValues[row._id],
+        costPerStoryValues[row._id],
+        costPerBothValues[row._id]
+      );
+    }
+
+    // Logic to update category count
+    const categoryId = row.page_category_id;
+    setPageCategoryCount((prevCount) => {
+      const newCount = { ...prevCount };
+      if (event.target.checked) {
+        // Increment count for the category
+        newCount[categoryId] = (newCount[categoryId] || 0) + 1;
+      } else {
+        // Decrement count if unchecked
+        newCount[categoryId] = (newCount[categoryId] || 0) - 1;
+        if (newCount[categoryId] <= 0) {
+          delete newCount[categoryId];
+        }
+      }
+      return newCount;
+    });
     updateStatistics(updatedSelectedRows);
   };
-
+  const handleToggleBtn = () => {
+    setToggleShowBtn(!toggleShowBtn);
+  };
+  const handleShowAll = () => {
+    setToggleShowBtn(false);
+  };
+  const handleOwnPage = () => {
+    setShowOwnPage(!showOwnPage);
+  };
   const handlePostPerPageChange = (row) => (event) => {
     const updatedPostValues = {
       ...postPerPageValues,
-      [row._id]: event.target.value
+      [row._id]: event.target.value,
     };
     setPostPerPageValues(updatedPostValues);
-    calculateTotalCost(row._id, updatedPostValues[row._id], storyPerPageValues[row._id], costPerPostValues[row._id], costPerStoryValues[row._id], costPerBothValues[row._id]);
+    calculateTotalCost(
+      row._id,
+      updatedPostValues[row._id],
+      storyPerPageValues[row._id],
+      costPerPostValues[row._id],
+      costPerStoryValues[row._id],
+      costPerBothValues[row._id]
+    );
     updateStatistics(selectedRows);
   };
-
+// console.log("s");
   useEffect(() => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
@@ -166,12 +228,21 @@ const PlanMaking = () => {
   const handleStoryPerPageChange = (row) => (event) => {
     const updatedStoryValues = {
       ...storyPerPageValues,
-      [row._id]: event.target.value
+      [row._id]: event.target.value,
     };
     setStoryPerPageValues(updatedStoryValues);
-    calculateTotalCost(row._id, postPerPageValues[row._id], updatedStoryValues[row._id], costPerPostValues[row._id], costPerStoryValues[row._id], costPerBothValues[row._id]);
+    calculateTotalCost(
+      row._id,
+      postPerPageValues[row._id],
+      updatedStoryValues[row._id],
+      costPerPostValues[row._id],
+      costPerStoryValues[row._id],
+      costPerBothValues[row._id]
+    );
     // updateStatistics(selectedRows);
   };
+
+  const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
 
   const updateStatistics = (rows) => {
     let followers = 0;
@@ -180,7 +251,7 @@ const PlanMaking = () => {
     let stories = 0;
     let totalDeliverables = 0;
 
-    rows.forEach(row => {
+    rows?.forEach((row) => {
       const postPerPage = Number(postPerPageValues[row._id]) || 0;
       const storyPerPage = Number(storyPerPageValues[row._id]) || 0;
       const rowFollowers = row.followers_count || 0;
@@ -197,41 +268,58 @@ const PlanMaking = () => {
     setTotalCost(cost);
     setTotalPostsPerPage(posts);
     setTotalStoriesPerPage(stories);
-    setTotalPagesSelected(rows.length);
+    setTotalPagesSelected(rows?.length);
   };
 
-  const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
+  const calculateTotalCost = (
+    id,
+    postPerPage,
+    storyPerPage,
+    costPerPost,
+    costPerStory,
+    costPerBoth
+  ) => {
     let totalCost;
     if (postPerPage === storyPerPage) {
       totalCost = postPerPage * costPerBoth;
     } else {
-      totalCost = (postPerPage * costPerPost) + (storyPerPage * costPerStory);
+      totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
     }
     setTotalCostValues({
       ...totalCostValues,
-      [id]: totalCost
+      [id]: totalCost,
     });
   };
 
   const dataGridcolumns = [
     {
-      field: "S.NO",
-      headerName: "Count",
-      renderCell: (params) => (
-        <div> {filterData.indexOf(params.row) + 1} </div>
-      ),
+      field: 'S.NO',
+      headerName: 'Count',
+      renderCell: (params) => <div> {filterData.indexOf(params.row) + 1} </div>,
 
       width: 80,
     },
     {
-      field: "page_name",
-      headerName: "Page Name",
+      field: 'page_name',
+      headerName: 'Page Name',
       width: 200,
-      editable: true
+      editable: true,
     },
     {
-      field: "page_link",
-      headerName: "Page Link",
+      field: 'Vendor',
+      headerName: 'Vendor',
+      width: 200,
+      renderCell: (params) => {
+        let name = vendorData?.find(
+          (item) => item?._id == params.row?.vendor_id
+        )?.vendor_name;
+        return <div>{name}</div>;
+      },
+      // editable: true
+    },
+    {
+      field: 'page_link',
+      headerName: 'Page Link',
       width: 200,
       editable: true,
       renderCell: (params) => {
@@ -248,17 +336,17 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "followers_count",
-      headerName: "Followers",
+      field: 'followers_count',
+      headerName: 'Followers',
       width: 100,
     },
     {
-      field: "ownership_type",
-      headerName: "Ownership",
-      width: 100
+      field: 'ownership_type',
+      headerName: 'Ownership',
+      width: 100,
     },
     {
-      field: "est_update",
+      field: 'est_update',
       headerName: 'Selection',
       width: 100,
       renderCell: (params) => {
@@ -271,29 +359,29 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "created_at",
+      field: 'created_at',
       headerName: 'Post Per Page',
       width: 150,
       renderCell: (params) => {
         return (
           <input
             type="number"
-            style={{width:'70%'}}
+            style={{ width: '70%' }}
             value={postPerPageValues[params.row._id] || ''}
             onChange={handlePostPerPageChange(params.row)}
-            />
-          );
+          />
+        );
       },
     },
     {
-      field: "updated_by",
+      field: 'updated_by',
       headerName: 'Story Per Page',
       width: 150,
       renderCell: (params) => {
         return (
           <input
             type="number"
-            style={{width:'70%'}}
+            style={{ width: '70%' }}
             value={storyPerPageValues[params.row._id] || ''}
             onChange={handleStoryPerPageChange(params.row)}
           />
@@ -301,40 +389,67 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "last_updated_by",
+      field: 'last_updated_by',
       headerName: 'Total Cost',
       width: 100,
       renderCell: (params) => {
         return (
-          <div style={{border:"1px solid red", padding:'10px'}}>{'₹'}{showTotalCost[params.row._id] ? totalCostValues[params.row._id] || 0 : '-'}</div>
+          <div style={{ border: '1px solid red', padding: '10px' }}>
+            {'₹'}
+            {showTotalCost[params.row._id]
+              ? totalCostValues[params.row._id] || 0
+              : '-'}
+          </div>
         );
       },
     },
     {
-      field: "page_catg_id",
-      headerName: "Category",
+      field: 'preference_level',
+      headerName: 'Level',
+      width: 200,
+      editable: true,
+    },
+    {
+      field: 'Vendor Type',
+      headerName: 'Vendor Type',
+      width: 200,
+      // editable: true
+      renderCell: (params) => {
+        let name = vendorData?.find(
+          (item) => item?._id == params.row?.vendor_id
+        )?.vendor_type;
+        let finalName = typeData?.find((item) => item?._id == name)?.type_name;
+        return <div>{finalName}</div>;
+      },
+    },
+    {
+      field: 'page_catg_id',
+      headerName: 'Category',
       width: 200,
       renderCell: (params) => {
-        let name = cat?.find((item) => item?._id == params.row?.page_category_id)?.page_category;
+        let name = cat?.find(
+          (item) => item?._id == params.row?.page_category_id
+        )?.page_category;
         return <div>{name}</div>;
       },
     },
     {
-      field: "platform_id",
-      headerName: "Platform",
+      field: 'platform_id',
+      headerName: 'Platform',
       renderCell: (params) => {
-        let name = platformData?.find((item) => item?._id == params.row.platform_id)?.platform_name;
+        let name = platformData?.find(
+          (item) => item?._id == params.row.platform_id
+        )?.platform_name;
         return <div>{name}</div>;
       },
       width: 150,
     },
-    { field: "page_status", headerName: "Status", width: 100 }
+    { field: 'page_status', headerName: 'Status', width: 100 },
   ];
-
   const pageDetailColumn = [
     {
-      field: "m_post_price",
-      headerName: "Cost Per Post",
+      field: 'm_post_price',
+      headerName: 'Cost Per Post',
       width: 150,
       valueGetter: ({ row }) => {
         let mPostPrice = row.m_post_price;
@@ -343,8 +458,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "m_story_price",
-      headerName: "Cost Per Story",
+      field: 'm_story_price',
+      headerName: 'Cost Per Story',
       width: 150,
       valueGetter: ({ row }) => {
         let mStoryPrice = row.m_story_price;
@@ -353,15 +468,15 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "m_both_price",
-      headerName: "Both Price",
+      field: 'm_both_price',
+      headerName: 'Both Price',
       width: 150,
       valueGetter: ({ row }) => {
         let mBothPrice = row.m_both_price;
         let bothPrice = row.both_;
         return bothPrice ?? mBothPrice;
       },
-    }
+    },
   ];
 
   if (!pageStatsAuth || decodedToken?.role_id === 1) {
@@ -373,92 +488,144 @@ const PlanMaking = () => {
   if (showPageHealthColumn) {
     // dataGridcolumns.push(...pageHealthColumn);
   }
+  useEffect(() => {
+    if (selectedRows?.length == 0) {
+      setToggleShowBtn(false);
+    }
+  }, [selectedRows]);
 
+  const handlePlatform = (id) => {
+    setActiveTabPlatform(id);
+    const platform = pageList?.data?.filter((item) => item.platform_id === id);
+
+    console.log('Fid:', id);
+    setFilterData(platform);
+  };
+
+  // console.log('filter', filterData);
   return (
     <>
       <div className="tabs">
         <h4>Plan Making</h4>
+        <Link to="/admin/pms-plan-upload">Plan Upload</Link>
       </div>
 
       <div className="content">
-        {activeTab === 'Tab1' &&
-        <div className="">
-          <div className="card">     
-            <div className="card-body p0">
-              <div className="data_tbl thm_table table-responsive">
-                {isPageListLoading ? (
-                  <Box
-                    sx={{
-                      textAlign: "center",
-                      position: "relative",
-                      margin: "auto",
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <CircularProgress variant="determinate" value={progress} />
+        {activeTab === 'Tab1' && (
+          <div className="">
+            <div className="card">
+              <div className="card-body p0">
+                <div className="data_tbl thm_table table-responsive">
+                  {isPageListLoading ? (
                     <Box
                       sx={{
-                        top: 0,
-                        left: 0,
-                        bottom: 0,
-                        right: 0,
-                        position: "absolute",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
+                        textAlign: 'center',
+                        position: 'relative',
+                        margin: 'auto',
+                        width: '100%',
+                        display: 'flex',
+                        justifyContent: 'center',
                       }}
                     >
-                      <Typography
-                        variant="caption"
-                        component="div"
-                        color="text-primary"
+                      <CircularProgress
+                        variant="determinate"
+                        value={progress}
+                      />
+                      <Box
+                        sx={{
+                          top: 0,
+                          left: 0,
+                          bottom: 0,
+                          right: 0,
+                          position: 'absolute',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
                       >
-                        {`${Math.round(progress)}%`}
-                      </Typography>
+                        <Typography
+                          variant="caption"
+                          component="div"
+                          color="text-primary"
+                        >
+                          {`${Math.round(progress)}%`}
+                        </Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                ) : (
-                  <>
-                    <Box sx={{ padding: 2 }}>
-                      <Typography>Total Followers: {totalFollowers} || 
-                        Total Cost: {totalCost} ||
-                        Total Posts Per Page: {totalPostsPerPage} ||
-                        Total Stories Per Page: {totalStoriesPerPage} ||
-                        Total Deliverable: {totalDeliverables} ||
-                        Total Pages: {totalPagesSelected}
-                      </Typography>
-                    </Box>
-                  <Box sx={{ height: 700, width: "100%" }}>
-                    <DataGrid
-                      title="Page Overview"
-                      rows={filterData}
-                      columns={dataGridcolumns}
-                      // onRowDoubleClick={(params) => {
-                      //   navigate(`/admin/pms-page-edit/${params.row._id}`);
-                      // }}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      disableSelectionOnClick
-                      getRowId={(row) => row._id}
-                      slots={{ toolbar: GridToolbar }}
-                      slotProps={{
-                        toolbar: {
-                          showQuickFilter: true,
-                        },
-                      }}
-                      // checkboxSelection
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
-                </>
-                )}
+                  ) : (
+                    <>
+                      <PlanStatics
+                        totalFollowers={totalFollowers}
+                        totalCost={totalCost}
+                        totalPostsPerPage={totalPostsPerPage}
+                        totalPagesSelected={totalPagesSelected}
+                        totalDeliverables={totalDeliverables}
+                        totalStoriesPerPage={totalStoriesPerPage}
+                        pageCategoryCount={pageCategoryCount}
+                        handleToggleBtn={handleToggleBtn}
+                        selectedRow={selectedRows}
+                        allrows={filterData}
+                        totalRecord={pageList?.pagination_data}
+                        postCount={postPerPageValues}
+                        handleShowAll={handleShowAll}
+                        storyPerPage={storyPerPageValues}
+                        handleOwnPage={handleOwnPage}
+                        category={cat}
+                      />
+                      <div
+                        className="parent_of_tab"
+                        style={{ display: 'flex' }}
+                      >
+                        {platformData?.map((item) => (
+                          <div key={item._id} className="tabs">
+                            <button
+                              className={
+                                activeTabPlatfrom === item._id
+                                  ? 'active btn btn-info'
+                                  : 'btn btn-link'
+                              }
+                              onClick={() => handlePlatform(item._id)}
+                            >
+                              {item.platform_name}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                      <Box sx={{ height: 700, width: '100%' }}>
+                        <DataGrid
+                          title="Page Overview"
+                          rows={
+                            showOwnPage
+                              ? ownPages
+                              : toggleShowBtn
+                              ? selectedRows
+                              : filterData
+                          }
+                          columns={dataGridcolumns}
+                          // onRowDoubleClick={(params) => {
+                          //   navigate(`/admin/pms-page-edit/${params.row._id}`);
+                          // }}
+                          pageSize={5}
+                          rowsPerPageOptions={[5]}
+                          disableSelectionOnClick
+                          getRowId={(row) => row._id}
+                          slots={{ toolbar: GridToolbar }}
+                          slotProps={{
+                            toolbar: {
+                              showQuickFilter: true,
+                            },
+                          }}
+                          // checkboxSelection
+                          disableRowSelectionOnClick
+                        />
+                      </Box>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        }
+        )}
       </div>
     </>
   );
