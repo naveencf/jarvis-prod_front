@@ -3,266 +3,266 @@ import './SkeletonLoader.css'
 const SkeletonLoader = () => {
     return (
         <div className="skeleton-loader">
-            <table class="tg">
+            <table className="tg">
                 <tr>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
-                    <th class="tg-cly1">
-                        <div class="line"></div>
+                    <th className="tg-cly1">
+                        <div className="line"></div>
                     </th>
                 </tr>
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
-                    </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
+                    </td>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
 
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
                 <tr>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
-                    <td class="tg-cly1">
-                        <div class="line"></div>
+                    <td className="tg-cly1">
+                        <div className="line"></div>
                     </td>
                 </tr>
             </table>

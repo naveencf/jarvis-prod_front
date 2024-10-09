@@ -37,7 +37,7 @@ const BirthdayAndWorkAniverseryWFO = () => {
         <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-sm-12">
           <div className="card">
             <div className="card-header">
-              <h5 class="card-title">Birthdays</h5>
+              <h5 className="card-title">Birthdays</h5>
             </div>
             <div className="card-body">
               <div className="eventListArea">
@@ -65,7 +65,7 @@ const BirthdayAndWorkAniverseryWFO = () => {
         <div className="col-xxl-6 col-xl-6 col-lg-6 col-md-6 col-sm-12">
           <div className="card">
             <div className="card-header">
-              <h5 class="card-title">Work anniversaries</h5>
+              <h5 className="card-title">Work anniversaries</h5>
             </div>
             <div className="card-body">
               <div className="eventListArea">

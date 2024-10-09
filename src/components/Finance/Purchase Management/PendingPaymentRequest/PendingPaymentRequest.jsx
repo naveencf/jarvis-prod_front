@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FormContainer from "../../../AdminPanel/FormContainer";
 import axios from "axios";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import pdf from "../../pdf-file.png";
 import logo from "../../../../../public/logo.png";
 import { Button } from "@mui/material";
 import DiscardConfirmation from "./Components/DiscardConfirmation";
@@ -10,16 +9,12 @@ import jwtDecode from "jwt-decode";
 import ImageView from "../../ImageView";
 import { useGlobalContext } from "../../../../Context/Context";
 import { baseUrl } from "../../../../utils/config";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
-import Badge from "@mui/material/Badge";
 import ShowDataModal from "./Components/ShowDataModal";
 import WhatsappAPI from "../../../WhatsappAPI/WhatsappAPI";
 import moment from "moment";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import PayVendorDialog from "././Components/PayVendorDialog";
-import { Link } from "react-router-dom";
 import CommonDialogBox from "./Components/CommonDialogBox";
 import BankDetailPendingPaymentDialog from "./Components/BankDetailPendingPaymentDialog";
 import PayThroughVendorDialog from "./Components/PayThroughVendorDialog";
@@ -27,18 +22,18 @@ import BulkPayThroughVendorDialog from "./Components/BulkPayThroughVendorDialog"
 import OverviewContainedDialog from "./Components/OverviewContainedDialog";
 import PendingPaymentReqFilters from "./Components/PendingPaymentReqFilters";
 import {
+  pendingPaymentDetailColumns,
+  pendingPaymentReqRemainderDialogColumns,
   pendingPaymentRequestColumns,
   pendingPaymentUniqueVendorColumns,
 } from "../../CommonColumn/Columns";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
-
   const { toastAlert, toastError } = useGlobalContext();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-  const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [payDialog, setPayDialog] = useState(false);
@@ -53,7 +48,6 @@ export default function PendingPaymentRequest() {
   const [uniqueVenderDialog, setUniqueVenderDialog] = useState(false);
   const [uniqueVendorData, setUniqueVendorData] = useState([]);
   const [sameVendorDialog, setSameVendorDialog] = useState(false);
-  const [sameVendorData, setSameVendorData] = useState([]);
   const [bankDetail, setBankDetail] = useState(false);
   const [paymentHistory, setPaymentHistory] = useState(false);
   const [reminderData, setReminderData] = useState([]);
@@ -64,8 +58,6 @@ export default function PendingPaymentRequest() {
   const [phpRemainderData, setPhpRemainderData] = useState([]);
   const [historyType, setHistoryType] = useState("");
   const [historyData, setHistoryData] = useState([]);
-  const [gstHold, setGstHold] = useState(false);
-  const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [baseAmount, setBaseAmount] = useState(0);
   const [bankDetailRowData, setBankDetailRowData] = useState([]);
 
@@ -76,8 +68,6 @@ export default function PendingPaymentRequest() {
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [vendorNameList, setVendorNameList] = useState([]);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
-  const [adjustAmount, setAdjustAmount] = useState("");
-  // const [preview, setPreview] = useState("");
   const [overviewDialog, setOverviewDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [netAmount, setNetAmount] = useState("");
@@ -97,53 +87,6 @@ export default function PendingPaymentRequest() {
     );
     return reminder?.length > 2 ? "bg-danger" : "";
   };
-
-  const remainderDialogColumns = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex = reminderData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      field: "request_date",
-      headerName: "Requested Date",
-      width: 150,
-      renderCell: (params) => {
-        return convertDateToDDMMYYYY(params.row.request_date);
-      },
-    },
-    {
-      field: "remind_remark",
-
-      headerName: "Remark",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
-      },
-    },
-    {
-      field: "action",
-      headerName: "Action",
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <div>
-            <button
-              className="btn btn-sm btn-success"
-              onClick={() => handleAcknowledgeClick(params.row)}
-            >
-              Acknowledge
-            </button>
-          </div>
-        );
-      },
-    },
-  ];
 
   const callApi = async () => {
     //Reminder API
@@ -293,34 +236,29 @@ export default function PendingPaymentRequest() {
     setRemainderDialog(true);
   };
 
-  const convertDateToDDMMYYYY = (date) => {
-    const date1 = new Date(date);
-    const day = String(date1.getDate()).padStart(2, "0");
-    const month = String(date1.getMonth() + 1).padStart(2, "0");
-    const year = date1.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  };
-
-  const handleGstHold = (e) => {
-    setGstHold(e.target.checked);
-    setGSTHoldAmount(rowData.gst_amount);
-  };
-
   GridToolbar.defaultProps = {
     filterRowsButtonText: "Filter",
     filterGridToolbarButton: "Filter",
   };
 
-  const totalPendingAmount = filterData?.reduce(
-    (total, item) => total + parseFloat(item?.request_amount),
-    0
-  );
+  const calculateTotals = (data) => {
+    return (
+      data?.reduce(
+        (totals, item) => {
+          const requestAmount = parseFloat(item?.request_amount) || 0;
+          const balanceAmount = parseFloat(item?.balance_amount) || 0;
+          return {
+            totalPendingAmount: totals.totalPendingAmount + requestAmount,
+            totalBalanceAmount: totals.totalBalanceAmount + balanceAmount,
+          };
+        },
+        { totalPendingAmount: 0, totalBalanceAmount: 0 }
+      ) || { totalPendingAmount: 0, totalBalanceAmount: 0 }
+    );
+  };
+  const { totalPendingAmount, totalBalanceAmount } =
+    calculateTotals(filterData);
 
-  const totalBalanceAmount = filterData?.reduce(
-    (total, item) => total + parseFloat(item?.balance_amount),
-    0
-  );
   const handleDiscardClick = (e, row) => {
     e.preventDefault();
     setRowData(row);
@@ -393,7 +331,6 @@ export default function PendingPaymentRequest() {
   };
 
   // Payment history detail:-
-
   const handleOpenPaymentHistory = (row, type) => {
     setHistoryType(type);
     setRowData(row);
@@ -401,8 +338,6 @@ export default function PendingPaymentRequest() {
     const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
     const currentYear = new Date().getFullYear();
 
-    // const startDate = new Date(`04/01/${new Date().getFullYear() -MonthisGraterThenMarch? 0:1}`);
-    // const endDate = new Date(`03/31/${new Date().getFullYear()+MonthisGraterThenMarch? 1:0}`);
     const startDate = new Date(
       `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1}`
     );
@@ -431,216 +366,12 @@ export default function PendingPaymentRequest() {
   const handleClosePaymentHistory = () => {
     setPaymentHistory(false);
   };
-
   // ==============================================================
-  function loadScript(src) {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = () => {
-        resolve(true);
-      };
-      script.onerror = () => {
-        resolve(false);
-      };
-      document.body.appendChild(script);
-    });
-  }
-
-  async function displayRazorpay(paymentAmout) {
-    const res = await loadScript(
-      "https://checkout.razorpay.com/v1/checkout.js"
-    );
-
-    if (!res) {
-      alert("Razorpay SDK failed to load. Are you online?");
-      return;
-    }
-
-    var options = {
-      key: "rzp_test_SIbrnELO2NP7rA", // Enter the Key ID generated from the Dashboard
-      amount: paymentAmout * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-      currency: "INR",
-      name: "Your Business Name",
-      description: "Payment to " + "Harshit",
-      image: { logo },
-      handler: function (response) {
-        alert(
-          "Payment Successful! Payment ID: " + response.razorpay_payment_id
-        );
-        // Here you can handle the payment success event, e.g., updating the database, sending notifications, etc.
-      },
-      // default_payment_method:"cash",
-      callback_url: "https://eneqd3r9zrjok.x.pipedream.net/",
-      prefill: {
-        name: "Customer Name",
-        email: "customer@example.com",
-        contact: "9000090000",
-        method: "netbanking",
-      },
-      notes: {
-        vendor_name: "Harshit",
-        vendor_account_number: "12345678901",
-      },
-      theme: {
-        color: "#3399cc",
-      },
-    };
-
-    const paymentObject = new window.Razorpay(options);
-    paymentObject.open();
-  }
-
-  // accordin function:-
+  // accordian function:-
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
 
-  const paymentDetailColumns = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex = historyData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
-    },
-    {
-      field: "request_amount",
-      headerName: "Requested Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
-      },
-    },
-    {
-      field: "outstandings",
-      headerName: "OutStanding ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
-      },
-    },
-    // {
-    //   field: "invc_img",
-    //   headerName: "Invoice Image",
-    //   renderCell: (params) => {
-    //     if (params.row.invc_img) {
-    //       // Extract file extension and check if it's a PDF
-    //       const fileExtension = params.row.invc_img
-    //         .split(".")
-    //         .pop()
-    //         .toLowerCase();
-    //       const isPdf = fileExtension === "pdf";
-
-    //       const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
-
-    //       return isPdf ? (
-    //         <img
-    //           onClick={() => {
-    //             setOpenImageDialog(true);
-    //             setViewImgSrc(imgUrl);
-    //           }}
-    //           src={pdf}
-    //           style={{ width: "40px", height: "40px" }}
-    //           title="PDF Preview"
-    //         />
-    //       ) : (
-    //         <img
-    //           onClick={() => {
-    //             setOpenImageDialog(true);
-    //             setViewImgSrc(imgUrl);
-    //           }}
-    //           src={imgUrl}
-    //           alt="Invoice"
-    //           style={{ width: "100px", height: "100px" }}
-    //         />
-    //       );
-    //     } else {
-    //       return null;
-    //     }
-    //   },
-    // },
-    {
-      field: "request_date",
-      headerName: "Requested Date",
-      width: 150,
-      renderCell: (params) => {
-        return convertDateToDDMMYYYY(params.row.request_date);
-      },
-    },
-    {
-      field: "name",
-      headerName: "Requested By",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.name;
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
-      // width: "auto",
-      width: 250,
-      renderCell: (params) => {
-        return params.row.vendor_name;
-      },
-    },
-    {
-      field: "remark_audit",
-      headerName: "Remark",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
-      },
-    },
-    {
-      field: "priority",
-      headerName: "Priority",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
-      },
-    },
-    {
-      field: "aging",
-      headerName: "Aging",
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <p>
-            {params.row.aging}
-            Days
-          </p>
-        );
-      },
-    },
-    {
-      field: "Status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => {
-        const matchingItems = nodeData.filter(
-          (item) => item.request_id == params.row.request_id
-        );
-        if (matchingItems.length > 0) {
-          return matchingItems.map((item, index) => (
-            <p key={index}>
-              {item.status == 0
-                ? "Pending"
-                : item.status == 2
-                ? "Discarded"
-                : "Paid"}
-            </p>
-          ));
-        } else {
-          return "Pending"; // Default value if no matching item is found
-        }
-      },
-    },
-  ];
   const getStatusText = (status) => {
     switch (status) {
       case "0":
@@ -678,7 +409,7 @@ export default function PendingPaymentRequest() {
       );
     });
 
-    const totalFY = dataFY.reduce(
+    const totalFY = dataFY?.reduce(
       (acc, item) => acc + parseFloat(item.payment_amount),
       0
     );
@@ -774,159 +505,166 @@ export default function PendingPaymentRequest() {
     }
   };
 
-  const partialData = filterData?.filter((d) => d.status === "3");
-  const instantData = filterData?.filter((d) => d.status === "0");
+  const processData = useCallback(
+    (data, status) => {
+      const filteredData = data?.filter((d) => d.status === status);
+      // Calculate the counts
+      const pendingCount = filteredData?.length;
+      // Aggregate other metrics
+      const uniqueVendorCount = new Set(
+        filteredData?.map((item) => item.vendor_name)
+      );
+      const pendingAmount = filteredData?.reduce(
+        (total, item) => total + parseFloat(item.request_amount),
+        0
+      );
+      const balanceAmount = filteredData?.reduce(
+        (total, item) => total + parseFloat(item.balance_amount),
+        0
+      );
+      const nonGstCount = filteredData?.filter((gst) => gst.gstHold === "0");
 
-  const pendingPartialcount = partialData?.length;
-  const pendingInstantcount = instantData?.length;
-  // For partial tab :-
-  const uniqueVendorPartialCount = new Set(
-    partialData?.map((item) => item.vendor_name)
-  );
-  const pendingAmountPartial = partialData?.reduce(
-    (total, item) => total + parseFloat(item.request_amount),
-    0
-  );
-  const balanceAmountPartial = partialData?.reduce(
-    (total, item) => total + parseFloat(item.balance_amount),
-    0
-  );
-  const nonGstPartialCount = partialData?.filter((gst) => gst.gstHold === "0");
+      const withInvcImage = filteredData?.filter(
+        (item) => item.invc_img && item.invc_img.length > 0
+      );
+      const withoutInvcImage = filteredData?.filter(
+        (item) => !item.invc_img || item.invc_img.length === 0
+      );
+      const tdsDeduction = filteredData?.filter(
+        (item) => item?.TDSDeduction === "1" || item?.TDSDeduction === null
+      );
 
-  const withInvcPartialImage = partialData?.filter(
-    (item) => item.invc_img && item.invc_img.length > 0
+      return {
+        pendingCount,
+        uniqueVendorCount,
+        pendingAmount,
+        balanceAmount,
+        nonGstCount,
+        withInvcImage,
+        withoutInvcImage,
+        tdsDeduction,
+      };
+    },
+    [data]
   );
 
-  const withoutInvcPartialImage = partialData?.filter(
-    (item) => !item.invc_img || item.invc_img.length === 0
-  );
-  const partialTDSDeduction = partialData?.filter(
-    (item) => item?.TDSDeduction === "1" || item?.TDSDeduction === null
-  );
-  // ===================================================================
-  // For Instant tab :-
-  const uniqueVendorsInstantCount = new Set(
-    instantData?.map((item) => item.vendor_name)
-  );
-  const pendingAmountInstant = instantData?.reduce(
-    (total, item) => total + parseFloat(item.request_amount),
-    0
-  );
-  const balanceAmountInstant = instantData?.reduce(
-    (total, item) => total + parseFloat(item.request_amount),
-    0
-  );
-  const nonGstInstantCount = instantData?.filter((gst) => gst.gstHold === "0");
+  // Use the function for partialData and instantData
+  const partialResults = processData(filterData, "3");
+  const instantResults = processData(filterData, "0");
 
-  const withInvcInstantImage = instantData?.filter(
-    (item) => item.invc_img && item.invc_img.length > 0
-  );
-  const withoutInvcInstantImage = instantData?.filter(
-    (item) => !item.invc_img || item.invc_img.length === 0
-  );
-  const instantTDSDeduction = instantData?.filter(
-    (item) => item?.TDSDeduction === "1" || item?.TDSDeduction === null
-  );
-  // ===================================================================
+  // Destructure the results as needed
+  const {
+    pendingCount: pendingPartialCount,
+    uniqueVendorCount: uniqueVendorPartialCount,
+    pendingAmount: pendingAmountPartial,
+    balanceAmount: balanceAmountPartial,
+    nonGstCount: nonGstPartialCount,
+    withInvcImage: withInvcPartialImage,
+    withoutInvcImage: withoutInvcPartialImage,
+    tdsDeduction: partialTDSDeduction,
+  } = partialResults;
 
-  useEffect(() => {
-    if (activeAccordionIndex === 0) {
-      const uniqueVendorNames = [...new Set(data?.map((d) => d?.vendor_name))];
-
-      setVendorNameList(uniqueVendorNames);
-    } else if (activeAccordionIndex === 1) {
-      const filteredData = data.filter((d) => d.status === "3");
-      const uniqueVendorNames = [
-        ...new Set(filteredData.map((d) => d?.vendor_name)),
-      ];
-
-      setVendorNameList(uniqueVendorNames);
-    } else if (activeAccordionIndex === 2) {
-      const filteredData = data?.filter((d) => d?.status === "0");
-      const uniqueVendorNames = [
-        ...new Set(filteredData.map((d) => d?.vendor_name)),
-      ];
-      setVendorNameList(uniqueVendorNames);
-    }
-  }, [activeAccordionIndex]);
+  const {
+    pendingCount: pendingInstantCount,
+    uniqueVendorCount: uniqueVendorsInstantCount,
+    pendingAmount: pendingAmountInstant,
+    balanceAmount: balanceAmountInstant,
+    nonGstCount: nonGstInstantCount,
+    withInvcImage: withInvcInstantImage,
+    withoutInvcImage: withoutInvcInstantImage,
+    tdsDeduction: instantTDSDeduction,
+  } = instantResults;
 
   useEffect(() => {
-    if (activeAccordionIndex === 0) {
-      const uniqueVendorNames = [...new Set(data?.map((d) => d?.vendor_name))];
+    const getUniqueVendorNames = (filterCondition) => {
+      const filteredData = filterCondition
+        ? data?.filter(filterCondition)
+        : data;
+      const uniqueVendorNames = [
+        ...new Set(filteredData?.map((d) => d?.vendor_name)),
+      ];
+      setVendorNameList(uniqueVendorNames);
+    };
 
+    switch (activeAccordionIndex) {
+      case 0:
+        getUniqueVendorNames();
+        break;
+      case 1:
+        getUniqueVendorNames((d) => d?.status === "3");
+        break;
+      case 2:
+        getUniqueVendorNames((d) => d?.status === "0");
+        break;
+      default:
+        setVendorNameList([]);
+    }
+  }, [activeAccordionIndex, data]);
+
+  useEffect(() => {
+    if (activeAccordionIndex === 0 && data?.length) {
+      const uniqueVendorNames = [...new Set(data?.map((d) => d?.vendor_name))];
       setVendorNameList(uniqueVendorNames);
     }
-  }, [data]);
+  }, [activeAccordionIndex, data]);
 
-  const handleRowSelectionModelChange = async (rowIds) => {
+  const handleRowSelectionModelChange = (rowIds) => {
     setRowSelectionModel(rowIds);
 
-    if (rowIds.length > 0) {
-      console.log("Selected IDs:", rowIds);
-      setIsZohoStatusFileUploaded(1);
-    } else {
-      console.log("No rows selected");
-      setIsZohoStatusFileUploaded(0);
-      // Handle logic for when no rows are selected
-    }
+    const isFileUploaded = rowIds?.length > 0 ? 1 : 0;
+    setIsZohoStatusFileUploaded(isFileUploaded);
+
+    console.log(
+      rowIds?.length > 0 ? `Selected IDs: ${rowIds}` : "No rows selected"
+    );
   };
 
-  // csv download----
   const handleDownloadInvoices = async () => {
     const zip = new JSZip();
 
-    // Generate CSVs and add them to the zip
     rowSelectionModel.forEach((rowId) => {
-      const rowData = filterData.find((row) => row.request_id === rowId); // Adjusted to find the correct row data
+      const rowData = filterData.find((row) => row.request_id === rowId);
       if (rowData) {
-        // Prepare CSV content
-        let csvContent = ""; // Initialize CSV content
+        const csvContent = [
+          Object.keys(rowData).join(","),
+          Object.values(rowData)
+            .map((value) => `"${value}"`)
+            .join(","),
+        ].join("\n");
 
-        // Generate headers row
-        const headers = Object.keys(rowData);
-        csvContent += headers.join(",") + "\n";
-
-        // Generate CSV content for the row
-        const values = Object.values(rowData);
-        const rowContent = values.map((value) => `"${value}"`).join(",");
-        csvContent += `${rowContent}\n`;
-
-        // Add CSV to the zip
         zip.file(`invoice_${rowId}.csv`, csvContent);
       }
     });
 
-    // Generate the zip file
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-
-    // Save the zip file
-    saveAs(zipBlob, "invoices.zip");
+    try {
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      saveAs(zipBlob, "invoices.zip");
+    } catch (error) {
+      console.error("Error generating zip file:", error);
+    }
   };
+
   // Zoho Status
   const handleZohoStatusUpload = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    rowSelectionModel?.forEach((id) => {
-      formData?.append("request_id", id);
-    });
-    formData.append("zoho_status", isZohoStatusFileUploaded);
+    try {
+      const formData = new FormData();
+      rowSelectionModel?.forEach((id) => formData.append("request_id", id));
+      formData.append("zoho_status", isZohoStatusFileUploaded);
 
-    await axios
-      .post(
+      const response = await axios.post(
         "https://purchase.creativefuel.io/webservices/RestController.php?view=updatezohostatus",
         formData
-      )
-      .then((res) => {
-        console.log(res, "response zoho status");
-        if (res) {
-          toastAlert("Invoice File Uploaded On Zoho Successfully");
-          callApi();
-        }
-      })
-      .catch((error) => {
-        console.log("Error while getting reminder data");
-      });
+      );
+
+      if (response) {
+        toastAlert("Invoice File Uploaded On Zoho Successfully");
+        callApi();
+      }
+    } catch (error) {
+      console.error("Error while uploading Zoho status:", error);
+    }
   };
 
   const handleOpenPayThroughVendor = () => {
@@ -936,18 +674,10 @@ export default function PendingPaymentRequest() {
     setBulkPayThroughVendor(true);
   };
 
-  useEffect(() => {
-    const initialAdjustmentAmt = netAmount - paymentAmout;
-    const formattedAdjustmentAmt = initialAdjustmentAmt?.toFixed(1);
-    setAdjustAmount(formattedAdjustmentAmt);
-  }, [rowData, paymentAmout]);
-
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
     setFilterData(data);
   };
-
-  console.log(filterData, uniqueVendorData, "data--->>>------>>>--------->>>");
 
   return (
     <div>
@@ -958,8 +688,8 @@ export default function PendingPaymentRequest() {
         totalPendingAmount={totalPendingAmount}
         totalBalanceAmount={totalBalanceAmount}
         pendingRequestCount={pendingRequestCount}
-        pendingPartialcount={pendingPartialcount}
-        pendingInstantcount={pendingInstantcount}
+        pendingPartialcount={pendingPartialCount}
+        pendingInstantcount={pendingInstantCount}
         uniqueVendorPartialCount={uniqueVendorPartialCount}
         uniqueVendorsInstantCount={uniqueVendorsInstantCount}
         pendingAmountPartial={pendingAmountPartial}
@@ -983,6 +713,7 @@ export default function PendingPaymentRequest() {
         partialTDSDeduction={partialTDSDeduction}
         instantTDSDeduction={instantTDSDeduction}
       />
+
       {/* Bank Details 14 */}
 
       <BankDetailPendingPaymentDialog
@@ -996,7 +727,10 @@ export default function PendingPaymentRequest() {
         handleCloseDialog={handleClosePaymentHistory}
         activeAccordionIndex={0}
         data={historyData}
-        columnsData={paymentDetailColumns}
+        columnsData={pendingPaymentDetailColumns({
+          historyData,
+          nodeData,
+        })}
       />
       {/* Unique Vendor Dialog Box */}
       <CommonDialogBox
@@ -1080,7 +814,7 @@ export default function PendingPaymentRequest() {
               >
                 Clear
               </Button>
-              {/* <Button
+              <Button
                 className="btn btn-success cmnbtn btn_sm ms-2"
                 variant="contained"
                 color="primary"
@@ -1097,7 +831,7 @@ export default function PendingPaymentRequest() {
                 onClick={handleOpenBulkPayThroughVendor}
               >
                 Bulk Pay Through Vendor
-              </Button>? */}
+              </Button>
             </div>
           </div>
           <div className="card-body thm_table fx-head">
@@ -1167,6 +901,7 @@ export default function PendingPaymentRequest() {
             setPayThroughVendor={setPayThroughVendor}
             payThroughVendor={payThroughVendor}
             rowSelectionModel={rowSelectionModel}
+            filterData={filterData}
           />
         )}
         {bulkPayThroughVendor && (
@@ -1177,22 +912,6 @@ export default function PendingPaymentRequest() {
             filterData={filterData}
           />
         )}
-
-        {/*Dialog Box */}
-        {/* {loading ? (
-          <div
-            style={{
-              width: "100vw",
-              height: "100vh",
-              position: "absolute",
-              top: "28%",
-              width: "50%",
-              zIndex: "222",
-            }}
-          >
-            <Loader />
-          </div>
-        ) : ( */}
         {payDialog && (
           <PayVendorDialog
             callApi={callApi}
@@ -1227,7 +946,10 @@ export default function PendingPaymentRequest() {
           <ShowDataModal
             handleClose={setRemainderDialog}
             rows={reminderData}
-            columns={remainderDialogColumns}
+            columns={pendingPaymentReqRemainderDialogColumns({
+              reminderData,
+              handleAcknowledgeClick,
+            })}
             aknowledgementDialog={aknowledgementDialog}
             setAknowledgementDialog={setAknowledgementDialog}
             userName={userName}

@@ -75,7 +75,7 @@ function TDSDialog(props) {
           .then((res) => {
             if (res.status === 200) {
               handleCloseTDSFields();
-              toastAlert(`TDS Closed Successfully`);
+              toastAlert(`Sale Booking Shifted To TDS Open Successfully`);
               getData();
               // handleCloseImageModal();
             }

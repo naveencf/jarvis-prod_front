@@ -790,7 +790,7 @@ const RefundRequests = () => {
               <h5 className="card-title w-100 flexCenterBetween">
                 Pending
                 <span className="iconLink">
-                  <i class="bi bi-arrow-up-right"></i>
+                  <i className="bi bi-arrow-up-right"></i>
                 </span>
               </h5>
             </div>
@@ -816,7 +816,7 @@ const RefundRequests = () => {
                 Approved
                 <Link className="link-primary" onClick={handleApprovedFilter}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
@@ -843,7 +843,7 @@ const RefundRequests = () => {
                 Rejected
                 <Link className="link-primary" onClick={handleRejectedFilter}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>

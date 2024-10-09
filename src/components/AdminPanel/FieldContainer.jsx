@@ -66,7 +66,7 @@ const FieldContainer = ({
             <i className="bi bi-calendar-week"></i>
           </div>
         ) : null}
-        {/* {Tag === "select"? <div className="custom-btn-2"><i class="bi bi-chevron-down"></i></div>: null} */}
+        {/* {Tag === "select"? <div className="custom-btn-2"><i className="bi bi-chevron-down"></i></div>: null} */}
       </div>
     </div>
   );

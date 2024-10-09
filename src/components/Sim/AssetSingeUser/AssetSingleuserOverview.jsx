@@ -397,21 +397,21 @@ const AssetSingleuserOverview = ({
       cell: (row) => (
         <>
           {row.asset_request_status == "Requested" && (
-            <div class="btn-group">
+            <div className="btn-group">
               <button
 
                 type="button"
-                class=" icon-1 "
+                className=" icon-1 "
                 data-toggle="dropdown"
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                <i class="fa-solid fa-ellipsis"></i>
+                <i className="fa-solid fa-ellipsis"></i>
               </button>
               <div className="dropdown-menu dropdown-menu-right">
                 <button
                   onClick={() => handleUpdateNewAssetRow(row)}
-                  class="dropdown-item "
+                  className="dropdown-item "
                 // type="button"
                 // data-toggle="modal"
                 // data-target="#sidebar-right"

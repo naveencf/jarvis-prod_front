@@ -11,6 +11,8 @@ import "./Tagcss.css";
 import { useNavigate } from "react-router-dom";
 import {
   useGetAllPageCategoryQuery,
+  useGetAllPageSubCategoryQuery,
+  useGetAllPageListQuery,
   useGetAllProfileListQuery,
   useGetMultiplePagePriceQuery,
 } from '../../Store/PageBaseURL';
@@ -24,6 +26,11 @@ import { useGetOwnershipTypeQuery } from "../../Store/PageBaseURL";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 
 const Page = () => {
+  const {
+    // data: pageList,
+    refetch: refetchPageList,
+    isLoading: isPageListLoading,
+  } = useGetAllPageListQuery();
   const navigate = useNavigate();
   const { pageMast_id } = useParams();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
@@ -40,6 +47,7 @@ const Page = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [platformId, setPlatformId] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [subCategoryId, setSubCategoryId] = useState('');
   const [tag, setTag] = useState([]);
   const [pageLevel, setPageLevel] = useState('');
   const [pageStatus, setPageStatus] = useState('');
@@ -54,7 +62,7 @@ const Page = () => {
   const [platformActive, setPlatformActive] = useState();
   const [rate, setRate] = useState('');
   const [description, setDescription] = useState('');
-
+  const [singlePage, setSinglePage] = useState({})
 
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -64,17 +72,17 @@ const Page = () => {
   const [rateType, setRateType] = useState('Fixed');
 
   const [engagment, setEngagment] = useState(0);
-
+  const [singleVendor, setSingleVendor] = useState({})
   const [p_id, setP_id] = useState();
 
   const [allUsers, setAllUsers] = useState([]);
   const token = sessionStorage.getItem("token");
 
-  useEffect(() => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
-      setAllUsers(res.data.data);
-    });
-  }, []);
+  // useEffect(() => {
+  //   axios.get(baseUrl + 'get_all_users').then((res) => {
+  //     setAllUsers(res.data.data);
+  //   });
+  // }, []);
 
   const PageLevels = [
     { value: 'Level 1 (High)', label: 'Level 1 (High)' },
@@ -123,6 +131,7 @@ const Page = () => {
         },
       })
       .then((res) => {
+        // console.log(res.data.data,"hdssdj")
         setPriceDataNew(res.data.data);
       });
   };
@@ -137,6 +146,13 @@ const Page = () => {
     isLoading: categoryIsLoading,
   } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
+
+  const {
+    data: subCategory,
+    error: subCategoryError,
+    isLoading: subCategoryIsLoading,
+  } = useGetAllPageSubCategoryQuery();
+  const subCategoryData = subCategory?.data || [];
 
   const {
     data: platform,
@@ -243,6 +259,8 @@ const Page = () => {
     }
   }, [priceData]);
 
+
+  // console.log(isPageListLoading,"kdshk",priceTypeList)
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMast_id}`, {
@@ -257,6 +275,7 @@ const Page = () => {
         setPageName(data[0].page_name);
         setLink(data[0].page_link);
         setCategoryId(data[0].page_category_id);
+        setSubCategoryId(data[0].page_sub_category_id);
         // setTag(data[0].tag_category);
         const tagFilter = categoryData.filter((e) =>
           data[0].tags_page_category.includes(e._id)
@@ -290,12 +309,23 @@ const Page = () => {
         setEngagment(data[0]?.engagment_rate);
         setDescription(data[0].description);
         setP_id(data[0].pageMast_id);
+        setSinglePage(data[0])
         // const { execounthismodels } = data[0];
         // setExecounthismodels(execounthismodels);
+
+        axios.get(baseUrl + `v1/vendor/${singlePage.vendor_id}`,{
+          headers: {
+            'Content-Type':'application/json',
+            Authorization: `Bearer ${token}`
+          }
+        }).then((res) => {
+          setSingleVendor(res?.data?.data)
+        })
       });
   }, [platformData]);
 
-  const handleSubmit = (e, flag) => {
+  const handleSubmit = async (e, flag) => {
+    // console.log("first",pageStatus)
     e.preventDefault();
     if (!pageName) {
       toastAlert('Page Name is required');
@@ -309,13 +339,18 @@ const Page = () => {
     } else if (!categoryId) {
       toastAlert('Category is required');
       return;
+    } else if (!subCategoryId) {
+      toastAlert('Sub Category is required');
+      return;
     } else if (!pageLevel) {
       toastAlert('Page Level is required');
       return;
-    } else if (!pageStatus) {
-      toastAlert('Page Status is required');
-      return;
-    } else if (!closeBy) {
+    } 
+    // else if (!pageStatus) {
+    //   toastAlert('Page Status is required');
+    //   return;
+    // } 
+    else if (!closeBy) {
       toastAlert('Close by is required');
       return;
     } else if (!pageType) {
@@ -336,10 +371,11 @@ const Page = () => {
     } else if (!profileId) {
       toastAlert('Profile Type is required');
       return;
-    } else if (!platformActive) {
-      toastAlert('Platform active on is required');
-      return;
     }
+    //  else if (!platformActive) {
+    //   toastAlert('Platform active on is required');
+    //   return;
+    // }
     // else if (!rate) {
     //   toastAlert("Engagement Rate is required");
     //   return;
@@ -350,6 +386,7 @@ const Page = () => {
       link: link,
       platform_id: platformId,
       page_category_id: categoryId,
+      page_sub_category_id: subCategoryId,
       tags_page_category: tag.map((e) => e.value),
       preference_level: pageLevel,
       page_mast_status: pageStatus,
@@ -362,15 +399,15 @@ const Page = () => {
       vendor_id: vendorId,
       followers_count: followCount,
       page_profile_type_id: profileId,
-      platform_active_on: platformActive.map((e) => e.value),
+      // platform_active_on: platformActive.map((e) => e.value),
       rate_type: rateType || '',
       description: description,
       updated_by: userID,
       engagment_rate: engagment || 0,
-      variable_type: rateType == "Variable" ? variableType.value : null,
+      variable_type: rateType == "Variable" ? variableType.value : null
     };
 
-    axios
+   await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
         headers: {
           'Content-Type': 'application/json',
@@ -380,8 +417,32 @@ const Page = () => {
       .then(() => {
         // setIsFormSubmitted(true);
         // toastAlert("Submitted");
+        const  cat_name = categoryData?.find((item) => item?._id == singlePage?.page_category_id)?.page_category;
+        const payload = {
+          p_id: singlePage.p_id,
+          page_name: pageName,
+          page_link: link,
+          temp_vendor_id: singleVendor.vendor_id,
+          story: singlePage.story,
+          post: singlePage.post,
+          both_: singlePage.both_,
+          m_post_price: singlePage.m_post_price,
+          m_story_price: singlePage.m_story_price,
+          m_both_price: singlePage.m_both_price,
+          followers_count: followCount,
+          preference_level: pageLevel,
+          temp_page_cat_id: cat_name
+          //temp_page_cat_id: singlePage.temp_page_cat_id
+        }
+        axios.post(baseUrl + `node_data_to_php_update_page`,payload)
+        .then(()=>{})
+        .catch((err)=>{
+          console.log(err)
+        })
+
         if (flag) {
           toastAlert("Submitted");
+          refetchPageList();
           navigate("/admin/pms-page-overview")
         }
         if (!flag) {
@@ -504,6 +565,27 @@ const Page = () => {
           }}
           onChange={(e) => {
             setCategoryId(e.value);
+          }}
+        ></Select>
+      </div>
+
+      <div className="form-group col-6">
+        <label className="form-label">
+          Sub Category <sup style={{ color: 'red' }}>*</sup>
+        </label>
+        <Select
+          options={subCategoryData?.map((option) => ({
+            value: option._id,
+            label: option.page_sub_category,
+          }))}
+          value={{
+            value: subCategoryId,
+            label:
+              subCategoryData.find((role) => role._id === subCategoryId)
+                ?.page_sub_category || '',
+          }}
+          onChange={(e) => {
+            setSubCategoryId(e.value);
           }}
         ></Select>
       </div>
@@ -675,7 +757,7 @@ const Page = () => {
         ></Select>
       </div>
 
-      <div className="form-group col-6">
+      {/* <div className="form-group col-6">
         <label className="form-label">
           Platform Active On <sup style={{ color: 'red' }}>*</sup>
         </label>
@@ -691,7 +773,7 @@ const Page = () => {
             setPlatformActive(e);
           }}
         ></Select>
-      </div>
+      </div> */}
 
       <div className="col-md-6 mb16">
         <div className="form-group m0">

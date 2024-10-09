@@ -15,9 +15,11 @@ import { useForm } from "react-hook-form";
 import jwtDecode from "jwt-decode";
 import {
   useAddPageCategoryMutation,
+  useAddPageSubCategoryMutation,
   useAddPlatformPriceMutation,
   useAddProfileTypeMutation,
   useUpdatePageCategoryMutation,
+  useUpdatePageSubCategoryMutation,
   useUpdatePlatformPriceMutation,
   useUpdateProfileTypeMutation,
 } from "../../Store/PageBaseURL";
@@ -64,7 +66,9 @@ export default function PageAddMasterModal() {
   const [addProfileType] = useAddProfileTypeMutation();
   const [updateProfileType] = useUpdateProfileTypeMutation();
   const [addCategory] = useAddPageCategoryMutation();
+  const [addSubCategory] = useAddPageSubCategoryMutation();
   const [updateCategory] = useUpdatePageCategoryMutation();
+  const [updateSubCategory] = useUpdatePageSubCategoryMutation();
 
   useEffect(() => {
     if (modalType === "Profile Type") {
@@ -75,10 +79,15 @@ export default function PageAddMasterModal() {
       setValue("description", rowData.description);
     } else if (modalType === "Category") {
       setTitle("Add Category");
+    } else if (modalType === "Sub Category") {
+      setTitle("Add Sub Category");
     } else if (modalType === "Category Update") {
       setTitle("Update Category");
       setValue("name", rowData.page_category);
-      // setValue("name", rowData.category_name);
+      setValue("description", rowData.description);
+    } else if (modalType === "Sub Category Update") {
+      setTitle("Update Sub Category");
+      setValue("name", rowData.page_sub_category);
       setValue("description", rowData.description);
     } else if (modalType === "Price Type") {
       setTitle("Add Price Type");
@@ -141,11 +150,39 @@ export default function PageAddMasterModal() {
       delete obj.updated_by;
       delete obj.profile_type;
       obj.category_name = data.name;
-      obj.last_updated_by=userID
+      obj.last_updated_by = userID;
       updateCategory(obj)
         .unwrap()
         .then(() => {
           toastAlert("Category Updated Successfully");
+          handleClose();
+          dispatch(setCloseShowPageInfoModal());
+        })
+        .catch((err) => {
+          toastError(err.message);
+        });
+    } else if (modalType === "Sub Category") {
+      delete obj.updated_by;
+      delete obj.profile_type;
+      obj.page_sub_category = data.name;
+      addSubCategory(obj)
+        .unwrap()
+        .then(() => {
+          toastAlert("Sub Category Added Successfully");
+          handleClose();
+        })
+        .catch((err) => {
+          toastError(err?.message);
+        });
+    } else if (modalType === "Sub Category Update") {
+      delete obj.updated_by;
+      delete obj.profile_type;
+      obj.page_sub_category = data.name;
+      obj.last_updated_by = userID;
+      updateSubCategory(obj)
+        .unwrap()
+        .then(() => {
+          toastAlert("Sub Category Updated Successfully");
           handleClose();
           dispatch(setCloseShowPageInfoModal());
         })
@@ -166,7 +203,7 @@ export default function PageAddMasterModal() {
       // console.log(data);
       const obj = {
         name: data.priceType,
-        platfrom_id: platformList.find(
+        platfrom_id: platformList?.find(
           (platform) => platform.platform_name === data.platform
         )._id,
         description: data.description,
@@ -295,16 +332,16 @@ export default function PageAddMasterModal() {
             {/* {!modalType == "category" ||
               !modalType == "Add Category" ||
               (!modalType == "Category" && ( */}
-                <TextField
-                  autoFocus
-                  margin="dense"
-                  id="description"
-                  label="Description"
-                  type="text"
-                  fullWidth
-                  {...register("description")}
-                />
-              {/* ))} */}
+            <TextField
+              autoFocus
+              margin="dense"
+              id="description"
+              label="Description"
+              type="text"
+              fullWidth
+              {...register("description")}
+            />
+            {/* ))} */}
             <DialogActions>
               <Button autoFocus type="submit">
                 submit

@@ -143,17 +143,19 @@ const SaleBookingClose = ({
     );
   }, [dateFilter]);
 
-  const open = (e) => {
-    e.preventDefault();
-    const filteredData = datas.filter((item) => item.tds_status === "open");
-    setFilterData(filteredData);
-  };
+  // const open = (e) => {
+  //   e.preventDefault();
+  //   const filteredData = datas.filter((item) => item.tds_status === "open");
+  //   setFilterData(filteredData);
+  // };
 
   const close = (e) => {
     e.preventDefault();
-    const filteredData = datas.filter((item) => item.tds_status === "close");
+    const filteredData = datas?.filter((item) => item);
     setFilterData(filteredData);
   };
+  console.log(filterData, "filter data sale booking ---->>>>");
+
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
     const initialFilteredData = datas?.filter(
@@ -442,22 +444,22 @@ const SaleBookingClose = ({
     }
   };
 
-  useEffect(() => {
-    const openCount = datas?.filter(
-      (item) => item.tds_status === "open"
-    )?.length;
-    setOpenBtnCount(openCount);
+  // useEffect(() => {
+  //     const openCount = datas?.filter(
+  //       (item) => item.tds_status === "open"
+  //     )?.length;
+  //     setOpenBtnCount(openCount);
 
-    const closeCount = datas?.filter(
-      (item) => item.tds_status === "close"
-    )?.length;
-    setCloseBtnCount(closeCount);
+  //   const closeCount = datas?.filter(
+  //     (item) => item.tds_status === "close"
+  //   )?.length;
+  //   setCloseBtnCount(closeCount);
 
-    const initialFilteredData = datas?.filter(
-      (item) => item.tds_status === "open"
-    );
-    setFilterData(initialFilteredData);
-  }, [datas]);
+  //   const initialFilteredData = datas?.filter(
+  //     (item) => item.tds_status === "open"
+  //   );
+  //   setFilterData(closeCount);
+  // }, [datas]);
 
   return (
     <>
@@ -822,18 +824,18 @@ const SaleBookingClose = ({
             >
               Clear
             </button>
-            <button
+            {/* <button
               className="btn cmnbtn btn_sm btn-success"
               onClick={(e) => open(e)}
             >
               Open ({openBtnCount})
-            </button>
-            <button
+            </button> */}
+            {/* <button
               className="btn cmnbtn btn_sm btn-danger"
               onClick={(e) => close(e)}
             >
-              Closed({closeBtnCount})
-            </button>
+              TDS Open({closeBtnCount})
+            </button> */}
           </div>
         </div>
         <div className="card-body thm_table fx-head data_tbl table-responsive">
@@ -846,7 +848,7 @@ const SaleBookingClose = ({
             pageSize={5}
             rowsPerPageOptions={[5]}
             disableSelectionOnClick
-            autoHeight
+            autoHeight={false}
             slots={{ toolbar: GridToolbar }}
             slotProps={{
               toolbar: {
@@ -860,7 +862,7 @@ const SaleBookingClose = ({
                 isMultipleKeyPressed: false,
               },
             }}
-            getRowId={(row) => filterData?.indexOf(row)}
+            getRowId={(row) => row?._id}
           />
         </div>
       </div>

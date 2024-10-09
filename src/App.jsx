@@ -370,6 +370,7 @@ function App() {
             path="/instaapi/community/learning"
             element={<Learning />}
           />
+          
         </Routes>
       </BrowserRouter>
     </>

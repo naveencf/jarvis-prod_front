@@ -1,58 +1,50 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import { Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
-import { setPlatform, setShowPageHealthColumn } from '../../Store/PageOverview';
+import { setShowPageHealthColumn } from '../../Store/PageOverview';
+import { setShowPageHealthColumn } from '../../Store/PageOverview';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
   useGetAllVendorTypeQuery,
 } from '../../Store/reduxBaseURL';
 import {
-  useGetAllCitiesQuery,
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
-  useGetMultiplePagePriceQuery,
-  useGetOwnershipTypeQuery,
-  useGetPageStateQuery,
-  useGetpagePriceTypeQuery,
+  // useGetMultiplePagePriceQuery,
 } from '../../Store/PageBaseURL';
 import Checkbox from '@mui/material/Checkbox';
 import PlanStatics from './PlanStatics';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 
 const PlanMaking = () => {
   const {
     data: pageList,
-    refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery();
-  const { data: pageStates } = useGetPageStateQuery();
-  const [vendorTypes, setVendorTypes] = useState([]);
+  // const { data: pageStates } = useGetPageStateQuery();
   const [activeTab, setActiveTab] = useState('Tab1');
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
     '666818824366007df1df1319'
   );
   const [filterData, setFilterData] = useState([]);
-  const [user, setUser] = useState();
+  //   const [user, setUser] = useState();
   const [toggleShowBtn, setToggleShowBtn] = useState();
   const [progress, setProgress] = useState(10);
   const [contextData, setContextData] = useState(false);
-  const [pageUpdateAuth, setPageUpdateAuth] = useState(false);
+  //   const [pageUpdateAuth, setPageUpdateAuth] = useState(false);
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const { data: vendorTypeData } = useGetAllVendorTypeQuery();
@@ -68,20 +60,23 @@ const PlanMaking = () => {
   const [totalPagesSelected, setTotalPagesSelected] = useState(0);
   const [showTotalCost, setShowTotalCost] = useState({});
   const [totalDeliverables, setTotalDeliverables] = useState(0);
-
-  const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-  const { data: ownerShipData } = useGetOwnershipTypeQuery();
+  const [followerFilterType, setFollowerFilterType] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const showPageHealthColumn = useSelector(
     (state) => state.PageOverview.showPageHelathColumn
   );
 
-  const { data: cities } = useGetAllCitiesQuery();
-
   const [totalFollowers, setTotalFollowers] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
+
+  const [priceFilterType, setPriceFilterType] = useState('post'); // Dropdown value
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(10000);
+  const [minFollowers, setMinFollowers] = useState(null);
+  const [maxFollowers, setMaxFollowers] = useState(null);
 
   useEffect(() => {
     if (userID && !contextData) {
@@ -92,7 +87,7 @@ const PlanMaking = () => {
             setContextData(true);
           }
           if (res.data[57].view_value === 1) {
-            setPageUpdateAuth(true);
+            // setPageUpdateAuth(true);
           }
           if (res.data[56].view_value === 1) {
             setPageStatsAuth(true);
@@ -113,14 +108,45 @@ const PlanMaking = () => {
   const vendorData = vendor?.data;
   const getData = () => {
     axios.get(baseUrl + 'get_all_users').then((res) => {
-      setUser(res.data.data);
       setProgress(70);
     });
   };
 
+  const handleCombinedFilter = () => {
+    let newFilteredData = filterData?.filter((page) => {
+      let price = 0;
+
+      // Handle the price filter based on the selected type
+      if (priceFilterType === 'post') {
+        price = page.price_details?.Insta_Post || 0; // Access Insta_Post price
+      } else if (priceFilterType === 'story') {
+        price = page.price_details?.Insta_Story || 0; // Access Insta_Story price
+      } else if (priceFilterType === 'both') {
+        price = page.price_details?.Both || 0; // Access Both price
+      }
+
+      const followers = page?.followers_count;
+
+      // Apply follower range filter if min and max are defined
+      const isFollowerInRange =
+        (minFollowers === null || followers >= minFollowers) &&
+        (maxFollowers === null || followers <= maxFollowers);
+
+      // Apply both price and follower filters
+      return (
+        (!priceFilterType || (price >= minPrice && price <= maxPrice)) &&
+        isFollowerInRange
+      );
+    });
+
+    setFilterData(newFilteredData);
+  };
+
+  const handleRemoveFilter = () => {
+    setFilterData(pageList?.data);
+  };
   useEffect(() => {
     if (pageList) {
-      setVendorTypes(pageList.data);
       setFilterData(pageList.data);
       const initialPostValues = {};
       const initialStoryValues = {};
@@ -142,8 +168,63 @@ const PlanMaking = () => {
     }
   }, [pageList]);
 
-  const { data: priceData, isLoading: isPriceLoading } =
-    useGetMultiplePagePriceQuery();
+  // const { data: priceData, isLoading: isPriceLoading } =
+  //   useGetMultiplePagePriceQuery();
+
+  const handleFollowerRangeChange = (e) => {
+    const selectedRange = e.target.value;
+    setFollowerFilterType(selectedRange);
+
+    let minFollowers = null;
+    let maxFollowers = null;
+
+    // Update min and max followers based on the selected range
+    switch (selectedRange) {
+      case 'lessThan10K':
+        minFollowers = 0;
+        maxFollowers = 10000;
+        break;
+      case '10Kto20K':
+        minFollowers = 10000;
+        maxFollowers = 20000;
+        break;
+      case '20Kto50K':
+        minFollowers = 20000;
+        maxFollowers = 50000;
+        break;
+      case '50Kto100K':
+        minFollowers = 50000;
+        maxFollowers = 100000;
+        break;
+      case '100Kto200K':
+        minFollowers = 100000;
+        maxFollowers = 200000;
+        break;
+      case 'moreThan200K':
+        minFollowers = 200000;
+        maxFollowers = null; // No upper limit
+        break;
+      default:
+        minFollowers = null;
+        maxFollowers = null;
+    }
+
+    // Set the follower state
+    setMinFollowers(minFollowers);
+    setMaxFollowers(maxFollowers);
+
+    // Apply the filter on the data based on the follower range
+    let filteredData = pageList?.data?.filter((page) => {
+      const followers = page?.followers_count;
+      return (
+        (minFollowers === null || followers >= minFollowers) &&
+        (maxFollowers === null || followers <= maxFollowers)
+      );
+    });
+
+    // Update the filtered data state
+    setFilterData(filteredData);
+  };
 
   const handleCheckboxChange = (row) => (event) => {
     const updatedSelectedRows = event.target.checked
@@ -198,9 +279,7 @@ const PlanMaking = () => {
   const handleToggleBtn = () => {
     setToggleShowBtn(!toggleShowBtn);
   };
-  const handleShowAll = () => {
-    setToggleShowBtn(false);
-  };
+
   const handleOwnPage = () => {
     setShowOwnPage(!showOwnPage);
   };
@@ -220,7 +299,7 @@ const PlanMaking = () => {
     );
     updateStatistics(selectedRows);
   };
-// console.log("s");
+
   useEffect(() => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
@@ -242,6 +321,17 @@ const PlanMaking = () => {
     // updateStatistics(selectedRows);
   };
 
+  // Handler for dropdown change
+  const handleCategoryChange = (event) => {
+    const selectedCategoryId = event.target.value;
+    setSelectedCategory(selectedCategoryId);
+
+    // Filter data based on selected category ID
+    const filtered = pageList?.data?.filter(
+      (item) => item.page_category_id === selectedCategoryId
+    );
+    setFilterData(filtered);
+  };
   const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
 
   const updateStatistics = (rows) => {
@@ -352,7 +442,7 @@ const PlanMaking = () => {
       renderCell: (params) => {
         return (
           <Checkbox
-            checked={selectedRows.some((row) => row._id === params.row._id)}
+            checked={selectedRows.some((row) => row?._id === params?.row?._id)}
             onChange={handleCheckboxChange(params.row)}
           />
         );
@@ -497,12 +587,50 @@ const PlanMaking = () => {
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
     const platform = pageList?.data?.filter((item) => item.platform_id === id);
-
-    console.log('Fid:', id);
     setFilterData(platform);
   };
+  useEffect(() => {
+    // Fetch user-specific data and page data
+    if (userID && !contextData) {
+      axios
+        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
+        .then((res) => {
+          if (res.data[33].view_value === 1) {
+            setContextData(true);
+          }
+          if (res.data[57].view_value === 1) {
+            // setPageUpdateAuth(true);
+          }
+          if (res.data[56].view_value === 1) {
+            setPageStatsAuth(true);
+          }
+        });
+    }
 
-  // console.log('filter', filterData);
+    // Fetch all necessary data
+    getData();
+  }, []);
+
+  useEffect(() => {
+    // Once pageList data is available, filter based on the active platform and category
+    if (pageList) {
+      // Filter by platform ID
+      let filteredData = pageList?.data?.filter(
+        (item) => item.platform_id === activeTabPlatfrom
+      );
+
+      // If a category is selected, further filter by page_category_id
+      if (selectedCategory) {
+        filteredData = filteredData.filter(
+          (item) => item.page_category_id === selectedCategory
+        );
+      }
+
+      // Set the filtered data
+      setFilterData(filteredData);
+    }
+  }, [pageList, activeTabPlatfrom, selectedCategory]);
+
   return (
     <>
       <div className="tabs">
@@ -511,121 +639,211 @@ const PlanMaking = () => {
       </div>
 
       <div className="content">
-        {activeTab === 'Tab1' && (
-          <div className="">
-            <div className="card">
-              <div className="card-body p0">
-                <div className="data_tbl thm_table table-responsive">
-                  {isPageListLoading ? (
+        <div className="">
+          <div className="card">
+            <div className="card-body p0">
+              <div className="data_tbl thm_table table-responsive">
+                {isPageListLoading ? (
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      position: 'relative',
+                      margin: 'auto',
+                      width: '100%',
+                      display: 'flex',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <CircularProgress variant="determinate" value={progress} />
                     <Box
                       sx={{
-                        textAlign: 'center',
-                        position: 'relative',
-                        margin: 'auto',
-                        width: '100%',
+                        top: 0,
+                        left: 0,
+                        bottom: 0,
+                        right: 0,
+                        position: 'absolute',
                         display: 'flex',
+                        alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <CircularProgress
-                        variant="determinate"
-                        value={progress}
-                      />
-                      <Box
-                        sx={{
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
-                          right: 0,
-                          position: 'absolute',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
+                      <Typography
+                        variant="caption"
+                        component="div"
+                        color="text-primary"
                       >
-                        <Typography
-                          variant="caption"
-                          component="div"
-                          color="text-primary"
-                        >
-                          {`${Math.round(progress)}%`}
-                        </Typography>
-                      </Box>
+                        {`${Math.round(progress)}%`}
+                      </Typography>
                     </Box>
-                  ) : (
-                    <>
-                      <PlanStatics
-                        totalFollowers={totalFollowers}
-                        totalCost={totalCost}
-                        totalPostsPerPage={totalPostsPerPage}
-                        totalPagesSelected={totalPagesSelected}
-                        totalDeliverables={totalDeliverables}
-                        totalStoriesPerPage={totalStoriesPerPage}
-                        pageCategoryCount={pageCategoryCount}
-                        handleToggleBtn={handleToggleBtn}
-                        selectedRow={selectedRows}
-                        allrows={filterData}
-                        totalRecord={pageList?.pagination_data}
-                        postCount={postPerPageValues}
-                        handleShowAll={handleShowAll}
-                        storyPerPage={storyPerPageValues}
-                        handleOwnPage={handleOwnPage}
-                        category={cat}
-                      />
-                      <div
-                        className="parent_of_tab"
-                        style={{ display: 'flex' }}
-                      >
-                        {platformData?.map((item) => (
-                          <div key={item._id} className="tabs">
-                            <button
-                              className={
-                                activeTabPlatfrom === item._id
-                                  ? 'active btn btn-info'
-                                  : 'btn btn-link'
-                              }
-                              onClick={() => handlePlatform(item._id)}
+                  </Box>
+                ) : (
+                  <>
+                    <PlanStatics
+                      totalFollowers={totalFollowers}
+                      totalCost={totalCost}
+                      totalPostsPerPage={totalPostsPerPage}
+                      totalPagesSelected={totalPagesSelected}
+                      totalDeliverables={totalDeliverables}
+                      totalStoriesPerPage={totalStoriesPerPage}
+                      pageCategoryCount={pageCategoryCount}
+                      handleToggleBtn={handleToggleBtn}
+                      selectedRow={selectedRows}
+                      allrows={filterData}
+                      totalRecord={pageList?.pagination_data}
+                      postCount={postPerPageValues}
+                      storyPerPage={storyPerPageValues}
+                      handleOwnPage={handleOwnPage}
+                      category={cat}
+                    />
+                    <div className="parent_of_tab" style={{ display: 'flex' }}>
+                      {platformData?.map((item) => (
+                        <div key={item._id} className="tabs">
+                          <button
+                            className={
+                              activeTabPlatfrom === item._id
+                                ? 'active btn btn-info'
+                                : 'btn btn-link'
+                            }
+                            onClick={() => handlePlatform(item._id)}
+                          >
+                            {item.platform_name}
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {activeTabPlatfrom === '666818824366007df1df1319' && (
+                      <div>
+                        <div className="filter-section">
+                          {/* Dropdown for price filter type */}
+                          <label className="filter-label">Filter by:</label>
+                          <select
+                            className="filter-dropdown"
+                            value={priceFilterType}
+                            onChange={(e) => setPriceFilterType(e.target.value)}
+                          >
+                            <option value="post">Post Price</option>
+                            <option value="story">Story Price</option>
+                            <option value="both">Both Price</option>
+                          </select>
+
+                          {/* Range input for minimum and maximum price */}
+                          <label className="filter-label">Min Price:</label>
+                          <input
+                            type="number"
+                            className="filter-input"
+                            value={minPrice}
+                            onChange={(e) => setMinPrice(e.target.value)}
+                          />
+                          <label className="filter-label">Max Price:</label>
+                          <input
+                            type="number"
+                            className="filter-input"
+                            value={maxPrice}
+                            onChange={(e) => setMaxPrice(e.target.value)}
+                          />
+                        </div>
+                        {/* Follower Filter Section */}
+                        <div className="follower-filter">
+                          <label className="filter-label">Min Followers:</label>
+                          <input
+                            type="number"
+                            className="filter-input"
+                            value={minFollowers || ''}
+                            onChange={(e) => setMinFollowers(e.target.value)}
+                          />
+                          <label className="filter-label">Max Followers:</label>
+                          <input
+                            type="number"
+                            className="filter-input"
+                            value={maxFollowers || ''}
+                            onChange={(e) => setMaxFollowers(e.target.value)}
+                          />
+                          <div>
+                            <label htmlFor="follower-filter">
+                              Follower Filter
+                            </label>
+                            <select
+                              id="follower-filter"
+                              className="filter-dropdown"
+                              value={followerFilterType}
+                              onChange={handleFollowerRangeChange}
                             >
-                              {item.platform_name}
-                            </button>
+                              <option value="" disabled>
+                                Select Follower Range
+                              </option>
+                              <option value="lessThan10K">Less than 10k</option>
+                              <option value="10Kto20K">10k to 20k</option>
+                              <option value="20Kto50K">20k to 50k</option>
+                              <option value="50Kto100K">50k to 100k</option>
+                              <option value="100Kto200K">100k to 200k</option>
+                              <option value="moreThan200K">
+                                More than 200k
+                              </option>
+                            </select>
                           </div>
-                        ))}
+                          <label htmlFor="categoryFilter">
+                            Filter by Category:
+                          </label>
+                          <select
+                            id="categoryFilter"
+                            value={selectedCategory}
+                            onChange={handleCategoryChange}
+                          >
+                            <option value="">All Categories</option>
+                            {cat.map((category) => (
+                              <option key={category._id} value={category._id}>
+                                {category.page_category}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div>
+                          <button
+                            className="remove-all-button"
+                            onClick={handleRemoveFilter}
+                          >
+                            Remove All Filter
+                          </button>
+                          {/* Filter button */}
+                          <button
+                            className="tab-button"
+                            onClick={handleCombinedFilter}
+                          >
+                            Apply Filter
+                          </button>
+                        </div>
                       </div>
-                      <Box sx={{ height: 700, width: '100%' }}>
-                        <DataGrid
-                          title="Page Overview"
-                          rows={
-                            showOwnPage
-                              ? ownPages
-                              : toggleShowBtn
-                              ? selectedRows
-                              : filterData
-                          }
-                          columns={dataGridcolumns}
-                          // onRowDoubleClick={(params) => {
-                          //   navigate(`/admin/pms-page-edit/${params.row._id}`);
-                          // }}
-                          pageSize={5}
-                          rowsPerPageOptions={[5]}
-                          disableSelectionOnClick
-                          getRowId={(row) => row._id}
-                          slots={{ toolbar: GridToolbar }}
-                          slotProps={{
-                            toolbar: {
-                              showQuickFilter: true,
-                            },
-                          }}
-                          // checkboxSelection
-                          disableRowSelectionOnClick
-                        />
-                      </Box>
-                    </>
-                  )}
-                </div>
+                    )}
+                    <Box sx={{ height: 700, width: '100%' }}>
+                      <DataGrid
+                        title="Page Overview"
+                        rows={
+                          showOwnPage
+                            ? ownPages
+                            : toggleShowBtn
+                            ? selectedRows
+                            : filterData
+                        }
+                        columns={dataGridcolumns}
+                        pageSize={5}
+                        rowsPerPageOptions={[5]}
+                        disableSelectionOnClick
+                        getRowId={(row) => row._id}
+                        slots={{ toolbar: GridToolbar }}
+                        slotProps={{
+                          toolbar: {
+                            showQuickFilter: true,
+                          },
+                        }}
+                        disableRowSelectionOnClick
+                      />
+                    </Box>
+                  </>
+                )}
               </div>
             </div>
           </div>
-        )}
+        </div>
       </div>
     </>
   );

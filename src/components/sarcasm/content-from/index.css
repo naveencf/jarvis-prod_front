@@ -1,0 +1,134 @@
+/* style for the button */
+.content-form-btn {
+  background-color: #7ac383;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 14px;
+  margin-top: 1rem;
+  /* margin-left: 2px; */
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.content-form-btn:hover {
+  background-color: #69a972;
+  transform: scale(1.05);
+}
+
+.content-form-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
+}
+.craete-content-text {
+  margin: 1rem 0;
+}
+
+/* ContentForm  */
+
+.content-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.content-input-container {
+  display: flex;
+  justify-content: start;
+  gap: 4em;
+}
+.content-form__title-category {
+  display: flex;
+}
+.blog-img-preview{
+  margin: 1rem 0;
+  width: 6rem;
+}
+.content-form__input-text {
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  /* margin-left: 1rem; */
+  margin-right: 1rem;
+}
+.blog-category-dropdown {
+  margin-top: 2rem;
+}
+.blog-category-dropdown {
+  margin-top: 1rem;
+  background-color: white;
+}
+
+.content-form__input-file {
+  padding: 8px;
+}
+.blog-imh-preview {
+  width: 150px;
+  padding: 0.5rem;
+}
+.sarcam-submit-btn-loader{
+  margin: 0 auto;
+}
+.content-form__react-quill {
+  /* min-height: 200px; */
+  border: 1px solid #ddd;
+  /* border-radius: 4px; */
+}
+
+.content-form__submit-button {
+  padding: 12px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.content-form__submit-button:hover {
+  background-color: #0056b3;
+}
+
+.content-form__header {
+  margin-bottom: 20px;
+  font-size: 24px;
+  text-align: center;
+}
+.add-more-images-btn {
+  background-color: #4caf50;  
+  color: white;  
+  padding: 4px 8px;  
+  border: none;  
+  border-radius: 4px;  
+  font-size: 14px;  
+  cursor: pointer;  
+  transition: background-color 0.3s ease;  
+}
+
+.add-more-images-btn:hover {
+  background-color: #45a049;  
+}
+
+.remove-image-btn {
+  background-color: #f44336;  
+  color: white;  
+  padding: 4px 8px; 
+  border: none;  
+  border-radius: 4px;  
+  font-size: 14px;  
+  cursor: pointer;  
+  transition: background-color 0.3s ease;  
+  margin-left: 10px;  
+}
+
+.remove-image-btn:hover {
+  background-color: #d32f2f;  
+}

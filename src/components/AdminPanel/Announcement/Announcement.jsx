@@ -237,21 +237,21 @@ const Announcement = ({
               alt=""
               width={20}
             >
-              <i class="bi bi-three-dots-vertical"></i>
+              <i className="bi bi-three-dots-vertical"></i>
             </div>
           </div>
           <div className="dropdown-menu notification  dropdown-menu-right shadow animated--grow-in mt1">
             <div className="pack d-flex flex-column">
               <div className="d-flex flex-row w-100 gap4">
-                <i class="bi bi-pencil"></i>
+                <i className="bi bi-pencil"></i>
                 <p>Edit</p>
               </div>
               <div className="pro-btn d-flex flex-row w-100 gap4">
-                <i class="bi bi-clipboard"></i>
+                <i className="bi bi-clipboard"></i>
                 <p>Copy URL</p>
               </div>
               <div className="pro-btn d-flex flex-row w-100 gap4">
-                <i class="bi bi-trash"></i>
+                <i className="bi bi-trash"></i>
                 <p>Delete</p>
               </div>
             </div>

@@ -25,8 +25,6 @@ import dayjs from "dayjs";
 import { formatUTCDate } from "../../../utils/formatUTCDate";
 import CommunityReport from "./CommunityReport";
 import jwtDecode from "jwt-decode";
-import DownloadIcon from "@mui/icons-material/Download";
-// import { CommunityHomeColumn } from "./CommunityColumns";
 
 function CustomToolbar({
   setFilterButtonEl,
@@ -135,11 +133,11 @@ function CustomToolbar({
 }
 
 function CommunityHome() {
+  const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
   const { contextData } = useAPIGlobalContext();
-  const navigate = useNavigate();
   const { userContextData } = useContext(ApiContextData);
   const [filterButtonEl, setFilterButtonEl] = useState(null);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -164,7 +162,6 @@ function CommunityHome() {
   const [teamDetail, setTeamDetail] = useState(null);
   const [reportView, setReportView] = useState(false);
   const [communityManagerCategory, setCommunityManagerCategory] = useState();
-
   const minSelectableDate = dayjs("2023-11-01");
 
   const getCommunityManagerCategory = async () => {
@@ -187,7 +184,6 @@ function CommunityHome() {
           endDate: endDate,
         }
       );
-
       if (res.status === 200) {
         let filteredData = res?.data?.data;
         if (loginUserId === communityManagerCategory?.userId) {
@@ -242,25 +238,24 @@ function CommunityHome() {
     getCommunityManagerCategory();
   }, []);
   const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    S_No: false,
+    S_No: true,
     avatar: true,
-    logoDownload: true,
     creatorName: true,
     projectxRecord: true,
-    teammanager: true,
-    status: false,
-    Date: true,
-    teamtype: true,
-    teamcount: false,
-    teamcost: false,
-    followersCount: false,
-    followingCount: false,
-    mediaCount: true,
+    followersCount: true,
     yesterdaypost: true,
     yesterdayFollowerGrowth: true,
     followerdiff: true,
-    followerStartdate: true,
-    followerEnddate: true,
+    teamtype: true,
+    teammanager: true,
+    status: false,
+    Date: false,
+    teamcount: true,
+    teamcost: false,
+    followingCount: true,
+    mediaCount: false,
+    followerStartdate: false,
+    followerEnddate: false,
     Image: false,
     Carousel: false,
     Reel: false,
@@ -300,29 +295,29 @@ function CommunityHome() {
         );
       },
     },
-    {
-      field: "logoDownload",
-      headerName: "Logo Download",
-      width: 140,
-      renderCell: (params) => {
-        const logoUrl = `https://storage.googleapis.com/insights_backend_bucket/cr/${params.row.creatorName.toLowerCase()}.jpeg`;
-        return (
-          <a
-            className="ml-auto mr-auto"
-            href={logoUrl}
-            download={`${params.row.creatorName}_logo.jpeg`}
-            style={{ textDecoration: "none" }}
-          >
-            {/* <Button className="btn tableIconBtn btn_sm" variant="outlined">
-              <DownloadIcon />
-            </Button> */}
-            <button className="icon-1">
-              <DownloadIcon />
-            </button>
-          </a>
-        );
-      },
-    },
+    // {
+    //   field: "logoDownload",
+    //   headerName: "Logo Download",
+    //   width: 140,
+    //   renderCell: (params) => {
+    //     const logoUrl = `https://storage.googleapis.com/insights_backend_bucket/cr/${params.row.creatorName.toLowerCase()}.jpeg`;
+    //     return (
+    //       <a
+    //         className="ml-auto mr-auto"
+    //         href={logoUrl}
+    //         download={`${params.row.creatorName}_logo.jpeg`}
+    //         style={{ textDecoration: "none" }}
+    //       >
+    //         {/* <Button className="btn tableIconBtn btn_sm" variant="outlined">
+    //           <DownloadIcon />
+    //         </Button> */}
+    //         <button className="icon-1">
+    //           <DownloadIcon />
+    //         </button>
+    //       </a>
+    //     );
+    //   },
+    // },
     {
       field: "creatorName",
       headerName: "Page name",
@@ -352,6 +347,71 @@ function CommunityHome() {
             category.category_id === params.row.projectxRecord?.pageCategoryId
         );
         return CategoryName?.category_name;
+      },
+    },
+    {
+      field: "followersCount",
+      headerName: "Follower",
+      width: 100,
+      valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
+      renderCell: (params) => {
+        const instagramfollowerCount =
+          params.row.creatorInfo?.followersCount || 0;
+        return formatNumber(instagramfollowerCount);
+      },
+    },
+    {
+      field: "yesterdaypost",
+      headerName: "YesterDay-Post-Count",
+      width: 150,
+      valueGetter: (params) =>
+        params.row.reportStatus?.previousDay?.todayPostCount || 0,
+    },
+    {
+      field: "yesterdayFollowerGrowth",
+      headerName: "YesterDay-Follower-Growth",
+      width: 150,
+      valueGetter: (params) =>
+        params.row.reportStatus?.previousDay
+          ?.todayVsYesterdayFollowersCountDiff || 0,
+      renderCell: (params) => {
+        const growth = params.value || 0;
+        return (
+          <div
+            style={{
+              color: growth > 0 ? "green" : growth < 0 ? "red" : "black",
+            }}
+          >
+            {growth}
+          </div>
+        );
+      },
+    },
+    {
+      field: "followerdiff",
+      headerName: "FollowerDifference",
+      width: 100,
+      // valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
+      renderCell: (params) => {
+        const instagramfollowerCount =
+          params.row?.reportStatus?.endDate?.followersCount -
+          params.row?.reportStatus?.startDate?.followersCount;
+        return formatNumber(instagramfollowerCount);
+      },
+    },
+    {
+      field: "teamtype",
+      headerName: "Page Type",
+      width: 200,
+      valueGetter: (params) => params.row.teamInfo?.team?.team_count || 0,
+      renderCell: (params) => {
+        const pageType =
+          params.row.teamInfo?.team?.team_count > 1
+            ? "Team"
+            : params.row.teamInfo?.team?.team_count == 1
+              ? "Individual"
+              : "Team Not Created";
+        return pageType;
       },
     },
     {
@@ -398,28 +458,14 @@ function CommunityHome() {
       field: "Date ",
       headerName: "Date",
       width: 200,
-      valueGetter: (params) => params.row.projectxRecord?.created_at,
+      // valueGetter: (params) => params.row.projectxRecord?.created_at,
       renderCell: (params) => {
         return new Date(params.row.projectxRecord?.created_at)
           .toLocaleDateString("en-GB", { timeZone: "IST" })
           .replace(/(\d+)\/(\d+)\/(\d+)/, "$3/$2/$1");
       },
     },
-    {
-      field: "teamtype",
-      headerName: "Page Type",
-      width: 200,
-      valueGetter: (params) => params.row.teamInfo?.team?.team_count || 0,
-      renderCell: (params) => {
-        const pageType =
-          params.row.teamInfo?.team?.team_count > 1
-            ? "Team"
-            : params.row.teamInfo?.team?.team_count == 1
-            ? "Individual"
-            : "Team Not Created";
-        return pageType;
-      },
-    },
+
     {
       field: "teamcount",
       headerName: "Team-Count",
@@ -432,17 +478,7 @@ function CommunityHome() {
       width: 100,
       valueGetter: (params) => params.row.teamInfo?.team?.cost_of_running || 0,
     },
-    {
-      field: "followersCount",
-      headerName: "Follower",
-      width: 100,
-      valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row.creatorInfo?.followersCount || 0;
-        return formatNumber(instagramfollowerCount);
-      },
-    },
+
     {
       field: "followingCount",
       headerName: "Following",
@@ -494,45 +530,7 @@ function CommunityHome() {
     //     return formatNumber(allComments);
     //   },
     // },
-    {
-      field: "yesterdaypost",
-      headerName: "YesterDay-Post-Count",
-      width: 150,
-      valueGetter: (params) =>
-        params.row.reportStatus?.previousDay?.todayPostCount || 0,
-    },
-    {
-      field: "yesterdayFollowerGrowth",
-      headerName: "YesterDay-Follower-Growth",
-      width: 150,
-      valueGetter: (params) =>
-        params.row.reportStatus?.previousDay
-          ?.todayVsYesterdayFollowersCountDiff || 0,
-      renderCell: (params) => {
-        const growth = params.value || 0;
-        return (
-          <div
-            style={{
-              color: growth > 0 ? "green" : growth < 0 ? "red" : "black",
-            }}
-          >
-            {growth}
-          </div>
-        );
-      },
-    },
-    {
-      field: "followerdiff",
-      headerName: "FollowerDifference",
-      width: 100,
-      // valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row?.reportStatus?.endDate?.followersCount -
-          params.row?.reportStatus?.startDate?.followersCount;
-        return formatNumber(instagramfollowerCount);
-      },
-    },
+
     {
       field: "followerStartdate",
       headerName: "StartDate-Follower",
@@ -643,7 +641,6 @@ function CommunityHome() {
       setStartDate(new Date(now.getFullYear(), now.getMonth() - 6, 1));
       setEndDate(new Date(now.getFullYear(), now.getMonth(), 0));
     }
-
     setOverViewValue(newValue);
   };
 
@@ -684,9 +681,9 @@ function CommunityHome() {
               </Button>
             </div>
           </div>
-          <div className="card mt24 mb0">
+          <div>
             <TabContext value={overViewvalue}>
-              <div className="card-body pt20 pb16 flex_center_between border-bottom-0">
+              <div className="card-header pt20 pb16 flex_center_between border-bottom-0">
                 <h5 className="cardHeaderTitle">
                   Page Overview From : <br />
                   <small>
@@ -774,7 +771,6 @@ function CommunityHome() {
                   <DataGrid
                     rows={rows}
                     columns={columns}
-                    // columns={CommunityHomeColumn}
                     getRowId={(row) => row.creatorName}
                     initialState={{
                       pagination: { paginationModel: { pageSize: 100 } },

@@ -278,7 +278,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgPrimaryLight m-0">
+                <div className="iconBadge bgPrimaryLight m-0">
                   <span>
                     <Blueprint weight="duotone" />
                   </span>
@@ -295,7 +295,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgSecondaryLight m-0">
+                <div className="iconBadge bgSecondaryLight m-0">
                   <span>
                     <CurrencyDollar weight="duotone" />
                   </span>
@@ -312,7 +312,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgTertiaryLight m-0">
+                <div className="iconBadge bgTertiaryLight m-0">
                   <span>
                     <CoinVertical weight="duotone" />
                   </span>
@@ -329,7 +329,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgSuccessLight m-0">
+                <div className="iconBadge bgSuccessLight m-0">
                   <span>
                     <Scroll weight="duotone" />
                   </span>
@@ -348,7 +348,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgInfoLight m-0">
+                <div className="iconBadge bgInfoLight m-0">
                   <span>
                     <Invoice weight="duotone" />
                   </span>
@@ -367,7 +367,7 @@ const UserIncentive = () => {
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
-                <div class="iconBadge bgWarningLight m-0">
+                <div className="iconBadge bgWarningLight m-0">
                   <span>
                     <CheckSquare weight="duotone" />
                   </span>

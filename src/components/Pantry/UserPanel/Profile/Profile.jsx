@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import UserNav from "../UserNav";
 import imageTest1 from "../../../../assets/img/product/Avtrar1.png";
 import { baseUrl } from "../../../../utils/config";
+import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import AppointmentLetter from "../../../PreOnboarding/AppointmentLetter";
+import OfferLetter from "../../../PreOnboarding/OfferLetter";
 // import GoogleSheetDownloader from "./googlesheet";
 
 const Profile = () => {
+  const [image64, setImage64] = useState("");
   const [selectedResponsibilityId, setSelectedResponsibilityId] =
     useState(null);
 
@@ -19,15 +23,13 @@ const Profile = () => {
   const loginUserId = decodedToken.id;
 
   function handleGetData() {
-    axios
-      .get(`${baseUrl}` + `get_single_user/${loginUserId}`)
-      .then((res) => {
-        setUserData(res.data);
-        // console.log(res.data, "user data");
-      });
+    axios.get(`${baseUrl}` + `get_single_user/${loginUserId}`).then((res) => {
+      setUserData(res.data);
+      // console.log(res.data, "user data");
+    });
   }
 
-  console.log(userData, 'profile')
+  console.log(userData, "profile");
 
   function responsibilityAPI() {
     axios
@@ -60,11 +62,22 @@ const Profile = () => {
       });
   };
 
+  axios
+    .post(baseUrl + "image_to_base64", {
+      imageUrl: userData.digital_signature_image_url,
+    })
+    .then((response) => {
+      setImage64(response.data.base64String);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+
   return (
     <>
       {/* <GoogleSheetDownloader/> */}
 
-      <div className="section product_section profile_section section_padding">
+      {/* <div className="section product_section profile_section section_padding"> */}
         <div className="container">
           <div className="row">
             <div className="col profile_data_col">
@@ -154,7 +167,7 @@ const Profile = () => {
                         </li>
                         <li>
                           <span>Password</span>
-                          {userData.user_login_password}
+                          {userData.user_login_password?.slice(0,30)}
                         </li>
                         <li>
                           <span>Department</span>
@@ -165,13 +178,44 @@ const Profile = () => {
                           {userData.designation_name}
                         </li>
                         <li>
-                          <span>Created by</span>
-                          {userData.created_by}
+                          <span>Report L1</span>
+                          {userData.Report_L1N}
                         </li>
                       </ul>
                     </div>
                   </div>
                   {/* profile info End  */}
+                  <div className="responsibility_main_box">
+                      <div className=" gap-2" style={{marginTop:'130px'}}>
+                      
+                        <PDFDownloadLink
+                          className="btn onboardBtn btn_primary d-flex align-items-center justify-content-center gap-2 mb-3"
+                          document={
+                            <OfferLetter
+                              allUserData={userData}
+                              image64={image64}
+                            />
+                          }
+                          fileName="OfferLetter.pdf"
+                        >
+                          <i class="bi bi-cloud-arrow-down"></i>
+                          Download Offer Letter
+                        </PDFDownloadLink>
+                        <PDFDownloadLink
+                          className="btn onboardBtn btn_primary d-flex align-items-center justify-content-center gap-2"
+                          document={
+                            <AppointmentLetter
+                              allUserData={userData}
+                              image64={image64}
+                            />
+                          }
+                          fileName="AppointmentLetter.pdf"
+                        >
+                          <i class="bi bi-cloud-arrow-down"></i>
+                          Download Appointment Letter
+                        </PDFDownloadLink>
+                      </div>
+                  </div>
 
                   {/* <div className="responsibility_main_box">
                     <div className="">
@@ -261,12 +305,9 @@ const Profile = () => {
             </div>
           </div>
         </div>
-      </div>
-
+      {/* </div> */}
     </>
   );
 };
 
 export default Profile;
-
-

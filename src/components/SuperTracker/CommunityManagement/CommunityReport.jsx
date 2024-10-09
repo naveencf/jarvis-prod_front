@@ -243,12 +243,12 @@ function CommunityReport({
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
                   <div className="iconBadge small bgPrimaryLight m-0">
                     <span>
-                      <i class="bi bi-people"></i>
+                      <i className="bi bi-people"></i>
                     </span>
                   </div>
                   <div>
-                    <h6 class="colorMedium">Followers</h6>
-                    <h6 class="mt4 fs_16">
+                    <h6 className="colorMedium">Followers</h6>
+                    <h6 className="mt4 fs_16">
                       {formatFollowersCount(totalFollowers)}
                     </h6>
                   </div>
@@ -256,23 +256,23 @@ function CommunityReport({
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
                   <div className="iconBadge small bgPrimaryLight m-0">
                     <span>
-                      <i class="bi bi-images"></i>
+                      <i className="bi bi-images"></i>
                     </span>
                   </div>
                   <div>
-                    <h6 class="colorMedium">Posts</h6>
-                    <h6 class="mt4 fs_16">{totalPosts}</h6>
+                    <h6 className="colorMedium">Posts</h6>
+                    <h6 className="mt4 fs_16">{totalPosts}</h6>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
                   <div className="iconBadge small bgPrimaryLight m-0">
                     <span>
-                      <i class="bi bi-exclamation-triangle"></i>
+                      <i className="bi bi-exclamation-triangle"></i>
                     </span>
                   </div>
                   <div>
-                    <h6 class="colorMedium">Team not created count</h6>
-                    <h6 class="mt4 fs_16">
+                    <h6 className="colorMedium">Team not created count</h6>
+                    <h6 className="mt4 fs_16">
                       {allRows?.length - teamCreated?.teamCount}
                     </h6>
                   </div>
@@ -280,12 +280,12 @@ function CommunityReport({
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
                   <div className="iconBadge small bgPrimaryLight m-0">
                     <span>
-                      <i class="bi bi-person-slash"></i>
+                      <i className="bi bi-person-slash"></i>
                     </span>
                   </div>
                   <div>
-                    <h6 class="colorMedium">Manager Not Assigned</h6>
-                    <h6 class="mt4 fs_16">{blankTeamInfoCount}</h6>
+                    <h6 className="colorMedium">Manager Not Assigned</h6>
+                    <h6 className="mt4 fs_16">{blankTeamInfoCount}</h6>
                   </div>
                 </div>
               </div>
@@ -302,7 +302,7 @@ function CommunityReport({
                     <h5>{allRows.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">All</h6>
+                    <h6 className="fs_16">All</h6>
                   </div>
                 </div>
                 <div className="col-md-3 col-sm-3 col-12 pb20 flexCenter colGap14">
@@ -316,7 +316,7 @@ function CommunityReport({
                     </h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Active</h6>
+                    <h6 className="fs_16">Active</h6>
                   </div>
                 </div>
                 <div className="col-md-3 col-sm-3 col-12 pb20 flexCenter colGap14">
@@ -330,7 +330,7 @@ function CommunityReport({
                     </h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Disabled</h6>
+                    <h6 className="fs_16">Disabled</h6>
                   </div>
                 </div>
                 <div className="col-md-3 col-sm-3 col-12 pb20 flexCenter colGap14">
@@ -344,7 +344,7 @@ function CommunityReport({
                     </h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Private</h6>
+                    <h6 className="fs_16">Private</h6>
                   </div>
                 </div>
               </div>
@@ -372,7 +372,7 @@ function CommunityReport({
                     <h5>{zeroPostData.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">0</h6>
+                    <h6 className="fs_16">0</h6>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
@@ -383,7 +383,7 @@ function CommunityReport({
                     <h5>{oneToFivePost.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">1 - 5</h6>
+                    <h6 className="fs_16">1 - 5</h6>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
@@ -394,7 +394,7 @@ function CommunityReport({
                     <h5>{fivePlusPost.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">5 -20</h6>
+                    <h6 className="fs_16">5 -20</h6>
                   </div>
                 </div>
                 <div className="col-md-6 col-sm-6 col-12 pb20 flexCenter colGap14">
@@ -405,7 +405,7 @@ function CommunityReport({
                     <h5>{twentyPlusPost.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">20+</h6>
+                    <h6 className="fs_16">20+</h6>
                   </div>
                 </div>
               </div>
@@ -425,7 +425,7 @@ function CommunityReport({
                     <h5>{negativeFollowerDiff.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Negative</h6>
+                    <h6 className="fs_16">Negative</h6>
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4 col-12 pb20 flexCenter colGap14">
@@ -436,7 +436,7 @@ function CommunityReport({
                     <h5>{constantFollowerDiff.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Constant</h6>
+                    <h6 className="fs_16">Constant</h6>
                   </div>
                 </div>
                 <div className="col-md-4 col-sm-4 col-12 pb20 flexCenter colGap14">
@@ -447,7 +447,7 @@ function CommunityReport({
                     <h5>{positiveFollowerDiff.length}</h5>
                   </div>
                   <div>
-                    <h6 class="fs_16">Positive</h6>
+                    <h6 className="fs_16">Positive</h6>
                   </div>
                 </div>
               </div>
@@ -474,10 +474,10 @@ function CommunityReport({
                           <div className="flexCenter colGap12">
                             <Avatar alt={item.category_name} src="n" />
                             <div>
-                              <h6 class="fs_16">
+                              <h6 className="fs_16">
                                 {`${item.category_name} - Pages: ${countData.count}`}
                               </h6>
-                              <h6 class="mt4 colorMedium fw_400">
+                              <h6 className="mt4 colorMedium fw_400">
                                 {
                                   <>
                                     Followers:

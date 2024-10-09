@@ -219,7 +219,7 @@ const ViewPaymentUpdate = () => {
           ) : (
             <Link to={`/admin/create-payment-update/${row._id}`}>
               <div className="icon-1">
-                <i class="bi bi-pencil"></i>
+                <i className="bi bi-pencil"></i>
               </div>
             </Link>
           )}

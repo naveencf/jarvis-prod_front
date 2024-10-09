@@ -25,7 +25,6 @@ const PendingInvoice = ({
   onHandleOpenUniqueSalesExecutiveChange,
   onHandleOpenUniqueCustomerClickChange,
 }) => {
-  const navigate = useNavigate();
   const { usersDataContext } = useGlobalContext();
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -62,7 +61,6 @@ const PendingInvoice = ({
       );
 
       if (data?.data) {
-        // Merging user data with invoice data
         const mergedData = data?.data?.map((item) => {
           const userData = usersDataContext?.find(
             (user) => user?.user_id === item?.created_by
@@ -74,14 +72,13 @@ const PendingInvoice = ({
           };
         });
 
-        // Sorting data by date
         const sortedData = mergedData.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
         setData(sortedData);
         setFilterData(sortedData);
-        calculateUniqueData(sortedData); // Passing directly, no need to spread
+        calculateUniqueData(sortedData);
         calculateTotals(sortedData);
       }
     } catch (error) {
@@ -97,9 +94,8 @@ const PendingInvoice = ({
           ? curr?.saleData?.account_name
           : curr?.[keyName];
 
-        if (!key) return acc; // Skip if key is missing
+        if (!key) return acc;
 
-        // Initialize or update the accumulator entry
         const existingEntry = acc[key] || {
           account_name: curr?.saleData?.account_name || "",
           user_name: curr?.user_name || "",
@@ -111,7 +107,6 @@ const PendingInvoice = ({
           invoice_amount: 0,
         };
 
-        // Accumulate amounts using optional chaining and nullish coalescing
         existingEntry.saleData.campaign_amount +=
           curr?.saleData?.campaign_amount ?? 0;
         existingEntry.saleData.base_amount += curr?.saleData?.base_amount ?? 0;
@@ -123,14 +118,12 @@ const PendingInvoice = ({
         return acc;
       }, {});
 
-    // Aggregate data by account name and set state
     const uniqueAccData = Object.values(
       aggregateData(sortedData, "account_name", true)
     );
     setUniqueCustomerData(uniqueAccData);
     setUniqueCustomerCount(uniqueAccData.length);
 
-    // Aggregate data by sales executive name and set state
     const uniqueSalesExData = Object.values(
       aggregateData(sortedData, "user_name", false)
     );
@@ -152,7 +145,7 @@ const PendingInvoice = ({
 
       if (data?.data) {
         // Merging user data with proforma data
-        const mergedData = data.data.map((item) => {
+        const mergedData = data?.data?.map((item) => {
           const userData = usersDataContext?.find(
             (user) => user.user_id === item.created_by
           );
@@ -180,7 +173,7 @@ const PendingInvoice = ({
   };
 
   useEffect(() => {
-    if (usersDataContext && usersDataContext.length > 0) {
+    if (usersDataContext && usersDataContext?.length > 0) {
       getData();
     }
     handleGetProforma();

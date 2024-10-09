@@ -313,27 +313,27 @@ const SalesDashboard = () => {
           data={weekMonthCard?.weeklyData}
           previousData={weekMonthCard?.lastWeekData}
           title="Weekly"
-          cardClass="bgPrimary"
-          titleClass="colorPrimary"
-          colorClass="bgPrimary"
+          cardclassName="bgPrimary"
+          titleclassName="colorPrimary"
+          colorclassName="bgPrimary"
         />
 
         <MonthlyWeeklyCard
           data={weekMonthCard?.monthlyData}
           previousData={weekMonthCard?.lastMonthData}
           title="Monthly"
-          cardClass="bgSecondary"
-          titleClass="colorSecondary"
-          colorClass="bgSecondary"
+          cardclassName="bgSecondary"
+          titleclassName="colorSecondary"
+          colorclassName="bgSecondary"
         />
 
         <MonthlyWeeklyCard
           data={weekMonthCard?.quarterlyData}
           previousData={weekMonthCard?.lastQuarterData}
           title="Quarterly"
-          cardClass="bgTertiary"
-          titleClass="colorTertiary"
-          colorClass="bgTertiary"
+          cardclassName="bgTertiary"
+          titleclassName="colorTertiary"
+          colorclassName="bgTertiary"
         />
       </div>
 
@@ -342,7 +342,7 @@ const SalesDashboard = () => {
           <NavLink to="/admin/sales-incentive-overview">
             <div className="card shadow-none bgPrimaryLight">
               <div className="card-body text-center pb20">
-                <div class="iconBadge bgPrimaryLight">
+                <div className="iconBadge bgPrimaryLight">
                   <span>
                     <Blueprint weight="duotone" />
                   </span>
@@ -360,7 +360,7 @@ const SalesDashboard = () => {
           <NavLink to="/admin/view-invoice-request">
             <div className="card shadow-none bgSecondaryLight">
               <div className="card-body text-center pb20">
-                <div class="iconBadge bgSecondaryLight">
+                <div className="iconBadge bgSecondaryLight">
                   <span>
                     <Invoice weight="duotone" />
                   </span>
@@ -379,7 +379,7 @@ const SalesDashboard = () => {
             <NavLink to="/admin/sales-incentive-settlement-overview">
               <div className="card shadow-none bgTertiaryLight">
                 <div className="card-body text-center pb20">
-                  <div class="iconBadge bgTertiaryLight">
+                  <div className="iconBadge bgTertiaryLight">
                     <span>
                       <Scroll weight="duotone" />
                     </span>
@@ -399,7 +399,7 @@ const SalesDashboard = () => {
             <NavLink to="https://forms.gle/jz7d66xRpska5fWU9">
               <div className="card shadow-none bgSuccessLight">
                 <div className="card-body text-center pb20">
-                  <div class="iconBadge bgSuccessLight">
+                  <div className="iconBadge bgSuccessLight">
                     <span>
                       <Files weight="duotone" />
                     </span>
@@ -419,7 +419,7 @@ const SalesDashboard = () => {
             <NavLink to="/admin/deleted-sales-booking">
               <div className="card shadow-none bgDangerLight">
                 <div className="card-body text-center pb20">
-                  <div class="iconBadge bgDangerLight">
+                  <div className="iconBadge bgDangerLight">
                     <span>
                       <FileX weight="duotone" />
                     </span>

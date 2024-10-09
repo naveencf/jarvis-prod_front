@@ -804,7 +804,7 @@ const CreateSaleBooking = () => {
       >
         <div className="d-flex">
           <div className="icon-1 flex-end" onClick={() => closeModal()}>
-            <i class="bi bi-x" />
+            <i className="bi bi-x" />
           </div>
         </div>
         {renderModalContent()}

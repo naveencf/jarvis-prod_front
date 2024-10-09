@@ -9,8 +9,8 @@ const initialState = {
   showPageModal: false,
   showVendorNotAssignedModal: false,
   showBankDetailsModal: false,
-  showPageHelathColumn:true,
-  rowData:""
+  showPageHelathColumn: true,
+  rowData: "",
 };
 
 const pageOverviewSlice = createSlice({
@@ -41,7 +41,7 @@ const pageOverviewSlice = createSlice({
     setVendorRowData(state, action) {
       state.venodrRowData = action.payload;
     },
-    setShowPageModal(state) {
+    PAsetShowPageModal(state) {
       state.showPageModal = true;
     },
     setClosePageModal(state) {
@@ -58,11 +58,11 @@ const pageOverviewSlice = createSlice({
     },
     setCloseBankDetailsModal(state) {
       state.showBankDetailsModal = false;
+    },
+    setRowData(state, action) {
+      state.rowData = action.payload;
+    },
   },
-  setRowData(state, action) {
-    state.rowData = action.payload;
-  },
-}
 });
 
 export const {

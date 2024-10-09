@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { Navigate, useParams } from "react-router-dom";
 import FormContainer from "../FormContainer";
@@ -25,6 +25,9 @@ import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
 import { Line, Circle } from "rc-progress";
 import { constant } from "../../../utils/constants";
+import OfferLetter from "../../PreOnboarding/OfferLetter";
+import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
+import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 
 const castOption = ["General", "OBC", "SC", "ST"];
 const colourOptions = [
@@ -125,9 +128,12 @@ const UserUpdate = () => {
   const [loading, setLoading] = useState(false);
   const { toastAlert, toastError } = useGlobalContext();
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
+  const [image64, setImage64] = useState("");
+  const [userData, setUserData] = useState([]);
 
   // Genral Information Tab-------------------Start------------------------------------
   // ---------------------Prsonal Info State Start
+
   const [username, setUserName] = useState("");
   const [profile, setProfile] = useState([]);
   const [personalEmail, setPersonalEmail] = useState("");
@@ -586,6 +592,7 @@ const UserUpdate = () => {
   useEffect(() => {
     axios.get(`${baseUrl}` + `get_single_user/${id}`).then((res) => {
       const fetchedData = res.data;
+      setUserData(res.data);
       const {
         user_name,
         role_id,
@@ -681,8 +688,14 @@ const UserUpdate = () => {
         return years + " years " + remainingDays + " days";
       }
       setAge(agesCalculate);
-      setCreditLimit(user_credit_limit);
+      if(user_credit_limit){
 
+        setCreditLimit(user_credit_limit);
+      }else{
+        setCreditLimit(0);
+
+      }
+// console.log(user_credit_limit,"user_credit_limit")
       setHobbies(Hobbies);
       setBloodGroup(BloodGroup);
       setMaritialStatus(MartialStatus);
@@ -872,7 +885,7 @@ const UserUpdate = () => {
     const formDataa = new FormData();
     if (personalEmail && personalContact) {
       setLoading(true);
-
+console.log(Number(creditLimit),"formData",creditLimit)
       await axios
         .put(
           `${baseUrl}` + `update_user_for_general_information/${id}`,
@@ -1455,10 +1468,49 @@ const UserUpdate = () => {
     setUserName(correctedNameParts.join(" "));
   };
 
+  axios
+  .post(baseUrl + "image_to_base64", {
+    imageUrl: userData.digital_signature_image_url,
+  })
+  .then((response) => {
+    setImage64(response.data.base64String);
+  })
+  .catch((error) => {
+    console.error("Error fetching data:", error);
+  });
+
   const genralFields = (
     <>
       <div className="card">
-        <div className="card-header">Personal Details</div>
+        <div className="d-flex align-item-center">
+          <div className="card-header">Personal Details</div>
+          <div>
+            <PDFDownloadLink
+              className="btn gap-2 "
+              document={
+                <OfferLetter allUserData={userData} image64={image64} />
+              }
+              fileName="OfferLetter.pdf"
+            >
+              <i
+                title="Download Offer Letter"
+                class="bi bi-cloud-arrow-down"
+              ></i>
+            </PDFDownloadLink>
+            <PDFDownloadLink
+              className="btn  gap-2"
+              document={
+                <AppointmentLetter allUserData={userData} image64={image64} />
+              }
+              fileName="AppointmentLetter.pdf"
+            >
+              <i
+                title="Download Appointment Letter"
+                class="bi bi-cloud-arrow-down"
+              ></i>
+            </PDFDownloadLink>
+          </div>
+        </div>
         <div className="card-body row">
           <FieldContainer
             label="Full Name"
@@ -1929,7 +1981,7 @@ const UserUpdate = () => {
               required={true}
               onChange={(e) => setCreditLimit(e.target.value)}
             />
-           )}
+          )}
 
           <div className="form-group col-3">
             <label className="form-label">Custom Rang</label>

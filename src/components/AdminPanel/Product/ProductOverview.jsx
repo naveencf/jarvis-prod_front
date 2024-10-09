@@ -125,7 +125,7 @@ const ProductOverview = () => {
                       row.Last_updated_date
                     );
                   }}>
-                    <i class="bi bi-pencil"></i>
+                    <i className="bi bi-pencil"></i>
                   </div>
                 {/* <button
                   title="Edit"

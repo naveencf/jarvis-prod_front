@@ -5,7 +5,7 @@ import { get } from "jquery";
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
   reducerPath: "PageBaseURL",
-  tagTypes: ["profileList", "categoryList", "PageList"],
+  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList"],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
@@ -70,7 +70,7 @@ export const PageBaseURL = createApi({
           body: {
             page_category: category_name,
             description: data.description,
-            last_updated_by: data.last_updated_by
+            last_updated_by: data.last_updated_by,
           },
         };
       },
@@ -92,7 +92,7 @@ export const PageBaseURL = createApi({
     }),
     getPlatformPrice: builder.query({
       query: () => `v1/pagePriceType`,
-      transformResponse:(response)=>response.data
+      transformResponse: (response) => response.data,
     }),
     updatePlatformPrice: builder.mutation({
       query: (data) => {
@@ -166,11 +166,39 @@ export const PageBaseURL = createApi({
 
     //Vendor company detail by vendor id
     getVendorCompanyDetail: builder.query({
-      // query: (data) => `v1/company_name/${data}`,
       query: (data) => `v1/company_name_wise_vendor/${data}`,
       transformResponse: (response) => response.data,
     }),
 
+    addPageSubCategory: builder.mutation({
+      query: (data) => ({
+        url: `v1/page_sub_category`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["subCategoryList"],
+    }),
+
+    updatePageSubCategory: builder.mutation({
+      query: (data) => {
+        const { _id, sub_category_name } = data;
+        return {
+          url: `v1/page_sub_category/${_id}`,
+          method: "PUT",
+          body: {
+            page_sub_category: sub_category_name,
+            description: data.description,
+            last_updated_by: data.last_updated_by,
+          },
+        };
+      },
+      invalidatesTags: ["subCategoryList"],
+    }),
+
+    getAllPageSubCategory: builder.query({
+      query: () => `v1/page_sub_category`,
+      providesTags: ["subCategoryList"],
+    }),
   }),
 });
 
@@ -196,4 +224,7 @@ export const {
   useGetAllCitiesQuery,
   useGetOwnershipTypeQuery,
   useGetVendorCompanyDetailQuery,
+  useAddPageSubCategoryMutation,
+  useUpdatePageSubCategoryMutation,
+  useGetAllPageSubCategoryQuery,
 } = PageBaseURL;

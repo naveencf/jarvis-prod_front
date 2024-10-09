@@ -971,7 +971,7 @@ const ApprovedList = () => {
                 Approved
                 <Link className="link-primary" onClick={handleApprovedClick}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>

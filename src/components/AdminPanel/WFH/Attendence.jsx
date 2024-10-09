@@ -674,7 +674,7 @@ const Attendence = () => {
                     }}
                   >
                     <div className="rounded-circle circle-card">
-                      <i class="bi bi-bounding-box"></i>
+                      <i className="bi bi-bounding-box"></i>
                     </div>
                     {option.dept_name}
                   </div>

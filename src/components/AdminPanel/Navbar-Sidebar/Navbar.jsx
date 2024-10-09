@@ -146,8 +146,8 @@ const Navbar = () => {
         </div>
         <ul className="navbar-nav align-items-center ml-auto w-100 blurBg">
           <li className="nav-item ml-0 mr-auto ">
-            <label className="icon" for="nav-toggle" id="sidebarToggle">
-              <div class="circle">
+            <label className="icon" htmlFor="nav-toggle" id="sidebarToggle">
+              <div className="circle">
                 <i className="ph">
                   <List />
                 </i>
@@ -210,7 +210,7 @@ const Navbar = () => {
                     alt=""
                     width={20}
                   >
-                    <i class="bi bi-bell"></i>
+                    <i className="bi bi-bell"></i>
                   </div>
                   {/* <NotificationsActiveIcon /> */}
                   {/* <span>{count}</span> */}
@@ -376,18 +376,18 @@ const Navbar = () => {
               <div className="pack">
                 <Link to="/admin/user-profile">
                   <div className="pro-btn">
-                    <i class="bi bi-person"></i>
+                    <i className="bi bi-person"></i>
                     <p>My profile</p>
                   </div>
                 </Link>
                 <Link to="/admin/user-timeline">
                   <div className="pro-btn">
-                    <i class="bi bi-gear"></i>
+                    <i className="bi bi-gear"></i>
                     <p>Timeline</p>
                   </div>
                 </Link>
                 <div className="pro-btn" onClick={handleLogOut}>
-                  <i class="bi bi-box-arrow-right"></i>
+                  <i className="bi bi-box-arrow-right"></i>
                   <p>Logout</p>
                 </div>
               </div>

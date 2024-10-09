@@ -72,7 +72,7 @@ const CocOverview = () => {
         <>
           <Link to={`/admin/pre-onboard-coc-update/${row._id}`}>
             <div className="icon-1" title="Edit">
-              <i class="bi bi-pencil"></i>
+              <i className="bi bi-pencil"></i>
             </div>
             {/* <button
               title="Edit"

@@ -108,13 +108,13 @@ function Dashboard() {
           <div className="form_heading_title">
             <h1>Dashboard</h1>
             {/* <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
                   <a href="#">
-                    <i class="bi bi-house"></i>
+                    <i className="bi bi-house"></i>
                   </a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">
+                <li className="breadcrumb-item active" aria-current="page">
                   {activeLink.slice(1).charAt(0).toUpperCase() +
                     activeLink.slice(2)}
                 </li>

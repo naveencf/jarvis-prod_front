@@ -96,12 +96,12 @@ const SalesServicesOverview = () => {
           <div className="flex-row gap-2">
             <button
               type="button"
-              class=" icon-1 "
+              className=" icon-1 "
               data-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
             >
-              <i class="fa-solid fa-ellipsis"></i>
+              <i className="fa-solid fa-ellipsis"></i>
             </button>
             <div className="dropdown-menu dropdown-menu-right">
               <Link to={`/admin/create-sales-services/${row._id}/${"put"}`}>

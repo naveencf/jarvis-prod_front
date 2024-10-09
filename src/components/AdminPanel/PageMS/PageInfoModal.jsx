@@ -16,6 +16,7 @@ import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
 import {
   useGetAllPageCategoryQuery,
+  useGetAllPageSubCategoryQuery,
   useGetAllProfileListQuery,
   useGetPlatformPriceQuery,
 } from "../../Store/PageBaseURL";
@@ -27,6 +28,7 @@ import jwtDecode from "jwt-decode";
 export default function PageInfoModal() {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
+  console.log(decodedToken, "decodedToken-->>>");
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const open = useSelector((state) => state.pageMaster.showInfoModal);
@@ -57,7 +59,7 @@ export default function PageInfoModal() {
   //     refetchCategoryList();
   //   } else if (modalType === "Price Type Info") {
   //     refetchPriceList();
-  //   }}  
+  //   }}
   // }, []);
 
   const {
@@ -66,6 +68,13 @@ export default function PageInfoModal() {
     isLoading: categoryListIsloading,
     refetch: refetchCategoryList,
   } = useGetAllPageCategoryQuery();
+
+  const {
+    data: subCategoryList,
+    error: subCategoryListError,
+    isLoading: subCategoryListIsloading,
+    refetch: refetchSubCategoryList,
+  } = useGetAllPageSubCategoryQuery();
 
   const handlRowClick = (row, Type) => {
     dispatch(setModalType(Type));
@@ -93,6 +102,8 @@ export default function PageInfoModal() {
       refetchProfileList();
     } else if (modalType === "Category Info") {
       refetchCategoryList();
+    } else if (modalType === "Sub Category Info") {
+      refetchSubCategoryList();
     } else if (modalType === "Price Type Info") {
       refetchPriceList();
     }
@@ -134,7 +145,6 @@ export default function PageInfoModal() {
       ),
     },
   ];
-
   const categoryColumn = [
     {
       name: "S.NO",
@@ -150,11 +160,12 @@ export default function PageInfoModal() {
       name: "Description",
       selector: (row) => row.description,
     },
-      {
-        name: "Action",
-        cell: (row) => (
-          <>
-          {decodedToken.role_id==1 &&  <button
+    {
+      name: "Action",
+      cell: (row) => (
+        <>
+          {decodedToken.role_id == 1 && (
+            <button
               title="Edit"
               className="btn btn-outline-primary btn-sm user-button"
               onClick={() => handlRowClick(row, "Category Update")}
@@ -162,13 +173,48 @@ export default function PageInfoModal() {
               data-target="#myModal"
             >
               <FaEdit />{" "}
-            </button>}
-            {/* <DeleteButton endpoint="deletePage" id={row._id} getData={getData} /> */}
-          </>
-        ),
-      },
+            </button>
+          )}
+          {/* <DeleteButton endpoint="deletePage" id={row._id} getData={getData} /> */}
+        </>
+      ),
+    },
   ];
-
+  const subCategoryColumn = [
+    {
+      name: "S.NO",
+      selector: (row, index) => <div>{index + 1}</div>,
+      sortable: true,
+    },
+    {
+      name: "Page Sub Category Name",
+      selector: (row) => row.page_sub_category,
+      // selector: (row) => row.category_name,
+    },
+    {
+      name: "Description",
+      selector: (row) => row.description,
+    },
+    {
+      name: "Action",
+      cell: (row) => (
+        <>
+          {decodedToken.role_id == 1 && (
+            <button
+              title="Edit"
+              className="btn btn-outline-primary btn-sm user-button"
+              onClick={() => handlRowClick(row, "Sub Category Update")}
+              data-toggle="modal"
+              data-target="#myModal"
+            >
+              <FaEdit />{" "}
+            </button>
+          )}
+          {/* <DeleteButton endpoint="deletePage" id={row._id} getData={getData} /> */}
+        </>
+      ),
+    },
+  ];
   const priceTypeColumn = [
     {
       name: "S.NO",
@@ -223,6 +269,11 @@ export default function PageInfoModal() {
       setLoading(categoryListIsloading);
       setData(categoryList?.data);
       setColumns(categoryColumn);
+    } else if (modalType === "Sub Category Info") {
+      setTitle("Sub Category Type");
+      setLoading(subCategoryListIsloading);
+      setData(subCategoryList?.data);
+      setColumns(subCategoryColumn);
     } else if (modalType === "Price Type Info") {
       setTitle("Price Type");
       setLoading(priceListIsloading);
