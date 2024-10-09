@@ -107,7 +107,7 @@ const BalancePaymentList = () => {
   const accordionButtons = [
     "Oustanding Invoice",
     "Non Invoice Created",
-    "Approved", 
+    "Approved",
     "All Tax Invoice",
   ];
 
@@ -171,6 +171,8 @@ const BalancePaymentList = () => {
         },
       })
       .then((res) => {
+        console.log(res.data.data, "response--->>>>");
+
         // Create a new array with transformed data
         const transformedData = res?.data?.data?.reduce((acc, object) => {
           if (object?.salesInvoiceRequestData?.length > 0) {
@@ -390,6 +392,20 @@ const BalancePaymentList = () => {
     }
   }, [paymentDetails, paymentModeDropDownData]);
 
+  console.log(
+    filterData?.filter(
+      (invc) =>
+        invc.invoice_type_id === "tax-invoice" &&
+        invc.invoice_creation_status !== "pending" &&
+        invc.gst_status === true &&
+        invc.paid_amount <= invc.campaign_amount * 0.9
+    ),
+    "console filter data ---->>>>"
+  );
+  console.log(
+    filterData?.find((invc) => invc.sale_booking_id == 2043),
+    "find ---->"
+  );
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -520,8 +536,9 @@ const BalancePaymentList = () => {
             <DataGrid
               rows={
                 activeAccordionIndex === 3
-                  ?  filterData?.filter(
-                    (invc) => invc.invoice_type_id !== "proforma")
+                  ? filterData?.filter(
+                      (invc) => invc.invoice_type_id !== "proforma"
+                    )
                   : activeAccordionIndex === 0
                   ? filterData?.filter(
                       (invc) =>
@@ -546,7 +563,7 @@ const BalancePaymentList = () => {
                 handleImageClick,
                 handleDiscardOpenDialog,
                 handleOpenEditAction,
-                activeAccordionIndex 
+                activeAccordionIndex,
               })}
               pageSize={5}
               rowsPerPageOptions={[5]}

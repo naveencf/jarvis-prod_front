@@ -33,6 +33,7 @@ const WFHDBankUpdate = () => {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [upi, setUpi] = useState("");
+  const [ctc , setCTC] = useState(0)
   //--------------------Address Info State End
 
   const [isRequired, setIsRequired] = useState({
@@ -68,6 +69,7 @@ const WFHDBankUpdate = () => {
         permanent_pin_code,
         pan_no,
         upi_Id,
+        ctc
       } = fetchedData;
 
       setBankName(bank_name);
@@ -80,9 +82,11 @@ const WFHDBankUpdate = () => {
       setPincode(permanent_pin_code);
       setPanNo(pan_no);
       setUpi(upi_Id);
+      setCTC(ctc)
     });
   }, []);
-
+ 
+console.log(ctc)
   const handleSubmit = async () => {
     if (bankName == "") {
       setIsRequired((perv) => ({ ...perv, bankName: true }));
@@ -97,15 +101,6 @@ const WFHDBankUpdate = () => {
     if (beneficiary == "") {
       setIsRequired((perv) => ({ ...perv, beneficiary: true }));
     }
-    // if (address == "") {
-    //   setIsRequired((perv) => ({ ...perv, address: true }));
-    // }
-    // if (state == "") {
-    //   setIsRequired((perv) => ({ ...perv, state: true }));
-    // }
-    // if (city == "") {
-    //   setIsRequired((perv) => ({ ...perv, city: true }));
-    // }
     if (pincode == "") {
       setIsRequired((perv) => ({ ...perv, pincode: true }));
     }
@@ -120,16 +115,10 @@ const WFHDBankUpdate = () => {
     } else if (!IFSC || IFSC == "") {
       return toastError("Please fill all Required field");
     }
-    // else if (!city || city == "") {
-    //   return toastError("Please fill all Required field");
-    // } else if (!address || address == "") {
-    //   return toastError("Please fill all Required field");
-    // } else if (!state || state == "") {
-    //   return toastError("Please fill all Required field");
-    // }
-    //  else if (!pincode || pincode == "") {
-    //   return toastError("Please fill all Required field");
-    // }
+ 
+    if (ctc >= 100000 && panNo === "") {
+      return toastError("Pan No is required because CTC is greater than or equal to 100000");
+    }
     try {
       const response = axios.put(baseUrl + "update_user", {
         user_id: user_id,
@@ -189,7 +178,7 @@ const WFHDBankUpdate = () => {
             <div className="form_heading_title">
               <h1>Bank Details & Address</h1>
               <div className="pack">
-                <i class="bi bi-house"></i>{" "}
+                <i className="bi bi-house"></i>{" "}
                 {activeLink.slice(1).charAt(0).toUpperCase() +
                   activeLink.slice(2)}
               </div>
@@ -313,98 +302,6 @@ const WFHDBankUpdate = () => {
                 fieldGrid={3}
                 onChange={(e) => setBeneficiary(e.target.value)}
               />
-              {/* <div className="col-3">
-                <FieldContainer
-                  label="Address"
-                  astric
-                  fieldGrid={3}
-                  value={address}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setAddress(value);
-
-                    if (value === "") {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        address: true,
-                      }));
-                    } else {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        address: false,
-                      }));
-                    }
-                  }}
-                />
-                {isRequired.address && (
-                  <p className="form-error">Please Enter Address</p>
-                )}
-              </div> */}
-              {/* <div className="form-group col-3">
-                <label className="form-label">State</label>
-                <IndianStatesMui
-                  selectedState={state}
-                  onChange={(option) => {
-                    const value = option;
-                    setState(option ? option : null);
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      state: value === null || value === "",
-                    }));
-                  }}
-                />
-                {isRequired.state && (
-                  <p className="form-error">Please Enter State</p>
-                )}
-              </div>
-              <div className="form-group col-3">
-                <label className="form-label">City</label>
-                <IndianCitiesMui
-                  selectedState={state}
-                  selectedCity={city}
-                  onChange={(option) => {
-                    const value = option;
-                    setCity(option ? option : null);
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      city: value === null || value === "",
-                    }));
-                  }}
-                />
-                {isRequired.city && (
-                  <p className="form-error">Please Enter City</p>
-                )}
-              </div>
-              <div className="col-3">
-                <FieldContainer
-                  label="Pincode"
-                  type="number"
-                  astric={true}
-                  fieldGrid={3}
-                  maxLength={6}
-                  value={pincode}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (/^\d{0,6}$/.test(value)) {
-                      setPincode(value);
-                    }
-                    if (e.target.value === "") {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        pincode: true,
-                      }));
-                    } else {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        pincode: false,
-                      }));
-                    }
-                  }}
-                />
-                {isRequired.pincode && (
-                  <p className="form-error">Please Enter Pincode</p>
-                )}
-              </div> */}
               <FieldContainer
                 label="Upi Id"
                 type="text"

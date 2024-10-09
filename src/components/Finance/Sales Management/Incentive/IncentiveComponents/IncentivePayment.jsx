@@ -44,7 +44,7 @@ const IncentivePayment = () => {
   const calculateAging = (date1, date2) => {
     const diffHours =
       Math.abs(new Date(date1) - new Date(date2)) / (60 * 60 * 1000);
-    return Math.round(diffHours);
+    return Math?.round(diffHours);
   };
 
   const releaseIncentive = async () => {
@@ -137,7 +137,7 @@ const IncentivePayment = () => {
           const quarterStart = moment().startOf("quarter");
           const quarterEnd = moment().endOf("quarter");
           return apiData.filter((item) =>
-            moment(item.request_creation_date).isBetween(
+            moment(item.request_creation_date)?.isBetween(
               quarterStart,
               quarterEnd,
               "day",
@@ -211,7 +211,7 @@ const IncentivePayment = () => {
       aggregateData(sortedData, "sales_executive_name")
     );
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniqueSalesExecutiveCount(uniqueSalesExData.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   }, []);
 
   useEffect(() => {

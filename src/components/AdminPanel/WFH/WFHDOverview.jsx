@@ -13,6 +13,7 @@ import { useGlobalContext } from "../../../Context/Context";
 import Select from "react-select";
 import ReportL1Component from "./ReportL1Component";
 import WFHDExcelConverter from "./WFHDExcelConverter";
+import { GrUserNew } from "react-icons/gr";
 
 const customStyles = {
   headCells: {
@@ -68,6 +69,75 @@ const WFHDOverview = () => {
   const [deptData, setDeptData] = useState("");
   // const id = useParams()
 
+
+  //Here in house functinality -----------------------------
+  const [modalOpenINHand , setModalOpenInHouse] = useState(false)
+  const [isApplicable, setIsApplicable] = useState("");
+  const [joiningDate, setJoiningDate] = useState("");
+  const [userOnboardingID, setUserIDOnboarding] = useState(0);
+  const [currentadd, setCurrentadd] = useState("");
+  const [currentcity, setCurrentcity] = useState("");
+  const [currentpin, setCurrentpin] = useState("");
+  const [currentState, setCurrentState] = useState("");
+  const [email, setEmail] = useState("");
+  const [usernames, setUserNames] = useState("");
+  const [login, setLoginID] = useState("");
+
+  const IsApplicableData = [
+    // { label: "PF", value: "pf" },
+    { label: "PF & ESIC", value: "pf_and_esic" },
+    { label: "IN Hand", value: "in_hand" },
+  ];
+  const handleOpenOnboardInHouseModal = (row) => {
+    setModalOpenInHouse(true);
+    setUserIDOnboarding(row.user_id)
+    setCurrentadd(row.permanent_address)
+    setCurrentState(row.permanent_state)
+    setCurrentcity(row.permanent_city)
+    setCurrentpin(row.permanent_pin_code)
+    setEmail(row.PersonalEmail)
+    setUserNames(row.user_name)
+    setLoginID(row.user_login_id)
+
+  };
+  const handleCloseModalInHouse = () => {
+    setModalOpenInHouse(false);
+  };
+  const handleOnbaordingInHouse = async(row) =>{
+    const password = email?.split('@')[0];
+    await axios.put(baseUrl + "update_user", {
+      user_id:userOnboardingID,
+      onboard_status:2,
+      offer_letter_send: true,
+      joining_date:joiningDate,
+      emergency_contact_person_name2: isApplicable.value,
+      current_address:currentadd,
+      current_city:currentcity,
+      current_state:currentState,
+      current_pin_code:currentpin,
+      job_type:"WFO",
+      user_login_password:password
+    });
+   await axios
+    .post(baseUrl + "add_send_user_mail", {
+      email:'lalit@creativefuel.io',
+      // email: row.PersonalEmail,
+      subject: "Welcome To Creativefuel",
+      text: "",
+      // attachment: selectedImage,
+      login_id: login,
+      name: usernames,
+      password: password,
+      status: "onboarded",
+    })
+    toastAlert("User Onboarded Successfully")
+    getData()
+    setJoiningDate("")
+    setIsApplicable("")
+    handleCloseModalInHouse()
+  }
+  
+// ----------------------------------------------------------------
   //Scrap Asset section Start
   const handleScrap = (row) => {
     setCurrentRow(row);
@@ -354,6 +424,8 @@ const WFHDOverview = () => {
     return name.charAt(0).toUpperCase();
   };
 
+  
+
   const columns = [
     {
       name: "S.No",
@@ -582,7 +654,16 @@ const WFHDOverview = () => {
                 <div className="icon-1" title="Edit User">
                   <i className="bi bi-pencil"></i>
                 </div>
-              </Link>
+              </Link> 
+              
+              {/* wfhd to wfo onboarding  */}
+                
+                <div className="icon-1" title="Onboard IN House" onClick={()=>handleOpenOnboardInHouseModal(row)}>
+                <GrUserNew/>
+                </div>
+              
+
+              {/* <button className="icon-1" title="Switch user to inhouse onboard" onClick={()=>handleOnbaordingInHouse(row.user_id)}>InHouse</button> */}
             </>
           ) : null}
         </>
@@ -923,12 +1004,7 @@ const WFHDOverview = () => {
                   astric
                   onChange={(e) => setSeparationStatus(e.target.value)}
                 >
-                  {/* <option value="">Choose...</option> */}
                   <option value="Resigned">Exit</option>
-                  {/* <option value="Resign Accepted">Resign Accepted</option>
-                    <option value="On Long Leave">On Long Leave</option>
-                    <option value="Subatical">Subatical</option>
-                    <option value="Suspended">Suspended</option> */}
                 </FieldContainer>
                 {/* <FieldContainer
                     label="Reason"
@@ -1013,6 +1089,62 @@ const WFHDOverview = () => {
           onClose={handleReportL1Close}
           rowData={currentRow}
         />
+
+<Modal
+        isOpen={modalOpenINHand}
+        onRequestClose={handleCloseModalInHouse}
+        contentLabel="Example Modal"
+        appElement={document.getElementById("root")}
+        style={{
+          content: {
+            width: "40%",
+            height: "40%",
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+          },
+        }}
+      >
+        <button
+          className="btn btn-danger mb-3 float-right"
+          onClick={handleCloseModalInHouse}
+        >
+          x
+        </button>
+        <h1 className="mb-2">In House Onboarding</h1>
+
+        <div className="form-group col-12">
+          <label className="form-label">
+            Custom Range <sup className="form-error">*</sup>
+          </label>
+          <Select
+            options={IsApplicableData.map((option) => ({
+              value: `${option.value}`,
+              label: `${option.label}`,
+            }))}
+            value={{
+              value: isApplicable.value,
+              label: isApplicable.label || "",
+            }}
+            onChange={(e)=>setIsApplicable(e)}
+              
+          />
+        </div>
+        <div className="col-md-12 p0">
+              <FieldContainer
+                type="date"
+                label="Joining Date "
+                astric
+                fieldGrid={12}
+                value={joiningDate}
+                onChange={(e)=>setJoiningDate(e.target.value)}
+              />
+            </div>
+            <button disabled={!isApplicable || !joiningDate} className="btn btn-primary ml-2" onClick={handleOnbaordingInHouse}>Submit</button>
+      </Modal>
       </>
       {/* ) */}
       {/* } */}

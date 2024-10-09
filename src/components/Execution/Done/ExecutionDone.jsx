@@ -18,7 +18,7 @@ export default function ExecutionDone() {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-const navigate = useNavigate()
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [contextData, setContextData] = useState(false);
   const [snackbar, setSnackbar] = useState(null);
@@ -263,7 +263,6 @@ const navigate = useNavigate()
         );
       },
     },
-
     contextData
       ? {
           field: "actions",

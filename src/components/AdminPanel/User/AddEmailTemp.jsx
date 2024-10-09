@@ -45,7 +45,7 @@ const AddEmailTemp = () => {
 
   return (
     <>
-      <div class="alert alert-danger">
+      <div className="alert alert-danger">
         <strong>
           Use {`{{user_name}}`} for user name, use {`{{user_email}}`} for user
           email, use {`{{user_password}}`} for user password, use{" "}
@@ -59,7 +59,7 @@ const AddEmailTemp = () => {
         </strong>
       </div>
 
-      <div class="alert alert-danger">
+      <div className="alert alert-danger">
         <strong>
           email template id for :- user joining before 0 days = 0, user joining
           before 1 days = 1, user joining before 2 days = 2, user joining before

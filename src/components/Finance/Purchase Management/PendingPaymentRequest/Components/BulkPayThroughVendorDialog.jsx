@@ -80,7 +80,6 @@ const BulkPayThroughVendorDialog = (props) => {
   };
 
   const uploadCSVToAPI = async (csvBlob) => {
-    console.log(csvBlob, "csv blob ------->>>>");
     try {
       const getTokenResponse = await axios.get(
         baseUrl + `generate_plural_payment_jwt_token`

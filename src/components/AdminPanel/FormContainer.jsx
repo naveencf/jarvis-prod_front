@@ -110,7 +110,7 @@ const FormContainer = ({
           >
             <h2>{mainTitle}</h2>
             {/* <div className="pack">
-              <i class="bi bi-house"></i>{" "}
+              <i className="bi bi-house"></i>{" "}
               {activeLink.slice(1).charAt(0).toUpperCase() +
                 activeLink.slice(2)}
             </div> */}

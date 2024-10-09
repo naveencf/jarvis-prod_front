@@ -613,18 +613,18 @@ const SalesAccountOverview = () => {
           <div className="row">
             <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
               <div
-                class="card p16 hov-pointer"
+                className="card p16 hov-pointer"
                 onClick={() => {
                   filterEngine(allAccount, "remove", "0");
                 }}
               >
-                <h6 class="colorMedium ">Total Accounts</h6>
-                <h6 class="mt8 fs_16">{allAccount?.length}</h6>
+                <h6 className="colorMedium ">Total Accounts</h6>
+                <h6 className="mt8 fs_16">{allAccount?.length}</h6>
               </div>
             </div>
             <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
               <div
-                class="card p16 hov-pointer"
+                className="card p16 hov-pointer"
                 onClick={() => {
                   filterEngine(
                     allAccount?.filter(
@@ -635,10 +635,10 @@ const SalesAccountOverview = () => {
                   );
                 }}
               >
-                <h6 class="colorMedium">
+                <h6 className="colorMedium">
                   Idle Accounts (Without Sale Booking)
                 </h6>
-                <h6 class="mt8 fs_16">
+                <h6 className="mt8 fs_16">
                   {
                     allAccount?.filter(
                       (account) => account?.totalSaleBookingCounts == 0
@@ -649,7 +649,7 @@ const SalesAccountOverview = () => {
             </div>
             <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
               <div
-                class="card p16 hov-pointer"
+                className="card p16 hov-pointer"
                 onClick={() => {
                   filterEngine(
                     allAccount?.filter((account) => account?.paidAmount == 0),
@@ -658,8 +658,8 @@ const SalesAccountOverview = () => {
                   );
                 }}
               >
-                <h6 class="colorMedium">Idle Accounts (Without Payment) </h6>
-                <h6 class="mt8 fs_16">
+                <h6 className="colorMedium">Idle Accounts (Without Payment) </h6>
+                <h6 className="mt8 fs_16">
                   {
                     allAccount?.filter((account) => account?.paidAmount == 0)
                       .length

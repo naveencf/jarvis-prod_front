@@ -189,7 +189,7 @@ const AssetDashboard = () => {
                           <h3>Total</h3>
                         </div>
                       </div>
-                      <i class="bi bi-box-arrow-up-right"></i>
+                      <i className="bi bi-box-arrow-up-right"></i>
                     </div>
                   </div>
                 </Link>
@@ -212,7 +212,7 @@ const AssetDashboard = () => {
                         <h3>Available</h3>
                       </div>
                       </div>
-                      <i class="bi bi-box-arrow-up-right"></i>
+                      <i className="bi bi-box-arrow-up-right"></i>
                     </div>
                   </div>
                 </Link>
@@ -238,7 +238,7 @@ const AssetDashboard = () => {
                         {/* <SimOverview allocated={isAllocation} /> */}
                       </div>
                       </div>
-                      <i class="bi bi-box-arrow-up-right"></i>
+                      <i className="bi bi-box-arrow-up-right"></i>
                     </div>
                   </Link>
                 </div>

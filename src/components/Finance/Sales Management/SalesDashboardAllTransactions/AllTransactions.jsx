@@ -1029,7 +1029,7 @@ const AllTransactions = () => {
                 Approved
                 <Link className="link-primary" onClick={handleApprovedClick}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
@@ -1058,7 +1058,7 @@ const AllTransactions = () => {
                 Approved
                 <Link className="link-primary" onClick={handleApprovedClick}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
@@ -1085,7 +1085,7 @@ const AllTransactions = () => {
                 Rejected
                 <Link className="link-primary" onClick={handleRejectedClick}>
                   <span className="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>

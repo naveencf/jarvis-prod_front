@@ -1094,7 +1094,7 @@ PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
           variant="outlined"
           onChange={handleSearchChange}
           />
-            <label for="fileInput" className="btn btn-outline-primary"
+            <label htmlFor="fileInput" className="btn btn-outline-primary"
             style={{margin:"0",display:"flex",alignItems:"center"}}>
               Upload Excel
             </label>

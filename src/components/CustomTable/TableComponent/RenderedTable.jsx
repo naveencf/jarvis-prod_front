@@ -280,7 +280,6 @@ const RenderedTable = ({
     setSortedData(newData);
 
     if (e.target.value === "" || editflag === false) {
-
       let prevData = [...sortedData];
       prevData[index] = {
         ...prevData[index],
@@ -420,9 +419,9 @@ const RenderedTable = ({
                                               filterCondition.map((item, i) =>
                                                 i === index
                                                   ? {
-                                                    ...item,
-                                                    ...valuefiller(value),
-                                                  }
+                                                      ...item,
+                                                      ...valuefiller(value),
+                                                    }
                                                   : item
                                               )
                                             );
@@ -446,9 +445,9 @@ const RenderedTable = ({
                                                 filterCondition.map((item, i) =>
                                                   i === index
                                                     ? {
-                                                      ...item,
-                                                      value1: e.target.value,
-                                                    }
+                                                        ...item,
+                                                        value1: e.target.value,
+                                                      }
                                                     : item
                                                 )
                                               );
@@ -459,35 +458,35 @@ const RenderedTable = ({
                                         {(filterCondition[index]?.key ===
                                           "notBetween" ||
                                           filterCondition[index]?.key ===
-                                          "between") && (
-                                            <FieldContainer
-                                              className="form-control form_sm"
-                                              fieldGrid={12}
-                                              fieldLabel="Value"
-                                              placeholder={"Enter value"}
-                                              type={
-                                                filterCondition[index]?.type !==
-                                                  undefined
-                                                  ? filterCondition[index].type
-                                                  : "text"
-                                              }
-                                              value={
-                                                filterCondition[index].value2
-                                              }
-                                              onChange={(e) => {
-                                                setFilterCondition(
-                                                  filterCondition.map((item, i) =>
-                                                    i === index
-                                                      ? {
+                                            "between") && (
+                                          <FieldContainer
+                                            className="form-control form_sm"
+                                            fieldGrid={12}
+                                            fieldLabel="Value"
+                                            placeholder={"Enter value"}
+                                            type={
+                                              filterCondition[index]?.type !==
+                                              undefined
+                                                ? filterCondition[index].type
+                                                : "text"
+                                            }
+                                            value={
+                                              filterCondition[index].value2
+                                            }
+                                            onChange={(e) => {
+                                              setFilterCondition(
+                                                filterCondition.map((item, i) =>
+                                                  i === index
+                                                    ? {
                                                         ...item,
                                                         value2: e.target.value,
                                                       }
-                                                      : item
-                                                  )
-                                                );
-                                              }}
-                                            />
-                                          )}
+                                                    : item
+                                                )
+                                              );
+                                            }}
+                                          />
+                                        )}
                                       </div>
                                     </li>
 
@@ -509,21 +508,24 @@ const RenderedTable = ({
                                       >
                                         <CustomSelect
                                           dataArray={Object.values(
-                                            originalData.reduce((acc, item) => {
-                                              if (column?.compare) {
-                                                const render =
-                                                  column?.renderRowCell;
-                                                item = {
-                                                  ...item,
-                                                  [column.key]: render(item),
-                                                };
-                                              }
-                                              acc[item[column.key]] = item;
-                                              return acc;
-                                            }, {})
+                                            originalData?.reduce(
+                                              (acc, item) => {
+                                                if (column?.compare) {
+                                                  const render =
+                                                    column?.renderRowCell;
+                                                  item = {
+                                                    ...item,
+                                                    [column.key]: render(item),
+                                                  };
+                                                }
+                                                acc[item[column?.key]] = item;
+                                                return acc;
+                                              },
+                                              {}
+                                            )
                                           )}
-                                          optionId={column.key}
-                                          optionLabel={column.key}
+                                          optionId={column?.key}
+                                          optionLabel={column?.key}
                                           selectedId={selectedId[index]}
                                           setSelectedId={(value) =>
                                             setSelectedId(
@@ -573,11 +575,13 @@ const RenderedTable = ({
                                                 className="form-check-label"
                                                 htmlFor={`flexSwitchCheckDefault-${indices}`}
                                               >
-                                                {column?.renderRowCell
+                                                {column?.compare
+                                                  ? row[column.key]
+                                                  : column?.renderRowCell
                                                   ? column?.renderRowCell(
-                                                    row,
-                                                    indices
-                                                  )
+                                                      row,
+                                                      indices
+                                                    )
                                                   : row[column.key]}
                                               </label>
                                             </div>
@@ -653,20 +657,23 @@ const RenderedTable = ({
                   {columnsheader?.map(
                     (column, colIndex) =>
                       visibleColumns?.[colIndex] && (
-                        <td key={colIndex}
+                        <td
+                          key={colIndex}
                           onClick={() => {
                             const now = Date.now();
                             const timeSinceLastTap = now - lastTap;
 
                             clearTimeout(tapTimeout.current);
 
-                            if (timeSinceLastTap < 1000 && timeSinceLastTap > 0) {
-
-                              setEditFlag(prev => {
+                            if (
+                              timeSinceLastTap < 1000 &&
+                              timeSinceLastTap > 0
+                            ) {
+                              setEditFlag((prev) => {
                                 if (prev === index) {
-                                  return false
+                                  return false;
                                 } else {
-                                  return index
+                                  return index;
                                 }
                               });
                             } else {
@@ -677,9 +684,9 @@ const RenderedTable = ({
                               }, 300);
                             }
                             setLastTap(now);
-                          }}>
-
-                          {(editableRows[colIndex] && editflag === index) ? (
+                          }}
+                        >
+                          {editableRows[colIndex] && editflag === index ? (
                             column?.customEditElement ? (
                               column?.customEditElement(
                                 row,

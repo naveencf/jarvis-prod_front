@@ -67,7 +67,7 @@ const Overview = (props) => {
                   >
                     {
                       data?.filter((item) => item.balance_amount <= 10000)
-                        .length
+                        ?.length
                     }
                   </a>
                 </td>

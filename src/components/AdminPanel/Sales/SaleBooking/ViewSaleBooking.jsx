@@ -616,7 +616,7 @@ const ViewSaleBooking = () => {
             to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
           >
             <div className="icon-1">
-              <i class="bi bi-pencil" />
+              <i className="bi bi-pencil" />
             </div>
           </Link>}
 

@@ -1,40 +1,47 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { baseUrl } from '../../../utils/config';
-import { FaEdit } from 'react-icons/fa';
-import DeleteButton from '../DeleteButton';
-import { Link, useNavigate } from 'react-router-dom';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import Box from '@mui/material/Box';
-import { Autocomplete, TextField, Typography } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import PriceCheckIcon from '@mui/icons-material/PriceCheck';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Button from '@mui/material/Button';
-import jwtDecode from 'jwt-decode';
-import { useDispatch, useSelector } from 'react-redux';
-import { addRow } from '../../Store/Executon-Slice';
-import View from '../Sales/Account/View/View';
-import * as XLSX from 'xlsx';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import Select from "react-select";
+import { FaEdit } from "react-icons/fa";
+import DeleteButton from "../DeleteButton";
+import { Link, useNavigate } from "react-router-dom";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import Box from "@mui/material/Box";
+import {
+  Autocomplete,
+  Avatar,
+  ButtonBase,
+  TextField,
+  Typography,
+} from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import PriceCheckIcon from "@mui/icons-material/PriceCheck";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import jwtDecode from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
+import { addRow } from "../../Store/Executon-Slice";
+import View from "../Sales/Account/View/View";
+import * as XLSX from "xlsx";
 
-import DateFormattingComponent from '../../DateFormator/DateFormared';
+import DateFormattingComponent from "../../DateFormator/DateFormared";
 import {
   openTagCategoriesModal,
   setPlatform,
   setShowPageHealthColumn,
   setTagCategories,
-} from '../../Store/PageOverview';
-import TagCategoryListModal from './TagCategoryListModal';
+} from "../../Store/PageOverview";
+import TagCategoryListModal from "./TagCategoryListModal";
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
   useGetVendorWhatsappLinkTypeQuery,
-} from '../../Store/reduxBaseURL';
-import VendorNotAssignedModal from './VendorNotAssignedModal';
+} from "../../Store/reduxBaseURL";
+import VendorNotAssignedModal from "./VendorNotAssignedModal";
 import {
   useGetAllCitiesQuery,
   useGetAllPageCategoryQuery,
@@ -43,15 +50,24 @@ import {
   useGetOwnershipTypeQuery,
   useGetPageStateQuery,
   useGetpagePriceTypeQuery,
-} from '../../Store/PageBaseURL';
-import AddIcon from '@mui/icons-material/Add';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import { setStatsUpdate } from '../../Store/PageMaster';
-import PageDetail from './PageOverview/PageDetail';
-import { setPageRow, setShowPageInfoModal } from '../../Store/Page-slice';
-import formatString from '../Operation/CampaignMaster/WordCapital';
-import { useGlobalContext } from '../../../Context/Context';
+  useGetAllPageSubCategoryQuery,
+  useGetAllProfileListQuery,
+} from "../../Store/PageBaseURL";
+import AddIcon from "@mui/icons-material/Add";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { setStatsUpdate } from "../../Store/PageMaster";
+import PageDetail from "./PageOverview/PageDetail";
+import { setPageRow, setShowPageInfoModal } from "../../Store/Page-slice";
+import formatString from "../Operation/CampaignMaster/WordCapital";
+import { useGlobalContext } from "../../../Context/Context";
+import PageClosedByDetails from "./Page/PageClosedByDetails";
+import Brightness6Icon from "@mui/icons-material/Brightness6";
+import ToggleOffIcon from "@mui/icons-material/ToggleOff";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import VendorDetails from "./Vendor/VendorDetails";
 
+let count = 0;
 const PageOverview = () => {
   const { toastAlert } = useGlobalContext();
   const {
@@ -65,7 +81,7 @@ const PageOverview = () => {
     isLoading: isPagestatLoading,
   } = useGetPageStateQuery();
   const [vendorTypes, setVendorTypes] = useState([]);
-  const [activeTab, setActiveTab] = useState('Tab1');
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [pageLevels, setPageLevels] = useState([]);
   const [pageStatus, setPageStatus] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -93,20 +109,67 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-  const storedToken = sessionStorage.getItem('token');
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [waData, setWaData] = useState([]);
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
-  const token = sessionStorage.getItem('token');
+  const token = sessionStorage.getItem("token");
   const [activeIndex, setActiveIndex] = useState(null);
-  const [individualData, setIndividualData] = useState([])
+  const [individualData, setIndividualData] = useState([]);
+  const [individualDataDup, setIndividualDataDup] = useState([]);
   const toggleAccordion = (index) => {
-    setActiveIndex(activeIndex === index ? null : index); 
+    setActiveIndex(activeIndex === index ? null : index);
   };
-  const [allVendorWhats, setAllVendorWhats] = useState([])
+  const [allVendorWhats, setAllVendorWhats] = useState([]);
+
+  const [selectedPriceType, setSelectedPriceType] = useState(""); // Holds the selected price type
+  const [inputPrice, setInputPrice] = useState(""); // Holds the input price
+  const [zeroLinksCount, setZeroLinksCount] = useState(0);
+  const [oneLinkCount, setOneLinkCount] = useState(0);
+  const [twoLinksCount, setTwoLinksCount] = useState(0);
+  const [threeLinksCount, setThreeLinksCount] = useState(0);
+  const [WhastappDataForLink, setWhastappDataForLink] = useState("");
+
+  // Handle price type change
+  const handlePriceTypeChange = (e) => {
+    setSelectedPriceType(e.target.value);
+  };
+
+  // Handle price input change
+  const handleInputChange = (e) => {
+    setInputPrice(e.target.value);
+  };
+
+  // Filter data when the button is clicked
+  const handleFilter = () => {
+    const filteredData = filterData.filter((row) => {
+      let price = 0;
+
+      // Get the selected price based on the selectedPriceType
+      switch (selectedPriceType) {
+        case "Post Price":
+          price = row?.price_details?.Insta_Post || 0;
+          break;
+        case "Story Price":
+          price = row?.price_details?.Insta_Story || 0;
+          break;
+        case "Both Price":
+          price = row?.price_details?.Both || 0;
+          break;
+        default:
+          return false;
+      }
+
+      // Return rows where price exactly matches the input price
+      return price === Number(inputPrice); // Ensures type matching
+    });
+
+    // Update the filtered data
+    setNewFilterData(filteredData);
+  };
 
   const handleExport = () => {
     const formattedData = newFilterData?.map((row, index) => {
@@ -122,99 +185,113 @@ const PageOverview = () => {
         (item) => item?.vendor_id === row.temp_vendor_id
       )?.vendor_name;
 
-      const closeByName = user?.find((item)=> item?.user_id === row.page_closed_by)?.user_name;
+      const closeByName = user?.find(
+        (item) => item?.user_id === row.page_closed_by
+      )?.user_name;
 
-      const pageStatusDescription = 
-      row.page_mast_status == 0
-        ? 'Active'
-        : row.page_mast_status == 1
-        ? 'Inactive'
-        : row.page_mast_status == 2
-        ? 'Delete'
-        : row.page_mast_status == 3
-        ? 'Semiactive'
-        : 'Unknown';
+      const pageStatusDescription =
+        row.page_mast_status == 0
+          ? "Active"
+          : row.page_mast_status == 1
+          ? "Inactive"
+          : row.page_mast_status == 2
+          ? "Delete"
+          : row.page_mast_status == 3
+          ? "Semiactive"
+          : "Unknown";
 
       return {
-        'S.No': index + 1,
-        'User Name': row.page_name,
-        'Level': row.preference_level,
-        'Status': pageStatusDescription,
-        'Ownership': row.ownership_type,
-        'Platform': platformName || 'N/A',
-        'Category': categoryName || 'N/A',
-        'Followers': formatNumber(row.followers_count),
-        'Vendor': vendorName || 'N/A',
-        'Active Platform': row.platform_active_on,
+        "S.No": index + 1,
+        "User Name": row.page_name,
+        Level: row.preference_level,
+        Status: pageStatusDescription,
+        Ownership: row.ownership_type,
+        Platform: platformName || "N/A",
+        Category: categoryName || "N/A",
+        Followers: formatNumber(row.followers_count),
+        Vendor: vendorName || "N/A",
+        "Active Platform": row.platform_active_on,
 
-        'Closed By': closeByName,
-        'Name Type': row.page_name_type,
-        'Content Creation': row.content_creation,
-        'Rate Type': row.rate_type,
-        'Variable Type': row.variable_type,
-        'Story Price': row.m_story_price,
-        'Post Price': row.m_post_price,
-        'Both Price': row.m_both_price,
+        "Closed By": closeByName,
+        "Name Type": row.page_name_type,
+        "Content Creation": row.content_creation,
+        "Rate Type": row.rate_type,
+        "Variable Type": row.variable_type,
+        "Story Price": row.m_story_price,
+        "Post Price": row.m_post_price,
+        "Both Price": row.m_both_price,
 
-        'Age_13_17_percent': row.Age_13_17_percent,
-        'Age_18_24_percent': row.Age_18_24_percent,
-        'Age_25_34_percent': row.Age_25_34_percent,
-        'Age_35_44_percent': row.Age_35_44_percent,
-        'Age_45_54_percent': row.Age_45_54_percent,
-        'Age_55_64_percent': row.Age_55_64_percent,
-        'Age_65_plus_percent': row.Age_65_plus_percent,
-        'Age_upload_url': row.Age_upload_url,
-        'both_': row.both_,
-        'city1_name': row.city1_name,
-        'city2_name': row.city2_name,
-        'city3_name': row.city3_name,
-        'city4_name': row.city4_name,
-        'city5_name': row.city5_name,
-        'city_image_url': row.city_image_url,
-        'country1_name': row.country1_name,
-        'country2_name': row.country2_name,
-        'country3_name': row.country3_name,
-        'country4_name': row.country4_name,
-        'country5_name': row.country5_name,
-        'country_image_url': row.country_image_url,
-        'created_at': row.created_at,
-        'engagement': row.engagement,
-        'engagement_image_url': row.engagement_image_url,
-        'female_percent': row.female_percent,
-        'follower_count_before_update': row.follower_count_before_update,
-        'followers_count': row.followers_count,
-        'impression': row.impression,
-        'impression_image_url': row.impression_image_url,
-        'male_percent': row.male_percent,
-        'page_link': row.page_link,
+        Age_13_17_percent: row.Age_13_17_percent,
+        Age_18_24_percent: row.Age_18_24_percent,
+        Age_25_34_percent: row.Age_25_34_percent,
+        Age_35_44_percent: row.Age_35_44_percent,
+        Age_45_54_percent: row.Age_45_54_percent,
+        Age_55_64_percent: row.Age_55_64_percent,
+        Age_65_plus_percent: row.Age_65_plus_percent,
+        Age_upload_url: row.Age_upload_url,
+        both_: row.both_,
+        city1_name: row.city1_name,
+        city2_name: row.city2_name,
+        city3_name: row.city3_name,
+        city4_name: row.city4_name,
+        city5_name: row.city5_name,
+        city_image_url: row.city_image_url,
+        country1_name: row.country1_name,
+        country2_name: row.country2_name,
+        country3_name: row.country3_name,
+        country4_name: row.country4_name,
+        country5_name: row.country5_name,
+        country_image_url: row.country_image_url,
+        created_at: row.created_at,
+        engagement: row.engagement,
+        engagement_image_url: row.engagement_image_url,
+        female_percent: row.female_percent,
+        follower_count_before_update: row.follower_count_before_update,
+        followers_count: row.followers_count,
+        impression: row.impression,
+        impression_image_url: row.impression_image_url,
+        male_percent: row.male_percent,
+        page_link: row.page_link,
         // 'page_status': row.page_status,
-        'percentage_city1_name': row.percentage_city1_name,
-        'percentage_city2_name': row.percentage_city2_name,
-        'percentage_city3_name': row.percentage_city3_name,
-        'percentage_city4_name': row.percentage_city4_name,
-        'percentage_city5_name': row.percentage_city5_name,
-        'percentage_country1_name': row.percentage_country1_name,
-        'percentage_country2_name': row.percentage_country2_name,
-        'percentage_country3_name': row.percentage_country3_name,
-        'percentage_country4_name': row.percentage_country4_name,
-        'percentage_country5_name': row.percentage_country5_name,
-        'profile_visit': row.profile_visit,
-        'reach': row.reach,
-        'reach_image_url': row.reach_image_url,
-        'story_view': row.story_view,
-        'story_view_image_url': row.story_view_image_url
+        percentage_city1_name: row.percentage_city1_name,
+        percentage_city2_name: row.percentage_city2_name,
+        percentage_city3_name: row.percentage_city3_name,
+        percentage_city4_name: row.percentage_city4_name,
+        percentage_city5_name: row.percentage_city5_name,
+        percentage_country1_name: row.percentage_country1_name,
+        percentage_country2_name: row.percentage_country2_name,
+        percentage_country3_name: row.percentage_country3_name,
+        percentage_country4_name: row.percentage_country4_name,
+        percentage_country5_name: row.percentage_country5_name,
+        profile_visit: row.profile_visit,
+        reach: row.reach,
+        reach_image_url: row.reach_image_url,
+        story_view: row.story_view,
+        story_view_image_url: row.story_view_image_url,
       };
     });
 
-    const fileName = 'data.xlsx';
+    const fileName = "data.xlsx";
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Data');
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
     XLSX.writeFile(workbook, fileName);
   };
 
   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
+  const { data: profileData } = useGetAllProfileListQuery();
+  const [vendorDetails, setVendorDetails] = useState(null);
+
+  const handleVendorClick = async (_id) => {
+    const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    setVendorDetails(res?.data?.data);
+  };
   // const handleEditCellChange = (params) => {
   //   (async () => {
   //     const updatedRow = {
@@ -254,7 +331,7 @@ const PageOverview = () => {
           ...item,
           pageId: matchingState?._id,
           ...matchingState,
-          _id: item._id,
+          _id: item?._id,
         };
       });
 
@@ -262,24 +339,27 @@ const PageOverview = () => {
       setNewFilterData(data);
 
       const result = [];
-      for (let i = 0; i < data.length; i++) {
-        const createdBy = data[i].created_by;
-        const pageName = data[i].page_name;
-        const created_at = data[i].created_at;
-      
-        const existingUser = result.find(item => item?.created_by === createdBy);
-      
+      for (let i = 0; i < data?.length; i++) {
+        const createdBy = data[i]?.created_by;
+        const pageName = data[i]?.page_name;
+        const created_at = data[i]?.created_at;
+
+        const existingUser = result.find(
+          (item) => item?.created_by === createdBy
+        );
+
         if (existingUser) {
           existingUser.page_names.push(pageName);
         } else {
           result.push({
             created_by: createdBy,
             page_names: [pageName],
-            created_at: created_at
+            created_at: created_at,
           });
         }
       }
-      setIndividualData(result)
+      setIndividualData(result);
+      setIndividualDataDup(result);
       // console.log('aaaaaaa',result)
     }
     if (showPageHealthColumn == false) {
@@ -290,27 +370,29 @@ const PageOverview = () => {
   function getStartOfWeek() {
     const now = new Date();
     const dayOfWeek = now.getDay();
-    const startOfWeek = new Date(now.setDate(now.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1)));
+    const startOfWeek = new Date(
+      now.setDate(now.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1))
+    );
     startOfWeek.setHours(0, 0, 0, 0);
     return startOfWeek;
   }
-  
+
   function getStartOfMonth() {
     const now = new Date();
     return new Date(now.getFullYear(), now.getMonth(), 1);
   }
-  
+
   function getStartOfQuarter() {
     const now = new Date();
     const quarterStartMonth = Math.floor(now.getMonth() / 3) * 3;
     return new Date(now.getFullYear(), quarterStartMonth, 1);
   }
-  
+
   function getStartOfYear() {
     const now = new Date();
     return new Date(now.getFullYear(), 0, 1);
   }
-  
+
   function isWithinRange(date, startDate) {
     const createdDate = new Date(date);
     return createdDate >= startDate;
@@ -318,35 +400,35 @@ const PageOverview = () => {
 
   function applyFilter(filterType) {
     let startDate;
-    
+
     switch (filterType) {
-      case 'week':
+      case "week":
         startDate = getStartOfWeek();
         break;
-      case 'month':
+      case "month":
         startDate = getStartOfMonth();
         break;
-      case 'quarter':
+      case "quarter":
         startDate = getStartOfQuarter();
         break;
-      case 'year':
+      case "year":
         startDate = getStartOfYear();
         break;
       default:
         return;
     }
-  
-    const filteredData = individualData.filter(item => {
+
+    const filteredData = individualDataDup.filter((item) => {
       if (!item.created_at) {
-        return false; 
+        return false;
       }
-  
-      const dateParts = item.created_at.split(' ')[0].split('-');
+
+      const dateParts = item.created_at.split(" ")[0].split("-");
       if (dateParts.length !== 3) {
-        return false; 
+        return false;
       }
-  
-      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; 
+
+      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
       const createdDate = new Date(formattedDate);
 
       return isWithinRange(createdDate, startDate);
@@ -356,10 +438,11 @@ const PageOverview = () => {
 
   // to match created_by id from user_id to display user name in accordion
   const getUserName = (createdBy) => {
-    const result = user.find(item => item.user_id == createdBy);
-    return result ? result.user_name : 'Unknown User';
+    const result = user.find((item) => item.user_id == createdBy);
+    return result ? result.user_name : "Unknown User";
   };
-
+  count++;
+  console.log("count",count)
   useEffect(() => {
     pageHealthToggleCheck();
   }, [isPageListLoading, isPagestatLoading, filterData]);
@@ -407,7 +490,12 @@ const PageOverview = () => {
 
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
-
+  const handleClick = (platform) => {
+    const res = vendorTypes.filter((d) => d.platform_id == platform);
+    setFilterData(res);
+    setTabFilterData(res);
+    calculateAndSetTotals(res);
+  };
   const {
     data: pageCate,
     refetch: refetchPageCate,
@@ -415,22 +503,28 @@ const PageOverview = () => {
   } = useGetAllPageCategoryQuery();
   const cat = pageCate?.data;
 
+  const { data: subCategory } = useGetAllPageSubCategoryQuery();
+  const subCat = subCategory?.data || [];
+  // console.log(subCat, ' oct-9 saimyual');
+
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
+    axios.get(baseUrl + "get_all_users").then((res) => {
       setUser(res.data.data);
       setProgress(70);
     });
 
-    axios.get(baseUrl + 'v1/vendor_group_link', {
-      headers: {
-        Authorization: `Bearer ${storedToken}`,
-        'Content-Type': 'application/json',
-      },
-    }).then((res) => {
-      setAllVendorWhats(res?.data?.data)
-    })
+    axios
+      .get(baseUrl + "v1/vendor_group_link", {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        setAllVendorWhats(res?.data?.data);
+      });
   };
 
   const calculateAndSetTotals = (result) => {
@@ -438,9 +532,9 @@ const PageOverview = () => {
     let totalPosts = 0;
     let totalStories = 0;
     let totalBoths = 0;
-if(!result){
-  return;
-}
+    if (!result) {
+      return;
+    }
     for (let i = 0; i < result?.length; i++) {
       totalFollowers += Number(result[i].followers_count);
       totalPosts += Number(result[i].post);
@@ -486,9 +580,22 @@ if(!result){
   useEffect(() => {}, [tableFollowers, tablePosts, tableStories, tableBoths]);
 
   const { data: priceData, isLoading: isPriceLoading } =
-    useGetMultiplePagePriceQuery(selectedRow, {
-      skip: !selectedRow,
-    });
+    useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
+
+  const [localPriceData, setLocalPriceData] = useState(null); // Local state to manage price data
+  // Effect to clear the local data and handle loading when selectedRow changes
+  // useEffect(() => {
+  //   if (selectedRow) {
+  //     setLocalPriceData(null);  // Clear old data
+  //   }
+  // }, [selectedRow]);
+
+  // Update localPriceData when new data is fetched
+  useEffect(() => {
+    if (priceData) {
+      setLocalPriceData(priceData);
+    }
+  }, [priceData]);
 
   const handlePriceClick = (row) => {
     return function () {
@@ -500,6 +607,8 @@ if(!result){
 
   const handleClose = () => {
     setShowPriceModal(false);
+    setSelectedRow(null);
+    setLocalPriceData(null);
   };
 
   const whatsAppData = async (data) => {
@@ -508,7 +617,7 @@ if(!result){
       .get(`${baseUrl}v1/vendor_group_link_vendor_id/${data.vendor_id}`, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       })
       .then((res) => {
@@ -517,17 +626,62 @@ if(!result){
       });
   };
 
+  const deletePhpData = async (row) => {
+    await axios.delete(baseUrl + `node_data_to_php_delete_page`, {
+      p_id: row.p_id,
+    });
+  };
+
+  const handleUpadteFollowers = async (row) => {
+    const payload = {
+      creators: [row.page_name],
+      department: "65c38781c52b3515f77b0815",
+      userId: 111111,
+    };
+    const token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+    try {
+      const result = await axios.post(
+        `https://insights.ist:8080/api/v1/creators_details_v3`,
+        payload,
+        { headers }
+      );
+      const followerData = result?.data?.data?.[0]?.creatorDetails?.followers;
+
+      if (followerData) {
+        const updateRes = await axios.put(
+          `${baseUrl}v1/pageMaster/${row._id}`,
+          { followers_count: followerData },
+          { headers }
+        );
+      } else {
+        console.error("No follower data found for this creator.");
+      }
+    } catch (error) {
+      if (error.response) {
+        console.error("Error response:", error.response.data.message);
+        toastError(error.response.data.message);
+      } else {
+        console.error("Error fetching followers:", error.message);
+        toastError("An error occurred while fetching the followers.");
+      }
+    }
+  };
+
   const dataGridcolumns = [
     {
-      key: 'S.NO',
-      name: 'S.no',
-      renderRowCell: (row, index) =>
-        index + 1,
+      key: "S.NO",
+      name: "S.no",
+      renderRowCell: (row, index) => index + 1,
       width: 80,
     },
     {
-      key: 'WA Links',
-      name: 'WA Links',
+      key: "WA Links",
+      name: "WA Links",
       width: 100,
       editable: false,
       renderRowCell: (row) => {
@@ -540,18 +694,25 @@ if(!result){
         //     onClick={() => whatsAppData(row)}
         //   />
         // );
-        let name = allVendorWhats?.filter((item)=> item.vendor_id == row?.vendor_id);
+        let name = allVendorWhats?.filter(
+          (item) => item.vendor_id == row?.vendor_id
+        );
         let countName = name?.length;
         return (
-          <div data-toggle="modal" data-target="#waModal" onClick={()=>whatsAppData(row)} style={{cursor:'pointer'}}>
+          <div
+            data-toggle="modal"
+            data-target="#waModal"
+            onClick={() => whatsAppData(row)}
+            style={{ cursor: "pointer" }}
+          >
             {countName}
           </div>
-        )
+        );
       },
     },
     {
-      key: 'page_name',
-      name: 'User Name',
+      key: "page_name",
+      name: "User Name",
       width: 200,
 
       renderRowCell: (row) => {
@@ -569,8 +730,23 @@ if(!result){
       },
     },
     {
-      key: 'preference_level',
-      name: 'Level',
+      key: "Logo",
+      name: "Logo",
+      width: 150,
+      renderRowCell: (row) => {
+        const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
+        return (
+          <Avatar
+            src={name}
+            alt={row.page_name}
+            style={{ width: "50px", height: "50px" }}
+          />
+        );
+      },
+    },
+    {
+      key: "preference_level",
+      name: "Level",
       width: 200,
       editable: true,
       customEditElement: (
@@ -598,20 +774,20 @@ if(!result){
       },
     },
     {
-      key: 'page_mast_status',
-      name: 'Status',
+      key: "page_mast_status",
+      name: "Status",
       width: 200,
       editable: true,
       renderRowCell: (row) => {
         let status;
         if (row.page_mast_status == 0) {
-          status = 'Active';
+          status = "Active";
         } else if (row.page_mast_status == 1) {
-          status = 'Inactive';
+          status = "Inactive";
         } else if (row.page_mast_status == 2) {
-          status = 'Delete';
+          status = "Delete";
         } else if (row.page_mast_status == 3) {
-          status = 'Semiactive'; 
+          status = "Semiactive";
         }
         return <div>{status}</div>;
       },
@@ -642,10 +818,10 @@ if(!result){
       },
     },
     {
-      key: 'content_creation',
-      name: 'Content Creation',
+      key: "content_creation",
+      name: "Content Creation",
       renderRowCell: (row) => {
-        return row.content_creation != 0 ? row.content_creation : '';
+        return row.content_creation != 0 ? row.content_creation : "";
       },
       width: 200,
     },
@@ -656,8 +832,8 @@ if(!result){
     //   valueGetter: (params) => (params.row.status == 1 ? "Active" : "Inactive"),
     // },
     {
-      key: 'ownership_type',
-      name: 'Ownership',
+      key: "ownership_type",
+      name: "Ownership",
       width: 200,
       // valueGetter: (params) => {
       //   if (!ownerShipData) {
@@ -673,8 +849,8 @@ if(!result){
       // },
     },
     {
-      key: 'platform_id',
-      name: 'Platform',
+      key: "platform_id",
+      name: "Platform",
       renderRowCell: (row) => {
         let name = platformData?.find(
           (item) => item?._id == row.platform_id
@@ -684,8 +860,8 @@ if(!result){
       width: 200,
     },
     {
-      key: 'page_catg_id',
-      name: 'Category',
+      key: "page_catg_id",
+      name: "Category",
       width: 200,
       renderRowCell: (row) => {
         // let name = cat?.find((item) => item?.page_category_id == row.row?.temp_page_cat_id)?.page_category;
@@ -715,8 +891,8 @@ if(!result){
           >
             {cat.map((status, idx) => (
               <option key={idx} value={status._id}>
-                {' '}
-                {status.page_category}{' '}
+                {" "}
+                {status.page_category}{" "}
               </option>
             ))}
           </select>
@@ -724,40 +900,83 @@ if(!result){
       },
     },
     {
-      key: 'followers_count',
-      name: 'Followers',
+      key: "page_sub_category_id",
+      name: "Sub Category",
+      width: 200,
+      renderRowCell: (row) => {
+        let name = subCat?.find(
+          (item) => item?._id == row?.page_sub_category_id
+        )?.page_sub_category;
+        return name;
+      },
+      editable: true,
+    },
+    {
+      key: "followers_count",
+      name: "Followers",
       width: 200,
       renderRowCell: (row) => {
         return <div>{formatNumber(row.followers_count)}</div>;
       },
     },
-    {
-      key: 'vendor_id',
-      name: 'Vendor',
-      renderRowCell: (row) => {
-        let name = vendorData?.find(
-          (item) => item?._id == row?.vendor_id
-        )?.vendor_name;
+    // {
+    //   key: 'vendor_id',
+    //   name: 'Vendor',
+    //   renderRowCell: (row) => {
+    //     let name = vendorData?.find(
+    //       (item) => item?._id == row?.vendor_id
+    //     )?.vendor_name;
 
-        return <div>{formatString(name)}</div>;
+    //     return <div>{formatString(name)}</div>;
+    //   },
+    //   width: 200,
+    // },
+    // {
+    //   key: "vendor_id",
+    //   name: "Vendor",
+    //   renderRowCell: (row) => {
+    //     let name = vendorData?.find(
+    //       (item) => item?._id == row?.vendor_id
+    //     )?.vendor_name;
+    //     return formatString(name);
+    //   },
+    //   width: 200,
+    //   compare: true,
+    // },
+
+    {
+      key: "vendor_id",
+      name: "Vendor",
+      renderRowCell: (row) => {
+        let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
+        let name = vendor ? vendor.vendor_name : "Unknown Vendor";
+        return (
+          <button
+            onClick={() => handleVendorClick(vendor?._id)}
+            style={{ width: "100%", cursor: "pointer" }}
+            className="btn cmnbtn btn_sm btn-outline-primary"
+          >
+            {formatString(name)}
+          </button>
+        );
       },
       width: 200,
+      compare: true,
     },
-
     {
-      key: 'platform_active_on',
-      name: 'Active Platform',
+      key: "platform_active_on",
+      name: "Active Platform",
       width: 200,
       renderRowCell: (row) => {
         let data = platformData?.filter((item) => {
-          return row.platform_active_on.includes(item._id);
+          return row.platform_active_on?.includes(item._id);
         });
-        return data?.map((item) => item.platform_name).join(', ');
+        return data?.map((item) => item.platform_name).join(", ");
       },
     },
     {
-      key: 'tags_page_category',
-      name: 'Tag Category',
+      key: "tags_page_category",
+      name: "Tag Category",
       width: 200,
       renderRowCell: (row) => {
         let data = cat
@@ -768,10 +987,10 @@ if(!result){
         return (
           <div
             style={{
-              width: '200px',
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
+              width: "200px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
             {data?.map((item, i) => {
@@ -779,10 +998,10 @@ if(!result){
                 <p
                   key={i}
                   onClick={handleTagCategory(data)}
-                  style={{ display: 'inline', cursor: 'pointer' }}
+                  style={{ display: "inline", cursor: "pointer" }}
                 >
                   {item}
-                  {i !== data?.length - 1 && ','}
+                  {i !== data?.length - 1 && ","}
                 </p>
               );
             })}
@@ -791,25 +1010,25 @@ if(!result){
       },
     },
     {
-      key: 'page_closed_by',
-      name: 'Closed By',
+      key: "page_closed_by",
+      name: "Closed By",
       width: 200,
       renderRowCell: (row) => {
         let name = user?.find(
           (item) => item?.user_id == row?.page_closed_by
         )?.user_name;
-        return <div>{name ?? 'NA'}</div>;
+        return <div>{name ?? "NA"}</div>;
       },
     },
     {
-      key: 'page_name_type',
-      name: 'Name Type',
+      key: "page_name_type",
+      name: "Name Type",
       width: 200,
       renderRowCell: (row) => {
-        return row.page_name_type != 0 ? row.page_name_type : '';
+        return row.page_name_type != 0 ? row.page_name_type : "";
       },
     },
-    { key: 'rate_type', name: 'Rate Type', width: 200 },
+    { key: "rate_type", name: "Rate Type", width: 200 },
     // { key: 'variable_type', name: 'Variable Type', width: 200 },
     // {
     //   key: 'm_story_price',
@@ -842,38 +1061,35 @@ if(!result){
     //   },
     // },
     {
-      key: 'Post Price',
-      name: 'Post Price',
+      key: "Post Price",
+      name: "Post Price",
       width: 200,
       renderRowCell: (row) => {
-        let StoryData = row?.price_data[0]?.page_price_name?.name;
-        let StoryPrice = row?.price_data[0]?.price;
-        return `${StoryData} - ${StoryPrice}`
+        let PostData = row?.price_details?.Insta_Post;
+        return PostData ? PostData : 0;
       },
     },
     {
-      key: 'Story price',
-      name: 'Story Price',
+      key: "Story price",
+      name: "Story Price",
       width: 200,
       renderRowCell: (row) => {
-        let PostData = row?.price_data[1]?.page_price_name?.name;
-        let PostPrice = row?.price_data[1]?.price;
-        return `${PostData} - ${PostPrice}`
+        let StoryData = row?.price_details?.Insta_Story;
+        return StoryData ? StoryData : 0;
       },
     },
     {
-      key: 'Both Price',
-      name: 'Both Price',
+      key: "Both Price",
+      name: "Both Price",
       width: 200,
       renderRowCell: (row) => {
-        let BothData = row?.price_data[2]?.page_price_name?.name;
-        let BothPrice = row?.price_data[2]?.price;
-        return `${BothData} - ${BothPrice}`
+        let BothData = row?.price_details?.Both;
+        return BothData ? BothData : 0;
       },
     },
     {
-      key: 'page_price_multiple',
-      name: 'Price',
+      key: "page_price_multiple",
+      name: "Price",
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -892,65 +1108,87 @@ if(!result){
       },
     },
     {
-      key: 'Action',
-      name: 'Action',
-      width: 300,
+      key: "Action",
+      name: "Action",
+      width: 500,
       renderRowCell: (row) => (
         <div className="d-flex align-center ">
-          
           {pageUpdateAuth && (
             <Link className="mt-2" to={`/admin/pms-page-edit/${row._id}`}>
               <button
                 title="Edit"
                 className="btn btn-outline-primary btn-sm user-button"
               >
-                <FaEdit />{' '}
+                <FaEdit />{" "}
               </button>
             </Link>
           )}
           {decodedToken.role_id == 1 && (
-            <DeleteButton
-              endpoint="v1/pageMaster"
-              id={row._id}
-              getData={refetchPageList}
-            />
+            <div onClick={() => deletePhpData(row)}>
+              <DeleteButton
+                endpoint="v1/pageMaster"
+                id={row._id}
+                getData={refetchPageList}
+              />
+            </div>
           )}
+          <button
+            title="Update Followers"
+            className="btn btn-outline-primary  user-button"
+            onClick={() => handleUpadteFollowers(row)}
+          >
+            Update Followers
+          </button>
         </div>
       ),
     },
+    // {
+    //   key: "update",
+    //   name: "Update",
+    //   width: 130,
+    //   renderRowCell: (row) => {
+    //     const totalPercentage = row.totalPercentage;
+    //     return (
+    //       <>
+    //         <Link to={{ pathname: `/admin/pageStats/${row._id}` }}
+    //         >
+    //           <button
+    //             type="button"
+    //             className="btn cmnbtn btn_sm btn-outline-primary"
+    //             onClick={handleSetState()}
+    //           >
+    //             Profile Stats
+    //           </button>
+    //         </Link>
+    //       </>
+    //     );
+    //   },
+    // },
     {
-      key: 'update',
-      name: 'Update',
+      key: "Add",
+      name: "Add",
       width: 130,
       renderRowCell: (row) => {
         const totalPercentage = row.totalPercentage;
         return (
-          // totalPercentage == 100 ||
-          // (totalPercentage == 0.0 && (
           <>
-            <Link
-              to={{
-                pathname: `/admin/pageStats/${row._id}`,
-              }}
-            >
+            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
               <button
                 type="button"
                 className="btn cmnbtn btn_sm btn-outline-primary"
                 onClick={handleSetState()}
               >
-                Profile Stats
+                Add Stats
               </button>
             </Link>
           </>
-          // )
-          // )
         );
       },
     },
     {
-      key: 'history',
+      key: "history",
       width: 150,
-      name: 'History',
+      name: "History",
       renderRowCell: (row) => {
         return (
           <button
@@ -964,9 +1202,9 @@ if(!result){
       },
     },
     {
-      key: 'statsUpdate',
+      key: "statsUpdate",
       width: 150,
-      name: 'Stats Update',
+      name: "Stats Update",
       renderRowCell: (row) => {
         return (
           row?.pageId && (
@@ -999,66 +1237,66 @@ if(!result){
     //   },
     // },
     {
-      key: 'Age_13_17_percent',
+      key: "Age_13_17_percent",
       width: 150,
-      name: 'Age 13-17 %',
+      name: "Age 13-17 %",
       renderRowCell: (row) => {
         let data = row?.Age_13_17_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_18_24_percent',
+      key: "Age_18_24_percent",
       width: 150,
-      name: 'Age 18-24 %',
+      name: "Age 18-24 %",
       renderRowCell: (row) => {
         let data = row?.Age_18_24_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_25_34_percent',
+      key: "Age_25_34_percent",
       width: 150,
-      name: 'Age 25-34 %',
+      name: "Age 25-34 %",
       renderRowCell: (row) => {
         let data = row?.Age_25_34_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_35_44_percent',
+      key: "Age_35_44_percent",
       width: 150,
-      name: 'Age 35-44 %',
+      name: "Age 35-44 %",
       renderRowCell: (row) => {
         let data = row?.Age_35_44_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_45_54_percent',
+      key: "Age_45_54_percent",
       width: 150,
-      name: 'Age 45-54 %',
+      name: "Age 45-54 %",
       renderRowCell: (row) => {
         let data = row?.Age_45_54_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_55_64_percent',
+      key: "Age_55_64_percent",
       width: 150,
-      name: 'Age 55-64 %',
+      name: "Age 55-64 %",
       renderRowCell: (row) => {
         let data = row?.Age_55_64_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     {
-      key: 'Age_65_plus_percent',
+      key: "Age_65_plus_percent",
       width: 150,
-      name: 'Age 65+ %',
+      name: "Age 65+ %",
       renderRowCell: (row) => {
         let data = row?.Age_65_plus_percent;
-        return +data ? data + '%' : 'NA';
+        return +data ? data + "%" : "NA";
       },
     },
     // {
@@ -1075,151 +1313,151 @@ if(!result){
     //   },
     // },
     {
-      key: 'city1_name',
+      key: "city1_name",
       width: 150,
-      name: 'City 1 and %',
+      name: "City 1 and %",
       renderRowCell: (row) => {
         let data = row?.city1_name;
         let percentage = row?.percentage_city1_name;
-        return data ? data + ` (${percentage}%)` : 'NA';
+        return data ? data + ` (${percentage}%)` : "NA";
       },
     },
     {
-      key: 'city2_name',
+      key: "city2_name",
       width: 150,
-      name: 'City 2 and %',
+      name: "City 2 and %",
       renderRowCell: (row) => {
         let data = row?.city2_name;
         let percentage = row?.percentage_city2_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'city3_name',
+      key: "city3_name",
       width: 150,
-      name: 'City 3 and %',
+      name: "City 3 and %",
       renderRowCell: (row) => {
         let data = row?.city3_name;
         let percentage = row?.percentage_city3_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'city4_name',
+      key: "city4_name",
       width: 150,
-      name: 'City 4 and %',
+      name: "City 4 and %",
       renderRowCell: (row) => {
         let data = row?.city4_name;
         let percentage = row?.percentage_city4_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'city5_name',
+      key: "city5_name",
       width: 150,
-      name: 'City 5 and %',
+      name: "City 5 and %",
       renderRowCell: (row) => {
         let data = row?.city5_name;
         let percentage = row?.percentage_city5_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'city_image_url',
+      key: "city_image_url",
       width: 150,
-      name: 'City Image',
+      name: "City Image",
       renderRowCell: (row) => {
         let data = row?.city_image_url;
         return data ? (
           <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: '50px', height: '50px' }} />
+            <img src={data} style={{ width: "50px", height: "50px" }} />
           </a>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
     {
-      key: 'country1_name',
+      key: "country1_name",
       width: 150,
-      name: 'Country 1  and %',
+      name: "Country 1  and %",
       renderRowCell: (row) => {
         let data = row?.country1_name;
         let percentage = row?.percentage_country1_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'country2_name',
+      key: "country2_name",
       width: 150,
-      name: 'Country 2 and %',
+      name: "Country 2 and %",
       renderRowCell: (row) => {
         let data = row?.country2_name;
         let percentage = row?.percentage_country2_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'country3_name',
+      key: "country3_name",
       width: 150,
-      name: 'Country 3 and %',
+      name: "Country 3 and %",
       renderRowCell: (row) => {
         let data = row?.country3_name;
         let percentage = row?.percentage_country3_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'country4_name',
+      key: "country4_name",
       width: 150,
-      name: 'Country 4 and %',
+      name: "Country 4 and %",
       renderRowCell: (row) => {
         let data = row?.country4_name;
         let percentage = row?.percentage_country4_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'country5_name',
+      key: "country5_name",
       width: 150,
-      name: 'Country 5 and %',
+      name: "Country 5 and %",
       renderRowCell: (row) => {
         let data = row?.country5_name;
         let percentage = row?.percentage_country5_name;
-        return data ? data + `(${percentage}%)` : 'NA';
+        return data ? data + `(${percentage}%)` : "NA";
       },
     },
     {
-      key: 'country_image_url',
+      key: "country_image_url",
       width: 150,
-      name: 'Country Image',
+      name: "Country Image",
       renderRowCell: (row) => {
         let data = row?.country_image_url;
         return data ? (
           <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: '50px', height: '50px' }} />
+            <img src={data} style={{ width: "50px", height: "50px" }} />
           </a>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
     {
-      key: 'createdAt',
+      key: "createdAt",
       width: 150,
-      name: 'Creation Date',
+      name: "Creation Date",
       renderRowCell: (row) => {
         let data = row?.createdAt;
         return data
-          ? Intl.DateTimeFormat('en-GB').format(new Date(data))
-          : 'NA';
+          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
+          : "NA";
       },
     },
 
     {
-      key: 'engagement',
+      key: "engagement",
       width: 150,
-      name: 'Engagement',
+      name: "Engagement",
       renderRowCell: (row) => {
         let data = row?.engagement;
         let dataimg = row?.engagement_image_url;
@@ -1229,14 +1467,14 @@ if(!result){
             {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
           </a>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
     {
-      key: 'impression',
+      key: "impression",
       width: 150,
-      name: 'Impression',
+      name: "Impression",
       renderRowCell: (row) => {
         let data = row?.impression;
         let dataimg = row?.impression_image_url;
@@ -1246,35 +1484,35 @@ if(!result){
             {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
           </a>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
     {
-      key: 'female_percent',
+      key: "female_percent",
       width: 150,
-      name: 'Female Percentage',
+      name: "Female Percentage",
       renderRowCell: (row) => {
         let data = row?.female_percent;
-        return data ? data + '%' : 'NA';
+        return data ? data + "%" : "NA";
       },
     },
     {
-      key: 'male_percent',
+      key: "male_percent",
       width: 150,
-      name: 'Male Percentage',
+      name: "Male Percentage",
       renderRowCell: (row) => {
         let data = row?.male_percent;
-        return data ? data + '%' : 'NA';
+        return data ? data + "%" : "NA";
       },
     },
     {
-      key: 'profile_visit',
+      key: "profile_visit",
       width: 150,
-      name: 'Profile Visit',
+      name: "Profile Visit",
       renderRowCell: (row) => {
         let data = row?.profile_visit;
-        return data ? data : 'NA';
+        return data ? data : "NA";
       },
       editable: true,
       // customEditElement: (row,
@@ -1294,9 +1532,9 @@ if(!result){
       // }
     },
     {
-      key: 'reach',
+      key: "reach",
       width: 150,
-      name: 'Reach',
+      name: "Reach",
       renderRowCell: (row) => {
         let data = row?.reach;
         let dataimg = row?.reach_image_url;
@@ -1306,7 +1544,7 @@ if(!result){
             {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
           </a>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
@@ -1324,42 +1562,42 @@ if(!result){
     //   },
     // },
     {
-      key: 'start_date',
+      key: "start_date",
       width: 150,
-      name: 'Start Date',
+      name: "Start Date",
       renderRowCell: (row) => {
         let data = row?.start_date;
-        return data ? <DateFormattingComponent date={data} /> : 'NA';
+        return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
     {
-      key: 'endDate',
+      key: "endDate",
       width: 150,
-      name: 'End Date',
+      name: "End Date",
       renderRowCell: (row) => {
         let data = row?.end_date;
-        return data ? <DateFormattingComponent date={data} /> : 'NA';
+        return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
     {
-      key: 'story_view',
+      key: "story_view",
       width: 150,
-      name: 'Story View',
+      name: "Story View",
       renderRowCell: (row) => {
         let data = row?.story_view;
-        return data ? data : 'NA';
+        return data ? data : "NA";
       },
     },
     {
-      key: 'story_view_image_url',
+      key: "story_view_image_url",
       width: 150,
-      name: 'Story View Image',
+      name: "Story View Image",
       renderRowCell: (row) => {
         let data = row?.story_view_image_url;
         return data ? (
-          <img src={data} style={{ width: '50px', height: '50px' }} />
+          <img src={data} style={{ width: "50px", height: "50px" }} />
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
@@ -1368,9 +1606,11 @@ if(!result){
   // convert follower count in millions
   function formatNumber(num) {
     if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M';
+      return (num / 1000000).toFixed(1) + "M";
     } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K';
+      return (num / 1000).toFixed(1) + "K";
+    } else if (num >= 10000000000) {
+      return (num / 1000).toFixed(1) + "B";
     } else {
       return num?.toString();
     }
@@ -1387,14 +1627,14 @@ if(!result){
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert('Data Updated');
+      toastAlert("Data Updated");
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     } finally {
       setEditFlag(false);
     }
@@ -1411,14 +1651,14 @@ if(!result){
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert('Data Updated');
+      toastAlert("Data Updated");
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     } finally {
       setEditFlag(false);
     }
@@ -1436,14 +1676,14 @@ if(!result){
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert('Data Updated');
+      toastAlert("Data Updated");
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     } finally {
       setEditFlag(false);
       refetchPageCate();
@@ -1462,14 +1702,14 @@ if(!result){
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert('Data Updated');
+      toastAlert("Data Updated");
     } catch (error) {
-      console.error('Error updating status:', error);
+      console.error("Error updating status:", error);
     } finally {
       setEditFlag(false);
     }
@@ -1479,14 +1719,14 @@ if(!result){
 
   const priceColumn = [
     {
-      field: 'S.NO',
-      headerName: 'S.NO',
+      field: "S.NO",
+      headerName: "S.NO",
       renderCell: (params) => <div>{priceData.indexOf(params.row) + 1}</div>,
       width: 130,
     },
     {
-      field: 'price_type',
-      headerName: 'Price Type',
+      field: "price_type",
+      headerName: "Price Type",
       width: 200,
       renderCell: (params) => {
         let name = allPriceTypeList?.find(
@@ -1497,8 +1737,8 @@ if(!result){
     },
 
     {
-      field: 'price',
-      headerName: 'Price',
+      field: "price",
+      headerName: "Price",
       width: 200,
     },
   ];
@@ -1519,7 +1759,7 @@ if(!result){
   useEffect(() => {
     const countPageLevels = (tabFilterData) => {
       const counts = {};
-      tabFilterData.forEach((item) => {
+      tabFilterData?.forEach((item) => {
         const category = item.preference_level;
         counts[category] = (counts[category] || 0) + 1;
       });
@@ -1544,26 +1784,105 @@ if(!result){
     setPageStatus(counts);
   }, [tabFilterData]);
 
+  // Fetch data from API
+  const fetchWhatsAppLinks = async () => {
+    try {
+      const response = await axios.get("/api/whatsAppLinks");
+      setAllVendorWhats(response.data);
+    } catch (error) {
+      console.error("Error fetching WhatsApp links", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchWhatsAppLinks();
+  }, []);
+
+  const renderWhatsAppLinkCards = () => {
+    const recordCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
+
+    newFilterData?.forEach((row) => {
+      const matchedVendors = allVendorWhats?.filter(
+        (item) => item.vendor_id === row?.vendor_id
+      );
+      const count = matchedVendors?.length || 0;
+
+      if (count > 3) {
+        recordCount[3]++;
+      } else {
+        recordCount[count]++;
+      }
+    });
+    setZeroLinksCount(recordCount[0]);
+    setOneLinkCount(recordCount[1]);
+    setTwoLinksCount(recordCount[2]);
+    setThreeLinksCount(recordCount[3]);
+    // setFilterData(filtered);
+  };
+
+  // const renderWhatsAppLinkCards = () => {
+  //   const recordCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
+  //   const recordsByCount = { 0: [], 1: [], 2: [], 3: [] };
+
+  //   newFilterData?.forEach((row) => {
+  //     const matchedVendors = allVendorWhats?.filter(
+  //       (item) => item.vendor_id === row?.vendor_id
+  //     );
+  //     const count = matchedVendors?.length || 0;
+
+  //     if (count > 3) {
+  //       recordCount[3]++;
+  //       recordsByCount[3].push(row);
+  //     } else {
+  //       recordCount[count]++;
+  //       recordsByCount[count].push(row);
+  //     }
+  //   });
+
+  //   setZeroLinksCount(recordCount[0]);
+  //   setOneLinkCount(recordCount[1]);
+  //   setTwoLinksCount(recordCount[2]);
+  //   setThreeLinksCount(recordCount[3]);
+  //   setWhastappDataForLink(recordsByCount);
+  // };
+
+  useEffect(() => {
+    if (allVendorWhats?.length > 0 && newFilterData?.length > 0) {
+      renderWhatsAppLinkCards();
+    }
+  }, [allVendorWhats, newFilterData]);
+
+  const handleFilterByWhatsAppCount = (count) => {
+    // const filtered = filterData[count] || [];
+    // setNewFilterData(filtered);
+    setActiveTab("Tab1");
+  };
+
+  console.log(newFilterData, "newFilterDatanewFilterDatanewFilterData------");
+
+  // const whatsAppApiData = () => {
+  //   setActiveTab("Tab1");
+  // };
   const pageWithLevels = (level) => {
     const pagewithlevels = tabFilterData.filter(
       (item) => item.preference_level == level
     );
     setFilterData(pagewithlevels);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const pageWithStatus = (status) => {
     const pagewithstatus = tabFilterData.filter(
       (item) => item.page_mast_status == status
     );
     setFilterData(pagewithstatus);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const pageClosedBy = (close_by) => {
     const pageclosedby = tabFilterData.filter(
       (item) => item.page_closed_by == close_by
     );
     setFilterData(pageclosedby);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
 
   useEffect(() => {
@@ -1595,7 +1914,7 @@ if(!result){
   }, [tabFilterData]);
 
   const showData = (dataArray) => {
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
     setFilterData(dataArray);
   };
 
@@ -1604,10 +1923,10 @@ if(!result){
     return acc;
   }, {});
 
-  const userCounts = Object.keys(closedByCounts).map((key) => {
+  const userCounts = Object.keys(closedByCounts)?.map((key) => {
     const userId = parseInt(key);
     const userName =
-      user?.find((u) => u?.user_id === parseInt(key))?.user_name || 'NA';
+      user?.find((u) => u?.user_id === parseInt(key))?.user_name || "NA";
     return { userId, userName, count: closedByCounts[key] };
   });
 
@@ -1623,41 +1942,40 @@ if(!result){
 
   const categoryGridcolumns = [
     {
-      field: 'S.NO',
-      headerName: 'S.no',
+      field: "S.NO",
+      headerName: "S.no",
       renderCell: (params) => <div>{categoryData.indexOf(params.row) + 1}</div>,
       width: 80,
     },
     {
-      headerName: 'Category',
+      headerName: "Category",
       width: 200,
       editable: false,
       renderCell: (params) => {
         let data = params.row?.category_name;
-        return data ? data : 'NA';
+        return data ? data : "NA";
       },
     },
     {
-      field: 'Vendor Count',
-      headerName: 'Vendor Count',
+      field: "Vendor Count",
+      headerName: "Vendor Count",
       width: 200,
       editable: true,
       renderCell: (params) => {
         let data = params.row.vendor_count;
-        return data ? data : 'NA';
+        return data ? data : "NA";
       },
     },
     {
-      field: 'Count',
-      headerName: 'Count',
+      field: "Count",
+      headerName: "Count",
       width: 200,
       editable: true,
       renderCell: (params) => {
         let data = params.row.category_used;
-        // return (data ? data : 'NA');
         return data ? (
           <div>
-            {data}
+            <button className="btn w_80">{data}</button>
             <button
               className="btn btn-sm btn-success"
               onClick={() => {
@@ -1666,46 +1984,66 @@ if(!result){
                     (item) => item.page_category_id === params.row.id
                   )
                 );
-                setActiveTab('Tab1');
+                setActiveTab("Tab1");
               }}
-              style={{ marginLeft: '10px' }}
+              style={{ marginLeft: "0px" }}
             >
               Show
             </button>
           </div>
         ) : (
-          'NA'
+          "NA"
         );
       },
     },
     {
-      field: 'Total Followers',
-      headerName: 'Total Followers',
+      field: "Total Followers",
+      headerName: "Total Followers",
       width: 200,
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_followers;
-        return data ? formatNumber(data) : '0';
+        return data ? formatNumber(data) : "0";
       },
     },
     {
-      field: 'Story',
-      headerName: 'Story',
+      field: "Story",
+      headerName: "Story",
       width: 200,
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_stories;
-        return data ? `₹. ${data}` : '0';
+        return data ? `₹. ${data}` : "0";
       },
     },
     {
-      field: 'Post',
-      headerName: 'Post',
+      field: "Ave. Story",
+      headerName: " Ave. Story",
+      width: 200,
+      editable: true,
+      renderCell: (params) => {
+        let data = params.row.total_stories / params.row.category_used;
+        return data ? `₹ ${data.toFixed(2)}` : "₹ 0.00";
+      },
+    },
+    {
+      field: "Post",
+      headerName: "Post",
       width: 200,
       editable: true,
       renderCell: (params) => {
         let data = params.row.total_posts;
-        return data ? `₹. ${data}` : '0';
+        return data ? `₹. ${data}` : "0";
+      },
+    },
+    {
+      field: "Ave. Post",
+      headerName: " Ave. Post",
+      width: 200,
+      editable: true,
+      renderCell: (params) => {
+        let data = params.row.total_posts / params.row.category_used;
+        return data ? `₹ ${data.toFixed(2)}` : "₹ 0.00";
       },
     },
   ];
@@ -1784,27 +2122,33 @@ if(!result){
   return (
     <>
       <div className="tabs">
+        {vendorDetails && (
+          <VendorDetails
+            vendorDetails={vendorDetails}
+            setVendorDetails={setVendorDetails}
+          />
+        )}
         <button
-          className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab1')}
+          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
         >
           Overview
         </button>
         <button
-          className={activeTab === 'Tab2' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab2')}
+          className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab2")}
         >
           Statistics
         </button>
         <button
-          className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab3')}
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
         >
           Category Wise
         </button>
         <button
-          className={activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab4')}
+          className={activeTab === "Tab4" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab4")}
         >
           Page Added Details
         </button>
@@ -1860,7 +2204,7 @@ if(!result){
       </div>
 
       <div id="waModal" className="modal fade" role="dialog">
-        <div className="modal-dialog" style={{ maxWidth: '40%' }}>
+        <div className="modal-dialog" style={{ maxWidth: "40%" }}>
           <div className="modal-content">
             <div className="modal-header">
               <button type="button" className="close" data-dismiss="modal">
@@ -1881,11 +2225,11 @@ if(!result){
                   {loading ? (
                     <div
                       style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '80vh',
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "80vh",
                       }}
                     >
                       <CircularProgress />
@@ -1914,7 +2258,7 @@ if(!result){
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="3" style={{ textAlign: 'center' }}>
+                      <td colSpan="3" style={{ textAlign: "center" }}>
                         No data available
                       </td>
                     </tr>
@@ -1936,13 +2280,13 @@ if(!result){
       </div>
 
       <div className="content">
-        {activeTab === 'Tab1' && (
+        {activeTab === "Tab1" && (
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
                 <h5 className="card-title flexCenterBetween">
                   {
-                    pageStatsAuth && ''
+                    pageStatsAuth && ""
                     // <Switch
                     //   checked={showPageHealthColumn}
                     //   value={showPageHealthColumn}
@@ -1969,25 +2313,51 @@ if(!result){
                   >
                     Vendor <KeyboardArrowRightIcon />
                   </Link>
+                  {decodedToken.role_id == 1 && (
+                    <Link
+                      to={`/admin/pms-page-cat-assignment-overview`}
+                      className="btn cmnbtn btn_sm btn-outline-primary"
+                    >
+                      Assign User <KeyboardArrowRightIcon />
+                    </Link>
+                  )}
                 </div>
               </div>
               <div className="card-body pb4">
+                <div className="d-flex">
+                  {platformData?.map((platform) => {
+                    const count = vendorTypes.filter(
+                      (d) => d.platform_id === platform._id
+                    )?.length;
+                    return (
+                      <button
+                        key={platform._id}
+                        onClick={() => handleClick(platform._id)}
+                        style={{ margin: "0 5px 15px 0" }}
+                        className="btn cmnbtn btn_sm btn-outline-primary"
+                      >
+                        {`${platform.platform_name} (${count})`}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 <div className="row thm_form">
-                  <div className="col-md-3 mb16">
+                  <div className="col-md-4 mb16">
                     <Autocomplete
-                      id="platform-autocomplete"
-                      options={platformData}
+                      id="subcat-autocomplete"
+                      options={subCat}
                       getOptionLabel={(option) => {
                         const count = vendorTypes.filter(
-                          (d) => d.platform_id == option._id
+                          (d) => d.page_sub_category_id == option._id
                         )?.length;
-                        return `${option.platform_name} (${count})`;
+                        return `${option.page_sub_category} (${count})`;
                       }}
                       style={{ width: 270 }}
                       renderInput={(params) => (
                         <TextField
                           {...params}
-                          label="Platform"
+                          label="Sub Category"
                           variant="outlined"
                         />
                       )}
@@ -1998,7 +2368,7 @@ if(!result){
                           calculateAndSetTotals(vendorTypes);
                         } else {
                           let result = vendorTypes.filter(
-                            (d) => d.platform_id == newValue._id
+                            (d) => d.page_sub_category_id == newValue._id
                           );
                           setFilterData(result);
                           calculateAndSetTotals(result);
@@ -2006,18 +2376,49 @@ if(!result){
                       }}
                     />
                   </div>
-                  <div className="col-md-3 mb16">
-                    {/* <Autocomplete /> */}
+                  {/* <div className="col-md-4 mb16">
+                    <label className="form-label">
+                      Sub Category <sup style={{ color: 'red' }}>*</sup>
+                    </label>
+                    <div className="input-group inputAddGroup">
+                      <Select
+                        className="w-100"
+                        options={subCat.map((option) => ({
+                          value: option._id,
+                          label: option.page_sub_category,
+                          // label: option.category_name,
+                        }))}
+                        required={true}
+                        value={{
+                          value: subCategoryId,
+                          label:
+                            subCategoryData.find((role) => role._id === subCategoryId)
+                              ?.page_sub_category || '',
+                        }}
+                        onChange={(e) => {
+                          setSubCategoryId(e.value);
+                          if (e.value) {
+                            setValidateFields((prev) => ({
+                              ...prev,
+                              subCategoryId: false,
+                            }));
+                          }
+                        }}
+                      />
+                    </div>
+                  </div> */}
+
+                  <div className="col-md-4 mb16">
                     <Autocomplete
                       id="ownership-type-autocomplete"
                       options={[
                         ...new Set(
-                          vendorTypes?.map((item) => item.ownership_type)
+                          vendorTypes?.map((item) => item?.ownership_type)
                         ),
                       ]}
                       getOptionLabel={(option) => {
                         const count = vendorTypes.filter(
-                          (d) => d.ownership_type === option
+                          (d) => d?.ownership_type === option
                         )?.length;
                         return `${option} (${count})`;
                       }}
@@ -2035,7 +2436,7 @@ if(!result){
                           calculateAndSetTotals(vendorTypes);
                         } else {
                           let result = vendorTypes.filter(
-                            (d) => d.ownership_type === newValue
+                            (d) => d?.ownership_type === newValue
                           );
                           setFilterData(result);
                           calculateAndSetTotals(result);
@@ -2043,7 +2444,7 @@ if(!result){
                       }}
                     />
                   </div>
-                  <div className="col-md-3 mb16">
+                  <div className="col-md-4 mb16">
                     <Autocomplete
                       id="page-status-autocomplete"
                       options={[
@@ -2052,12 +2453,19 @@ if(!result){
                         ),
                       ]}
                       getOptionLabel={(option) => {
-                        const count = vendorTypes?.filter((d) => d.page_mast_status === option)?.length;
+                        const count = vendorTypes?.filter(
+                          (d) => d.page_mast_status === option
+                        )?.length;
                         const name =
-                          option === 0 ? 'Active' :
-                          option === 1 ? 'Inactive' :
-                          option === 2 ? 'Delete' :
-                          option === 3 ? 'Semiactive' : 'Unknown';
+                          option === 0
+                            ? "Active"
+                            : option === 1
+                            ? "Inactive"
+                            : option === 2
+                            ? "Delete"
+                            : option === 3
+                            ? "Semiactive"
+                            : "Unknown";
                         return `${name} (${count})`;
                       }}
                       style={{ width: 270 }}
@@ -2082,7 +2490,7 @@ if(!result){
                       }}
                     />
                   </div>
-                  <div className="col-md-3 mb16">
+                  <div className="col-md-4 mb16">
                     <Autocomplete
                       id="pagename-type-autocomplete"
                       options={[
@@ -2162,6 +2570,7 @@ if(!result){
                   <div className="col-md-3 mb16">
                     <Autocomplete
                       id="category-autocomplete"
+                      multiple
                       options={[
                         ...new Set(
                           vendorTypes?.map((item) => item?.page_category_id)
@@ -2173,7 +2582,7 @@ if(!result){
                           (d) => d?.page_category_id === option
                         ).length;
                         return `${
-                          category?.page_category || 'Unknown Category'
+                          category?.page_category || "Unknown Category"
                         } (${count})`;
                       }}
                       renderInput={(params) => (
@@ -2184,12 +2593,52 @@ if(!result){
                         />
                       )}
                       onChange={(event, newValue) => {
+                        if (newValue.length === 0) {
+                          setFilterData(vendorTypes);
+                          calculateAndSetTotals(vendorTypes);
+                        } else {
+                          let result = vendorTypes.filter((d) =>
+                            newValue.includes(d.page_category_id)
+                          );
+                          setFilterData(result);
+                          calculateAndSetTotals(result);
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-3 mb16">
+                    <Autocomplete
+                      id="profile-type"
+                      options={[
+                        ...new Set(
+                          vendorTypes?.map((item) => item?.page_profile_type_id)
+                        ),
+                      ]}
+                      getOptionLabel={(option) => {
+                        const category = profileData?.data?.find(
+                          (e) => e?._id === option
+                        );
+                        const count = vendorTypes?.filter(
+                          (d) => d?.page_profile_type_id === option
+                        ).length;
+                        return `${
+                          category?.profile_type || "Unknown Profile"
+                        } (${count})`;
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Profile Type"
+                          variant="outlined"
+                        />
+                      )}
+                      onChange={(event, newValue) => {
                         if (newValue === null) {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
                           let result = vendorTypes.filter(
-                            (d) => d.page_category_id == newValue
+                            (d) => d.page_profile_type_id == newValue
                           );
                           setFilterData(result);
                           calculateAndSetTotals(result);
@@ -2198,12 +2647,11 @@ if(!result){
                     />
                   </div>
                   <div className="col-md-3">
-                    {/* {showPageHealthColumn == true ? ( */}
                     <Autocomplete
                       id="Health of Pages"
                       options={[
-                        { value: 'Done', label: 'Done' },
-                        { value: 'Not Done', label: 'Not Done' },
+                        { value: "Done", label: "Done" },
+                        { value: "Not Done", label: "Not Done" },
                       ]}
                       renderInput={(params) => (
                         <TextField
@@ -2220,24 +2668,23 @@ if(!result){
                           setFilterData(vendorTypes);
                         } else {
                           let result = [];
-                          if (newValue.value === 'Done') {
+                          if (newValue.value === "Done") {
                             result = newFilterData.filter(
                               (d) =>
-                                d.hasOwnProperty('reach') &&
-                                d.hasOwnProperty('impression')
+                                d.hasOwnProperty("reach") &&
+                                d.hasOwnProperty("impression")
                             );
-                          } else if (newValue.value === 'Not Done') {
+                          } else if (newValue.value === "Not Done") {
                             result = newFilterData.filter(
                               (d) =>
-                                !d.hasOwnProperty('reach') &&
-                                !d.hasOwnProperty('impression')
+                                !d.hasOwnProperty("reach") &&
+                                !d.hasOwnProperty("impression")
                             );
                           }
                           setFilterData(result);
                         }
                       }}
                     />
-                    {/* ) : ''} */}
                   </div>
                   <div className="col-md-3 mb16 export-excel">
                     <Button
@@ -2257,42 +2704,79 @@ if(!result){
                 <div className="flexCenterBetween">
                   <div>
                     <h5>
-                      Followers -{' '}
-                      <span className="colorMedium">{tableFollowers}</span>
+                      Followers -{" "}
+                      <span className="colorMedium">
+                        {formatNumber(tableFollowers)}
+                      </span>
                     </h5>
                   </div>
                   <div>
                     <h5>
-                      Posts - <span className="colorMedium">{tablePosts}</span>
+                      Posts -{" "}
+                      <span className="colorMedium">
+                        {formatNumber(tablePosts)}
+                      </span>
                     </h5>
                   </div>
                   <div>
                     <h5>
-                      Stories -{' '}
-                      <span className="colorMedium">{tableStories}</span>
+                      Stories -{" "}
+                      <span className="colorMedium">
+                        {formatNumber(tableStories)}
+                      </span>
                     </h5>
                   </div>
                   <div>
                     <h5>
-                      Boths - <span className="colorMedium">{tableBoths}</span>
+                      Boths -{" "}
+                      <span className="colorMedium">
+                        {formatNumber(tableBoths)}
+                      </span>
                     </h5>
                   </div>
                 </div>
               </div>
             </div>
 
+            <div>
+              {/* Dropdown for selecting price type */}
+              <select
+                value={selectedPriceType}
+                onChange={handlePriceTypeChange}
+              >
+                <option value="" disabled>
+                  Select Price Type
+                </option>
+                <option value="Post Price">Post Price</option>
+                <option value="Story Price">Story Price</option>
+                <option value="Both Price">Both Price</option>
+              </select>
+
+              {/* Input for entering price */}
+              {selectedPriceType && (
+                <input
+                  type="number"
+                  placeholder="Enter price"
+                  value={inputPrice}
+                  onChange={handleInputChange}
+                />
+              )}
+
+              {/* Filter button */}
+              <button onClick={handleFilter}>Filter</button>
+            </div>
             <div className="card">
               <div className="card-body p0">
                 <div className="data_tbl thm_table table-responsive">
                   {isPageListLoading ? (
                     <Box
                       sx={{
-                        textAlign: 'center',
-                        position: 'relative',
-                        margin: 'auto',
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center',
+                        textAlign: "center",
+                        position: "relative",
+                        margin: "auto",
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "center",
                       }}
                     >
                       <CircularProgress
@@ -2305,10 +2789,10 @@ if(!result){
                           left: 0,
                           bottom: 0,
                           right: 0,
-                          position: 'absolute',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
+                          position: "absolute",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
                         }}
                       >
                         <Typography
@@ -2346,10 +2830,10 @@ if(!result){
                       columns={dataGridcolumns}
                       data={newFilterData}
                       isLoading={false}
-                      title={'Page Overview'}
+                      title={"Page Overview"}
                       rowSelectable={true}
                       pagination={[100, 200, 1000]}
-                      tableName={'Page Overview'}
+                      tableName={"Page Overview"}
                     />
                   )}
                 </div>
@@ -2362,37 +2846,35 @@ if(!result){
               aria-describedby="alert-dialog-description"
             >
               <DialogTitle id="alert-dialog-title">
-                {'Price Details'}
+                {"Price Details"}
               </DialogTitle>
               <DialogContent>
-                {isPriceLoading ? (
+                {localPriceData == null ? (
                   <div
                     style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
                     }}
                   >
                     <CircularProgress />
                   </div>
                 ) : (
                   <DialogContentText id="alert-dialog-description">
-                    {!isPriceLoading && (
-                      <DataGrid
-                        rows={priceData}
-                        columns={priceColumn}
-                        pageSize={5}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                        getRowId={(row) => row._id}
-                        slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                          toolbar: {
-                            showQuickFilter: true,
-                          },
-                        }}
-                      />
-                    )}
+                    <DataGrid
+                      rows={localPriceData}
+                      columns={priceColumn}
+                      pageSize={5}
+                      rowsPerPageOptions={[5]}
+                      disableSelectionOnClick
+                      getRowId={(row) => row._id}
+                      slots={{ toolbar: GridToolbar }}
+                      slotProps={{
+                        toolbar: {
+                          showQuickFilter: true,
+                        },
+                      }}
+                    />
                   </DialogContentText>
                 )}
               </DialogContent>
@@ -2407,7 +2889,7 @@ if(!result){
             <PageDetail />
           </div>
         )}
-        {activeTab === 'Tab2' && (
+        {activeTab === "Tab2" && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -2421,13 +2903,15 @@ if(!result){
                       className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
                     >
                       <div
-                        className="card"
+                        className="card pointer"
                         key={level}
                         onClick={() => pageWithLevels(level)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span>
+                              <Brightness6Icon />
+                            </span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{level}</h6>
@@ -2445,7 +2929,7 @@ if(!result){
               <div className="card-header">
                 <h5 className="card-title">Profile with Status</h5>
               </div>
-              <div className="card-body">
+              <div className="card-body ">
                 <div className="row">
                   {Object.entries(pageStatus).map(([status, count]) => (
                     <div
@@ -2453,26 +2937,28 @@ if(!result){
                       key={Math.random()}
                     >
                       <div
-                        className="card"
+                        className="card pointer"
                         key={status}
                         onClick={() => pageWithStatus(status)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span>
+                              <ToggleOffIcon />
+                            </span>
                           </div>
                           <div>
-                          <h6 className="colorMedium">
-                            {status == 0
-                              ? 'Active'
-                              : status == 1
-                              ? 'Inactive'
-                              : status == 2
-                              ? 'Delete'
-                              : status == 3
-                              ? 'Semiactive'
-                              : 'Unknown'}
-                          </h6>
+                            <h6 className="colorMedium">
+                              {status == 0
+                                ? "Active"
+                                : status == 1
+                                ? "Inactive"
+                                : status == 2
+                                ? "Delete"
+                                : status == 3
+                                ? "Semiactive"
+                                : "Unknown"}
+                            </h6>
                             <h6 className="mt4 fs_16">{count}</h6>
                           </div>
                         </div>
@@ -2482,7 +2968,101 @@ if(!result){
                 </div>
               </div>
             </div>
-
+            {/* WhatsAppp Links */}
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title">WhatsApp Links</h5>
+              </div>
+              <div className="card-body">
+                <div
+                  className="row"
+                  onClick={() => handleFilterByWhatsAppCount(0)}
+                >
+                  <div
+                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    key={Math?.random()}
+                  >
+                    <div className="card ">
+                      <div className="card-body pb20 flexCenter colGap14">
+                        <div className="iconBadge small bgPrimaryLight m-0">
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
+                        </div>
+                        <div>
+                          <h6 className="colorMedium">
+                            Records with 0 WhatsApp Link
+                          </h6>
+                          <h6 className="mt4 fs_16">{zeroLinksCount}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    // key={Math?.random()}
+                  >
+                    <div className="card">
+                      <div className="card-body pb20 flexCenter colGap14">
+                        <div className="iconBadge small bgPrimaryLight m-0">
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
+                        </div>
+                        <div>
+                          <h6 className="colorMedium">
+                            Records with 1 WhatsApp Link
+                          </h6>
+                          <h6 className="mt4 fs_16">{oneLinkCount}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    // key={Math?.random()}
+                  >
+                    <div className="card">
+                      <div className="card-body pb20 flexCenter colGap14">
+                        <div className="iconBadge small bgPrimaryLight m-0">
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
+                        </div>
+                        <div>
+                          <h6 className="colorMedium">
+                            Records with 2 WhatsApp Link
+                          </h6>
+                          <h6 className="mt4 fs_16">{twoLinksCount}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    // key={Math?.random()}
+                  >
+                    <div className="card">
+                      <div className="card-body pb20 flexCenter colGap14">
+                        <div className="iconBadge small bgPrimaryLight m-0">
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
+                        </div>
+                        <div>
+                          <h6 className="colorMedium">
+                            Records with 3 WhatsApp Link
+                          </h6>
+                          <h6 className="mt4 fs_16">{threeLinksCount}</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* ))} */}
+                </div>
+              </div>
+            </div>
+            {/* =------------------= */}
             <div className="card">
               <div className="card-header">
                 <h5 className="card-title">Profile with Followers Count</h5>
@@ -2491,12 +3071,14 @@ if(!result){
                 <div className="row">
                   <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                     <div
-                      className="card"
+                      className="card pointer"
                       onClick={() => showData(data.lessThan1Lac)}
                     >
                       <div className="card-body pb20 flexCenter colGap14">
                         <div className="iconBadge small bgPrimaryLight m-0">
-                          <span></span>
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
                         </div>
                         <div>
                           <h6 className="colorMedium">Less than 1 Lac</h6>
@@ -2509,12 +3091,14 @@ if(!result){
                   </div>
                   <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                     <div
-                      className="card"
+                      className="card pointer"
                       onClick={() => showData(data.between1And10Lac)}
                     >
                       <div className="card-body pb20 flexCenter colGap14">
                         <div className="iconBadge small bgPrimaryLight m-0">
-                          <span></span>
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
                         </div>
                         <div>
                           <h6 className="colorMedium">1-10 Lacs</h6>
@@ -2527,12 +3111,14 @@ if(!result){
                   </div>
                   <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                     <div
-                      className="card"
+                      className="card pointer"
                       onClick={() => showData(data.between10And20Lac)}
                     >
                       <div className="card-body pb20 flexCenter colGap14">
                         <div className="iconBadge small bgPrimaryLight m-0">
-                          <span></span>
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
                         </div>
                         <div>
                           <h6 className="colorMedium">10-20 Lacs</h6>
@@ -2545,12 +3131,14 @@ if(!result){
                   </div>
                   <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                     <div
-                      className="card"
+                      className="card pointer"
                       onClick={() => showData(data.between20And30Lac)}
                     >
                       <div className="card-body pb20 flexCenter colGap14">
                         <div className="iconBadge small bgPrimaryLight m-0">
-                          <span></span>
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
                         </div>
                         <div>
                           <h6 className="colorMedium">20-30 Lacs</h6>
@@ -2563,12 +3151,14 @@ if(!result){
                   </div>
                   <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                     <div
-                      className="card"
+                      className="card pointer"
                       onClick={() => showData(data.moreThan30Lac)}
                     >
                       <div className="card-body pb20 flexCenter colGap14">
                         <div className="iconBadge small bgPrimaryLight m-0">
-                          <span></span>
+                          <span>
+                            <FormatListNumberedIcon />
+                          </span>
                         </div>
                         <div>
                           <h6 className="colorMedium">More than 30 Lacs</h6>
@@ -2595,13 +3185,15 @@ if(!result){
                       key={Math.random()}
                     >
                       <div
-                        className="card"
+                        className="card pointer"
                         key={item.userName}
                         onClick={() => pageClosedBy(item.userId)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span>
+                              <AccountCircleIcon />
+                            </span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{item.userName}</h6>
@@ -2622,7 +3214,7 @@ if(!result){
                   data-toggle="modal"
                   data-target="#myModal"
                 >
-                  <div className="card-body pb20 flexCenter colGap14">
+                  <div className="card-body pb20 flexCenter colGap14 pointer">
                     <div className="iconBadge small bgPrimaryLight m-0">
                       <span></span>
                     </div>
@@ -2636,9 +3228,9 @@ if(!result){
             </div>
           </div>
         )}
-        {activeTab === 'Tab3' && (
+        {activeTab === "Tab3" && (
           <div className="">
-            <Box sx={{ height: 700, width: '100%' }}>
+            <Box sx={{ height: 700, width: "100%" }}>
               <DataGrid
                 title="Category Wise"
                 rows={categoryData}
@@ -2659,56 +3251,7 @@ if(!result){
             </Box>
           </div>
         )}
-        {activeTab === 'Tab4' && (
-          <div className="">
-            <Box sx={{ height: 700, width: '100%' }}>
-            <div>
-              <div className='flexCenterBetween'>
-                <button className='btn btn-primary' onClick={() => applyFilter('week')}>This Week</button>
-                <button className='btn btn-primary' onClick={() => applyFilter('month')}>This Month</button>
-                <button className='btn btn-primary' onClick={() => applyFilter('quarter')}>This Quarter</button>
-                <button className='btn btn-primary' onClick={() => applyFilter('year')}>This Year</button>
-              </div>
-              <h3 style={{marginBottom:'10px'}}>Page Details Added By Individuals</h3>
-              {individualData.length == 0 ? (
-                <p>No data available</p>
-                ) : (
-                individualData.map((user, index) => (
-                  <div key={user.created_by} style={{ marginBottom: '10px' }}>
-                    <button
-                      onClick={() => toggleAccordion(index)}
-                      style={{ 
-                        padding: '10px', 
-                        backgroundColor: '#303f72', 
-                        color: '#fff', 
-                        width: '100%', 
-                        textAlign: 'left',
-                        border: 'none', 
-                        cursor: 'pointer' 
-                      }}
-                    >
-                      Created by User: {getUserName(user.created_by)}
-                      <span style={{ float: 'right' }}>
-                        {user?.page_names?.length} page{user?.page_names?.length > 1 ? 's' : ''}
-                      </span>
-                    </button>
-
-                    {activeIndex === index && (
-                      <div style={{ padding: '10px', backgroundColor: '#f1f1f1', border: '1px solid #ddd' }}>
-                        <ul>
-                          {user.page_names.map((pageName, idx) => (
-                            <li key={idx}>{pageName}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
-            </Box>
-          </div>
-        )}
+        {activeTab === "Tab4" && <PageClosedByDetails />}
       </div>
     </>
   );

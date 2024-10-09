@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
-import { FaEdit } from 'react-icons/fa';
-import DeleteButton from '../DeleteButton';
-import { Link } from 'react-router-dom';
-import { Box, Grid, Skeleton } from '@mui/material';
-import DataTable from 'react-data-table-component';
-import View from '../Sales/Account/View/View';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { useState, useEffect } from "react";
+import { FaEdit } from "react-icons/fa";
+import DeleteButton from "../DeleteButton";
+import { Link } from "react-router-dom";
+import { Box, Grid, Skeleton } from "@mui/material";
+import DataTable from "react-data-table-component";
+import View from "../Sales/Account/View/View";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 
 import {
   setRowData,
   setShowBankDetailsModal,
   setShowWhatsappModal,
-} from '../../Store/PageOverview';
-import { useDispatch } from 'react-redux';
-import VendorWhatsappLinkModla from './VendorWhatsappLinkModla';
-import OpenWithIcon from '@mui/icons-material/OpenWith';
-import VendorPageModal from './VendorPageModal';
+} from "../../Store/PageOverview";
+import { useDispatch } from "react-redux";
+import VendorWhatsappLinkModla from "./VendorWhatsappLinkModla";
+import OpenWithIcon from "@mui/icons-material/OpenWith";
+import VendorPageModal from "./VendorPageModal";
 import {
   useGetAllVendorQuery,
   useGetAllVendorTypeQuery,
@@ -31,15 +31,18 @@ import axios from "axios";
 import { baseUrl } from "../../../utils/config";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import UploadBulkVendorPages from "./Vendor/BulkVendor/UploadBulkVendorPages";
+import { constant } from "../../../utils/constants";
 
 const VendorOverview = () => {
   const [vendorDetails, setVendorDetails] = useState(null);
-  const storedToken = sessionStorage.getItem('token');
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
   const [contextData, setContextData] = useState(false);
 
   const userID = decodedToken.id;
+  const roleToken = decodedToken.role_id;
+
   const { data: vendor } = useGetAllVendorTypeQuery();
   const typeData = vendor?.data;
   const { data: platform } = useGetPmsPlatformQuery();
@@ -49,23 +52,47 @@ const VendorOverview = () => {
   const cycleData = cycle?.data;
 
   const { data: payData } = useGetPmsPaymentMethodQuery();
-  const {
-    data: vendorData,
-    isLoading: loading,
-    refetch: refetchVendor,
-  } = useGetAllVendorQuery();
-  let vendorTypes = vendorData?.data;
+
+  
+const {
+  data: vendorData,
+  isLoading: loading,
+  refetch: refetchVendor,
+} = useGetAllVendorQuery(); 
+
+const [vendorDatas, setVendorDatas] = useState([]);
+
+useEffect(() => {
+  const fetchVendors = async () => {
+    try {
+      let res;
+
+      if (roleToken === constant.CONST_ADMIN_ROLE) {
+        res = await axios.get(`${baseUrl}v1/vendor`);
+      } else {
+        res = await axios.post(`${baseUrl}v1/get_all_vendors_for_users`, { user_id: 1045 });
+      }
+      if (res && res.data) {
+        setVendorDatas(res.data.data || res.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+  fetchVendors(); 
+}, [roleToken]); 
+
   const [filterData, setFilterData] = useState([]);
   const [pageData, setPageData] = useState([]);
-  const token = sessionStorage.getItem('token');
-  const [activeTab, setActiveTab] = useState('Tab1');
+  const token = sessionStorage.getItem("token");
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [tabFilterData, setTabFilterData] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [platformCounts, setPlatformCounts] = useState([]);
   const [stateDataS, setStateDataS] = useState([]);
   const [cityDataS, setCityDataS] = useState([]);
   const { data: pageList } = useGetAllPageListQuery();
-  const [getRowData, setGetRowData] = useState([])
+  const [getRowData, setGetRowData] = useState([]);
 
   const getData = () => {
     refetchVendor();
@@ -75,16 +102,16 @@ const VendorOverview = () => {
     // if (showPageHealthColumn) {
     //   dispatch(setShowPageHealthColumn(false));
     // }
-    if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          // commenting this code for visible user creation wise data
-          // if (res.data[57].view_value === 1) {
-          //   setContextData(true);
-          // }
-        });
-    }
+    // if (userID && !contextData) {
+    //   axios
+    //     .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
+    //     .then((res) => {
+    //       // commenting this code for visible user creation wise data
+    //       // if (res.data[57].view_value === 1) {
+    //       //   setContextData(true);
+    //       // }
+    //     });
+    // }
 
     getData();
   }, []);
@@ -94,20 +121,20 @@ const VendorOverview = () => {
     //   setFilterData(vendorData?.data);
     //   setTabFilterData(vendorData?.data);
     // }
-    if (vendorData) {
+    if (vendorDatas) {
       if (decodedToken.role_id !== 1) {
         setFilterData(
-          vendorData?.data.filter((item) => item.created_by == decodedToken.id)
+          vendorDatas.filter((item) => item.created_by == decodedToken.id)
         );
         setTabFilterData(
-          vendorData?.data.filter((item) => item.created_by == decodedToken.id)
+          vendorDatas.filter((item) => item.created_by == decodedToken.id)
         );
       } else {
-        setFilterData(vendorData?.data);
-        setTabFilterData(vendorData?.data);
+        setFilterData(vendorDatas);
+        setTabFilterData(vendorDatas);
       }
     }
-  }, [vendorData]);
+  }, [vendorDatas]);
 
   const handleOpenWhatsappModal = (row) => {
     // console.log('row', row);
@@ -130,16 +157,23 @@ const VendorOverview = () => {
   };
 
   const showPagesOfVendor = async (data) => {
-    const result = await axios
-      .get(`${baseUrl}v1/vendor_wise_page_master_data/${data._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((res) => {
-        setPageData(res.data.data);
-      });
+    try {
+      let result;
+
+      result = await axios.get(
+        `${baseUrl}v1/vendor_wise_page_master_data/${data._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setPageData(result.data.data);
+    } catch (error) {
+      console.error("Error fetching vendor pages:", error);
+    }
   };
 
   useEffect(() => {
@@ -190,54 +224,54 @@ const VendorOverview = () => {
 
   const columns = [
     {
-      name: 'S.No',
+      name: "S.No",
       cell: (row, index) => <div>{index + 1}</div>,
-      width: '10%',
+      width: "10%",
       sortable: true,
     },
     {
-      name: 'Page Name',
+      name: "Page Name",
       selector: (row) => (
         <a href={row.page_link} target="blank">
           {row.page_name}
         </a>
       ),
-      width: '30%',
+      width: "30%",
       sortable: true,
     },
     {
-      name: 'followers',
+      name: "followers",
       selector: (row) => row.followers_count,
-      width: '20%',
+      width: "20%",
     },
     {
-      name: 'Ownership Type',
+      name: "Ownership Type",
       selector: (row) => row.ownership_type,
-      width: '20%',
+      width: "20%",
     },
   ];
 
   const dataGridcolumns = [
     {
-      key: 'sno',
-      name: 'S.NO',
+      key: "sno",
+      name: "S.NO",
       width: 80,
       renderRowCell: (row, index) => {
         return index + 1;
       },
     },
     {
-      key: 'vendorPercentage',
-      name: 'Vendor %',
+      key: "vendorPercentage",
+      name: "Vendor %",
       width: 150,
       renderRowCell: (row) => {
         const fields = [
-          'vendor_name',
-          'email',
-          'mobile',
-          'home_address',
-          'payment_method',
-          'Pincode',
+          "vendor_name",
+          "email",
+          "mobile",
+          "home_address",
+          "payment_method",
+          "Pincode",
         ];
         const totalFields = fields?.length;
         let filledFields = 0;
@@ -251,17 +285,17 @@ const VendorOverview = () => {
         const percentage = (filledFields / totalFields) * 100;
 
         if (percentage === 100) {
-          return 'Full';
+          return "Full";
         } else if (percentage > 50) {
-          return 'More than Partial';
+          return "More than Partial";
         } else {
-          return 'Less than Partial';
+          return "Less than Partial";
         }
       },
     },
     {
-      key: 'vendor_name',
-      name: 'Vendor Name',
+      key: "vendor_name",
+      name: "Vendor Name",
       width: 200,
       // editable: true,
       renderRowCell: (row) => {
@@ -276,24 +310,24 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'vendor_category',
-      name: 'Vendor Category',
+      key: "vendor_category",
+      name: "Vendor Category",
       width: 150,
     },
     {
-      key: 'primary_page',
-      name: 'Primary Page',
+      key: "primary_page",
+      name: "Primary Page",
       width: 200,
       renderRowCell: (row) => {
         let name = pageList?.data?.find(
           (ele) => ele._id === row.primary_page
         )?.page_name;
-        return name ?? 'NA';
+        return name ?? "NA";
       },
     },
     {
-      key: 'page_count',
-      name: 'Page Count',
+      key: "page_count",
+      name: "Page Count",
       renderRowCell: (row) => {
         return (
           <button
@@ -310,44 +344,44 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'mobile',
-      name: 'Mobile',
+      key: "mobile",
+      name: "Mobile",
       width: 200,
       editable: true,
     },
     {
-      key: 'email',
-      name: 'Email',
+      key: "email",
+      name: "Email",
       width: 200,
       editable: true,
     },
     {
-      key: 'Pincode',
-      name: 'Home Pincode',
+      key: "Pincode",
+      name: "Home Pincode",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_city',
-      name: 'Home City',
+      key: "home_city",
+      name: "Home City",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_state',
-      name: 'Home State',
+      key: "home_state",
+      name: "Home State",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_address',
-      name: 'Home Address',
+      key: "home_address",
+      name: "Home Address",
       width: 200,
       editable: true,
     },
     {
-      key: 'vendor_type',
-      name: 'Vendor Type',
+      key: "vendor_type",
+      name: "Vendor Type",
       renderRowCell: (row) => {
         return typeData?.find((item) => item?._id == row?.vendor_type)
           ?.type_name;
@@ -356,8 +390,8 @@ const VendorOverview = () => {
       editable: true,
     },
     {
-      key: 'vendor_platform',
-      name: 'Platform',
+      key: "vendor_platform",
+      name: "Platform",
       renderRowCell: (row) => {
         return platformData?.find((item) => item?._id == row?.vendor_platform)
           ?.platform_name;
@@ -366,8 +400,8 @@ const VendorOverview = () => {
       editable: true,
     },
     {
-      key: 'pay_cycle',
-      name: 'Cycle',
+      key: "pay_cycle",
+      name: "Cycle",
       width: 200,
       renderRowCell: (row) => {
         return cycleData?.find((item) => item?._id == row?.pay_cycle)
@@ -382,8 +416,8 @@ const VendorOverview = () => {
       editable: true,
     },
     {
-      key: 'Bank Details',
-      name: 'Bank Details',
+      key: "Bank Details",
+      name: "Bank Details",
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -398,8 +432,8 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'whatsapp_link',
-      name: 'Whatsapp Link',
+      key: "whatsapp_link",
+      name: "Whatsapp Link",
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -414,8 +448,8 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'action',
-      name: 'Action',
+      key: "action",
+      name: "Action",
       width: 200,
       renderRowCell: (row) => (
         <>
@@ -425,13 +459,17 @@ const VendorOverview = () => {
               title="Edit"
               className="btn btn-outline-primary btn-sm user-button"
             >
-              <FaEdit />{' '}
+              <FaEdit />{" "}
             </button>
           </Link>
           {/* )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
-              <DeleteButton endpoint="v1/vendor" id={row._id} getData={getData}/>
+              <DeleteButton
+                endpoint="v1/vendor"
+                id={row._id}
+                getData={getData}
+              />
             </div>
           )}
         </>
@@ -518,11 +556,14 @@ const VendorOverview = () => {
     // },
   ];
 
-  const deletePhpData = async(row) => {
-    await axios.delete(`https://purchase.creativefuel.io/webservices/RestController.php?view=deletevendor`,{
-      vendor_id: row.vendor_id
-    })
-  }
+  const deletePhpData = async (row) => {
+    // await axios.delete(`https://purchase.creativefuel.io/webservices/RestController.php?view=deletevendor`,{
+    //   vendor_id: row.vendor_id
+    // })
+    await axios.delete(baseUrl + `node_data_to_php_delete_vendor`, {
+      vendor_id: row.vendor_id,
+    });
+  };
 
   // for category statistics
   useEffect(() => {
@@ -572,39 +613,39 @@ const VendorOverview = () => {
       (item) => item.mobile == 0
     );
     setFilterData(vendorwithnomobilenum);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithNoEmail = () => {
-    const vendorwithnoemail = tabFilterData.filter((item) => item.email == '');
+    const vendorwithnoemail = tabFilterData.filter((item) => item.email == "");
     setFilterData(vendorwithnoemail);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithNoPages = () => {
     const vendorwithnopages = tabFilterData.filter(
       (item) => item.page_count == 0
     );
     setFilterData(vendorwithnopages);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithCategories = (category) => {
     const vendorwithcategories = tabFilterData.filter(
       (item) => item.vendor_category == category
     );
     setFilterData(vendorwithcategories);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithPlatforms = (platform) => {
     const vendorwithplatforms = tabFilterData.filter(
       (item) => item.vendor_platform == platform
     );
     setFilterData(vendorwithplatforms);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
 
   return (
     <>
       <div className="modal fade" id="myModal" role="dialog">
-        <div className="modal-dialog" style={{ maxWidth: '40%' }}>
+        <div className="modal-dialog" style={{ maxWidth: "40%" }}>
           <div className="modal-content">
             <div className="modal-header">
               <button type="button" className="close" data-dismiss="modal">
@@ -638,27 +679,27 @@ const VendorOverview = () => {
 
       <div className="tabs">
         <button
-          className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab1')}
+          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
         >
           Overview
         </button>
         <button
-          className={activeTab === 'Tab2' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab2')}
+          className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab2")}
         >
           Statistics
         </button>
         <button
-          className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab3')}
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
         >
           State/City Wise
         </button>
       </div>
 
       <div className="content">
-        {activeTab === 'Tab1' && (
+        {activeTab === "Tab1" && (
           <div>
             {filterData && (
               <div className="card">
@@ -670,7 +711,7 @@ const VendorOverview = () => {
                 )}
                 <VendorWhatsappLinkModla />
                 <div className="card-header flexCenterBetween">
-                  <h5 className="card-title">Vendor : {vendorTypes?.length}</h5>
+                  <h5 className="card-title">Vendor : {vendorDatas?.length}</h5>
                   <div className="flexCenter colGap8">
                     {/* <Link
                       // to={`/admin/pms-vendor-master`}
@@ -678,7 +719,10 @@ const VendorOverview = () => {
                     >
                      <i className="fa fa-plus" />
                     </Link> */}
-                    <UploadBulkVendorPages getRowData={getRowData} />
+                    <UploadBulkVendorPages
+                      getRowData={getRowData}
+                      from={"vendor"}
+                    />
                     <Link
                       to={`/admin/pms-vendor-master`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
@@ -699,7 +743,7 @@ const VendorOverview = () => {
               /> */}
                 <div className="data_tbl thm_table table-responsive card-body p0">
                   {loading ? (
-                    <Box mt={2} ml={2} mb={3} sx={{ width: '95%' }}>
+                    <Box mt={2} ml={2} mb={3} sx={{ width: "95%" }}>
                       <Grid
                         container
                         spacing={{ xs: 1, md: 10 }}
@@ -709,7 +753,7 @@ const VendorOverview = () => {
                           <Grid item md={1} key={index}>
                             <Skeleton
                               sx={{
-                                width: '100%',
+                                width: "100%",
                               }}
                             />
                           </Grid>
@@ -725,7 +769,7 @@ const VendorOverview = () => {
                             <Skeleton
                               animation="wave"
                               sx={{
-                                width: '100%',
+                                width: "100%",
                               }}
                             />
                           </Grid>
@@ -751,10 +795,10 @@ const VendorOverview = () => {
                       columns={dataGridcolumns}
                       data={filterData}
                       isLoading={false}
-                      title={'Vendor Overview'}
+                      title={"Vendor Overview"}
                       rowSelectable={true}
                       pagination={[100, 200, 1000]}
-                      tableName={'Vendor Overview'}
+                      tableName={"Vendor Overview"}
                       selectedData={setGetRowData}
                     />
                   )}
@@ -766,7 +810,7 @@ const VendorOverview = () => {
             )}
           </div>
         )}
-        {activeTab === 'Tab2' && (
+        {activeTab === "Tab2" && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -849,7 +893,7 @@ const VendorOverview = () => {
                       <h6 className="colorMedium">Vendor with no email id</h6>
                       <h6 className="mt4 fs_16">
                         {
-                          tabFilterData.filter((item) => item.email == '')
+                          tabFilterData.filter((item) => item.email == "")
                             ?.length
                         }
                       </h6>
@@ -894,7 +938,7 @@ const VendorOverview = () => {
             </div>
           </div>
         )}
-        {activeTab === 'Tab3' && (
+        {activeTab === "Tab3" && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">

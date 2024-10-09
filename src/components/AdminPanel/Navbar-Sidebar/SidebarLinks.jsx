@@ -13,6 +13,7 @@ import {
   FolderSimpleStar,
   UserRectangle,
   Files,
+  MaskHappy,
 } from "@phosphor-icons/react";
 import { constant } from "../../../utils/constants";
 import ExenseManagement from "./ExenseManagementSidebarLinks";
@@ -614,7 +615,7 @@ const SidebarLinks = () => {
             aria-controls="collapseFive"
           >
             {/* <RiOrganizationChart /> */}
-            <i class="fa-solid fa-sitemap"></i>
+            <i className="fa-solid fa-sitemap"></i>
 
             <span>Org</span>
           </Link>
@@ -1723,16 +1724,16 @@ const SidebarLinks = () => {
                   <i className="bi bi-dot"></i> Contact
                 </NavLink>
                 <NavLink className="collapse-item" to="/admin/ops-doc-mast">
-                  <i class="bi bi-dot"></i> Doc Master
+                  <i className="bi bi-dot"></i> Doc Master
                 </NavLink>
                 <NavLink
                   className="collapse-item"
                   to="/admin/customer-document-overview"
                 >
-                  <i class="bi bi-dot"></i> Document Overview
+                  <i className="bi bi-dot"></i> Document Overview
                 </NavLink>
                 {/* <NavLink className="collapse-item" to="/admin/customer-doc-master">
-                <i class="bi bi-dot"></i> Customer Document
+                <i className="bi bi-dot"></i> Customer Document
               </NavLink> 
               </>
             </div>
@@ -1785,8 +1786,18 @@ const SidebarLinks = () => {
               <NavLink className="collapse-item" to="/admin/pms-page-overview">
                 <i className="bi bi-dot"></i>Page
               </NavLink>
-              <NavLink className="collapse-item" to="/admin/pms-plan-making">
-                <i className="bi bi-dot"></i>Plan Making
+              {decodedToken?.role_id === 1 ? (
+                <NavLink className="collapse-item" to="/admin/pms-plan-making">
+                  <i className="bi bi-dot"></i>Plan Making
+                </NavLink>
+              ) : (
+                ""
+              )}
+              <NavLink
+                className="collapse-item"
+                to="/admin/pms-bulk-vendor-overview"
+              >
+                <i className="bi bi-dot"></i>Bulk Vendor
               </NavLink>
               {/* )} */}
               {/* {contextData &&
@@ -1894,7 +1905,7 @@ const SidebarLinks = () => {
       )}
 
       {isSales && <SalesSidebarLinks />}
-      {isExenseManagement && <ExenseManagement />}
+      {/* {isExenseManagement && <ExenseManagement />} */}
       {isInstaApiVisible && (
         <li className="nav-item">
           <Link
@@ -1943,6 +1954,67 @@ const SidebarLinks = () => {
               </NavLink>
             </div>
           </div>
+        </li>
+      )}
+      {contextData && contextData[29] && contextData[29]?.view_value === 1 && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#sarcasm"
+            aria-expanded="false"
+            aria-controls="sarcasm"
+            // to="/admin/sarcasm"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Sarcasm</span>
+          </Link>
+          <div
+            id="sarcasm"
+            className="collapse"
+            aria-labelledby="headingSarcasm"
+          >
+            <div className="internal collapse-inner">
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/post-content"
+              >
+                <i className="bi bi-dot"></i> Post Content
+              </NavLink>
+
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/sarcasm-category"
+              >
+                <i className="bi bi-dot"></i> Category Management
+              </NavLink>
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/sarcasm-blog"
+              >
+                <i className="bi bi-dot"></i> Blog Management
+              </NavLink>
+            </div>
+          </div>
+        </li>
+      )}
+      {contextData && contextData[54] && contextData[54]?.view_value === 1 && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#statics"
+            aria-expanded="false"
+            aria-controls="statics"
+            to="/admin/statics"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Stats</span>
+          </Link>
         </li>
       )}
     </>

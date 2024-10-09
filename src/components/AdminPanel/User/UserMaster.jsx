@@ -2335,7 +2335,7 @@ const UserMaster = () => {
           />
           <div className="custom-btn-2">
             <i
-              class="bi bi-calendar-week"
+              className="bi bi-calendar-week"
               style={{
                 pointereEvents: "none",
                 position: "absolute",

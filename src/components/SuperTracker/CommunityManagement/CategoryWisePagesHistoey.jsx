@@ -6,19 +6,7 @@ import DatePickerCf from "../../CommonTool/DatePickerCf";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import Tab from "@mui/material/Tab";
 import dayjs from "dayjs";
-import { Box, Button, ButtonGroup, Modal, Typography } from '@mui/material';
-
-// Modal style
-const modalStyle = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-};
+import { Box, Button, Modal, TableContainer, TableHead, TableRow, TableCell, TableBody, Table, Paper } from '@mui/material';
 
 const CategoryWisePagesHistory = () => {
     const location = useLocation();
@@ -33,11 +21,9 @@ const CategoryWisePagesHistory = () => {
     const minSelectableDate = dayjs().subtract(1, 'year').toDate();
     const [postCountRange, setPostCountRange] = useState({ start: 10, end: 20 }); // New state for range
     const [open, setOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
-    console.log(selectedRow, '16-sep');
+    const [selectedRow, setSelectedRow] = useState([]);
 
     const handleOpen = (row) => {
-        console.log(row.pagesWithPostCountRange,' 16-sep <-- row ');
         setSelectedRow(row?.pagesWithPostCountRange);
         setOpen(true);
     };
@@ -65,8 +51,11 @@ const CategoryWisePagesHistory = () => {
         }
     };
     useEffect(() => {
-        postWiseHistory(postCountRange.start, postCountRange.end); // Pass range to function
+        if (!categoryId) {
+            postWiseHistory(postCountRange.start, postCountRange.end);
+        }
     }, [postCountRange]);
+
     const postWiseHistory = async (start, end) => {
         try {
             const res = await axios.post('https://insights.ist:8080/api/v1/community/get_pages_based_on_post_count_fluctuation', {
@@ -156,7 +145,7 @@ const CategoryWisePagesHistory = () => {
         setOverViewValue(newValue);
     };
     const handleRangeClick = (start, end) => {
-        setPostCountRange({ start, end }); // Update range on button click
+        setPostCountRange({ start, end });
     };
     const columns = [
         {
@@ -230,7 +219,7 @@ const CategoryWisePagesHistory = () => {
             width: 120,
             renderCell: (params) => {
                 return <>
-                    <Button onClick={() => handleOpen(params.row)}>
+                    <Button onClick={() => handleOpen(params.row)} className="btn cmnbtn btn-primary btn_sm">
                         View Pages
                     </Button>
                 </>
@@ -304,40 +293,94 @@ const CategoryWisePagesHistory = () => {
                     </TabPanel>
                     <TabPanel value="2">
                         <div className="card">
-                            <div>
-                                <ButtonGroup variant="outlined" aria-label="Basic button group">
-                                    <Button onClick={() => handleRangeClick(0, 1)}>0</Button>
-                                    <Button onClick={() => handleRangeClick(1, 5)}>1 - 5</Button>
-                                    <Button onClick={() => handleRangeClick(5, 20)}>5 - 20</Button>
-                                    <Button onClick={() => handleRangeClick(20, 100)}> 20+</Button>
-                                </ButtonGroup>
+
+                            <div className="action_heading">
+                                <div className="form-heading">
+                                    <h2 className="mb0 mt-1"> Post Wise History</h2>
+                                </div>
+                                <div className="action_btns">
+                                    <Button
+                                        className="btn cmnbtn btn-primary btn_sm"
+                                        onClick={() => handleRangeClick(-1, 0)}
+                                    >
+                                        0
+                                    </Button>
+                                    <Button
+                                        className="btn cmnbtn btn-primary btn_sm"
+                                        onClick={() => handleRangeClick(1, 5)}
+                                    >
+                                        1 - 5
+                                    </Button>
+                                    <Button
+                                        className="btn cmnbtn btn-primary btn_sm"
+                                        onClick={() => handleRangeClick(6, 20)}
+                                    >
+                                        6 - 20
+                                    </Button>
+                                    <Button
+                                        className="btn cmnbtn btn-primary btn_sm"
+                                        onClick={() => handleRangeClick(21, 100)}
+                                    >
+                                        20 +               </Button>
+                                </div>
+                                <DataGrid
+                                    rows={postWiseHistoryData}
+                                    columns={columnsPost}
+                                    getRowId={(row) => row._id}
+                                />
                             </div>
-                            <DataGrid
-                                rows={postWiseHistoryData}
-                                columns={columnsPost}
-                                getRowId={(row) => row._id}
-                            />
                         </div>
                     </TabPanel>
                 </TabContext>
             </Box>
-            <> {/* Modal for displaying page data */}
+            <>
                 <Modal
                     open={open}
                     onClose={handleClose}
                     aria-labelledby="modal-title"
                     aria-describedby="modal-description"
                 >
-                    <Box sx={modalStyle}>
-                        <Typography id="modal-title" variant="h6" component="h2">
-                            Page Details
-                        </Typography>
-                        {/* <Typography id="modal-description" sx={{ mt: 2 }}>
-                        {selectedRow ? JSON.stringify(selectedRow.Pages) : 'No data available'}
-                    </Typography> */}
-                        <Button onClick={handleClose}>Close</Button>
+                    <Box
+                        sx={{
+                            width: "80%",
+                            maxWidth: 800,
+                            bgcolor: "background.paper",
+                            p: 4,
+                            margin: "auto",
+                            mt: "10%",
+                            borderRadius: 1,
+                        }}
+                    >
+                        <h4 className="mb-2 text-primary">Pages </h4>
+                        <TableContainer component={Paper}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell align="left">S. No.</TableCell>
+                                        <TableCell align="left">Page Name</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {selectedRow?.map((page, index) => (
+                                        <TableRow
+                                            key={index}
+                                            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                        >
+                                            <TableCell component="th" scope="row">
+                                                {index + 1}
+                                            </TableCell>
+                                            <TableCell>
+                                                {page || "N/A"}
+                                            </TableCell>
+
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Box>
-                </Modal></>
+                </Modal>
+            </>
         </div>
     );
 }

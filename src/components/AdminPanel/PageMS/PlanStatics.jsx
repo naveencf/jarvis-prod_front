@@ -15,8 +15,9 @@ import {
   List,
 } from '@mui/material';
 import { useState, useMemo } from 'react';
-import './Tagcss.css';
+import '../../../components/AdminPanel/PageMS/Tagcss.css';
 import * as XLSX from 'xlsx';
+import ExcelPreviewModal from './ExcelPreviewModal';
 
 // Function to get the platform name based on the platform ID
 const getPlatformName = (platformId) => {
@@ -64,14 +65,19 @@ const calculateOwnershipCounts = (selectedRow, postCount, storyPerPage) =>
 const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
   const workbook = XLSX.utils.book_new(); // Create a new workbook
   const overviewData = []; // Array to hold overview data for the Excel sheet
-  let totalInstagramPages = 0; // Counter for total Instagram pages
+  let totalPostsAndStories = 0;
+  let totalCost = 0;
 
   const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat'];
+
   platforms.forEach((platform) => {
     const platformData = selectedRow?.filter(
       (page) => getPlatformName(page.platform_id) === platform // Filter data for the current platform
     );
     if (!platformData?.length) return; // Skip if there is no data for the platform
+
+    // Variable to store total posts and stories count per platform
+    let platformTotalPostsAndStories = 0;
 
     // Handling Instagram platform separately to categorize by page category
     if (platform === 'Instagram') {
@@ -81,59 +87,234 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
           category?.find((cat) => cat._id === categoryId)?.page_category ||
           'Unknown'; // Get the category name or default to 'Unknown'
         acc[categoryName] = acc[categoryName] || []; // Initialize array if not present
+
+        // Ensure post and story counts are treated as numbers
+        const postCountValue = Number(postCount[page._id]) || 0; // Convert to number
+        const storyCountValue = Number(storyPerPage[page._id]) || 0; // Convert to number
+
         acc[categoryName].push({
           SNo: acc[categoryName].length + 1,
           'User Name': page.page_name,
           'Profile Link': page.page_link,
           Followers: page.followers_count,
-          'Post Count': postCount[page._id] || 0,
-          'Story Count': storyPerPage[page._id] || 0,
+          'Post Count': postCountValue,
+          'Story Count': storyCountValue,
         });
+
+        // Add to platform and overall totals for posts and stories
+        platformTotalPostsAndStories += postCountValue + storyCountValue;
+        totalPostsAndStories += postCountValue + storyCountValue;
+
+        // Calculate total cost
+        totalCost +=
+          postCountValue * page.m_post_price +
+          storyCountValue * page.m_story_price;
         return acc; // Return the accumulator for the next iteration
       }, {});
 
       // Append each category sheet to the workbook
       Object.entries(categories).forEach(([categoryName, categoryData]) => {
         const categorySheet = XLSX.utils.json_to_sheet(categoryData); // Convert category data to a sheet
+        addHyperlinksAndAdjustWidths(categorySheet, categoryData); // Add hyperlinks and adjust column widths
+        applyCellStyles(categorySheet, categoryData); // Apply cell styles
         XLSX.utils.book_append_sheet(workbook, categorySheet, categoryName); // Append to workbook
+        // Calculate category total cost
+        const categoryTotalCost = categoryData.reduce((acc, item) => {
+          const page = platformData.find(
+            (p) => p.page_name === item['User Name']
+          );
+          const postCountValue = Number(postCount[page._id]) || 0;
+          const storyCountValue = Number(storyPerPage[page._id]) || 0;
+          return (
+            acc +
+            postCountValue * page.m_post_price +
+            storyCountValue * page.m_story_price
+          );
+        }, 0);
         overviewData.push({
           SNo: overviewData.length + 1,
-          Description: `Post on ${categoryName} Pages`,
+          Description: `Post and Stories on ${categoryName} Pages`,
           Platform: 'Instagram',
-          Count: categoryData.length,
+          Count: `${categoryData.reduce(
+            (acc, item) => acc + item['Post Count'] + item['Story Count'],
+            0
+          )}`, // Total post and story count for category
+          Cost: `₹${categoryTotalCost.toFixed(2)}`, // Calculate cost for category
         });
-        totalInstagramPages += categoryData.length; // Count total Instagram pages
       });
     } else {
       // Handle other platforms
-      const platformSheetData = platformData.map((page, index) => ({
-        SNo: index + 1,
-        'Page Name': page.page_name,
-        Followers: page.followers_count,
-        'Post Count': postCount[page._id] || 0,
-        'Story Count': storyPerPage[page._id] || 0,
-      }));
+      const platformSheetData = platformData.map((page, index) => {
+        const postCountValue = Number(postCount[page._id]) || 0; // Ensure it's a number
+        const storyCountValue = Number(storyPerPage[page._id]) || 0; // Ensure it's a number
+
+        // Add to platform total posts and stories count
+        platformTotalPostsAndStories += postCountValue + storyCountValue;
+
+        return {
+          SNo: index + 1,
+          'Page Name': page.page_name,
+          Followers: page.followers_count,
+          'Post Count': postCountValue,
+          'Story Count': storyCountValue,
+        };
+      });
+
       const platformSheet = XLSX.utils.json_to_sheet(platformSheetData); // Convert platform data to a sheet
+      addHyperlinksAndAdjustWidths(platformSheet, platformSheetData); // Add hyperlinks and adjust column widths
+      applyCellStyles(platformSheet, platformSheetData); // Apply cell styles
       XLSX.utils.book_append_sheet(workbook, platformSheet, platform); // Append to workbook
+
+      // Calculate cost for the platform
+      const platformCost = platformData.reduce((acc, page) => {
+        const postCountValue = Number(postCount[page._id]) || 0;
+        const storyCountValue = Number(storyPerPage[page._id]) || 0;
+        return (
+          acc +
+          postCountValue * page.m_post_price +
+          storyCountValue * page.m_story_price
+        );
+      }, 0);
+
       overviewData.push({
         SNo: overviewData.length + 1,
-        Description: `Post on ${platform} Pages`,
+        Description: `Post and Stories on ${platform} Pages`,
         Platform: platform,
-        Count: platformData.length,
+        Count: platformTotalPostsAndStories, // Total post and story count for platform
+        Cost: `₹${platformCost.toFixed(2)}`, // Add cost for the platform
       });
     }
   });
 
+  // Calculate GST
+  const gst = totalCost * 0.18; // 18% GST
+  const totalWithGst = totalCost + gst; // Total after GST
+
   // Add GST and total to the overview data
   overviewData.push(
-    { SNo: '', Description: 'GST (18%)', Platform: '', Count: '' },
-    { SNo: '', Description: 'Total', Platform: '', Count: totalInstagramPages }
+    {
+      SNo: '',
+      Description: 'Total Cost',
+      Platform: '',
+      Count: '',
+      Cost: `₹${totalCost.toFixed(2)}`,
+    },
+    {
+      SNo: '',
+      Description: 'GST (18%)',
+      Platform: '',
+      Count: '',
+      Cost: `₹${gst.toFixed(2)}`,
+    },
+    {
+      SNo: '',
+      Description: 'Total Cost After GST',
+      Platform: '',
+      Count: '',
+      Cost: `₹${totalWithGst.toFixed(2)}`,
+    },
+    {
+      SNo: '',
+      Description: 'Total Count of Posts and Stories',
+      Platform: '',
+      Count: totalPostsAndStories,
+      Cost: '',
+    } // Updated total count of posts and stories
   );
+
   const overviewSheet = XLSX.utils.json_to_sheet(overviewData); // Convert overview data to a sheet
-  XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Overview'); // Append to workbook
+  addHyperlinksAndAdjustWidths(overviewSheet, overviewData); // Add hyperlinks and adjust column widths
+  applyCellStyles(overviewSheet, overviewData); // Apply cell styles
+ 
+  XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Overview'); // Create overview sheet
+
+  // Move the overview sheet to the first position
+  workbook.SheetNames = [
+    'Overview',
+    ...workbook.SheetNames.filter((name) => name !== 'Overview'),
+  ];
 
   // Write the workbook to a file
   XLSX.writeFile(workbook, 'Plan_Statistics.xlsx');
+};
+
+// Helper function to apply cell styles
+const applyCellStyles = (sheet, data) => {
+  const range = XLSX.utils.decode_range(sheet['!ref']);
+  const headerRow = range.s.r;
+
+  // Style the header row
+  for (let C = range.s.c; C <= range.e.c; ++C) {
+    const address = XLSX.utils.encode_cell({ c: C, r: headerRow });
+    if (!sheet[address]) continue;
+    // console.log("sheet", sheet[address]);
+    sheet[address].s = {
+      font: { bold: true, color: { rgb: 'FF0000' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      fill: { fgColor: { rgb: 'BFEE90' } },
+      border: {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
+      },
+    };
+  }
+
+  // Style all filled cells with borders
+  for (let R = range.s.r; R <= range.e.r; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const address = XLSX.utils.encode_cell({ r: R, c: C });
+      if (!sheet[address]) continue;
+      if (!sheet[address].s) {
+        sheet[address].s = {};
+      }
+      sheet[address].s.border = {
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
+      };
+      sheet[address].s.font = {
+        bold: true,
+      };
+      if (C === 0 || C === 3) {
+        // Center align the SNo column and Followers column
+        sheet[address].s.alignment = {
+          horizontal: 'center',
+          vertical: 'center',
+        };
+      }
+    }
+  }
+};
+
+// Function to add hyperlinks and adjust column widths
+const addHyperlinksAndAdjustWidths = (worksheet, data) => {
+  const range = XLSX.utils.decode_range(worksheet['!ref']);
+
+  // Apply column widths
+  const columnWidths = [
+    { wch: 5 }, // SNo column width
+    { wch: 30 }, // User Name or Page Name
+    { wch: 50 }, // Profile Link
+    { wch: 15 }, // Followers
+    { wch: 15 }, // Post Count
+    { wch: 15 }, // Story Count
+  ];
+  worksheet['!cols'] = columnWidths;
+
+  // Add hyperlinks to 'Profile Link' column (assuming it's at index 2)
+  for (let R = range.s.r + 1; R <= range.e.r; ++R) {
+    const address = XLSX.utils.encode_cell({ r: R, c: 2 }); // Column 'C' (index 2)
+    const profileLink = worksheet[address]?.v;
+    if (profileLink) {
+      worksheet[address].l = {
+        Target: profileLink,
+        Tooltip: 'Click to open profile',
+      };
+    }
+  }
 };
 
 const PlanStatics = ({
@@ -146,22 +327,26 @@ const PlanStatics = ({
   pageCategoryCount,
   handleToggleBtn,
   selectedRow,
-  totalRecord,
   allrows,
   postCount,
-  handleShowAll,
   handleOwnPage,
   category,
   storyPerPage,
 }) => {
-  const [openModal, setOpenModal] = useState(false); // State for controlling the modal visibility
-  const [pageDetails, setPageDetails] = useState([]); // State for holding details of selected pages
+  const [openModal, setOpenModal] = useState(false);
+  const [pageDetails, setPageDetails] = useState([]);
+  const [previewData, setPreviewData] = useState([]);
+  const [openPreviewModal, setOpenPreviewModal] = useState(false);
 
   // Memoized calculation of ownership counts for performance optimization
   const ownershipCounts = useMemo(
     () => calculateOwnershipCounts(selectedRow, postCount, storyPerPage),
     [selectedRow, postCount, storyPerPage]
   );
+
+  const formatFollowers = (followers) => {
+    return (followers / 1000000).toFixed(1) + 'M';
+  };
 
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
@@ -171,9 +356,46 @@ const PlanStatics = ({
 
   // Filter all rows to get only 'Own' type pages
   const ownPages = allrows?.filter((item) => item?.ownership_type === 'Own');
+  const handlePreviewExcel = () => {
+    const preview = selectedRow?.map((page) => {
+      const platformName = getPlatformName(page.platform_id);
+      const postCountForPage = postCount[page._id] || 0;
+      const storyCountForPage = storyPerPage[page._id] || 0;
+
+      return {
+        'Page Name': page.page_name,
+        Platform: platformName,
+        Followers: page.followers_count,
+        'Post Count': postCountForPage,
+        'Story Count': storyCountForPage,
+        'Post Price': page.m_post_price,
+        'Story Price': page.m_story_price,
+        'Total Post Cost': postCountForPage * page.m_post_price,
+        'Total Story Cost': storyCountForPage * page.m_story_price,
+        category: page.page_category_id, // Add category ID for filtering
+      };
+    });
+
+    setPreviewData(preview);
+    setOpenPreviewModal(true); // Open the preview modal
+  };
 
   return (
     <div>
+      <ExcelPreviewModal
+        open={openPreviewModal} // Pass the modal open state
+        onClose={() => setOpenPreviewModal(false)} // Pass the close handler
+        previewData={previewData} // Pass the preview data
+        categories={category}
+      />
+      <Button
+        variant="contained"
+        className="preview-btn-excel"
+        onClick={handlePreviewExcel}
+      >
+        Preview Excel
+      </Button>
+
       {/* Button to download Excel report */}
       <Button
         variant="contained"
@@ -188,10 +410,10 @@ const PlanStatics = ({
       <Box sx={{ padding: 2 }}>
         {/* Display summary information */}
         <Typography>
-          Total Followers: {totalFollowers} || Total Cost: {totalCost} || Total
-          Posts Per Page: {totalPostsPerPage} || Total Stories Per Page:{' '}
-          {totalStoriesPerPage} || Total Deliverable: {totalDeliverables} ||
-          Total Pages: {totalPagesSelected}
+          Total Followers: {formatFollowers(totalFollowers)} || Total Cost:{' '}
+          {totalCost} || Total Posts Per Page: {totalPostsPerPage} || Total
+          Stories Per Page: {totalStoriesPerPage} || Total Deliverable:{' '}
+          {totalDeliverables} || Total Pages: {totalPagesSelected}
         </Typography>
         <div className="list-container-plan-making">
           <List>
@@ -221,19 +443,7 @@ const PlanStatics = ({
           </List>
           <List>
             {/* Display remaining pages */}
-            <ListItem>
-              <Typography sx={{ width: '84%' }}>
-                Total Remaining Pages:
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={handleShowAll} // Show all pages handler
-                >
-                  {totalRecord?.total_records - selectedRow?.length}
-                </Button>
-              </Typography>
-            </ListItem>
+
             <ListItem>
               <Typography sx={{ width: '84%' }}>
                 Own Remaining Pages:

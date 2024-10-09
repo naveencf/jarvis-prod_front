@@ -6,8 +6,13 @@ import { baseUrl } from "../../utils/config";
 import Loader from "../Finance/Loader/Loader";
 import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
 import Profile from "../Pantry/UserPanel/Profile/Profile";
+import PostStats from "../Stats/PostStats";
+import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor";
 
-const ViewSalesPoc = lazy(() => import("../CustomTable/TableComponent/ViewSalesPoc"));
+
+const ViewSalesPoc = lazy(() =>
+  import("../CustomTable/TableComponent/ViewSalesPoc")
+);
 const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./User/UserMaster"));
@@ -157,6 +162,16 @@ const SalaryDashboard = lazy(() =>
 );
 const CampignAdmin = lazy(() => import("./CampaginAdmin/CampignAdmin"));
 const BrandMaster = lazy(() => import("./RegisterCampaign/BrandMaster"));
+/* Sarcasm start*/
+const SarcasmDashboard = lazy(() => import("../sarcasm/content-from/index"));
+const SarcasmBlog = lazy(() => import("../sarcasm/blog-managment/index"));
+const BlogDetail = lazy(() =>
+  import("../sarcasm/blog-managment/blog-detail/index")
+);
+const SarcasmCategory = lazy(() =>
+  import("../sarcasm/category-management/index")
+);
+/* Sarcasm end*/
 const CategoryMaster = lazy(() => import("./RegisterCampaign/CategoryMaster"));
 const ContentType = lazy(() => import("./RegisterCampaign/ContentType"));
 const CampaignCommitment = lazy(() =>
@@ -461,6 +476,10 @@ const PMSplatformPriceTypeMast = lazy(() =>
 const VendorGroupLink = lazy(() => import("./PageMS/VendorGroupLink"));
 const PageMaster = lazy(() => import("./PageMS/PageMaster"));
 const PageOverview = lazy(() => import("./PageMS/PageOverview"));
+const PageAssignmentUser = lazy(() => import("./PageMS/PageAssignmentUser"));
+const PageAssignmentUserAdd = lazy(() =>
+  import("./PageMS/PageAssignmentUserAdd")
+);
 const RepairRetrunSummary = lazy(() => import("../Sim/RepairRetrunSummary"));
 const VendorPagePriceOverview = lazy(() =>
   import("./PageMS/VendorPagePriceOverview")
@@ -642,7 +661,13 @@ const PaymentDoneTransactionList = lazy(() =>
   )
 );
 const PageStats = lazy(() => import("./PageMS/PageStats"));
-const PlanMaking = lazy(() => import("../AdminPanel/PageMS/PlanMaking"));
+// const PlanMaking = lazy(() => import("../AdminPanel/PageMS/PlanMaking"));
+const PlanMaking = lazy(() =>
+  import("../../components/inventory/plan-making/index")
+);
+const PlanMakingTable = lazy(() =>
+  import("../../components/inventory/plan-making/PlanMaking")
+);
 const PlanUpload = lazy(() =>
   import("../AdminPanel/Inventory/Plan-upload/index")
 );
@@ -823,21 +848,17 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
 
+                      <Route path="/user-profile" element={<Profile />} />
                       {contextData &&
                         contextData[0] &&
                         contextData[0].view_value === 1 && (
                           <>
-
-                            <Route
-                              path="/user-profile"
-                              element={<Profile />}
-                            />
                             <Route
                               path="/user-overview/:id"
                               element={<UserOverview />}
@@ -1873,6 +1894,11 @@ const Admin = () => {
                       element={<CustomerDocumentDetails />}
                     />
 
+                    <Route
+                      path="/pms-bulk-vendor-overview"
+                      element={<BulkVendor />}
+                    />
+
                     <Route path="/pms-vendor-type" element={<VendorType />} />
                     <Route
                       path="/pms-page-category"
@@ -1899,6 +1925,10 @@ const Admin = () => {
                       element={<VendorMaster />}
                     />
                     <Route path="/pms-plan-making" element={<PlanMaking />} />
+                    <Route
+                      path="/pms-plan-making/:id"
+                      element={<PlanMakingTable />}
+                    />
                     <Route path="/pms-plan-upload" element={<PlanUpload />} />
                     <Route
                       path="/pms-vendor-master/:_id"
@@ -1929,6 +1959,14 @@ const Admin = () => {
                       element={<VendorGroupLink />}
                     />
                     <Route path="/pms-page-master" element={<PageMaster />} />
+                    <Route
+                      path="/pms-page-cat-assignment-overview"
+                      element={<PageAssignmentUser />}
+                    />
+                    <Route
+                      path="/pms-page-cat-assignment-add"
+                      element={<PageAssignmentUserAdd />}
+                    />
                     <Route
                       path="/pms-page-overview"
                       element={<PageOverview />}
@@ -2247,6 +2285,36 @@ const Admin = () => {
                             element={<OverviewMeetingVia />}
                           />
                         </>
+                      )}
+                    {/* Sarcasm Start*/}
+                    {contextData &&
+                      contextData[29] &&
+                      contextData[29].view_value === 1 && (
+                        <>
+                          <Route
+                            path="/sarcasm/post-content"
+                            element={<SarcasmDashboard />}
+                          />
+                          <Route
+                            path="/sarcasm/sarcasm-category"
+                            element={<SarcasmCategory />}
+                          />
+                          <Route
+                            path="/sarcasm/sarcasm-blog"
+                            element={<SarcasmBlog />}
+                          />
+                          <Route
+                            path="/sarcasm/sarcasm-blog/:id"
+                            element={<BlogDetail />}
+                          />
+                        </>
+                      )}
+                    {/* Sarcasm End */}
+                    {/* Post stats from Insights */}
+                    {contextData &&
+                      contextData[54] &&
+                      contextData[54].view_value === 1 && (
+                        <Route path="/statics" element={<PostStats />} />
                       )}
                   </Route>
                 </Routes>

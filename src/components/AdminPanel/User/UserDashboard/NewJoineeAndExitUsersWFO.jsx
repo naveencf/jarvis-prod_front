@@ -193,7 +193,7 @@ const NewJoineeAndExitUsersWFO = () => {
               style={{ justifyContent: "space-between" }}
             >
               <div>
-                <h5 class="card-title">New Joiners</h5>
+                <h5 className="card-title">New Joiners</h5>
               </div>
               <div>
                 <h6
@@ -246,7 +246,7 @@ const NewJoineeAndExitUsersWFO = () => {
               style={{ justifyContent: "space-between" }}
             >
               <div>
-                <h5 class="card-title">Exit Users</h5>
+                <h5 className="card-title">Exit Users</h5>
               </div>
               <div>
                 <h6

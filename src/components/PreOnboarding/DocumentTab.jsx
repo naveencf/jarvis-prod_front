@@ -382,7 +382,7 @@ const DocumentTab = ({
                         </td>
                         <td>
                           {" "}
-                          <div className="flex-row">
+                          <div className="flex-row" style={{display:'flex'}}>
 
                             <button
                               className="btn icon-1  btn-danger btn-sm"

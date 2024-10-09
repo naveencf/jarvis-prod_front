@@ -161,6 +161,7 @@ const VendorMaster = () => {
   const [dob, setDob] = useState('');
   const [messageColor, setMessageColor] = useState('');
   const [existError, setExistError] = useState('');
+  const [busiTypeData, setBusiTypeData] = useState([]);
 
   useEffect(() => {
     if (gst?.length === 15) {
@@ -298,6 +299,16 @@ const VendorMaster = () => {
       setUserData(res.data.data);
     });
 
+    axios.get(baseUrl + `v1/vendor_business_type`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    })
+    .then((res)=>{
+      setBusiTypeData(res.data.data)
+    })
+
     if (_id) {
       axios
         .get(baseUrl + `v1/vendor/${_id}`, {
@@ -331,6 +342,7 @@ const VendorMaster = () => {
           setHomePincode(data?.home_pincode);
           setVendorCategory(data?.vendor_category ?? 'Theme Page');
           setDob(data?.dob)
+          setBusiType(data?.busi_type)
         });
 
       axios
@@ -424,15 +436,15 @@ const VendorMaster = () => {
       if (busiType !== '') {
         let filteredDocs;
         if (
-          busiType === 'Registered Business' ||
-          busiType === 'Registered Business (Composition)'
+          busiType === '670112aa579d1873b7ede523' ||
+          busiType === '670112bd579d1873b7ede524'
         ) {
           filteredDocs = combinedDocs;
-        } else if (busiType === 'Unregistered Business') {
+        } else if (busiType === '670112d0579d1873b7ede526') {
           filteredDocs = combinedDocs.filter((doc) =>
             ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName)
           );
-        } else if (busiType === "Individual") {
+        } else if (busiType === "670112e2579d1873b7ede528") {
           filteredDocs = combinedDocs.filter(doc => 
             ["Driving License", "Aadhar Card", "Pan Card"].includes(doc.docName)
           );
@@ -467,8 +479,8 @@ const VendorMaster = () => {
   const addDocDetails = () => {
     let newDocs = [];
     if (
-      busiType === 'Registered Business' ||
-      busiType === 'Registered Business (Composition)'
+      busiType === '670112aa579d1873b7ede523' ||
+      busiType === '670112bd579d1873b7ede524'
     ) {
       newDocs = [
         { docName: 'GST', docNumber: '', document_image_upload: '' },
@@ -481,7 +493,7 @@ const VendorMaster = () => {
         },
         
       ];
-    } else if (busiType === 'Unregistered Business') {
+    } else if (busiType === '670112d0579d1873b7ede526') {
       newDocs = [
         { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
         {
@@ -491,7 +503,7 @@ const VendorMaster = () => {
         },
         { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
       ];
-    } else if (busiType === 'Individual') {
+    } else if (busiType === '670112e2579d1873b7ede528') {
       newDocs = [
         {
           docName: 'Driving License',
@@ -727,7 +739,8 @@ const VendorMaster = () => {
       bank_details: bankRows,
       vendorLinks: whatsappLink,
       closed_by: userId,
-      dob: dob
+      dob: dob,
+      busi_type:busiType
     };
     setPreviewData(formData);
     setOpenPreviewModal(true);
@@ -787,7 +800,8 @@ const VendorMaster = () => {
       bank_details: bankRows,
       vendorLinks: whatsappLink,
       closed_by: userId,
-      dob: dob
+      dob: dob,
+      busi_type:busiType
     };
 
     if (!_id) {
@@ -954,26 +968,40 @@ const VendorMaster = () => {
       // Handle vendor update logic (same as original logic)
       setIsFormSubmitting(true);
       previewData._id = _id;
-
-      const formData = new FormData();
-      formData.append('vendor_id', vendorData.vendor_id);
-      formData.append('mobile', vendorData.mobile);
-      formData.append('alternate_mobile', vendorData.alternate_mobile);
-      formData.append('account_type', forPhp?.account_type);
-      formData.append('account_no', forPhp?.account_number);
-      formData.append('ifcs', forPhp?.ifcs);
-      formData.append('bank_name', forPhp?.bank_name);
-      formData.append('vendor_name', vendorData.vendor_name);
-
-      await axios.put(
-        'https://purchase.creativefuel.io/webservices/RestController.php?view=updatevendor',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
-
       updateVendor(previewData)
         .unwrap()
         .then(() => {
+          // const formData = new FormData();
+          // formData.append('vendor_id', vendorData.vendor_id);
+          // formData.append('mobile', vendorData.mobile);
+          // formData.append('alternate_mobile', vendorData.alternate_mobile);
+          // formData.append('account_type', forPhp?.account_type);
+          // formData.append('account_no', forPhp?.account_number);
+          // formData.append('ifcs', forPhp?.ifcs);
+          // formData.append('bank_name', forPhp?.bank_name);
+          // formData.append('vendor_name', vendorData.vendor_name);
+
+          // axios.put(
+          //   'https://purchase.creativefuel.io/webservices/RestController.php?view=updatevendor',
+          //   formData,
+          //   { headers: { 'Content-Type': 'multipart/form-data' } }
+          // );
+          const payload = {
+            vendor_id: vendorData.vendor_id,
+            mobile: mobile,
+            alternate_mobile: altMobile,
+            account_type: forPhp?.account_type || bankRows[0].account_type,
+            account_no: forPhp?.account_number || bankRows[0].account_number,
+            ifcs: forPhp?.ifcs || bankRows[0].ifcs,
+            bank_name: forPhp?.bank_name || bankRows[0].bank_name,
+            vendor_name: vendorName
+          }
+          axios.post(baseUrl + `node_data_to_php_update_vendor`,payload)
+          .then(()=>{})
+          .catch((err)=>{
+            console.log(err)
+          })
+          
           toastAlert('Data Updated Successfully');
           setIsFormSubmitted(true);
           setIsFormSubmitting(false);
@@ -1007,9 +1035,9 @@ const VendorMaster = () => {
   const [copyOptions, setCopyOptions] = useState(docOptions);
 
   useEffect(() => {
-    const docNames = docDetails.map((e) => e.docName);
-    const filteredData = docOptions.filter(
-      (option) => !docNames.includes(option)
+    const docNames = docDetails?.map((e) => e?.docName);
+    const filteredData = docOptions?.filter(
+      (option) => !docNames?.includes(option)
     );
     setCopyOptions(filteredData);
   }, [docDetails]);
@@ -1119,6 +1147,21 @@ const VendorMaster = () => {
               <div className="form-group m0">
                 <label className="form-label">Business Type</label>
                 <Select
+                  options={
+                    busiTypeData.map((option) => ({
+                    value: option._id,
+                    label: option.busi_type_name,
+                  }))}
+                  required={true}
+                  value={{
+                    value: busiType,
+                    label: (busiTypeData?.find((role) => role._id == busiType)?.busi_type_name) || '',
+                  }}
+                  onChange={(e) => {
+                    setBusiType(e.value);
+                  }}
+                ></Select>
+                {/* <Select
                   options={[
                     'Registered Business',
                     'Registered Business (Composition)',
@@ -1136,25 +1179,20 @@ const VendorMaster = () => {
                   onChange={(e) => {
                     setBusiType(e.value);
                   }}
-                ></Select>
-                {/* {!busiType && (
-                  <span style={{ color: "red", fontSize: "12px" }}>
-                    Please Select Business Type
-                  </span>
-                )} */}
+                ></Select> */}
               </div>
             </div>
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">NOTE:</label>
-                {busiType === 'Registered Business' ? (
+                {busiType === '670112aa579d1873b7ede523' ? (
                   <p>If Private Limited 2% TDS And If Not 1%.</p>
-                ) : busiType === 'Registered Business (Composition)' ? (
+                ) : busiType === '670112bd579d1873b7ede524' ? (
                   <p>If Private Limited 2% TDS And If Not 1%.</p>
-                ) : busiType === 'Unregistered Business' ? (
+                ) : busiType === '670112d0579d1873b7ede526' ? (
                   <p>1% TDS.</p>
-                ) : busiType === 'Individual' ? (
+                ) : busiType === '670112e2579d1873b7ede528' ? (
                   <p>
                     Max Limit is 25k Per Bill. Total Year Limit is 100k. Please
                     Choose Unregistered Business & Upload Pan If You Believe
@@ -1241,7 +1279,7 @@ const VendorMaster = () => {
               </div>
             </div>
             
-            {busiType === "Individual" ? '' : (
+            {busiType === "670112e2579d1873b7ede528" ? '' : (
               <>
                 <div className="card-header">Company Details</div>
                 <div className="card-body row">

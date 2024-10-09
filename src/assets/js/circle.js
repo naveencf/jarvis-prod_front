@@ -10,7 +10,7 @@ $(document).ready(function() {
 
 function Circlebar(prefs) {
     this.element = $(prefs.element);
-    this.element.append('<div class="spinner-holder-one animate-0-25-a"><div class="spinner-holder-two animate-0-25-b"><div class="loader-spinner" style=""></div></div></div><div class="spinner-holder-one animate-25-50-a"><div class="spinner-holder-two animate-25-50-b"><div class="loader-spinner"></div></div></div><div class="spinner-holder-one animate-50-75-a"><div class="spinner-holder-two animate-50-75-b"><div class="loader-spinner"></div></div></div><div class="spinner-holder-one animate-75-100-a"><div class="spinner-holder-two animate-75-100-b"><div class="loader-spinner"></div></div></div>');
+    this.element.append('<div className="spinner-holder-one animate-0-25-a"><div className="spinner-holder-two animate-0-25-b"><div className="loader-spinner" style=""></div></div></div><div className="spinner-holder-one animate-25-50-a"><div className="spinner-holder-two animate-25-50-b"><div className="loader-spinner"></div></div></div><div className="spinner-holder-one animate-50-75-a"><div className="spinner-holder-two animate-50-75-b"><div className="loader-spinner"></div></div></div><div className="spinner-holder-one animate-75-100-a"><div className="spinner-holder-two animate-75-100-b"><div className="loader-spinner"></div></div></div>');
     this.value, this.maxValue, this.counter, this.dialWidth, this.size, this.fontSize, this.fontColor, this.skin, this.triggerPercentage, this.type, this.timer;
     // var attribs = this.element.find("div")[0].parentNode.dataset;
     var attribs = this.element[0].dataset,

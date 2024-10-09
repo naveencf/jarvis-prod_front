@@ -9,50 +9,77 @@ import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import React from "react";
 import { baseUrl } from "../../../../../utils/config";
-import { useEffect } from "react";
 
 const PayThroughVendorDialog = (props) => {
-  const { payThroughVendor, setPayThroughVendor, rowSelectionModel } = props;
+  const {
+    payThroughVendor,
+    setPayThroughVendor,
+    rowSelectionModel,
+    filterData,
+  } = props;
 
   const handleClosePayThroughVendor = () => {
     setPayThroughVendor(false);
   };
 
+  // useEffect(() => {
+  //   const initialAdjustmentAmt = netAmount - paymentAmout;
+  //   const formattedAdjustmentAmt = initialAdjustmentAmt?.toFixed(1);
+  //   setAdjustAmount(formattedAdjustmentAmt);
+  // }, [rowData, paymentAmout]);
+
   const doPayment = async (e) => {
     try {
+      // Step 1: Get the JWT token
       const getTokenResponse = await axios.get(
-        baseUrl + `generate_plural_payment_jwt_token`
+        `${baseUrl}generate_plural_payment_jwt_token`
       );
-      const token = getTokenResponse.data.data;
-      console.log(token, "getTokenResponse->>>>");
+      const token = getTokenResponse?.data?.data;
 
-      // const paymentPayload = {
-      //   clientReferenceId: "abcd1234",
-      //   payeeName: "Abhishek", // Corrected name capitalization
-      //   accountNumber: "1234567890", // Use a valid account number
-      //   branchCode: "001122", // Use a valid branch code
-      //   email: "ascs739@gmail.com",
-      //   phone: "7000436496",
-      //   amount: { currency: "INR", value: 3000 },
-      //   remarks: "Payment remarks here", // Add a meaningful remark
-      //   mode: "IMPS", // Options: IMPS, NEFT, RTGS, UPI
-      // };
+      if (!token) {
+        console.error("Error: Token not received.");
+        return;
+      }
+
+      // Step 2: Ensure rowSelectionModel and filterData are valid
+      if (!rowSelectionModel || rowSelectionModel.length === 0) {
+        console.error("Error: No rows selected.");
+        return;
+      }
+      if (!filterData || filterData.length === 0) {
+        console.error("Error: Filter data is empty or missing.");
+        return;
+      }
+
+      // Step 3: Map rowSelectionModel to corresponding rows in filterData
+      const selectedRow = filterData.find(
+        (row) => row.request_id === rowSelectionModel[0]
+      ); // Only select the first row for now
+
+      if (!selectedRow) {
+        console.error("Error: Selected row not found in filterData.");
+        return;
+      }
+
+      console.log("Selected Row:", selectedRow);
+
+      // Step 4: Create the payment payload dynamically based on the selected row
       const paymentPayload = {
-        clientReferenceId: "1062",
-        payeeName: "Neetika Ligga",
-        accountNumber: "040403873332190801",
-        branchCode: "CSBK0000404",
-        email: "ligga@icloud.com",
-        phone: "9993009092",
+        clientReferenceId: selectedRow?.request_id || "defaultReferenceId",
+        payeeName: selectedRow?.vendor_name || "defaultPayeeName",
+        accountNumber: selectedRow?.account_no || "defaultAccountNumber",
+        branchCode: selectedRow?.ifsc || "defaultBranchCode",
+        email: selectedRow?.email || "defaultEmail",
+        phone: selectedRow?.mob1 || "defaultPhone",
         amount: {
           currency: "INR",
-          value: 20000000,
+          value: selectedRow?.balance_amount || 0,
         },
-        mode: "RTGS",
-        remarks: "Testing transaction",
+        mode: selectedRow?.payment_mode || "RTGS",
+        remarks: selectedRow?.remark_audit || "Testing transaction",
       };
 
-      const payResponse = await axios?.post(
+      const payResponse = await axios.post(
         baseUrl + `create_payout`,
         paymentPayload,
         {
@@ -63,7 +90,7 @@ const PayThroughVendorDialog = (props) => {
         }
       );
 
-      console.log("Payment successful:", payResponse?.data);
+      console.log("Payment successful:", payResponse);
     } catch (error) {
       console.error("Error processing payment:", error);
     }

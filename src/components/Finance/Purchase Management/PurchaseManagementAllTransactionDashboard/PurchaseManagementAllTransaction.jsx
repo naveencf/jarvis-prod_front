@@ -1519,23 +1519,23 @@ export default function PurchaseManagementAllTransaction() {
 
       <div className="row">
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 Pending
                 <Link
                   className="link-primary"
                   onClick={handlePendingButtonClick}
                 >
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">Total Requested Amount</h5>
-              <h4 class="font-weight-bold mt8">
+            <div className="card-body">
+              <h5 className="mediumText">Total Requested Amount</h5>
+              <h4 className="font-weight-bold mt8">
                 {filterData.length > 0
                   ? filterData
                       .filter((item) => {
@@ -1555,20 +1555,20 @@ export default function PurchaseManagementAllTransaction() {
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 Done
                 <Link className="link-primary" onClick={handleDoneButtonClick}>
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">Total Requested Amount</h5>
-              <h4 class="font-weight-bold mt8">
+            <div className="card-body">
+              <h5 className="mediumText">Total Requested Amount</h5>
+              <h4 className="font-weight-bold mt8">
                 {filterData.length > 0
                   ? filterData
                       .filter(
@@ -1587,23 +1587,23 @@ export default function PurchaseManagementAllTransaction() {
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 Discard
                 <Link
                   className="link-primary"
                   onClick={handleDiscardButtonClick}
                 >
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">Total Requested Amount</h5>
-              <h4 class="font-weight-bold mt8">
+            <div className="card-body">
+              <h5 className="mediumText">Total Requested Amount</h5>
+              <h4 className="font-weight-bold mt8">
                 {" "}
                 {filterData.length > 0
                   ? filterData
@@ -1624,112 +1624,112 @@ export default function PurchaseManagementAllTransaction() {
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 With Invoice
                 <Link
                   className="link-primary"
                   onClick={handleWithInvoiceButtonClick}
                 >
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">With Invoice Count</h5>
-              <h4 class="font-weight-bold mt8">{withInvoiceCount}</h4>
+            <div className="card-body">
+              <h5 className="mediumText">With Invoice Count</h5>
+              <h4 className="font-weight-bold mt8">{withInvoiceCount}</h4>
             </div>
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 Without Invoice
                 <Link
                   className="link-primary"
                   onClick={handleWithoutInvoiceButtonClick}
                 >
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">Without Invoice Count</h5>
-              <h4 class="font-weight-bold mt8">{withoutInvoiceCount}</h4>
+            <div className="card-body">
+              <h5 className="mediumText">Without Invoice Count</h5>
+              <h4 className="font-weight-bold mt8">{withoutInvoiceCount}</h4>
             </div>
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 GST Hold
                 <Link className="link-primary" onClick={filterDataByGstHold}>
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
+            <div className="card-body">
               <div className="flexCenterBetween">
                 <div>
-                  <h5 class="mediumText">GST Hold Amount</h5>
-                  <h4 class="font-weight-bold mt8 mb8">{totalGstHoldAmount}</h4>
+                  <h5 className="mediumText">GST Hold Amount</h5>
+                  <h4 className="font-weight-bold mt8 mb8">{totalGstHoldAmount}</h4>
                 </div>
                 <div>
-                  <h5 class="mediumText">GST Hold Count</h5>
-                  <h4 class="font-weight-bold mt8">{totalGstHoldCount}</h4>
+                  <h5 className="mediumText">GST Hold Count</h5>
+                  <h4 className="font-weight-bold mt8">{totalGstHoldCount}</h4>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div className="col-md-4 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 Average Payment Aging
               </h5>
             </div>
-            <div class="card-body">
-              <h5 class="mediumText">Average Aging</h5>
-              <h4 class="font-weight-bold mt8">{averageAging}</h4>
+            <div className="card-body">
+              <h5 className="mediumText">Average Aging</h5>
+              <h4 className="font-weight-bold mt8">{averageAging}</h4>
             </div>
           </div>
         </div>
         <div className="col-md-8 col-sm-12">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="card-title w-100 flexCenterBetween">
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title w-100 flexCenterBetween">
                 TDS Deducted
                 <Link
                   className="link-primary"
                   onClick={filterDataByTotalDeductedAmount}
                 >
-                  <span class="iconLink">
-                    <i class="bi bi-arrow-up-right"></i>
+                  <span className="iconLink">
+                    <i className="bi bi-arrow-up-right"></i>
                   </span>
                 </Link>
               </h5>
             </div>
-            <div class="card-body">
+            <div className="card-body">
               <div className="flexCenterBetween">
                 <div>
-                  <h5 class="mediumText">Total TDS Deduction amount</h5>
-                  <h4 class="font-weight-bold mt8 mb8">
+                  <h5 className="mediumText">Total TDS Deduction amount</h5>
+                  <h4 className="font-weight-bold mt8 mb8">
                     {totalTDSDeductedCount}
                   </h4>
                 </div>
                 <div>
-                  <h5 class="mediumText">Total TDS Deduction Count</h5>
-                  <h4 class="font-weight-bold mt8">{totalTDSDeductedCount}</h4>
+                  <h5 className="mediumText">Total TDS Deduction Count</h5>
+                  <h4 className="font-weight-bold mt8">{totalTDSDeductedCount}</h4>
                 </div>
               </div>
             </div>

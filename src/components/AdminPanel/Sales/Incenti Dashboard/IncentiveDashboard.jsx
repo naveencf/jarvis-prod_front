@@ -445,7 +445,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgPrimaryLight m-0">
+              <div className="iconBadge small bgPrimaryLight m-0">
                 <span>
                   <CardsThree weight="duotone" />
                 </span>
@@ -462,7 +462,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgSecondaryLight m-0">
+              <div className="iconBadge small bgSecondaryLight m-0">
                 <span>
                   <Dresser weight="duotone" />
                 </span>
@@ -479,7 +479,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgTertiaryLight m-0">
+              <div className="iconBadge small bgTertiaryLight m-0">
                 <span>
                   <CurrencyDollar weight="duotone" />
                 </span>
@@ -496,7 +496,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgSuccessLight m-0">
+              <div className="iconBadge small bgSuccessLight m-0">
                 <span>
                   <CoinVertical weight="duotone" />
                 </span>
@@ -515,7 +515,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgWarningLight m-0">
+              <div className="iconBadge small bgWarningLight m-0">
                 <span>
                   <Money weight="duotone" />
                 </span>
@@ -532,7 +532,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgInfoLight m-0">
+              <div className="iconBadge small bgInfoLight m-0">
                 <span>
                   <Money weight="duotone" />
                 </span>
@@ -551,7 +551,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgDangerLight m-0">
+              <div className="iconBadge small bgDangerLight m-0">
                 <span>
                   <Money weight="duotone" />
                 </span>
@@ -572,7 +572,7 @@ const IncentiveDashboard = () => {
         <div className="col-xxl-3 col-xl-3 col-lg-4 col-md-6 col-sm-6 col-12">
           <div className="card">
             <div className="card-body pb20 flexCenter colGap14">
-              <div class="iconBadge small bgPrimaryLight m-0">
+              <div className="iconBadge small bgPrimaryLight m-0">
                 <span>
                   <Money weight="duotone" />
                 </span>

@@ -27,6 +27,7 @@ import { useGlobalContext } from "../../Context/Context";
 import { useGetAllBrandQuery } from "../Store/API/Sales/BrandApi";
 import { ButtonGroup } from "react-bootstrap";
 import formatString from "../AdminPanel/Operation/CampaignMaster/WordCapital";
+import CaseStudyOpenUpdate from "./CaseStudyOpenUpdate";
 
 function ExecutionPending() {
   const token = sessionStorage.getItem("token");
@@ -41,9 +42,10 @@ function ExecutionPending() {
   const [alert, setAlert] = useState([]);
   const [reload, setReload] = useState(false);
   const [contextData, setContextData] = useState(false);
+  const [caseStudyOpen, setCaseStudyOpen] = useState(false);
   const [executionStatus, setExecutionStatus] = useState();
   const [saimyualCamp, setSaimyualCamp] = useState([]);
-
+  const [caseStudyOpenRowData, setCaseStudyOpenRowData] = useState("");
   const userID = decodedToken.id;
   const [openPaymentDetailDialog, setOpenPaymentDetaliDialog] = useState(false);
   const [paymentDialogDetails, setPaymentDialogDetails] = useState([{}]);
@@ -51,19 +53,12 @@ function ExecutionPending() {
   const [filterData, setFilterData] = useState([]);
   const [holdDialog, setShowHoldDialog] = useState(false);
   const [reason, setReason] = useState("");
+  const [caseStudyDialog, setCaseStudyDialog] = useState(false);
   const [apiStatus, setApiStatus] = useState("sent_for_execution");
+  const [totalExecutionCounts, setTotalExecutionCounts] = useState("");
+  const [readOnlyAccountsData, setReadOnlyAccountsData] = useState("");
 
   const handleHoldSubmit = () => {
-    // const payload = {
-    //   loggedin_user_id: userID,
-    //   sale_booking_id: rowData.sale_booking_id,
-    //   sale_booking_execution_id: rowData.sale_booking_execution_id,
-    //   start_date_: new Date(),
-    //   execution_status: executionStatus,
-    //   execution_remark: reason,
-    // };
-    // axios
-    //   .put(`${baseUrl}` + `edit_exe_sum`, payload)
     let payload = {
       // execution_token: token,
       execution_status: "execution_paused",
@@ -79,32 +74,6 @@ function ExecutionPending() {
       .then((res) => {
         setReload((preVal) => !preVal);
         handleClose();
-        // const payload1 = {
-        //   loggedin_user_id: userID,
-        //   sale_booking_execution_id: rowData.sale_booking_execution_id,
-        //   execution_date_time: new Date().toISOString().split("T")[0],
-        //   execution_time: "0.00",
-        //   execution_remark: reason,
-        //   execution_status: 5,
-        // };
-        // axios
-        //   .post(
-        //     `https://sales.creativefuel.io/webservices/RestController.php?view=executionSummaryUpdate`,
-        //     payload1
-        //   )
-        //   .then((res) => {
-        //     setReload((preVal) => !preVal);
-        //     handleClose();
-        //     setExecutionStatus(null);
-        //   })
-        //   .catch((err) => {
-        //     console.log(err);
-        //     setSnackbar({
-        //       open: true,
-        //       message: "Error Updating",
-        //       severity: "error",
-        //     });
-        //   });
       })
 
       .catch((err) => {
@@ -118,17 +87,7 @@ function ExecutionPending() {
 
   const handleReleaseRow = (row) => {
     return () => {
-      // const payload = {
-      //   loggedin_user_id: userID,
-      //   sale_booking_id: row.sale_booking_id,
-      //   sale_booking_execution_id: row.sale_booking_execution_id,
-      //   start_date_: new Date(),
-      //   execution_status: row.execution_status == 5 ? 1 : 2,
-      // };
-      // axios
-      //   .put(`${baseUrl}` + `edit_exe_sum`, payload)
       let payload = {
-        // execution_token: token,
         execution_status: "sent_for_execution",
         sale_booking_id: row.sale_booking_id,
       };
@@ -145,32 +104,6 @@ function ExecutionPending() {
         .catch((err) => {
           console.log(err);
         });
-
-      // const payload1 = {
-      //   loggedin_user_id: userID,
-      //   sale_booking_execution_id: row.sale_booking_execution_id,
-      //   execution_date_time: new Date().toISOString().split("T")[0],
-      //   execution_time: "0.00",
-      //   execution_remark: "Accepted",
-      //   execution_status: row.execution_status == 5 ? 1 : 2,
-      // };
-      // axios
-      //   .post(
-      //     `https://sales.creativefuel.io/webservices/RestController.php?view=executionSummaryUpdate`,
-      //     payload1
-      //   )
-      //   .then((res) => {
-      //     // console.log(res);
-      //     setReload((preVal) => !preVal);
-      //   })
-      //   .catch((err) => {
-      //     console.log(err);
-      //     setSnackbar({
-      //       open: true,
-      //       message: "Error Updating",
-      //       severity: "error",
-      //     });
-      //   });
     };
   };
 
@@ -182,15 +115,6 @@ function ExecutionPending() {
     setOpenPaymentDetaliDialog(false);
   };
 
-  const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-    "& .MuiDialogContent-root": {
-      padding: theme.spacing(2),
-    },
-    "& .MuiDialogActions-root": {
-      padding: theme.spacing(1),
-    },
-  }));
-
   const handleRowHold = (row, hold_execution_status) => {
     return () => {
       setRowData(row);
@@ -200,64 +124,9 @@ function ExecutionPending() {
   };
   const handleMultipleVerification = (e) => {
     e.preventDefault();
-    // axios
-    //   .put(baseUrl + `update_all_list_token/${multipleToken}`)
-    //   .then((res) => {
-    //     let data = res?.data?.data;
-    //     const payload = {
-    //       loggedin_user_id: userID,
-    //       sale_booking_id: data.sale_booking_id,
-    //       sale_booking_execution_id: data.sale_booking_execution_id,
-    //       start_date_: new Date(),
-    //       execution_status: "execution_accepted",
-    //     };
-    //     axios
-    //       .put(`${baseUrl}edit_exe_sum`, payload)
-    //       .then((res) => {
-    //         setReload((preVal) => !preVal);
-    //       })
-    //       .catch((err) => {
-    //         console.log(err);
-    //       });
-
-    //     setConfirmation(false);
-    //     fetchData();
-    //     setMultipleToken("");
-    //     toastAlert("Token Verified");
-
-    //     const payload1 = {
-    //       loggedin_user_id: userID,
-    //       sale_booking_execution_id: data.sale_booking_execution_id,
-    //       execution_date_time: new Date().toISOString().split("T")[0],
-    //       execution_time: "0.00",
-    //       execution_remark: "Accepted",
-    //       execution_status: 2,
-    //     };
-    //     axios
-    //       .post(
-    //         `https://sales.creativefuel.io/webservices/RestController.php?view=executionSummaryUpdate`,
-    //         payload1
-    //       )
-    //       .then((res) => {
-    //         setReload((preVal) => !preVal);
-    //       })
-    //       .catch((err) => {
-    //         console.log(err);
-    //         setSnackbar({
-    //           open: true,
-    //           message: "Error Updating",
-    //           severity: "error",
-    //         });
-    //       });
-    //   })
-    //   .catch((err) => {
-    //     toastError("Invalid Token");
-    //   });
-    // console.log(saimyualCamp)
-    let filteredRow = saimyualCamp.find(
-      (e) => e.execution_token == multipleToken
+    let filteredRow = saimyualCamp?.find(
+      (e) => e?.execution_token == multipleToken
     );
-    console.log(filteredRow);
     if (filteredRow) {
       let payload = {
         execution_status: "execution_accepted",
@@ -272,6 +141,7 @@ function ExecutionPending() {
         .then((res) => {
           console.log(res);
           setReload((preVal) => !preVal);
+          executionAPI();
           toastAlert("Execution Accepted");
           multipleToken("");
         })
@@ -326,35 +196,39 @@ function ExecutionPending() {
     });
   };
 
-  let executionAPI = () => {
-    axios
-      .get(`${baseUrl}sales/sales_booking_execution`, {
+  let executionAPI = async (status = "sent_for_execution") => {
+    await axios
+      .get(`${baseUrl}sales/sales_booking_execution?status=${status}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
 
       .then((res) => {
-        const pendingData = res?.data?.data?.filter(
-          (ele) => ele.execution_status === "sent_for_execution"
-        );
-        setSaimyualCamp(pendingData);
-        // setSaimyualCamp(res?.data?.data);
+        console.log(res, "response--->>>-->>>");
+        setSaimyualCamp(res?.data?.data);
         setData(res?.data?.data);
         setFilterData(res?.data?.data.reverse());
       });
   };
 
+  const ExecutionTotalCounts = async () => {
+    await axios
+      .get(`${baseUrl}/sales/count_data_status_wise`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log(res, "total--->>>-->>>");
+        setTotalExecutionCounts(res?.data);
+      });
+  };
+
   useEffect(() => {
     executionAPI();
+    ExecutionTotalCounts();
   }, []);
-
-  const handleFilter = (status) => {
-    setSaimyualCamp(
-      data?.filter((element) => element.execution_status === status)
-    );
-    setApiStatus(status);
-  };
 
   const handleViewClick = (id) => {
     const selected = data.find((ele) => ele.sale_booking_id == id);
@@ -379,6 +253,30 @@ function ExecutionPending() {
       S_No: index + 1,
     }));
   };
+  const handleOpenCaseStudyDialog = async (e, row) => {
+    console.log(row, "row--->>");
+    e.preventDefault();
+    setCaseStudyDialog(true);
+    setCaseStudyOpenRowData(row);
+    try {
+      const response = await axios.get(
+        `${baseUrl}accounts/get_all_account?account_id=${row?.account_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const accountData = response?.data?.data;
+      console.log(accountData, " rd total--->>>-->>>");
+      setReadOnlyAccountsData(accountData);
+    } catch (error) {
+      console.error("Error fetching account data:", error);
+      toastError(error, "Failed to fetch account data");
+    }
+  };
+
   const columns = [
     {
       field: "S_No",
@@ -432,19 +330,6 @@ function ExecutionPending() {
               >
                 Pending
               </Button>
-              {params?.row?.execution_excel &&
-                params.row?.execution_status == "execution_accepted" && (
-                  <Button
-                    size="small"
-                    color="success"
-                    variant="outlined"
-                    className="btn btn_sm cmnbtn"
-                    fontSize="inherit"
-                    onClick={() => handleStartExecutions(params)}
-                  >
-                    Start Execution
-                  </Button>
-                )}
             </>
           );
         } else if (params.row.execution_status == "execution_accepted") {
@@ -461,7 +346,7 @@ function ExecutionPending() {
               >
                 In Progress
               </Button>
-              {params?.row?.execution_excel &&
+              {/* {params?.row?.execution_excel &&
                 params.row?.execution_status == "execution_accepted" && (
                   <Button
                     size="small"
@@ -473,7 +358,7 @@ function ExecutionPending() {
                   >
                     Start Execution
                   </Button>
-                )}
+                )} */}
             </>
           );
         } else if (params.row.execution_status == "execution_completed") {
@@ -500,11 +385,7 @@ function ExecutionPending() {
               Rejected
             </Button>
           );
-        } else if (
-          params.row.execution_status == "execution_paused"
-          //  ||
-          // params.row.execution_status == 6
-        ) {
+        } else if (params.row.execution_status == "execution_paused") {
           return (
             <Button
               size="small"
@@ -514,6 +395,18 @@ function ExecutionPending() {
               fontSize="inherit"
             >
               Hold
+            </Button>
+          );
+        } else if (params.row.case_study_status == false) {
+          return (
+            <Button
+              size="small"
+              color="success"
+              variant="outlined"
+              className="btn btn_sm cmnbtn"
+              fontSize="inherit"
+            >
+              Case Study Close
             </Button>
           );
         }
@@ -653,26 +546,6 @@ function ExecutionPending() {
       headerName: "Credit Status",
       width: 150,
     },
-    // {
-    //   field: "Time passed",
-    //   headerName: "Time passed",
-    //   type: "number",
-    //   width: 110,
-    //   renderCell: (params) => {
-    //     if (params.row.execution_status == "2") {
-    //       let time =
-    //         Math.abs(
-    //           (new Date(params.row.start_date) - new Date()) / 36e5
-    //         ).toFixed(1) + " hours";
-    //       return time.includes(".0") ? time.split(".")[0] : time;
-    //     }
-    //   },
-    // },
-    // {
-    //   field: "execution_remark",
-    //   headerName: "Remark",
-    //   width: 150,
-    // },
     contextData
       ? {
           field: "actions",
@@ -682,7 +555,7 @@ function ExecutionPending() {
           cellClassName: "actions",
           getActions: (params) => {
             const { id, row } = params;
-            const executionStatus = row.execution_status;
+            const executionStatus = row?.execution_status;
 
             if (executionStatus == "sent_for_execution") {
               return [
@@ -814,6 +687,35 @@ function ExecutionPending() {
                   Release
                 </Button>,
               ];
+            } else if (executionStatus == "execution_completed") {
+              return [
+                <div className="icon-1">
+                  <GridActionsCellItem
+                    key={id}
+                    icon={<PointOfSaleTwoToneIcon />}
+                    onClick={handleClickOpenPaymentDetailDialog}
+                    color="inherit"
+                  />
+                </div>,
+                <Link key={id} to={`/admin/exeexecution/${id}`}>
+                  <div className="icon-1">
+                    <GridActionsCellItem
+                      icon={<ListAltOutlinedIcon />}
+                      onClick={handleViewClick(id)}
+                      color="inherit"
+                    />
+                  </div>
+                </Link>,
+                <Button
+                  key={`${id}-update`}
+                  variant="outlined"
+                  onClick={(e) => handleOpenCaseStudyDialog(e, row)}
+                  className="btn btn_sm cmnbtn"
+                  color="success"
+                >
+                  Update
+                </Button>,
+              ];
             } else {
               return [
                 <div className="icon-1">
@@ -847,7 +749,7 @@ function ExecutionPending() {
             const { id, row } = params;
             const executionStatus = row.execution_status;
 
-            if (executionStatus == "1") {
+            if (executionStatus == "sent_for_execution") {
               return [
                 <Link key={id} to={`/admin/exeexecution/${id}`}>
                   <div className="icon-1">
@@ -881,7 +783,7 @@ function ExecutionPending() {
                   color="inherit"
                 />,
               ];
-            } else if (executionStatus == "2") {
+            } else if (executionStatus == "execution_accepted") {
               return [
                 <Link key={id} to={`/admin/exeexecution/${id}`}>
                   <div className="icon-1">
@@ -924,7 +826,6 @@ function ExecutionPending() {
           },
         },
   ];
-
   return (
     <>
       {confirmation && (
@@ -974,7 +875,10 @@ function ExecutionPending() {
           </ButtonGroup>
 
           <div className="thm_table card body-padding fx-head thm_row">
-            <form onSubmit={handleMultipleVerification} className="d-flex">
+            <form
+              onSubmit={(e) => handleMultipleVerification(e)}
+              className="d-flex"
+            >
               <input
                 type="text"
                 placeholder="Enter Token"
@@ -999,92 +903,52 @@ function ExecutionPending() {
                   return isActive ? "disabled" : "";
                 }}
                 onClick={() => {
-                  // setData(
-                  //   filterData.filter((ele) => ele.execution_status == 1)
-                  // );
-                  handleFilter("sent_for_execution");
+                  executionAPI("sent_for_execution");
                 }}
               >
-                Pending{" "}
-                {
-                  filterData?.filter(
-                    (ele) => ele.execution_status == "sent_for_execution"
-                  ).length
-                }
+                Pending {totalExecutionCounts?.sent_for_execution}
               </Button>
               <Button
                 onClick={() => {
-                  // setData(
-                  //   filterData.filter((ele) => ele.execution_status == 2)
-                  // );
-                  handleFilter("execution_accepted");
-                  // console.log(
-                  //   filterData.filter((ele) => ele.execution_status == 2)
-                  // );
+                  executionAPI("execution_accepted");
                 }}
               >
-                In Progress{" "}
-                {
-                  filterData?.filter(
-                    (ele) => ele.execution_status == "execution_accepted"
-                  )?.length
-                }
+                In Progress {totalExecutionCounts?.execution_accepted}
               </Button>
               <Button
                 onClick={() => {
-                  // setData(
-                  //   filterData.filter((ele) => ele.execution_status == 3)
-                  // );
-                  handleFilter("execution_completed");
+                  executionAPI("execution_completed");
                 }}
               >
-                Completed{" "}
-                {
-                  filterData?.filter(
-                    (ele) => ele.execution_status == "execution_completed"
-                  )?.length
-                }
+                Completed {totalExecutionCounts?.execution_completed}
               </Button>
               <Button
                 onClick={() => {
-                  // setData(
-                  //   filterData.filter((ele) => ele.execution_status == 4)
-                  // );
-                  handleFilter("execution_rejected");
+                  executionAPI("execution_rejected");
                 }}
               >
-                Rejected{" "}
-                {
-                  filterData?.filter(
-                    (ele) => ele.execution_status == "execution_rejected"
-                  )?.length
-                }
+                Rejected {totalExecutionCounts?.execution_rejected}
               </Button>
               <Button
                 onClick={() => {
-                  // setData(
-                  //   filterData.filter(
-                  //     (ele) =>
-                  //       ele.execution_status == 5 || ele.execution_status == 6
-                  //   )
-                  // );
-                  handleFilter("execution_paused");
+                  executionAPI("execution_paused");
                 }}
               >
-                Hold{" "}
-                {
-                  filterData?.filter(
-                    (ele) => ele.execution_status == "execution_paused"
-                    // || ele.execution_status == 6
-                  )?.length
-                }
+                Hold {totalExecutionCounts?.execution_paused}
+              </Button>
+              <Button
+                onClick={() => {
+                  executionAPI(false);
+                }}
+              >
+                Case Study Close{" "}
               </Button>
             </div>
 
             <DataGrid
               rows={addSerialNumber(saimyualCamp)}
               columns={columns}
-              getRowId={(row) => row._id}
+              getRowId={(row) => row?._id}
               slots={{ toolbar: GridToolbar }}
               slotProps={{
                 toolbar: {
@@ -1100,6 +964,12 @@ function ExecutionPending() {
         handleClosePaymentDetailDialog={handleClosePaymentDetailDialog}
         openPaymentDetailDialog={openPaymentDetailDialog}
         paymentDialogDetails={paymentDialogDetails}
+      />
+      <CaseStudyOpenUpdate
+        setCaseStudyDialog={setCaseStudyDialog}
+        caseStudyDialog={caseStudyDialog}
+        caseStudyOpenRowData={caseStudyOpenRowData}
+        readOnlyAccountsData={readOnlyAccountsData}
       />
 
       <Dialog

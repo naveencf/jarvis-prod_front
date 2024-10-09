@@ -299,7 +299,7 @@ export default function VendorNotAssignedModal() {
         <DialogContent>
           {!isLoading && (
             <DataGrid
-              rows={data.data}
+              rows={data?.data}
               columns={dataGridcolumns}
               pageSize={5}
               rowsPerPageOptions={[5]}

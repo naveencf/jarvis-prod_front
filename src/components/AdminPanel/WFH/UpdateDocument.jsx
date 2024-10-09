@@ -224,7 +224,7 @@ const UpdateDocument = () => {
           <div className="form_heading_title">
           <h1>Documents</h1>
             <div className="pack">
-            <i class="bi bi-house"></i> {activeLink.slice(1).charAt(0).toUpperCase()+ activeLink.slice(2)}
+            <i className="bi bi-house"></i> {activeLink.slice(1).charAt(0).toUpperCase()+ activeLink.slice(2)}
             </div>
           </div>
           {/* <Link to={`/admin/kra/${userId}`}>
@@ -324,7 +324,7 @@ const UpdateDocument = () => {
                           </h4>
                           {item.status == "Rejected" && (
                             <i
-                              class="bi bi-exclamation-circle-fill"
+                              className="bi bi-exclamation-circle-fill"
                               title={item.reject_reason}
                             />
                           )}

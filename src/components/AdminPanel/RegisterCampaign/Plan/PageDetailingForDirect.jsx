@@ -1119,7 +1119,7 @@ const PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
                         </button>
 
 
-                        <label for="fileInput" class="btn btn-outline-primary cmnbtn" style={{ width: "140px", margin: "0", display: "flex", alignItems: "center", justifyContent: "center" }} >
+                        <label htmlFor="fileInput" className="btn btn-outline-primary cmnbtn" style={{ width: "140px", margin: "0", display: "flex", alignItems: "center", justifyContent: "center" }} >
                             upload excel
                         </label>
                         <input

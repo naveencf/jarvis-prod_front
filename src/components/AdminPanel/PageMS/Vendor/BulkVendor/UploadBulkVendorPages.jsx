@@ -12,27 +12,38 @@ import {
   TableRow,
 } from "@mui/material";
 import * as XLSX from "xlsx";
-import { useGlobalContext } from '../../../../../Context/Context';
-import { baseUrl } from '../../../../../utils/config';
-import axios from 'axios';
-const storedToken = sessionStorage.getItem('token');
+import { useGlobalContext } from "../../../../../Context/Context";
+import { baseUrl } from "../../../../../utils/config";
+import axios from "axios";
+const storedToken = sessionStorage.getItem("token");
 
-const UploadBulkVendorPages = ({getRowData}) => {
+const UploadBulkVendorPages = ({ getRowData,from }) => {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [fileName, setFileName] = useState("");
-  const [file, setFile] = useState(null); 
+  const [file, setFile] = useState(null);
   const { toastAlert, toastError } = useGlobalContext();
 
-  const handleUpload = (event) => {
-    if(getRowData.length === 0){
-      toastError('Please select at least one vendor');
+  const handleCheck = (event) => {
+    if (getRowData.length === 0) {
+      toastError("Please select at least one vendor");
+      return;
+    } else if (getRowData.length > 1) {
+      toastError("Please select only one vendor at a time");
       return;
     }
-    
+  };
+  // console.log(getRowData,"getRowData")
+  const handleUpload = (event) => {
+    if (getRowData.length === 0) {
+      toastError("Please select at least one vendor");
+
+      return;
+    }
+
     const selectedFile = event.target.files[0];
     if (selectedFile) {
-      setFile(selectedFile);  
+      setFile(selectedFile);
       setFileName(selectedFile.name);
 
       const reader = new FileReader();
@@ -51,7 +62,7 @@ const UploadBulkVendorPages = ({getRowData}) => {
             return acc;
           }, {})
         );
-        
+
         setRows(formattedRows);
         setOpen(true);
       };
@@ -63,25 +74,27 @@ const UploadBulkVendorPages = ({getRowData}) => {
   const handleClose = () => {
     setOpen(false);
     setRows([]);
-    setFile(null); 
+    setFile(null);
   };
 
-  const handleSubmit = async() => {
-    if(getRowData.length <= 2){
-      toastError('Please select maximum 1 vendor');
-      return;
-    }
-
+  const handleSubmit = async () => {
+  
     const formdata = new FormData();
-    formdata.append('vendor_id', getRowData[0]._id);
-    formdata.append('bulk_vendor_excel', file);  
-    formdata.append('category_id', ''); 
+    if(from == "vendor"){
+      
+      formdata.append("vendor_id", getRowData[0]._id);
+    }else{
+
+      formdata.append("vendor_id", getRowData[0].vendor_id);
+    }
+    formdata.append("bulk_vendor_excel", file);
+    // formdata.append('category_id', '');
 
     try {
       const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
-          'Content-Type': 'multipart/form-data', 
+          "Content-Type": "multipart/form-data",
         },
       });
       console.log(res);
@@ -94,7 +107,17 @@ const UploadBulkVendorPages = ({getRowData}) => {
 
   const downloadTemplate = () => {
     const headers = [
-      ["pagename", "story", "post", "both", "m_story", "m_post", "m_both", "reel", "carousel"],
+      [
+        "page_name",
+        "story",
+        "post",
+        "both",
+        "m_story",
+        "m_post",
+        "m_both",
+        "reel",
+        "carousel",
+      ],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(headers);
@@ -115,18 +138,30 @@ const UploadBulkVendorPages = ({getRowData}) => {
       </Button>
 
       {/* Button to upload the Excel file */}
-      <Button component="label" className="btn cmnbtn btn_sm btn-outline-primary">
+      <Button
+        component="label"
+        className="btn cmnbtn btn_sm btn-outline-primary"
+        onClick={handleCheck}
+      >
         Upload Bulk-Vendor-Pages
-        <input type="file" accept=".xlsx, .xls" hidden onChange={handleUpload} />
+        {getRowData.length === 1 && (
+          <input
+            type="file"
+            accept=".xlsx, .xls"
+            hidden
+            onChange={handleUpload}
+          />
+        )}
       </Button>
 
       {/* Dialog to preview the uploaded data */}
-      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth='lg' fullWidth>
         <DialogTitle>Preview: {fileName}</DialogTitle>
         <DialogContent>
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>S No</TableCell>
                 <TableCell>Pagename</TableCell>
                 <TableCell>Story</TableCell>
                 <TableCell>Post</TableCell>
@@ -141,7 +176,8 @@ const UploadBulkVendorPages = ({getRowData}) => {
             <TableBody>
               {rows.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{row.pagename}</TableCell>
+                  <TableCell>{index+1}</TableCell>
+                  <TableCell>{row.page_name}</TableCell>
                   <TableCell>{row.story}</TableCell>
                   <TableCell>{row.post}</TableCell>
                   <TableCell>{row.both}</TableCell>

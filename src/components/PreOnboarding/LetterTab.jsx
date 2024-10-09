@@ -215,7 +215,7 @@ const LetterTab = ({ allUserData, gettingData }) => {
                     document={<OfferLetter allUserData={allUserData} image64={image64} />} fileName="OfferLetter.pdf">
 
 
-                    <i class="bi bi-cloud-arrow-down"></i>
+                    <i className="bi bi-cloud-arrow-down"></i>
 
                     Download Offer Letter
                   </PDFDownloadLink>
@@ -225,7 +225,7 @@ const LetterTab = ({ allUserData, gettingData }) => {
                     document={<AppointmentLetter allUserData={allUserData} image64={image64} />} fileName="AppointmentLetter.pdf">
 
 
-                    <i class="bi bi-cloud-arrow-down"></i>
+                    <i className="bi bi-cloud-arrow-down"></i>
 
                     Download Appointment Letter
                   </PDFDownloadLink>
@@ -279,7 +279,7 @@ const LetterTab = ({ allUserData, gettingData }) => {
                     className="btn cmnbtn btn_sm btn-danger previewClose mt-1"
                     onClick={handelClose}
                   >
-                    <i class="bi bi-x-lg"></i>
+                    <i className="bi bi-x-lg"></i>
                   </button>
                 </div>
                 <embed src={`${pdfBlob}#toolbar=0`} width={"100%"} height={"100%"} />

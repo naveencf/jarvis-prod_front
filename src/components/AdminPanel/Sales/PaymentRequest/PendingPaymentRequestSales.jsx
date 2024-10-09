@@ -84,7 +84,7 @@ const PendingPaymentRequestSales = () => {
         <>
           <Link to={`/admin/create-payment-update`}>
             <div className="icon-1" title="Document upload">
-              <i class="bi bi-file-earmark-plus"></i>
+              <i className="bi bi-file-earmark-plus"></i>
             </div>
           </Link>
         </>

@@ -40,8 +40,8 @@ const SalesBadges = ({ userBadgeData }) => {
   return (
     <div>
       <div className="mt20">
-        <div class="stepWrapper">
-          <ol class="steps">
+        <div className="stepWrapper">
+          <ol className="steps">
             <input
               type="hidden"
               id="total_payment_request_approved_amount"

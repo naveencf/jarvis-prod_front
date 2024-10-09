@@ -30,8 +30,8 @@ const Timeline = () => {
       <div className="timeline">
         <div className="timeline__event  animated fadeInUp delay-3s timeline__event--type1">
           <div className="timeline__event__icon ">
-            {/* <i class="bi bi-cake2-fill"></i> */}
-            <i class="fa-solid fa-cake-candles"></i>
+            {/* <i className="bi bi-cake2-fill"></i> */}
+            <i className="fa-solid fa-cake-candles"></i>
             <div className="timeline__event__date">Birthday</div>
           </div>
           <div className="timeline__event__content ">
@@ -45,7 +45,7 @@ const Timeline = () => {
         </div>
         <div className="timeline__event animated fadeInUp delay-2s timeline__event--type2">
           <div className="timeline__event__icon">
-            <i class="fa-regular fa-calendar-days"></i>
+            <i className="fa-regular fa-calendar-days"></i>
             <div className="timeline__event__date">Joining Date</div>
           </div>
           <div className="timeline__event__content">
@@ -59,7 +59,7 @@ const Timeline = () => {
         </div>
         <div className="timeline__event animated fadeInUp delay-1s timeline__event--type3">
           <div className="timeline__event__icon">
-            <i class="fa-solid fa-square-check"></i>
+            <i className="fa-solid fa-square-check"></i>
             <div className="timeline__event__date">Probation Completed</div>
           </div>
           <div className="timeline__event__content">
@@ -75,7 +75,7 @@ const Timeline = () => {
         </div>
         <div className="timeline__event animated fadeInUp timeline__event--type1">
           <div className="timeline__event__icon">
-            <i class="fa-solid fa-person-circle-check"></i>
+            <i className="fa-solid fa-person-circle-check"></i>
             <div className="timeline__event__date">Work Anniversary</div>
           </div>
           <div className="timeline__event__content">
