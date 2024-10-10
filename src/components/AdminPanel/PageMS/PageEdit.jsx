@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useGlobalContext } from "../../../Context/Context";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
@@ -24,6 +24,7 @@ import { useDispatch } from "react-redux";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useGetOwnershipTypeQuery } from "../../Store/PageBaseURL";
 import formatString from "../Operation/CampaignMaster/WordCapital";
+import { useContext } from "react";
 
 const Page = () => {
   const {
@@ -51,7 +52,7 @@ const Page = () => {
   const [tag, setTag] = useState([]);
   const [pageLevel, setPageLevel] = useState('');
   const [pageStatus, setPageStatus] = useState('');
-  const [userData, setUserData] = useState([]);
+  // const [userData, setUserData] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("");
   const [content, setContent] = useState("");
@@ -77,6 +78,7 @@ const Page = () => {
 
   const [allUsers, setAllUsers] = useState([]);
   const token = sessionStorage.getItem("token");
+  const { usersDataContext } = useContext(AppContext);
 
   // useEffect(() => {
   //   axios.get(baseUrl + 'get_all_users').then((res) => {
@@ -119,9 +121,9 @@ const Page = () => {
   });
 
   const getData = () => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
-      setUserData(res.data.data);
-    });
+    // axios.get(baseUrl + 'get_all_users').then((res) => {
+    //   setUserData(res.data.data);
+    // });
 
     axios
       .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMast_id}`, {
@@ -312,17 +314,19 @@ const Page = () => {
         setSinglePage(data[0])
         // const { execounthismodels } = data[0];
         // setExecounthismodels(execounthismodels);
-
-        axios.get(baseUrl + `v1/vendor/${singlePage.vendor_id}`,{
-          headers: {
-            'Content-Type':'application/json',
-            Authorization: `Bearer ${token}`
-          }
-        }).then((res) => {
-          setSingleVendor(res?.data?.data)
-        })
       });
   }, [platformData]);
+
+  useEffect(()=>{
+    axios.get(baseUrl + `v1/vendor/${singlePage.vendor_id}`,{
+      headers: {
+        'Content-Type':'application/json',
+        Authorization: `Bearer ${token}`
+      }
+    }).then((res) => {
+      setSingleVendor(res?.data?.data)
+    })
+  },[singlePage])
 
   const handleSubmit = async (e, flag) => {
     // console.log("first",pageStatus)
@@ -418,17 +422,21 @@ const Page = () => {
         // setIsFormSubmitted(true);
         // toastAlert("Submitted");
         const  cat_name = categoryData?.find((item) => item?._id == singlePage?.page_category_id)?.page_category;
+        const postPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c7412fbbf002179f6d6");
+        const storyPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c9112fbbf002179f72c");
+        const bothPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c9c12fbbf002179f72f");
+
         const payload = {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
           temp_vendor_id: singleVendor.vendor_id,
-          story: singlePage.story,
-          post: singlePage.post,
-          both_: singlePage.both_,
-          m_post_price: singlePage.m_post_price,
-          m_story_price: singlePage.m_story_price,
-          m_both_price: singlePage.m_both_price,
+          story: storyPrice?.price,
+          post: postPrice?.price,
+          both_: bothPrice?.price,
+          m_post_price: singlePage?.m_post_price,
+          m_story_price: singlePage?.m_story_price,
+          m_both_price: singlePage?.m_both_price,
           followers_count: followCount,
           preference_level: pageLevel,
           temp_page_cat_id: cat_name
@@ -640,14 +648,14 @@ const Page = () => {
           Close by <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
-          options={userData.map((option) => ({
+          options={usersDataContext.map((option) => ({
             value: option.user_id,
             label: option.user_name,
           }))}
           value={{
             value: closeBy,
             label:
-              userData.find((role) => role.user_id === closeBy)?.user_name ||
+              usersDataContext.find((role) => role.user_id === closeBy)?.user_name ||
               '',
           }}
           onChange={(e) => {

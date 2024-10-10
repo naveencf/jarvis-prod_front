@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
-import Select from "react-select";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link, useNavigate } from "react-router-dom";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
 import {
   Autocomplete,
   Avatar,
-  ButtonBase,
   TextField,
+  Box,
   Typography,
+  Button
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
@@ -21,7 +20,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
 import jwtDecode from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { addRow } from "../../Store/Executon-Slice";
@@ -31,7 +29,6 @@ import * as XLSX from "xlsx";
 import DateFormattingComponent from "../../DateFormator/DateFormared";
 import {
   openTagCategoriesModal,
-  setPlatform,
   setShowPageHealthColumn,
   setTagCategories,
 } from "../../Store/PageOverview";
@@ -57,7 +54,6 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { setStatsUpdate } from "../../Store/PageMaster";
 import PageDetail from "./PageOverview/PageDetail";
-import { setPageRow, setShowPageInfoModal } from "../../Store/Page-slice";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import { useGlobalContext } from "../../../Context/Context";
 import PageClosedByDetails from "./Page/PageClosedByDetails";
@@ -66,6 +62,8 @@ import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VendorDetails from "./Vendor/VendorDetails";
+import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
+import StatisticsWisePageOverview from "./PageOverview/StatisticsWisePageOverview";
 
 let count = 0;
 const PageOverview = () => {
@@ -77,9 +75,9 @@ const PageOverview = () => {
   } = useGetAllPageListQuery();
   const {
     data: pageStates,
-
     isLoading: isPagestatLoading,
   } = useGetPageStateQuery();
+
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState("Tab1");
   const [pageLevels, setPageLevels] = useState([]);
@@ -99,7 +97,6 @@ const PageOverview = () => {
   const [tableStories, setTableStories] = useState(0);
   const [tableBoths, setTableBoths] = useState(0);
   const [filterData, setFilterData] = useState([]);
-  // const [venodr, setVenodr] = useState([{}]);
   const [user, setUser] = useState();
   const [progress, setProgress] = useState(10);
   const [showPriceModal, setShowPriceModal] = useState(false);
@@ -131,7 +128,6 @@ const PageOverview = () => {
   const [oneLinkCount, setOneLinkCount] = useState(0);
   const [twoLinksCount, setTwoLinksCount] = useState(0);
   const [threeLinksCount, setThreeLinksCount] = useState(0);
-  const [WhastappDataForLink, setWhastappDataForLink] = useState("");
 
   // Handle price type change
   const handlePriceTypeChange = (e) => {
@@ -145,7 +141,7 @@ const PageOverview = () => {
 
   // Filter data when the button is clicked
   const handleFilter = () => {
-    const filteredData = filterData.filter((row) => {
+    const filteredData = filterData?.filter((row) => {
       let price = 0;
 
       // Get the selected price based on the selectedPriceType
@@ -193,12 +189,12 @@ const PageOverview = () => {
         row.page_mast_status == 0
           ? "Active"
           : row.page_mast_status == 1
-          ? "Inactive"
-          : row.page_mast_status == 2
-          ? "Delete"
-          : row.page_mast_status == 3
-          ? "Semiactive"
-          : "Unknown";
+            ? "Inactive"
+            : row.page_mast_status == 2
+              ? "Delete"
+              : row.page_mast_status == 3
+                ? "Semiactive"
+                : "Unknown";
 
       return {
         "S.No": index + 1,
@@ -418,7 +414,7 @@ const PageOverview = () => {
         return;
     }
 
-    const filteredData = individualDataDup.filter((item) => {
+    const filteredData = individualDataDup?.filter((item) => {
       if (!item.created_at) {
         return false;
       }
@@ -491,7 +487,7 @@ const PageOverview = () => {
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
   const handleClick = (platform) => {
-    const res = vendorTypes.filter((d) => d.platform_id == platform);
+    const res = vendorType?.filter((d) => d.platform_id == platform);
     setFilterData(res);
     setTabFilterData(res);
     calculateAndSetTotals(res);
@@ -557,16 +553,16 @@ const PageOverview = () => {
     if (pageList) {
       if (decodedToken.role_id !== 1) {
         setVendorTypes(
-          pageList.data.filter((item) => item.created_by == decodedToken.id)
+          pageList.data?.filter((item) => item.created_by == decodedToken.id)
         );
         setFilterData(
-          pageList.data.filter((item) => item.created_by == decodedToken.id)
+          pageList.data?.filter((item) => item.created_by == decodedToken.id)
         );
         calculateAndSetTotals(
-          pageList.data.filter((item) => item.created_by == decodedToken.id)
+          pageList.data?.filter((item) => item.created_by == decodedToken.id)
         );
         setTabFilterData(
-          pageList.data.filter((item) => item.created_by == decodedToken.id)
+          pageList.data?.filter((item) => item.created_by == decodedToken.id)
         );
       } else {
         setVendorTypes(pageList.data);
@@ -577,7 +573,7 @@ const PageOverview = () => {
     }
   }, [pageList]);
 
-  useEffect(() => {}, [tableFollowers, tablePosts, tableStories, tableBoths]);
+  useEffect(() => { }, [tableFollowers, tablePosts, tableStories, tableBoths]);
 
   const { data: priceData, isLoading: isPriceLoading } =
     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
@@ -1858,27 +1854,25 @@ const PageOverview = () => {
     setActiveTab("Tab1");
   };
 
-  console.log(newFilterData, "newFilterDatanewFilterDatanewFilterData------");
-
   // const whatsAppApiData = () => {
   //   setActiveTab("Tab1");
   // };
   const pageWithLevels = (level) => {
-    const pagewithlevels = tabFilterData.filter(
+    const pagewithlevels = tabFilterData?.filter(
       (item) => item.preference_level == level
     );
     setFilterData(pagewithlevels);
     setActiveTab("Tab1");
   };
   const pageWithStatus = (status) => {
-    const pagewithstatus = tabFilterData.filter(
+    const pagewithstatus = tabFilterData?.filter(
       (item) => item.page_mast_status == status
     );
     setFilterData(pagewithstatus);
     setActiveTab("Tab1");
   };
   const pageClosedBy = (close_by) => {
-    const pageclosedby = tabFilterData.filter(
+    const pageclosedby = tabFilterData?.filter(
       (item) => item.page_closed_by == close_by
     );
     setFilterData(pageclosedby);
@@ -1939,114 +1933,6 @@ const PageOverview = () => {
         setTopVendorData(res.data.body);
       });
   }, []);
-
-  const categoryGridcolumns = [
-    {
-      field: "S.NO",
-      headerName: "S.no",
-      renderCell: (params) => <div>{categoryData.indexOf(params.row) + 1}</div>,
-      width: 80,
-    },
-    {
-      headerName: "Category",
-      width: 200,
-      editable: false,
-      renderCell: (params) => {
-        let data = params.row?.category_name;
-        return data ? data : "NA";
-      },
-    },
-    {
-      field: "Vendor Count",
-      headerName: "Vendor Count",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.vendor_count;
-        return data ? data : "NA";
-      },
-    },
-    {
-      field: "Count",
-      headerName: "Count",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.category_used;
-        return data ? (
-          <div>
-            <button className="btn w_80">{data}</button>
-            <button
-              className="btn btn-sm btn-success"
-              onClick={() => {
-                setFilterData(
-                  pageList.data.filter(
-                    (item) => item.page_category_id === params.row.id
-                  )
-                );
-                setActiveTab("Tab1");
-              }}
-              style={{ marginLeft: "0px" }}
-            >
-              Show
-            </button>
-          </div>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "Total Followers",
-      headerName: "Total Followers",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.total_followers;
-        return data ? formatNumber(data) : "0";
-      },
-    },
-    {
-      field: "Story",
-      headerName: "Story",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.total_stories;
-        return data ? `₹. ${data}` : "0";
-      },
-    },
-    {
-      field: "Ave. Story",
-      headerName: " Ave. Story",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.total_stories / params.row.category_used;
-        return data ? `₹ ${data.toFixed(2)}` : "₹ 0.00";
-      },
-    },
-    {
-      field: "Post",
-      headerName: "Post",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.total_posts;
-        return data ? `₹. ${data}` : "0";
-      },
-    },
-    {
-      field: "Ave. Post",
-      headerName: " Ave. Post",
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        let data = params.row.total_posts / params.row.category_used;
-        return data ? `₹ ${data.toFixed(2)}` : "₹ 0.00";
-      },
-    },
-  ];
 
   useEffect(() => {
     if (pageList) {
@@ -2326,7 +2212,7 @@ const PageOverview = () => {
               <div className="card-body pb4">
                 <div className="d-flex">
                   {platformData?.map((platform) => {
-                    const count = vendorTypes.filter(
+                    const count = vendorTypes?.filter(
                       (d) => d.platform_id === platform._id
                     )?.length;
                     return (
@@ -2348,7 +2234,7 @@ const PageOverview = () => {
                       id="subcat-autocomplete"
                       options={subCat}
                       getOptionLabel={(option) => {
-                        const count = vendorTypes.filter(
+                        const count = vendorTypes?.filter(
                           (d) => d.page_sub_category_id == option._id
                         )?.length;
                         return `${option.page_sub_category} (${count})`;
@@ -2367,7 +2253,7 @@ const PageOverview = () => {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
-                          let result = vendorTypes.filter(
+                          let result = vendorTypes?.filter(
                             (d) => d.page_sub_category_id == newValue._id
                           );
                           setFilterData(result);
@@ -2417,7 +2303,7 @@ const PageOverview = () => {
                         ),
                       ]}
                       getOptionLabel={(option) => {
-                        const count = vendorTypes.filter(
+                        const count = vendorTypes?.filter(
                           (d) => d?.ownership_type === option
                         )?.length;
                         return `${option} (${count})`;
@@ -2435,7 +2321,7 @@ const PageOverview = () => {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
-                          let result = vendorTypes.filter(
+                          let result = vendorTypes?.filter(
                             (d) => d?.ownership_type === newValue
                           );
                           setFilterData(result);
@@ -2460,12 +2346,12 @@ const PageOverview = () => {
                           option === 0
                             ? "Active"
                             : option === 1
-                            ? "Inactive"
-                            : option === 2
-                            ? "Delete"
-                            : option === 3
-                            ? "Semiactive"
-                            : "Unknown";
+                              ? "Inactive"
+                              : option === 2
+                                ? "Delete"
+                                : option === 3
+                                  ? "Semiactive"
+                                  : "Unknown";
                         return `${name} (${count})`;
                       }}
                       style={{ width: 270 }}
@@ -2481,7 +2367,7 @@ const PageOverview = () => {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
-                          let result = vendorTypes.filter(
+                          let result = vendorTypes?.filter(
                             (d) => d.page_mast_status === newValue
                           );
                           setFilterData(result);
@@ -2501,7 +2387,7 @@ const PageOverview = () => {
                         ),
                       ]}
                       getOptionLabel={(option) => {
-                        const count = vendorTypes.filter(
+                        const count = vendorTypes?.filter(
                           (d) => d.page_name_type == option
                         )?.length;
                         return `${option} (${count})`;
@@ -2519,7 +2405,7 @@ const PageOverview = () => {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
-                          let result = vendorTypes.filter(
+                          let result = vendorTypes?.filter(
                             (d) => d.page_name_type == newValue
                           );
                           setFilterData(result);
@@ -2540,7 +2426,7 @@ const PageOverview = () => {
                       ]}
                       getOptionLabel={(option) => {
                         const users = user?.find((e) => e.user_id == option);
-                        const count = vendorTypes.filter(
+                        const count = vendorTypes?.filter(
                           (d) => d.page_closed_by == option
                         )?.length;
                         return `${users?.user_name} (${count})`;
@@ -2558,7 +2444,7 @@ const PageOverview = () => {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
                         } else {
-                          let result = vendorTypes.filter(
+                          let result = vendorTypes?.filter(
                             (d) => d.page_closed_by == newValue
                           );
                           setFilterData(result);
@@ -2581,9 +2467,8 @@ const PageOverview = () => {
                         const count = vendorTypes?.filter(
                           (d) => d?.page_category_id === option
                         ).length;
-                        return `${
-                          category?.page_category || "Unknown Category"
-                        } (${count})`;
+                        return `${category?.page_category || "Unknown Category"
+                          } (${count})`;
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -2621,9 +2506,8 @@ const PageOverview = () => {
                         const count = vendorTypes?.filter(
                           (d) => d?.page_profile_type_id === option
                         ).length;
-                        return `${
-                          category?.profile_type || "Unknown Profile"
-                        } (${count})`;
+                        return `${category?.profile_type || "Unknown Profile"
+                          } (${count})`;
                       }}
                       renderInput={(params) => (
                         <TextField
@@ -2669,7 +2553,7 @@ const PageOverview = () => {
                         } else {
                           let result = [];
                           if (newValue.value === "Done") {
-                            result = newFilterData.filter(
+                            result = newFilterData?.filter(
                               (d) =>
                                 d.hasOwnProperty("reach") &&
                                 d.hasOwnProperty("impression")
@@ -2805,27 +2689,6 @@ const PageOverview = () => {
                       </Box>
                     </Box>
                   ) : (
-                    // <Box sx={{ height: 700, width: "100%" }}>
-                    //   <DataGrid
-                    //     title="Profile Overview"
-                    //     rows={filterData}
-                    //     columns={dataGridcolumns}
-                    //     // onPaginationModelChange={handlePageChange}
-                    //     pageSize={5}
-                    //     rowsPerPageOptions={[5]}
-                    //     // rowHeight={38}
-                    //     disableSelectionOnClick
-                    //     getRowId={(row) => row._id}
-                    //     slots={{ toolbar: GridToolbar }}
-                    //     slotProps={{
-                    //       toolbar: {
-                    //         showQuickFilter: true,
-                    //       },
-                    //     }}
-                    //     checkboxSelection
-                    //     disableRowSelectionOnClick
-                    //   />
-                    // </Box>
                     <View
                       columns={dataGridcolumns}
                       data={newFilterData}
@@ -2890,7 +2753,11 @@ const PageOverview = () => {
           </div>
         )}
         {activeTab === "Tab2" && (
+          // <StatisticsWisePageOverview tabFilterData={tabFilterData}
+          //   setTabFilterData={setTabFilterData}
+          //   setActiveTab={setActiveTab} setFilterData={setFilterData} />
           <div className="vendor-container">
+
             <div className="card">
               <div className="card-header">
                 <h5 className="card-title">Profile with Levels</h5>
@@ -2952,12 +2819,12 @@ const PageOverview = () => {
                               {status == 0
                                 ? "Active"
                                 : status == 1
-                                ? "Inactive"
-                                : status == 2
-                                ? "Delete"
-                                : status == 3
-                                ? "Semiactive"
-                                : "Unknown"}
+                                  ? "Inactive"
+                                  : status == 2
+                                    ? "Delete"
+                                    : status == 3
+                                      ? "Semiactive"
+                                      : "Unknown"}
                             </h6>
                             <h6 className="mt4 fs_16">{count}</h6>
                           </div>
@@ -3000,7 +2867,6 @@ const PageOverview = () => {
                   </div>
                   <div
                     className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    // key={Math?.random()}
                   >
                     <div className="card">
                       <div className="card-body pb20 flexCenter colGap14">
@@ -3020,7 +2886,6 @@ const PageOverview = () => {
                   </div>
                   <div
                     className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    // key={Math?.random()}
                   >
                     <div className="card">
                       <div className="card-body pb20 flexCenter colGap14">
@@ -3040,7 +2905,7 @@ const PageOverview = () => {
                   </div>
                   <div
                     className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    // key={Math?.random()}
+                  // key={Math?.random()}
                   >
                     <div className="card">
                       <div className="card-body pb20 flexCenter colGap14">
@@ -3228,29 +3093,9 @@ const PageOverview = () => {
             </div>
           </div>
         )}
-        {activeTab === "Tab3" && (
-          <div className="">
-            <Box sx={{ height: 700, width: "100%" }}>
-              <DataGrid
-                title="Category Wise"
-                rows={categoryData}
-                columns={categoryGridcolumns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                disableSelectionOnClick
-                getRowId={(row) => row.id}
-                slots={{ toolbar: GridToolbar }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
-          </div>
-        )}
+        {activeTab === "Tab3" &&
+          <CategoryWisePageOverview categoryData={categoryData} formatNumber={formatNumber} setFilterData={setFilterData} pageList={pageList} setActiveTab={setActiveTab} vendorTypes={vendorTypes} vendorData={vendorData} />
+        }
         {activeTab === "Tab4" && <PageClosedByDetails />}
       </div>
     </>

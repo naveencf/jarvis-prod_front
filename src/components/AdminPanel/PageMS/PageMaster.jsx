@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useGlobalContext } from "../../../Context/Context";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
@@ -42,6 +42,7 @@ import {
 import { useParams, useNavigate } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import formatString from "../Operation/CampaignMaster/WordCapital";
+import { useContext } from "react";
 
 const PageMaster = () => {
   const location = useLocation();
@@ -157,9 +158,10 @@ const PageMaster = () => {
     useGetPlatformPriceQuery();
 
   const [showAll, setShowAll] = useState(true);
-  const optionsToShow = showAll ? userData : userData.slice(0, 5);
+  // const optionsToShow = showAll ? userData : userData.slice(0, 5);
   const [existError, setExistError] = useState("");
   const [messageColor, setMessageColor] = useState("");
+  const { usersDataContext } = useContext(AppContext);
 
   useEffect(() => {
     if (!singlePageLoading && pageMast_id) {
@@ -337,16 +339,16 @@ const PageMaster = () => {
   };
 
   const getData = () => {
-    axios
-      .get(baseUrl + "get_all_users", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // Adjust content type as needed
-        },
-      })
-      .then((res) => {
-        setUserData(res.data.data);
-      });
+    // axios
+    //   .get(baseUrl + "get_all_users", {
+    //     headers: {
+    //       Authorization: `Bearer ${token}`,
+    //       "Content-Type": "application/json", // Adjust content type as needed
+    //     },
+    //   })
+    //   .then((res) => {
+    //     setUserData(res.data.data);
+    //   });
   };
 
   useEffect(() => {
@@ -579,26 +581,26 @@ const PageMaster = () => {
   };
 
   // see more button inside close by
-  const MenuList = (props) => {
-    return (
-      <components.MenuList {...props}>
-        {props.children}
-        {!showAll && userData.length > 5 && (
-          <div
-            style={{
-              padding: "10px",
-              textAlign: "center",
-              cursor: "pointer",
-              color: "#007bff",
-            }}
-            onClick={() => setShowAll(true)}
-          >
-            See More
-          </div>
-        )}
-      </components.MenuList>
-    );
-  };
+  // const MenuList = (props) => {
+  //   return (
+  //     <components.MenuList {...props}>
+  //       {props.children}
+  //       {!showAll && userData.length > 5 && (
+  //         <div
+  //           style={{
+  //             padding: "10px",
+  //             textAlign: "center",
+  //             cursor: "pointer",
+  //             color: "#007bff",
+  //           }}
+  //           onClick={() => setShowAll(true)}
+  //         >
+  //           See More
+  //         </div>
+  //       )}
+  //     </components.MenuList>
+  //   );
+  // };
 
   const getInitialValue = () => {
     const initialId = vendorId || vendorDetails._id;
@@ -1273,7 +1275,7 @@ const PageMaster = () => {
                 </label>
                 <Select
                   // components={{ MenuList }}
-                  options={userData.map((option) => ({
+                  options={usersDataContext.map((option) => ({
                     value: option.user_id,
                     label: option.user_name,
                   }))}
@@ -1281,7 +1283,7 @@ const PageMaster = () => {
                   value={{
                     value: singleVendor.closed_by || closeBy,
                     label:
-                      userData.find(
+                      usersDataContext.find(
                         (role) =>
                           role.user_id == singleVendor.closed_by ||
                           role.user_id == closeBy
