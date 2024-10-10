@@ -1090,7 +1090,7 @@ const PageMaster = () => {
                       )
                     ) {
                       setLink(
-                        () => `https://www.instagram.com/${e.target.value}/`
+                        () => `https://www.instagram.com/${e.target.value}`
                       );
                       if (link) {
                         setValidateFields((prev) => ({ ...prev, link: false }));

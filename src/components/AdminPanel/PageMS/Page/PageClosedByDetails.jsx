@@ -24,6 +24,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
+import { Link } from "react-router-dom";
 
 const filterOptions = [
   { label: "Today", value: "today" },
@@ -47,7 +48,7 @@ const PageClosedByDetails = () => {
   const { usersDataContext } = useContext(AppContext);
   const [filterOption, setFilterOption] = useState("today");
   const [individualData, setIndividualData] = useState([]);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(null);
   const [customStartDate, setCustomStartDate] = useState(null);
   const [customEndDate, setCustomEndDate] = useState(null);
 
@@ -89,7 +90,13 @@ const PageClosedByDetails = () => {
         return { start: startOfToday(), end: endOfDay(now) };
     }
   };
-
+const handleIndex = (index) => {
+  if(index == activeIndex){
+    setActiveIndex(null);
+    return;
+  }
+  setActiveIndex(index)
+}
   const filterData = () => {
     const { start, end } = getDateRange();
     return (
@@ -186,7 +193,7 @@ const PageClosedByDetails = () => {
                     border: "none",
                     cursor: "pointer",
                   }}
-                  onClick={() => setActiveIndex(index)}
+                  onClick={() => handleIndex(index)}
                 >
                   Created by User: {getUserName(createdBy)}
                   <span style={{ float: "right" }}>
@@ -218,10 +225,13 @@ const PageClosedByDetails = () => {
                                     <ImageIcon />
                                   </Avatar>
                                 </ListItemAvatar>
+                                <Link  target="_blank" to={`https://instagram.com/${item?.page_name}`} >
+
                                 <ListItemText
                                   primary={item?.page_name}
                                   secondary={DateISOtoNormal(item?.createdAt)}
                                 />
+                                </Link>
                               </ListItem>
                             </List>
                           </Grid>

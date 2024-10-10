@@ -64,10 +64,15 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VendorDetails from "./Vendor/VendorDetails";
 import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
 import StatisticsWisePageOverview from "./PageOverview/StatisticsWisePageOverview";
+import { constant } from "../../../utils/constants";
 
 let count = 0;
 const PageOverview = () => {
   const { toastAlert } = useGlobalContext();
+  const storedToken = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(storedToken);
+  const userID = decodedToken.id;
+  const roleToken = decodedToken.role_id;
   const {
     data: pageList,
     refetch: refetchPageList,
@@ -78,20 +83,35 @@ const PageOverview = () => {
     isLoading: isPagestatLoading,
   } = useGetPageStateQuery();
 
+  const [pageDatas, setPageDatas] = useState([]);
+
+  useEffect(() => {
+    const fetchVendors = async () => {
+      try {
+        let res;
+        if (roleToken === constant.CONST_ADMIN_ROLE) {
+          res = await axios.get(`${baseUrl}v1/pageMaster`);
+          console.log(res.data.data , 'admin page data')
+        } else {
+          res = await axios.post(`${baseUrl}v1/get_all_pages_for_users`, { user_id: userID });
+          console.log(res.data.data , 'pagedata here')
+        }
+        if (res && res.data) {
+          setPageDatas(res.data.data || res.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+    fetchVendors(); 
+  }, [roleToken]); 
+
+
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState("Tab1");
-  const [pageLevels, setPageLevels] = useState([]);
-  const [pageStatus, setPageStatus] = useState([]);
   const [loading, setLoading] = useState(false);
   const [tabFilterData, setTabFilterData] = useState([]);
   const [topVendorData, setTopVendorData] = useState([]);
-  const [data, setData] = useState({
-    lessThan1Lac: [],
-    between1And10Lac: [],
-    between10And20Lac: [],
-    between20And30Lac: [],
-    moreThan30Lac: [],
-  });
   const [tableFollowers, setTableFollowers] = useState(0);
   const [tablePosts, setTablePosts] = useState(0);
   const [tableStories, setTableStories] = useState(0);
@@ -106,9 +126,7 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-  const storedToken = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(storedToken);
-  const userID = decodedToken.id;
+  
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [waData, setWaData] = useState([]);
@@ -121,13 +139,8 @@ const PageOverview = () => {
     setActiveIndex(activeIndex === index ? null : index);
   };
   const [allVendorWhats, setAllVendorWhats] = useState([]);
-
   const [selectedPriceType, setSelectedPriceType] = useState(""); // Holds the selected price type
   const [inputPrice, setInputPrice] = useState(""); // Holds the input price
-  const [zeroLinksCount, setZeroLinksCount] = useState(0);
-  const [oneLinkCount, setOneLinkCount] = useState(0);
-  const [twoLinksCount, setTwoLinksCount] = useState(0);
-  const [threeLinksCount, setThreeLinksCount] = useState(0);
 
   // Handle price type change
   const handlePriceTypeChange = (e) => {
@@ -141,6 +154,7 @@ const PageOverview = () => {
 
   // Filter data when the button is clicked
   const handleFilter = () => {
+    console.log(filterData,"filterData")
     const filteredData = filterData?.filter((row) => {
       let price = 0;
 
@@ -162,7 +176,6 @@ const PageOverview = () => {
       // Return rows where price exactly matches the input price
       return price === Number(inputPrice); // Ensures type matching
     });
-
     // Update the filtered data
     setNewFilterData(filteredData);
   };
@@ -356,10 +369,9 @@ const PageOverview = () => {
       }
       setIndividualData(result);
       setIndividualDataDup(result);
-      // console.log('aaaaaaa',result)
     }
     if (showPageHealthColumn == false) {
-      setFilterData(pageList.data);
+      setFilterData(pageDatas);
     }
   }
 
@@ -501,8 +513,6 @@ const PageOverview = () => {
 
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCat = subCategory?.data || [];
-  // console.log(subCat, ' oct-9 saimyual');
-
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
@@ -550,7 +560,7 @@ const PageOverview = () => {
     // setFilterData(pageList.data);
     // calculateAndSetTotals(pageList.data)
     // setTabFilterData(pageList.data)
-    if (pageList) {
+    if (pageDatas) {
       if (decodedToken.role_id !== 1) {
         setVendorTypes(
           pageList.data?.filter((item) => item.created_by == decodedToken.id)
@@ -565,13 +575,13 @@ const PageOverview = () => {
           pageList.data?.filter((item) => item.created_by == decodedToken.id)
         );
       } else {
-        setVendorTypes(pageList.data);
-        setFilterData(pageList.data);
-        calculateAndSetTotals(pageList.data);
-        setTabFilterData(pageList.data);
+        setVendorTypes(pageDatas);
+        setFilterData(pageDatas);
+        calculateAndSetTotals(pageDatas);
+        setTabFilterData(pageDatas);
       }
     }
-  }, [pageList]);
+  }, [pageDatas]);
 
   useEffect(() => { }, [tableFollowers, tablePosts, tableStories, tableBoths]);
 
@@ -579,13 +589,6 @@ const PageOverview = () => {
     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
 
   const [localPriceData, setLocalPriceData] = useState(null); // Local state to manage price data
-  // Effect to clear the local data and handle loading when selectedRow changes
-  // useEffect(() => {
-  //   if (selectedRow) {
-  //     setLocalPriceData(null);  // Clear old data
-  //   }
-  // }, [selectedRow]);
-
   // Update localPriceData when new data is fetched
   useEffect(() => {
     if (priceData) {
@@ -1752,37 +1755,6 @@ const PageOverview = () => {
   //   dataGridcolumns.push(...pageHealthColumn);
   // }
 
-  useEffect(() => {
-    const countPageLevels = (tabFilterData) => {
-      const counts = {};
-      console.log(tabFilterData,"tabFilterData")
-      tabFilterData?.forEach((item) => {
-        const category = item.preference_level;
-        counts[category] = (counts[category] || 0) + 1;
-      });
-      return counts;
-    };
-
-    const counts = countPageLevels(tabFilterData);
-    setPageLevels(counts);
-  
-  }, [tabFilterData]);
-
-  useEffect(() => {
-    const countPageStatus = (tabFilterData) => {
-      const counts = {};
-      console.log(tabFilterData,"tabFilterData")
-      tabFilterData?.forEach((item) => {
-        const status = item.page_mast_status;
-        counts[status] = (counts[status] || 0) + 1;
-      });
-      return counts;
-      
-    };
-
-    const counts = countPageStatus(tabFilterData);
-    setPageStatus(counts);
-  }, [tabFilterData]);
 
   // Fetch data from API
   const fetchWhatsAppLinks = async () => {
@@ -1798,135 +1770,6 @@ const PageOverview = () => {
     fetchWhatsAppLinks();
   }, []);
 
-  const renderWhatsAppLinkCards = () => {
-    const recordCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
-console.log(newFilterData,"newFilterData")
-    newFilterData?.forEach((row) => {
-      const matchedVendors = allVendorWhats?.filter(
-        (item) => item.vendor_id === row?.vendor_id
-      );
-      const count = matchedVendors?.length || 0;
-
-      if (count > 3) {
-        recordCount[3]++;
-      } else {
-        recordCount[count]++;
-      }
-    });
-    setZeroLinksCount(recordCount[0]);
-    setOneLinkCount(recordCount[1]);
-    setTwoLinksCount(recordCount[2]);
-    setThreeLinksCount(recordCount[3]);
-    // setFilterData(filtered);
-  };
-
-  // const renderWhatsAppLinkCards = () => {
-  //   const recordCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
-  //   const recordsByCount = { 0: [], 1: [], 2: [], 3: [] };
-
-  //   newFilterData?.forEach((row) => {
-  //     const matchedVendors = allVendorWhats?.filter(
-  //       (item) => item.vendor_id === row?.vendor_id
-  //     );
-  //     const count = matchedVendors?.length || 0;
-
-  //     if (count > 3) {
-  //       recordCount[3]++;
-  //       recordsByCount[3].push(row);
-  //     } else {
-  //       recordCount[count]++;
-  //       recordsByCount[count].push(row);
-  //     }
-  //   });
-
-  //   setZeroLinksCount(recordCount[0]);
-  //   setOneLinkCount(recordCount[1]);
-  //   setTwoLinksCount(recordCount[2]);
-  //   setThreeLinksCount(recordCount[3]);
-  //   setWhastappDataForLink(recordsByCount);
-  // };
-
-  useEffect(() => {
-    if (allVendorWhats?.length > 0 && newFilterData?.length > 0) {
-      renderWhatsAppLinkCards();
-    }
-  }, [allVendorWhats, newFilterData]);
-
-  const handleFilterByWhatsAppCount = (count) => {
-    // const filtered = filterData[count] || [];
-    // setNewFilterData(filtered);
-    setActiveTab("Tab1");
-  };
-
-  // const whatsAppApiData = () => {
-  //   setActiveTab("Tab1");
-  // };
-  const pageWithLevels = (level) => {
-    const pagewithlevels = tabFilterData?.filter(
-      (item) => item.preference_level == level
-    );
-    setFilterData(pagewithlevels);
-    setActiveTab("Tab1");
-  };
-  const pageWithStatus = (status) => {
-    const pagewithstatus = tabFilterData?.filter(
-      (item) => item.page_mast_status == status
-    );
-    setFilterData(pagewithstatus);
-    setActiveTab("Tab1");
-  };
-  const pageClosedBy = (close_by) => {
-    const pageclosedby = tabFilterData?.filter(
-      (item) => item.page_closed_by == close_by
-    );
-    setFilterData(pageclosedby);
-    setActiveTab("Tab1");
-  };
-
-  useEffect(() => {
-    let newData = {
-      lessThan1Lac: [],
-      between1And10Lac: [],
-      between10And20Lac: [],
-      between20And30Lac: [],
-      moreThan30Lac: [],
-    };
-
-    for (let i = 0; i < tabFilterData.length; i++) {
-      const item = tabFilterData[i];
-      const followersCount = item.followers_count;
-
-      if (followersCount < 100000) {
-        newData.lessThan1Lac.push(item);
-      } else if (followersCount >= 100000 && followersCount < 1000000) {
-        newData.between1And10Lac.push(item);
-      } else if (followersCount >= 1000000 && followersCount < 2000000) {
-        newData.between10And20Lac.push(item);
-      } else if (followersCount >= 2000000 && followersCount < 3000000) {
-        newData.between20And30Lac.push(item);
-      } else if (followersCount >= 3000000) {
-        newData.moreThan30Lac.push(item);
-      }
-    }
-    setData(newData);
-  }, [tabFilterData]);
-
-  const showData = (dataArray) => {
-    setActiveTab("Tab1");
-    setFilterData(dataArray);
-  };
-
-  const closedByCounts = tabFilterData?.reduce((acc, item) => {
-    acc[item.page_closed_by] = (acc[item.page_closed_by] || 0) + 1;
-    return acc;
-  }, {});
-
-  const userCounts = Object.keys(closedByCounts)?.map((key) => {
-    const userId = parseInt(key);
-    const userName =
-      user?.find((u) => u?.user_id === parseInt(key))?.user_name || "NA";
-    return { userId, userName, count: closedByCounts[key] };
-  });
 
   useEffect(() => {
     const result = axios
@@ -1939,19 +1782,19 @@ console.log(newFilterData,"newFilterData")
   }, []);
 
   useEffect(() => {
-    if (pageList) {
+    if (pageDatas) {
       const pageCategoryCount = {};
       const categoryVendorMap = {};
       const categoryFollowerMap = {};
       const postMap = {};
       const storyMap = {};
 
-      for (let i = 0; i < pageList.data?.length; i++) {
-        const categoryId = pageList.data[i]?.page_category_id;
-        const vendorId = pageList.data[i]?.vendor_id;
-        const followers = pageList.data[i]?.followers_count || 0;
-        const storys = pageList.data[i]?.story || 0;
-        const posts = pageList.data[i]?.post || 0;
+      for (let i = 0; i < pageDatas?.length; i++) {
+        const categoryId = pageDatas[i]?.page_category_id;
+        const vendorId = pageDatas[i]?.vendor_id;
+        const followers = pageDatas[i]?.followers_count || 0;
+        const storys = pageDatas[i]?.story || 0;
+        const posts = pageDatas[i]?.post || 0;
 
         if (categoryId) {
           if (pageCategoryCount[categoryId]) {
@@ -2007,7 +1850,7 @@ console.log(newFilterData,"newFilterData")
 
       setCategoryData(finalResult);
     }
-  }, [vendorTypes, vendorData, cat, pageList]);
+  }, [vendorTypes, vendorData, cat, pageDatas]);
 
   return (
     <>
@@ -2058,7 +1901,6 @@ console.log(newFilterData,"newFilterData")
                 <thead>
                   <tr>
                     <th>Vendor Name</th>
-                    {/* <th>Page Name</th> */}
                     <th>Profile Count</th>
                     <th>Total Sales</th>
                   </tr>
@@ -2072,7 +1914,6 @@ console.log(newFilterData,"newFilterData")
                             {item.vendor_name}
                           </a>
                         </td>
-                        {/* <td>{item.page_name}</td> */}
                         <td>{item.page_id_count}</td>
                         <td>{item.total_credit}</td>
                       </tr>
@@ -2266,37 +2107,6 @@ console.log(newFilterData,"newFilterData")
                       }}
                     />
                   </div>
-                  {/* <div className="col-md-4 mb16">
-                    <label className="form-label">
-                      Sub Category <sup style={{ color: 'red' }}>*</sup>
-                    </label>
-                    <div className="input-group inputAddGroup">
-                      <Select
-                        className="w-100"
-                        options={subCat.map((option) => ({
-                          value: option._id,
-                          label: option.page_sub_category,
-                          // label: option.category_name,
-                        }))}
-                        required={true}
-                        value={{
-                          value: subCategoryId,
-                          label:
-                            subCategoryData.find((role) => role._id === subCategoryId)
-                              ?.page_sub_category || '',
-                        }}
-                        onChange={(e) => {
-                          setSubCategoryId(e.value);
-                          if (e.value) {
-                            setValidateFields((prev) => ({
-                              ...prev,
-                              subCategoryId: false,
-                            }));
-                          }
-                        }}
-                      />
-                    </div>
-                  </div> */}
 
                   <div className="col-md-4 mb16">
                     <Autocomplete
@@ -2756,347 +2566,11 @@ console.log(newFilterData,"newFilterData")
             <PageDetail />
           </div>
         )}
-        {activeTab === "Tab2" && (
-          // <StatisticsWisePageOverview tabFilterData={tabFilterData}
-          //   setTabFilterData={setTabFilterData}
-          //   setActiveTab={setActiveTab} setFilterData={setFilterData} />
-          <div className="vendor-container">
-
-            <div className="card">
-              <div className="card-header">
-                <h5 className="card-title">Profile with Levels</h5>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  {Object.entries(pageLevels).map(([level, count]) => (
-                    <div
-                      key={level}
-                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    >
-                      <div
-                        className="card pointer"
-                        key={level}
-                        onClick={() => pageWithLevels(level)}
-                      >
-                        <div className="card-body pb20 flexCenter colGap14">
-                          <div className="iconBadge small bgPrimaryLight m-0">
-                            <span>
-                              <Brightness6Icon />
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="colorMedium">{level}</h6>
-                            <h6 className="mt4 fs_16">{count}</h6>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-header">
-                <h5 className="card-title">Profile with Status</h5>
-              </div>
-              <div className="card-body ">
-                <div className="row">
-                  {Object.entries(pageStatus).map(([status, count]) => (
-                    <div
-                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                      key={Math.random()}
-                    >
-                      <div
-                        className="card pointer"
-                        key={status}
-                        onClick={() => pageWithStatus(status)}
-                      >
-                        <div className="card-body pb20 flexCenter colGap14">
-                          <div className="iconBadge small bgPrimaryLight m-0">
-                            <span>
-                              <ToggleOffIcon />
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="colorMedium">
-                              {status == 0
-                                ? "Active"
-                                : status == 1
-                                  ? "Inactive"
-                                  : status == 2
-                                    ? "Delete"
-                                    : status == 3
-                                      ? "Semiactive"
-                                      : "Unknown"}
-                            </h6>
-                            <h6 className="mt4 fs_16">{count}</h6>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-            {/* WhatsAppp Links */}
-            <div className="card">
-              <div className="card-header">
-                <h5 className="card-title">WhatsApp Links</h5>
-              </div>
-              <div className="card-body">
-                <div
-                  className="row"
-                  onClick={() => handleFilterByWhatsAppCount(0)}
-                >
-                  <div
-                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    key={Math?.random()}
-                  >
-                    <div className="card ">
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">
-                            Records with 0 WhatsApp Link
-                          </h6>
-                          <h6 className="mt4 fs_16">{zeroLinksCount}</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                  >
-                    <div className="card">
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">
-                            Records with 1 WhatsApp Link
-                          </h6>
-                          <h6 className="mt4 fs_16">{oneLinkCount}</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                  >
-                    <div className="card">
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">
-                            Records with 2 WhatsApp Link
-                          </h6>
-                          <h6 className="mt4 fs_16">{twoLinksCount}</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div
-                    className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                  // key={Math?.random()}
-                  >
-                    <div className="card">
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">
-                            Records with 3 WhatsApp Link
-                          </h6>
-                          <h6 className="mt4 fs_16">{threeLinksCount}</h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* ))} */}
-                </div>
-              </div>
-            </div>
-            {/* =------------------= */}
-            <div className="card">
-              <div className="card-header">
-                <h5 className="card-title">Profile with Followers Count</h5>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div
-                      className="card pointer"
-                      onClick={() => showData(data.lessThan1Lac)}
-                    >
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">Less than 1 Lac</h6>
-                          <h6 className="mt4 fs_16">
-                            {data.lessThan1Lac.length}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div
-                      className="card pointer"
-                      onClick={() => showData(data.between1And10Lac)}
-                    >
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">1-10 Lacs</h6>
-                          <h6 className="mt4 fs_16">
-                            {data.between1And10Lac.length}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div
-                      className="card pointer"
-                      onClick={() => showData(data.between10And20Lac)}
-                    >
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">10-20 Lacs</h6>
-                          <h6 className="mt4 fs_16">
-                            {data.between10And20Lac.length}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div
-                      className="card pointer"
-                      onClick={() => showData(data.between20And30Lac)}
-                    >
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">20-30 Lacs</h6>
-                          <h6 className="mt4 fs_16">
-                            {data.between20And30Lac.length}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                    <div
-                      className="card pointer"
-                      onClick={() => showData(data.moreThan30Lac)}
-                    >
-                      <div className="card-body pb20 flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0">
-                          <span>
-                            <FormatListNumberedIcon />
-                          </span>
-                        </div>
-                        <div>
-                          <h6 className="colorMedium">More than 30 Lacs</h6>
-                          <h6 className="mt4 fs_16">
-                            {data.moreThan30Lac.length}
-                          </h6>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="card">
-              <div className="card-header">
-                <h5 className="card-title">Profile closed by</h5>
-              </div>
-              <div className="card-body">
-                <div className="row">
-                  {userCounts.map((item) => (
-                    <div
-                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                      key={Math.random()}
-                    >
-                      <div
-                        className="card pointer"
-                        key={item.userName}
-                        onClick={() => pageClosedBy(item.userId)}
-                      >
-                        <div className="card-body pb20 flexCenter colGap14">
-                          <div className="iconBadge small bgPrimaryLight m-0">
-                            <span>
-                              <AccountCircleIcon />
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="colorMedium">{item.userName}</h6>
-                            <h6 className="mt4 fs_16">{item.count}</h6>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                <div
-                  className="card"
-                  data-toggle="modal"
-                  data-target="#myModal"
-                >
-                  <div className="card-body pb20 flexCenter colGap14 pointer">
-                    <div className="iconBadge small bgPrimaryLight m-0">
-                      <span></span>
-                    </div>
-                    <div>
-                      <h6 className="colorMedium">Top Vendors</h6>
-                      <h6 className="mt4 fs_16">10</h6>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === "Tab2" &&
+          <StatisticsWisePageOverview tabFilterData={tabFilterData}
+            setTabFilterData={setTabFilterData}
+            setActiveTab={setActiveTab} setFilterData={setFilterData} allVendorWhats={allVendorWhats} newFilterData={newFilterData} />
+        }
         {activeTab === "Tab3" &&
           <CategoryWisePageOverview categoryData={categoryData} formatNumber={formatNumber} setFilterData={setFilterData} pageList={pageList} setActiveTab={setActiveTab} vendorTypes={vendorTypes} vendorData={vendorData} />
         }
