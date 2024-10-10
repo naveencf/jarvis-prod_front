@@ -1469,47 +1469,52 @@ console.log(Number(creditLimit),"formData",creditLimit)
   };
 
   axios
-  .post(baseUrl + "image_to_base64", {
-    imageUrl: userData.digital_signature_image_url,
-  })
-  .then((response) => {
-    setImage64(response.data.base64String);
-  })
-  .catch((error) => {
-    console.error("Error fetching data:", error);
-  });
+    .post(baseUrl + "image_to_base64", {
+      imageUrl: userData.digital_signature_image_url,
+    })
+    .then((response) => {
+      setImage64(response.data.base64String);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
 
   const genralFields = (
     <>
       <div className="card">
         <div className="d-flex align-item-center">
-          <div className="card-header">Personal Details</div>
-          <div>
+          <div className="card-header sb"><h5 className="card-tittle">Personal Details </h5><div className="d-flex gap-2 ">
             <PDFDownloadLink
-              className="btn gap-2 "
+
               document={
                 <OfferLetter allUserData={userData} image64={image64} />
               }
               fileName="OfferLetter.pdf"
             >
-              <i
-                title="Download Offer Letter"
-                class="bi bi-cloud-arrow-down"
-              ></i>
+              <button className="btn-primary btn cmnbtn btn_sm">
+                Offer Letter
+                <i
+                  title="Download Offer Letter"
+                  class="bi bi-cloud-arrow-down"
+                ></i>
+              </button>
             </PDFDownloadLink>
             <PDFDownloadLink
-              className="btn  gap-2"
               document={
                 <AppointmentLetter allUserData={userData} image64={image64} />
               }
               fileName="AppointmentLetter.pdf"
             >
-              <i
-                title="Download Appointment Letter"
-                class="bi bi-cloud-arrow-down"
-              ></i>
+              <button className="btn-primary btn cmnbtn btn_sm">
+                Appointment Letter
+                <i
+                  title="Download Offer Letter"
+                  class="bi bi-cloud-arrow-down"
+                ></i>
+              </button>
             </PDFDownloadLink>
-          </div>
+          </div></div>
+
         </div>
         <div className="card-body row">
           <FieldContainer
@@ -2290,7 +2295,7 @@ console.log(Number(creditLimit),"formData",creditLimit)
               }
             }}
 
-            // setBankAccountNumber(e.target.value)}
+          // setBankAccountNumber(e.target.value)}
           />
           <FieldContainer
             label="IFSC"
@@ -2684,15 +2689,14 @@ console.log(Number(creditLimit),"formData",creditLimit)
         {accordionButtons.map((button, index) => (
           <div className="flex-row align-items-center w-100 gap-4">
             <button
-              className={`tab ${
-                activeAccordionIndex === index ? "active" : "disabled"
-              }`}
+              className={`tab ${activeAccordionIndex === index ? "active" : "disabled"
+                }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               <div className="gap-1 flex-row">
                 {
                   indicator[
-                    activeAccordionIndex === index ? "active" : "disabled"
+                  activeAccordionIndex === index ? "active" : "disabled"
                   ]
                 }
                 <p>{button}</p>
@@ -2714,9 +2718,8 @@ console.log(Number(creditLimit),"formData",creditLimit)
                     fill-rule="evenodd"
                     clip-rule="evenodd"
                     d="M6.51171 4.43057C6.8262 4.161 7.29968 4.19743 7.56924 4.51192L13.5692 11.5119C13.81 11.7928 13.81 12.2072 13.5692 12.4881L7.56924 19.4881C7.29968 19.8026 6.8262 19.839 6.51171 19.5695C6.19721 19.2999 6.16079 18.8264 6.43036 18.5119L12.012 12L6.43036 5.48811C6.16079 5.17361 6.19721 4.70014 6.51171 4.43057ZM10.5119 4.43068C10.8264 4.16111 11.2999 4.19753 11.5694 4.51202L17.5694 11.512C17.8102 11.7929 17.8102 12.2073 17.5694 12.4882L11.5694 19.4882C11.2999 19.8027 10.8264 19.8391 10.5119 19.5696C10.1974 19.3 10.161 18.8265 10.4306 18.512L16.0122 12.0001L10.4306 5.48821C10.161 5.17372 10.1974 4.70024 10.5119 4.43068Z"
-                    fill={`${
-                      activeAccordionIndex === index ? "var(--primary)" : ""
-                    }`}
+                    fill={`${activeAccordionIndex === index ? "var(--primary)" : ""
+                      }`}
                   />
                 </g>
               </svg>

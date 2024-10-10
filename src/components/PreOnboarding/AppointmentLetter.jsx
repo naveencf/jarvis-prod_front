@@ -962,7 +962,7 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                     <Text>Designation: {allUserData?.designation_name}</Text>
                     <Text>D.O.J: {formatDate(allUserData?.joining_date)}</Text>
                 </View>
-                <View style={styles.section}>
+                <View style={[styles.section, { paddingBottom: 2 }]}>
                     <Text style={[styles.Tableheading, styles.underline]}>
                         Remuneration Structure & Break-up
                     </Text>
@@ -1005,17 +1005,17 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                         the contents here in.
                     </Text>
                 </View>
-                <View style={[styles.section]}>
-                    <Text style={[styles.text, { marginBottom: 10, marginTop: 20 }]}>Signature:</Text>
-                    <Image
+                <View style={[styles.section, { paddingBottom: 0 }]}>
+                    <Text style={[styles.text, { marginTop: 10 }]}>Signature:</Text>
+                    {true && <Image
                         style={styles.signatureImage2}
                         src={`data:image/png;base64,${image64}`}
                         alt="Signature"
-                    />
-                </View>
-                <View>
+                    />}
                     <Text style={styles.text} >{allUserData?.user_name}</Text>
                 </View>
+
+
                 <View style={styles.footer} fixed>
                     <Text style={styles.footName}>CREATIVEFUEL PRIVATE LIMITED</Text>
                     <Text>
