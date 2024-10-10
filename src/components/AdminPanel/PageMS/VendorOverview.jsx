@@ -70,7 +70,7 @@ useEffect(() => {
       if (roleToken === constant.CONST_ADMIN_ROLE) {
         res = await axios.get(`${baseUrl}v1/vendor`);
       } else {
-        res = await axios.post(`${baseUrl}v1/get_all_vendors_for_users`, { user_id: 1045 });
+        res = await axios.post(`${baseUrl}v1/get_all_vendors_for_users`, { user_id: userID });
       }
       if (res && res.data) {
         setVendorDatas(res.data.data || res.data);

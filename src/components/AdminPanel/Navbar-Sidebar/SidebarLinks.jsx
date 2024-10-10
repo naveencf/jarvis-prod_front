@@ -1773,6 +1773,12 @@ const SidebarLinks = () => {
               {/* {contextData &&
                 contextData[0] &&
                 contextData[0].view_value === 1 && ( */}
+                <NavLink
+                className="collapse-item"
+                to="/admin/pms-inventory-dashboard"
+              >
+                <i className="bi bi-dot"></i>Dashboard
+              </NavLink>
               <NavLink
                 className="collapse-item"
                 to="/admin/pms-vendor-overview"

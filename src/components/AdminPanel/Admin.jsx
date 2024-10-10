@@ -8,6 +8,8 @@ import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/Catego
 import Profile from "../Pantry/UserPanel/Profile/Profile";
 import PostStats from "../Stats/PostStats";
 import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor";
+import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard";
+import CategoryOverview from "./PageMS/Category/CategoryOverview";
 
 
 const ViewSalesPoc = lazy(() =>
@@ -1897,6 +1899,14 @@ const Admin = () => {
                     <Route
                       path="/pms-bulk-vendor-overview"
                       element={<BulkVendor />}
+                    />
+                    <Route
+                      path="/pms-inventory-dashboard"
+                      element={<InventoryDashboard />}
+                    />
+                    <Route
+                      path="/pms-inventory-category-overview"
+                      element={<CategoryOverview />}
                     />
 
                     <Route path="/pms-vendor-type" element={<VendorType />} />

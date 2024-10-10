@@ -15,7 +15,7 @@ import {
   useGetAllPageListQuery,
   useGetAllProfileListQuery,
   useGetMultiplePagePriceQuery,
-} from '../../Store/PageBaseURL';
+} from "../../Store/PageBaseURL";
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
@@ -38,20 +38,20 @@ const Page = () => {
   const dispatch = useDispatch();
   const { toastAlert } = useGlobalContext();
   const [rowCount, setRowCount] = useState([
-    { page_price_type_id: '', price: '' },
+    { page_price_type_id: "", price: "" },
   ]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [priceTypeList, setPriceTypeList] = useState([]);
 
-  const [pageName, setPageName] = useState('');
-  const [link, setLink] = useState('');
+  const [pageName, setPageName] = useState("");
+  const [link, setLink] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [platformId, setPlatformId] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [subCategoryId, setSubCategoryId] = useState('');
+  const [platformId, setPlatformId] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [subCategoryId, setSubCategoryId] = useState("");
   const [tag, setTag] = useState([]);
-  const [pageLevel, setPageLevel] = useState('');
-  const [pageStatus, setPageStatus] = useState('');
+  const [pageLevel, setPageLevel] = useState("");
+  const [pageStatus, setPageStatus] = useState("");
   // const [userData, setUserData] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("");
@@ -61,19 +61,19 @@ const Page = () => {
   const [followCount, setFollowCount] = useState("");
   const [profileId, setProfileId] = useState("");
   const [platformActive, setPlatformActive] = useState();
-  const [rate, setRate] = useState('');
-  const [description, setDescription] = useState('');
-  const [singlePage, setSinglePage] = useState({})
+  const [rate, setRate] = useState("");
+  const [description, setDescription] = useState("");
+  const [singlePage, setSinglePage] = useState({});
 
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
 
   const [priceDataNew, setPriceDataNew] = useState([]);
-  const [rateType, setRateType] = useState('Fixed');
+  const [rateType, setRateType] = useState("Fixed");
 
   const [engagment, setEngagment] = useState(0);
-  const [singleVendor, setSingleVendor] = useState({})
+  const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
 
   const [allUsers, setAllUsers] = useState([]);
@@ -87,32 +87,32 @@ const Page = () => {
   // }, []);
 
   const PageLevels = [
-    { value: 'Level 1 (High)', label: 'Level 1 (High)' },
-    { value: 'Level 2 (Medium)', label: 'Level 2 (Medium)' },
-    { value: 'Level 3 (Low)', label: 'Level 3 (Low)' },
+    { value: "Level 1 (High)", label: "Level 1 (High)" },
+    { value: "Level 2 (Medium)", label: "Level 2 (Medium)" },
+    { value: "Level 3 (Low)", label: "Level 3 (Low)" },
   ];
 
   const PageStatus = [
-    { value: 0, label: 'Active' },
-    { value: 1, label: 'Inactive' },
-    { value: 2, label: 'Disabled' },
-    { value: 3, label: 'Semiactive' },
+    { value: 0, label: "Active" },
+    { value: 1, label: "Inactive" },
+    { value: 2, label: "Disabled" },
+    { value: 3, label: "Semiactive" },
   ];
 
   const PageTypes = [
-    { value: 'Non Adult', label: 'Non Adult' },
-    { value: 'Adult', label: 'Adult' },
+    { value: "Non Adult", label: "Non Adult" },
+    { value: "Adult", label: "Adult" },
   ];
 
   const Contents = [
-    { value: 'By Vendor', label: 'By Vendor' },
-    { value: 'By CF', label: 'By CF' },
-    { value: 'Both', label: 'Both' },
+    { value: "By Vendor", label: "By Vendor" },
+    { value: "By CF", label: "By CF" },
+    { value: "Both", label: "Both" },
   ];
 
   const RateTypes = [
-    { value: 'Fixed', label: 'Fixed' },
-    { value: 'Variable', label: 'Variable' },
+    { value: "Fixed", label: "Fixed" },
+    { value: "Variable", label: "Variable" },
   ];
 
   const [variableType, setVariableType] = useState({
@@ -128,7 +128,7 @@ const Page = () => {
     axios
       .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMast_id}`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       })
@@ -213,7 +213,7 @@ const Page = () => {
     });
     axios.delete(baseUrl + `v1/pagePriceMultiple/${_id}`, {
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
@@ -229,7 +229,7 @@ const Page = () => {
       axios
         .get(baseUrl + `v1/pagePriceTypesForPlatformId/${platformId}`, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         })
@@ -244,10 +244,10 @@ const Page = () => {
     if (rowCount.length > 0) {
       setRowCount((rowCount) => [
         ...rowCount,
-        { page_price_type_id: '', price: '' },
+        { page_price_type_id: "", price: "" },
       ]);
     } else {
-      setRowCount([{ page_price_type_id: '', price: '' }]);
+      setRowCount([{ page_price_type_id: "", price: "" }]);
     }
   };
 
@@ -261,13 +261,12 @@ const Page = () => {
     }
   }, [priceData]);
 
-
   // console.log(isPageListLoading,"kdshk",priceTypeList)
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMast_id}`, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       })
@@ -311,69 +310,71 @@ const Page = () => {
         setEngagment(data[0]?.engagment_rate);
         setDescription(data[0].description);
         setP_id(data[0].pageMast_id);
-        setSinglePage(data[0])
+        setSinglePage(data[0]);
         // const { execounthismodels } = data[0];
         // setExecounthismodels(execounthismodels);
       });
   }, [platformData]);
 
-  useEffect(()=>{
-    axios.get(baseUrl + `v1/vendor/${singlePage.vendor_id}`,{
-      headers: {
-        'Content-Type':'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    }).then((res) => {
-      setSingleVendor(res?.data?.data)
-    })
-  },[singlePage])
+  useEffect(() => {
+    axios
+      .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        setSingleVendor(res?.data?.data);
+      });
+  }, [singlePage]);
 
   const handleSubmit = async (e, flag) => {
     // console.log("first",pageStatus)
     e.preventDefault();
     if (!pageName) {
-      toastAlert('Page Name is required');
+      toastAlert("Page Name is required");
       return;
     } else if (!link) {
-      toastAlert('Link is required');
+      toastAlert("Link is required");
       return;
     } else if (!platformId) {
-      toastAlert('Platform ID is required');
+      toastAlert("Platform ID is required");
       return;
     } else if (!categoryId) {
-      toastAlert('Category is required');
+      toastAlert("Category is required");
       return;
     } else if (!subCategoryId) {
-      toastAlert('Sub Category is required');
+      toastAlert("Sub Category is required");
       return;
     } else if (!pageLevel) {
-      toastAlert('Page Level is required');
+      toastAlert("Page Level is required");
       return;
-    } 
+    }
     // else if (!pageStatus) {
     //   toastAlert('Page Status is required');
     //   return;
-    // } 
+    // }
     else if (!closeBy) {
-      toastAlert('Close by is required');
+      toastAlert("Close by is required");
       return;
     } else if (!pageType) {
-      toastAlert('Page Name Type is required');
+      toastAlert("Page Name Type is required");
       return;
     } else if (!content) {
-      toastAlert('Content Creation is required');
+      toastAlert("Content Creation is required");
       return;
     } else if (!ownerType) {
-      toastAlert('Ownership type is required');
+      toastAlert("Ownership type is required");
       return;
     } else if (!vendorId) {
-      toastAlert('Vendor is required');
+      toastAlert("Vendor is required");
       return;
     } else if (!followCount) {
-      toastAlert('Followers Count is required');
+      toastAlert("Followers Count is required");
       return;
     } else if (!profileId) {
-      toastAlert('Profile Type is required');
+      toastAlert("Profile Type is required");
       return;
     }
     //  else if (!platformActive) {
@@ -404,27 +405,35 @@ const Page = () => {
       followers_count: followCount,
       page_profile_type_id: profileId,
       // platform_active_on: platformActive.map((e) => e.value),
-      rate_type: rateType || '',
+      rate_type: rateType || "",
       description: description,
       updated_by: userID,
       engagment_rate: engagment || 0,
-      variable_type: rateType == "Variable" ? variableType.value : null
+      variable_type: rateType == "Variable" ? variableType.value : null,
     };
 
-   await axios
+    await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       })
       .then(() => {
         // setIsFormSubmitted(true);
         // toastAlert("Submitted");
-        const  cat_name = categoryData?.find((item) => item?._id == singlePage?.page_category_id)?.page_category;
-        const postPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c7412fbbf002179f6d6");
-        const storyPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c9112fbbf002179f72c");
-        const bothPrice = rowCount.find((item) => item?.page_price_type_id == "667e6c9c12fbbf002179f72f");
+        const cat_name = categoryData?.find(
+          (item) => item?._id == singlePage?.page_category_id
+        )?.page_category;
+        const postPrice = rowCount.find(
+          (item) => item?.page_price_type_id == "667e6c7412fbbf002179f6d6"
+        );
+        const storyPrice = rowCount.find(
+          (item) => item?.page_price_type_id == "667e6c9112fbbf002179f72c"
+        );
+        const bothPrice = rowCount.find(
+          (item) => item?.page_price_type_id == "667e6c9c12fbbf002179f72f"
+        );
 
         const payload = {
           p_id: singlePage.p_id,
@@ -439,19 +448,20 @@ const Page = () => {
           m_both_price: singlePage?.m_both_price,
           followers_count: followCount,
           preference_level: pageLevel,
-          temp_page_cat_id: cat_name
+          temp_page_cat_id: cat_name,
           //temp_page_cat_id: singlePage.temp_page_cat_id
-        }
-        axios.post(baseUrl + `node_data_to_php_update_page`,payload)
-        .then(()=>{})
-        .catch((err)=>{
-          console.log(err)
-        })
+        };
+        axios
+          .post(baseUrl + `node_data_to_php_update_page`, payload)
+          .then(() => {})
+          .catch((err) => {
+            console.log(err);
+          });
 
         if (flag) {
           toastAlert("Submitted");
           refetchPageList();
-          navigate("/admin/pms-page-overview")
+          navigate("/admin/pms-page-overview");
         }
         if (!flag) {
           toastAlert("Submitted");
@@ -459,23 +469,36 @@ const Page = () => {
       });
 
     for (let i = 0; i < rowCount.length; i++) {
-      let matchingObject = priceDataNew.find(obj => obj.page_price_type_id === rowCount[i].page_price_type_id);
+      let matchingObject = priceDataNew.find(
+        (obj) => obj.page_price_type_id === rowCount[i].page_price_type_id
+      );
 
       if (matchingObject) {
         if (matchingObject.price !== rowCount[i].price) {
-          axios.put(baseUrl + `v1/pagePriceMultiple/${matchingObject._id}`, {
-            price: rowCount[i].price,
-          }, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            }
-          })
-            .then(response => {
-              console.log(`Updated object ${i} with _id ${matchingObject._id}:`, response.data);
+          axios
+            .put(
+              baseUrl + `v1/pagePriceMultiple/${matchingObject._id}`,
+              {
+                price: rowCount[i].price,
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            )
+            .then((response) => {
+              console.log(
+                `Updated object ${i} with _id ${matchingObject._id}:`,
+                response.data
+              );
             })
-            .catch(error => {
-              console.error(`Error updating object ${i} with _id ${matchingObject._id}:`, error);
+            .catch((error) => {
+              console.error(
+                `Error updating object ${i} with _id ${matchingObject._id}:`,
+                error
+              );
             });
         }
       } else {
@@ -483,16 +506,17 @@ const Page = () => {
         rowCount[i].page_master_id = pageMast_id;
         rowCount[i].price = Number(rowCount[i].price);
 
-        axios.post(baseUrl + `v1/pagePriceMultiple`, rowCount[i], {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          }
-        })
-          .then(response => {
+        axios
+          .post(baseUrl + `v1/pagePriceMultiple`, rowCount[i], {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
             console.log(`Added new object ${i}:`, response.data);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(`Error adding new object ${i}:`, error);
           });
       }
@@ -509,9 +533,9 @@ const Page = () => {
         <button
           type="submit"
           className="btn btn-primary mt-2 btn-sm"
-          style={{ width: '15%', float:'right' }}
+          style={{ width: "15%", float: "right" }}
           onClick={(e) => {
-            handleSubmit(e,0);
+            handleSubmit(e, 0);
           }}
         >
           Save
@@ -525,9 +549,7 @@ const Page = () => {
         onChange={(e) => {
           setPageName(e.target.value);
           e.preventDefault();
-          setLink(
-                        () => `https://www.instagram.com/${e.target.value}/`
-                      );
+          setLink(() => `https://www.instagram.com/${e.target.value}`);
         }}
       />
 
@@ -540,7 +562,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Platform ID <sup style={{ color: 'red' }}>*</sup>
+          Platform ID <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={platformData.map((option) => ({
@@ -551,7 +573,7 @@ const Page = () => {
             value: platformId,
             label:
               platformData.find((role) => role._id === platformId)
-                ?.platform_name || '',
+                ?.platform_name || "",
           }}
           onChange={(e) => {
             setPlatformId(e.value);
@@ -561,7 +583,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Category <sup style={{ color: 'red' }}>*</sup>
+          Category <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={categoryData.map((option) => ({
@@ -572,7 +594,7 @@ const Page = () => {
             value: categoryId,
             label:
               categoryData.find((role) => role._id === categoryId)
-                ?.page_category || '',
+                ?.page_category || "",
           }}
           onChange={(e) => {
             setCategoryId(e.value);
@@ -582,7 +604,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Sub Category <sup style={{ color: 'red' }}>*</sup>
+          Sub Category <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={subCategoryData?.map((option) => ({
@@ -593,7 +615,7 @@ const Page = () => {
             value: subCategoryId,
             label:
               subCategoryData.find((role) => role._id === subCategoryId)
-                ?.page_sub_category || '',
+                ?.page_sub_category || "",
           }}
           onChange={(e) => {
             setSubCategoryId(e.value);
@@ -620,7 +642,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Level <sup style={{ color: 'red' }}>*</sup>
+          Page Level <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           name="page level"
@@ -634,21 +656,23 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Status <sup style={{ color: 'red' }}>*</sup>
+          Page Status <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           name="page status"
           options={PageStatus}
           className="basic-multi-select"
           classNamePrefix="select"
-          value={PageStatus.find((option) => option.value === Number(pageStatus))} 
+          value={PageStatus.find(
+            (option) => option.value === Number(pageStatus)
+          )}
           onChange={(selectedOption) => setPageStatus(selectedOption.value)}
         />
       </div>
 
       <div className="form-group col-6">
         <label className="form-label">
-          Close by <sup style={{ color: 'red' }}>*</sup>
+          Close by <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={usersDataContext.map((option) => ({
@@ -658,8 +682,8 @@ const Page = () => {
           value={{
             value: closeBy,
             label:
-              usersDataContext.find((role) => role.user_id === closeBy)?.user_name ||
-              '',
+              usersDataContext.find((role) => role.user_id === closeBy)
+                ?.user_name || "",
           }}
           onChange={(e) => {
             setCloseBy(e.value);
@@ -669,7 +693,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Name Type <sup style={{ color: 'red' }}>*</sup>
+          Page Name Type <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           name="page name type"
@@ -683,7 +707,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Content Creation <sup style={{ color: 'red' }}>*</sup>
+          Content Creation <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           name="Content creation"
@@ -697,7 +721,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Ownership Type <sup style={{ color: 'red' }}>*</sup>
+          Ownership Type <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           className="w-100"
@@ -711,7 +735,7 @@ const Page = () => {
             label:
               ownerShipData?.find(
                 (role) => role.company_type_name === ownerType
-              )?.company_type_name || '',
+              )?.company_type_name || "",
           }}
           onChange={(e) => {
             setOwnerType(e.value);
@@ -721,7 +745,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Vendor <sup style={{ color: 'red' }}>*</sup>
+          Vendor <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={vendorData.map((option) => ({
@@ -732,7 +756,7 @@ const Page = () => {
             value: vendorId,
             label:
               vendorData.find((role) => role._id === vendorId)?.vendor_name ||
-              '',
+              "",
           }}
           onChange={(e) => {
             setVendorId(e.value);
@@ -749,7 +773,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Profile Type <sup style={{ color: 'red' }}>*</sup>
+          Profile Type <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={profileData.map((option) => ({
@@ -760,7 +784,7 @@ const Page = () => {
             value: profileId,
             label:
               profileData.find((role) => role._id === profileId)
-                ?.profile_type || '',
+                ?.profile_type || "",
           }}
           onChange={(e) => {
             setProfileId(e.value);
@@ -789,7 +813,7 @@ const Page = () => {
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
-            Rate Type <sup style={{ color: 'red' }}>*</sup>
+            Rate Type <sup style={{ color: "red" }}>*</sup>
           </label>
           <Select
             options={RateTypes.map((option) => ({
@@ -798,7 +822,9 @@ const Page = () => {
             }))}
             required={true}
             value={RateTypes.find((option) => option.value == rateType)}
-            onChange={(selectedOption) => { setRateType(selectedOption.value) }}
+            onChange={(selectedOption) => {
+              setRateType(selectedOption.value);
+            }}
           />
         </div>
       </div>
@@ -858,7 +884,7 @@ const Page = () => {
             <>
               <div className="form-group col-5 row">
                 <label className="form-label">
-                  Price Type <sup style={{ color: 'red' }}>*</sup>
+                  Price Type <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <Select
                   // options={priceTypeList?.map((option) => ({
@@ -885,7 +911,7 @@ const Page = () => {
                     value: rowCount[index]?.page_price_type_id,
                   }}
                   onChange={(e) => handlePriceTypeChange(e, index)}
-                  isDisabled={row.price !== ''}
+                  isDisabled={row.price !== ""}
                 />
               </div>
               <FieldContainer
@@ -921,16 +947,28 @@ const Page = () => {
           </button>
         </div>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', marginBottom: '10px' }}>
-        <button type="submit" className="btn btn-primary mt-2 btn-sm" style={{ width: '45%' }} onClick={(e) => {
-          handleSubmit(e, 1);
-        }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+          marginBottom: "10px",
+        }}
+      >
+        <button
+          type="submit"
+          className="btn btn-primary mt-2 btn-sm"
+          style={{ width: "45%" }}
+          onClick={(e) => {
+            handleSubmit(e, 1);
+          }}
+        >
           Submit
         </button>
         <button
           type="submit"
           className="btn btn-primary mt-2 btn-sm"
-          style={{ width: '45%' }}
+          style={{ width: "45%" }}
           onClick={(e) => {
             handleSubmit(e, 0);
           }}
@@ -953,28 +991,25 @@ const PageEdit = () => {
   //   return <Navigate to="/admin/pms-page-overview" />;
   // }
 
-  const accordionButtons = ['Edit Page', 'Page Health', 'Performance'];
+  const accordionButtons = ["Edit Page", "Page Health", "Performance"];
 
   const goBack = () => {
     navigate(-1);
   };
 
   const PerformanceDashboard = () => {
-    return (
-      <>
-      </>
-    );
+    return <></>;
   };
 
   return (
     <>
       <div
         style={{
-          backgroundColor: '#52b2d6',
-          width: '3%',
-          padding: '7px',
-          marginBottom: '10px',
-          cursor: 'pointer',
+          backgroundColor: "#52b2d6",
+          width: "3%",
+          padding: "7px",
+          marginBottom: "10px",
+          cursor: "pointer",
         }}
       >
         <ArrowBackIcon onClick={goBack} />
