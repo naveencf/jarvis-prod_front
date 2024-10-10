@@ -1755,6 +1755,7 @@ const PageOverview = () => {
   useEffect(() => {
     const countPageLevels = (tabFilterData) => {
       const counts = {};
+      console.log(tabFilterData,"tabFilterData")
       tabFilterData?.forEach((item) => {
         const category = item.preference_level;
         counts[category] = (counts[category] || 0) + 1;
@@ -1764,16 +1765,19 @@ const PageOverview = () => {
 
     const counts = countPageLevels(tabFilterData);
     setPageLevels(counts);
+  
   }, [tabFilterData]);
 
   useEffect(() => {
     const countPageStatus = (tabFilterData) => {
       const counts = {};
-      tabFilterData.forEach((item) => {
+      console.log(tabFilterData,"tabFilterData")
+      tabFilterData?.forEach((item) => {
         const status = item.page_mast_status;
         counts[status] = (counts[status] || 0) + 1;
       });
       return counts;
+      
     };
 
     const counts = countPageStatus(tabFilterData);
@@ -1796,7 +1800,7 @@ const PageOverview = () => {
 
   const renderWhatsAppLinkCards = () => {
     const recordCount = { 0: 0, 1: 0, 2: 0, 3: 0 };
-
+console.log(newFilterData,"newFilterData")
     newFilterData?.forEach((row) => {
       const matchedVendors = allVendorWhats?.filter(
         (item) => item.vendor_id === row?.vendor_id
