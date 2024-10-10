@@ -387,7 +387,7 @@ const Page = () => {
 
     const payload = {
       page_name: pageName,
-      link: link,
+      page_link: link,
       platform_id: platformId,
       page_category_id: categoryId,
       page_sub_category_id: subCategoryId,
@@ -525,6 +525,9 @@ const Page = () => {
         onChange={(e) => {
           setPageName(e.target.value);
           e.preventDefault();
+          setLink(
+                        () => `https://www.instagram.com/${e.target.value}/`
+                      );
         }}
       />
 
