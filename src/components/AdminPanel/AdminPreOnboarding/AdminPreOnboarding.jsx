@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { AiOutlineReload } from "react-icons/ai";
-import { useGlobalContext } from "../../../Context/Context";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
 import Select from "react-select";
 import WhatsappAPI from "../../WhatsappAPI/WhatsappAPI";
 // import { City } from "country-state-city";
@@ -20,11 +20,12 @@ import { constant } from "../../../utils/constants";
 import dayjs from "dayjs";
 import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
+import { useContext } from "react";
 
 const onBoardStatus = 2;
 
 const AdminPreOnboarding = () => {
-  
+  const {  usersDataContext } = useContext(AppContext);
   const [loading, setLoading] = useState(false);   
   const navigate = useNavigate()
 
@@ -86,7 +87,7 @@ const AdminPreOnboarding = () => {
   const [department, setDepartment] = useState("");
   const [departmentdata, getDepartmentData] = useState([]);
 
-  const [usersData, getUsersData] = useState([]);
+  // const [usersData, getUsersData] = useState([]);
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -161,9 +162,9 @@ const AdminPreOnboarding = () => {
     //   setDesignationData(res.data.data);
     // });
 
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      getUsersData(res.data.data);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    //   getUsersData(res.data.data);
+    // });
   }, []);
 
   useEffect(() => {
@@ -357,15 +358,15 @@ const AdminPreOnboarding = () => {
     };
 
     try {
-      const isLoginIdExists = usersData.some(
+      const isLoginIdExists = usersDataContext.some(
         (user) =>
           user.user_login_id?.toLocaleLowerCase() ===
           loginId?.toLocaleLowerCase()
       );
-      const contactNumberExists = usersData.some(
+      const contactNumberExists = usersDataContext.some(
         (user) => user.user_contact_no == personalContact
       );
-      const emailIdExists = usersData.some(
+      const emailIdExists = usersDataContext.some(
         (user) =>
           user.user_email_id?.toLocaleLowerCase() ==
           personalEmail?.toLocaleLowerCase()
@@ -954,14 +955,14 @@ const AdminPreOnboarding = () => {
           <Select
             required={true}
             className=""
-            options={usersData.map((option) => ({
+            options={usersDataContext.map((option) => ({
               value: option.user_id,
               label: `${option.user_name}`,
             }))}
             value={{
               value: reportL1,
               label:
-                usersData.find((user) => user.user_id === reportL1)
+              usersDataContext.find((user) => user.user_id === reportL1)
                   ?.user_name || "",
             }}
             onChange={(e) => {

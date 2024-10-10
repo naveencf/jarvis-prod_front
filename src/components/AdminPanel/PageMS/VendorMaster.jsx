@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useGlobalContext } from '../../../Context/Context';
+import { AppContext, useGlobalContext } from '../../../Context/Context';
 import FieldContainer from '../FieldContainer';
 import FormContainer from '../FormContainer';
 import { baseUrl } from '../../../utils/config';
@@ -53,6 +53,7 @@ import { useGstDetailsMutation } from '../../Store/API/Sales/GetGstDetailApi';
 import formatString from '../Operation/CampaignMaster/WordCapital';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PreviewModal from './Vendor/PreviewModal';
+import { useContext } from 'react';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
@@ -162,6 +163,7 @@ const VendorMaster = () => {
   const [messageColor, setMessageColor] = useState('');
   const [existError, setExistError] = useState('');
   const [busiTypeData, setBusiTypeData] = useState([]);
+  const { usersDataContext } = useContext(AppContext);
 
   useEffect(() => {
     if (gst?.length === 15) {
@@ -295,9 +297,9 @@ const VendorMaster = () => {
     useGetVendorDocumentByVendorDetailQuery(_id);
 
   useEffect(() => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
-      setUserData(res.data.data);
-    });
+    // axios.get(baseUrl + 'get_all_users').then((res) => {
+    //   setUserData(res.data.data);
+    // });
 
     axios.get(baseUrl + `v1/vendor_business_type`, {
       headers: {
@@ -1787,14 +1789,14 @@ const VendorMaster = () => {
               <label className="form-label">Closed By</label>
               <Select
                 className=""
-                options={userData?.map((option) => ({
+                options={usersDataContext?.map((option) => ({
                   value: option.user_id,
                   label: `${option.user_name}`,
                 }))}
                 value={{
                   value: userId,
                   label:
-                    userData.find((user) => user.user_id === userId)
+                    usersDataContext.find((user) => user.user_id === userId)
                       ?.user_name || '',
                 }}
                 onChange={(e) => {
