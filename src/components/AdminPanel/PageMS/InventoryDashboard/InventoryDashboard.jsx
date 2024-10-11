@@ -5,7 +5,6 @@ import FormContainer from '../../FormContainer'
 const InventoryDashboard = () => {
   return (
     <div>
-
       <div className="action_heading">
         <div className="action_title">
           <FormContainer mainTitle={'Dashboard'} link={true} />

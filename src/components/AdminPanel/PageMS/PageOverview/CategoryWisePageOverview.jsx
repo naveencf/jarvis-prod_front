@@ -1,9 +1,10 @@
 import React from 'react'
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
+import { formatNumber } from '../../../../utils/formatNumber';
 
 
-const CategoryWisePageOverview = ({ categoryData, formatNumber, setFilterData, pageList, setActiveTab }) => {
+const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setActiveTab }) => {
     
     const categoryGridcolumns = [
         {
