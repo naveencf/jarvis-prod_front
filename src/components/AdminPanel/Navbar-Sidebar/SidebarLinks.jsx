@@ -1762,33 +1762,21 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
-              {/* {contextData &&
-                contextData[0] &&
-                contextData[0].view_value === 1 && (
-                  <NavLink className="collapse-item" to="/admin/pms-master">
-                    <i className="bi bi-dot"></i>Master
-                  </NavLink>
-                )} */}
-
-              {/* {contextData &&
-                contextData[0] &&
-                contextData[0].view_value === 1 && ( */}
+   
+              {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
                 <NavLink
                 className="collapse-item"
                 to="/admin/pms-inventory-dashboard"
               >
                 <i className="bi bi-dot"></i>Dashboard
               </NavLink>
+              )}
               <NavLink
                 className="collapse-item"
                 to="/admin/pms-vendor-overview"
               >
                 <i className="bi bi-dot"></i>Vendor
               </NavLink>
-              {/* )} */}
-              {/* {contextData &&
-                contextData[0] &&
-                contextData[0].view_value === 1 && ( */}
               <NavLink className="collapse-item" to="/admin/pms-page-overview">
                 <i className="bi bi-dot"></i>Page
               </NavLink>
@@ -1799,13 +1787,14 @@ const SidebarLinks = () => {
               ) : (
                 ""
               )}
+               {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
               <NavLink
                 className="collapse-item"
                 to="/admin/pms-bulk-vendor-overview"
               >
                 <i className="bi bi-dot"></i>Bulk Vendor
               </NavLink>
-              {/* )} */}
+              )}
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (

@@ -1,37 +1,35 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { baseUrl } from '../../../utils/config';
-import { Link } from 'react-router-dom';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
-import jwtDecode from 'jwt-decode';
-import { useDispatch, useSelector } from 'react-redux';
-import { setShowPageHealthColumn } from '../../Store/PageOverview';
-import { setShowPageHealthColumn } from '../../Store/PageOverview';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import { Link } from "react-router-dom";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import Box from "@mui/material/Box";
+import { Typography } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
+import jwtDecode from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
+import { setShowPageHealthColumn } from "../../Store/PageOverview";
+import { setShowPageHealthColumn } from "../../Store/PageOverview";
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
   useGetAllVendorTypeQuery,
-} from '../../Store/reduxBaseURL';
+} from "../../Store/reduxBaseURL";
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
   // useGetMultiplePagePriceQuery,
-} from '../../Store/PageBaseURL';
-import Checkbox from '@mui/material/Checkbox';
-import PlanStatics from './PlanStatics';
+} from "../../Store/PageBaseURL";
+import Checkbox from "@mui/material/Checkbox";
+import PlanStatics from "./PlanStatics";
 
 const PlanMaking = () => {
-  const {
-    data: pageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery();
+  const { data: pageList, isLoading: isPageListLoading } =
+    useGetAllPageListQuery();
   // const { data: pageStates } = useGetPageStateQuery();
-  const [activeTab, setActiveTab] = useState('Tab1');
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
-    '666818824366007df1df1319'
+    "666818824366007df1df1319"
   );
   const [filterData, setFilterData] = useState([]);
   //   const [user, setUser] = useState();
@@ -42,7 +40,7 @@ const PlanMaking = () => {
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
-  const storedToken = sessionStorage.getItem('token');
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const dispatch = useDispatch();
@@ -60,8 +58,8 @@ const PlanMaking = () => {
   const [totalPagesSelected, setTotalPagesSelected] = useState(0);
   const [showTotalCost, setShowTotalCost] = useState({});
   const [totalDeliverables, setTotalDeliverables] = useState(0);
-  const [followerFilterType, setFollowerFilterType] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
+  const [followerFilterType, setFollowerFilterType] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const showPageHealthColumn = useSelector(
     (state) => state.PageOverview.showPageHelathColumn
@@ -72,7 +70,7 @@ const PlanMaking = () => {
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
 
-  const [priceFilterType, setPriceFilterType] = useState('post'); // Dropdown value
+  const [priceFilterType, setPriceFilterType] = useState("post"); // Dropdown value
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
   const [minFollowers, setMinFollowers] = useState(null);
@@ -107,7 +105,7 @@ const PlanMaking = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
+    axios.get(baseUrl + "get_all_users").then((res) => {
       setProgress(70);
     });
   };
@@ -117,11 +115,11 @@ const PlanMaking = () => {
       let price = 0;
 
       // Handle the price filter based on the selected type
-      if (priceFilterType === 'post') {
+      if (priceFilterType === "post") {
         price = page.price_details?.Insta_Post || 0; // Access Insta_Post price
-      } else if (priceFilterType === 'story') {
+      } else if (priceFilterType === "story") {
         price = page.price_details?.Insta_Story || 0; // Access Insta_Story price
-      } else if (priceFilterType === 'both') {
+      } else if (priceFilterType === "both") {
         price = page.price_details?.Both || 0; // Access Both price
       }
 
@@ -180,27 +178,27 @@ const PlanMaking = () => {
 
     // Update min and max followers based on the selected range
     switch (selectedRange) {
-      case 'lessThan10K':
+      case "lessThan10K":
         minFollowers = 0;
         maxFollowers = 10000;
         break;
-      case '10Kto20K':
+      case "10Kto20K":
         minFollowers = 10000;
         maxFollowers = 20000;
         break;
-      case '20Kto50K':
+      case "20Kto50K":
         minFollowers = 20000;
         maxFollowers = 50000;
         break;
-      case '50Kto100K':
+      case "50Kto100K":
         minFollowers = 50000;
         maxFollowers = 100000;
         break;
-      case '100Kto200K':
+      case "100Kto200K":
         minFollowers = 100000;
         maxFollowers = 200000;
         break;
-      case 'moreThan200K':
+      case "moreThan200K":
         minFollowers = 200000;
         maxFollowers = null; // No upper limit
         break;
@@ -332,7 +330,7 @@ const PlanMaking = () => {
     );
     setFilterData(filtered);
   };
-  const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
+  const ownPages = filterData?.filter((item) => item?.ownership_type === "Own");
 
   const updateStatistics = (rows) => {
     let followers = 0;
@@ -383,21 +381,21 @@ const PlanMaking = () => {
 
   const dataGridcolumns = [
     {
-      field: 'S.NO',
-      headerName: 'Count',
+      field: "S.NO",
+      headerName: "Count",
       renderCell: (params) => <div> {filterData.indexOf(params.row) + 1} </div>,
 
       width: 80,
     },
     {
-      field: 'page_name',
-      headerName: 'Page Name',
+      field: "page_name",
+      headerName: "Page Name",
       width: 200,
       editable: true,
     },
     {
-      field: 'Vendor',
-      headerName: 'Vendor',
+      field: "Vendor",
+      headerName: "Vendor",
       width: 200,
       renderCell: (params) => {
         let name = vendorData?.find(
@@ -408,8 +406,8 @@ const PlanMaking = () => {
       // editable: true
     },
     {
-      field: 'page_link',
-      headerName: 'Page Link',
+      field: "page_link",
+      headerName: "Page Link",
       width: 200,
       editable: true,
       renderCell: (params) => {
@@ -426,18 +424,18 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'followers_count',
-      headerName: 'Followers',
+      field: "followers_count",
+      headerName: "Followers",
       width: 100,
     },
     {
-      field: 'ownership_type',
-      headerName: 'Ownership',
+      field: "ownership_type",
+      headerName: "Ownership",
       width: 100,
     },
     {
-      field: 'est_update',
-      headerName: 'Selection',
+      field: "est_update",
+      headerName: "Selection",
       width: 100,
       renderCell: (params) => {
         return (
@@ -449,59 +447,59 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'created_at',
-      headerName: 'Post Per Page',
+      field: "created_at",
+      headerName: "Post Per Page",
       width: 150,
       renderCell: (params) => {
         return (
           <input
             type="number"
-            style={{ width: '70%' }}
-            value={postPerPageValues[params.row._id] || ''}
+            style={{ width: "70%" }}
+            value={postPerPageValues[params.row._id] || ""}
             onChange={handlePostPerPageChange(params.row)}
           />
         );
       },
     },
     {
-      field: 'updated_by',
-      headerName: 'Story Per Page',
+      field: "updated_by",
+      headerName: "Story Per Page",
       width: 150,
       renderCell: (params) => {
         return (
           <input
             type="number"
-            style={{ width: '70%' }}
-            value={storyPerPageValues[params.row._id] || ''}
+            style={{ width: "70%" }}
+            value={storyPerPageValues[params.row._id] || ""}
             onChange={handleStoryPerPageChange(params.row)}
           />
         );
       },
     },
     {
-      field: 'last_updated_by',
-      headerName: 'Total Cost',
+      field: "last_updated_by",
+      headerName: "Total Cost",
       width: 100,
       renderCell: (params) => {
         return (
-          <div style={{ border: '1px solid red', padding: '10px' }}>
-            {'₹'}
+          <div style={{ border: "1px solid red", padding: "10px" }}>
+            {"₹"}
             {showTotalCost[params.row._id]
               ? totalCostValues[params.row._id] || 0
-              : '-'}
+              : "-"}
           </div>
         );
       },
     },
     {
-      field: 'preference_level',
-      headerName: 'Level',
+      field: "preference_level",
+      headerName: "Level",
       width: 200,
       editable: true,
     },
     {
-      field: 'Vendor Type',
-      headerName: 'Vendor Type',
+      field: "Vendor Type",
+      headerName: "Vendor Type",
       width: 200,
       // editable: true
       renderCell: (params) => {
@@ -513,8 +511,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'page_catg_id',
-      headerName: 'Category',
+      field: "page_catg_id",
+      headerName: "Category",
       width: 200,
       renderCell: (params) => {
         let name = cat?.find(
@@ -524,8 +522,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'platform_id',
-      headerName: 'Platform',
+      field: "platform_id",
+      headerName: "Platform",
       renderCell: (params) => {
         let name = platformData?.find(
           (item) => item?._id == params.row.platform_id
@@ -534,12 +532,12 @@ const PlanMaking = () => {
       },
       width: 150,
     },
-    { field: 'page_status', headerName: 'Status', width: 100 },
+    { field: "page_status", headerName: "Status", width: 100 },
   ];
   const pageDetailColumn = [
     {
-      field: 'm_post_price',
-      headerName: 'Cost Per Post',
+      field: "m_post_price",
+      headerName: "Cost Per Post",
       width: 150,
       valueGetter: ({ row }) => {
         let mPostPrice = row.m_post_price;
@@ -548,8 +546,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'm_story_price',
-      headerName: 'Cost Per Story',
+      field: "m_story_price",
+      headerName: "Cost Per Story",
       width: 150,
       valueGetter: ({ row }) => {
         let mStoryPrice = row.m_story_price;
@@ -558,8 +556,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: 'm_both_price',
-      headerName: 'Both Price',
+      field: "m_both_price",
+      headerName: "Both Price",
       width: 150,
       valueGetter: ({ row }) => {
         let mBothPrice = row.m_both_price;
@@ -646,12 +644,12 @@ const PlanMaking = () => {
                 {isPageListLoading ? (
                   <Box
                     sx={{
-                      textAlign: 'center',
-                      position: 'relative',
-                      margin: 'auto',
-                      width: '100%',
-                      display: 'flex',
-                      justifyContent: 'center',
+                      textAlign: "center",
+                      position: "relative",
+                      margin: "auto",
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
                     }}
                   >
                     <CircularProgress variant="determinate" value={progress} />
@@ -661,10 +659,10 @@ const PlanMaking = () => {
                         left: 0,
                         bottom: 0,
                         right: 0,
-                        position: 'absolute',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        position: "absolute",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
                       }}
                     >
                       <Typography
@@ -695,14 +693,14 @@ const PlanMaking = () => {
                       handleOwnPage={handleOwnPage}
                       category={cat}
                     />
-                    <div className="parent_of_tab" style={{ display: 'flex' }}>
+                    <div className="parent_of_tab" style={{ display: "flex" }}>
                       {platformData?.map((item) => (
                         <div key={item._id} className="tabs">
                           <button
                             className={
                               activeTabPlatfrom === item._id
-                                ? 'active btn btn-info'
-                                : 'btn btn-link'
+                                ? "active btn btn-info"
+                                : "btn btn-link"
                             }
                             onClick={() => handlePlatform(item._id)}
                           >
@@ -711,7 +709,7 @@ const PlanMaking = () => {
                         </div>
                       ))}
                     </div>
-                    {activeTabPlatfrom === '666818824366007df1df1319' && (
+                    {activeTabPlatfrom === "666818824366007df1df1319" && (
                       <div>
                         <div className="filter-section">
                           {/* Dropdown for price filter type */}
@@ -748,14 +746,14 @@ const PlanMaking = () => {
                           <input
                             type="number"
                             className="filter-input"
-                            value={minFollowers || ''}
+                            value={minFollowers || ""}
                             onChange={(e) => setMinFollowers(e.target.value)}
                           />
                           <label className="filter-label">Max Followers:</label>
                           <input
                             type="number"
                             className="filter-input"
-                            value={maxFollowers || ''}
+                            value={maxFollowers || ""}
                             onChange={(e) => setMaxFollowers(e.target.value)}
                           />
                           <div>
@@ -814,7 +812,7 @@ const PlanMaking = () => {
                         </div>
                       </div>
                     )}
-                    <Box sx={{ height: 700, width: '100%' }}>
+                    <Box sx={{ height: 700, width: "100%" }}>
                       <DataGrid
                         title="Page Overview"
                         rows={
