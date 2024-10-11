@@ -11,10 +11,11 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import axios from "axios"; // Ensure you import axios here if not imported in the file
+import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../utils/config";
+import PendingInvoiceDiscard from "./PendingInvoiceDiscard";
 
 const EditInvoiceActionDialog = (props) => {
   const {
@@ -34,6 +35,7 @@ const EditInvoiceActionDialog = (props) => {
   const [imageInvoice, setImageInvoice] = useState(null);
   const [preview, setPreview] = useState(null);
   const [isPDF, setIsPDF] = useState(false);
+  const [discardDialog, setDiscardDialog] = useState(false);
 
   const [isRequired, setIsRequired] = useState({
     imageInvoice: false,
@@ -59,6 +61,11 @@ const EditInvoiceActionDialog = (props) => {
     });
   };
 
+  const handleOpenDiscardDialog = (e) => {
+    e.preventDefault();
+    setDiscardDialog(true);
+  };
+
   useEffect(() => {
     if (InvcCreatedRowData) {
       setInvcNumber(InvcCreatedRowData?.invoice_number || "");
@@ -74,7 +81,8 @@ const EditInvoiceActionDialog = (props) => {
         setViewImgSrc(InvcCreatedRowData.invoice_file_url);
 
         // Check if the file is a PDF
-        const isFilePDF = InvcCreatedRowData?.invoice_file_url?.endsWith(".pdf");
+        const isFilePDF =
+          InvcCreatedRowData?.invoice_file_url?.endsWith(".pdf");
         setIsPDF(isFilePDF);
       }
     }
@@ -146,94 +154,118 @@ const EditInvoiceActionDialog = (props) => {
   };
 
   return (
-    <Dialog
-      open={editActionDialog}
-      onClose={handleCloseEditFieldAction}
-      fullWidth
-      maxWidth="md"
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <DialogTitle>Invoice Update</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleCloseEditFieldAction}
+    <div>
+      <Dialog
+        open={editActionDialog}
+        onClose={handleCloseEditFieldAction}
+        fullWidth
+        maxWidth="md"
         sx={{
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
         }}
       >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent dividers={true} sx={{ maxHeight: "80vh", overflowY: "auto" }}>
-        <div className="row">
-          <TextField
-            type="text"
-            label="Invoice Number"
-            value={invcNumber}
-            onChange={(e) => setInvcNumber(e.target.value)}
-            error={isRequired.invcNumber}
-            helperText={isRequired.invcNumber && "Please enter a valid invoice number"}
-          />
-          <label className="form-label mt-2">Invoice Date</label>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              format="DD/MM/YYYY"
-              value={invcDate}
-              onChange={(e) => setInvcDate(e)}
+        <DialogTitle>Invoice Update</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseEditFieldAction}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent
+          dividers={true}
+          sx={{ maxHeight: "80vh", overflowY: "auto" }}
+        >
+          <div className="row">
+            <TextField
+              type="text"
+              label="Invoice Number"
+              value={invcNumber}
+              onChange={(e) => setInvcNumber(e.target.value)}
+              error={isRequired.invcNumber}
+              helperText={
+                isRequired.invcNumber && "Please enter a valid invoice number"
+              }
             />
-          </LocalizationProvider>
-          <TextField
-            type="text"
-            label="Party Name"
-            value={partyInvoiceName}
-            className="mt-3"
-            onChange={(e) => setPartyInvoiceName(e.target.value)}
-          />
-          <div className="col-3">
-            <label className="form-label mt-2">
-              Invoice Image <sup style={{ color: "red" }}>*</sup>
-            </label>
-            <input type="file" onChange={handleFileChange} />
-            {isRequired?.imageInvoice && (
-              <p className="form-error">Please Add Correct File</p>
-            )}
-            {preview && (
-              <div className="mt-2">
-                {!isPDF ? (
-                  <img
-                    src={preview}
-                    alt="Preview"
-                    style={{ maxWidth: "70px", cursor: "pointer" }}
-                    onClick={() => setOpenImageDialog(true)}
-                  />
-                ) : (
-                  <img
-                    src="/pdf-icon.png"
-                    alt="PDF Preview"
-                    style={{ maxWidth: "40px", cursor: "pointer" }}
-                    onClick={() => setOpenImageDialog(true)}
-                  />
-                )}
-              </div>
-            )}
+            <label className="form-label mt-2">Invoice Date</label>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                format="DD/MM/YYYY"
+                value={invcDate}
+                onChange={(e) => setInvcDate(e)}
+              />
+            </LocalizationProvider>
+            <TextField
+              type="text"
+              label="Party Name"
+              value={partyInvoiceName}
+              className="mt-3"
+              onChange={(e) => setPartyInvoiceName(e.target.value)}
+            />
+            <div className="col-3">
+              <label className="form-label mt-2">
+                Invoice Image <sup style={{ color: "red" }}>*</sup>
+              </label>
+              <input type="file" onChange={handleFileChange} />
+              {isRequired?.imageInvoice && (
+                <p className="form-error">Please Add Correct File</p>
+              )}
+              {preview && (
+                <div className="mt-2">
+                  {!isPDF ? (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      style={{ maxWidth: "70px", cursor: "pointer" }}
+                      onClick={() => setOpenImageDialog(true)}
+                    />
+                  ) : (
+                    <img
+                      src="/pdf-icon.png"
+                      alt="PDF Preview"
+                      style={{ maxWidth: "40px", cursor: "pointer" }}
+                      onClick={() => setOpenImageDialog(true)}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="">
+              <Button
+                type="button"
+                className="mt-3"
+                variant="contained"
+                onClick={handleInvoiceEditFields}
+              >
+                Update Invoice
+              </Button>
+              <Button
+                type="button"
+                className="mt-3 ms-3"
+                variant="contained"
+                onClick={(e) => handleOpenDiscardDialog(e)}
+              >
+                Discard
+              </Button>
+            </div>
           </div>
-          <Button
-            type="button"
-            className="mt-3"
-            variant="contained"
-            onClick={handleInvoiceEditFields}
-          >
-            Update Invoice
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+      <PendingInvoiceDiscard
+        discardDialog={discardDialog}
+        setDiscardDialog={setDiscardDialog}
+        handleCloseEditFieldAction={handleCloseEditFieldAction}
+        getData={getData}
+        InvcCreatedRowData={InvcCreatedRowData}
+      />
+    </div>
   );
 };
 

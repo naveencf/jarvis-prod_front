@@ -64,8 +64,9 @@ export const PageBaseURL = createApi({
     updatePageCategory: builder.mutation({
       query: (data) => {
         const { _id, category_name } = data;
+        console.log(category_name, "category_name--->>>", data);
         return {
-          url: `v1/page_category/${_id}`, // Directly assign the URL string
+          url: `v1/page_category/${_id}`,
           method: "PUT",
           body: {
             page_category: category_name,
@@ -74,7 +75,7 @@ export const PageBaseURL = createApi({
           },
         };
       },
-      invalidatesTags: ["categoryList"], // Assuming you might want to invalidate cache after update
+      invalidatesTags: ["categoryList"],
     }),
 
     //price List
@@ -182,6 +183,7 @@ export const PageBaseURL = createApi({
     updatePageSubCategory: builder.mutation({
       query: (data) => {
         const { _id, sub_category_name } = data;
+        console.log(sub_category_name, "sub_category_name");
         return {
           url: `v1/page_sub_category/${_id}`,
           method: "PUT",
@@ -195,25 +197,31 @@ export const PageBaseURL = createApi({
       invalidatesTags: ["subCategoryList"],
     }),
 
-    
+    deletePageSubCategory: builder.mutation({
+      query: (id) => {
+        return {
+          url: `v1/page_sub_category/${id}`,
+          method: "DELETE",
+        };
+      },
+      invalidatesTags: ["subCategoryList"],
+    }),
+
     getAllPageSubCategory: builder.query({
       query: () => `v1/page_sub_category`,
       providesTags: ["subCategoryList"],
     }),
+
     deletePageCategory: builder.mutation({
       query: (id) => {
-      
         return {
-          url: `v1/page_category/${id}`, // Directly assign the URL string
+          url: `v1/page_category/${id}`,
           method: "DELETE",
-          
         };
       },
-      invalidatesTags: ["categoryList"], // Assuming you might want to invalidate cache after update
+      invalidatesTags: ["categoryList"],
     }),
   }),
-  
-
 });
 
 export const {
@@ -240,6 +248,7 @@ export const {
   useGetVendorCompanyDetailQuery,
   useAddPageSubCategoryMutation,
   useUpdatePageSubCategoryMutation,
+  useDeletePageSubCategoryMutation,
   useGetAllPageSubCategoryQuery,
   useDeletePageCategoryMutation,
 } = PageBaseURL;

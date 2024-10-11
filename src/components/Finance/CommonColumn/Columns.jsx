@@ -150,14 +150,14 @@ export const saleBookingCloseColumns = ({
     renderCell: (params) => {
       return (
         <div className="flex-row gap16">
-          {params.row.tds_status === "close" ? (
-            <button
-              className="btn cmnbtn btn_sm btn-outline-primary mr4"
-              onClick={(e) => handleOpenVerifyDialog(e, params.row)}
-            >
-              Verify
-            </button>
-          ) : null}
+          {/* {params.row.tds_status === "close" ? ( */}
+          <button
+            className="btn cmnbtn btn_sm btn-outline-primary mr4"
+            onClick={(e) => handleOpenVerifyDialog(e, params.row)}
+          >
+            Verify
+          </button>
+          {/* ) : null} */}
         </div>
       );
     },

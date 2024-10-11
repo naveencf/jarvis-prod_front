@@ -115,10 +115,10 @@ export default function PendingPaymentRequest() {
           )
           .then((res) => {
             console.log(res, "getting paymentrequest user data from php");
-            let y = res.data.body.filter((item) => {
+            let y = res?.data?.body.filter((item) => {
               return !x.some((item2) => item.request_id === item2.request_id);
             });
-            setPhpData(y); // Setting the filtered data to state
+            setPhpData(y);
 
             let c = res.data.body.filter((item) => {
               return remindData.some(
@@ -679,6 +679,8 @@ export default function PendingPaymentRequest() {
     setFilterData(data);
   };
 
+  console.log(filterData, "filterData--===>>>>>>");
+
   return (
     <div>
       <FormContainer
@@ -750,6 +752,7 @@ export default function PendingPaymentRequest() {
         setOverviewDialog={setOverviewDialog}
         overviewDialog={overviewDialog}
         filterData={filterData}
+        // data={}
         columns={pendingPaymentRequestColumns({
           activeAccordionIndex,
           filterData,

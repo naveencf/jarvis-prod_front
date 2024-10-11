@@ -1285,6 +1285,19 @@ console.log(Number(creditLimit),"formData",creditLimit)
     const selectedLoginId = event.target.value;
     setLoginId(selectedLoginId);
   };
+  useEffect(()=>{
+    axios
+    .post(baseUrl + "image_to_base64", {
+      imageUrl: userData.digital_signature_image_url,
+    })
+    .then((response) => {
+      setImage64(response.data.base64String);
+    })
+    .catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+
+  },[])
   // const calculateAge = (dob) => {
   //   const currentDate = new Date();
   //   const birthDate = new Date(dob);
@@ -1468,17 +1481,7 @@ console.log(Number(creditLimit),"formData",creditLimit)
     setUserName(correctedNameParts.join(" "));
   };
 
-  axios
-    .post(baseUrl + "image_to_base64", {
-      imageUrl: userData.digital_signature_image_url,
-    })
-    .then((response) => {
-      setImage64(response.data.base64String);
-    })
-    .catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-
+  
   const genralFields = (
     <>
       <div className="card">

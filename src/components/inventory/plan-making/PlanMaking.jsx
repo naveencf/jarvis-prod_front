@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
-import { Link, useParams } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import Box from "@mui/material/Box";
+import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/config';
+import { Link, useParams } from 'react-router-dom';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
 import {
   Button,
   Dialog,
@@ -11,27 +11,27 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-} from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
-import { setShowPageHealthColumn } from "../../Store/PageOverview";
+} from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import jwtDecode from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowPageHealthColumn } from '../../Store/PageOverview';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
   useGetAllVendorTypeQuery,
-} from "../../Store/reduxBaseURL";
+} from '../../Store/reduxBaseURL';
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
-} from "../../Store/PageBaseURL";
-import Checkbox from "@mui/material/Checkbox";
-import PlanStatics from "./PlanStatics";
-import { Modal } from "react-bootstrap";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+} from '../../Store/PageBaseURL';
+import Checkbox from '@mui/material/Checkbox';
+import PlanStatics from './PlanStatics';
+import { Modal } from 'react-bootstrap';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 const PlanMaking = () => {
   const { data: pageList, isLoading: isPageListLoading } =
@@ -39,8 +39,9 @@ const PlanMaking = () => {
 
   // const { id } = useParams();
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
-    "666818824366007df1df1319"
+    '666818824366007df1df1319'
   );
+  
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
   const [progress, setProgress] = useState(10);
@@ -48,7 +49,7 @@ const PlanMaking = () => {
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const dispatch = useDispatch();
@@ -66,26 +67,28 @@ const PlanMaking = () => {
   const [totalPagesSelected, setTotalPagesSelected] = useState(0);
   const [showTotalCost, setShowTotalCost] = useState({});
   const [totalDeliverables, setTotalDeliverables] = useState(0);
-  const [followerFilterType, setFollowerFilterType] = useState("");
+  const [followerFilterType, setFollowerFilterType] = useState('');
   const [selectedCategory, setSelectedCategory] = useState([]);
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState('');
 
   const showPageHealthColumn = useSelector(
     (state) => state.PageOverview.showPageHelathColumn
   );
-
   const [totalFollowers, setTotalFollowers] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
 
-  const [priceFilterType, setPriceFilterType] = useState("post"); // Dropdown value
+  const [priceFilterType, setPriceFilterType] = useState('post'); // Dropdown value
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(10000);
   const [minFollowers, setMinFollowers] = useState(null);
   const [maxFollowers, setMaxFollowers] = useState(null);
   const [notFoundPages, setNotFoundPages] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [pageDetail, setPageDetails] = useState([]);
+
+  const { id } = useParams();
 
   useEffect(() => {
     if (userID && !contextData) {
@@ -106,7 +109,17 @@ const PlanMaking = () => {
 
     getData();
   }, []);
-
+  const debounce = (func, delay) => {
+    let timeoutId;
+    return function (...args) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+      timeoutId = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  };
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
 
@@ -116,7 +129,7 @@ const PlanMaking = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + 'get_all_users').then((res) => {
       setProgress(70);
     });
   };
@@ -126,11 +139,11 @@ const PlanMaking = () => {
       let price = 0;
 
       // Handle the price filter based on the selected type
-      if (priceFilterType === "post") {
+      if (priceFilterType === 'post') {
         price = page.price_details?.Insta_Post || 0; // Access Insta_Post price
-      } else if (priceFilterType === "story") {
+      } else if (priceFilterType === 'story') {
         price = page.price_details?.Insta_Story || 0; // Access Insta_Story price
-      } else if (priceFilterType === "both") {
+      } else if (priceFilterType === 'both') {
         price = page.price_details?.Both || 0; // Access Both price
       }
 
@@ -197,27 +210,27 @@ const PlanMaking = () => {
 
     // Update min and max followers based on the selected range
     switch (selectedRange) {
-      case "lessThan10K":
+      case 'lessThan10K':
         minFollowers = 0;
         maxFollowers = 10000;
         break;
-      case "10Kto20K":
+      case '10Kto20K':
         minFollowers = 10000;
         maxFollowers = 20000;
         break;
-      case "20Kto50K":
+      case '20Kto50K':
         minFollowers = 20000;
         maxFollowers = 50000;
         break;
-      case "50Kto100K":
+      case '50Kto100K':
         minFollowers = 50000;
         maxFollowers = 100000;
         break;
-      case "100Kto200K":
+      case '100Kto200K':
         minFollowers = 100000;
         maxFollowers = 200000;
         break;
-      case "moreThan200K":
+      case 'moreThan200K':
         minFollowers = 200000;
         maxFollowers = null;
         break;
@@ -232,6 +245,18 @@ const PlanMaking = () => {
 
     // Update the filtered data state
     setFilterData(followerFilteredData);
+  };
+
+  const handlePostPerValue = (row, postPerPage, callback) => {
+    setPostPerPageValues((prevValues) => {
+      const newValues = {
+        ...prevValues,
+        [row._id]: postPerPage,
+      };
+
+      if (callback) callback(newValues); // Trigger callback with the updated values
+      return newValues;
+    });
   };
 
   const handleCheckboxChange = (row) => (event) => {
@@ -250,26 +275,36 @@ const PlanMaking = () => {
       [row._id]: isChecked,
     }));
 
-    // Handle post per page values
-    if (
-      isChecked &&
-      (!postPerPageValues[row._id] || postPerPageValues[row._id] === 0)
-    ) {
-      setPostPerPageValues((prevValues) => ({
-        ...prevValues,
-        [row._id]: 1,
-      }));
+    // Set postPerPage values and calculate cost with latest values
+    const postPerPage = isChecked ? 1 : 0;
 
-      // Call cost calculation function
+    // Update postPerPage and after updating, calculate total cost with the latest values
+    handlePostPerValue(row, postPerPage, (updatedPostValues) => {
+      // Now that postPerPageValues are updated, calculate the total cost with the latest values
       calculateTotalCost(
         row._id,
-        1,
-        storyPerPageValues[row._id],
-        costPerPostValues[row._id],
-        costPerStoryValues[row._id],
-        costPerBothValues[row._id]
+        updatedPostValues[row._id], // Use the updated postPerPage value
+        storyPerPageValues[row._id], // Assuming this value exists
+        costPerPostValues[row._id], // Assuming this value exists
+        costPerStoryValues[row._id], // Assuming this value exists
+        costPerBothValues[row._id] // Assuming this value exists
       );
-    }
+
+      // Now, map updated planxData with the latest postPerPage values
+      const planxData = updatedSelectedRows.map(
+        ({ _id, m_story_price, page_name, m_post_price }) => ({
+          _id,
+          page_name,
+          post_price: m_post_price,
+          story_price: m_story_price,
+          post_count: Number(updatedPostValues[_id]) || 0, // Use updated postPerPageValues
+          story_count: Number(storyPerPageValues[_id]) || 0, // Use existing storyPerPageValues
+        })
+      );
+
+      debouncedSendPlanDetails(planxData);
+      // sendPlanDetails(planxData);
+    });
 
     // Update the page category count
     const categoryId = row.page_category_id;
@@ -286,8 +321,61 @@ const PlanMaking = () => {
       return newCount;
     });
 
-    updateStatistics(updatedSelectedRows); // Update statistics with the new selected rows
+    // Update statistics
+    updateStatistics(updatedSelectedRows);
   };
+
+  const fetchPageDetail = async () => {
+    try {
+      const response = await fetch(
+        `${baseUrl}v1/plan_page_details_with_planxid/${id}`
+      );
+      const json = await response.json();
+      setPageDetails(json?.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const sendPlanDetails = async (updatedPlanDetails) => {
+    const payload = {
+      planx_id: id,
+      plan_pages: updatedPlanDetails,
+    };
+
+    try {
+      const response = await fetch(`${baseUrl}v1/add_multiple_plan_page_data`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+    } catch (error) {
+      console.error('Error calling the API:', error);
+    }
+  };
+  // const debounce = (func, delay) => {
+  //   let timeoutId;
+  //   return function (...args) {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId);
+  //     }
+  //     timeoutId = setTimeout(() => {
+  //       func.apply(this, args);
+  //     }, delay);
+  //   };
+  // };
+  const debouncedSendPlanDetails = useCallback(
+    debounce(sendPlanDetails, 5000),
+    []
+  );
 
   const handleToggleBtn = () => {
     setToggleShowBtn(!toggleShowBtn);
@@ -296,13 +384,14 @@ const PlanMaking = () => {
   const handleOwnPage = () => {
     setShowOwnPage(!showOwnPage);
   };
+
   const handlePostPerPageChange = (row) => (event) => {
     const value = String(event.target.value);
     const updatedPostValues = {
       ...postPerPageValues,
       [row._id]: value,
     };
-    console.log("value", updatedPostValues);
+
     setPostPerPageValues(updatedPostValues);
     calculateTotalCost(
       row._id,
@@ -373,7 +462,7 @@ const PlanMaking = () => {
     }
   };
 
-  const ownPages = filterData?.filter((item) => item?.ownership_type === "Own");
+  const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
 
   const updateStatistics = (rows) => {
     let followers = 0;
@@ -416,29 +505,29 @@ const PlanMaking = () => {
     } else {
       totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
     }
-    setTotalCostValues({
-      ...totalCostValues,
+    setTotalCostValues((prevValues) => ({
+      ...prevValues,
       [id]: totalCost,
-    });
+    }));
   };
   const dataGridcolumns = [
     {
-      field: "S.NO",
-      headerName: "Count",
+      field: 'S.NO',
+      headerName: 'Count',
       renderCell: (params) => <div> {filterData?.indexOf(params.row) + 1}</div>,
 
       width: 80,
     },
 
     {
-      field: "page_name",
-      headerName: "Page Name",
+      field: 'page_name',
+      headerName: 'Page Name',
       width: 200,
       editable: true,
     },
     {
-      field: "Vendor",
-      headerName: "Vendor",
+      field: 'Vendor',
+      headerName: 'Vendor',
       width: 200,
       renderCell: (params) => {
         let name = vendorData?.find(
@@ -449,8 +538,8 @@ const PlanMaking = () => {
       // editable: true
     },
     {
-      field: "page_link",
-      headerName: "Page Link",
+      field: 'page_link',
+      headerName: 'Page Link',
       width: 200,
       editable: true,
       renderCell: (params) => {
@@ -467,18 +556,18 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "followers_count",
-      headerName: "Followers",
+      field: 'followers_count',
+      headerName: 'Followers',
       width: 100,
     },
     {
-      field: "ownership_type",
-      headerName: "Ownership",
+      field: 'ownership_type',
+      headerName: 'Ownership',
       width: 100,
     },
     {
-      field: "est_update",
-      headerName: "Selection",
+      field: 'est_update',
+      headerName: 'Selection',
       width: 100,
       renderCell: (params) => {
         return (
@@ -490,16 +579,16 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "created_at",
-      headerName: "Post Per Page",
+      field: 'created_at',
+      headerName: 'Post Per Page',
       width: 150,
       renderCell: (params) => {
         return (
           <div>
             <input
               type="number"
-              style={{ width: "70%" }}
-              value={postPerPageValues[params.row._id] || ""}
+              style={{ width: '70%' }}
+              value={postPerPageValues[params.row._id] || ''}
               onChange={handlePostPerPageChange(params.row)}
             />
           </div>
@@ -507,44 +596,44 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "updated_by",
-      headerName: "Story Per Page",
+      field: 'updated_by',
+      headerName: 'Story Per Page',
       width: 150,
       renderCell: (params) => {
         return (
           <input
             type="number"
-            style={{ width: "70%" }}
-            value={storyPerPageValues[params.row._id] || ""}
+            style={{ width: '70%' }}
+            value={storyPerPageValues[params.row._id] || ''}
             onChange={handleStoryPerPageChange(params.row)}
           />
         );
       },
     },
     {
-      field: "last_updated_by",
-      headerName: "Total Cost",
+      field: 'last_updated_by',
+      headerName: 'Total Cost',
       width: 100,
       renderCell: (params) => {
         return (
-          <div style={{ border: "1px solid red", padding: "10px" }}>
-            {"₹"}
+          <div style={{ border: '1px solid red', padding: '10px' }}>
+            {'₹'}
             {showTotalCost[params.row._id]
               ? totalCostValues[params.row._id] || 0
-              : "-"}
+              : '-'}
           </div>
         );
       },
     },
     {
-      field: "preference_level",
-      headerName: "Level",
+      field: 'preference_level',
+      headerName: 'Level',
       width: 200,
       editable: true,
     },
     {
-      field: "Vendor Type",
-      headerName: "Vendor Type",
+      field: 'Vendor Type',
+      headerName: 'Vendor Type',
       width: 200,
       // editable: true
       renderCell: (params) => {
@@ -556,8 +645,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "page_catg_id",
-      headerName: "Category",
+      field: 'page_catg_id',
+      headerName: 'Category',
       width: 200,
       renderCell: (params) => {
         let name = cat?.find(
@@ -567,8 +656,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "platform_id",
-      headerName: "Platform",
+      field: 'platform_id',
+      headerName: 'Platform',
       renderCell: (params) => {
         let name = platformData?.find(
           (item) => item?._id == params.row.platform_id
@@ -577,12 +666,12 @@ const PlanMaking = () => {
       },
       width: 150,
     },
-    { field: "page_status", headerName: "Status", width: 100 },
+    { field: 'page_status', headerName: 'Status', width: 100 },
   ];
   const pageDetailColumn = [
     {
-      field: "m_post_price",
-      headerName: "Cost Per Post",
+      field: 'm_post_price',
+      headerName: 'Cost Per Post',
       width: 150,
       valueGetter: ({ row }) => {
         let mPostPrice = row.m_post_price;
@@ -591,8 +680,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "m_story_price",
-      headerName: "Cost Per Story",
+      field: 'm_story_price',
+      headerName: 'Cost Per Story',
       width: 150,
       valueGetter: ({ row }) => {
         let mStoryPrice = row.m_story_price;
@@ -601,8 +690,8 @@ const PlanMaking = () => {
       },
     },
     {
-      field: "m_both_price",
-      headerName: "Both Price",
+      field: 'm_both_price',
+      headerName: 'Both Price',
       width: 150,
       valueGetter: ({ row }) => {
         let mBothPrice = row.m_both_price;
@@ -623,7 +712,7 @@ const PlanMaking = () => {
   }
 
   const clearSearch = () => {
-    setSearchInput("");
+    setSearchInput('');
   };
   useEffect(() => {
     if (selectedRows?.length == 0) {
@@ -636,32 +725,76 @@ const PlanMaking = () => {
     const platform = pageList?.data?.filter((item) => item.platform_id === id);
     setFilterData(platform);
   };
-  const handleSearchChange = (event) => {
-    const inputValue = event.target.value;
-    setSearchInput(inputValue);
+  const handleAutomaticSelection = (incomingData) => {
+    const updatedSelectedRows = [...selectedRows];
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    let totalCost = 0;
 
-    // Split and process search terms
-    const searchTerms = inputValue
-      .split(" ")
-      .map((term) => term.trim().toLowerCase())
-      .filter(Boolean);
+    // Loop through each incoming data object
+    incomingData.forEach((incomingPage) => {
+      const matchingPage = filterData.find(
+        (page) => page.page_name === incomingPage.page_name
+      );
 
+      if (matchingPage) {
+        // Check if the page is already selected
+        const isAlreadySelected = updatedSelectedRows.some(
+          (selectedRow) => selectedRow._id === matchingPage._id
+        );
+
+        if (!isAlreadySelected) {
+          // Manually invoke the logic to select the row
+          handleCheckboxChange(matchingPage)({ target: { checked: true } });
+          updatedSelectedRows.push(matchingPage);
+        }
+
+        // Set post per page and story per page values
+        updatedPostValues[matchingPage._id] = incomingPage.post_count;
+        updatedStoryValues[matchingPage._id] = incomingPage.story_count;
+
+        // Calculate cost for the current page
+        const costPerPost = matchingPage.m_post_price;
+        const costPerStory = matchingPage.m_story_price;
+        const costPerBoth = costPerPost + costPerStory;
+
+        // Calculate total cost for the current page
+        const currentTotalCost = calculateTotalCost(
+          matchingPage._id,
+          incomingPage.post_count,
+          incomingPage.story_count,
+          costPerPost,
+          costPerStory,
+          costPerBoth
+        );
+
+        totalCost += currentTotalCost;
+      }
+    });
+
+    // Update states
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setSelectedRows(updatedSelectedRows);
+  };
+
+  const filterAndSelectRows = (searchTerms) => {
     // Filter data based on search terms
-    if (searchTerms.length > 0) {
+    if (searchTerms?.length > 0) {
       const filtered = pageList?.data?.filter((item) =>
-        searchTerms.some((term) =>
-          item?.page_name?.toLowerCase().includes(term)
+        searchTerms?.some((term) =>
+          item?.page_name?.toLowerCase().includes(term.toLowerCase())
         )
       );
 
       setFilterData(filtered);
 
       // Automatically check all rows that match the search terms
-      const updatedSelectedRows = [...selectedRows]; // Copy existing selected rows
-      const updatedPostValues = { ...postPerPageValues }; // Copy existing post per page values
+      const updatedSelectedRows = [...selectedRows];
+      const updatedPostValues = { ...postPerPageValues };
 
       // Loop through each filtered row
-      filtered.forEach((row) => {
+      filtered?.forEach((row) => {
         // Check if the row is already selected
         const isAlreadySelected = updatedSelectedRows.some(
           (selectedRow) => selectedRow._id === row._id
@@ -669,36 +802,27 @@ const PlanMaking = () => {
 
         // If not already selected, select the row and update checkbox
         if (!isAlreadySelected) {
-          handleCheckboxChange(row)({ target: { checked: true } }); // Set the checkbox to checked
-
-          // Add the row to selected rows
+          // Instead of directly calling handleCheckboxChange, we manually invoke the necessary logic
+          handleCheckboxChange(row)({ target: { checked: true } });
           updatedSelectedRows.push(row);
         }
 
         // Set the post per page value to 1 for this row
-        updatedPostValues[row._id] = 1; // Set the value for ALL rows
-
-        // Update category count for each matched row
-        const categoryId = row.page_category_id;
-        setPageCategoryCount((prevCount) => {
-          const newCount = { ...prevCount };
-          newCount[categoryId] = (newCount[categoryId] || 0) + 1; // Increment category count
-          return newCount;
-        });
+        updatedPostValues[row._id] = 1;
       });
 
       // Set post per page values for all rows at once
-      setPostPerPageValues(updatedPostValues); // Update post per page values for all selected rows
-      setSelectedRows(updatedSelectedRows); // Update the selected rows
+      setPostPerPageValues(updatedPostValues);
+      setSelectedRows(updatedSelectedRows);
 
-      updateStatistics(updatedSelectedRows); // Update statistics after selection
+      updateStatistics(updatedSelectedRows);
 
       // Identify pages not found
       const filteredPageNames = new Set(
         filtered?.map((item) => item.page_name.toLowerCase())
       );
       const notFound = searchTerms.filter(
-        (term) => !filteredPageNames.has(term)
+        (term) => !filteredPageNames.has(term.toLowerCase()) // Case-insensitive check
       );
 
       if (notFound.length > 0) {
@@ -714,7 +838,19 @@ const PlanMaking = () => {
       setNotFoundPages([]);
     }
   };
-  console.log("page", postPerPageValues);
+
+  const handleSearchChange = (event) => {
+    const inputValue = event.target.value;
+    setSearchInput(inputValue);
+
+    // Split and process search terms
+    const searchTerms = inputValue
+      .split(' ')
+      .map((term) => term.trim().toLowerCase())
+      .filter(Boolean);
+    filterAndSelectRows(searchTerms);
+  };
+
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
@@ -726,6 +862,13 @@ const PlanMaking = () => {
   // useEffect(() => {
 
   // }, [searchInput, pageList?.data]);
+
+  useEffect(() => {
+    // Call your function to handle automatic selection
+    if (filterData.length > 0 && pageDetail.length > 0) {
+      handleAutomaticSelection(pageDetail);
+    }
+  }, [filterData, pageDetail]);
 
   useEffect(() => {
     // Fetch user-specific data and page data
@@ -747,20 +890,32 @@ const PlanMaking = () => {
 
     // Fetch all necessary data
     getData();
+    fetchPageDetail();
   }, []);
 
   const handleFollowersBlur = () => {
     const followerFilteredData = pageList?.data?.filter((page) => {
       const followers = page?.followers_count;
       return (
-        (minFollowers === "" || followers >= parseInt(minFollowers)) &&
-        (maxFollowers === "" || followers <= parseInt(maxFollowers))
+        (minFollowers === '' || followers >= parseInt(minFollowers)) &&
+        (maxFollowers === '' || followers <= parseInt(maxFollowers))
       );
     });
 
     setFilterData(followerFilteredData);
   };
 
+  const clearRecentlySelected = () => {
+    // Reset all the states
+    setSelectedRows([]);
+    setPostPerPageValues({});
+    setStoryPerPageValues({});
+    setPageCategoryCount({});
+    setFilterData(pageList.data);
+
+    // Optionally clear the search input
+    setSearchInput('');
+  };
   // useEffect(() => {
   //   // Once pageList data is available, filter based on the active platform and category
   //   if (pageList) {
@@ -777,7 +932,7 @@ const PlanMaking = () => {
   //     }
 
   //     // Set the filtered data
-  //     // setFilterData(filteredData);
+  //     setFilterData(filteredData);
   //   }
   // }, [pageList, activeTabPlatfrom, selectedCategory]);
 
@@ -802,33 +957,18 @@ const PlanMaking = () => {
         </DialogActions>
       </Dialog>
 
-      <div
-        className="mb24"
-        style={{ display: "flex", alignItems: "center", width: "300px" }}
-      >
-        <input
-          type="text"
-          placeholder="Type values separated by spaces"
-          value={searchInput}
-          onChange={handleSearchChange} // Handle input change
-        />
-        <button onClick={clearSearch} style={{ marginLeft: " 1rem" }}>
-          Clear Input
-        </button>
-      </div>
-
       <div className="scrollWrapper">
         <div className="table-responsive topStickty">
           <div className="data_tbl thm_table">
             {isPageListLoading ? (
               <Box
                 sx={{
-                  textAlign: "center",
-                  position: "relative",
-                  margin: "auto",
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "center",
+                  textAlign: 'center',
+                  position: 'relative',
+                  margin: 'auto',
+                  width: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
                 <CircularProgress variant="determinate" value={progress} />
@@ -838,10 +978,10 @@ const PlanMaking = () => {
                     left: 0,
                     bottom: 0,
                     right: 0,
-                    position: "absolute",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+                    position: 'absolute',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
                   }}
                 >
                   <Typography
@@ -857,6 +997,10 @@ const PlanMaking = () => {
               <>
                 <PlanStatics
                   totalFollowers={totalFollowers}
+                  clearSearch={clearSearch}
+                  searchInputValue={searchInput}
+                  clearRecentlySelected={clearRecentlySelected}
+                  handleSearchChange={handleSearchChange}
                   totalCost={totalCost}
                   totalPostsPerPage={totalPostsPerPage}
                   totalPagesSelected={totalPagesSelected}
@@ -893,8 +1037,8 @@ const PlanMaking = () => {
                   key={item._id}
                   className={
                     activeTabPlatfrom === item._id
-                      ? "active btn btn-info"
-                      : "btn"
+                      ? 'active btn btn-info'
+                      : 'btn'
                   }
                   onClick={() => handlePlatform(item._id)}
                 >
@@ -902,7 +1046,7 @@ const PlanMaking = () => {
                 </button>
               ))}
             </div>
-            {activeTabPlatfrom === "666818824366007df1df1319" && (
+            {activeTabPlatfrom === '666818824366007df1df1319' && (
               <div className="row">
                 <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
                   <label className="">Filter by:</label>
@@ -941,7 +1085,7 @@ const PlanMaking = () => {
                   <input
                     type="number"
                     className="filter-input form-control"
-                    value={minFollowers || ""}
+                    value={minFollowers || ''}
                     onChange={(e) => setMinFollowers(e.target.value)}
                     onBlur={handleFollowersBlur}
                   />
@@ -951,7 +1095,7 @@ const PlanMaking = () => {
                   <input
                     type="number"
                     className="filter-input form-control"
-                    value={maxFollowers || ""}
+                    value={maxFollowers || ''}
                     onChange={(e) => setMaxFollowers(e.target.value)}
                     onBlur={handleFollowersBlur}
                   />
@@ -1035,7 +1179,7 @@ const PlanMaking = () => {
         <div className="card">
           <div className="card-body pb20">
             <div className="thmTable">
-              <Box sx={{ height: 700, width: "100%" }}>
+              <Box sx={{ height: 700, width: '100%' }}>
                 <DataGrid
                   title="Page Overview"
                   rows={

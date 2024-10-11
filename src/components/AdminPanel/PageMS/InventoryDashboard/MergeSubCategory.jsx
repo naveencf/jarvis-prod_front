@@ -9,17 +9,22 @@ import Slide from "@mui/material/Slide";
 import Select from "react-select";
 import Swal from "sweetalert2";
 import axios from "axios";
-import { useGetAllPageCategoryQuery } from "../../../Store/PageBaseURL";
+import {
+  useGetAllPageCategoryQuery,
+  useGetAllPageSubCategoryQuery,
+} from "../../../Store/PageBaseURL";
 import { baseUrl } from "../../../../utils/config";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function MergeCategory() {
+export default function MergeSubCategory() {
   const [open, setOpen] = React.useState(false);
-  const { data: category ,refetch:refetchPageCate} = useGetAllPageCategoryQuery();
-  const categoryData = category?.data || [];
+  const { data: subCategory, refetch: refetchPageSubCate } =
+    useGetAllPageSubCategoryQuery();
+  const subCategoryData = subCategory?.data || [];
+  console.log(subCategoryData, "subCategoryData--->>>");
   const [preference, setPreference] = React.useState("");
   const [remove, setRemove] = React.useState("");
 
@@ -34,7 +39,7 @@ export default function MergeCategory() {
   const handleSubmit = () => {
     const startDate = "2023-01-01";
     const currentDate = new Date().toISOString().split("T")[0];
-  
+
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -42,16 +47,16 @@ export default function MergeCategory() {
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, merge it!"
+      confirmButtonText: "Yes, merge it!",
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .put(baseUrl + `v1/merge_page_category`, {
+          .put(baseUrl + `v1/merge_page_sub_category`, {
             preference_id: preference,
             removed_id: remove,
             flag: 2,
             start_date: startDate,
-            end_date: currentDate  
+            end_date: currentDate,
           })
           .then(() => {
             Swal.fire({
@@ -59,8 +64,8 @@ export default function MergeCategory() {
               text: "The categories have been merged successfully.",
               icon: "success",
             });
-            handleClose()
-            refetchPageCate()
+            handleClose();
+            refetchPageSubCate();
           })
           .catch((error) => {
             Swal.fire({
@@ -72,12 +77,11 @@ export default function MergeCategory() {
       }
     });
   };
-  
 
   return (
     <>
       <Button variant="outlined" onClick={handleClickOpen}>
-        Merge Category
+        Merge Sub Category
       </Button>
       <Dialog
         open={open}
@@ -85,10 +89,10 @@ export default function MergeCategory() {
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
-         fullWidth={true} // Ensures the dialog takes full width based on maxWidth
+        fullWidth={true}
         maxWidth="md"
       >
-        <DialogTitle>{"Merge Category"}</DialogTitle>
+        <DialogTitle>{"Merge Sub Category"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-slide-description">
             <div className="form-group col-12">
@@ -97,16 +101,16 @@ export default function MergeCategory() {
               </label>
               <Select
                 className=""
-                options={categoryData.map((option) => ({
-                  value: option.page_category_id,
-                  label: `${option.page_category}`,
+                options={subCategoryData?.map((option) => ({
+                  value: option.page_sub_category_id,
+                  label: `${option.page_sub_category}`,
                 }))}
                 value={{
                   value: preference,
                   label:
-                    categoryData.find(
-                      (user) => user.page_category_id === preference
-                    )?.page_category || "",
+                    subCategoryData.find(
+                      (user) => user.page_sub_category_id === preference
+                    )?.page_sub_category || "",
                 }}
                 onChange={(e) => {
                   setPreference(e.value);
@@ -120,16 +124,16 @@ export default function MergeCategory() {
               </label>
               <Select
                 className=""
-                options={categoryData.map((option) => ({
-                  value: option.page_category_id,
-                  label: `${option.page_category}`,
+                options={subCategoryData?.map((option) => ({
+                  value: option.page_sub_category_id,
+                  label: `${option.page_sub_category}`,
                 }))}
                 value={{
                   value: remove,
                   label:
-                    categoryData.find(
-                      (user) => user.page_category_id === remove
-                    )?.page_category || "",
+                    subCategoryData?.find(
+                      (user) => user.page_sub_category_id === remove
+                    )?.page_sub_category || "",
                 }}
                 onChange={(e) => {
                   setRemove(e.value);

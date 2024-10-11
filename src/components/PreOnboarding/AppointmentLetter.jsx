@@ -983,11 +983,11 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                             <Inhandmore UserDetails={UserDetails} />
                         )}
 
-                    <View style={[styles.section, styles.marginTop]}>
+                    <View style={[styles.section,{marginTop:3}]}>
                         <Text>This document will give you clarity on terms associated with compensation and benefits as per
                             organization policies in effect. Kindly go through and provide your acceptance for the same. </Text>
                     </View>
-                    <View style={[styles.section]} break>
+                    <View style={[styles.section,{paddingBottom:0}]} break>
                         <Text style={styles.text}>Sincerely, on behalf of Creativefuel Private Limited,</Text>
                         <Text style={styles.text}>Authorized Signatory</Text>
                         <Image
@@ -1006,12 +1006,12 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                     </Text>
                 </View>
                 <View style={[styles.section, { paddingBottom: 0 }]}>
-                    <Text style={[styles.text, { marginTop: 10 }]}>Signature:</Text>
-                    {true && <Image
+                    <Text style={[styles.text, { marginTop: 0 }]}>Signature:</Text>
+                     <Image
                         style={styles.signatureImage2}
                         src={`data:image/png;base64,${image64}`}
                         alt="Signature"
-                    />}
+                    />
                     <Text style={styles.text} >{allUserData?.user_name}</Text>
                 </View>
 

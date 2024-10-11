@@ -77,9 +77,11 @@ export default function PageInfoModal() {
   } = useGetAllPageSubCategoryQuery();
 
   const handlRowClick = (row, Type) => {
+    console.log("start");
     dispatch(setModalType(Type));
     dispatch(setOpenShowAddModal());
     dispatch(setRowData(row));
+    console.log("roq", row);
   };
 
   const {
