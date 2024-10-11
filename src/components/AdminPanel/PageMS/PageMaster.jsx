@@ -606,7 +606,10 @@ const PageMaster = () => {
     const initialId = vendorId || vendorDetails._id;
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
-      ? { value: initialVendor._id, label: formatString(initialVendor.vendor_name )}
+      ? {
+          value: initialVendor._id,
+          label: formatString(initialVendor.vendor_name),
+        }
       : null;
   };
 
@@ -658,6 +661,31 @@ const PageMaster = () => {
       })
       .catch((error) => {
         console.error("Error fetching followers:", error);
+        
+        const fallbackPayload = {
+          creators: [value],
+          department: "65c38781c52b3515f77b0815",
+          userId: 111111,
+          creatorType: 0,
+        };
+  
+        axios
+          .post(
+            `https://insights.ist:8080/api/v1/creator_details_operation_multiple`,
+            fallbackPayload,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          )
+          .then((fallbackResult) => {
+            setFollowCount(fallbackResult?.data?.data[0]?.creatorDetails?.followers);
+          })
+          .catch((fallbackError) => {
+            console.error("Error fetching followers from the fallback API:", fallbackError);
+          });
       });
   };
 
@@ -848,8 +876,9 @@ const PageMaster = () => {
                     value={{
                       value: profileId,
                       label:
-                        profileData?.data?.find((role) => role?._id === profileId)
-                          ?.profile_type || singleVendor?.vendor_category,
+                        profileData?.data?.find(
+                          (role) => role?._id === profileId
+                        )?.profile_type || singleVendor?.vendor_category,
                     }}
                     onChange={(e) => {
                       setProfileId(e.value);
@@ -999,7 +1028,6 @@ const PageMaster = () => {
                     options={subCategoryData.map((option) => ({
                       value: option._id,
                       label: option.page_sub_category,
-                      // label: option.category_name,
                     }))}
                     required={true}
                     value={{
@@ -1045,16 +1073,12 @@ const PageMaster = () => {
             </div>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
-                <label className="form-label">
-                  Tags
-                  {/* <sup style={{ color: "red" }}>*</sup> */}
-                </label>
+                <label className="form-label">Tags</label>
                 <Select
                   isMulti
                   options={categoryData.map((option) => ({
                     value: option._id,
                     label: option.page_category,
-                    // label: option.category_name,
                   }))}
                   required={true}
                   value={tag}
@@ -1065,9 +1089,6 @@ const PageMaster = () => {
                     }
                   }}
                 ></Select>
-                {/* {validateFields.tag && (
-                  <small style={{ color: "red" }}>Please select Tags</small>
-                )} */}
               </div>
             </div>
             <div className="col-md-6 p0 mb16">

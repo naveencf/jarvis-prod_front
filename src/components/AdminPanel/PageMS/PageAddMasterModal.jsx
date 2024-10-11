@@ -177,7 +177,7 @@ export default function PageAddMasterModal() {
     } else if (modalType === "Sub Category Update") {
       delete obj.updated_by;
       delete obj.profile_type;
-      obj.page_sub_category = data.name;
+      obj.sub_category_name = data.name;
       obj.last_updated_by = userID;
       updateSubCategory(obj)
         .unwrap()

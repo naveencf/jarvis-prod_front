@@ -8,6 +8,7 @@ import { IconButton, Stack } from "@mui/material";
 import {
   setModalType,
   setOpenShowAddModal,
+  setRowData
 } from "../../../Store/PageMaster";
 import { useDispatch } from "react-redux";
 import PageAddMasterModal from "../PageAddMasterModal";
@@ -15,6 +16,7 @@ import MergeCategory from "./MergeCategory";
 import { Link } from "react-router-dom";
 import FormContainer from "../../FormContainer";
 import Swal from "sweetalert2"; // Import SweetAlert2
+import { FaEdit } from "react-icons/fa";
 
 const CategoryOverview = () => {
   const { data: category } = useGetAllPageCategoryQuery();
@@ -52,12 +54,20 @@ const CategoryOverview = () => {
             Swal.fire({
               title: "Error!",
               text:
-                error?.data?.message || "Something went wrong. Please try again.",
+                error?.data?.message ||
+                "Something went wrong. Please try again.",
               icon: "error",
             });
           });
       }
     });
+  };
+  const handlRowClick = (row, Type) => {
+    console.log("row", row);
+    console.log("type", Type);
+    dispatch(setModalType(Type));
+    dispatch(setOpenShowAddModal());
+    dispatch(setRowData(row));
   };
 
   // Columns configuration for the data grid
@@ -76,10 +86,42 @@ const CategoryOverview = () => {
       width: 150,
     },
     {
+      key: "createdAt",
+      name: "Created At",
+      renderRowCell: (row) => {
+        let data = row?.createdAt;
+        return data
+          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
+          : "NA";
+      },
+      width: 150,
+    },
+    {
+      key: "updatedAt",
+      name: "Updated At",
+      renderRowCell: (row) => {
+        let data = row?.updatedAt;
+        return data
+          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
+          : "NA";
+      },
+      width: 150,
+    },
+    
+    {
       key: "Action_edits",
       name: "Actions",
       renderRowCell: (row) => (
         <div className="flex-row">
+            <button
+              title="Edit"
+              className="icon-1"
+              onClick={() => handlRowClick(row, "Category Update")}
+              data-toggle="modal"
+              data-target="#myModal"
+            >
+              <FaEdit />{" "}
+            </button>
           <div className="icon-1" onClick={() => handleDelete(row._id)}>
             <i className="bi bi-trash" />
           </div>
@@ -114,7 +156,7 @@ const CategoryOverview = () => {
         </div>
       </div>
       <View
-        title={"Sales Booking Status Grid"}
+        title={""}
         data={categoryData}
         columns={categoryGrid}
         pagination

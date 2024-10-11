@@ -11,6 +11,7 @@ import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor";
 import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard";
 import CategoryOverview from "./PageMS/Category/CategoryOverview";
 
+import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
 
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
@@ -1913,6 +1914,10 @@ const Admin = () => {
                     <Route
                       path="/pms-page-category"
                       element={<PageCategory />}
+                    />
+                    <Route
+                      path="/pms-page-sub-category"
+                      element={<SubCategoryOverview />}
                     />
                     <Route path="/pms-profile-type" element={<ProfileType />} />
                     <Route

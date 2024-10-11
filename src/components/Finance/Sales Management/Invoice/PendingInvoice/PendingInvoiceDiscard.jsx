@@ -1,51 +1,72 @@
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@mui/material";
 import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { Button } from "antd";
+import axios from "axios";
+import { baseUrl } from "../../../../../utils/config";
+import { useGlobalContext } from "../../../../../Context/Context";
 
 const PendingInvoiceDiscard = (props) => {
-  const { discardDialog } = props;
+  const {
+    discardDialog,
+    setDiscardDialog,
+    getData,
+    handleCloseEditFieldAction,
+    InvcCreatedRowData,
+  } = props;
 
+  const { toastAlert } = useGlobalContext();
   const [reason, setReason] = useState("");
+  const token = sessionStorage.getItem("token");
+  console.log(InvcCreatedRowData, "getData--->>>");
 
-  const handleDiscardCloseDialog = () => {
-    discardDialog(false);
+  const handleCloseDiscardDialog = () => {
+    setDiscardDialog(false);
   };
 
-  //   const handleReject = async (e) => {
-  //     e.preventDefault();
-  //     const formData = new FormData();
-  //     formData.append("invoice_action_reason", reason);
+  const handleReject = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append("invoice_action_reason", reason);
 
-  //     const confirmation = confirm("Are you sure you want to reject this data?");
-  //     if (confirmation) {
-  //       axios
-  //         .put(baseUrl + `sales/invoice_request_rejected/${objId}`, formData, {
-  //           headers: {
-  //             "Content-Type": "multipart/form-data",
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //         })
-  //         .then((res) => {
-  //           toastAlert("Data Rejected Successfully");
-  //           handleDiscardCloseDialog();
-  //           getData();
-  //           setInoiceNum("");
-  //           setPartyName("");
-  //         });
-  //     } else {
-  //       getData();
-  //     }
-  //     // toastAlert("Data updated");
-  //     // setIsFormSubmitted(true);
-  //   };
+    const confirmation = confirm("Are you sure you want to reject this data?");
+    if (confirmation) {
+      axios
+        .put(
+          baseUrl + `sales/invoice_request_rejected/${InvcCreatedRowData?._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((res) => {
+          toastAlert("Data Rejected Successfully");
+          handleCloseDiscardDialog();
+          handleCloseEditFieldAction();
+          getData();
+          setInoiceNum("");
+          setPartyName("");
+        });
+    } else {
+      getData();
+    }
+    setIsFormSubmitted(true);
+  };
 
   return (
     <div>
       <Dialog
         open={discardDialog}
-        onClose={handleDiscardCloseDialog}
+        onClose={handleCloseDiscardDialog}
         fullWidth={true}
         maxWidth="md"
         sx={{
@@ -57,7 +78,7 @@ const PendingInvoiceDiscard = (props) => {
         <DialogTitle>Invoice Rejected</DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={handleDiscardCloseDialog}
+          onClick={handleCloseDiscardDialog}
           sx={{
             position: "absolute",
             right: 8,
@@ -79,11 +100,8 @@ const PendingInvoiceDiscard = (props) => {
           />
           <div className="pack w-100 mt-3 sb">
             <div className="pack gap16">
-              <Button
-                variant="contained"
-                //   onClick={(e) => handleReject(e)}
-              >
-                Submit
+              <Button variant="contained" onClick={(e) => handleReject(e)}>
+                Discard
               </Button>
             </div>
           </div>

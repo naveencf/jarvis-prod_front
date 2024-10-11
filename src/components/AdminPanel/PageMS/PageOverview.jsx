@@ -4,19 +4,10 @@ import { baseUrl } from "../../../utils/config";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link, useNavigate } from "react-router-dom";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
-  Autocomplete,
   Avatar,
-  TextField,
   Box,
   Typography,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
@@ -60,6 +51,7 @@ import StatisticsWisePageOverview from "./PageOverview/StatisticsWisePageOvervie
 import { constant } from "../../../utils/constants";
 import { formatNumber } from "../../../utils/formatNumber";
 import FilterWisePageOverview from "./PageOverview/FilterWisePageOverview";
+import PriceModal from "./PageOverview/PriceModal";
 const PageOverview = () => {
   const { toastAlert } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -87,7 +79,6 @@ const PageOverview = () => {
           res = await axios.post(`${baseUrl}v1/get_all_pages_for_users`, {
             user_id: userID,
           });
-         
         }
         if (res && res.data) {
           setPageDatas(res.data.data || res.data);
@@ -169,7 +160,6 @@ const PageOverview = () => {
   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
   const { data: profileData } = useGetAllProfileListQuery();
 
-
   const [vendorDetails, setVendorDetails] = useState(null);
 
   const handleVendorClick = async (_id) => {
@@ -224,7 +214,7 @@ const PageOverview = () => {
         };
       });
       setNewFilterData(data);
-     
+
       const result = [];
       for (let i = 0; i < data?.length; i++) {
         const createdBy = data[i]?.created_by;
@@ -354,16 +344,16 @@ const PageOverview = () => {
   useEffect(() => {
     if (pageDatas) {
       if (decodedToken.role_id !== 1) {
-        setVendorTypes(pageDatas)
+        setVendorTypes(pageDatas);
         //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
         // );
-        setFilterData(pageDatas)
+        setFilterData(pageDatas);
         //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
         // );
-        calculateAndSetTotals(pageDatas)
+        calculateAndSetTotals(pageDatas);
         //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
         // );
-        setTabFilterData(pageDatas)
+        setTabFilterData(pageDatas);
         //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
         // );
       } else {
@@ -375,7 +365,7 @@ const PageOverview = () => {
     }
   }, [pageDatas]);
 
-  useEffect(() => {}, [tableFollowers, tablePosts, tableStories, tableBoths]);
+  useEffect(() => { }, [tableFollowers, tablePosts, tableStories, tableBoths]);
 
   const { data: priceData, isLoading: isPriceLoading } =
     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
@@ -393,12 +383,6 @@ const PageOverview = () => {
       setSelectedRow(row._id);
       setShowPriceModal(true);
     };
-  };
-
-  const handleClose = () => {
-    setShowPriceModal(false);
-    setSelectedRow(null);
-    setLocalPriceData(null);
   };
 
   const whatsAppData = async (data) => {
@@ -933,16 +917,6 @@ const PageOverview = () => {
         );
       },
     },
-    // {
-    //   field: "totalPercentage",
-    //   width: 150,
-    //   headerName: "Stats Update %",
-    //   renderCell: (params) => {
-    //     return params.row.totalPercentage > 0
-    //       ? Math.round(+params.row?.totalPercentage) + "%"
-    //       : params.row.totalPercentageForExeHistory + "%";
-    //   },
-    // },
     {
       key: "Age_13_17_percent",
       width: 150,
@@ -1390,33 +1364,6 @@ const PageOverview = () => {
       setEditFlag(false);
     }
   };
-
-  const priceColumn = [
-    {
-      field: "S.NO",
-      headerName: "S.NO",
-      renderCell: (params) => <div>{priceData.indexOf(params.row) + 1}</div>,
-      width: 130,
-    },
-    {
-      field: "price_type",
-      headerName: "Price Type",
-      width: 200,
-      renderCell: (params) => {
-        let name = allPriceTypeList?.find(
-          (item) => item._id == params.row.page_price_type_id
-        )?.name;
-        return <div>{name}</div>;
-      },
-    },
-
-    {
-      field: "price",
-      headerName: "Price",
-      width: 200,
-    },
-  ];
-
   // Fetch data from API
   const fetchWhatsAppLinks = async () => {
     try {
@@ -1704,14 +1651,14 @@ const PageOverview = () => {
                   >
                     Vendor <KeyboardArrowRightIcon />
                   </Link>
-                  {decodedToken.role_id == 1 && (
+                  {/* {decodedToken.role_id == 1 && (
                     <Link
                       to={`/admin/pms-page-cat-assignment-overview`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
                     >
                       Assign User <KeyboardArrowRightIcon />
                     </Link>
-                  )}
+                  )} */}
                 </div>
               </div>
               <div className="card-body pb4">
@@ -1846,51 +1793,15 @@ const PageOverview = () => {
                 </div>
               </div>
             </div>
-            <Dialog
-              open={showPriceModal}
-              onClose={handleClose}
-              aria-labelledby="alert-dialog-title"
-              aria-describedby="alert-dialog-description"
-            >
-              <DialogTitle id="alert-dialog-title">
-                {"Price Details"}
-              </DialogTitle>
-              <DialogContent>
-                {localPriceData == null ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                    }}
-                  >
-                    <CircularProgress />
-                  </div>
-                ) : (
-                  <DialogContentText id="alert-dialog-description">
-                    <DataGrid
-                      rows={localPriceData}
-                      columns={priceColumn}
-                      pageSize={5}
-                      rowsPerPageOptions={[5]}
-                      disableSelectionOnClick
-                      getRowId={(row) => row._id}
-                      slots={{ toolbar: GridToolbar }}
-                      slotProps={{
-                        toolbar: {
-                          showQuickFilter: true,
-                        },
-                      }}
-                    />
-                  </DialogContentText>
-                )}
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose} autoFocus>
-                  Close
-                </Button>
-              </DialogActions>
-            </Dialog>
+
+            <PriceModal
+              setShowPriceModal={setShowPriceModal}
+              setSelectedRow={setSelectedRow}
+              setLocalPriceData={setLocalPriceData}
+              showPriceModal={showPriceModal}
+              localPriceData={localPriceData}
+              priceData={priceData}
+              allPriceTypeList={allPriceTypeList} />
             <TagCategoryListModal />
             <VendorNotAssignedModal />
             <PageDetail />

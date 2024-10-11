@@ -16,8 +16,9 @@ const PageAssignmentUserAdd = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // const { data: category } = useGetAllPageCategoryQuery();
-  // const categoryData = category?.data || [];
+  const { data: category } = useGetAllPageCategoryQuery();
+  const categoryData = category?.data || [];
+  const [categorys , setCategorys] = useState("")
 
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
@@ -28,7 +29,7 @@ const PageAssignmentUserAdd = () => {
   const [userData, setUserData] = useState([])
   const [userId, setUserId] = useState(0)
   const [subCat, setSubCat] = useState([])
-  const [categoryData, setCategoryData] = useState([])
+  const [subCategory, setSubCategory] = useState([])
 
   const getData = () => {
     axios
@@ -50,7 +51,7 @@ const PageAssignmentUserAdd = () => {
         },
       })
       .then((res) => {
-        setCategoryData(res.data.data);
+        setSubCategory(res.data.data);
       });
   };
 
@@ -141,6 +142,28 @@ const PageAssignmentUserAdd = () => {
                 />
               </div>
             </div>
+            <div className="form-group col-6">
+          <label className="form-label">
+            Category 
+          </label>
+          <Select
+            className=""
+            options={categoryData.map((option) => ({
+              value: option.page_category_id,
+              label: `${option.page_category}`,
+            }))}
+            value={{
+              value: categorys,
+              label:
+                categoryData.find((user) => user.page_category_id === categorys)
+                  ?.page_category || "",
+            }}
+            onChange={(e) => {
+              setCategorys(e.value);
+            }}
+            required
+          />
+        </div>
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
@@ -150,7 +173,7 @@ const PageAssignmentUserAdd = () => {
                 <div className="">
                 <Select
                   required={true}
-                  options={categoryData.map((option) => ({
+                  options={subCategory.map((option) => ({
                     value: option._id,
                     label: option.page_sub_category,
                   }))}
@@ -163,13 +186,14 @@ const PageAssignmentUserAdd = () => {
                 </div>
               </div>
             </div>    
+            <div className="col-12">
             <button
               className="btn cmnbtn btn-primary"
               type="submit"
               onClick={handleSubmit}
             >Submit
             </button>
-
+            </div>
           </div>
         </div>
       </div>
