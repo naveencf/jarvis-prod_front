@@ -99,20 +99,6 @@ useEffect(() => {
   };
 
   useEffect(() => {
-    // if (showPageHealthColumn) {
-    //   dispatch(setShowPageHealthColumn(false));
-    // }
-    // if (userID && !contextData) {
-    //   axios
-    //     .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-    //     .then((res) => {
-    //       // commenting this code for visible user creation wise data
-    //       // if (res.data[57].view_value === 1) {
-    //       //   setContextData(true);
-    //       // }
-    //     });
-    // }
-
     getData();
   }, []);
 
@@ -123,12 +109,12 @@ useEffect(() => {
     // }
     if (vendorDatas) {
       if (decodedToken.role_id !== 1) {
-        setFilterData(
-          vendorDatas.filter((item) => item.created_by == decodedToken.id)
-        );
-        setTabFilterData(
-          vendorDatas.filter((item) => item.created_by == decodedToken.id)
-        );
+        setFilterData(vendorDatas)
+        //   vendorDatas.filter((item) => item.created_by == decodedToken.id)
+        // );
+        setTabFilterData(vendorDatas)
+        //   vendorDatas.filter((item) => item.created_by == decodedToken.id)
+        // );
       } else {
         setFilterData(vendorDatas);
         setTabFilterData(vendorDatas);
@@ -475,85 +461,7 @@ useEffect(() => {
         </>
       ),
     },
-    // {
-    //   field: "alternate_mobile",
-    //   headerName: "Alternate Mobile",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "gst_no",
-    //   headerName: "GST No",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "threshold_limit",
-    //   headerName: "Threshold Limit",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "country_code",
-    //   headerName: "Country Code",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "company_pincode",
-    //   headerName: "Company Pincode",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "company_address",
-    //   headerName: "Company Address",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "company_name",
-    //   headerName: "Company Name",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "company_state",
-    //   headerName: "Company State",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "company_city",
-    //   headerName: "Company City",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "pan_no",
-    //   headerName: "Pan No",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "personal_address",
-    //   headerName: "Personal Address",
-    //   width: 200,
-    //   editable: true,
-    // },
-    // {
-    //   field: "payment_method",
-    //   headerName: "Payment Method",
-    //   width: 200,
-    //   renderRowCell: (params) => {
-    //     let name = payData?.find(
-    //       (item) => item?._id == params.row?.payment_method
-    //     )?.payMethod_name;
-    //     console.log(params.row.payment_method, "payment_method")
-    //     return <div>{name}</div>;
-    //   },
-    //   editable: true,
-    // },
+   
   ];
 
   const deletePhpData = async (row) => {
@@ -776,21 +684,7 @@ useEffect(() => {
                         ))}
                       </Grid>
                     </Box>
-                  ) : (
-                    // <DataGrid
-                    //   rows={filterData}
-                    //   columns={dataGridcolumns}
-                    //   pageSize={5}
-                    //   rowsPerPageOptions={[5]}
-                    //   disableSelectionOnClick
-                    //   getRowId={(row) => row._id}
-                    //   slots={{ toolbar: GridToolbar }}
-                    //   slotProps={{
-                    //     toolbar: {
-                    //       showQuickFilter: true,
-                    //     },
-                    //   }}
-                    // />
+                  ) : (                 
                     <View
                       columns={dataGridcolumns}
                       data={filterData}
