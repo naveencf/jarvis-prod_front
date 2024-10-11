@@ -6,20 +6,11 @@ import DeleteButton from "../DeleteButton";
 import { Link, useNavigate } from "react-router-dom";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import {
-  Autocomplete,
-  Avatar,
-  TextField,
-  Box,
-  Typography,
-  Button
+  Autocomplete, Avatar, TextField, Box, Typography, Button, Dialog, DialogActions,
+  DialogContent, DialogContentText, DialogTitle
 } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import jwtDecode from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { addRow } from "../../Store/Executon-Slice";
@@ -57,16 +48,13 @@ import PageDetail from "./PageOverview/PageDetail";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import { useGlobalContext } from "../../../Context/Context";
 import PageClosedByDetails from "./Page/PageClosedByDetails";
-import Brightness6Icon from "@mui/icons-material/Brightness6";
-import ToggleOffIcon from "@mui/icons-material/ToggleOff";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import VendorDetails from "./Vendor/VendorDetails";
 import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
 import StatisticsWisePageOverview from "./PageOverview/StatisticsWisePageOverview";
 import { constant } from "../../../utils/constants";
 
 let count = 0;
+import { formatNumber } from "../../../utils/formatNumber";
 const PageOverview = () => {
   const { toastAlert } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -91,10 +79,10 @@ const PageOverview = () => {
         let res;
         if (roleToken === constant.CONST_ADMIN_ROLE) {
           res = await axios.get(`${baseUrl}v1/pageMaster`);
-          console.log(res.data.data , 'admin page data')
+          console.log(res.data.data, 'admin page data')
         } else {
           res = await axios.post(`${baseUrl}v1/get_all_pages_for_users`, { user_id: userID });
-          console.log(res.data.data , 'pagedata here')
+          console.log(res.data.data, 'pagedata here')
         }
         if (res && res.data) {
           setPageDatas(res.data.data || res.data);
@@ -103,9 +91,8 @@ const PageOverview = () => {
         console.error('Error fetching data:', error);
       }
     };
-    fetchVendors(); 
-  }, [roleToken]); 
-
+    fetchVendors();
+  }, [roleToken]);
 
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState("Tab1");
@@ -126,18 +113,14 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-  
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [waData, setWaData] = useState([]);
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
   const token = sessionStorage.getItem("token");
-  const [activeIndex, setActiveIndex] = useState(null);
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
-  const toggleAccordion = (index) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
   const [allVendorWhats, setAllVendorWhats] = useState([]);
   const [selectedPriceType, setSelectedPriceType] = useState(""); // Holds the selected price type
   const [inputPrice, setInputPrice] = useState(""); // Holds the input price
@@ -172,7 +155,6 @@ const PageOverview = () => {
         default:
           return false;
       }
-
       // Return rows where price exactly matches the input price
       return price === Number(inputPrice); // Ensures type matching
     });
@@ -288,7 +270,6 @@ const PageOverview = () => {
   };
 
   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-  const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const { data: profileData } = useGetAllProfileListQuery();
   const [vendorDetails, setVendorDetails] = useState(null);
 
@@ -375,82 +356,6 @@ const PageOverview = () => {
     }
   }
 
-  function getStartOfWeek() {
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const startOfWeek = new Date(
-      now.setDate(now.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1))
-    );
-    startOfWeek.setHours(0, 0, 0, 0);
-    return startOfWeek;
-  }
-
-  function getStartOfMonth() {
-    const now = new Date();
-    return new Date(now.getFullYear(), now.getMonth(), 1);
-  }
-
-  function getStartOfQuarter() {
-    const now = new Date();
-    const quarterStartMonth = Math.floor(now.getMonth() / 3) * 3;
-    return new Date(now.getFullYear(), quarterStartMonth, 1);
-  }
-
-  function getStartOfYear() {
-    const now = new Date();
-    return new Date(now.getFullYear(), 0, 1);
-  }
-
-  function isWithinRange(date, startDate) {
-    const createdDate = new Date(date);
-    return createdDate >= startDate;
-  }
-
-  function applyFilter(filterType) {
-    let startDate;
-
-    switch (filterType) {
-      case "week":
-        startDate = getStartOfWeek();
-        break;
-      case "month":
-        startDate = getStartOfMonth();
-        break;
-      case "quarter":
-        startDate = getStartOfQuarter();
-        break;
-      case "year":
-        startDate = getStartOfYear();
-        break;
-      default:
-        return;
-    }
-
-    const filteredData = individualDataDup?.filter((item) => {
-      if (!item.created_at) {
-        return false;
-      }
-
-      const dateParts = item.created_at.split(" ")[0].split("-");
-      if (dateParts.length !== 3) {
-        return false;
-      }
-
-      const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-      const createdDate = new Date(formattedDate);
-
-      return isWithinRange(createdDate, startDate);
-    });
-    setIndividualData(filteredData);
-  }
-
-  // to match created_by id from user_id to display user name in accordion
-  const getUserName = (createdBy) => {
-    const result = user.find((item) => item.user_id == createdBy);
-    return result ? result.user_name : "Unknown User";
-  };
-  count++;
-  console.log("count",count)
   useEffect(() => {
     pageHealthToggleCheck();
   }, [isPageListLoading, isPagestatLoading, filterData]);
@@ -555,11 +460,6 @@ const PageOverview = () => {
   };
 
   useEffect(() => {
-    // if (pageList) {
-    // setVendorTypes(pageList.data);
-    // setFilterData(pageList.data);
-    // calculateAndSetTotals(pageList.data)
-    // setTabFilterData(pageList.data)
     if (pageDatas) {
       if (decodedToken.role_id !== 1) {
         setVendorTypes(
@@ -834,18 +734,6 @@ const PageOverview = () => {
       key: "ownership_type",
       name: "Ownership",
       width: 200,
-      // valueGetter: (params) => {
-      //   if (!ownerShipData) {
-      //     return <div>Unknown</div>;
-      //   }
-
-      //   const ownership = ownerShipData?.find(
-      //     (item) => item._id === params.row.ownership_type
-      //   )?.company_type_name;
-      //   const finalName = ownership ? ownership : "NA";
-
-      //   return finalName;
-      // },
     },
     {
       key: "platform_id",
@@ -1602,18 +1490,6 @@ const PageOverview = () => {
     },
   ];
 
-  // convert follower count in millions
-  function formatNumber(num) {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + "M";
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + "K";
-    } else if (num >= 10000000000) {
-      return (num / 1000).toFixed(1) + "B";
-    } else {
-      return num?.toString();
-    }
-  }
 
   const handleLevelChange = async (event, setEditFlag, row) => {
     const newValue = event.target.value;
@@ -1670,7 +1546,6 @@ const PageOverview = () => {
       await axios.put(
         `${baseUrl}v1/pageMaster/${row._id}`,
         {
-          // ...params.row,
           page_category_id: newValue,
         },
         {
@@ -1714,8 +1589,6 @@ const PageOverview = () => {
     }
   };
 
-  const pageDetailColumn = [];
-
   const priceColumn = [
     {
       field: "S.NO",
@@ -1742,20 +1615,6 @@ const PageOverview = () => {
     },
   ];
 
-  const pageHealthColumn = [];
-
-  // if (!pageStatsAuth || decodedToken?.role_id === 1) {
-  //   dataGridcolumns.push(...pageDetailColumn);
-  // }
-  !decodedToken?.role_id === 1 &&
-    dispatch(setShowPageHealthColumn(pageStatsAuth));
-  // !decodedToken?.role_id === 1&&  dispatch(setShowPageHealthColumn(pageStatsAuth));
-
-  // if (showPageHealthColumn) {
-  //   dataGridcolumns.push(...pageHealthColumn);
-  // }
-
-
   // Fetch data from API
   const fetchWhatsAppLinks = async () => {
     try {
@@ -1769,7 +1628,6 @@ const PageOverview = () => {
   useEffect(() => {
     fetchWhatsAppLinks();
   }, []);
-
 
   useEffect(() => {
     const result = axios
@@ -2395,7 +2253,6 @@ const PageOverview = () => {
                       Export Excel
                     </Button>
                   </div>
-                  {/* <div className="col-md-3 mb16"> </div> */}
                 </div>
               </div>
               <div className="card-footer">
@@ -2567,12 +2424,20 @@ const PageOverview = () => {
           </div>
         )}
         {activeTab === "Tab2" &&
-          <StatisticsWisePageOverview tabFilterData={tabFilterData}
+          <StatisticsWisePageOverview
+            tabFilterData={tabFilterData}
             setTabFilterData={setTabFilterData}
-            setActiveTab={setActiveTab} setFilterData={setFilterData} allVendorWhats={allVendorWhats} newFilterData={newFilterData} />
+            setActiveTab={setActiveTab}
+            setFilterData={setFilterData}
+            allVendorWhats={allVendorWhats}
+            newFilterData={newFilterData} />
         }
         {activeTab === "Tab3" &&
-          <CategoryWisePageOverview categoryData={categoryData} formatNumber={formatNumber} setFilterData={setFilterData} pageList={pageList} setActiveTab={setActiveTab} vendorTypes={vendorTypes} vendorData={vendorData} />
+          <CategoryWisePageOverview
+            categoryData={categoryData}
+            setFilterData={setFilterData}
+            pageList={pageList} setActiveTab={setActiveTab}
+            vendorTypes={vendorTypes} vendorData={vendorData} />
         }
         {activeTab === "Tab4" && <PageClosedByDetails />}
       </div>

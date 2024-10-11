@@ -312,7 +312,7 @@ const OfferLetter = ({ allUserData, image64 }) => {
             <Text>
               To accept this offer, please sign and return a copy of this letter
               within 48 hours. You can scan and email it to,
-              onboarding@creativefuel.io CC: fahbir@creativefuel.io or just
+              onboarding@creativefuel.io CC: fabhr@creativefuel.io or just
               reply back if I accept the offer. We are excited about the
               prospect of having you onboard and look forward to your positive
               response.

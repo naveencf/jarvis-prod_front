@@ -195,11 +195,25 @@ export const PageBaseURL = createApi({
       invalidatesTags: ["subCategoryList"],
     }),
 
+    
     getAllPageSubCategory: builder.query({
       query: () => `v1/page_sub_category`,
       providesTags: ["subCategoryList"],
     }),
+    deletePageCategory: builder.mutation({
+      query: (id) => {
+      
+        return {
+          url: `v1/page_category/${id}`, // Directly assign the URL string
+          method: "DELETE",
+          
+        };
+      },
+      invalidatesTags: ["categoryList"], // Assuming you might want to invalidate cache after update
+    }),
   }),
+  
+
 });
 
 export const {
@@ -227,4 +241,5 @@ export const {
   useAddPageSubCategoryMutation,
   useUpdatePageSubCategoryMutation,
   useGetAllPageSubCategoryQuery,
+  useDeletePageCategoryMutation,
 } = PageBaseURL;

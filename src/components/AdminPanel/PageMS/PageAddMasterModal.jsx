@@ -36,8 +36,6 @@ export default function PageAddMasterModal() {
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
   const open = useSelector((state) => state.pageMaster.showAddModal)
   const modalType = useSelector((state) => state.pageMaster.modalType);
-  console.log("open", open)
-  console.log("modal-type", modalType)
   const dispatch = useDispatch();
   const rowData = useSelector((state) => state.pageMaster.rowData);
   const {
