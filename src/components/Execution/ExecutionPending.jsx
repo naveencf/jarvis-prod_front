@@ -214,7 +214,7 @@ function ExecutionPending() {
 
   const ExecutionTotalCounts = async () => {
     await axios
-      .get(`${baseUrl}/sales/count_data_status_wise`, {
+      .get(`${baseUrl}sales/count_data_status_wise`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

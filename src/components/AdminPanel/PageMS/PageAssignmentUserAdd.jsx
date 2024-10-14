@@ -6,9 +6,8 @@ import FormContainer from '../FormContainer';
 import { baseUrl } from '../../../utils/config';
 import jwtDecode from 'jwt-decode';
 import { useLocation } from 'react-router';
-import Select, { components } from 'react-select';
+import Select from 'react-select';
 import './Tagcss.css';
-
 import { useNavigate } from 'react-router';
 import { useGetAllPageCategoryQuery } from '../../Store/PageBaseURL';
 
@@ -18,7 +17,7 @@ const PageAssignmentUserAdd = () => {
 
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
-  const [categorys , setCategorys] = useState("")
+  const [categorys, setCategorys] = useState("");
 
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
@@ -26,57 +25,65 @@ const PageAssignmentUserAdd = () => {
 
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [userData, setUserData] = useState([])
-  const [userId, setUserId] = useState(0)
-  const [subCat, setSubCat] = useState([])
-  const [subCategory, setSubCategory] = useState([])
-
+  const [userData, setUserData] = useState([]);
+  const [userId, setUserId] = useState(0);
+  const [subCategoryOptions, setSubCategoryOptions] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+console.log(selectedSubCategories , 'select sub')
   const getData = () => {
     axios
       .get(baseUrl + 'get_all_users', {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', 
+          'Content-Type': 'application/json',
         },
       })
       .then((res) => {
         setUserData(res.data.data);
       });
-
-    axios
-      .get(baseUrl + 'v1/page_sub_category', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json', 
-        },
-      })
-      .then((res) => {
-        setSubCategory(res.data.data);
-      });
   };
+
+  // Fetch sub-categories when a category is selected
+  useEffect(() => {
+    if (categorys) {
+      axios
+        .get(baseUrl + `v1/get_all_sub_cat_with_cat_id/${categorys}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => {
+          const subCatList = res.data.map((subCat) => ({
+            value: subCat.page_sub_category_id,
+            label: subCat.page_sub_category_name,
+          }));
+          console.log(subCatList , 'sublist')
+          setSubCategoryOptions(subCatList);
+        })
+        .catch((error) => {
+          console.error('Error fetching sub-categories:', error);
+          toastError('Failed to load sub-categories');
+        });
+    }
+  }, [categorys, token, toastError]);
 
   useEffect(() => {
     getData();
-
-    let subCategoriesDataList = subCat?.map((e) => ({
-      value: e._id,
-      label: e.page_sub_category,
-    }));
-    setSubCat(subCategoriesDataList ? subCategoriesDataList : []);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!userId && subCat.length == 0){
-      toastError('Please select user and sub category')
-      return
+    if (!userId || selectedSubCategories.length === 0) {
+      toastError('Please select user and sub-categories');
+      return;
     }
 
     const payload = {
       user_id: userId,
-      page_sub_category_id: subCat,
-      created_by: userID
+      page_sub_category_id: selectedSubCategories.map((subCat) => subCat.value),
+      created_by: userID,
     };
 
     await axios
@@ -88,36 +95,34 @@ const PageAssignmentUserAdd = () => {
       })
       .then(() => {
         setIsFormSubmitted(true);
-        toastAlert(' Data Submitted Successfully');
+        toastAlert('Data Submitted Successfully');
       })
       .catch((error) => {
         const errorMessage = error.response.data.message;
-        if (errorMessage.includes("E11000")) {
-          toastError("Duplicate Page Name.");
+        if (errorMessage.includes('E11000')) {
+          toastError('Duplicate Page Name.');
         } else {
           toastError(errorMessage);
         }
-        // toastError(error.response.data.message);
       });
   };
 
   if (isFormSubmitted) {
     return navigate('/admin/pms-page-cat-assignment-overview');
   }
- 
+
   return (
     <>
       <FormContainer
         mainTitle={'Page Cat Assignment'}
         link={true}
-        // handleSubmit={handleSubmit}
         submitButton={false}
       />
 
-      <div className='card'>
-          <div className="card-header">
-            <h5 className="card-title">Profile Master</h5>
-          </div>
+      <div className="card">
+        <div className="card-header">
+          <h5 className="card-title">Profile Master</h5>
+        </div>
         <div className="card-body pb4">
           <div className="row thm_form">
             <div className="col-md-6 mb16">
@@ -126,7 +131,6 @@ const PageAssignmentUserAdd = () => {
                   User <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
-                  // components={{ MenuList }}
                   options={userData.map((option) => ({
                     value: option.user_id,
                     label: option.user_name,
@@ -134,7 +138,7 @@ const PageAssignmentUserAdd = () => {
                   required={true}
                   value={{
                     value: userId,
-                    label: userData.find((role) => role.user_id == userId )?.user_name || '',
+                    label: userData.find((user) => user.user_id === userId)?.user_name || '',
                   }}
                   onChange={(e) => {
                     setUserId(e.value);
@@ -142,62 +146,58 @@ const PageAssignmentUserAdd = () => {
                 />
               </div>
             </div>
-            <div className="form-group col-6">
-          <label className="form-label">
-            Category 
-          </label>
-          <Select
-            className=""
-            options={categoryData.map((option) => ({
-              value: option.page_category_id,
-              label: `${option.page_category}`,
-            }))}
-            value={{
-              value: categorys,
-              label:
-                categoryData.find((user) => user.page_category_id === categorys)
-                  ?.page_category || "",
-            }}
-            onChange={(e) => {
-              setCategorys(e.value);
-            }}
-            required
-          />
-        </div>
+
+            <div className="col-md-6 mb16">
+              <div className="form-group m0">
+                <label className="form-label">
+                  Category <sup style={{ color: 'red' }}>*</sup>
+                </label>
+                <Select
+                  options={categoryData.map((option) => ({
+                    value: option._id,
+                    label: option.page_category,
+                  }))}
+                  value={{
+                    value: categorys,
+                    label: categoryData.find((cat) => cat._id === categorys)?.page_category || '',
+                  }}
+                  onChange={(e) => {
+                    setCategorys(e.value);
+                  }}
+                  required
+                />
+              </div>
+            </div>
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
                   Sub Categories <sup style={{ color: 'red' }}>*</sup>
                 </label>
-                <div className="">
                 <Select
-                  required={true}
-                  options={subCategory.map((option) => ({
-                    value: option._id,
-                    label: option.page_sub_category,
-                  }))}
+                  options={subCategoryOptions}
                   isMulti
-                  value={subCat}
+                  value={selectedSubCategories}
                   onChange={(e) => {
-                    setSubCat(e);
+                    setSelectedSubCategories(e);
                   }}
-                ></Select>
-                </div>
+                  required
+                />
               </div>
-            </div>    
+            </div>
+
             <div className="col-12">
-            <button
-              className="btn cmnbtn btn-primary"
-              type="submit"
-              onClick={handleSubmit}
-            >Submit
-            </button>
+              <button
+                className="btn cmnbtn btn-primary"
+                type="submit"
+                onClick={handleSubmit}
+              >
+                Submit
+              </button>
             </div>
           </div>
         </div>
       </div>
-
     </>
   );
 };

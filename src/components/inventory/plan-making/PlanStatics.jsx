@@ -375,6 +375,7 @@ const PlanStatics = ({
   handleSearchChange,
   clearRecentlySelected,
   clearSearch,
+  HandleSavePlan,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
@@ -483,6 +484,13 @@ const PlanStatics = ({
                 }
               >
                 Download Excel
+              </Button>
+              <Button
+                className="btn btn_sm cmnbtn btn-success"
+                variant="contained"
+                onClick={() => HandleSavePlan()}
+              >
+                Save Plan
               </Button>
             </div>
           </div>

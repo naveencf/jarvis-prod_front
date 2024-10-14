@@ -1,4 +1,3 @@
-import { DataGrid } from '@mui/x-data-grid';
 import {
   Box,
   Button,
@@ -7,69 +6,23 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
+  Autocomplete,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
 import { AppContext } from '../../../Context/Context';
-
-const rows = [
-  {
-    id: 1,
-    platformCount: 3,
-    planName: 'Basic',
-    costPrice: 10,
-    sellingPrice: 15,
-    pages: 5,
-    postCount: 10,
-    storyCount: 3,
-    description: 'Basic plan for small businesses',
-  },
-  {
-    id: 2,
-    platformCount: 5,
-    planName: 'Standard',
-    costPrice: 20,
-    sellingPrice: 30,
-    pages: 10,
-    postCount: 25,
-    storyCount: 5,
-    description: 'Standard plan for growing businesses',
-  },
-  {
-    id: 3,
-    platformCount: 7,
-    planName: 'Premium',
-    costPrice: 50,
-    sellingPrice: 70,
-    pages: 20,
-    postCount: 50,
-    storyCount: 10,
-    description: 'Premium plan for large businesses',
-  },
-];
-
-const columns = [
-  { field: 'platformCount', headerName: 'No of Platform', width: 150 },
-  { field: 'planName', headerName: 'Plan Name', width: 150 },
-  { field: 'costPrice', headerName: 'Cost Price', width: 120 },
-  { field: 'sellingPrice', headerName: 'Selling Price', width: 120 },
-  { field: 'pages', headerName: 'No of Pages', width: 120 },
-  { field: 'postCount', headerName: 'Post Count', width: 120 },
-  { field: 'storyCount', headerName: 'Story Count', width: 120 },
-  { field: 'description', headerName: 'Description', width: 250 },
-];
+import CustomTable from '../../CustomTable/CustomTable';
+import { FaEdit } from 'react-icons/fa';
 
 function PlanHome() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Tab1');
   const [openDialog, setOpenDialog] = useState(false);
   const [planRows, setPlanRows] = useState([]);
+  const [duplicatePlanId, setDuplicatePlanId] = useState(null);
+
   const [planDetails, setPlanDetails] = useState({
     planName: '',
     costPrice: '',
@@ -87,8 +40,8 @@ function PlanHome() {
     createdBy: 938,
   });
   const [accounts, setAccounts] = useState([]); // State to store account data
+  const [loading, setLoading] = useState(true);
   const storedToken = sessionStorage.getItem('token');
-
   const { usersDataContext } = useContext(AppContext); // Getting users from context
 
   const filteredUsers = usersDataContext.filter(
@@ -116,12 +69,10 @@ function PlanHome() {
     }
   };
   const fetchPlans = async () => {
+    setLoading(true);
     try {
-      const response = await fetch(
-        `http://35.225.122.157:8080/api/v1/planxlogs`
-      );
+      const response = await fetch(`${baseUrl}v1/planxlogs`);
       const data = await response.json();
-      console.log(data);
       if (data.success) {
         // Map API response to match DataGrid row structure
         const formattedRows = data?.data?.map((plan, index) => ({
@@ -140,7 +91,10 @@ function PlanHome() {
     } catch (error) {
       console.error('Error fetching plans:', error);
     }
+    setLoading(false);
   };
+
+  // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
     navigate(`/admin/pms-plan-making/${planId}`);
@@ -162,37 +116,36 @@ function PlanHome() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-
+  
     // Handle account selection
     if (name === 'accountName') {
       const selectedAccount = accounts.find(
         (account) => account.account_name === value
       );
-      setPlanDetails({
-        ...planDetails,
+      setPlanDetails((prevDetails) => ({
+        ...prevDetails,
         accountName: selectedAccount ? selectedAccount.account_name : '',
         accountId: selectedAccount ? selectedAccount._id : '',
         brandId: selectedAccount ? selectedAccount.brand_id : '',
-      });
+      }));
     }
     // Handle user selection from usersDataContext
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find((user) => user._id === value);
-      setPlanDetails({
-        ...planDetails,
+      const selectedUser = usersDataContext.find((user) => user.user_name === value);
+      setPlanDetails((prevDetails) => ({
+        ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
-      });
+      }));
     } else {
-      setPlanDetails({
-        ...planDetails,
+      setPlanDetails((prevDetails) => ({
+        ...prevDetails,
         [name]: value,
-      });
+      }));
     }
   };
+ 
 
   const handleFormSubmit = async () => {
-    const apiUrl = 'http://35.225.122.157:8080/api/v1/planxlogs';
-
     const planData = {
       plan_name: planDetails.planName,
       cost_price: parseFloat(planDetails.costPrice),
@@ -208,10 +161,11 @@ function PlanHome() {
       plan_status: planDetails.planStatus,
       plan_saved: planDetails.planSaved,
       created_by: planDetails.createdBy,
+      ...(duplicatePlanId && { duplicate_planx_id: duplicatePlanId }),
     };
 
     try {
-      const response = await fetch(apiUrl, {
+      const response = await fetch(`${baseUrl}v1/planxlogs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,9 +176,8 @@ function PlanHome() {
 
       const result = await response.json();
       if (result.success) {
-        console.log('Plan created successfully:', result);
-        const planId = result?.data?._id;
-        navigate(`/admin/pms-plan-making/${planId}`);
+        const newPlanId = result?.data?._id;
+        navigate(`/admin/pms-plan-making/${newPlanId}`);
       } else {
         console.error('Failed to create plan:', result.message);
       }
@@ -233,8 +186,139 @@ function PlanHome() {
     }
 
     setOpenDialog(false);
+    setDuplicatePlanId(null); // Reset duplicate plan ID
   };
 
+  const handleDuplicateClick = (params) => {
+    const planId = params.id; // Get the original plan's ID
+    setDuplicatePlanId(planId); // Track the plan ID being duplicated
+
+    // Clear the form fields
+    setPlanDetails({
+      planName: '',
+      costPrice: '',
+      sellingPrice: '',
+      noOfPages: '',
+      postCount: '',
+      storyCount: '',
+      description: '',
+      salesExecutiveId: '',
+      accountId: '',
+      brandId: '',
+      brief: '',
+      planStatus: 'close',
+      planSaved: false,
+      createdBy: 938,
+    });
+
+    setOpenDialog(true); // Open the dialog
+  };
+  const columns = [
+    {
+      key: 'serial_no',
+      name: 'S.No',
+      renderRowCell: (row, index) => (
+        <div style={{ textAlign: 'center' }}>{index + 1}</div>
+      ),
+      width: 70,
+      showCol: true,
+    },
+    {
+      key: 'platform_count',
+      name: 'No of Platform',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.platformCount}</div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'plan_name',
+      name: 'Plan Name',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.planName}</div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'cost_price',
+      name: 'Cost Price',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.costPrice}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'selling_price',
+      name: 'Selling Price',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.sellingPrice}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'pages',
+      name: 'No of Pages',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.pages}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'post_count',
+      name: 'Post Count',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.postCount}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'story_count',
+      name: 'Story Count',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.storyCount}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'description',
+      name: 'Description',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row.description}</div>
+      ),
+      width: 250,
+      showCol: true,
+    },
+    {
+      key: 'actions',
+      name: 'Actions',
+      renderRowCell: (row) => (
+        <div>
+          <button
+            onClick={() => handleDuplicateClick(row)}
+            className="btn btn-primary cmnbtn btn_sm"
+          >
+            Duplicate
+          </button>
+          <button
+            title="Edit"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={() => handleRowClick(row)}
+          >
+            <FaEdit />{' '}
+          </button>
+        </div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+  ];
   return (
     <div>
       <Button variant="contained" onClick={handlePlanMaking}>
@@ -253,51 +337,7 @@ function PlanHome() {
             value={planDetails.planName}
             onChange={handleInputChange}
           />
-          {/* <TextField
-            margin="dense"
-            label="Cost Price"
-            name="costPrice"
-            type="number"
-            fullWidth
-            value={planDetails.costPrice}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            label="Selling Price"
-            name="sellingPrice"
-            type="number"
-            fullWidth
-            value={planDetails.sellingPrice}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            label="No of Pages"
-            name="noOfPages"
-            type="number"
-            fullWidth
-            value={planDetails.noOfPages}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            label="Post Count"
-            name="postCount"
-            type="number"
-            fullWidth
-            value={planDetails.postCount}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            label="Story Count"
-            name="storyCount"
-            type="number"
-            fullWidth
-            value={planDetails.storyCount}
-            onChange={handleInputChange}
-          /> */}
+
           <TextField
             margin="dense"
             label="Description"
@@ -306,40 +346,53 @@ function PlanHome() {
             value={planDetails.description}
             onChange={handleInputChange}
           />
+          <TextField
+            margin="dense"
+            label="Budget"
+            name="sellingPrice"
+            fullWidth
+            value={planDetails.sellingPrice}
+            onChange={handleInputChange}
+          />
 
-          {/* Account Name Dropdown */}
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Account Name</InputLabel>
-            <Select
-              name="accountName"
-              value={planDetails.accountName}
-              onChange={handleInputChange}
-              label="Account Name"
-            >
-              {accounts.map((account) => (
-                <MenuItem key={account._id} value={account.account_name}>
-                  {account.account_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          {/* Sales Executive Dropdown */}
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Sales Executive</InputLabel>
-            <Select
-              name="salesExecutiveId"
-              value={planDetails.salesExecutiveId}
-              onChange={handleInputChange}
-              label="Sales Executive"
-            >
-              {filteredUsers?.map((user) => (
-                <MenuItem key={user._id} value={user._id}>
-                  {user.user_login_id}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete
+            name="accountName"
+            disablePortal
+            onChange={(event, value) => {
+              const selectedAccount = accounts.find(
+                (account) => account.account_name === value
+              );
+              setPlanDetails((prevDetails) => ({
+                ...prevDetails,
+                accountName: selectedAccount
+                  ? selectedAccount.account_name
+                  : '',
+                accountId: selectedAccount ? selectedAccount._id : '',
+                brandId: selectedAccount ? selectedAccount.brand_id : '',
+              }));
+            }}
+            options={accounts.map((account) => account.account_name)}
+            renderInput={(params) => (
+              <TextField {...params} label="Account Name" />
+            )}
+          />
+          <Autocomplete
+            disablePortal
+            name="salesExecutiveId"
+            onChange={(event, value) => {
+              const selectedUser = usersDataContext.find(
+                (user) => user.user_name === value
+              );
+              setPlanDetails((prevDetails) => ({
+                ...prevDetails,
+                salesExecutiveId: selectedUser ? selectedUser._id : '',
+              }));
+            }}
+            options={filteredUsers?.map((user) => user?.user_name)}
+            renderInput={(params) => (
+              <TextField {...params} label="Sales Executive" />
+            )}
+          />
 
           <TextField
             margin="dense"
@@ -378,33 +431,21 @@ function PlanHome() {
           Plan Pricing
         </button>
       </div>
-
+      {/* <CustomTable
+              isLoading={SalesLoading || userLoading}
+              columns={columns}
+              data={SalesData}
+              Pagination
+              tableName={"SalesBookingDetails"}
+            /> */}
       {activeTab === 'Tab1' && (
         <Box sx={{ height: 400, width: '100%' }}>
-          <DataGrid
-            rows={planRows} // Use fetched data
-            columns={[
-              {
-                field: 'platformCount',
-                headerName: 'No of Platform',
-                width: 150,
-              },
-              { field: 'planName', headerName: 'Plan Name', width: 150 },
-              { field: 'costPrice', headerName: 'Cost Price', width: 120 },
-              {
-                field: 'sellingPrice',
-                headerName: 'Selling Price',
-                width: 120,
-              },
-              { field: 'pages', headerName: 'No of Pages', width: 120 },
-              { field: 'postCount', headerName: 'Post Count', width: 120 },
-              { field: 'storyCount', headerName: 'Story Count', width: 120 },
-              { field: 'description', headerName: 'Description', width: 250 },
-            ]}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            checkboxSelection
-            onRowClick={handleRowClick} // Handle row click event
+          <CustomTable
+            isLoading={loading}
+            columns={columns}
+            data={planRows?.reverse()}
+            Pagination
+            tableName={'PlanMakingDetails'}
           />
         </Box>
       )}
