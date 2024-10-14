@@ -25,37 +25,35 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
   const categoryData = category?.data || [];
   const subCatData = subcategory?.data || [];
   const [userName, setUserName] = useState("");
-  const { userContextData,userID } = useAPIGlobalContext();
+  const { userContextData, userID } = useAPIGlobalContext();
 
-  
   const handleSubmit = () => {
     axios
-      .put(baseUrl + `v1/edit_page_cat_assignment/${row._id}`, {
-        user_id:userName,
+      .post(baseUrl + `v1/edit_page_cat_assignment/${row._id}`, {
+        user_id: userName,
         page_sub_category_id: subCategorys,
-        updated_by:userID
+        updated_by: userID,
       })
       .then(() => {
-          setUserName(" ")
-        onClose(); // Close the modal after successful submit
+        setUserName(" ");
+        onClose();
       });
   };
 
   useEffect(() => {
+    console.log(row, "lalitigoe");
     if (row) {
-      setSubCategory(row.page_sub_category_id || "");
-      setUserName(row?.user_id || "")
+      setSubCategory(row?.page_sub_category_id || "");
+      setUserName(row?.user_id || "");
     }
   }, [row]);
-console.log(row ,'rowrow')
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
       <DialogTitle>{"Update Page Cat Assignment To User"}</DialogTitle>
       <DialogContent>
         <div className="form-group col-12">
-          <label className="form-label">
-            User Name 
-          </label>
+          <label className="form-label">User Name</label>
           <Select
             className=""
             options={userContextData.map((option) => ({
@@ -75,9 +73,7 @@ console.log(row ,'rowrow')
           />
         </div>
         <div className="form-group col-12">
-          <label className="form-label">
-            Category 
-          </label>
+          <label className="form-label">Category</label>
           <Select
             className=""
             options={categoryData.map((option) => ({
@@ -97,9 +93,7 @@ console.log(row ,'rowrow')
           />
         </div>
         <div className="form-group col-12">
-          <label className="form-label">
-            Sub Category 
-          </label>
+          <label className="form-label">Sub Category</label>
           <Select
             className=""
             options={subCatData.map((option) => ({

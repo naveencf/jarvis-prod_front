@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
-import { Link, useParams } from 'react-router-dom';
+import {  useNavigate, useParams } from 'react-router-dom';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 import {
@@ -27,11 +27,11 @@ import {
 } from '../../Store/PageBaseURL';
 import Checkbox from '@mui/material/Checkbox';
 import PlanStatics from './PlanStatics';
-import { Modal } from 'react-bootstrap';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Swal from 'sweetalert2';
 
 const PlanMaking = () => {
   const { data: pageList, isLoading: isPageListLoading } =
@@ -41,7 +41,7 @@ const PlanMaking = () => {
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
     '666818824366007df1df1319'
   );
-  
+
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
   const [progress, setProgress] = useState(10);
@@ -70,11 +70,13 @@ const PlanMaking = () => {
   const [followerFilterType, setFollowerFilterType] = useState('');
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
-
+  const [savePlan, setSavePlan] = useState([]);
+  const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
   const showPageHealthColumn = useSelector(
     (state) => state.PageOverview.showPageHelathColumn
   );
   const [totalFollowers, setTotalFollowers] = useState(0);
+  const [planSuccess, setPlanSuccess] = useState();
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
@@ -120,6 +122,7 @@ const PlanMaking = () => {
       }, delay);
     };
   };
+  const navigate = useNavigate();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
 
@@ -301,8 +304,10 @@ const PlanMaking = () => {
           story_count: Number(storyPerPageValues[_id]) || 0, // Use existing storyPerPageValues
         })
       );
-
-      debouncedSendPlanDetails(planxData);
+      setSavePlan(planxData);
+      if (!isAutomaticCheck) {
+        debouncedSendPlanDetails(planxData);
+      }
       // sendPlanDetails(planxData);
     });
 
@@ -324,7 +329,7 @@ const PlanMaking = () => {
     // Update statistics
     updateStatistics(updatedSelectedRows);
   };
-
+  console.log('save', savePlan);
   const fetchPageDetail = async () => {
     try {
       const response = await fetch(
@@ -357,21 +362,12 @@ const PlanMaking = () => {
       }
 
       const data = await response.json();
+      setPlanSuccess(data);
     } catch (error) {
       console.error('Error calling the API:', error);
     }
   };
-  // const debounce = (func, delay) => {
-  //   let timeoutId;
-  //   return function (...args) {
-  //     if (timeoutId) {
-  //       clearTimeout(timeoutId);
-  //     }
-  //     timeoutId = setTimeout(() => {
-  //       func.apply(this, args);
-  //     }, delay);
-  //   };
-  // };
+ 
   const debouncedSendPlanDetails = useCallback(
     debounce(sendPlanDetails, 5000),
     []
@@ -425,7 +421,35 @@ const PlanMaking = () => {
     );
     // updateStatistics(selectedRows);
   };
-
+  const HandleSavePlan = () => {
+    try {
+      sendPlanDetails(savePlan);
+      if (planSuccess.success) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Plan has been saved successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          navigate('/admin/pms-plan-making');
+        });
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to save the plan. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Something went wrong. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  };
   // Handler for dropdown change
   const handleCategoryChange = (event) => {
     const selectedOptions = Array.from(event.target.selectedOptions)?.map(
@@ -726,40 +750,37 @@ const PlanMaking = () => {
     setFilterData(platform);
   };
   const handleAutomaticSelection = (incomingData) => {
+    setIsAutomaticCheck(true);
     const updatedSelectedRows = [...selectedRows];
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
-    let totalCost = 0;
+    const updatedShowTotalCost = { ...showTotalCost }; // Clone the current state
 
-    // Loop through each incoming data object
+    // Loop through incoming data to calculate costs
     incomingData.forEach((incomingPage) => {
       const matchingPage = filterData.find(
         (page) => page.page_name === incomingPage.page_name
       );
 
       if (matchingPage) {
-        // Check if the page is already selected
         const isAlreadySelected = updatedSelectedRows.some(
           (selectedRow) => selectedRow._id === matchingPage._id
         );
 
         if (!isAlreadySelected) {
-          // Manually invoke the logic to select the row
-          handleCheckboxChange(matchingPage)({ target: { checked: true } });
           updatedSelectedRows.push(matchingPage);
         }
 
-        // Set post per page and story per page values
+        // Update post and story counts
         updatedPostValues[matchingPage._id] = incomingPage.post_count;
         updatedStoryValues[matchingPage._id] = incomingPage.story_count;
 
-        // Calculate cost for the current page
+        // Calculate the cost
         const costPerPost = matchingPage.m_post_price;
         const costPerStory = matchingPage.m_story_price;
         const costPerBoth = costPerPost + costPerStory;
 
-        // Calculate total cost for the current page
-        const currentTotalCost = calculateTotalCost(
+        calculateTotalCost(
           matchingPage._id,
           incomingPage.post_count,
           incomingPage.story_count,
@@ -768,14 +789,18 @@ const PlanMaking = () => {
           costPerBoth
         );
 
-        totalCost += currentTotalCost;
+        // Mark this page's cost as 'true' in updatedShowTotalCost
+        updatedShowTotalCost[matchingPage._id] = true;
       }
     });
 
-    // Update states
+    // Update all states after processing
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
     setSelectedRows(updatedSelectedRows);
+    setShowTotalCost(updatedShowTotalCost); // Update the showTotalCost state
+
+    setIsAutomaticCheck(false);
   };
 
   const filterAndSelectRows = (searchTerms) => {
@@ -865,7 +890,7 @@ const PlanMaking = () => {
 
   useEffect(() => {
     // Call your function to handle automatic selection
-    if (filterData.length > 0 && pageDetail.length > 0) {
+    if (filterData?.length > 0 && pageDetail?.length > 0) {
       handleAutomaticSelection(pageDetail);
     }
   }, [filterData, pageDetail]);
@@ -997,6 +1022,7 @@ const PlanMaking = () => {
               <>
                 <PlanStatics
                   totalFollowers={totalFollowers}
+                  HandleSavePlan={HandleSavePlan}
                   clearSearch={clearSearch}
                   searchInputValue={searchInput}
                   clearRecentlySelected={clearRecentlySelected}

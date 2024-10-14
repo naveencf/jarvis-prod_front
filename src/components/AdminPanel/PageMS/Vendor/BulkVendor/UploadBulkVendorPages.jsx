@@ -109,11 +109,13 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
     const headers = [
       [
         "page_name",
-        "story",
+        "page_link",
+        "followers",
         "post",
+        "story",
         "both",
-        "m_story",
         "m_post",
+        "m_story",
         "m_both",
         "reel",
         "carousel",
@@ -163,6 +165,8 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
               <TableRow>
                 <TableCell>S No</TableCell>
                 <TableCell>Pagename</TableCell>
+                <TableCell>Link</TableCell>
+                <TableCell>Followers</TableCell>
                 <TableCell>Story</TableCell>
                 <TableCell>Post</TableCell>
                 <TableCell>Both</TableCell>
@@ -177,15 +181,17 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
               {rows.map((row, index) => (
                 <TableRow key={index}>
                   <TableCell>{index+1}</TableCell>
-                  <TableCell>{row.page_name}</TableCell>
-                  <TableCell>{row.story}</TableCell>
-                  <TableCell>{row.post}</TableCell>
-                  <TableCell>{row.both}</TableCell>
-                  <TableCell>{row.m_story}</TableCell>
-                  <TableCell>{row.m_post}</TableCell>
-                  <TableCell>{row.m_both}</TableCell>
-                  <TableCell>{row.reel}</TableCell>
-                  <TableCell>{row.carousel}</TableCell>
+                  <TableCell>{row?.page_name}</TableCell>
+                  <TableCell>{row?.page_link}</TableCell>
+                  <TableCell>{row?.followers}</TableCell>
+                  <TableCell>{row?.post}</TableCell>
+                  <TableCell>{row?.story}</TableCell>
+                  <TableCell>{row?.both}</TableCell>
+                  <TableCell>{row?.m_post}</TableCell>
+                  <TableCell>{row?.m_story}</TableCell>
+                  <TableCell>{row?.m_both}</TableCell>
+                  <TableCell>{row?.reel}</TableCell>
+                  <TableCell>{row?.carousel}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

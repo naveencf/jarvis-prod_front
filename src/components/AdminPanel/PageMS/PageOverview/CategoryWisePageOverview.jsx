@@ -36,7 +36,7 @@ const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setAc
             field: "Count",
             headerName: "Count",
             width: 200,
-            editable: true,
+            // editable: true,
             renderCell: (params) => {
                 let data = params.row.category_used;
                 return data ? (
@@ -46,7 +46,7 @@ const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setAc
                             className="btn btn-sm btn-success"
                             onClick={() => {
                                 setFilterData(
-                                    pageList.data.filter(
+                                    pageList?.filter(
                                         (item) => item.page_category_id === params.row.id
                                     )
                                 );
