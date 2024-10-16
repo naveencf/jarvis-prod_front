@@ -844,7 +844,7 @@ console.log(pageList)
       name: "Action",
       width: 500,
       renderRowCell: (row) => (
-        <div className="d-flex align-center ">
+        <div  className="flexCenter colGap8">
           {pageUpdateAuth && (
             <Link
               className="mt-2"
