@@ -20,7 +20,13 @@ import getDecodedToken from "../../../../utils/DecodedToken";
 import InvoiceDownload from "./InvoiceDownload";
 import ExecutionData from "./ExecutionData";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../../Store/API/Sales/ExecutionCampaignApi";
-import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear, subDays, subWeeks, subMonths, subYears, subQuarters } from 'date-fns';
+import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear, subDays, subWeeks, subMonths, subYears, subQuarters, set } from 'date-fns';
+import { Accordion } from "@mui/material";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import CustomTable from "../../../CustomTable/CustomTable";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -31,9 +37,6 @@ const ViewSaleBooking = () => {
   }
   const filterDate = useLocation().state;
   const [stats, setStats] = useState("");
-
-
-
   const { toastAlert, toastError } = useGlobalContext();
   const { userContextData } = useAPIGlobalContext();
 
@@ -58,12 +61,13 @@ const ViewSaleBooking = () => {
   const [deleteSaleBooking, { isLoading }] = useDeleteSaleBookingMutation();
   const [executionModal, setExecutionModal] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
-  const [filteredData, setFilteredData] = useState(allSaleBooking);
+  const [filteredData, setFilteredData] = useState(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
   const [campaignList, setCampaignList] = useState([]);
   const [filterByCampaignName, setFilterByCampaignName] = useState("");
   const [filterByAccountName, setFilterByAccountName] = useState("");
   const [filterBySalesExecutiveName, setFilterBySalesExecutiveName] =
     useState("");
+  const [pivotData, setPivotData] = useState([]);
 
   const [modalName, setModalName] = useState();
   const [fromDate, setFromDate] = useState("");
@@ -208,7 +212,7 @@ const ViewSaleBooking = () => {
   };
 
   function handelRemoveFiltter() {
-    setFilteredData(allSaleBooking);
+    setFilteredData(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
     setFilterByCampaignName("");
     setFilterByAccountName("");
     setFilterBySalesExecutiveName("");
@@ -226,12 +230,12 @@ const ViewSaleBooking = () => {
         setToDate(filterDate?.end?.split("T")[0]);
         dataFiltter();
       } else {
-        setFilteredData(allSaleBooking);
+        setFilteredData(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
       }
   }, [filterDate, allSaleBooking, allAccountLoading]);
 
   function dataFiltter() {
-    let filteredData = allSaleBooking?.filter((data) => {
+    let filteredData1 = filteredData?.filter((data) => {
       let matchesCampaignName = true,
         matchesAccountName = true,
         matchesSalesExecutiveName = true,
@@ -268,12 +272,93 @@ const ViewSaleBooking = () => {
       );
     });
 
-    setFilteredData(filteredData);
+    setFilteredData(filteredData1);
   }
 
   useEffect(() => {
     setCampaignList(allExeCampaignList);
   }, [allExeCampaignListLoading]);
+
+
+
+  function pivotDataFunction() {
+    const ranges = [{ range: "0-100K" }, { range: "100-200K" }, { range: "200-300K" }, { range: "300-400K" }, { range: "400-500K" }, { range: "500-600K" }, { range: "600-700K" }, { range: "700-800K" }, { range: "800-900K" }, { range: "900-1000K" }, { range: "10L+" }];
+    const newPivot = ranges.map((data) => {
+      let range = data?.range;
+      let rangeData = allSaleBooking?.filter((item) => {
+        let amount = item?.base_amount;
+        if (range === "0-100K") {
+          return amount >= 0 && amount <= 100000;
+        }
+        if (range === "100-200K") {
+          return amount >= 100000 && amount <= 200000;
+        }
+        if (range === "200-300K") {
+          return amount >= 200000 && amount <= 300000;
+        }
+        if (range === "300-400K") {
+          return amount >= 300000 && amount <= 400000;
+        }
+        if (range === "400-500K") {
+          return amount >= 400000 && amount <= 500000;
+        }
+        if (range === "500-600K") {
+          return amount >= 500000 && amount <= 600000;
+        }
+        if (range === "600-700K") {
+          return amount >= 600000 && amount <= 700000;
+        }
+        if (range === "700-800K") {
+          return amount >= 700000 && amount <= 800000;
+        }
+        if (range === "800-900K") {
+          return amount >= 800000 && amount <= 900000;
+        }
+        if (range === "900-1000K") {
+          return amount >= 900000 && amount <= 1000000;
+        }
+        if (range === "10L+") {
+          return amount >= 1000000;
+        }
+      });
+      return {
+        ...data,
+        count: rangeData.length,
+        total: rangeData.reduce((acc, item) => acc + item.base_amount, 0),
+      }
+    })
+    setPivotData(newPivot);
+  }
+  useEffect(() => {
+    if (allSaleBookingLoading === false)
+      pivotDataFunction();
+  }, [allSaleBookingLoading]);
+
+  const pivotColumn = [
+    {
+      key: "sno",
+      name: "S.NO",
+      renderRowCell: (row, index) => index + 1,
+      width: 20,
+    },
+    {
+      key: "range",
+      name: "Range",
+      width: 100,
+    },
+    {
+      key: "count",
+      name: "Count",
+      width: 100,
+      getTotal: true,
+    },
+    {
+      key: "total",
+      name: "Total",
+      width: 100,
+      getTotal: true,
+    },
+  ]
 
   const columns = [
     {
@@ -504,6 +589,14 @@ const ViewSaleBooking = () => {
       showCol: true,
     },
     {
+      key: "multiSharing",
+      name: "Incentive Multisharing",
+      renderRowCell: (row) => row?.is_incentive_sharing ? "Yes" : "No",
+      showCol: true,
+      width: 100,
+      compare: true,
+    },
+    {
       key: "record_service_file_url",
       name: "Record Service File",
       renderRowCell: (row) =>
@@ -610,43 +703,49 @@ const ViewSaleBooking = () => {
       name: "Actions",
       width: 100,
       renderRowCell: (row) => (
-        <div className="flex-row">
-          {row.incentive_earning_status === "un-earned" && <Link
-            title="Edit sale booking"
-            to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
-          >
-            <div className="icon-1">
-              <i className="bi bi-pencil" />
+        <>
+          {
+            !row?.is_dummy_sale_booking &&
+            <div className="flex-row">
+              {row.incentive_earning_status === "un-earned" && <Link
+                title="Edit sale booking"
+                to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
+              >
+                <div className="icon-1">
+                  <i className="bi bi-pencil" />
+                </div>
+              </Link>}
+
+              {loginUserRole == 1 && (
+                <button
+                  title="Delete sale booking"
+                  className="icon-1"
+                  onClick={() => row._id}
+                >
+                  <i className="bi bi-trash" />
+                </button>
+              )}
+
+              {row?.campaign_amount >= row?.approved_amount && (
+                <button
+                  title="Payment Update"
+                  className="icon-1"
+                  onClick={() => {
+                    navigate(`/admin/create-payment-update/0`, {
+                      state: {
+                        sale_id: row.sale_booking_id,
+                        userdata: row,
+                      },
+                    });
+                  }}
+                >
+                  <i className="bi bi-credit-card-2-back" />
+                </button>
+              )}
             </div>
-          </Link>}
+          }
 
-          {loginUserRole == 1 && (
-            <button
-              title="Delete sale booking"
-              className="icon-1"
-              onClick={() => row._id}
-            >
-              <i className="bi bi-trash" />
-            </button>
-          )}
-
-          {row?.campaign_amount >= row?.approved_amount && (
-            <button
-              title="Payment Update"
-              className="icon-1"
-              onClick={() => {
-                navigate(`/admin/create-payment-update/0`, {
-                  state: {
-                    sale_id: row.sale_booking_id,
-                    userdata: row,
-                  },
-                });
-              }}
-            >
-              <i className="bi bi-credit-card-2-back" />
-            </button>
-          )}
-        </div>
+        </>
       ),
       showCol: true,
     },
@@ -654,8 +753,8 @@ const ViewSaleBooking = () => {
 
   if (loginUserRole == 1) {
     columns.push({
-      key: "created_by",
-      name: "Sales Executive name",
+      key: "executive_name",
+      name: "Executive name",
       compare: true,
       renderRowCell: (row) =>
         userContextData?.find((user) => user?.user_id === row?.created_by)
@@ -827,7 +926,29 @@ const ViewSaleBooking = () => {
           </div>
         </div>
       </div>
+      <div className="cardAccordion">
+        <Accordion >
+          <AccordionSummary className="flexCenter"
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1-content"
+            id="panel1-header">
 
+            <h5 className="card-title">Pivot</h5>
+
+          </AccordionSummary>
+          <AccordionDetails>
+            <CustomTable
+              columns={pivotColumn}
+              data={pivotData}
+              dataLoading={allSaleBookingLoading || allAccountLoading}
+              title={"Sale Booking Pivot"}
+              Pagination
+              tableName={"SaleBookingPivotView"}
+              showTotal={true}
+            />
+          </AccordionDetails>
+        </Accordion>
+      </div>
       <View
         columns={columns}
         data={filteredData}

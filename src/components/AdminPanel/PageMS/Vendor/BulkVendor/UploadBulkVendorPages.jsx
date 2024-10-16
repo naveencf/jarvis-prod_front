@@ -18,6 +18,7 @@ import axios from "axios";
 const storedToken = sessionStorage.getItem("token");
 
 const UploadBulkVendorPages = ({ getRowData,from }) => {
+  console.log(getRowData , 'getrow data')
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [fileName, setFileName] = useState("");
@@ -25,18 +26,15 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
   const { toastAlert, toastError } = useGlobalContext();
 
   const handleCheck = (event) => {
-    if (getRowData.length === 0) {
-      toastError("Please select at least one vendor");
-      return;
-    } else if (getRowData.length > 1) {
-      toastError("Please select only one vendor at a time");
+    if (!getRowData) {
+      toastError("Please select vendor first");
       return;
     }
   };
   // console.log(getRowData,"getRowData")
   const handleUpload = (event) => {
-    if (getRowData.length === 0) {
-      toastError("Please select at least one vendor");
+    if (!getRowData) {
+      toastError("Please select vendor first");
 
       return;
     }
@@ -80,13 +78,13 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
   const handleSubmit = async () => {
   
     const formdata = new FormData();
-    if(from == "vendor"){
+    // if(from == "vendor"){
       
-      formdata.append("vendor_id", getRowData[0]._id);
-    }else{
+      // formdata.append("vendor_id", getRowData);
+    // }else{
 
-      formdata.append("vendor_id", getRowData[0].vendor_id);
-    }
+      formdata.append("vendor_id", getRowData);
+    // }
     formdata.append("bulk_vendor_excel", file);
     // formdata.append('category_id', '');
 
@@ -146,14 +144,14 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
         onClick={handleCheck}
       >
         Upload Bulk-Vendor-Pages
-        {getRowData.length === 1 && (
+        {/* {getRowData.length === 1 && ( */}
           <input
             type="file"
             accept=".xlsx, .xls"
             hidden
             onChange={handleUpload}
           />
-        )}
+        {/* )} */}
       </Button>
 
       {/* Dialog to preview the uploaded data */}

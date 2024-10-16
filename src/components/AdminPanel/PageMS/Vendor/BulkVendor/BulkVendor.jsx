@@ -4,12 +4,14 @@ import axios from "axios";
 import { baseUrl } from "../../../../../utils/config";
 import { Link } from "react-router-dom";
 import UploadBulkVendorPages from "./UploadBulkVendorPages";
+import BulkVendorUploadModal from "../BulkVendorUploadModal";
 
 const BulkVendor = () => {
   const token = sessionStorage.getItem("token");
   const [bulkData, setBulkData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [getRowData, setGetRowData] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     axios
@@ -98,12 +100,31 @@ const BulkVendor = () => {
       },
     },
   ];
+
+  const handleOpenModal = (rowData) => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
   return (
     <div>
       <div className="card-header flexCenterBetween">
         <h5 className="card-title">Bulk-Vendor-Pages</h5>
         <div className="flexCenter colGap8">
-          <UploadBulkVendorPages getRowData={getRowData} from={"pages"} />
+          {/* <UploadBulkVendorPages getRowData={getRowData} from={"pages"} /> */}
+
+
+          <BulkVendorUploadModal open={openModal} onClose={handleCloseModal} />
+
+          <button
+            onClick={() => handleOpenModal()}
+            title="Edit"
+            className="btn btn-outline-primary"
+          >
+            Upload Bulk Vendor
+          </button>
         </div>
       </div>
       <View

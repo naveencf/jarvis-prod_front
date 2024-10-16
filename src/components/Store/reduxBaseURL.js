@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../utils/authBaseQuery";
 import { add } from "date-fns";
+import jwtDecode from "jwt-decode";
 
 export const reduxBaseURL = createApi({
   baseQuery: authBaseQuery,
@@ -11,7 +12,7 @@ export const reduxBaseURL = createApi({
     "addPayMethod",
     "whatsappLinkType",
     "addBankName",
-    "addVendorMaster"
+    "addVendorMaster",
   ],
   endpoints: (builder) => ({
     getnotAssignedVendors: builder.query({
@@ -75,7 +76,7 @@ export const reduxBaseURL = createApi({
     getPmsPaymentMethod: builder.query({
       query: () => `v1/payment_method`,
       providesTags: ["addPayMethod"],
-      transformResponse:res=>res.data
+      transformResponse: (res) => res.data,
     }),
 
     updatePmsPaymentMethod: builder.mutation({
@@ -162,12 +163,44 @@ export const reduxBaseURL = createApi({
       }),
     }),
 
-    //Vendor
+    
     getAllVendor: builder.query({
-      query: () => `v1/vendor`,
-      // query: () => `v1/vendor?page=1&limit=50`,
+      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
+        // Fetch the stored token from sessionStorage
+        const storedToken = sessionStorage.getItem("token");
+        if (!storedToken) {
+          return { error: { status: 401, message: "No token found" } };
+        }
+
+        // Decode the token to get the user ID and role
+        const decodedToken = jwtDecode(storedToken);
+        const userID = decodedToken.id;
+        const roleToken = decodedToken.role_id;
+
+        let res;
+        if (roleToken === 1) {
+          // If the user is an admin, fetch all vendor data
+          res = await baseQuery({ url: `v1/vendor`, method: "GET" });
+        } else {
+          // If the user is not an admin, fetch vendors based on their user ID
+          res = await baseQuery({
+            url: `v1/get_all_vendors_for_users`,
+            method: "POST",
+            body: { user_id: userID },
+          });
+        }
+
+        // Return the response data
+        if (res.error) {
+          return { error: res.error };
+        }
+
+        return { data: res.data.data || res.data };
+      },
+      keepUnusedDataFor: 60 * 60,
       providesTags: ["addVendorMaster"],
     }),
+
     addVendor: builder.mutation({
       query: (data) => ({
         url: `v1/vendor`,
@@ -270,5 +303,5 @@ export const {
   useUpdateBankNameDetailMutation,
   useGetVendorDocumentByVendorDetailQuery,
   useAddVendorDocumentMutation,
-  useAddCompanyDataMutation,  
+  useAddCompanyDataMutation,
 } = reduxBaseURL;

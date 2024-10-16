@@ -9,7 +9,8 @@ import { useLocation } from 'react-router';
 import Select from 'react-select';
 import './Tagcss.css';
 import { useNavigate } from 'react-router';
-import { useGetAllPageCategoryQuery } from '../../Store/PageBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageSubCategoryQuery } from '../../Store/PageBaseURL';
+import { useAPIGlobalContext } from '../APIContext/APIContext';
 
 const PageAssignmentUserAdd = () => {
   const location = useLocation();
@@ -17,33 +18,22 @@ const PageAssignmentUserAdd = () => {
 
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
-  const [categorys, setCategorys] = useState("");
 
+  const { data: subcategory } =
+    useGetAllPageSubCategoryQuery();
+  
+  const [categorys, setCategorys] = useState("");
+const {userContextData} = useAPIGlobalContext()
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [userData, setUserData] = useState([]);
   const [userId, setUserId] = useState(0);
   const [subCategoryOptions, setSubCategoryOptions] = useState([]);
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
-console.log(selectedSubCategories , 'select sub')
-  const getData = () => {
-    axios
-      .get(baseUrl + 'get_all_users', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((res) => {
-        setUserData(res.data.data);
-      });
-  };
 
-  // Fetch sub-categories when a category is selected
   useEffect(() => {
     if (categorys) {
       axios
@@ -58,8 +48,25 @@ console.log(selectedSubCategories , 'select sub')
             value: subCat.page_sub_category_id,
             label: subCat.page_sub_category_name,
           }));
-          console.log(subCatList , 'sublist')
-          setSubCategoryOptions(subCatList);
+  
+          // Check if any new sub-categories were added
+          const newSubCategories = subCatList.filter(
+            (newSubCat) =>
+              !selectedSubCategories.some(
+                (oldSubCat) => oldSubCat.value === newSubCat.value
+              )
+          );
+  
+          if (newSubCategories.length > 0) {
+            // Only update if there are new sub-categories to add
+            setSubCategoryOptions(subCatList);
+            setSelectedSubCategories((prevSelected) => [
+              ...prevSelected,
+              ...newSubCategories,
+            ]);
+          } else {
+            setSubCategoryOptions(subCatList); // Just update the subcategory options
+          }
         })
         .catch((error) => {
           console.error('Error fetching sub-categories:', error);
@@ -68,9 +75,11 @@ console.log(selectedSubCategories , 'select sub')
     }
   }, [categorys, token, toastError]);
 
-  useEffect(() => {
-    getData();
-  }, []);
+  const handleSubCategoryChange = (e) => {
+    setSelectedSubCategories(e || []); // Update the selected sub-categories based on user selection
+  };
+  
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -131,14 +140,14 @@ console.log(selectedSubCategories , 'select sub')
                   User <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
-                  options={userData.map((option) => ({
+                  options={userContextData.map((option) => ({
                     value: option.user_id,
                     label: option.user_name,
                   }))}
                   required={true}
                   value={{
                     value: userId,
-                    label: userData.find((user) => user.user_id === userId)?.user_name || '',
+                    label: userContextData.find((user) => user.user_id === userId)?.user_name || '',
                   }}
                   onChange={(e) => {
                     setUserId(e.value);
@@ -178,9 +187,7 @@ console.log(selectedSubCategories , 'select sub')
                   options={subCategoryOptions}
                   isMulti
                   value={selectedSubCategories}
-                  onChange={(e) => {
-                    setSelectedSubCategories(e);
-                  }}
+                  onChange={handleSubCategoryChange}
                   required
                 />
               </div>

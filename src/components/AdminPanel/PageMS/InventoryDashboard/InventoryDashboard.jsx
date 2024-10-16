@@ -27,7 +27,7 @@ const InventoryDashboard = () => {
             Assign User <KeyboardArrowRightIcon />
           </Link>
         </div>
-        <TagCategory/>
+        <TagCategory />
       </div>
     </div>
   );

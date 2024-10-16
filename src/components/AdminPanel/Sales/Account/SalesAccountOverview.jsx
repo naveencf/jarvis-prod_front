@@ -223,6 +223,12 @@ const SalesAccountOverview = () => {
       sortable: true,
     },
     {
+      key: "account_percentage",
+      name: "Account Percentage",
+      width: 100,
+
+    },
+    {
       key: "created_by_name",
       name: "Sales Executive Name",
       width: 100,
@@ -495,7 +501,7 @@ const SalesAccountOverview = () => {
         onRequestClose={handleCloseModal}
         style={{
           content: {
-            width: "max-content",
+            width: "70%",
             height: "80%",
             top: "50%",
             left: "50%",
@@ -503,6 +509,8 @@ const SalesAccountOverview = () => {
             bottom: "auto",
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
+            background: "#fff",
+
           },
         }}
       >
@@ -515,13 +523,13 @@ const SalesAccountOverview = () => {
           <FormContainer mainTitle={"Account Overview"} link={true} />
         </div>
         <div className="action_btns">
-          {/* {loginUserRole === 1 && selectedData.length === 1 && <button className="btn cmnbtn btn-primary btn_sm" onClick={() => {
+          {loginUserRole === 1 && selectedData.length === 1 && <button className="btn cmnbtn btn-primary btn_sm" onClick={() => {
             setModalIsOpen(true)
             setModalHandler("IncentiveShare")
           }
           }>
             Incentive Share
-          </button>} */}
+          </button>}
 
           <Link to="/admin/view-Outstanding-details">
             <button className="btn cmnbtn btn-primary btn_sm">

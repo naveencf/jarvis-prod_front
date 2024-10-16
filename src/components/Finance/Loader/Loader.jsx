@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import "./Loader.css";
+import loader from "../../../assets/imgs/other/coffee-loader.gif";
+import logo from "../../../assets/logo.png";
 
 const Loader = () => {
   useEffect(() => {
@@ -12,17 +14,27 @@ const Loader = () => {
     });
   }, []);
   return (
-    <div className="loader-overlay">
-      <main>
-        <div className="loader js-loader" data-delay="200">
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
-          <div className="dot"></div>
+    <>
+      {/* <div className="loader-overlay">
+        <main>
+          <div className="loader js-loader" data-delay="200">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+          </div>
+        </main>
+      </div> */}
+      <div className="loader-overlay">
+        <div className="loaderCup">
+          <div className="loaderLogo">
+            <img src={logo} />
+          </div>
+          <img src={loader} className="cup" />
         </div>
-      </main>
-    </div>
+      </div>
+    </>
   );
 };
 

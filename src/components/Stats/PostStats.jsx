@@ -189,39 +189,40 @@ function PostStats() {
 
   function separateDateAndTime(createdAt) {
     const dateObject = new Date(createdAt);
-
+  
     // Get UTC time in milliseconds
     const utcTime = dateObject.getTime();
-
+  
     // Get time zone offset in milliseconds for GMT (inverting sign to convert from UTC to GMT)
     const timeZoneOffset = dateObject.getTimezoneOffset() * 60000 * -1;
-
+  
     // Convert UTC time to GMT by adding time zone offset
     const gmtTime = utcTime + timeZoneOffset;
-
+  
     // Create new date object with GMT time
     const gmtDateObject = new Date(gmtTime);
-
+  
     // Extract date
     const date = gmtDateObject.toISOString().split("T")[0];
-
+  
     // Extract hour, minute, and second
     let hour = gmtDateObject.getUTCHours();
     const minute = gmtDateObject.getUTCMinutes();
     const second = gmtDateObject.getUTCSeconds();
-
+  
     // Determine AM/PM indicator
     const ampm = hour >= 12 ? "PM" : "AM";
-
+  
     // Convert hour to 12-hour format
     hour = hour % 12;
     hour = hour ? hour : 12; // "0" should be displayed as "12"
-    // :${second < 10 ? '0' + second : second}
-    // Format time
-    const time = `${hour}:${minute < 10 ? "0" + minute : minute} ${ampm}`;
-
+  
+    // Format time with seconds
+    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${second < 10 ? "0" + second : second} ${ampm}`;
+  
     return { date, time };
   }
+  
 
   const columns = [
     {
@@ -247,12 +248,12 @@ function PostStats() {
    
     {
       field: "createdAt",
-      headerName: "Date",
+      headerName: "Upload Date",
       width: 200,
-      type: "text",
+      // type: "text",
       renderCell: (params) => {
-        const { date, time } = separateDateAndTime(params.row.createdAt);
-        // const rowIndex = rows.indexOf(params.row);
+        const { date, time } = separateDateAndTime(params?.row?.createdAt);
+      
         return (
           <div style={{ textAlign: "center", marginLeft: 10 }}>{date}</div>
         );
@@ -260,8 +261,22 @@ function PostStats() {
       // editable: true,
     },
     {
-      field: "time",
-      headerName: "Time",
+      field: "updatedAt",
+      headerName: "Resolved-Date",
+      width: 200,
+      // type: "text",
+      renderCell: (params) => {
+        const { date, time } = separateDateAndTime(params?.row?.updatedAt);
+
+        return (
+          <div style={{ textAlign: "center", marginLeft: 10 }}>{date}</div>
+        );
+      },
+      // editable: true,
+    },
+    {
+      field: "upload_time",
+      headerName: "Upload-Time",
       width: 200,
       type: "text",
       renderCell: (params) => {
@@ -273,6 +288,8 @@ function PostStats() {
       },
       // editable: true,
     },
+   
+    
     {
       field: "userId",
       headerName: "User-Name",
@@ -293,7 +310,7 @@ function PostStats() {
     },
     {
       field: "shortCodesLength",
-      headerName: "Requested-Post",
+      headerName: "Req-Post",
       width: 90,
       // type: "text",
       // editable: true,
@@ -362,6 +379,55 @@ function PostStats() {
         } 
       },
     },
+    {
+      field: "time",
+      headerName: "Resolved-Time",
+      width: 200,
+      type: "text",
+      renderCell: (params) => {
+        const { time } = separateDateAndTime(params.row?.updatedAt);
+        const requestIdResolvedStatus = params.row?.requestIdResolvedStatus; // Assuming this is part of the row data
+        
+        // Directly return the condition
+        return requestIdResolvedStatus === 1 ? time : "";
+      },
+      // editable: true,
+    }
+    
+    
+   ,
+   {
+    field: "resolved_time",
+    headerName: "Time-Taken",
+    width: 200,
+    type: "text",
+    valueGetter: (params) => {
+      // Extract upload_time and resolved_time (updatedAt)
+      const uploadDateTime = new Date(params.row?.createdAt);
+      const resolvedDateTime = new Date(params.row?.updatedAt);
+  
+      // Calculate the difference in milliseconds
+      const timeDifference = resolvedDateTime - uploadDateTime;
+  
+      // Convert the difference to seconds
+      const timeDifferenceInSeconds = Math.floor(timeDifference / 1000);
+  
+      // Calculate minutes and remaining seconds
+      const minutes = Math.floor(timeDifferenceInSeconds / 60);
+      const seconds = timeDifferenceInSeconds % 60;
+  
+      // Format the time as "X min Y sec" or just "Y sec"
+      const formattedTime =
+        minutes > 0 ? `${minutes} min ${seconds} sec` : `${seconds} sec`;
+  
+      // Return the formatted time difference
+      return formattedTime;
+    },
+    // editable: true,
+  }
+  
+  
+,    
   ];
 
   return (

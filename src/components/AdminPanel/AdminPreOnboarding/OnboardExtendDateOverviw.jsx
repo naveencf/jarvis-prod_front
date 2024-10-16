@@ -5,9 +5,11 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
 import WhatsappAPI from "../../WhatsappAPI/WhatsappAPI";
 import { baseUrl } from '../../../utils/config'
+import { ApiContextData } from "../APIContext/APIContext";
 
 const OnboardExtendDateOverview = () => {
   const whatsappApi = WhatsappAPI();
+  const {userContextData} = ApiContextData()
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [filterdata, setFilterData] = useState([]);
@@ -29,10 +31,13 @@ const OnboardExtendDateOverview = () => {
 
   async function getData() {
     try {
-      const response = await axios.get(
-        baseUrl + "get_all_users"
-      );
-      const data = response.data.data.filter(
+      // const response = await axios.get(
+      //   baseUrl + "get_all_users"
+      // );
+      // const data = response.data.data.filter(
+      //   (item) => item.joining_date_extend_status == "Requested"
+      // );
+      const data = userContextData.filter(
         (item) => item.joining_date_extend_status == "Requested"
       );
       // const data = response.data.data;

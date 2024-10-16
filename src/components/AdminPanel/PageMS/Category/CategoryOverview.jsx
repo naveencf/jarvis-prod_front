@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import FormContainer from "../../FormContainer";
 import Swal from "sweetalert2"; // Import SweetAlert2
 import { FaEdit } from "react-icons/fa";
+import { FormatName } from "../../../../utils/FormatName";
 
 const CategoryOverview = () => {
   const { data: category } = useGetAllPageCategoryQuery();
@@ -84,6 +85,9 @@ const CategoryOverview = () => {
       key: "page_category",
       name: "Page Category",
       width: 150,
+      renderRowCell: (row) => (
+        <div> {FormatName(row?.page_category)} </div>
+      )
     },
     {
       key: "createdAt",

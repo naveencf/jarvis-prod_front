@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../utils/authBaseQuery";
 import { get } from "jquery";
+import jwtDecode from "jwt-decode";
 
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
@@ -107,9 +108,26 @@ export const PageBaseURL = createApi({
     }),
 
     //Page
+   
     getAllPageList: builder.query({
-      query: () => `v1/pageMaster`,
+      query: ({ decodedToken, userID }) => {
+        // Check if the role is admin (role_id == 1)
+        if (decodedToken?.role_id === 1) {
+          return {
+            url: `v1/pageMaster`, // Use GET request for admin
+            method: "GET",
+          };
+        } else {
+          return {
+            url: `v1/get_all_pages_for_users`, // Use POST request for non-admin
+            method: "POST",
+            body: { user_id: userID }, // Send userID in the body
+          };
+        }
+      },
+      transformResponse: (response) => response.data, // Optionally transform the response data
     }),
+
     getPageById: builder.query({
       query: (id) => `v1/pageMaster/${id}`,
       transformResponse: (response) => response.data,
@@ -182,15 +200,15 @@ export const PageBaseURL = createApi({
 
     updatePageSubCategory: builder.mutation({
       query: (data) => {
-        const { _id, sub_category_name } = data;
-        console.log(sub_category_name, "sub_category_name");
+        const { _id, ...payload } = data;
         return {
           url: `v1/page_sub_category/${_id}`,
           method: "PUT",
           body: {
-            page_sub_category: sub_category_name,
-            description: data.description,
-            last_updated_by: data.last_updated_by,
+            page_sub_category: payload.sub_category_name,
+            description: payload.description,
+            last_updated_by: payload.last_updated_by,
+            ...payload
           },
         };
       },

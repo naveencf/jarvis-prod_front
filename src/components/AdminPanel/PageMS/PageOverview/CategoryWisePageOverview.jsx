@@ -5,6 +5,7 @@ import { formatNumber } from '../../../../utils/formatNumber';
 
 
 const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setActiveTab }) => {
+    console.log(pageList,' new catgory');
     
     const categoryGridcolumns = [
         {
@@ -14,9 +15,18 @@ const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setAc
             width: 80,
         },
         {
+            field: "category",
             headerName: "Category",
             width: 200,
-            editable: false,
+            renderCell: (params) => {
+                let data = params.row?.category_name;
+                return data ? data : "NA";
+            },
+        },
+        {
+            field: " subcatgory",
+            headerName: "Sub Category",
+            width: 200,
             renderCell: (params) => {
                 let data = params.row?.category_name;
                 return data ? data : "NA";

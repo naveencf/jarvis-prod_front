@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
-import {  useNavigate, useParams } from 'react-router-dom';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import {
   Button,
@@ -10,11 +9,13 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
+  Snackbar,
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { setShowPageHealthColumn } from '../../Store/PageOverview';
 import {
   useGetAllVendorQuery,
@@ -25,18 +26,24 @@ import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
 } from '../../Store/PageBaseURL';
-import Checkbox from '@mui/material/Checkbox';
 import PlanStatics from './PlanStatics';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Swal from 'sweetalert2';
+import DataGridColumns from './DataGridColumns';
+import Filters from './Filters';
+import {
+  useFetchPlanDetails,
+  usePageDetail,
+  useSendPlanDetails,
+} from './apiServices';
+import CustomTable from '../../CustomTable/CustomTable';
+
 
 const PlanMaking = () => {
-  const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery();
-
+  
   // const { id } = useParams();
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
     '666818824366007df1df1319'
@@ -54,6 +61,10 @@ const PlanMaking = () => {
   const userID = decodedToken.id;
   const dispatch = useDispatch();
 
+  const { data: pageList, isLoading: isPageListLoading } =
+    useGetAllPageListQuery({decodedToken, userID});
+    
+
   const { data: vendorTypeData } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
 
@@ -70,13 +81,10 @@ const PlanMaking = () => {
   const [followerFilterType, setFollowerFilterType] = useState('');
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
-  const [savePlan, setSavePlan] = useState([]);
   const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
-  const showPageHealthColumn = useSelector(
-    (state) => state.PageOverview.showPageHelathColumn
-  );
+  const [expanded, setExpanded] = useState(false);
   const [totalFollowers, setTotalFollowers] = useState(0);
-  const [planSuccess, setPlanSuccess] = useState();
+  // const [planSuccess, setPlanSuccess] = useState();
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
@@ -88,9 +96,14 @@ const PlanMaking = () => {
   const [maxFollowers, setMaxFollowers] = useState(null);
   const [notFoundPages, setNotFoundPages] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [pageDetail, setPageDetails] = useState([]);
+ 
+  // const [pageDetail, setPageDetails] = useState([]);
 
   const { id } = useParams();
+
+  const { pageDetail } = usePageDetail(id);
+  const { sendPlanDetails } = useSendPlanDetails(id);
+  const { planDetails } = useFetchPlanDetails(id);
 
   useEffect(() => {
     if (userID && !contextData) {
@@ -111,6 +124,13 @@ const PlanMaking = () => {
 
     getData();
   }, []);
+
+  const sellingPrice = planDetails && planDetails[0]?.selling_price;
+
+  const percentageRemaining = ((sellingPrice - totalCost) / sellingPrice) * 100;
+
+  // setPercentageRemaining(percentage);
+
   const debounce = (func, delay) => {
     let timeoutId;
     return function (...args) {
@@ -132,7 +152,8 @@ const PlanMaking = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
   const getData = () => {
-    axios.get(baseUrl + 'get_all_users').then((res) => {
+    // axios.get(baseUrl + 'get_all_users').then((res) => {
+    axios.get(baseUrl + 'get_all_users').then(() => {
       setProgress(70);
     });
   };
@@ -168,17 +189,17 @@ const PlanMaking = () => {
   };
 
   const handleRemoveFilter = () => {
-    setFilterData(pageList?.data);
+    setFilterData(pageList);
   };
   useEffect(() => {
     if (pageList) {
-      setFilterData(pageList.data);
+      setFilterData(pageList);
       const initialPostValues = {};
       const initialStoryValues = {};
       const initialCostPerPostValues = {};
       const initialCostPerStoryValues = {};
       const initialCostPerBothValues = {};
-      pageList?.data?.forEach((page) => {
+      pageList?.forEach((page) => {
         initialPostValues[page._id] = 0;
         initialStoryValues[page._id] = 0;
         initialCostPerPostValues[page._id] = page.m_post_price || 0;
@@ -192,17 +213,19 @@ const PlanMaking = () => {
       setCostPerBothValues(initialCostPerBothValues);
     }
   }, [pageList]);
-
   // const { data: priceData, isLoading: isPriceLoading } =
   //   useGetMultiplePagePriceQuery();
 
-  let followerFilteredData = pageList?.data?.filter((page) => {
+  let followerFilteredData = pageList?.filter((page) => {
     const followers = page?.followers_count;
     return (
       (minFollowers === null || followers >= minFollowers) &&
       (maxFollowers === null || followers <= maxFollowers)
     );
   });
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
 
   const handleFollowerRangeChange = (e) => {
     const selectedRange = e.target.value;
@@ -283,14 +306,13 @@ const PlanMaking = () => {
 
     // Update postPerPage and after updating, calculate total cost with the latest values
     handlePostPerValue(row, postPerPage, (updatedPostValues) => {
-      // Now that postPerPageValues are updated, calculate the total cost with the latest values
       calculateTotalCost(
         row._id,
-        updatedPostValues[row._id], // Use the updated postPerPage value
-        storyPerPageValues[row._id], // Assuming this value exists
-        costPerPostValues[row._id], // Assuming this value exists
-        costPerStoryValues[row._id], // Assuming this value exists
-        costPerBothValues[row._id] // Assuming this value exists
+        updatedPostValues[row._id],
+        storyPerPageValues[row._id],
+        costPerPostValues[row._id],
+        costPerStoryValues[row._id],
+        costPerBothValues[row._id]
       );
 
       // Now, map updated planxData with the latest postPerPage values
@@ -300,11 +322,10 @@ const PlanMaking = () => {
           page_name,
           post_price: m_post_price,
           story_price: m_story_price,
-          post_count: Number(updatedPostValues[_id]) || 0, // Use updated postPerPageValues
-          story_count: Number(storyPerPageValues[_id]) || 0, // Use existing storyPerPageValues
+          post_count: Number(updatedPostValues[_id]) || 0,
+          story_count: Number(storyPerPageValues[_id]) || 0,
         })
       );
-      setSavePlan(planxData);
       if (!isAutomaticCheck) {
         debouncedSendPlanDetails(planxData);
       }
@@ -329,45 +350,7 @@ const PlanMaking = () => {
     // Update statistics
     updateStatistics(updatedSelectedRows);
   };
-  console.log('save', savePlan);
-  const fetchPageDetail = async () => {
-    try {
-      const response = await fetch(
-        `${baseUrl}v1/plan_page_details_with_planxid/${id}`
-      );
-      const json = await response.json();
-      setPageDetails(json?.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  const sendPlanDetails = async (updatedPlanDetails) => {
-    const payload = {
-      planx_id: id,
-      plan_pages: updatedPlanDetails,
-    };
-
-    try {
-      const response = await fetch(`${baseUrl}v1/add_multiple_plan_page_data`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setPlanSuccess(data);
-    } catch (error) {
-      console.error('Error calling the API:', error);
-    }
-  };
- 
   const debouncedSendPlanDetails = useCallback(
     debounce(sendPlanDetails, 5000),
     []
@@ -405,6 +388,8 @@ const PlanMaking = () => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
 
+console.log("pagelist", pageList);
+
   const handleStoryPerPageChange = (row) => (event) => {
     const updatedStoryValues = {
       ...storyPerPageValues,
@@ -421,10 +406,24 @@ const PlanMaking = () => {
     );
     // updateStatistics(selectedRows);
   };
-  const HandleSavePlan = () => {
+
+  const HandleSavePlan = async () => {
+    const payload = {
+      id: id,
+      plan_status: 'close',
+      plan_saved: true,
+    };
+
     try {
-      sendPlanDetails(savePlan);
-      if (planSuccess.success) {
+      const response = await fetch(`${baseUrl}v1/planxlogs`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (response.ok) {
         Swal.fire({
           title: 'Success!',
           text: 'Plan has been saved successfully.',
@@ -442,6 +441,8 @@ const PlanMaking = () => {
         });
       }
     } catch (error) {
+      console.error('Error updating plan:', error);
+
       Swal.fire({
         title: 'Error!',
         text: 'Something went wrong. Please try again later.',
@@ -463,7 +464,7 @@ const PlanMaking = () => {
     setSelectedCategory(updatedCategories);
 
     // Filter data based on the updated selected categories
-    const filtered = pageList?.data?.filter((item) =>
+    const filtered = pageList?.filter((item) =>
       updatedCategories?.includes(item.page_category_id)
     );
     setFilterData(filtered);
@@ -475,14 +476,14 @@ const PlanMaking = () => {
     setSelectedCategory(updatedCategories);
 
     const filtered =
-      pageList?.data?.filter((item) =>
+      pageList?.filter((item) =>
         updatedCategories.includes(item.page_category_id)
       ) || [];
 
     if (filtered?.length) {
       setFilterData(filtered);
     } else {
-      setFilterData(pageList?.data);
+      setFilterData(pageList);
     }
   };
 
@@ -534,206 +535,26 @@ const PlanMaking = () => {
       [id]: totalCost,
     }));
   };
-  const dataGridcolumns = [
-    {
-      field: 'S.NO',
-      headerName: 'Count',
-      renderCell: (params) => <div> {filterData?.indexOf(params.row) + 1}</div>,
+  const { dataGridColumns } = DataGridColumns({
+    vendorData,
+    filterData,
+    selectedRows,
+    handleCheckboxChange,
+    postPerPageValues,
+    handlePostPerPageChange,
+    storyPerPageValues,
+    handleStoryPerPageChange,
+    showTotalCost,
+    totalCostValues,
+    typeData,
+    cat,
+    platformData,
+    pageStatsAuth,
+    decodedToken,
+  });
 
-      width: 80,
-    },
-
-    {
-      field: 'page_name',
-      headerName: 'Page Name',
-      width: 200,
-      editable: true,
-    },
-    {
-      field: 'Vendor',
-      headerName: 'Vendor',
-      width: 200,
-      renderCell: (params) => {
-        let name = vendorData?.find(
-          (item) => item?._id == params.row?.vendor_id
-        )?.vendor_name;
-        return <div>{name}</div>;
-      },
-      // editable: true
-    },
-    {
-      field: 'page_link',
-      headerName: 'Page Link',
-      width: 200,
-      editable: true,
-      renderCell: (params) => {
-        return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={params.row.page_link}
-            className="link-primary"
-          >
-            {params.row.page_link}
-          </a>
-        );
-      },
-    },
-    {
-      field: 'followers_count',
-      headerName: 'Followers',
-      width: 100,
-    },
-    {
-      field: 'ownership_type',
-      headerName: 'Ownership',
-      width: 100,
-    },
-    {
-      field: 'est_update',
-      headerName: 'Selection',
-      width: 100,
-      renderCell: (params) => {
-        return (
-          <Checkbox
-            checked={selectedRows?.some((row) => row?._id === params?.row?._id)}
-            onChange={handleCheckboxChange(params.row)}
-          />
-        );
-      },
-    },
-    {
-      field: 'created_at',
-      headerName: 'Post Per Page',
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <div>
-            <input
-              type="number"
-              style={{ width: '70%' }}
-              value={postPerPageValues[params.row._id] || ''}
-              onChange={handlePostPerPageChange(params.row)}
-            />
-          </div>
-        );
-      },
-    },
-    {
-      field: 'updated_by',
-      headerName: 'Story Per Page',
-      width: 150,
-      renderCell: (params) => {
-        return (
-          <input
-            type="number"
-            style={{ width: '70%' }}
-            value={storyPerPageValues[params.row._id] || ''}
-            onChange={handleStoryPerPageChange(params.row)}
-          />
-        );
-      },
-    },
-    {
-      field: 'last_updated_by',
-      headerName: 'Total Cost',
-      width: 100,
-      renderCell: (params) => {
-        return (
-          <div style={{ border: '1px solid red', padding: '10px' }}>
-            {'₹'}
-            {showTotalCost[params.row._id]
-              ? totalCostValues[params.row._id] || 0
-              : '-'}
-          </div>
-        );
-      },
-    },
-    {
-      field: 'preference_level',
-      headerName: 'Level',
-      width: 200,
-      editable: true,
-    },
-    {
-      field: 'Vendor Type',
-      headerName: 'Vendor Type',
-      width: 200,
-      // editable: true
-      renderCell: (params) => {
-        let name = vendorData?.find(
-          (item) => item?._id == params.row?.vendor_id
-        )?.vendor_type;
-        let finalName = typeData?.find((item) => item?._id == name)?.type_name;
-        return <div>{finalName}</div>;
-      },
-    },
-    {
-      field: 'page_catg_id',
-      headerName: 'Category',
-      width: 200,
-      renderCell: (params) => {
-        let name = cat?.find(
-          (item) => item?._id == params.row?.page_category_id
-        )?.page_category;
-        return <div>{name}</div>;
-      },
-    },
-    {
-      field: 'platform_id',
-      headerName: 'Platform',
-      renderCell: (params) => {
-        let name = platformData?.find(
-          (item) => item?._id == params.row.platform_id
-        )?.platform_name;
-        return <div>{name}</div>;
-      },
-      width: 150,
-    },
-    { field: 'page_status', headerName: 'Status', width: 100 },
-  ];
-  const pageDetailColumn = [
-    {
-      field: 'm_post_price',
-      headerName: 'Cost Per Post',
-      width: 150,
-      valueGetter: ({ row }) => {
-        let mPostPrice = row.m_post_price;
-        let postPrice = row.post;
-        return postPrice ?? mPostPrice;
-      },
-    },
-    {
-      field: 'm_story_price',
-      headerName: 'Cost Per Story',
-      width: 150,
-      valueGetter: ({ row }) => {
-        let mStoryPrice = row.m_story_price;
-        let storyPrice = row.story;
-        return storyPrice ?? mStoryPrice;
-      },
-    },
-    {
-      field: 'm_both_price',
-      headerName: 'Both Price',
-      width: 150,
-      valueGetter: ({ row }) => {
-        let mBothPrice = row.m_both_price;
-        let bothPrice = row.both_;
-        return bothPrice ?? mBothPrice;
-      },
-    },
-  ];
-
-  if (!pageStatsAuth || decodedToken?.role_id === 1) {
-    dataGridcolumns.push(...pageDetailColumn);
-  }
   !decodedToken?.role_id === 1 &&
     dispatch(setShowPageHealthColumn(pageStatsAuth));
-
-  if (showPageHealthColumn) {
-    // dataGridcolumns.push(...pageHealthColumn);
-  }
 
   const clearSearch = () => {
     setSearchInput('');
@@ -746,7 +567,7 @@ const PlanMaking = () => {
 
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
-    const platform = pageList?.data?.filter((item) => item.platform_id === id);
+    const platform = pageList?.filter((item) => item.platform_id === id);
     setFilterData(platform);
   };
   const handleAutomaticSelection = (incomingData) => {
@@ -754,7 +575,7 @@ const PlanMaking = () => {
     const updatedSelectedRows = [...selectedRows];
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
-    const updatedShowTotalCost = { ...showTotalCost }; // Clone the current state
+    const updatedShowTotalCost = { ...showTotalCost };
 
     // Loop through incoming data to calculate costs
     incomingData.forEach((incomingPage) => {
@@ -798,23 +619,25 @@ const PlanMaking = () => {
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
     setSelectedRows(updatedSelectedRows);
-    setShowTotalCost(updatedShowTotalCost); // Update the showTotalCost state
+    setShowTotalCost(updatedShowTotalCost);
 
     setIsAutomaticCheck(false);
   };
 
   const filterAndSelectRows = (searchTerms) => {
-    // Filter data based on search terms
+    // If there are search terms
     if (searchTerms?.length > 0) {
-      const filtered = pageList?.data?.filter((item) =>
+      // Filter data based on search terms
+      const filtered = pageList?.filter((item) =>
         searchTerms?.some((term) =>
           item?.page_name?.toLowerCase().includes(term.toLowerCase())
         )
       );
 
+      // Store filtered data
       setFilterData(filtered);
 
-      // Automatically check all rows that match the search terms
+      // Create a copy of the currently selected rows
       const updatedSelectedRows = [...selectedRows];
       const updatedPostValues = { ...postPerPageValues };
 
@@ -827,7 +650,7 @@ const PlanMaking = () => {
 
         // If not already selected, select the row and update checkbox
         if (!isAlreadySelected) {
-          // Instead of directly calling handleCheckboxChange, we manually invoke the necessary logic
+          // Manually invoke the necessary logic to simulate checkbox selection
           handleCheckboxChange(row)({ target: { checked: true } });
           updatedSelectedRows.push(row);
         }
@@ -840,26 +663,48 @@ const PlanMaking = () => {
       setPostPerPageValues(updatedPostValues);
       setSelectedRows(updatedSelectedRows);
 
+      // Update statistics based on the selected rows
       updateStatistics(updatedSelectedRows);
 
       // Identify pages not found
       const filteredPageNames = new Set(
         filtered?.map((item) => item.page_name.toLowerCase())
       );
+
+      // Check for terms that do not match any filtered items
       const notFound = searchTerms.filter(
         (term) => !filteredPageNames.has(term.toLowerCase()) // Case-insensitive check
       );
 
+      // Show not found pages if any
       if (notFound.length > 0) {
         setNotFoundPages(notFound);
-        handleOpenDialog();
+        handleOpenDialog(); // Open dialog to show not found pages
       } else {
         setNotFoundPages([]);
       }
+
+      // Determine unselected rows (not checked)
+      const selectedRowIds = new Set(updatedSelectedRows.map((row) => row._id));
+      const notCheckedRows = pageList?.filter(
+        (item) => !selectedRowIds.has(item._id)
+      );
+
+      // Update filterData with the unselected rows for display
+      // setFilterData((prevData) => {
+      setFilterData(() => {
+        return [
+          ...filtered,
+          ...notCheckedRows.filter(
+            (item) =>
+              !filtered.some((filteredItem) => filteredItem._id === item._id)
+          ),
+        ];
+      });
     } else {
       // If no search terms, reset filterData and selectedRows
-      setFilterData(pageList?.data);
-      setSelectedRows([]); // Clear selected rows if no search terms
+      setFilterData(pageList);
+      setSelectedRows([]);
       setNotFoundPages([]);
     }
   };
@@ -883,10 +728,6 @@ const PlanMaking = () => {
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
-
-  // useEffect(() => {
-
-  // }, [searchInput, pageList?.data]);
 
   useEffect(() => {
     // Call your function to handle automatic selection
@@ -915,11 +756,10 @@ const PlanMaking = () => {
 
     // Fetch all necessary data
     getData();
-    fetchPageDetail();
   }, []);
 
   const handleFollowersBlur = () => {
-    const followerFilteredData = pageList?.data?.filter((page) => {
+    const followerFilteredData = pageList?.filter((page) => {
       const followers = page?.followers_count;
       return (
         (minFollowers === '' || followers >= parseInt(minFollowers)) &&
@@ -936,30 +776,96 @@ const PlanMaking = () => {
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
-    setFilterData(pageList.data);
+    setFilterData(pageList);
 
     // Optionally clear the search input
     setSearchInput('');
   };
-  // useEffect(() => {
-  //   // Once pageList data is available, filter based on the active platform and category
-  //   if (pageList) {
-  //     // Filter by platform ID
-  //     let filteredData = pageList?.data?.filter(
-  //       (item) => item.platform_id === activeTabPlatfrom
-  //     );
+  // Function to sort rows: checked rows come first
+  const sortedRows = (rows, selectedRows) => {
+    // Create a shallow copy of the rows to avoid modifying the original array
+    const rowsCopy = [...rows];
 
-  //     // If a category is selected, further filter by page_category_id
-  //     if (selectedCategory?.length> 0) {
-  //       filteredData = filteredData.filter(
-  //         (item) => item.page_category_id === selectedCategory
-  //       );
-  //     }
+    return rowsCopy.sort((a, b) => {
+      const aChecked = selectedRows.some(
+        (selectedRow) => selectedRow._id === a._id
+      );
+      const bChecked = selectedRows.some(
+        (selectedRow) => selectedRow._id === b._id
+      );
+      return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
+    });
+  };
 
-  //     // Set the filtered data
-  //     setFilterData(filteredData);
-  //   }
-  // }, [pageList, activeTabPlatfrom, selectedCategory]);
+  const selectAllRows = () => {
+    const updatedSelectedRows = [...selectedRows];
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    const updatedShowTotalCost = { ...showTotalCost };
+
+    filterData.forEach((row) => {
+      const isAlreadySelected = updatedSelectedRows.some(
+        (selectedRow) => selectedRow._id === row._id
+      );
+
+      // If not already selected, push the row to updatedSelectedRows
+      if (!isAlreadySelected) {
+        updatedSelectedRows.push(row);
+      }
+
+      // Assuming post_count and story_count come from row, adjust as needed
+      updatedPostValues[row._id] = row.post_count || 1;
+      updatedStoryValues[row._id] = row.story_count || 0;
+
+      // Calculate costs (if applicable)
+      const costPerPost = row.m_post_price || 0;
+      const costPerStory = row.m_story_price || 0;
+
+      // Assuming a function exists for cost calculation
+      calculateTotalCost(
+        row._id,
+        updatedPostValues[row._id],
+        updatedStoryValues[row._id],
+        costPerPost,
+        costPerStory,
+        costPerPost + costPerStory
+      );
+
+      // Mark this row's cost as 'true' in updatedShowTotalCost
+      updatedShowTotalCost[row._id] = true;
+      // handleCheckboxChange(row)({ target: { checked: true } });
+    });
+
+    const planxData = updatedSelectedRows.map(
+      ({ _id, m_story_price, page_name, m_post_price }) => ({
+        _id,
+        page_name,
+        post_price: m_post_price,
+        story_price: m_story_price,
+        post_count: Number(updatedPostValues[_id]) || 0,
+        story_count: Number(updatedStoryValues[_id]) || 0,
+      })
+    );
+    sendPlanDetails(planxData);
+
+    // Update all states after processing
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setSelectedRows(updatedSelectedRows);
+    setShowTotalCost(updatedShowTotalCost);
+    // sendPlanDetails(savePlan)
+    // setIsAutomaticCheck(false);
+  };
+
+  const displayPercentage = Math.floor(percentageRemaining);
+
+  useEffect(() => {
+    if (percentageRemaining  >=45 && percentageRemaining<=50) {
+      alert('You have reached 50%!');
+    } else if (percentageRemaining >=15 && percentageRemaining<=20) {
+      alert('you have reached 20%');
+    }
+  }, [percentageRemaining]);
 
   return (
     <>
@@ -1047,13 +953,38 @@ const PlanMaking = () => {
           </div>
         </div>
 
-        <Accordion className="card" defaultExpanded>
+        <Accordion className="card" expanded={expanded}>
           <AccordionSummary
             className="card-header"
-            expandIcon={<ExpandMoreIcon />}
+            expandIcon={
+              <IconButton onClick={handleToggle}>
+                <ExpandMoreIcon />
+              </IconButton>
+            }
             aria-controls="panel1-content"
             id="panel2-header"
           >
+            <Box
+              sx={{
+                position: 'relative',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CircularProgress
+                variant="determinate"
+                value={displayPercentage}
+                sx={{ position: 'absolute' }}
+              />
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ position: 'absolute', color: 'primary.main' }}
+              >
+                {`${displayPercentage}%`}
+              </Typography>
+            </Box>
             <h5 className="card-title">Category Filters</h5>
           </AccordionSummary>
           <AccordionDetails className="card-body">
@@ -1073,131 +1004,29 @@ const PlanMaking = () => {
               ))}
             </div>
             {activeTabPlatfrom === '666818824366007df1df1319' && (
-              <div className="row">
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label className="">Filter by:</label>
-                  <select
-                    className="filter-dropdown form-control"
-                    value={priceFilterType}
-                    onChange={(e) => setPriceFilterType(e.target.value)}
-                  >
-                    <option value="post">Post Price</option>
-                    <option value="story">Story Price</option>
-                    <option value="both">Both Price</option>
-                  </select>
-                </div>
-                {/* Range input for minimum and maximum price */}
-
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label className="filter-label">Min Price:</label>
-                  <input
-                    type="number"
-                    className="filter-input form-control"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value)}
-                  />
-                </div>
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label className="filter-label">Max Price:</label>
-                  <input
-                    type="number"
-                    className="filter-input form-control"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value)}
-                  />
-                </div>
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label className="filter-label">Min Followers:</label>
-                  <input
-                    type="number"
-                    className="filter-input form-control"
-                    value={minFollowers || ''}
-                    onChange={(e) => setMinFollowers(e.target.value)}
-                    onBlur={handleFollowersBlur}
-                  />
-                </div>
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label className="filter-label">Max Followers:</label>
-                  <input
-                    type="number"
-                    className="filter-input form-control"
-                    value={maxFollowers || ''}
-                    onChange={(e) => setMaxFollowers(e.target.value)}
-                    onBlur={handleFollowersBlur}
-                  />
-                </div>
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label htmlFor="follower-filter">Follower Filter</label>
-                  <select
-                    id="follower-filter"
-                    className="filter-dropdown form-control"
-                    value={followerFilterType}
-                    onChange={handleFollowerRangeChange}
-                  >
-                    <option value="" disabled>
-                      Select Follower Range
-                    </option>
-                    <option value="lessThan10K">Less than 10k</option>
-                    <option value="10Kto20K">10k to 20k</option>
-                    <option value="20Kto50K">20k to 50k</option>
-                    <option value="50Kto100K">50k to 100k</option>
-                    <option value="100Kto200K">100k to 200k</option>
-                    <option value="moreThan200K">More than 200k</option>
-                  </select>
-                </div>
-                <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-                  <label htmlFor="categoryFilter">Filter by Category:</label>
-                  <select
-                    className="form-control"
-                    id="categoryFilter"
-                    value={selectedCategory}
-                    onChange={handleCategoryChange}
-                    // multiple
-                  >
-                    <option value="">Select a category</option>
-                    {cat?.map((category) => (
-                      <option key={category._id} value={category._id}>
-                        {category.page_category}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {/* Selected categories as tags */}
-                <div className="form-group col-lg-6 col-md-6 col-sm-12 col-12">
-                  <label>&nbsp;</label>
-                  <div className="selectBadge">
-                    {selectedCategory?.length > 0 &&
-                      selectedCategory?.map((categoryId) => {
-                        const category = cat?.find((c) => c._id === categoryId);
-                        return (
-                          <div className="selectBadgeItem" key={categoryId}>
-                            {category.page_category}
-                            <button onClick={() => removeCategory(categoryId)}>
-                              ×
-                            </button>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </div>
-                <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-                  <div className="flexCenter colGap12">
-                    <button
-                      className="btn cmnbtn btn-outline-danger"
-                      onClick={handleRemoveFilter}
-                    >
-                      Remove All Filter
-                    </button>
-                    {/* Filter button */}
-                    <button
-                      className="cmnbtn btn-success"
-                      onClick={handleCombinedFilter}
-                    >
-                      Apply Filter
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <Filters
+                percentageRemaining={percentageRemaining}
+                priceFilterType={priceFilterType}
+                setPriceFilterType={setPriceFilterType}
+                minPrice={minPrice}
+                setMinPrice={setMinPrice}
+                maxPrice={maxPrice}
+                setMaxPrice={setMaxPrice}
+                minFollowers={minFollowers}
+                setMinFollowers={setMinFollowers}
+                maxFollowers={maxFollowers}
+                setMaxFollowers={setMaxFollowers}
+                followerFilterType={followerFilterType}
+                handleFollowerRangeChange={handleFollowerRangeChange}
+                selectedCategory={selectedCategory}
+                handleCategoryChange={handleCategoryChange}
+                cat={cat}
+                removeCategory={removeCategory}
+                handleRemoveFilter={handleRemoveFilter}
+                handleCombinedFilter={handleCombinedFilter}
+                handleFollowersBlur={handleFollowersBlur}
+                selectAllRows={selectAllRows}
+              />
             )}
           </AccordionDetails>
         </Accordion>
@@ -1206,27 +1035,19 @@ const PlanMaking = () => {
           <div className="card-body pb20">
             <div className="thmTable">
               <Box sx={{ height: 700, width: '100%' }}>
-                <DataGrid
-                  title="Page Overview"
-                  rows={
+                <CustomTable
+                  isLoading={isPageListLoading}
+                  columns={dataGridColumns}
+                  data={
                     showOwnPage
                       ? ownPages
                       : toggleShowBtn
                       ? selectedRows
-                      : filterData
+                      : sortedRows(filterData, selectedRows)
                   }
-                  columns={dataGridcolumns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  disableSelectionOnClick
-                  getRowId={(row) => row._id}
-                  slots={{ toolbar: GridToolbar }}
-                  slotProps={{
-                    toolbar: {
-                      showQuickFilter: true,
-                    },
-                  }}
-                  disableRowSelectionOnClick
+                  Pagination={[100, 200]}
+                  // selectedData={}
+                  tableName={'PlanMakingDetails'}
                 />
               </Box>
             </div>

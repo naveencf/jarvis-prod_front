@@ -35,7 +35,9 @@ import DepartmentApi from "./API/Sales/DepartmentApi";
 import TargetCompetitionApi from "./API/Sales/TargetCompetitionApi";
 import SalePocApi from "./API/Sales/SalesPocApi";
 import SalesReportApi from "./API/Sales/SalesReportApi";
+import IncentiveSharingApi from "./API/Sales/IncentiveSharingApi";
 import TagCategoryApi from "./API/Inventory/TagCategoryAPI";
+import CatAssignment from "./API/Inventory/CatAssignment";
 
 const store = configureStore({
   reducer: {
@@ -74,7 +76,9 @@ const store = configureStore({
     [TargetCompetitionApi.reducerPath]: TargetCompetitionApi.reducer,
     [SalePocApi.reducerPath]: SalePocApi.reducer,
     [SalesReportApi.reducerPath]: SalesReportApi.reducer,
+    [IncentiveSharingApi.reducerPath]: IncentiveSharingApi.reducer,
     [TagCategoryApi.reducerPath]: TagCategoryApi.reducer,
+    [CatAssignment.reducerPath]: CatAssignment.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -108,7 +112,10 @@ const store = configureStore({
       .concat(TargetCompetitionApi.middleware)
       .concat(SalePocApi.middleware)
       .concat(SalesReportApi.middleware)
-      .concat(TagCategoryApi.middleware),
+      .concat(IncentiveSharingApi.middleware)
+      .concat(TagCategoryApi.middleware)
+      .concat(TagCategoryApi.middleware)
+      .concat(CatAssignment.middleware),
 });
 setupListeners(store.dispatch);
 

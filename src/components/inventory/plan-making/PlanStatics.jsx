@@ -11,6 +11,7 @@ import {
   TableRow,
   Paper,
   Button,
+  IconButton,
 } from '@mui/material';
 import { useState, useMemo } from 'react';
 import '../../../components/AdminPanel/PageMS/Tagcss.css';
@@ -189,9 +190,9 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
         };
 
         // Add "Story Count" if story counts are not all zero
-        if (!allStoryCountsZero) {
-          rowData['Story Count'] = storyCountValue;
-        }
+        // if (!allStoryCountsZero) {
+        //   rowData['Story Count'] = storyCountValue;
+        // }
 
         // Add to platform total posts and stories count
         platformTotalPostsAndStories += postCountValue + storyCountValue;
@@ -278,7 +279,8 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
 };
 
 // Helper function to apply cell styles
-const applyCellStyles = (sheet, data) => {
+// const applyCellStyles = (sheet, data) => {
+const applyCellStyles = (sheet,) => {
   const range = XLSX.utils.decode_range(sheet['!ref']);
   const headerRow = range.s.r;
 
@@ -329,7 +331,8 @@ const applyCellStyles = (sheet, data) => {
 };
 
 // Function to add hyperlinks and adjust column widths
-const addHyperlinksAndAdjustWidths = (worksheet, data) => {
+// const addHyperlinksAndAdjustWidths = (worksheet, ßdata) => {
+const addHyperlinksAndAdjustWidths = (worksheet, ) => {
   const range = XLSX.utils.decode_range(worksheet['!ref']);
 
   // Apply column widths
@@ -381,6 +384,7 @@ const PlanStatics = ({
   const [pageDetails, setPageDetails] = useState([]);
   const [previewData, setPreviewData] = useState([]);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   // Memoized calculation of ownership counts for performance optimization
   const ownershipCounts = useMemo(
@@ -424,12 +428,19 @@ const PlanStatics = ({
     setOpenPreviewModal(true); // Open the preview modal
   };
 
+  const handleToggle = () => {
+    setExpanded((prev) => !prev);
+  };
   return (
     <>
-      <Accordion className="card" defaultExpanded>
+      <Accordion className="card" expanded={expanded}>
         <AccordionSummary
           className="card-header"
-          expandIcon={<ExpandMoreIcon />}
+          expandIcon={
+            <IconButton onClick={handleToggle}>
+              <ExpandMoreIcon />
+            </IconButton>
+          }
           aria-controls="panel1-content"
           id="panel1-header"
         >

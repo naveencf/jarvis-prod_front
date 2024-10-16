@@ -4,11 +4,40 @@
   align-items: center;
   width: 100dvw;
   height: 100vh;
-  background-color: #00000069;
+  /* background-color: #00000069; */
+  background-color: #f9f1c9;
   position: fixed;
   z-index: 100000000000;
   top: 0;
   right: 0;
+}
+
+.loaderCup {
+  position: relative;
+}
+
+.loaderCup .cup {
+  width: 200px;
+  height: 200px;
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: scale-down;
+}
+
+.loaderLogo {
+  display: none;
+  position: absolute;
+  top: 56%;
+  left: 47%;
+  transform: translate(-50%, -50%);
+}
+
+.loaderLogo img {
+  width: 40px;
+  height: 40px;
+  max-width: 40px;
+  max-height: 40px;
+  object-fit: scale-down;
 }
 
 .loading-container {
@@ -22,8 +51,7 @@
   height: 100%;
   width: 100%;
   border-radius: 50%;
-  border: 5px solid #ACCAFF36;
-
+  border: 5px solid #accaff36;
 }
 
 .loading-progress::before {

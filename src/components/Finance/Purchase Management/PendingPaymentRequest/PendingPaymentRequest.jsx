@@ -817,7 +817,7 @@ export default function PendingPaymentRequest() {
               >
                 Clear
               </Button>
-              <Button
+              {/* <Button
                 className="btn btn-success cmnbtn btn_sm ms-2"
                 variant="contained"
                 color="primary"
@@ -825,7 +825,7 @@ export default function PendingPaymentRequest() {
                 onClick={handleOpenPayThroughVendor}
               >
                 Pay Through Vendor
-              </Button>
+              </Button> */}
               <Button
                 className="btn btn-success cmnbtn btn_sm ms-2"
                 variant="contained"
@@ -932,6 +932,8 @@ export default function PendingPaymentRequest() {
             setBaseAmount={setBaseAmount}
             payDialog={payDialog}
             setPayDialog={setPayDialog}
+            rowSelectionModel={rowSelectionModel}
+            filterData={filterData}
           />
         )}
 

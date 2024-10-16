@@ -12,6 +12,7 @@ import axios from "axios";
 import { useGetAllPageCategoryQuery } from "../../../Store/PageBaseURL";
 import { baseUrl } from "../../../../utils/config";
 
+
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -22,6 +23,7 @@ export default function MergeCategory() {
   const categoryData = category?.data || [];
   const [preference, setPreference] = React.useState("");
   const [remove, setRemove] = React.useState("");
+  const token = sessionStorage.getItem("token");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -46,13 +48,22 @@ export default function MergeCategory() {
     }).then((result) => {
       if (result.isConfirmed) {
         axios
-          .put(baseUrl + `v1/merge_page_category`, {
-            preference_id: preference,
-            removed_id: remove,
-            flag: 2,
-            start_date: startDate,
-            end_date: currentDate  
-          })
+  .put(
+    `${baseUrl}v1/merge_page_category`, 
+    {
+      preference_id: preference,
+      removed_id: remove,
+      flag: 2,
+      start_date: startDate,
+      end_date: currentDate  
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    }
+  )
           .then(() => {
             Swal.fire({
               title: "Merged!",
@@ -98,14 +109,14 @@ export default function MergeCategory() {
               <Select
                 className=""
                 options={categoryData.map((option) => ({
-                  value: option.page_category_id,
+                  value: option._id,
                   label: `${option.page_category}`,
                 }))}
                 value={{
                   value: preference,
                   label:
                     categoryData.find(
-                      (user) => user.page_category_id === preference
+                      (user) => user._id === preference
                     )?.page_category || "",
                 }}
                 onChange={(e) => {
@@ -121,14 +132,14 @@ export default function MergeCategory() {
               <Select
                 className=""
                 options={categoryData.map((option) => ({
-                  value: option.page_category_id,
+                  value: option._id,
                   label: `${option.page_category}`,
                 }))}
                 value={{
                   value: remove,
                   label:
                     categoryData.find(
-                      (user) => user.page_category_id === remove
+                      (user) => user._id === remove
                     )?.page_category || "",
                 }}
                 onChange={(e) => {

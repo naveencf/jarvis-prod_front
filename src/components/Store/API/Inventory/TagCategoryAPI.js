@@ -11,6 +11,7 @@ const TagCategoryApi = createApi({
       keepUnusedDataFor: 0,
     }),
 
+
     addTagCategory:builder.mutation({
         query:(payload)=>({
             url:"v1/page_tag_cat",
@@ -30,8 +31,14 @@ const TagCategoryApi = createApi({
             url:`v1/page_tag_cat/${id}`,
             method:"DELETE",
         }),
-    })
+    }),
    
+
+    getAllCatAssignment: builder.query({
+      query: () => `v1/get_all_page_cat_assignment`,
+      transformResponse: (response) => response.data.data,
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
@@ -40,6 +47,7 @@ export const {
   useAddTagCategoryMutation,
   useUpdateTagCategoryMutation,
   useDeleteTagCategoryMutation
+  
   
 } = TagCategoryApi;
 
