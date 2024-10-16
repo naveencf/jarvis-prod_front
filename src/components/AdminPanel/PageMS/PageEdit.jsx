@@ -20,15 +20,21 @@ import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
 } from "../../Store/reduxBaseURL";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useGetOwnershipTypeQuery } from "../../Store/PageBaseURL";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import { useContext } from "react";
+import { IconButton, Stack } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import InfoIcon from "@mui/icons-material/Info";
+import { setOpenShowAddModal, setModalType, setOpenShowPageInfoModal } from "../../Store/PageMaster";
+import PageAddMasterModal from "./PageAddMasterModal";
+import PageInfoModal from "./PageInfoModal";
 
+setOpenShowAddModal
 const Page = () => {
   const {
-    // data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery();
@@ -36,7 +42,7 @@ const Page = () => {
   const { pageMast_id } = useParams();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const dispatch = useDispatch();
-  const { toastAlert } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const [rowCount, setRowCount] = useState([
     { page_price_type_id: "", price: "" },
   ]);
@@ -63,6 +69,7 @@ const Page = () => {
   const [platformActive, setPlatformActive] = useState();
   const [rate, setRate] = useState("");
   const [description, setDescription] = useState("");
+  const [bio, setBio] = useState("");
   const [singlePage, setSinglePage] = useState({});
 
   const storedToken = sessionStorage.getItem("token");
@@ -75,16 +82,8 @@ const Page = () => {
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
-
-  const [allUsers, setAllUsers] = useState([]);
   const token = sessionStorage.getItem("token");
   const { usersDataContext } = useContext(AppContext);
-
-  // useEffect(() => {
-  //   axios.get(baseUrl + 'get_all_users').then((res) => {
-  //     setAllUsers(res.data.data);
-  //   });
-  // }, []);
 
   const PageLevels = [
     { value: "Level 1 (High)", label: "Level 1 (High)" },
@@ -93,10 +92,11 @@ const Page = () => {
   ];
 
   const PageStatus = [
-    { value: 0, label: "Active" },
-    { value: 1, label: "Inactive" },
-    { value: 2, label: "Disabled" },
-    { value: 3, label: "Semiactive" },
+ 
+    { value: 0, label: "Super Active" },
+    { value: 1, label: "Active" },
+    { value: 2, label: "Semiactive" },
+    { value: 3, label: "Dead" },
   ];
 
   const PageTypes = [
@@ -121,10 +121,6 @@ const Page = () => {
   });
 
   const getData = () => {
-    // axios.get(baseUrl + 'get_all_users').then((res) => {
-    //   setUserData(res.data.data);
-    // });
-
     axios
       .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMast_id}`, {
         headers: {
@@ -133,7 +129,6 @@ const Page = () => {
         },
       })
       .then((res) => {
-        // console.log(res.data.data,"hdssdj")
         setPriceDataNew(res.data.data);
       });
   };
@@ -179,12 +174,6 @@ const Page = () => {
   } = useGetAllProfileListQuery();
 
   const profileData = profile?.data || [];
-
-  // const handlePriceTypeChange = (e, index) => {
-  //   rowCount[index].page_price_type_id = e.value;
-  //   handleFilterPriceType();
-  // };
-
   const handlePriceTypeChange = (e, index) => {
     const updatedRowCount = [...rowCount];
     updatedRowCount[index] = {
@@ -206,7 +195,6 @@ const Page = () => {
 
   const handleFilterPriceType = (_id) => {
     let filteredData = priceTypeList.filter((row) => {
-      // Check if row's page_price_type_id exists in priceTypeList
       return !rowCount.some(
         (e) => e.page_price_type_id == row.page_price_type_id
       );
@@ -235,7 +223,6 @@ const Page = () => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
-          // setFilterPriceTypeList(res?.data?.data);
         });
     }
   }, [platformId]);
@@ -261,7 +248,6 @@ const Page = () => {
     }
   }, [priceData]);
 
-  // console.log(isPageListLoading,"kdshk",priceTypeList)
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMast_id}`, {
@@ -277,7 +263,6 @@ const Page = () => {
         setLink(data[0].page_link);
         setCategoryId(data[0].page_category_id);
         setSubCategoryId(data[0].page_sub_category_id);
-        // setTag(data[0].tag_category);
         const tagFilter = categoryData.filter((e) =>
           data[0].tags_page_category.includes(e._id)
         );
@@ -286,16 +271,15 @@ const Page = () => {
             return { value: e._id, label: e.page_category };
           })
         );
-        // setPageLevel(data[0].page_level);
-        // setPageStatus(data[0].status == 0 ? "Active" : "Inactive");
         setPageLevel(data[0].preference_level);
-        setPageStatus(data[0].page_mast_status);
+        setPageStatus(data[0].page_activeness);
         setCloseBy(data[0].page_closed_by);
         setPageType(data[0].page_name_type);
         setContent(data[0].content_creation);
         setOwnerType(data[0].ownership_type);
         setVendorId(data[0].vendor_id);
         setFollowCount(data[0].followers_count);
+        setBio(data[0].bio);
         setProfileId(data[0].page_profile_type_id);
         const platformActive = platformData.filter((e) =>
           data[0].platform_active_on.includes(e._id)
@@ -311,8 +295,6 @@ const Page = () => {
         setDescription(data[0].description);
         setP_id(data[0].pageMast_id);
         setSinglePage(data[0]);
-        // const { execounthismodels } = data[0];
-        // setExecounthismodels(execounthismodels);
       });
   }, [platformData]);
 
@@ -330,7 +312,6 @@ const Page = () => {
   }, [singlePage]);
 
   const handleSubmit = async (e, flag) => {
-    // console.log("first",pageStatus)
     e.preventDefault();
     if (!pageName) {
       toastAlert("Page Name is required");
@@ -394,7 +375,7 @@ const Page = () => {
       page_sub_category_id: subCategoryId,
       tags_page_category: tag.map((e) => e.value),
       preference_level: pageLevel,
-      page_mast_status: pageStatus,
+      page_activeness: pageStatus,
       // status: pageStatus == 'Active' ? 1 : 0,
       // page_status: pageStatus == 'Active' ? 1 : 0,
       page_closed_by: closeBy,
@@ -402,11 +383,14 @@ const Page = () => {
       content_creation: content,
       ownership_type: ownerType,
       vendor_id: vendorId,
+      // followers_count: followCount,
       followers_count: followCount,
+
+      bio: bio,
       page_profile_type_id: profileId,
       // platform_active_on: platformActive.map((e) => e.value),
       rate_type: rateType || "",
-      description: description,
+
       updated_by: userID,
       engagment_rate: engagment || 0,
       variable_type: rateType == "Variable" ? variableType.value : null,
@@ -453,7 +437,7 @@ const Page = () => {
         };
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => {})
+          .then(() => { })
           .catch((err) => {
             console.log(err);
           });
@@ -526,9 +510,61 @@ const Page = () => {
   const handleVariableTypeChange = (selectedOption) => {
     setVariableType(selectedOption);
   };
+  const handleOpenPageModal = (type) => {
+    return () => {
+      dispatch(setOpenShowAddModal());
+      dispatch(setModalType(type));
+    };
+  };
+  const handleOpenInfoModal = (type) => {
+    return () => {
+      dispatch(setOpenShowPageInfoModal());
+      dispatch(setModalType(type));
+    };
+  };
+  const pageInfoModlaOpen = useSelector(
+    (state) => state.pageMaster.showInfoModal
+  );
+
+  const handleUpadteFollowers = async () => {
+    const payload = {
+      creators: [pageName],
+      department: "65c38781c52b3515f77b0815",
+      userId: 111111,
+    };
+
+    const token =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const { data } = await axios.post(
+        `https://insights.ist:8080/api/v1/creators_details_v3`,
+        payload,
+        { headers }
+      );
+      const followerData = data?.data?.[0]?.creatorDetails?.followers;
+
+      if (followerData > 0) {
+        setFollowCount(followerData);
+        toastAlert(" Followers updated successfully!")
+      } else {
+        toastError("Page disabled or private.");
+      }
+
+    } catch (error) {
+      console.error("Error fetching followers:", errorMessage);
+    }
+  };
 
   return (
     <>
+      <PageAddMasterModal />
+      {pageInfoModlaOpen && <PageInfoModal />}
+
       <div>
         <button
           type="submit"
@@ -539,6 +575,14 @@ const Page = () => {
           }}
         >
           Save
+        </button>
+        <button
+          type="button"
+          title="Update Followers"
+          className="btn btn-primary mt-2 btn-sm"
+          onClick={() => handleUpadteFollowers()}
+        >
+          Update Followers
         </button>
       </div>
 
@@ -585,42 +629,81 @@ const Page = () => {
         <label className="form-label">
           Category <sup style={{ color: "red" }}>*</sup>
         </label>
-        <Select
-          options={categoryData.map((option) => ({
-            value: option._id,
-            label: option.page_category,
-          }))}
-          value={{
-            value: categoryId,
-            label:
-              categoryData.find((role) => role._id === categoryId)
-                ?.page_category || "",
-          }}
-          onChange={(e) => {
-            setCategoryId(e.value);
-          }}
-        ></Select>
+        <div className="input-group inputAddGroup">
+
+          <Select
+            options={categoryData.map((option) => ({
+              value: option._id,
+              label: option.page_category,
+            }))}
+            value={{
+              value: categoryId,
+              label:
+                categoryData.find((role) => role._id === categoryId)
+                  ?.page_category || "",
+            }}
+            onChange={(e) => {
+              setCategoryId(e.value);
+            }}
+          />
+          <IconButton
+            onClick={handleOpenPageModal("Category")}
+            variant="contained"
+            color="primary"
+            aria-label="Add Platform.."
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            onClick={handleOpenInfoModal("Category Info")}
+            variant="contained"
+            color="primary"
+            aria-label="Platform Info.."
+          >
+            <InfoIcon />
+          </IconButton>
+
+        </div>
       </div>
 
       <div className="form-group col-6">
         <label className="form-label">
           Sub Category <sup style={{ color: "red" }}>*</sup>
         </label>
-        <Select
-          options={subCategoryData?.map((option) => ({
-            value: option._id,
-            label: option.page_sub_category,
-          }))}
-          value={{
-            value: subCategoryId,
-            label:
-              subCategoryData.find((role) => role._id === subCategoryId)
-                ?.page_sub_category || "",
-          }}
-          onChange={(e) => {
-            setSubCategoryId(e.value);
-          }}
-        ></Select>
+        <div className="input-group inputAddGroup">
+
+          <Select
+            options={subCategoryData?.map((option) => ({
+              value: option._id,
+              label: option.page_sub_category,
+            }))}
+            value={{
+              value: subCategoryId,
+              label:
+                subCategoryData.find((role) => role._id === subCategoryId)
+                  ?.page_sub_category || "",
+            }}
+            onChange={(e) => {
+              setSubCategoryId(e.value);
+            }}
+          />
+          <IconButton
+            onClick={handleOpenPageModal("Sub Category")}
+            variant="contained"
+            color="primary"
+            aria-label="Add Sub Category.."
+          >
+            <AddIcon />
+          </IconButton>
+          <IconButton
+            onClick={handleOpenInfoModal("Sub Category Info")}
+            variant="contained"
+            color="primary"
+            aria-label="Sub Category Info.."
+          >
+            <InfoIcon />
+          </IconButton>
+        </div>
       </div>
 
       <div className="form-group col-6">
@@ -656,7 +739,7 @@ const Page = () => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Status <sup style={{ color: "red" }}>*</sup>
+          Activeness <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           name="page status"
@@ -857,6 +940,12 @@ const Page = () => {
         required={false}
         onChange={(e) => setDescription(e.target.value)}
       />
+      <FieldContainer
+        label="Bio"
+        value={bio}
+        required={false}
+        onChange={(e) => setBio(e.target.value)}
+      />
 
       <div className="col-md-6 p0 mb16">
         <FieldContainer
@@ -866,12 +955,6 @@ const Page = () => {
           value={engagment}
           required={false}
           onChange={(e) => {
-            // if (
-            //   e.target.value !== "" &&
-            //   (e.target.value < 0 || isNaN(e.target.value))
-            // ) {
-            //   return;
-            // }
             setEngagment(e.target.value);
           }}
         />
@@ -987,10 +1070,6 @@ const PageEdit = () => {
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
-  // if (isFormSubmitted) {
-  //   return <Navigate to="/admin/pms-page-overview" />;
-  // }
-
   const accordionButtons = ["Edit Page", "Page Health", "Performance"];
 
   const goBack = () => {
@@ -1014,6 +1093,7 @@ const PageEdit = () => {
       >
         <ArrowBackIcon onClick={goBack} />
       </div>
+
       <FormContainer
         mainTitle="Page Edit"
         title="Page Edit"

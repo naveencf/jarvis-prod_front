@@ -108,7 +108,7 @@ const SalesDashboard = () => {
     isError: targetCompetitionsError,
     isLoading: targetCompetitionsLoading,
   } = useGetAllTargetCompetitionsQuery();
- 
+
   useEffect(() => {
     if (!targetCompetitionsLoading && allTargetCompetitionsData) {
       const activeCompetitions = allTargetCompetitionsData?.filter(
@@ -436,9 +436,10 @@ const SalesDashboard = () => {
       </div>
 
       {allTargetCompetitionsData?.map(
-        (data) =>
+        (data, index) =>
           data?.status == 1 && (
             <TargetCard
+              index={index}
               data={data}
               totalSaleAmountDateWise={totalSaleAmountDateWise}
             />

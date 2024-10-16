@@ -25,7 +25,7 @@ const filterOptions = [
   "Last 6 Months",
   "Last 1 Year",
   "Custom Date",
-]; // Mapping the array to the required format
+];
 
 export default function SalesDashboard() {
   const [vendorCardData, setVendorCardData] = useState([]);
@@ -78,6 +78,7 @@ export default function SalesDashboard() {
         },
       })
       .then((res) => {
+        console.log(res, "res of sales dashnoard-->");
         setData(res?.data?.data);
         setFilterData(res?.data?.data);
       })

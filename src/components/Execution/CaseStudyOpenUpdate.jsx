@@ -21,6 +21,8 @@ const CaseStudyOpenUpdate = (props) => {
     caseStudyDialog,
     caseStudyOpenRowData,
     readOnlyAccountsData,
+    executionAPI,
+    getCaseStudyExecution,
   } = props;
   const { toastAlert, toastError } = useGlobalContext();
 
@@ -37,13 +39,6 @@ const CaseStudyOpenUpdate = (props) => {
   const [sarcasmGoogleSheetLink, setSarcasmGoogleSheetLink] = useState("");
   const [mmcGoogleSheetLink, setMMCGoogleSheetLink] = useState("");
   const token = sessionStorage.getItem("token");
-
-  console.log(
-    caseStudyOpenRowData?.account_id,
-    "caseStudyOpenRowData--->>",
-    readOnlyAccountsData
-  );
-  console.log(readOnlyAccountsData, "case study row data ---->>>");
 
   const handleCloseCaseStudyDialog = () => {
     setCaseStudyDialog(false);
@@ -67,6 +62,7 @@ const CaseStudyOpenUpdate = (props) => {
       sarcasm_google_sheet__link: sarcasmGoogleSheetLink,
       MMC_google_sheet__link: mmcGoogleSheetLink,
       case_study_status: false,
+      sale_booking_id: parseFloat(caseStudyOpenRowData?.sale_booking_id),
     };
 
     try {
@@ -76,10 +72,11 @@ const CaseStudyOpenUpdate = (props) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response, "Response---->");
       if (response) {
         toastAlert("Data Updated SuccessFully");
         handleCloseCaseStudyDialog();
+        await executionAPI();
+        await getCaseStudyExecution();
       }
     } catch (error) {
       toastError(error, "Error While Updating Data");
@@ -223,7 +220,7 @@ const CaseStudyOpenUpdate = (props) => {
 
             <TextField
               type="text"
-              label="CF Google sheet Link"
+              label="Sheet Link"
               className="col"
               onChange={(e) => setCfGoogleSheetLink(e.target.value)}
               autoFocus
@@ -235,7 +232,7 @@ const CaseStudyOpenUpdate = (props) => {
           <div className="row gap-3">
             <TextField
               type="text"
-              label="Sarcasm Google Sheet Link"
+              label="Sarcasm"
               className="col"
               onChange={(e) => setSarcasmGoogleSheetLink(e.target.value)}
               autoFocus
@@ -245,7 +242,7 @@ const CaseStudyOpenUpdate = (props) => {
             />
             <TextField
               type="text"
-              label="MMC Google Sheet Link"
+              label="MMC"
               className="col"
               onChange={(e) => setMMCGoogleSheetLink(e.target.value)}
               autoFocus

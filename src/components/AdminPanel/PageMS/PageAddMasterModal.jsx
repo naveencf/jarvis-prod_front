@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -9,23 +10,19 @@ import {
   setCloseShowAddModal,
   setCloseShowPageInfoModal,
 } from "../../Store/PageMaster";
-import { useEffect, useState } from "react";
-import { Autocomplete, Box, DialogTitle, TextField } from "@mui/material";
+import { Box, DialogTitle, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import jwtDecode from "jwt-decode";
 import {
   useAddPageCategoryMutation,
   useAddPageSubCategoryMutation,
-  useAddPlatformPriceMutation,
-  useAddProfileTypeMutation,
+  useGetAllPageCategoryQuery,
   useUpdatePageCategoryMutation,
   useUpdatePageSubCategoryMutation,
-  useUpdatePlatformPriceMutation,
-  useUpdateProfileTypeMutation,
 } from "../../Store/PageBaseURL";
 import { useGlobalContext } from "../../../Context/Context";
-import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
-import { setRowData } from "../../Store/PageMaster";
+import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
+import Select from "react-select";
 
 export default function PageAddMasterModal() {
   const { toastAlert, toastError } = useGlobalContext();
@@ -34,10 +31,11 @@ export default function PageAddMasterModal() {
   const userID = decodedToken.id;
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const open = useSelector((state) => state.pageMaster.showAddModal)
+  const open = useSelector((state) => state.pageMaster.showAddModal);
   const modalType = useSelector((state) => state.pageMaster.modalType);
   const dispatch = useDispatch();
   const rowData = useSelector((state) => state.pageMaster.rowData);
+
   const {
     register,
     handleSubmit,
@@ -45,39 +43,26 @@ export default function PageAddMasterModal() {
     setValue,
   } = useForm();
 
-  const {
-    register: register2,
-    handleSubmit: handleSubmit2,
-    formState: { errors: errors2 },
-    setValue: setValue2,
-  } = useForm();
-
+  const [currentState, setCurrentState] = useState(null);
   const [title, setTitle] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
 
   const handleClose = () => {
     dispatch(setCloseShowAddModal());
     setValue("name", "");
-    setValue2("description", null);
-    setValue2("platform", null);
-    setValue2("priceType", null);
-    dispatch(setRowData({}));
+    setValue("description", "");
+    // dispatch(setRowData({}));
+    setSelectedCategory("");
+    setCurrentState(null);
   };
 
-  const [addProfileType] = useAddProfileTypeMutation();
-  const [updateProfileType] = useUpdateProfileTypeMutation();
   const [addCategory] = useAddPageCategoryMutation();
   const [addSubCategory] = useAddPageSubCategoryMutation();
   const [updateCategory] = useUpdatePageCategoryMutation();
   const [updateSubCategory] = useUpdatePageSubCategoryMutation();
 
   useEffect(() => {
-    if (modalType === "Profile Type") {
-      setTitle("Add Profile Type");
-    } else if (modalType === "Profile Type Update") {
-      setTitle("Update Profile Type");
-      setValue("name", rowData.profile_type);
-      setValue("description", rowData.description);
-    } else if (modalType === "Category") {
+    if (modalType === "Category") {
       setTitle("Add Category");
     } else if (modalType === "Sub Category") {
       setTitle("Add Sub Category");
@@ -89,68 +74,58 @@ export default function PageAddMasterModal() {
       setTitle("Update Sub Category");
       setValue("name", rowData.page_sub_category);
       setValue("description", rowData.description);
-    } else if (modalType === "Price Type") {
-      setTitle("Add Price Type");
-    } else if (modalType === "Price Type Update") {
-      setTitle("Update Price Type");
+      setCurrentState(rowData.state);
     }
-  }, [modalType, rowData]);
+  }, [modalType, rowData, setValue]);
 
   const formSubmit = (data) => {
+    // Check if category is required (for Sub Category or Sub Category Update) and is not selected
+    if (
+      (modalType === "Sub Category" || modalType === "Sub Category Update") &&
+      !selectedCategory
+    ) {
+      toastError("Please select a category before submitting.");
+      return; // Stop the form submission if no category is selected
+    }
+  
+    const stateToSend =
+      selectedCategory === 96 && currentState
+        ? currentState
+        : "";
+  
     const obj = {
-      profile_type: data.name,
       description: data.description,
-      updated_by: userID,
-      _id: rowData._id,
       created_by: userID,
+      _id: rowData._id,
+      state: stateToSend,
     };
-
-    if (modalType === "Profile Type") {
-      delete obj.updated_by;
+  
+    if (modalType === "Sub Category" || modalType === "Sub Category Update") {
+      obj.page_sub_category = data.name; // Use `page_sub_category` for subcategories
+    } else {
+      obj.name = data.name;
+    }
+  
+    // API calls based on modalType
+    if (modalType === "Category") {
       delete obj._id;
-
-      addProfileType(obj)
-        .unwrap()
-        .then(() => {
-          toastAlert("Profile Type Added Successfully");
-          handleClose();
-        })
-        .catch((err) => {
-          toastError(err.message);
-        });
-    } else if (modalType === "Profile Type Update") {
-      delete obj.created_by;
-      delete obj.updated_by;
-      obj.last_updated_by = userID;
-      updateProfileType(obj)
-        .unwrap()
-        .then(() => {
-          toastAlert("Profile Type Updated Successfully");
-          handleClose();
-          dispatch(setCloseShowPageInfoModal());
-        })
-        .catch((err) => {
-          toastError(err.message);
-        });
-    } else if (modalType === "Category") {
-      delete obj.updated_by;
-      delete obj.profile_type;
-      // obj.category_name = data.name;
-      obj.page_category = data.name;
       addCategory(obj)
         .unwrap()
         .then(() => {
           toastAlert("Category Added Successfully");
           handleClose();
         })
-        .catch((err) => {
-          toastError(err.message);
-        });
+        .catch((err) => toastError(err.message));
+    } else if (modalType === "Sub Category") {
+      delete obj._id;
+      addSubCategory(obj)
+        .unwrap()
+        .then(() => {
+          toastAlert("Sub Category Added Successfully");
+          handleClose();
+        })
+        .catch((err) => toastError(err.message));
     } else if (modalType === "Category Update") {
-      delete obj.updated_by;
-      delete obj.profile_type;
-      obj.category_name = data.name;
-      obj.last_updated_by = userID;
       updateCategory(obj)
         .unwrap()
         .then(() => {
@@ -158,27 +133,8 @@ export default function PageAddMasterModal() {
           handleClose();
           dispatch(setCloseShowPageInfoModal());
         })
-        .catch((err) => {
-          toastError(err.message);
-        });
-    } else if (modalType === "Sub Category") {
-      delete obj.updated_by;
-      delete obj.profile_type;
-      obj.page_sub_category = data.name;
-      addSubCategory(obj)
-        .unwrap()
-        .then(() => {
-          toastAlert("Sub Category Added Successfully");
-          handleClose();
-        })
-        .catch((err) => {
-          toastError(err?.message);
-        });
+        .catch((err) => toastError(err.message));
     } else if (modalType === "Sub Category Update") {
-      delete obj.updated_by;
-      delete obj.profile_type;
-      obj.sub_category_name = data.name;
-      obj.last_updated_by = userID;
       updateSubCategory(obj)
         .unwrap()
         .then(() => {
@@ -186,123 +142,13 @@ export default function PageAddMasterModal() {
           handleClose();
           dispatch(setCloseShowPageInfoModal());
         })
-        .catch((err) => {
-          toastError(err.message);
-        });
+        .catch((err) => toastError(err.message));
     }
   };
+  
 
-  const { data: platformData } = useGetPmsPlatformQuery();
-  const platformList = platformData?.data || [];
-
-  const [addPlatformPrice] = useAddPlatformPriceMutation();
-  const [updatePlatformPrice] = useUpdatePlatformPriceMutation();
-
-  if (modalType === "Price Type" || modalType === "Price Type Update") {
-    const priceTypeFormSubmit = (data) => {
-      // console.log(data);
-      const obj = {
-        name: data.priceType,
-        platfrom_id: platformList?.find(
-          (platform) => platform.platform_name === data.platform
-        )._id,
-        description: data.description,
-        created_by: userID,
-      };
-
-      if (modalType === "Price Type") {
-        addPlatformPrice(obj)
-          .unwrap()
-          .then(() => {
-            toastAlert("Price Type Added Successfully");
-            handleClose();
-          })
-          .catch((err) => {
-            toastError(err.message);
-          });
-      } else {
-        obj._id = rowData._id;
-        updatePlatformPrice(obj)
-          .unwrap()
-          .then(() => {
-            toastAlert("Price Type Updated Successfully");
-            handleClose();
-            dispatch(setCloseShowPageInfoModal());
-          })
-          .catch((err) => toastError(err.message));
-      }
-    };
-
-    setValue2("priceType", rowData.name);
-    setValue2("description", rowData.description);
-
-    return (
-      <div>
-        <Dialog
-          fullScreen={fullScreen}
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="responsive-dialog-title"
-        >
-          <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
-          <DialogContent>
-            <Box component="form" onSubmit={handleSubmit2(priceTypeFormSubmit)}>
-              <TextField
-                label="Price Type"
-                required={true}
-                {...register2("priceType", {
-                  required: "Please Enter the Price Type",
-                })}
-              />
-              <Autocomplete
-                id="platform-autocomplete"
-                options={platformList?.map((option) => ({
-                  platformName: option.platform_name,
-                  value: option._id,
-                }))}
-                getOptionLabel={(option) => option.platformName || ""}
-                style={{ width: 300 }}
-                defaultValue={{
-                  platformName: platformList.find(
-                    (platform) => platform._id === rowData.platfrom_id
-                  )?.platform_name,
-                }}
-                onChange={(event, newValue) => {
-                  setValue2("platform", newValue ? newValue.value : "");
-                }}
-                isOptionEqualToValue={(option, value) =>
-                  option.platformName === value.platformName
-                }
-                renderInput={(params) => (
-                  <TextField
-                    {...register2("platform", {
-                      required: "Please Select the Platform",
-                    })}
-                    {...params}
-                    label="Platform *"
-                    variant="outlined"
-                    helperText={errors2.platform?.message}
-                    error={Boolean(errors2.platform)}
-                  />
-                )}
-              />
-
-              <TextField
-                label="Description"
-                required={false}
-                {...register2("description")}
-              />
-              <DialogActions>
-                <Button autoFocus type="submit">
-                  Submit
-                </Button>
-              </DialogActions>
-            </Box>
-          </DialogContent>
-        </Dialog>
-      </div>
-    );
-  }
+  const { data: categoryData } = useGetAllPageCategoryQuery();
+  const categoryOptions = categoryData?.data || [];
 
   return (
     <div>
@@ -315,6 +161,42 @@ export default function PageAddMasterModal() {
         <DialogTitle id="responsive-dialog-title">{title}</DialogTitle>
         <DialogContent>
           <Box component="form" onSubmit={handleSubmit(formSubmit)}>
+            {/* Category Field: Only show for adding/updating subcategories */}
+            {(modalType === "Sub Category" || modalType === "Sub Category Update") && (
+              <div className="form-group col-12">
+                <label className="form-label">Category <sup style={{color:"red"}}>*</sup></label>
+                <Select
+                  className=""
+                  options={categoryOptions.map((option) => ({
+                    value: option.page_category_id,
+                    label: option.page_category,
+                  }))}
+                  value={{
+                    value: selectedCategory,
+                    label:
+                      categoryOptions.find(
+                        (cat) => cat.page_category_id === selectedCategory
+                      )?.page_category || "",
+                  }}
+                  onChange={(e) => {
+                    setSelectedCategory(e.value);
+                  }}
+                  required
+                />
+              </div>
+            )}
+
+            {/* Conditional State Input: Only show for adding/updating subcategories */}
+            {(modalType === "Sub Category" || modalType === "Sub Category Update") &&
+              selectedCategory === 96 && (
+                <div className="form-group col-12 mt-3">
+                  <label htmlFor="">State</label>
+                  <IndianStatesMui
+                    selectedState={currentState}
+                    onChange={(option) => setCurrentState(option ? option : null)}
+                  />
+                </div>
+            )}
             <TextField
               autoFocus
               margin="dense"
@@ -322,18 +204,12 @@ export default function PageAddMasterModal() {
               label="Name *"
               type="text"
               fullWidth
-              {...register("name", {
-                required: "Please Enter the Name",
-                maxLength: 80,
-              })}
+              {...register("name", { required: "Please Enter the Name" })}
               helperText={errors.name?.message}
               error={Boolean(errors.name)}
             />
-            {/* {!modalType == "category" ||
-              !modalType == "Add Category" ||
-              (!modalType == "Category" && ( */}
+
             <TextField
-              autoFocus
               margin="dense"
               id="description"
               label="Description"
@@ -341,10 +217,10 @@ export default function PageAddMasterModal() {
               fullWidth
               {...register("description")}
             />
-            {/* ))} */}
+
             <DialogActions>
               <Button autoFocus type="submit">
-                submit
+                Submit
               </Button>
             </DialogActions>
           </Box>

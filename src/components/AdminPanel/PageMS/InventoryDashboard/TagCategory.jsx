@@ -1,37 +1,33 @@
 import React, { useState, useEffect } from "react";
-import View from "../../Sales/Account/View/View"; // Adjust the import according to your path
-import DeleteButton from "../../DeleteButton"; // Adjust the import according to your path
+import View from "../../Sales/Account/View/View"; 
+import DeleteButton from "../../DeleteButton"; 
 import { FaEdit } from "react-icons/fa";
-import { useGetAllTagCategoryQuery } from "../../../Store/API/Inventory/TagCategoryAPI"; // Adjust the import according to your path
-import TagCategoryModal from "./TagCategoryModal"; // Adjust the import according to your path
+import { useGetAllTagCategoryQuery } from "../../../Store/API/Inventory/TagCategoryAPI"; 
+import TagCategoryModal from "./TagCategoryModal";
 
 const TagCategory = () => {
   const [openModal, setOpenModal] = useState(false);
   const { data: TagCategory, isLoading } = useGetAllTagCategoryQuery();
   const [rowData, setRowData] = useState("");
 
-  // Function to group data by page_name and aggregate page_category_name
   const groupByPageName = (data) => {
     const groupedData = {};
   
     data.forEach(item => {
-      const key = Object.keys(item)[0]; // Get the page name (e.g., "kj" or "ddddd")
-      const value = item[key]; // Get the array of items for this page name
+      const key = Object.keys(item)[0]; 
+      const value = item[key];
   
       value.forEach((subItem) => {
         const pageName = subItem.page_name;
   
-        // Initialize the page_name entry in the groupedData
         if (!groupedData[pageName]) {
           groupedData[pageName] = {
             page_name: pageName,
-            created_by_name: subItem.created_by_name, // Assuming it's the same for all
-            page_id: subItem.page_id, // Include the page_id here
+            created_by_name: subItem.created_by_name, 
+            page_id: subItem.page_id,
             page_categories: []
           };
         }
-  
-        // Add the category to the array
         groupedData[pageName].page_categories.push(subItem.page_category_name);
       });
     });
@@ -39,12 +35,7 @@ const TagCategory = () => {
     return Object.values(groupedData);
   };
   
-  // Rest of your component code remains the same
-  
-
-  // Group the TagCategory data if available
   const groupedTagCategoryData = TagCategory ? groupByPageName(TagCategory) : [];
-  console.log(TagCategory,'tag')
 
   const dataGridColumns = [
     {
@@ -92,7 +83,6 @@ const TagCategory = () => {
     setRowData(rowData);
   };
 
-  // Close modal
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -107,7 +97,7 @@ const TagCategory = () => {
       
         <View
           columns={dataGridColumns}
-          data={groupedTagCategoryData} // Pass the grouped data
+          data={groupedTagCategoryData}
           isLoading={false}
           title={"Tag Category"}
           pagination={[100, 200, 1000]}

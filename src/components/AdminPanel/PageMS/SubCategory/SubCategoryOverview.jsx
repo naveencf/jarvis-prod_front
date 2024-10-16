@@ -17,6 +17,7 @@ import FormContainer from "../../FormContainer";
 import MergeSubCategory from "../InventoryDashboard/MergeSubCategory";
 import Swal from "sweetalert2";
 import moment from "moment/moment";
+import { FormatName } from "../../../../utils/FormatName";
 
 const SubCategoryOverview = () => {
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
@@ -26,8 +27,6 @@ const SubCategoryOverview = () => {
   const decodedToken = jwtDecode(token);
   const [deleteSubPageCategory, { data: deletedResponse, error: deleteError }] =
     useDeletePageSubCategoryMutation();
-
-  // Handle the delete confirmation and process
 
   const handleDelete = (subCategoryId) => {
     Swal.fire({
@@ -75,10 +74,18 @@ const SubCategoryOverview = () => {
       key: "page_sub_category",
       name: "Page Sub Category",
       width: 140,
+      renderRowCell: (row) => (
+        <div> {FormatName(row?.page_sub_category)} </div>
+      )
     },
     {
       key: "description",
       name: "Description",
+      width: 140,
+    },
+    {
+      key: "state",
+      name: "state",
       width: 140,
     },
     {

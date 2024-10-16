@@ -85,12 +85,13 @@ const ViewOutstanding = () => {
       renderRowCell: (row) => row.registered_by_name,
       with: 100,
     },
-    {
-      key: "requested_amount",
-      name: "Requested Amount",
-      renderRowCell: (row) => row.requested_amount,
-      width: 100,
-    },
+    // {
+    //   key: "requested_amount",
+    //   name: "Requested Amount",
+    //   renderRowCell: (row) => row.requested_amount,
+    //   width: 100,
+    //   getTotal :true,
+    // },
     {
       key: "gst_status",
       name: "GST Status",
@@ -98,19 +99,28 @@ const ViewOutstanding = () => {
       renderRowCell: (row) => (row.gst_status ? "GST" : "No GST"),
     },
     {
-      key: "account_type",
+      key: "approved_amount",
       name: "Approved Amount",
       renderRowCell: (row) => row.approved_amount,
       width: 100,
       compare: true,
+      getTotal: true,
     },
     {
-      key: "balance_payment_ondate",
-      name: "Balance Payment On Date",
-      renderRowCell: (row) => DateISOtoNormal(row.balance_payment_ondate),
+      key: "balance_amount",
+      name: "Total Balance Amount",
+      renderRowCell: (row) => row.total_purchase_amount - row.approved_amount,
       width: 100,
       compare: true,
+      getTotal: true,
     },
+    // {
+    //   key: "balance_payment_ondate",
+    //   name: "Balance Payment On Date",
+    //   renderRowCell: (row) => DateISOtoNormal(row.balance_payment_ondate),
+    //   width: 100,
+    //   compare: true,
+    // },
     {
       key: "booking_status",
       name: "Booking Status",
@@ -124,29 +134,32 @@ const ViewOutstanding = () => {
       width: 100,
       compare: true,
     },
-    {
-      key: "campaign_amount",
-      name: "Campaign Amount",
-      renderRowCell: (row) => row.campaign_amount,
-      width: 100,
-    },
-    {
-      key: "credit_approval_status",
-      name: "Credit Approval Status",
-      renderRowCell: (row) => row.credit_approval_status,
-      width: 100,
-    },
+    // {
+    //   key: "campaign_amount",
+    //   name: "Campaign Amount",
+    //   renderRowCell: (row) =>  row.campaign_amount,
+    //   width: 100,
+    //   getTotal: true,
+    // },
+    // {
+    //   key: "credit_approval_status",
+    //   name: "Credit Approval Status",
+    //   renderRowCell: (row) => row.credit_approval_status,
+    //   width: 100,
+    // },
     {
       key: "total_purchase_amount",
-      name: "Total Purchase Amount",
+      name: "Total Campaign Amount",
       renderRowCell: (row) => row.total_purchase_amount,
       width: 100,
+      getTotal: true,
     },
     {
       key: "total_sale_booking",
       name: "Total Sale Booking",
       renderRowCell: (row) => row.total_sale_booking,
       width: 100,
+      getTotal: true,
     },
   ];
 
@@ -165,6 +178,7 @@ const ViewOutstanding = () => {
         isLoading={accountWiseStatusLoading || userWiseStatusLoading}
         pagination
         tableName={"SalesOutstandingView"}
+        showTotal={true}
       />
     </div>
   );

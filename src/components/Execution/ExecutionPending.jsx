@@ -41,7 +41,7 @@ function ExecutionPending() {
   const [data, setData] = useState([]);
   const [alert, setAlert] = useState([]);
   const [reload, setReload] = useState(false);
-  const [contextData, setContextData] = useState(false);
+  const [contextData, setContextData] = useState(true);
   const [caseStudyOpen, setCaseStudyOpen] = useState(false);
   const [executionStatus, setExecutionStatus] = useState();
   const [saimyualCamp, setSaimyualCamp] = useState([]);
@@ -57,6 +57,8 @@ function ExecutionPending() {
   const [apiStatus, setApiStatus] = useState("sent_for_execution");
   const [totalExecutionCounts, setTotalExecutionCounts] = useState("");
   const [readOnlyAccountsData, setReadOnlyAccountsData] = useState("");
+  const [caseStudyCloseData, setCaseStudyCloseData] = useState([]);
+  const [isCaseStudyClose, setIsCaseStudyClose] = useState(false);
 
   const handleHoldSubmit = () => {
     let payload = {
@@ -64,7 +66,6 @@ function ExecutionPending() {
       execution_status: "execution_paused",
       sale_booking_id: rowData.sale_booking_id,
     };
-    console.log(rowData.sale_booking_id, "data");
     axios
       .put(`${baseUrl}sales/execution_status/${rowData._id}`, payload, {
         headers: {
@@ -91,7 +92,6 @@ function ExecutionPending() {
         execution_status: "sent_for_execution",
         sale_booking_id: row.sale_booking_id,
       };
-      console.log(row, "data");
       axios
         .put(`${baseUrl}sales/execution_status/${row._id}`, payload, {
           headers: {
@@ -139,7 +139,6 @@ function ExecutionPending() {
           },
         })
         .then((res) => {
-          console.log(res);
           setReload((preVal) => !preVal);
           executionAPI();
           toastAlert("Execution Accepted");
@@ -175,20 +174,20 @@ function ExecutionPending() {
   }, [reload]);
 
   const fetchData = async () => {
-    try {
-      if (userID && contextData == false) {
-        axios
-          .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
-          .then((res) => {
-            if (res.data[26].view_value == 1) {
-              setContextData(true);
-              setAlert(res.data);
-            }
-          });
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
+    // try {
+    //   if (userID && contextData == false) {
+    //     axios
+    //       .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
+    //       .then((res) => {
+    //         if (res.data[26].view_value == 1) {
+    //           setContextData(true);
+    //           setAlert(res.data);
+    //         }
+    //       });
+    //   }
+    // } catch (error) {
+    //   console.error("Error fetching data:", error);
+    // }
     axios.get(baseUrl + `sales/sales_booking_execution?status=${apiStatus}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -212,6 +211,20 @@ function ExecutionPending() {
       });
   };
 
+  const getCaseStudyExecution = async () => {
+    await axios
+      .get(`${baseUrl}v1/casestudy`, {
+        headers: {
+          // Authorization: `Bearer ${token}`,
+        },
+      })
+
+      .then((res) => {
+        console.log(res, "--->>>CaseStudyClose-->>>");
+        setCaseStudyCloseData(res?.data);
+      });
+  };
+
   const ExecutionTotalCounts = async () => {
     await axios
       .get(`${baseUrl}sales/count_data_status_wise`, {
@@ -220,7 +233,6 @@ function ExecutionPending() {
         },
       })
       .then((res) => {
-        console.log(res, "total--->>>-->>>");
         setTotalExecutionCounts(res?.data);
       });
   };
@@ -228,6 +240,7 @@ function ExecutionPending() {
   useEffect(() => {
     executionAPI();
     ExecutionTotalCounts();
+    getCaseStudyExecution();
   }, []);
 
   const handleViewClick = (id) => {
@@ -254,7 +267,6 @@ function ExecutionPending() {
     }));
   };
   const handleOpenCaseStudyDialog = async (e, row) => {
-    console.log(row, "row--->>");
     e.preventDefault();
     setCaseStudyDialog(true);
     setCaseStudyOpenRowData(row);
@@ -269,7 +281,6 @@ function ExecutionPending() {
       );
 
       const accountData = response?.data?.data;
-      console.log(accountData, " rd total--->>>-->>>");
       setReadOnlyAccountsData(accountData);
     } catch (error) {
       console.error("Error fetching account data:", error);
@@ -536,12 +547,12 @@ function ExecutionPending() {
           : 0;
       },
     },
-    contextData && {
+  {
       field: "payment_type",
       headerName: "Payment Status",
       width: 150,
     },
-    contextData && {
+  {
       field: "payment_status_show",
       headerName: "Credit Status",
       width: 150,
@@ -689,23 +700,23 @@ function ExecutionPending() {
               ];
             } else if (executionStatus == "execution_completed") {
               return [
-                <div className="icon-1">
-                  <GridActionsCellItem
-                    key={id}
-                    icon={<PointOfSaleTwoToneIcon />}
-                    onClick={handleClickOpenPaymentDetailDialog}
-                    color="inherit"
-                  />
-                </div>,
-                <Link key={id} to={`/admin/exeexecution/${id}`}>
-                  <div className="icon-1">
-                    <GridActionsCellItem
-                      icon={<ListAltOutlinedIcon />}
-                      onClick={handleViewClick(id)}
-                      color="inherit"
-                    />
-                  </div>
-                </Link>,
+                // <div className="icon-1">
+                //   <GridActionsCellItem
+                //     key={id}
+                //     icon={<PointOfSaleTwoToneIcon />}
+                //     onClick={handleClickOpenPaymentDetailDialog}
+                //     color="inherit"
+                //   />
+                // </div>,
+                // <Link key={id} to={`/admin/exeexecution/${id}`}>
+                //   <div className="icon-1">
+                //     <GridActionsCellItem
+                //       icon={<ListAltOutlinedIcon />}
+                //       onClick={handleViewClick(id)}
+                //       color="inherit"
+                //     />
+                //   </div>
+                // </Link>,
                 <Button
                   key={`${id}-update`}
                   variant="outlined"
@@ -826,6 +837,138 @@ function ExecutionPending() {
           },
         },
   ];
+  const caseStudyColumn = [
+    {
+      field: "s_no",
+      headerName: "S.No",
+      renderCell: (params) => (
+        <div>{[...caseStudyCloseData]?.indexOf(params.row) + 1}</div>
+      ),
+      sortable: true,
+    },
+    {
+      field: "account_name",
+      headerName: "Account Name",
+      width: 150,
+    },
+    {
+      field: "brand_category_name",
+      headerName: "Branch Category Name",
+      width: 150,
+    },
+    {
+      field: "no_of_posts",
+      headerName: "Posts",
+      width: 150,
+    },
+    {
+      field: "reach",
+      headerName: "Reach",
+      width: 150,
+    },
+    {
+      field: "impression",
+      headerName: "Impression",
+      width: 150,
+    },
+    {
+      field: "views",
+      headerName: "Views",
+      width: 150,
+    },
+    {
+      field: "engagement",
+      headerName: "Engagement",
+      width: 150,
+    },
+    {
+      field: "story_views",
+      headerName: "Story Views",
+      width: 150,
+    },
+    {
+      field: "link_clicks",
+      headerName: "Link Clicks",
+      width: 150,
+    },
+    {
+      field: "likes",
+      headerName: "Likes",
+      width: 150,
+    },
+    {
+      field: "comments",
+      headerName: "Comments",
+      width: 150,
+    },
+    {
+      field: "cf_google_sheet_link",
+      headerName: "Sheet Link",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <div>
+            <a
+              href={params.row.cf_google_sheet_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "blue" }}
+            >
+              {params.row.cf_google_sheet_link ? "Link" : ""}
+            </a>
+          </div>
+        );
+      },
+    },
+    {
+      field: "sarcasm_google_sheet__link",
+      headerName: "Sarcasm",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <div>
+            <a
+              href={params.row.sarcasm_google_sheet__link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "blue" }}
+            >
+              {params.row.sarcasm_google_sheet__link ? "Link" : ""}
+            </a>
+          </div>
+        );
+      },
+    },
+    {
+      field: "MMC_google_sheet__link",
+      headerName: "MMC",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <div>
+            <a
+              href={params.row.MMC_google_sheet__link}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: "blue" }}
+            >
+              {params.row.MMC_google_sheet__link ? "Link" : ""}
+            </a>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const handleCaseStudyClose = async () => {
+    await getCaseStudyExecution();
+    setIsCaseStudyClose(true);
+  };
+
+  const handleExecutionClick = async (status) => {
+    await executionAPI(status);
+    setIsCaseStudyClose(false);
+  };
   return (
     <>
       {confirmation && (
@@ -903,51 +1046,56 @@ function ExecutionPending() {
                   return isActive ? "disabled" : "";
                 }}
                 onClick={() => {
-                  executionAPI("sent_for_execution");
+                  handleExecutionClick("sent_for_execution");
                 }}
               >
                 Pending {totalExecutionCounts?.sent_for_execution}
               </Button>
               <Button
                 onClick={() => {
-                  executionAPI("execution_accepted");
+                  handleExecutionClick("execution_accepted");
                 }}
               >
                 In Progress {totalExecutionCounts?.execution_accepted}
               </Button>
               <Button
                 onClick={() => {
-                  executionAPI("execution_completed");
+                  handleExecutionClick("execution_completed");
                 }}
               >
                 Completed {totalExecutionCounts?.execution_completed}
               </Button>
               <Button
                 onClick={() => {
-                  executionAPI("execution_rejected");
+                  handleExecutionClick("execution_rejected");
                 }}
               >
                 Rejected {totalExecutionCounts?.execution_rejected}
               </Button>
               <Button
                 onClick={() => {
-                  executionAPI("execution_paused");
+                  handleExecutionClick("execution_paused");
                 }}
               >
                 Hold {totalExecutionCounts?.execution_paused}
               </Button>
               <Button
-                onClick={() => {
-                  executionAPI(false);
+                onClick={async () => {
+                  handleCaseStudyClose("case_study_close");
                 }}
               >
-                Case Study Close{" "}
+                Case Study Close {""}
+                {totalExecutionCounts?.case_study_close}
               </Button>
             </div>
-
             <DataGrid
-              rows={addSerialNumber(saimyualCamp)}
-              columns={columns}
+              rows={
+                isCaseStudyClose
+                  ? caseStudyCloseData
+                  : addSerialNumber(saimyualCamp)
+              }
+              // columns={columns}
+              columns={isCaseStudyClose ? caseStudyColumn : columns}
               getRowId={(row) => row?._id}
               slots={{ toolbar: GridToolbar }}
               slotProps={{
@@ -970,6 +1118,8 @@ function ExecutionPending() {
         caseStudyDialog={caseStudyDialog}
         caseStudyOpenRowData={caseStudyOpenRowData}
         readOnlyAccountsData={readOnlyAccountsData}
+        executionAPI={executionAPI}
+        getCaseStudyExecution={getCaseStudyExecution}
       />
 
       <Dialog

@@ -53,8 +53,8 @@ const BalanceReleaseIncentive = (props) => {
 
     // Build saleBookingIds array using optional chaining to prevent undefined errors
     const saleBookingIds = [
-      ...(selectedTrue?.map((c) => c.sale_booking_id) || []),
-      ...(selectedFalse?.map((c) => c.sale_booking_id) || []),
+      ...(selectedTrue?.map((c) => c._id) || []),
+      ...(selectedFalse?.map((c) => c._id) || []),
     ];
 
     // Format payment date
@@ -93,8 +93,7 @@ const BalanceReleaseIncentive = (props) => {
     } catch (error) {
       console.error("Error releasing campaigns:", error);
       toastError(
-        `Error releasing campaigns: ${
-          error?.response?.data?.message || error?.message
+        `Error releasing campaigns: ${error?.response?.data?.message || error?.message
         }`
       );
     }
@@ -107,7 +106,7 @@ const BalanceReleaseIncentive = (props) => {
 
   useEffect(() => {
     balanceReleaseAmount * 1 + selectedData.released_amount * 1 ==
-    selectedData.request_amount
+      selectedData.request_amount
       ? setPaymentType("Full Payment")
       : setPaymentType("Partial Payment");
     setPartialPaymentReason("");

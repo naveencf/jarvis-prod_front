@@ -1,14 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Avatar,
-  Box,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import jwtDecode from "jwt-decode";
@@ -43,7 +39,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { setStatsUpdate } from "../../Store/PageMaster";
 import PageDetail from "./PageOverview/PageDetail";
 import formatString from "../Operation/CampaignMaster/WordCapital";
-import { useGlobalContext } from "../../../Context/Context";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
 import PageClosedByDetails from "./Page/PageClosedByDetails";
 import VendorDetails from "./Vendor/VendorDetails";
 import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
@@ -52,44 +48,20 @@ import { constant } from "../../../utils/constants";
 import { formatNumber } from "../../../utils/formatNumber";
 import FilterWisePageOverview from "./PageOverview/FilterWisePageOverview";
 import PriceModal from "./PageOverview/PriceModal";
+import FollowerLogsModal from "./FollowerLogsModal";
+import PriceLogs from "./PriceLogs";
 const PageOverview = () => {
-  const { toastAlert } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const roleToken = decodedToken.role_id;
-  const {
-    data: pageList,
-    refetch: refetchPageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery();
-  const { data: pageStates, isLoading: isPagestatLoading } =
-    useGetPageStateQuery();
-
-  const [pageDatas, setPageDatas] = useState([]);
-
-  useEffect(() => {
-    const fetchVendors = async () => {
-      try {
-        let res;
-        if (roleToken === constant.CONST_ADMIN_ROLE) {
-          res = await axios.get(`${baseUrl}v1/pageMaster`);
-          console.log(res.data.data, "admin page data");
-        } else {
-          res = await axios.post(`${baseUrl}v1/get_all_pages_for_users`, {
-            user_id: userID,
-          });
-        }
-        if (res && res.data) {
-          setPageDatas(res.data.data || res.data);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchVendors();
-  }, [roleToken]);
-
+  const token = sessionStorage.getItem("token");  
+  
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  
+  const { usersDataContext } = useContext(AppContext);
+  const [vendorDetails, setVendorDetails] = useState(null);
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState("Tab1");
   const [loading, setLoading] = useState(false);
@@ -109,17 +81,46 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [waData, setWaData] = useState([]);
-  const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
-  const token = sessionStorage.getItem("token");
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
   const [allVendorWhats, setAllVendorWhats] = useState([]);
   const [selectedPriceType, setSelectedPriceType] = useState(""); // Holds the selected price type
   const [inputPrice, setInputPrice] = useState(""); // Holds the input price
+  const [openFollowerModal, setOpenFollowerModal] = useState(false);
+  const [rowDataFollower, setRowDataFollower] = useState("");
+  const [localPriceData, setLocalPriceData] = useState(null);
+  const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
+  const { data: platData } = useGetPmsPlatformQuery();
+  const platformData = platData?.data;
+  const showPageHealthColumn = useSelector(
+    (state) => state.PageOverview.showPageHelathColumn
+  );
+  const { data: cities } = useGetAllCitiesQuery();
+  const {
+    data: pageCate,
+    refetch: refetchPageCate,
+    isLoading: isPageCateLoading,
+  } = useGetAllPageCategoryQuery();
+  const cat = pageCate?.data;
+
+  const { data: subCategory } = useGetAllPageSubCategoryQuery();
+  const subCat = subCategory?.data || [];
+  const { data: vendor } = useGetAllVendorQuery();
+  const vendorData = vendor?.data;
+  const { data: priceData, isLoading: isPriceLoading } =
+  useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
+  const {
+    data: pageList,
+    refetch: refetchPageList,
+    isLoading: isPageListLoading,
+  } = useGetAllPageListQuery({decodedToken ,userID});
+  
+  const { data: pageStates, isLoading: isPagestatLoading } =
+    useGetPageStateQuery();
+  const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
+  const { data: profileData } = useGetAllProfileListQuery(); 
+
   // Handle price type change
   const handlePriceTypeChange = (e) => {
     setSelectedPriceType(e.target.value);
@@ -157,11 +158,6 @@ const PageOverview = () => {
     setNewFilterData(filteredData);
   };
 
-  const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-  const { data: profileData } = useGetAllProfileListQuery();
-
-  const [vendorDetails, setVendorDetails] = useState(null);
-
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
@@ -195,11 +191,6 @@ const PageOverview = () => {
   //   // });
   // };
 
-  const showPageHealthColumn = useSelector(
-    (state) => state.PageOverview.showPageHelathColumn
-  );
-
-  const { data: cities } = useGetAllCitiesQuery();
   function pageHealthToggleCheck() {
     if (showPageHealthColumn) {
       const data = filterData?.map((item) => {
@@ -215,34 +206,13 @@ const PageOverview = () => {
       });
       setNewFilterData(data);
 
-      const result = [];
-      for (let i = 0; i < data?.length; i++) {
-        const createdBy = data[i]?.created_by;
-        const pageName = data[i]?.page_name;
-        const created_at = data[i]?.created_at;
-
-        const existingUser = result.find(
-          (item) => item?.created_by === createdBy
-        );
-
-        if (existingUser) {
-          existingUser.page_names.push(pageName);
-        } else {
-          result.push({
-            created_by: createdBy,
-            page_names: [pageName],
-            created_at: created_at,
-          });
-        }
-      }
-      setIndividualData(result);
-      setIndividualDataDup(result);
+     
     }
     if (showPageHealthColumn == false) {
-      setFilterData(pageDatas);
+      setFilterData(pageList);
     }
   }
-
+console.log(pageList)
   useEffect(() => {
     pageHealthToggleCheck();
   }, [isPageListLoading, isPagestatLoading, filterData]);
@@ -267,6 +237,25 @@ const PageOverview = () => {
     getData();
   }, []);
 
+  const getData = () => {
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    // setUser(res.data.data);
+    //   setProgress(70);
+    // });
+
+    setUser(usersDataContext);
+    axios
+      .get(baseUrl + "v1/vendor_group_link", {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+      .then((res) => {
+        setAllVendorWhats(res?.data?.data);
+      });
+  };
+
   const handleTagCategory = (params) => {
     return function () {
       dispatch(setTagCategories(params));
@@ -286,39 +275,7 @@ const PageOverview = () => {
     navigate(`/admin/exe-history/${row._id}`, {
       state: row.pageMast_id,
     });
-  };
-
-  const { data: platData } = useGetPmsPlatformQuery();
-  const platformData = platData?.data;
-
-  const {
-    data: pageCate,
-    refetch: refetchPageCate,
-    isLoading: isPageCateLoading,
-  } = useGetAllPageCategoryQuery();
-  const cat = pageCate?.data;
-
-  const { data: subCategory } = useGetAllPageSubCategoryQuery();
-  const subCat = subCategory?.data || [];
-  const { data: vendor } = useGetAllVendorQuery();
-  const vendorData = vendor?.data;
-  const getData = () => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      setUser(res.data.data);
-      setProgress(70);
-    });
-
-    axios
-      .get(baseUrl + "v1/vendor_group_link", {
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setAllVendorWhats(res?.data?.data);
-      });
-  };
+  }; 
 
   const calculateAndSetTotals = (result) => {
     let totalFollowers = 0;
@@ -329,12 +286,14 @@ const PageOverview = () => {
       return;
     }
     for (let i = 0; i < result?.length; i++) {
-      totalFollowers += Number(result[i].followers_count);
-      totalPosts += Number(result[i].post);
-      totalStories += Number(result[i].story);
-      totalBoths += Number(result[i].both_);
-    }
+      if(result[i]?.followers_count){
 
+        totalFollowers += (result[i]?.followers_count);
+      }
+      totalPosts += (result[i].post);
+      totalStories += (result[i].story);
+      totalBoths += (result[i].both_);
+    }
     setTableFollowers(totalFollowers);
     setTablePosts(totalPosts);
     setTableStories(totalStories);
@@ -342,35 +301,34 @@ const PageOverview = () => {
   };
 
   useEffect(() => {
-    if (pageDatas) {
+    if (pageList) {
       if (decodedToken.role_id !== 1) {
-        setVendorTypes(pageDatas);
-        //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
+        setVendorTypes(pageList);
+        //   pageList?.filter((item) => item.created_by == decodedToken.id)
         // );
-        setFilterData(pageDatas);
-        //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
+        setFilterData(pageList);
+        //   pageList?.filter((item) => item.created_by == decodedToken.id)
         // );
-        calculateAndSetTotals(pageDatas);
-        //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
+        calculateAndSetTotals(pageList);
+        //   pageList?.filter((item) => item.created_by == decodedToken.id)
         // );
-        setTabFilterData(pageDatas);
-        //   pageDatas?.filter((item) => item.created_by == decodedToken.id)
+        setTabFilterData(pageList);
+        //   pageList?.filter((item) => item.created_by == decodedToken.id)
         // );
       } else {
-        setVendorTypes(pageDatas);
-        setFilterData(pageDatas);
-        calculateAndSetTotals(pageDatas);
-        setTabFilterData(pageDatas);
+        setVendorTypes(pageList);
+        setFilterData(pageList);
+        calculateAndSetTotals(pageList);
+        setTabFilterData(pageList);
       }
     }
-  }, [pageDatas]);
+  }, [pageList]);
 
-  useEffect(() => { }, [tableFollowers, tablePosts, tableStories, tableBoths]);
+  // useEffect(() => {}, [tableFollowers, tablePosts, tableStories, tableBoths]);
 
-  const { data: priceData, isLoading: isPriceLoading } =
-    useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
+ 
 
-  const [localPriceData, setLocalPriceData] = useState(null); // Local state to manage price data
+ 
   // Update localPriceData when new data is fetched
   useEffect(() => {
     if (priceData) {
@@ -383,6 +341,26 @@ const PageOverview = () => {
       setSelectedRow(row._id);
       setShowPriceModal(true);
     };
+  };
+
+
+
+  const handleFollowerLogs = (row) => {
+    setOpenFollowerModal(true);
+    setRowDataFollower(row);
+  };
+  const handleCloseFollowerModal = () => {
+    setOpenFollowerModal(false);
+  };
+  const [openPriceLogModal, setOpenPriceLogModal] = useState(false);
+  const [rowDataPriceLog, setRowDataPriceLog] = useState("");
+
+  const handlePriceLogs = (row) => {
+    setOpenPriceLogModal(true);
+    setRowDataPriceLog(row);
+  };
+  const handleClosePriceModal = () => {
+    setOpenPriceLogModal(false);
   };
 
   const whatsAppData = async (data) => {
@@ -446,6 +424,11 @@ const PageOverview = () => {
     }
   };
 
+  const editInNewTab = (_id) => {
+    window.open(`/admin/pms-page-edit/${_id}`, "_blank");
+    sessionStorage.setItem("token", storedToken);
+  }
+
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -457,7 +440,7 @@ const PageOverview = () => {
       key: "WA Links",
       name: "WA Links",
       width: 100,
-      editable: false,
+
       renderRowCell: (row) => {
         let name = allVendorWhats?.filter(
           (item) => item.vendor_id == row?.vendor_id
@@ -474,6 +457,14 @@ const PageOverview = () => {
           </div>
         );
       },
+    },
+    {
+      key: "Bio",
+      name: "Bio",
+      width: 80,
+      renderRowCell: (row) => (
+        <div>{row.bio ? row.bio : "NA "}</div>
+      )
     },
     {
       key: "page_name",
@@ -513,7 +504,7 @@ const PageOverview = () => {
       key: "preference_level",
       name: "Level",
       width: 200,
-      editable: true,
+      // editable: true,
       customEditElement: (
         row,
         index,
@@ -554,7 +545,7 @@ const PageOverview = () => {
         } else if (row.page_mast_status == 3) {
           status = "Semiactive";
         }
-        return <div>{status}</div>;
+        return status;
       },
       customEditElement: (
         row,
@@ -581,6 +572,7 @@ const PageOverview = () => {
           </select>
         );
       },
+      compare: true,
     },
     {
       key: "content_creation",
@@ -607,9 +599,10 @@ const PageOverview = () => {
       width: 200,
     },
     {
-      key: "page_catg_id",
+      key: "page_catg_name",
       name: "Category",
       width: 200,
+      compare: true,
       renderRowCell: (row) => {
         // let name = cat?.find((item) => item?.page_category_id == row.row?.temp_page_cat_id)?.page_category;
         let name = cat?.find(
@@ -617,7 +610,7 @@ const PageOverview = () => {
         )?.page_category;
         return name;
       },
-      editable: true,
+      // editable: true,
       customEditElement: (
         row,
         index,
@@ -647,7 +640,7 @@ const PageOverview = () => {
       },
     },
     {
-      key: "page_sub_category_id",
+      key: "page_sub_category_name",
       name: "Sub Category",
       width: 200,
       renderRowCell: (row) => {
@@ -656,7 +649,9 @@ const PageOverview = () => {
         )?.page_sub_category;
         return name;
       },
-      editable: true,
+      // editable: true,
+      compare: true,
+
     },
     {
       key: "followers_count",
@@ -673,17 +668,17 @@ const PageOverview = () => {
         let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
         let name = vendor ? vendor.vendor_name : "Unknown Vendor";
         return (
-          <button
+          <a
+            className="link-primary pointer"
             onClick={() => handleVendorClick(vendor?._id)}
-            style={{ width: "100%", cursor: "pointer" }}
-            className="btn cmnbtn btn_sm btn-outline-primary"
           >
             {formatString(name)}
-          </button>
+          </a>
         );
       },
       width: 200,
       compare: true,
+
     },
     {
       key: "platform_active_on",
@@ -696,41 +691,42 @@ const PageOverview = () => {
         return data?.map((item) => item.platform_name).join(", ");
       },
     },
-    {
-      key: "tags_page_category",
-      name: "Tag Category",
-      width: 200,
-      renderRowCell: (row) => {
-        let data = cat
-          ?.filter((item) => {
-            return row?.tags_page_category?.includes(item._id);
-          })
-          .map((item) => item.page_category);
-        return (
-          <div
-            style={{
-              width: "200px",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            {data?.map((item, i) => {
-              return (
-                <p
-                  key={i}
-                  onClick={handleTagCategory(data)}
-                  style={{ display: "inline", cursor: "pointer" }}
-                >
-                  {item}
-                  {i !== data?.length - 1 && ","}
-                </p>
-              );
-            })}
-          </div>
-        );
-      },
-    },
+    // {
+    //   key: "tags_page_category",
+    //   name: "Tag Category",
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     let data = cat
+    //       ?.filter((item) => {
+    //         return row?.tags_page_category?.includes(item._id);
+    //       })
+    //       .map((item) => item.page_category);
+    //     return (
+    //       <div
+    //         style={{
+    //           width: "200px",
+    //           whiteSpace: "nowrap",
+    //           overflow: "hidden",
+    //           textOverflow: "ellipsis",
+    //         }}
+    //       >
+    //         {data?.map((item, i) => {
+    //           return (
+    //             <p
+    //               key={i}
+    //               onClick={handleTagCategory(data)}
+    //               style={{ display: "inline", cursor: "pointer" }}
+    //             >
+    //               {item}
+    //               {i !== data?.length - 1 && ","}
+    //             </p>
+    //           );
+    //         })}
+    //       </div>
+    //     );
+    //   },
+    //   compare: true,
+    // },
     {
       key: "page_closed_by",
       name: "Closed By",
@@ -759,6 +755,7 @@ const PageOverview = () => {
         let PostData = row?.price_details?.Insta_Post;
         return PostData ? PostData : 0;
       },
+      compare: true,
     },
     {
       key: "Story price",
@@ -768,6 +765,8 @@ const PageOverview = () => {
         let StoryData = row?.price_details?.Insta_Story;
         return StoryData ? StoryData : 0;
       },
+      compare: true,
+
     },
     {
       key: "Both Price",
@@ -777,6 +776,8 @@ const PageOverview = () => {
         let BothData = row?.price_details?.Both;
         return BothData ? BothData : 0;
       },
+      compare: true,
+
     },
     {
       key: "page_price_multiple",
@@ -799,16 +800,62 @@ const PageOverview = () => {
       },
     },
     {
+      key: "follower logs",
+      name: "Follower Logs",
+      width: 200,
+      renderRowCell: (row) => {
+        return (
+          <div>
+            {
+              <button
+                title="Follower Logs"
+                onClick={() => handleFollowerLogs(row)}
+                className="btn cmnbtn btn_sm btn-outline-primary"
+              >
+                Follower Logs
+              </button>
+            }
+          </div>
+        );
+      },
+    },
+    {
+      key: "Price_logs",
+      name: "Price Logs",
+      width: 200,
+      renderRowCell: (row) => {
+        return (
+          <div>
+            {
+              <button
+                title="Price Logs"
+                onClick={() => handlePriceLogs(row)}
+                className="btn cmnbtn btn_sm btn-outline-primary"
+              >
+                Price Logs
+              </button>
+            }
+          </div>
+        );
+      },
+    },
+    {
       key: "Action",
       name: "Action",
       width: 500,
       renderRowCell: (row) => (
         <div className="d-flex align-center ">
           {pageUpdateAuth && (
-            <Link className="mt-2" to={`/admin/pms-page-edit/${row._id}`}>
+            <Link
+              className="mt-2"
+              to={`/admin/pms-page-edit/${row._id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <button
                 title="Edit"
                 className="btn btn-outline-primary btn-sm user-button"
+                onClick={()=>editInNewTab(row._id)}
               >
                 <FaEdit />{" "}
               </button>
@@ -833,28 +880,7 @@ const PageOverview = () => {
         </div>
       ),
     },
-    // {
-    //   key: "update",
-    //   name: "Update",
-    //   width: 130,
-    //   renderRowCell: (row) => {
-    //     const totalPercentage = row.totalPercentage;
-    //     return (
-    //       <>
-    //         <Link to={{ pathname: `/admin/pageStats/${row._id}` }}
-    //         >
-    //           <button
-    //             type="button"
-    //             className="btn cmnbtn btn_sm btn-outline-primary"
-    //             onClick={handleSetState()}
-    //           >
-    //             Profile Stats
-    //           </button>
-    //         </Link>
-    //       </>
-    //     );
-    //   },
-    // },
+
     {
       key: "Add",
       name: "Add",
@@ -980,19 +1006,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-    // {
-    //   field: "Age_upload",
-    //   width: 150,
-    //   headerName: "Age Upload",
-    //   renderCell: (params) => {
-    //     let url = params.row?.Age_upload;
-    //     return url ? (
-    //       <img src={url} style={{ width: "50px", height: "50px" }} />
-    //     ) : (
-    //       "NA"
-    //     );
-    //   },
-    // },
+
     {
       key: "city1_name",
       width: 150,
@@ -1194,7 +1208,7 @@ const PageOverview = () => {
         let data = row?.profile_visit;
         return data ? data : "NA";
       },
-      editable: true,
+      // editable: true,
       // customEditElement: (row,
       //   index,
       //   setEditFlag,
@@ -1389,19 +1403,19 @@ const PageOverview = () => {
   }, []);
 
   useEffect(() => {
-    if (pageDatas) {
+    if (pageList) {
       const pageCategoryCount = {};
       const categoryVendorMap = {};
       const categoryFollowerMap = {};
       const postMap = {};
       const storyMap = {};
 
-      for (let i = 0; i < pageDatas?.length; i++) {
-        const categoryId = pageDatas[i]?.page_category_id;
-        const vendorId = pageDatas[i]?.vendor_id;
-        const followers = pageDatas[i]?.followers_count || 0;
-        const storys = pageDatas[i]?.story || 0;
-        const posts = pageDatas[i]?.post || 0;
+      for (let i = 0; i < pageList?.length; i++) {
+        const categoryId = pageList[i]?.page_category_id;
+        const vendorId = pageList[i]?.vendor_id;
+        const followers = pageList[i]?.followers_count || 0;
+        const storys = pageList[i]?.story || 0;
+        const posts = pageList[i]?.post || 0;
 
         if (categoryId) {
           if (pageCategoryCount[categoryId]) {
@@ -1457,10 +1471,22 @@ const PageOverview = () => {
 
       setCategoryData(finalResult);
     }
-  }, [vendorTypes, vendorData, cat, pageDatas]);
+  }, [vendorTypes, vendorData, cat, pageList]);
 
   return (
     <>
+      <FollowerLogsModal
+        open={openFollowerModal}
+        onClose={handleCloseFollowerModal}
+        rowData={rowDataFollower}
+        allPriceTypeList={allPriceTypeList}
+      />
+      <PriceLogs
+        open={openPriceLogModal}
+        onClose={handleClosePriceModal}
+        rowData={rowDataPriceLog}
+        allPriceTypeList={allPriceTypeList}
+      />
       <div className="tabs">
         {vendorDetails && (
           <VendorDetails
@@ -1801,7 +1827,8 @@ const PageOverview = () => {
               showPriceModal={showPriceModal}
               localPriceData={localPriceData}
               priceData={priceData}
-              allPriceTypeList={allPriceTypeList} />
+              allPriceTypeList={allPriceTypeList}
+            />
             <TagCategoryListModal />
             <VendorNotAssignedModal />
             <PageDetail />
@@ -1821,7 +1848,7 @@ const PageOverview = () => {
           <CategoryWisePageOverview
             categoryData={categoryData}
             setFilterData={setFilterData}
-            pageList={pageDatas}
+            pageList={pageList}
             setActiveTab={setActiveTab}
             vendorTypes={vendorTypes}
             vendorData={vendorData}

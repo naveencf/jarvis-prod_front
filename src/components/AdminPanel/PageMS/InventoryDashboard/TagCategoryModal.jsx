@@ -11,15 +11,18 @@ import Select from "react-select";
 import { useGetAllPageCategoryQuery } from "../../../Store/PageBaseURL";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import FieldContainer from "../../FieldContainer";
-import { useUpdateTagCategoryMutation } from "../../../Store/API/Inventory/TagCategoryAPI";
+import { useGetAllTagCategoryQuery, useUpdateTagCategoryMutation } from "../../../Store/API/Inventory/TagCategoryAPI";
+import { useGlobalContext } from "../../../../Context/Context";
 
 export default function TagCategoryModal({ open, onClose, rowData }) {
   const { data: category, refetch: refetchPageCate } =
     useGetAllPageCategoryQuery();
   const [updateTagCategory, { isLoading, isError }] =
   useUpdateTagCategoryMutation();
+  const { data: TagCategory, refetch:refechTag } = useGetAllTagCategoryQuery();
   const categoryData = category?.data || [];
   const { userContextData, userID } = useAPIGlobalContext();
+  const {toastAlert} = useGlobalContext()
   const [pageName, setPageName] = useState("");
   const [pageCategories, setPageCategories] = useState([]);
   const [pagID , setPageID]  = useState('')
@@ -29,42 +32,37 @@ export default function TagCategoryModal({ open, onClose, rowData }) {
     try {
       const payload = {
         page_name: pageName,
-        page_category_id: pageCategories.map((cat) => cat.value), // Extract only the category IDs for submission
+        page_category_id: pageCategories.map((cat) => cat.value),
         created_by: userID,
         page_id:pagID
       };
-      console.log(payload,"hello");
       
       await updateTagCategory(payload).unwrap();
       onClose()
-      refetchPageCate()
+      toastAlert("Data updated successfully!")
+      refechTag()
     } catch (error) {
       // Handle error
       console.error(error);
     }
   };
 
-  console.log(rowData,'-----rowdata')
   useEffect(() => {
     if (rowData) {
-      // Set the page name from rowData
       setPageName(rowData.page_name);
       setPageID(rowData.page_id)
-      // Map rowData.page_categories (names) to categoryData (filter by name)
       const tagFilter = categoryData.filter((category) =>
-        rowData.page_categories.includes(category.page_category) // Match by category name
+        rowData.page_categories.includes(category.page_category) 
       );
 
-      // Map to { value, label } format for react-select
       const formattedCategories = tagFilter.map((category) => ({
         value: category._id,
         label: category.page_category,
       }));
 
-      // Set the selected categories in pageCategories state
       setPageCategories(formattedCategories);
     }
-  }, [rowData, categoryData]); // Re-run when rowData or categoryData changes
+  }, [rowData, categoryData]); 
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">

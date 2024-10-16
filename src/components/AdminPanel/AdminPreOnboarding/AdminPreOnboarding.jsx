@@ -158,13 +158,6 @@ const AdminPreOnboarding = () => {
     axios.get(baseUrl + "get_all_departments").then((res) => {
       getDepartmentData(res.data);
     });
-    // axios.get(baseUrl + "get_all_designations").then((res) => {
-    //   setDesignationData(res.data.data);
-    // });
-
-    // axios.get(baseUrl + "get_all_users").then((res) => {
-    //   getUsersData(res.data.data);
-    // });
   }, []);
 
   useEffect(() => {

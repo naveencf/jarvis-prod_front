@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from "sweetalert2";
 import { AppContext, useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
@@ -79,17 +80,19 @@ const PageMaster = () => {
   const [pageLevel, setPageLevel] = useState("");
   // const [pageStatus, setPageStatus] = useState('Active');
   const [pageStatus, setPageStatus] = useState(0);
-  const [userData, setUserData] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("Non Adult");
   const [content, setContent] = useState("By CF");
   const [ownerType, setOwnerType] = useState("66ab43f41068e2b9eea495a9");
   const [vendorId, setVendorId] = useState("");
+  const [languageId, setLanguageId] = useState([]);
   const [followCount, setFollowCount] = useState("");
   const [profileId, setProfileId] = useState("");
   const [platformActive, setPlatformActive] = useState();
   const [rate, setRate] = useState("");
   const [description, setDescription] = useState("");
+  const [bio, setBio] = useState("");
   const [priceTypeList, setPriceTypeList] = useState([]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [activeTab, setActiveTab] = useState("666818824366007df1df1319");
@@ -118,6 +121,7 @@ const PageMaster = () => {
     profileId: false,
     platformActive: false,
     description: false,
+    bio: false,
     rateType: false,
     variableType: false,
     primary: false,
@@ -133,6 +137,7 @@ const PageMaster = () => {
   const dispatch = useDispatch();
 
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
+  console.log(ownerShipData , 'ownership')
 
   const { data: profileData } = useGetAllProfileListQuery();
 
@@ -141,11 +146,9 @@ const PageMaster = () => {
 
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
-  console.log(categoryData, "categoryData-->>>");
 
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
-  console.log(subCategoryData, "subCategoryData--->>>");
 
   const { data: vendor } = useGetAllVendorQuery();
 
@@ -194,6 +197,7 @@ const PageMaster = () => {
       setPlatformActive(platformActiveDataList ? platformActiveDataList : []);
       setRate(singlePageData?.engagment_rate);
       setDescription(singlePageData?.description);
+      setBio(singlePageData?.bio);
       setRateType({
         value: singlePageData?.rate_type,
         label: singlePageData?.rate_type,
@@ -239,14 +243,19 @@ const PageMaster = () => {
     }
   }, [singlePageLoading]);
 
-  // useEffect(() => {
-  //   if (rowCount.length > 0) {
-  //     let data = priceTypeList?.filter(
-  //       (e) => !rowCount.map((row) => row.page_price_type_id).includes(e._id)
-  //     );
-  //     setFilterPriceTypeList(data);
-  //   }
-  // }, [rowCount, priceTypeList]);
+
+  const getLanguage = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
+      setLanguages(res?.data?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getLanguage()
+  }, []);
 
   useEffect(() => {
     if (rowCount.length > 0) {
@@ -287,10 +296,10 @@ const PageMaster = () => {
   ];
 
   const PageStatus = [
-    { value: 0, label: "Active" },
-    { value: 1, label: "Inactive" },
-    { value: 2, label: "Disabled" },
-    { value: 3, label: "Semiactive" },
+    { value: 0, label: "Super Active" },
+    { value: 1, label: "Active" },
+    { value: 2, label: "Semiactive" },
+    { value: 3, label: "Dead" },
   ];
 
   const PageTypes = [
@@ -417,6 +426,9 @@ const PageMaster = () => {
     if (description === "") {
       setValidateFields((prev) => ({ ...prev, description: true }));
     }
+    if (bio === "") {
+      setValidateFields((prev) => ({ ...prev, bio: true }));
+    }
     if (rateType === "") {
       setValidateFields((prev) => ({ ...prev, rateType: true }));
     }
@@ -463,7 +475,8 @@ const PageMaster = () => {
       page_sub_category_id: subCategoryId,
       tags_page_category: tag.map((e) => e.value),
       preference_level: pageLevel,
-      page_mast_status: pageStatus,
+      // page_mast_status: pageStatus,
+      page_activeness: pageStatus,
       // page_status: pageStatus == 'Active' ? 1 : 0,
       // status: pageStatus == 'Active' ? 1 : 0,
       page_closed_by: closeBy,
@@ -477,11 +490,12 @@ const PageMaster = () => {
       // platform_active_on: platformActive.map((e) => e.value),
       engagment_rate: rate,
       description: description,
+      bio: bio,
       created_by: userID,
       rate_type: rateType.value,
       variable_type: rateType.value == "Variable" ? variableType.value : null,
       page_price_multiple: rowCount,
-
+      page_language_id : languageId.map((item)=>item),
       primary_page: primary.value,
       post:
         rowCount.find((e) => e.page_price_type_id == "667e6c7412fbbf002179f6d6")
@@ -607,9 +621,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-          value: initialVendor._id,
-          label: formatString(initialVendor.vendor_name),
-        }
+        value: initialVendor._id,
+        label: formatString(initialVendor.vendor_name),
+      }
       : null;
   };
 
@@ -661,14 +675,14 @@ const PageMaster = () => {
       })
       .catch((error) => {
         console.error("Error fetching followers:", error);
-        
+
         const fallbackPayload = {
           creators: [value],
           department: "65c38781c52b3515f77b0815",
           userId: 111111,
           creatorType: 0,
         };
-  
+
         axios
           .post(
             `https://insights.ist:8080/api/v1/creator_details_operation_multiple`,
@@ -777,6 +791,34 @@ const PageMaster = () => {
               </div>
             </div>
 
+            <div className="col-md-6 mb16">
+              <div className="form-group m0">
+                <label className="form-label">
+                  Language <sup style={{ color: "red" }}>*</sup>
+                </label>
+                <Select
+                  options={languages.map((option) => ({
+                    value: option._id,
+                    label: formatString(option.language_name),
+                  }))}
+                  isMulti
+                  required={true}
+                  onChange={(selectedOptions) => {
+                    const selectedValues = selectedOptions.map(option => option.value);
+                    setLanguageId(selectedValues); 
+                    if (selectedValues.length > 0) {
+                      setValidateFields((prev) => ({
+                        ...prev,
+                        vendorId: false,
+                      }));
+                    }
+                  }}
+                />
+                {/* {validateFields.vendorId && (
+                  <small style={{ color: "red" }}>Please select Vendor</small>
+                )} */}
+              </div>
+            </div>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -938,10 +980,10 @@ const PageMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Profile Status <sup style={{ color: "red" }}>*</sup>
+                  Activeness <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <Select
-                  name="Profile status"
+                  name="Page status"
                   options={PageStatus}
                   required={true}
                   className="basic-multi-select"
@@ -950,7 +992,7 @@ const PageMaster = () => {
                     (option) => option.value == pageStatus
                   )}
                   onChange={(selectedOption) => {
-                    setPageStatus(selectedOption.value);
+                    setPageStatus(selectedOption?.label);
                     if (selectedOption.value) {
                       setValidateFields((prev) => ({
                         ...prev,
@@ -1214,7 +1256,7 @@ const PageMaster = () => {
                 <label className="form-label">
                   Ownership Type<sup style={{ color: "red" }}>*</sup>
                 </label>
-                <Select
+                {/* <Select
                   className="w-100"
                   options={ownerShipData?.map((option) => ({
                     value: option._id,
@@ -1236,7 +1278,53 @@ const PageMaster = () => {
                       }));
                     }
                   }}
-                />
+                /> */}
+<Select
+  className="w-100"
+  options={ownerShipData?.map((option) => ({
+    value: option._id,
+    label: option.company_type_name,
+  }))}
+  required={true}
+  value={{
+    value: ownerType,
+    label:
+      ownerShipData?.find((role) => role._id === ownerType)
+        ?.company_type_name || "",
+  }}
+  onChange={(e) => {
+    const selectedId = e.value;
+    const specificId = "6655bd6b0f9216140c64f956"; 
+
+    if (selectedId === specificId) {
+      setOwnerType(selectedId);
+      setValidateFields((prev) => ({
+        ...prev,
+        ownerType: false,
+      }));
+    } else {
+      Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to select this option?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, select it!",
+        cancelButtonText: "No, cancel!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setOwnerType(selectedId);
+          setValidateFields((prev) => ({
+            ...prev,
+            ownerType: false,
+          }));
+        } else {
+          Swal.fire("Selection canceled", "", "info");
+        }
+      });
+    }
+  }}
+/>
+
               </div>
               {validateFields.ownerType && (
                 <small style={{ color: "red" }}>
@@ -1449,6 +1537,15 @@ const PageMaster = () => {
                 value={description}
                 required={false}
                 onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Bio"
+                fieldGrid={12}
+                value={bio}
+                required={false}
+                onChange={(e) => setBio(e.target.value)}
               />
             </div>
             {/* <div className="col-md-6 mb16">

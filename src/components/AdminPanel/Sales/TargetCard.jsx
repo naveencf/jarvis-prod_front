@@ -10,7 +10,7 @@ import View from "./Account/View/View";
 import { useEffect } from "react";
 import { Log } from "@phosphor-icons/react";
 
-const TargetCard = ({ data, totalSaleAmountDateWise }) => {
+const TargetCard = ({ data, totalSaleAmountDateWise, index }) => {
   const loginUserRole = getDecodedToken().role_id;
   const finalTargetAmount = data?.target_amount || 0;
 
@@ -58,7 +58,7 @@ const TargetCard = ({ data, totalSaleAmountDateWise }) => {
 
 
   return (
-    <div className="row">
+    <div className="row" key={index}>
       <div className="col-12">
         <div className="card cardAccordion target-card">
           <div className="card-header">

@@ -1,12 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 import { baseUrl } from "../../../../utils/config";
-import DeleteButton from "../../DeleteButton";
 import FormContainer from "../../FormContainer";
-import DynamicExcelDownload from "../DynamicExcelDownload";
-import DynamicPDFDownload from "../DynamicPDFDownload";
+
 import { useGetIncentivePlanListQuery } from "../../../Store/API/Sales/IncentivePlanApi";
 import View from "../Account/View/View";
 import { useGetAllSaleServiceQuery } from "../../../Store/API/Sales/SalesServiceApi";
@@ -49,6 +46,17 @@ const IncentiveOverview = () => {
     apicall();
   }, []);
 
+  useEffect(() => {
+    if (allIncentiveData) {
+      if (loginUserRole === 1) {
+        setIncentiveData(allIncentiveData);
+      } else {
+        setIncentiveData(allIncentiveData.filter((data) => data?.sales_service_master_Data?.status === 0));
+      }
+    }
+  }, [allIncentiveData]);
+
+
   const columns = [
     {
       name: "S.No",
@@ -57,10 +65,10 @@ const IncentiveOverview = () => {
       sortable: true,
     },
     {
-      key: "sales_service_master_id",
+      key: "sales_service_name",
       name: "Service Name",
       renderRowCell: (row) =>
-        allsalesdata?.find((data) => data._id === row.sales_service_master_id)
+        row?.sales_service_master_Data
           ?.service_name,
       width: 200,
     },
@@ -112,10 +120,9 @@ const IncentiveOverview = () => {
         </div>
       </div>
       <View
-        title={`Incentive Overview (${
-          allIncentiveData?.length
-        }) - ${"There will be no incentive for competitive plan"}`}
-        data={allIncentiveData}
+        title={`Incentive Overview (${allIncentiveData?.length
+          }) - ${"There will be no incentive for competitive plan"}`}
+        data={incentiveData}
         columns={columns}
         isLoading={incentiveLoading || salesLoading}
         pagination={[20]}

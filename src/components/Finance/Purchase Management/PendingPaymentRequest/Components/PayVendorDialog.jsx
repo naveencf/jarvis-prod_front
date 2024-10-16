@@ -23,36 +23,28 @@ import { baseUrl } from "../../../../../utils/config";
 import ReadableList from "./ReadableList";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
+import PayThroughVendorDialog from "./PayThroughVendorDialog";
 
 function PayVendorDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
   const {
-    loading,
-    setLoading,
-    phpRemainderData,
     rowData,
-    setRowData,
     paymentAmout,
     setPaymentAmount,
     netAmount,
     setNetAmount,
     baseAmount,
-    setBaseAmount,
     payDialog,
     setPayDialog,
     userName,
     callApi,
+    rowSelectionModel,
+    filterData,
   } = props;
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-
-  //   const [netAmount, setNetAmount] = useState("");
-  //   const [paymentAmout, setPaymentAmount] = useState("");
-  //   const [baseAmount, setBaseAmount] = useState(0);
-  //   const [loading, setLoading] = useState(false);
-  //   const [payDialog, setPayDialog] = useState(true);
   const [TDSDeduction, setTDSDeduction] = useState(false);
   const [TDSPercentage, setTDSPercentage] = useState(1);
   const [isTDSMandatory, setIsTDSMandatory] = useState(false);
@@ -68,6 +60,8 @@ function PayVendorDialog(props) {
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
+  const [payThroughVendor, setPayThroughVendor] = useState(false);
+  rowSelectionModel;
   const [preview, setPreview] = useState("");
   const [paymentDate, setPaymentDate] = useState(
     dayjs(new Date()).add(5, "hours").add(30, "minutes").$d.toGMTString()
@@ -302,6 +296,10 @@ function PayVendorDialog(props) {
     } else {
       setNetAmount("");
     }
+  };
+
+  const handleOpenPayThroughVendor = () => {
+    setPayThroughVendor(true);
   };
   return (
     <div>
@@ -636,7 +634,6 @@ function PayVendorDialog(props) {
                   className="form-control col-md-6"
                   id="paymentProof"
                   onChange={handleFileChange}
-                  // onClick={openImgDialog}
                 />
                 <Button
                   variant="contained"
@@ -654,14 +651,30 @@ function PayVendorDialog(props) {
           <Button
             variant="contained"
             className="mx-2"
-            // fullWidth
             onClick={(e) => handlePayVendorClick(e)}
             disabled={!paymentMode || !paymentAmout}
           >
             Pay Vendor
           </Button>
+          <Button
+            className="btn btn-success cmnbtn btn_sm ms-2"
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={handleOpenPayThroughVendor}
+          >
+            Pay Through Vendor
+          </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Dialog for  */}
+      <PayThroughVendorDialog
+        setPayThroughVendor={setPayThroughVendor}
+        payThroughVendor={payThroughVendor}
+        rowSelectionModel={rowSelectionModel}
+        filterData={filterData}
+      />
       {/* )} */}
     </div>
   );

@@ -15,6 +15,7 @@ import { baseUrl } from '../../../utils/config';
 import { AppContext } from '../../../Context/Context';
 import CustomTable from '../../CustomTable/CustomTable';
 import { FaEdit } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -22,6 +23,7 @@ function PlanHome() {
   const [openDialog, setOpenDialog] = useState(false);
   const [planRows, setPlanRows] = useState([]);
   const [duplicatePlanId, setDuplicatePlanId] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -39,15 +41,18 @@ function PlanHome() {
     planSaved: false,
     createdBy: 938,
   });
-  const [accounts, setAccounts] = useState([]); // State to store account data
+  const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchInput, setSearchInput] = useState('');
   const storedToken = sessionStorage.getItem('token');
-  const { usersDataContext } = useContext(AppContext); // Getting users from context
+  const { usersDataContext } = useContext(AppContext);
 
-  const filteredUsers = usersDataContext.filter(
-    (user) =>
-      user.department_name === 'Community Management' ||
-      user.department_name === 'Sales'
+  const salesUsers = usersDataContext?.filter(
+    (user) => user?.department_name === 'Sales'
+  );
+ 
+  const globalFilteredUsers = usersDataContext?.filter((user) =>
+    user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase())
   );
 
   const fetchAccounts = async () => {
@@ -61,6 +66,7 @@ function PlanHome() {
       });
 
       const data = await response.json();
+      
       if (data.success) {
         setAccounts(data.data);
       }
@@ -68,6 +74,19 @@ function PlanHome() {
       console.error('Error fetching accounts:', error);
     }
   };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
+    if (!planDetails.sellingPrice)
+      newErrors.sellingPrice = 'Budget is required';
+    if (!planDetails.accountId)
+      newErrors.accountName = 'Account Name is required';
+    if (!planDetails.salesExecutiveId)
+      newErrors.salesExecutiveId = 'Sales Executive is required';
+    return newErrors;
+  };
+
   const fetchPlans = async () => {
     setLoading(true);
     try {
@@ -75,7 +94,7 @@ function PlanHome() {
       const data = await response.json();
       if (data.success) {
         // Map API response to match DataGrid row structure
-        const formattedRows = data?.data?.map((plan, index) => ({
+        const formattedRows = data?.data?.map((plan) => ({
           id: plan._id, // Use _id as the row ID
           platformCount: plan.no_of_pages,
           planName: plan.plan_name,
@@ -116,7 +135,7 @@ function PlanHome() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-  
+
     // Handle account selection
     if (name === 'accountName') {
       const selectedAccount = accounts.find(
@@ -131,7 +150,9 @@ function PlanHome() {
     }
     // Handle user selection from usersDataContext
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find((user) => user.user_name === value);
+      const selectedUser = usersDataContext.find(
+        (user) => user.user_name === value
+      );
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
@@ -143,9 +164,14 @@ function PlanHome() {
       }));
     }
   };
- 
 
   const handleFormSubmit = async () => {
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+
     const planData = {
       plan_name: planDetails.planName,
       cost_price: parseFloat(planDetails.costPrice),
@@ -175,19 +201,36 @@ function PlanHome() {
       });
 
       const result = await response.json();
+
       if (result.success) {
-        const newPlanId = result?.data?._id;
+        const newPlanId = result.data._id;
         navigate(`/admin/pms-plan-making/${newPlanId}`);
       } else {
-        console.error('Failed to create plan:', result.message);
+        // Show SweetAlert if the plan name already exists
+        Swal.fire({
+          icon: 'error',
+          title: 'Duplicate Plan',
+          text: result.message, // "Plan with the same name already exists"
+        });
+        setPlanDetails({});
       }
     } catch (error) {
       console.error('Error submitting form:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Submission Failed',
+        text: 'Something went wrong. Please try again later.',
+      });
     }
 
     setOpenDialog(false);
-    setDuplicatePlanId(null); // Reset duplicate plan ID
   };
+
+  const isSubmitDisabled =
+    !planDetails.planName ||
+    !planDetails.sellingPrice ||
+    !planDetails.accountId ||
+    !planDetails.salesExecutiveId;
 
   const handleDuplicateClick = (params) => {
     const planId = params.id; // Get the original plan's ID
@@ -237,6 +280,15 @@ function PlanHome() {
       name: 'Plan Name',
       renderRowCell: (row) => (
         <div style={{ cursor: 'pointer' }}>{row.planName}</div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'brief',
+      name: 'brief',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row?.brief}</div>
       ),
       width: 150,
       showCol: true,
@@ -331,13 +383,35 @@ function PlanHome() {
         <DialogContent>
           <TextField
             margin="dense"
-            label="Plan Name"
+            label="Plan Name *"
             name="planName"
             fullWidth
             value={planDetails.planName}
             onChange={handleInputChange}
+            error={!!errors.planName}
+            helperText={errors.planName}
           />
-
+          <Autocomplete
+            options={accounts}
+            getOptionLabel={(option) => option.account_name || ''}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
+            onChange={(event, value) => {
+              setPlanDetails((prevDetails) => ({
+                ...prevDetails,
+                accountId: value ? value._id : '',
+                accountName: value ? value.account_name : '',
+                brandId: value ? value.brand_id : '',
+              }));
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Account Name *"
+                error={!!errors.accountName}
+                helperText={errors.accountName}
+              />
+            )}
+          />
           <TextField
             margin="dense"
             label="Description"
@@ -348,52 +422,36 @@ function PlanHome() {
           />
           <TextField
             margin="dense"
-            label="Budget"
+            label="Budget *"
             name="sellingPrice"
             fullWidth
             value={planDetails.sellingPrice}
             onChange={handleInputChange}
-          />
-
-          <Autocomplete
-            name="accountName"
-            disablePortal
-            onChange={(event, value) => {
-              const selectedAccount = accounts.find(
-                (account) => account.account_name === value
-              );
-              setPlanDetails((prevDetails) => ({
-                ...prevDetails,
-                accountName: selectedAccount
-                  ? selectedAccount.account_name
-                  : '',
-                accountId: selectedAccount ? selectedAccount._id : '',
-                brandId: selectedAccount ? selectedAccount.brand_id : '',
-              }));
-            }}
-            options={accounts.map((account) => account.account_name)}
-            renderInput={(params) => (
-              <TextField {...params} label="Account Name" />
-            )}
+            error={!!errors.sellingPrice}
+            helperText={errors.sellingPrice}
           />
           <Autocomplete
-            disablePortal
-            name="salesExecutiveId"
+            options={searchInput ? globalFilteredUsers : salesUsers}  
+            getOptionLabel={(option) => option.user_name || ''}
+            isOptionEqualToValue={(option, value) => option._id === value._id}
+            onInputChange={(event, value) => setSearchInput(value)} 
             onChange={(event, value) => {
-              const selectedUser = usersDataContext.find(
-                (user) => user.user_name === value
-              );
               setPlanDetails((prevDetails) => ({
                 ...prevDetails,
-                salesExecutiveId: selectedUser ? selectedUser._id : '',
+                salesExecutiveId: value ? value._id : '',
+                salesExecutiveName: value ? value.user_name : '',
               }));
             }}
-            options={filteredUsers?.map((user) => user?.user_name)}
             renderInput={(params) => (
-              <TextField {...params} label="Sales Executive" />
+              <TextField
+                {...params}
+                label="Sales Executive *"
+                error={!!errors.salesExecutiveId}
+                helperText={errors.salesExecutiveId}
+              />
             )}
           />
-
+          
           <TextField
             margin="dense"
             label="Brief"
@@ -405,7 +463,11 @@ function PlanHome() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={handleFormSubmit} variant="contained">
+          <Button
+            onClick={handleFormSubmit}
+            variant="contained"
+            disabled={isSubmitDisabled}
+          >
             Submit
           </Button>
         </DialogActions>
@@ -444,7 +506,7 @@ function PlanHome() {
             isLoading={loading}
             columns={columns}
             data={planRows?.reverse()}
-            Pagination
+            Pagination={[100, 200]}
             tableName={'PlanMakingDetails'}
           />
         </Box>

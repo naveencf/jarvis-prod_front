@@ -4,25 +4,24 @@ import FormContainer from '../../AdminPanel/FormContainer';
 import FieldContainer from '../../AdminPanel/FieldContainer';
 import Select from 'react-select'
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState ,useContext} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton } from '@mui/material';
 import CreateMeetingPages from "./CreateMeetingPages";
-import { useGlobalContext } from "../../../Context/Context";
-// import jwtDecode from "jwt-decode";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
+
 const achievedStatus = [
     { value: 1, label: "Achieved" },
     { value: 2, label: "UnAchieved" }
 ];
 
 const MeetingPagesOverView = () => {
+    const {  usersDataContext } = useContext(AppContext);
     const { toastAlert, toastError } = useGlobalContext();
-
     const location = useLocation();
     const { creatorDetail } = location.state || {}
     const navigate = useNavigate();
     const [meetingPage, setMeetingpage] = useState([]);
-    const [user, setUser] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
     const [modalOpenUpdate, setModalOpenUpdate] = useState(false);
     const [id, setId] = useState("");
@@ -34,20 +33,10 @@ const MeetingPagesOverView = () => {
     const [status, setStatus] = useState(null);
     const [pagesViaData, setPagesViaData] = useState([]);
     
-
     const getMeetingPages = async () => {
         const res = await axios.get('https://insights.ist:8080/api/v1/community/page_meeting');
         setMeetingpage(res.data.data);
-
-
     };
-    const getuserdata = async () => {
-        const getUser = await axios.get('http://34.42.28.61:8080/api/get_all_users');
-        setUser(getUser.data.data);
-        console.log(getUser.data.data);
-    }
-
-
     const getMeetingViapage = async () => {
         try {
             const res = await axios.get('https://insights.ist:8080/api/v1/community/page_meeting_mode');
@@ -59,9 +48,8 @@ const MeetingPagesOverView = () => {
 
     useEffect(() => {
         getMeetingPages();
-        getuserdata()
         getMeetingViapage();
-    }, []);
+    }, [usersDataContext]);
 
     const handleEdit = async (row) => {
         setModalOpenUpdate(true)
@@ -99,8 +87,8 @@ const MeetingPagesOverView = () => {
             headerName: "User Name",
             width: 200,
             renderCell: (params) =>
-                user?.find(
-                    (user) => user.user_id === params.row.poc
+                usersDataContext?.find(
+                    (user) => user?.user_id === params.row.poc
                 )?.user_name || "N/A",
         }
         ,

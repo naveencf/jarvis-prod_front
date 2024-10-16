@@ -3,7 +3,8 @@ import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../FieldContainer";
 import { useParams } from "react-router-dom";
 import { useGlobalContext } from "../../../../Context/Context";
-import { set } from "date-fns";
+import { set } from "date-fns"
+  ;
 
 const RecordServices = ({
   records,
@@ -13,7 +14,10 @@ const RecordServices = ({
   setValidateService,
   isValidRec,
   setIsValidRec,
+  getincentiveSharingData,
 }) => {
+  const { usersDataContext } = useGlobalContext();
+
   const { editId } = useParams();
   const [selectedRecords, setSelectedRecords] = useState(
     records?.map(() => "")
@@ -75,6 +79,8 @@ const RecordServices = ({
       recordIndex === index ? { ...record, [key]: value } : record
     );
 
+
+
     setIsValidRec((prev) =>
       prev.map((rec, recIndex) =>
         recIndex === index ? { ...rec, [key]: false } : rec
@@ -120,9 +126,10 @@ const RecordServices = ({
     }
 
     if (key === "sales_service_master_id") {
+
+
       const updatedSelectedRecords = [...selectedRecords];
       updatedSelectedRecords[index] = value;
-
       const updatedServiceFieldsData = [...serviceFieldsData];
       updatedServiceFieldsData[index] = serviceTypes?.find(
         (service) => service?._id === value
@@ -130,6 +137,7 @@ const RecordServices = ({
 
       setSelectedRecords(updatedSelectedRecords);
       setServiceFieldsData(updatedServiceFieldsData);
+
     }
   };
 
@@ -169,6 +177,7 @@ const RecordServices = ({
         const ServiceFields = serviceFieldsData?.[index];
         const isValidRecIndex = isValidRec?.[index];
 
+
         return (
           <div className="card" key={index}>
             <div className="card-header sb">
@@ -182,6 +191,36 @@ const RecordServices = ({
             </div>
             <div className="card-body">
               <div className="row record-container">
+
+                <div className="col-12">
+                  {
+                    getincentiveSharingData?.services?.find(data => data.service_id === record?.sales_service_master_id)?.service_percentage  &&
+                    <div className="card gstinfo-card">
+
+                      {
+                        <div>
+                          <h5>
+
+                            {record?.sales_service_master_id ? "Service Percentage" + " " + getincentiveSharingData?.services?.find(data => data.service_id === record?.sales_service_master_id)?.service_percentage + "%" : "Please Select Service Type"}
+
+                          </h5>
+                        </div>
+                      }
+                      <div className="flex-grid gap-2 ">
+
+                        {
+                          getincentiveSharingData?.services?.find(data => data?.service_id === record?.sales_service_master_id)?.incentive_sharing_users?.map((data, index) => (
+                            <div key={index} className="sb gap-2  cmnbtn btn btn_sm">
+                              <p>{usersDataContext?.find(user => user?.user_id === data?.user_id)?.user_name}</p>
+                              <p>{data?.user_percentage + "%"}</p>
+                            </div>
+                          ))
+                        }
+                      </div>
+
+                    </div>
+                  }
+                </div>
                 <div className="col-6">
                   <CustomSelect
                     label="Service Type"

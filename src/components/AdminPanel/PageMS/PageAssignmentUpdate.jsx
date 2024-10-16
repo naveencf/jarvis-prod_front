@@ -14,10 +14,14 @@ import {
 } from "../../Store/PageBaseURL";
 import Select from "react-select";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
+import { useGlobalContext } from "../../../Context/Context";
+import { useGetAllCatAssignmentQuery } from "../../Store/API/Inventory/CatAssignment";
+
 
 export default function PageAssignmentUpdate({ open, onClose, row }) {
   const [categorys, setCategory] = useState("");
-  const [subCategorys, setSubCategory] = useState("");
+  const { data: authData, refetch:getData } = useGetAllCatAssignmentQuery();
+  const [subCategorys, setSubCategory] = useState([]);
   const { data: category, refetch: refetchPageCate } =
     useGetAllPageCategoryQuery();
   const { data: subcategory, refetch: refetchSubCat } =
@@ -26,27 +30,66 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
   const subCatData = subcategory?.data || [];
   const [userName, setUserName] = useState("");
   const { userContextData, userID } = useAPIGlobalContext();
+  const {toastAlert} = useGlobalContext()
+  const token = sessionStorage.getItem('token');
+  const [selectedSubCategories, setSelectedSubCategories] = useState([]);
 
+console.log(row,"row")
+  
   const handleSubmit = () => {
+    const selectedSubCategoryIds = subCategorys.map(sub => sub.value);
+    
     axios
-      .post(baseUrl + `v1/edit_page_cat_assignment/${row._id}`, {
+      .post(baseUrl + `v1/edit_page_cat_assignment`, {
         user_id: userName,
-        page_sub_category_id: subCategorys,
+        page_sub_category_id: selectedSubCategoryIds,
         updated_by: userID,
       })
       .then(() => {
-        setUserName(" ");
+        setUserName("");
+        setSubCategory([]);
         onClose();
+        getData()
+        toastAlert("Data updated successfully!")
       });
   };
 
   useEffect(() => {
-    console.log(row, "lalitigoe");
-    if (row) {
-      setSubCategory(row?.page_sub_category_id || "");
-      setUserName(row?.user_id || "");
+    if (categorys) {
+      axios
+        .get(baseUrl + `v1/get_all_sub_cat_with_cat_id/${categorys}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => {
+          const subCatList = res.data.map((subCat) => ({
+            value: subCat.page_sub_category_id,
+            label: subCat.page_sub_category_name,
+          }));
+          setSelectedSubCategories(res.data);
+        })
+        .catch((error) => {
+          console.error('Error fetching sub-categories:', error);
+        });
     }
-  }, [row]);
+  }, [categorys, token]);
+
+  useEffect(() => {
+    if (row) {
+      setUserName(row?.user_id);
+      // const tagFilter = subCatData?.filter((subcategory) =>
+      //   row.page_sub_category_ids.includes(subcategory.page_sub_category_id) 
+      // );
+      // const formattedCategories = tagFilter.map((subcategory) => ({
+      //   value: subcategory.page_sub_category_ids, 
+      //   label: subcategory.page_categories,
+      // }));
+
+      // setSubCategory(formattedCategories);
+    }
+  }, [row, subCatData]);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
@@ -61,7 +104,7 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
               label: `${option.user_name}`,
             }))}
             value={{
-              value: categorys,
+              value: userName,
               label:
                 userContextData.find((user) => user.user_id === userName)
                   ?.user_name || "",
@@ -77,13 +120,13 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
           <Select
             className=""
             options={categoryData.map((option) => ({
-              value: option.page_category_id,
+              value: option._id,
               label: `${option.page_category}`,
             }))}
             value={{
               value: categorys,
               label:
-                categoryData.find((user) => user.page_category_id === categorys)
+                categoryData.find((user) => user._id === categorys)
                   ?.page_category || "",
             }}
             onChange={(e) => {
@@ -96,20 +139,15 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
           <label className="form-label">Sub Category</label>
           <Select
             className=""
-            options={subCatData.map((option) => ({
+            options={selectedSubCategories.map((option) => ({
               value: option.page_sub_category_id,
-              label: `${option.page_sub_category}`,
+              label: `${option.page_sub_category_name}`,
             }))}
-            value={{
-              value: subCategorys,
-              label:
-                subCatData.find(
-                  (user) => user.page_sub_category_id === subCategorys
-                )?.page_sub_category || "",
+            value={subCategorys}
+            onChange={(selectedOptions) => {
+              setSubCategory(selectedOptions);
             }}
-            onChange={(e) => {
-              setSubCategory(e.value);
-            }}
+            isMulti 
             required
           />
         </div>

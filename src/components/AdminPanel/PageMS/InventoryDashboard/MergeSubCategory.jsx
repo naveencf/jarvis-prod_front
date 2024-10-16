@@ -102,14 +102,14 @@ export default function MergeSubCategory() {
               <Select
                 className=""
                 options={subCategoryData?.map((option) => ({
-                  value: option.page_sub_category_id,
+                  value: option._id,
                   label: `${option.page_sub_category}`,
                 }))}
                 value={{
                   value: preference,
                   label:
                     subCategoryData.find(
-                      (user) => user.page_sub_category_id === preference
+                      (user) => user._id === preference
                     )?.page_sub_category || "",
                 }}
                 onChange={(e) => {
@@ -125,14 +125,14 @@ export default function MergeSubCategory() {
               <Select
                 className=""
                 options={subCategoryData?.map((option) => ({
-                  value: option.page_sub_category_id,
+                  value: option._id,
                   label: `${option.page_sub_category}`,
                 }))}
                 value={{
                   value: remove,
                   label:
                     subCategoryData?.find(
-                      (user) => user.page_sub_category_id === remove
+                      (user) => user._id === remove
                     )?.page_sub_category || "",
                 }}
                 onChange={(e) => {

@@ -4,8 +4,7 @@ import SkeletonLoader from "./SkeletonLoader";
 import axios from "axios";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../AdminPanel/FieldContainer";
-import { type } from "jquery";
-import { set } from "date-fns";
+
 
 const RenderedTable = ({
   headref,
@@ -161,7 +160,7 @@ const RenderedTable = ({
     const newColSearch = columnsheader?.map((column, index) => {
       if (!visibleColumns[index]) return []; // Skip invisible columns
 
-      return selectedId[index].map((value) => ({
+      return selectedId[index]?.map((value) => ({
         [column.key]: value,
       }));
     });
@@ -419,9 +418,9 @@ const RenderedTable = ({
                                               filterCondition.map((item, i) =>
                                                 i === index
                                                   ? {
-                                                      ...item,
-                                                      ...valuefiller(value),
-                                                    }
+                                                    ...item,
+                                                    ...valuefiller(value),
+                                                  }
                                                   : item
                                               )
                                             );
@@ -445,9 +444,9 @@ const RenderedTable = ({
                                                 filterCondition.map((item, i) =>
                                                   i === index
                                                     ? {
-                                                        ...item,
-                                                        value1: e.target.value,
-                                                      }
+                                                      ...item,
+                                                      value1: e.target.value,
+                                                    }
                                                     : item
                                                 )
                                               );
@@ -458,35 +457,35 @@ const RenderedTable = ({
                                         {(filterCondition[index]?.key ===
                                           "notBetween" ||
                                           filterCondition[index]?.key ===
-                                            "between") && (
-                                          <FieldContainer
-                                            className="form-control form_sm"
-                                            fieldGrid={12}
-                                            fieldLabel="Value"
-                                            placeholder={"Enter value"}
-                                            type={
-                                              filterCondition[index]?.type !==
-                                              undefined
-                                                ? filterCondition[index].type
-                                                : "text"
-                                            }
-                                            value={
-                                              filterCondition[index].value2
-                                            }
-                                            onChange={(e) => {
-                                              setFilterCondition(
-                                                filterCondition.map((item, i) =>
-                                                  i === index
-                                                    ? {
+                                          "between") && (
+                                            <FieldContainer
+                                              className="form-control form_sm"
+                                              fieldGrid={12}
+                                              fieldLabel="Value"
+                                              placeholder={"Enter value"}
+                                              type={
+                                                filterCondition[index]?.type !==
+                                                  undefined
+                                                  ? filterCondition[index].type
+                                                  : "text"
+                                              }
+                                              value={
+                                                filterCondition[index].value2
+                                              }
+                                              onChange={(e) => {
+                                                setFilterCondition(
+                                                  filterCondition.map((item, i) =>
+                                                    i === index
+                                                      ? {
                                                         ...item,
                                                         value2: e.target.value,
                                                       }
-                                                    : item
-                                                )
-                                              );
-                                            }}
-                                          />
-                                        )}
+                                                      : item
+                                                  )
+                                                );
+                                              }}
+                                            />
+                                          )}
                                       </div>
                                     </li>
 
@@ -575,13 +574,12 @@ const RenderedTable = ({
                                                 className="form-check-label"
                                                 htmlFor={`flexSwitchCheckDefault-${indices}`}
                                               >
-                                                {column?.compare
-                                                  ? row[column.key]
-                                                  : column?.renderRowCell
+
+                                                {column?.compare ? row[column.key] : column?.renderRowCell
                                                   ? column?.renderRowCell(
-                                                      row,
-                                                      indices
-                                                    )
+                                                    row,
+                                                    indices
+                                                  )
                                                   : row[column.key]}
                                               </label>
                                             </div>

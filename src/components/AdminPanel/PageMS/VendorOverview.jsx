@@ -32,67 +32,50 @@ import { baseUrl } from "../../../utils/config";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import UploadBulkVendorPages from "./Vendor/BulkVendor/UploadBulkVendorPages";
 import { constant } from "../../../utils/constants";
+import VendorMPriceModal from "./VendorMPriceModal";
 
 const VendorOverview = () => {
-  const [vendorDetails, setVendorDetails] = useState(null);
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
-  const [contextData, setContextData] = useState(false);
+ 
+  const [vendorDetails, setVendorDetails] = useState(null);
+const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
+const [rowVendor , setRowVendor] = useState('')
+const [filterData, setFilterData] = useState([]);
+const [pageData, setPageData] = useState([]);
+const token = sessionStorage.getItem("token");
+const [activeTab, setActiveTab] = useState("Tab1");
+const [tabFilterData, setTabFilterData] = useState([]);
+const [categoryCounts, setCategoryCounts] = useState({});
+const [platformCounts, setPlatformCounts] = useState([]);
+const [stateDataS, setStateDataS] = useState([]);
+const [cityDataS, setCityDataS] = useState([]);
+const { data: pageList } = useGetAllPageListQuery();
+const [getRowData, setGetRowData] = useState([]);
 
-  const userID = decodedToken.id;
-  const roleToken = decodedToken.role_id;
+const { data: vendor } = useGetAllVendorTypeQuery();
+const typeData = vendor?.data;
+const { data: platform } = useGetPmsPlatformQuery();
+const platformData = platform?.data;
 
-  const { data: vendor } = useGetAllVendorTypeQuery();
-  const typeData = vendor?.data;
-  const { data: platform } = useGetPmsPlatformQuery();
-  const platformData = platform?.data;
-
-  const { data: cycle } = useGetPmsPayCycleQuery();
-  const cycleData = cycle?.data;
-
-  const { data: payData } = useGetPmsPaymentMethodQuery();
-
-  
+const { data: cycle } = useGetPmsPayCycleQuery();
+const cycleData = cycle?.data;  
 const {
   data: vendorData,
   isLoading: loading,
   refetch: refetchVendor,
 } = useGetAllVendorQuery(); 
 
-const [vendorDatas, setVendorDatas] = useState([]);
+const handleUpdateVendorMPrice = (row) =>{
+  setOpenUpdateVendorMPrice(true);
+  setRowVendor(row)
+}
+const handleCloseVendorMPriceModal = () => {
+  setOpenUpdateVendorMPrice(false);
+};
 
-useEffect(() => {
-  const fetchVendors = async () => {
-    try {
-      let res;
 
-      if (roleToken === constant.CONST_ADMIN_ROLE) {
-        res = await axios.get(`${baseUrl}v1/vendor`);
-      } else {
-        res = await axios.post(`${baseUrl}v1/get_all_vendors_for_users`, { user_id: userID });
-      }
-      if (res && res.data) {
-        setVendorDatas(res.data.data || res.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
-  fetchVendors(); 
-}, [roleToken]); 
-
-  const [filterData, setFilterData] = useState([]);
-  const [pageData, setPageData] = useState([]);
-  const token = sessionStorage.getItem("token");
-  const [activeTab, setActiveTab] = useState("Tab1");
-  const [tabFilterData, setTabFilterData] = useState([]);
-  const [categoryCounts, setCategoryCounts] = useState({});
-  const [platformCounts, setPlatformCounts] = useState([]);
-  const [stateDataS, setStateDataS] = useState([]);
-  const [cityDataS, setCityDataS] = useState([]);
-  const { data: pageList } = useGetAllPageListQuery();
-  const [getRowData, setGetRowData] = useState([]);
 
   const getData = () => {
     refetchVendor();
@@ -107,20 +90,20 @@ useEffect(() => {
     //   setFilterData(vendorData?.data);
     //   setTabFilterData(vendorData?.data);
     // }
-    if (vendorDatas) {
+    if (vendorData) {
       if (decodedToken.role_id !== 1) {
-        setFilterData(vendorDatas)
-        //   vendorDatas.filter((item) => item.created_by == decodedToken.id)
+        setFilterData(vendorData)
+        //   vendorData.filter((item) => item.created_by == decodedToken.id)
         // );
-        setTabFilterData(vendorDatas)
-        //   vendorDatas.filter((item) => item.created_by == decodedToken.id)
+        setTabFilterData(vendorData)
+        //   vendorData.filter((item) => item.created_by == decodedToken.id)
         // );
       } else {
-        setFilterData(vendorDatas);
-        setTabFilterData(vendorDatas);
+        setFilterData(vendorData);
+        setTabFilterData(vendorData);
       }
     }
-  }, [vendorDatas]);
+  }, [vendorData]);
 
   const handleOpenWhatsappModal = (row) => {
     // console.log('row', row);
@@ -225,6 +208,7 @@ useEffect(() => {
       width: "30%",
       sortable: true,
     },
+    
     {
       name: "followers",
       selector: (row) => row.followers_count,
@@ -294,6 +278,26 @@ useEffect(() => {
           </div>
         );
       },
+    },
+    {
+      key: "Price_Update",
+      name:"Price Update",
+      renderRowCell: (row) => {
+        return (
+          <div>
+            {
+              <button
+                title="Price Update"
+                onClick={()=> handleUpdateVendorMPrice(row)}
+                className="btn cmnbtn btn_sm btn-outline-primary"
+              >
+                Price Update
+              </button>
+            }
+          </div>
+        );
+      },
+      width: "20%",
     },
     {
       key: "vendor_category",
@@ -552,6 +556,11 @@ useEffect(() => {
 
   return (
     <>
+    <VendorMPriceModal
+    open={openUpdateVendorMPrice}
+    onClose={handleCloseVendorMPriceModal}
+    rowData={rowVendor}
+    />
       <div className="modal fade" id="myModal" role="dialog">
         <div className="modal-dialog" style={{ maxWidth: "40%" }}>
           <div className="modal-content">
@@ -619,7 +628,7 @@ useEffect(() => {
                 )}
                 <VendorWhatsappLinkModla />
                 <div className="card-header flexCenterBetween">
-                  <h5 className="card-title">Vendor : {vendorDatas?.length}</h5>
+                  <h5 className="card-title">Vendor : {vendorData?.length}</h5>
                   <div className="flexCenter colGap8">
                     {/* <Link
                       // to={`/admin/pms-vendor-master`}
@@ -627,10 +636,10 @@ useEffect(() => {
                     >
                      <i className="fa fa-plus" />
                     </Link> */}
-                    <UploadBulkVendorPages
+                    {/* <UploadBulkVendorPages
                       getRowData={getRowData}
                       from={"vendor"}
-                    />
+                    /> */}
                     <Link
                       to={`/admin/pms-vendor-master`}
                       className="btn cmnbtn btn_sm btn-outline-primary"

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 import { useGlobalContext } from "../../../../Context/Context";
@@ -40,6 +40,7 @@ import convertNumberToIndianString from "../../../../utils/convertNumberToIndian
 import SalesSubmitDialog from "./SalesSubmitDialog";
 import ShareIncentive from "../Account/ShareIncentive";
 import FetchSheet from "./FetchSheet";
+import { useGetIncentiveSharingDetailsQuery } from "../../../Store/API/Sales/IncentiveSharingApi";
 
 const todayDate = new Date().toISOString().split("T")[0];
 
@@ -48,6 +49,7 @@ const CreateSaleBooking = () => {
   const account_info = useLocation();
   const token = getDecodedToken();
   const loginUserId = token.id;
+
 
   let newSaleBookingData;
 
@@ -69,6 +71,8 @@ const CreateSaleBooking = () => {
 
   const [addsaledata, { isLoading: addsaleLoading, error: addsaleError }] =
     useAddSaleBookingMutation();
+
+
 
   const [
     updateRecordServices,
@@ -166,13 +170,7 @@ const CreateSaleBooking = () => {
 
   const [submitDialog, setSubmitDialog] = useState(false);
   const paymentStatusList = [
-    // {
-    //   value: "sent_for_credit_approval",
-    //   label:
-    //     userCreditLimit > netAmount
-    //       ? `Use Credit Limit`
-    //       : "Send For Credit Approval",
-    // },
+
     {
       value: "sent_for_payment_approval",
       label: "Sent For Payment Approval",
@@ -193,10 +191,19 @@ const CreateSaleBooking = () => {
   });
 
   const {
+    refetch: getIncentiveSharingDetails,
+    data: getincentiveSharingData,
+    isError: getincentiveSharingError,
+    isLoading: getincentiveSharingLoading
+  } = useGetIncentiveSharingDetailsQuery(selectedAccount, { skip: !selectedAccount });
+
+  const {
     data: allCreditApprovals,
     error: allCreditApprovalsError,
     isLoading: allCreditApprovalsLoading,
   } = useGetAllCreditApprovalsQuery();
+
+
   useEffect(() => {
     const fetchcampaign = async () => {
       try {
@@ -396,6 +403,8 @@ const CreateSaleBooking = () => {
 
 
 
+
+
   useEffect(() => {
     if (
       singleDocumentOverviewData?.data?.length > 0 &&
@@ -432,8 +441,15 @@ const CreateSaleBooking = () => {
     }
   }, [baseAmount, addGst]);
 
+
+
+
+
   const handleSubmit = async (e, draft) => {
+
+
     e.preventDefault();
+
     if (!selectedAccount) {
       setIsValidate((prev) => ({ ...prev, selectedAccount: true }));
     }
@@ -543,6 +559,10 @@ const CreateSaleBooking = () => {
       if (recordServiceErrors.length > 0) {
         return;
       }
+
+
+
+
       const formData = new FormData();
       formData.append("plan_link", planLink);
       formData.append("account_id", selectedAccount);
@@ -578,6 +598,7 @@ const CreateSaleBooking = () => {
         );
       }
 
+
       formData.append("brand_id", selectedBrand || "");
       formData.append("balance_payment_ondate", balancePayDate);
       formData.append(
@@ -589,12 +610,22 @@ const CreateSaleBooking = () => {
         toastError("Base amount cannot be 0");
         return;
       }
-
-      (incentiveSharing.length > 0) ? (formData.append("is_incentive_sharing", true), formData.append("incentiveSharingArray", JSON.stringify(incentiveSharing))) : formData.append("is_incentive_sharing", false);
+      (getincentiveSharingData?.services?.length > 0) ? (formData.append("is_incentive_sharing", true), formData.append("account_percentage", getincentiveSharingData?.account_percentage)) : formData.append("is_incentive_sharing", false);
+      const recServiceData = recServices.map((record) => {
+        return {
+          ...record,
+          service_percentage: getincentiveSharingData?.services?.find(
+            (data) => data.service_id === record?.sales_service_master_id
+          )?.service_percentage,
+          incentive_sharing_users_array: getincentiveSharingData?.services?.find(
+            (data) => data?.service_id === record?.sales_service_master_id
+          )?.incentive_sharing_users,
+        };
+      });
 
       if (editId === undefined) {
         formData.append("created_by", loginUserId);
-        formData.append("record_services", JSON.stringify(recServices));
+        formData.append("record_services", JSON.stringify(recServiceData));
 
         const salesResponse = await addsaledata(formData).unwrap();
 
@@ -613,9 +644,10 @@ const CreateSaleBooking = () => {
         await updateSalesBooking({ ...formDataObj, id: un_id }).unwrap();
         await updateRecordServices({
           id: editId,
-          record_services: recServices,
-          is_incentive_sharing: incentiveSharing.length > 1,
-          incentiveSharingArray: incentiveSharing,
+          record_services: recServiceData,
+          is_incentive_sharing: getincentiveSharingData?.services?.length > 0,
+          account_percentage: getincentiveSharingData?.account_percentage || 100,
+
           old_sales_booking_created_by: salesdata.created_by,
           updated_by: loginUserId,
         }).unwrap();
@@ -636,6 +668,13 @@ const CreateSaleBooking = () => {
       // }
     } catch (error) {
       console.error(error);
+      if (error.response && error.response.status === 666) {
+        toastError("Sale booking created but email not sent");
+        navigate("/admin/view-sales-booking");
+        return;
+
+      }
+
       toastError(
         error.message || "An error occurred while creating the sale booking."
       );
@@ -686,6 +725,7 @@ const CreateSaleBooking = () => {
         deliverables_info: "",
         remarks: "",
         created_by: loginUserId,
+
       },
     ]);
   };
@@ -1261,6 +1301,7 @@ const CreateSaleBooking = () => {
           setValidateService={setValidateService}
           isValidRec={isValidRec}
           setIsValidRec={setIsValidRec}
+          getincentiveSharingData={getincentiveSharingData}
         />
         {/* <ExcelToInputFields /> */}
         <div className="flex-row sb">
