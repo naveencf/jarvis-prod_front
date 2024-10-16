@@ -493,13 +493,7 @@ function PlanHome() {
           Plan Pricing
         </button>
       </div>
-      {/* <CustomTable
-              isLoading={SalesLoading || userLoading}
-              columns={columns}
-              data={SalesData}
-              Pagination
-              tableName={"SalesBookingDetails"}
-            /> */}
+     
       {activeTab === 'Tab1' && (
         <Box sx={{ height: 400, width: '100%' }}>
           <CustomTable

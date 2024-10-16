@@ -9001,6 +9001,7 @@ button.bg-dark:focus {
 }
 
 .flex-row {
+  display: flex !important;
   flex-direction: row !important;
 }
 
@@ -17762,6 +17763,16 @@ col,
   .css-15v22id-MuiAccordionDetails-root {
     padding: 0px;
   }
+}
+
+.flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.btn-tag {
+  border: 0;
+
 }
 
 /* Anmol CSS Start */
