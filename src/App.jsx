@@ -221,6 +221,8 @@ function App() {
     };
   }, []);
 
+
+
   return (
     <>
       <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div>
@@ -370,7 +372,7 @@ function App() {
             path="/instaapi/community/learning"
             element={<Learning />}
           />
-          
+
         </Routes>
       </BrowserRouter>
     </>

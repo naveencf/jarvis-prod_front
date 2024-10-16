@@ -28,7 +28,7 @@ const Login = () => {
         } else {
           const token = res.data.token;
           const decodedToken = jwtDecode(token);
-          console.log(decodedToken);
+
           const status = decodedToken.user_status;
           const deptId = decodedToken.dept_id;
           const onboardStatus = decodedToken.onboard_status;
@@ -40,6 +40,11 @@ const Login = () => {
               navigate("/");
             }
             sessionStorage.setItem("token", token);
+            setTimeout(() => {
+              sessionStorage.removeItem("token");
+              navigate("/login");
+            }
+              , 1000 * 60 * 60 * 10); // 10 hours
           } else {
             navigate("/login");
             toastError("You are an inactive user");
