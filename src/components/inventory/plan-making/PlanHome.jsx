@@ -7,50 +7,52 @@ import {
   DialogActions,
   TextField,
   Autocomplete,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
-import PlanPricing from './PlanPricing';
-import { baseUrl } from '../../../utils/config';
-import { AppContext } from '../../../Context/Context';
-import CustomTable from '../../CustomTable/CustomTable';
-import { FaEdit } from 'react-icons/fa';
-import Swal from 'sweetalert2';
+} from "@mui/material";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useContext } from "react";
+import PlanPricing from "./PlanPricing";
+import { baseUrl } from "../../../utils/config";
+import { AppContext } from "../../../Context/Context";
+import CustomTable from "../../CustomTable/CustomTable";
+import { FaEdit } from "react-icons/fa";
+import Swal from "sweetalert2";
+import View from "../../AdminPanel/Sales/Account/View/View";
+import AddIcon from "@mui/icons-material/Add";
 
 function PlanHome() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('Tab1');
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [openDialog, setOpenDialog] = useState(false);
   const [planRows, setPlanRows] = useState([]);
   const [duplicatePlanId, setDuplicatePlanId] = useState(null);
   const [errors, setErrors] = useState({});
 
   const [planDetails, setPlanDetails] = useState({
-    planName: '',
-    costPrice: '',
-    sellingPrice: '',
-    noOfPages: '',
-    postCount: '',
-    storyCount: '',
-    description: '',
-    salesExecutiveId: '',
-    accountId: '',
-    brandId: '',
-    brief: '',
-    planStatus: 'close',
+    planName: "",
+    costPrice: "",
+    sellingPrice: "",
+    noOfPages: "",
+    postCount: "",
+    storyCount: "",
+    description: "",
+    salesExecutiveId: "",
+    accountId: "",
+    brandId: "",
+    brief: "",
+    planStatus: "close",
     planSaved: false,
     createdBy: 938,
   });
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchInput, setSearchInput] = useState('');
-  const storedToken = sessionStorage.getItem('token');
+  const [searchInput, setSearchInput] = useState("");
+  const storedToken = sessionStorage.getItem("token");
   const { usersDataContext } = useContext(AppContext);
 
   const salesUsers = usersDataContext?.filter(
-    (user) => user?.department_name === 'Sales'
+    (user) => user?.department_name === "Sales"
   );
- 
+
   const globalFilteredUsers = usersDataContext?.filter((user) =>
     user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase())
   );
@@ -58,32 +60,32 @@ function PlanHome() {
   const fetchAccounts = async () => {
     try {
       const response = await fetch(`${baseUrl}accounts/get_all_account`, {
-        method: 'GET',
+        method: "GET",
         headers: {
           Authorization: `Bearer ${storedToken}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         setAccounts(data.data);
       }
     } catch (error) {
-      console.error('Error fetching accounts:', error);
+      console.error("Error fetching accounts:", error);
     }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
+    if (!planDetails.planName) newErrors.planName = "Plan Name is required";
     if (!planDetails.sellingPrice)
-      newErrors.sellingPrice = 'Budget is required';
+      newErrors.sellingPrice = "Budget is required";
     if (!planDetails.accountId)
-      newErrors.accountName = 'Account Name is required';
+      newErrors.accountName = "Account Name is required";
     if (!planDetails.salesExecutiveId)
-      newErrors.salesExecutiveId = 'Sales Executive is required';
+      newErrors.salesExecutiveId = "Sales Executive is required";
     return newErrors;
   };
 
@@ -108,7 +110,7 @@ function PlanHome() {
         setPlanRows(formattedRows); // Set rows with API data
       }
     } catch (error) {
-      console.error('Error fetching plans:', error);
+      console.error("Error fetching plans:", error);
     }
     setLoading(false);
   };
@@ -137,25 +139,25 @@ function PlanHome() {
     const { name, value } = e.target;
 
     // Handle account selection
-    if (name === 'accountName') {
+    if (name === "accountName") {
       const selectedAccount = accounts.find(
         (account) => account.account_name === value
       );
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
-        accountName: selectedAccount ? selectedAccount.account_name : '',
-        accountId: selectedAccount ? selectedAccount._id : '',
-        brandId: selectedAccount ? selectedAccount.brand_id : '',
+        accountName: selectedAccount ? selectedAccount.account_name : "",
+        accountId: selectedAccount ? selectedAccount._id : "",
+        brandId: selectedAccount ? selectedAccount.brand_id : "",
       }));
     }
     // Handle user selection from usersDataContext
-    else if (name === 'salesExecutiveId') {
+    else if (name === "salesExecutiveId") {
       const selectedUser = usersDataContext.find(
         (user) => user.user_name === value
       );
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
-        salesExecutiveId: selectedUser ? selectedUser._id : '',
+        salesExecutiveId: selectedUser ? selectedUser._id : "",
       }));
     } else {
       setPlanDetails((prevDetails) => ({
@@ -192,9 +194,9 @@ function PlanHome() {
 
     try {
       const response = await fetch(`${baseUrl}v1/planxlogs`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${storedToken}`,
         },
         body: JSON.stringify(planData),
@@ -208,18 +210,18 @@ function PlanHome() {
       } else {
         // Show SweetAlert if the plan name already exists
         Swal.fire({
-          icon: 'error',
-          title: 'Duplicate Plan',
+          icon: "error",
+          title: "Duplicate Plan",
           text: result.message, // "Plan with the same name already exists"
         });
         setPlanDetails({});
       }
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Submission Failed',
-        text: 'Something went wrong. Please try again later.',
+        icon: "error",
+        title: "Submission Failed",
+        text: "Something went wrong. Please try again later.",
       });
     }
 
@@ -238,18 +240,18 @@ function PlanHome() {
 
     // Clear the form fields
     setPlanDetails({
-      planName: '',
-      costPrice: '',
-      sellingPrice: '',
-      noOfPages: '',
-      postCount: '',
-      storyCount: '',
-      description: '',
-      salesExecutiveId: '',
-      accountId: '',
-      brandId: '',
-      brief: '',
-      planStatus: 'close',
+      planName: "",
+      costPrice: "",
+      sellingPrice: "",
+      noOfPages: "",
+      postCount: "",
+      storyCount: "",
+      description: "",
+      salesExecutiveId: "",
+      accountId: "",
+      brandId: "",
+      brief: "",
+      planStatus: "close",
       planSaved: false,
       createdBy: 938,
     });
@@ -258,100 +260,100 @@ function PlanHome() {
   };
   const columns = [
     {
-      key: 'serial_no',
-      name: 'S.No',
+      key: "serial_no",
+      name: "S.No",
       renderRowCell: (row, index) => (
-        <div style={{ textAlign: 'center' }}>{index + 1}</div>
+        <div style={{ textAlign: "center" }}>{index + 1}</div>
       ),
       width: 70,
       showCol: true,
     },
     {
-      key: 'platform_count',
-      name: 'No of Platform',
+      key: "platform_count",
+      name: "No of Platform",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.platformCount}</div>
+        <div style={{ cursor: "pointer" }}>{row.platformCount}</div>
       ),
       width: 150,
       showCol: true,
     },
     {
-      key: 'plan_name',
-      name: 'Plan Name',
+      key: "plan_name",
+      name: "Plan Name",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.planName}</div>
+        <div style={{ cursor: "pointer" }}>{row.planName}</div>
       ),
       width: 150,
       showCol: true,
     },
     {
-      key: 'brief',
-      name: 'brief',
+      key: "brief",
+      name: "brief",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.brief}</div>
+        <div style={{ cursor: "pointer" }}>{row?.brief}</div>
       ),
       width: 150,
       showCol: true,
     },
     {
-      key: 'cost_price',
-      name: 'Cost Price',
+      key: "cost_price",
+      name: "Cost Price",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.costPrice}</div>
+        <div style={{ cursor: "pointer" }}>{row.costPrice}</div>
       ),
       width: 120,
       showCol: true,
     },
     {
-      key: 'selling_price',
-      name: 'Selling Price',
+      key: "selling_price",
+      name: "Selling Price",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.sellingPrice}</div>
+        <div style={{ cursor: "pointer" }}>{row.sellingPrice}</div>
       ),
       width: 120,
       showCol: true,
     },
     {
-      key: 'pages',
-      name: 'No of Pages',
+      key: "pages",
+      name: "No of Pages",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.pages}</div>
+        <div style={{ cursor: "pointer" }}>{row.pages}</div>
       ),
       width: 120,
       showCol: true,
     },
     {
-      key: 'post_count',
-      name: 'Post Count',
+      key: "post_count",
+      name: "Post Count",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.postCount}</div>
+        <div style={{ cursor: "pointer" }}>{row.postCount}</div>
       ),
       width: 120,
       showCol: true,
     },
     {
-      key: 'story_count',
-      name: 'Story Count',
+      key: "story_count",
+      name: "Story Count",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.storyCount}</div>
+        <div style={{ cursor: "pointer" }}>{row.storyCount}</div>
       ),
       width: 120,
       showCol: true,
     },
     {
-      key: 'description',
-      name: 'Description',
+      key: "description",
+      name: "Description",
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.description}</div>
+        <div style={{ cursor: "pointer" }}>{row.description}</div>
       ),
       width: 250,
       showCol: true,
     },
     {
-      key: 'actions',
-      name: 'Actions',
+      key: "actions",
+      name: "Actions",
       renderRowCell: (row) => (
-        <div>
+        <div  className="flexCenter colGap8">
           <button
             onClick={() => handleDuplicateClick(row)}
             className="btn btn-primary cmnbtn btn_sm"
@@ -363,7 +365,7 @@ function PlanHome() {
             className="btn btn-outline-primary btn-sm user-button"
             onClick={() => handleRowClick(row)}
           >
-            <FaEdit />{' '}
+            <FaEdit />{" "}
           </button>
         </div>
       ),
@@ -373,9 +375,9 @@ function PlanHome() {
   ];
   return (
     <div>
-      <Button variant="contained" onClick={handlePlanMaking}>
+      {/* <Button variant="contained" onClick={handlePlanMaking}>
         Plan Making Button
-      </Button>
+      </Button> */}
 
       {/* Plan Making Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -393,14 +395,14 @@ function PlanHome() {
           />
           <Autocomplete
             options={accounts}
-            getOptionLabel={(option) => option.account_name || ''}
+            getOptionLabel={(option) => option.account_name || ""}
             isOptionEqualToValue={(option, value) => option._id === value._id}
             onChange={(event, value) => {
               setPlanDetails((prevDetails) => ({
                 ...prevDetails,
-                accountId: value ? value._id : '',
-                accountName: value ? value.account_name : '',
-                brandId: value ? value.brand_id : '',
+                accountId: value ? value._id : "",
+                accountName: value ? value.account_name : "",
+                brandId: value ? value.brand_id : "",
               }));
             }}
             renderInput={(params) => (
@@ -431,15 +433,15 @@ function PlanHome() {
             helperText={errors.sellingPrice}
           />
           <Autocomplete
-            options={searchInput ? globalFilteredUsers : salesUsers}  
-            getOptionLabel={(option) => option.user_name || ''}
+            options={searchInput ? globalFilteredUsers : salesUsers}
+            getOptionLabel={(option) => option.user_name || ""}
             isOptionEqualToValue={(option, value) => option._id === value._id}
-            onInputChange={(event, value) => setSearchInput(value)} 
+            onInputChange={(event, value) => setSearchInput(value)}
             onChange={(event, value) => {
               setPlanDetails((prevDetails) => ({
                 ...prevDetails,
-                salesExecutiveId: value ? value._id : '',
-                salesExecutiveName: value ? value.user_name : '',
+                salesExecutiveId: value ? value._id : "",
+                salesExecutiveName: value ? value.user_name : "",
               }));
             }}
             renderInput={(params) => (
@@ -451,7 +453,7 @@ function PlanHome() {
               />
             )}
           />
-          
+
           <TextField
             margin="dense"
             label="Brief"
@@ -472,40 +474,51 @@ function PlanHome() {
           </Button>
         </DialogActions>
       </Dialog>
-
+      <div className="card">
+        <div className="card-header flexCenterBetween">
+          <div className="flexCenter colGap8" >
+            <Link
+            onClick={handlePlanMaking}
+              // to={`/admin/pms-page-master`}
+              className="btn cmnbtn btn_sm btn-outline-primary"
+            >
+              Create Plan <AddIcon />
+            </Link>
+          </div>
+        </div>
+      </div>
       <div className="tabs">
         <button
-          className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab1')}
+          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
         >
           Overview
         </button>
+
         <button
-          className={activeTab === 'Tab2' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab2')}
-        >
-          Statistics
-        </button>
-        <button
-          className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab3')}
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
         >
           Plan Pricing
         </button>
       </div>
-     
-      {activeTab === 'Tab1' && (
-        <Box sx={{ height: 400, width: '100%' }}>
-          <CustomTable
-            isLoading={loading}
-            columns={columns}
-            data={planRows?.reverse()}
-            Pagination={[100, 200]}
-            tableName={'PlanMakingDetails'}
-          />
-        </Box>
-      )}
-      {activeTab === 'Tab3' && <PlanPricing />}
+      <div className="card">
+        <div className="card-body p0">
+          <div className="data_tbl thm_table table-responsive">
+            {activeTab === "Tab1" && (
+              <View
+                isLoading={loading}
+                columns={columns}
+                title={"Plan Overview"}
+                data={planRows?.reverse()}
+                Pagination={[100, 200]}
+                tableName={"PlanMakingDetails"}
+              />
+            )}
+            {activeTab === "Tab3" && <PlanPricing />}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -41,6 +41,8 @@ export default function FinanceWFHDashboard() {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [rowForPayment, setRowForPayment] = useState([]);
+  console.log(rowForPayment , 'row for payment')
+  console.log(filterData , 'fillter data')
   const [invoice, setInvoice] = useState("");
   const [refrenceNumber, setRefrenceNumber] = useState(null);
   const [screenshot, setScreenshot] = useState([]);
@@ -374,7 +376,7 @@ export default function FinanceWFHDashboard() {
   const handleRowSelectionModelChange = async (rowIds) => {
     setRowSelectionModel(rowIds);
     let x = filterData?.filter((item) => {
-      return rowIds.includes(item.id);
+      return rowIds.includes(item._id);
     });
     setRowForPayment(x);
   };

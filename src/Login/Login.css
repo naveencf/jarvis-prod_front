@@ -30,6 +30,19 @@ html {
   height: 100%;
   /* font-family: Ubuntu-Regular, sans-serif; */
 }
+.password-input-container {
+  position: relative;
+  display: flex;
+}
+
+.password-toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #000;
+}
+
 
 /*---------------------------------------------*/
 .newlogin a {
