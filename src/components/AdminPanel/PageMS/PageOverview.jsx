@@ -107,7 +107,7 @@ const PageOverview = () => {
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCat = subCategory?.data || [];
   const { data: vendor } = useGetAllVendorQuery();
-  const vendorData = vendor?.data;
+  const vendorData = vendor;
   const { data: priceData, isLoading: isPriceLoading } =
   useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
   const {
@@ -212,7 +212,7 @@ const PageOverview = () => {
       setFilterData(pageList);
     }
   }
-console.log(pageList)
+// console.log(pageList)
   useEffect(() => {
     pageHealthToggleCheck();
   }, [isPageListLoading, isPagestatLoading, filterData]);
@@ -428,7 +428,7 @@ console.log(pageList)
     window.open(`/admin/pms-page-edit/${_id}`, "_blank");
     sessionStorage.setItem("token", storedToken);
   }
-
+// console.log(vendorData,"vendorData")
   const dataGridcolumns = [
     {
       key: "S.NO",

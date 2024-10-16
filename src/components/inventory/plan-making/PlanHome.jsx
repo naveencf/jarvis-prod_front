@@ -373,6 +373,7 @@ function PlanHome() {
       showCol: true,
     },
   ];
+  console.log(planRows,"planRows")
   return (
     <div>
       {/* <Button variant="contained" onClick={handlePlanMaking}>
