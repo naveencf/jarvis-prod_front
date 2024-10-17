@@ -5,6 +5,7 @@ import { AppContext } from '../../../../Context/Context';
 import { Button } from '@mui/material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import * as XLSX from "xlsx";
+import { cleanDigitSectionValue } from '@mui/x-date-pickers/internals/hooks/useField/useField.utils';
 
 const FilterWisePageOverview = ({ 
     platformData, 
@@ -371,7 +372,9 @@ const FilterWisePageOverview = ({
                         if (newValue.length === 0) {
                           setFilterData(vendorTypes);
                           calculateAndSetTotals(vendorTypes);
+                          console.log(newValue,"newValue")
                         } else {
+                          console.log(newValue,"newValue")
                           let result = vendorTypes.filter((d) =>
                             newValue.includes(d.page_category_id)
                           );

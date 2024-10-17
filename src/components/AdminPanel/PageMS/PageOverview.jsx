@@ -252,13 +252,13 @@ const PageOverview = () => {
       setFilterData(pageList);
       calculateAndSetTotals(pageList);
       setTabFilterData(pageList);
-      setNewFilterData(pageList);
+      // setNewFilterData(pageList);
     }
   }, [pageList]);
 
-  // useEffect(() => {
-  //   pageHealthToggleCheck();
-  // }, [isPageListLoading, isPagestatLoading, filterData]);
+  useEffect(() => {
+    pageHealthToggleCheck();
+  }, [isPageListLoading, isPagestatLoading, filterData]);
 
   useEffect(() => {
     if (userID && !contextData) {

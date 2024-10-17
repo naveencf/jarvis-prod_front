@@ -92,7 +92,7 @@ console.log(row,"row")
   }, [row, subCatData]);
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
+    <Dialog open={open} onClose={onClose} >
       <DialogTitle>{"Update Page Cat Assignment To User"}</DialogTitle>
       <DialogContent>
         <div className="form-group col-12">
@@ -118,7 +118,7 @@ console.log(row,"row")
         <div className="form-group col-12">
           <label className="form-label">Category</label>
           <Select
-            className=""
+         
             options={categoryData.map((option) => ({
               value: option._id,
               label: `${option.page_category}`,
@@ -138,7 +138,7 @@ console.log(row,"row")
         <div className="form-group col-12">
           <label className="form-label">Sub Category</label>
           <Select
-            className=""
+          
             options={selectedSubCategories.map((option) => ({
               value: option.page_sub_category_id,
               label: `${option.page_sub_category_name}`,
