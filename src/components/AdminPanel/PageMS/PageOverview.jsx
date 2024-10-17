@@ -50,23 +50,23 @@ import FilterWisePageOverview from "./PageOverview/FilterWisePageOverview";
 import PriceModal from "./PageOverview/PriceModal";
 import FollowerLogsModal from "./FollowerLogsModal";
 import PriceLogs from "./PriceLogs";
+import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
+import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
 const PageOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const token = sessionStorage.getItem("token");  
-  
+  const token = sessionStorage.getItem("token");
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  
+
   const { usersDataContext } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
   const [vendorTypes, setVendorTypes] = useState([]);
-  const [activeTab, setActiveTab] = useState("Tab1");
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("Tab0");
   const [tabFilterData, setTabFilterData] = useState([]);
-  const [topVendorData, setTopVendorData] = useState([]);
   const [tableFollowers, setTableFollowers] = useState(0);
   const [tablePosts, setTablePosts] = useState(0);
   const [tableStories, setTableStories] = useState(0);
@@ -81,7 +81,7 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-  const [waData, setWaData] = useState([]);
+  const [waData, setWaData] = useState(null);
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
   const [allVendorWhats, setAllVendorWhats] = useState([]);
@@ -96,7 +96,7 @@ const PageOverview = () => {
   const showPageHealthColumn = useSelector(
     (state) => state.PageOverview.showPageHelathColumn
   );
-  const { data: cities } = useGetAllCitiesQuery();
+
   const {
     data: pageCate,
     refetch: refetchPageCate,
@@ -109,17 +109,17 @@ const PageOverview = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor;
   const { data: priceData, isLoading: isPriceLoading } =
-  useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
+    useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({decodedToken ,userID});
-  
+  } = useGetAllPageListQuery({ decodedToken, userID });
+
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-  const { data: profileData } = useGetAllProfileListQuery(); 
+  const { data: profileData } = useGetAllProfileListQuery();
 
   // Handle price type change
   const handlePriceTypeChange = (e) => {
@@ -167,29 +167,6 @@ const PageOverview = () => {
     });
     setVendorDetails(res?.data?.data);
   };
-  // const handleEditCellChange = (params) => {
-  //   (async () => {
-  //     const updatedRow = {
-  //       ...params.row,
-  //       [params.field]: params.value,
-  //     };
-
-  //     return axios
-  //       .put(baseUrl + `updatePage/${params.row._id}`, updatedRow)
-  //       .then((res) => {});
-  //   })();
-
-  //   // Make API call to update the row data
-  //   // Example: fetch('/api/updateRow', { method: 'POST', body: JSON.stringify(updatedRow) })
-
-  //   // Update the local state with the updated row
-  //   // setUpdatedRows((prevRows) => {
-  //   //   const updatedRows = [...prevRows];
-  //   //   const rowIndex = updatedRows.findIndex((row) => row.id === params.row.id);
-  //   //   updatedRows[rowIndex] = updatedRow;
-  //   //   return updatedRows;
-  //   // });
-  // };
 
   function pageHealthToggleCheck() {
     if (showPageHealthColumn) {
@@ -204,45 +181,15 @@ const PageOverview = () => {
           _id: item?._id,
         };
       });
-      setNewFilterData(data);
 
-     
+      setNewFilterData(data);
     }
     if (showPageHealthColumn == false) {
       setFilterData(pageList);
     }
   }
-// console.log(pageList)
-  useEffect(() => {
-    pageHealthToggleCheck();
-  }, [isPageListLoading, isPagestatLoading, filterData]);
-
-  useEffect(() => {
-    if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
-    }
-
-    getData();
-  }, []);
 
   const getData = () => {
-    // axios.get(baseUrl + "get_all_users").then((res) => {
-    // setUser(res.data.data);
-    //   setProgress(70);
-    // });
-
     setUser(usersDataContext);
     axios
       .get(baseUrl + "v1/vendor_group_link", {
@@ -275,7 +222,7 @@ const PageOverview = () => {
     navigate(`/admin/exe-history/${row._id}`, {
       state: row.pageMast_id,
     });
-  }; 
+  };
 
   const calculateAndSetTotals = (result) => {
     let totalFollowers = 0;
@@ -286,13 +233,12 @@ const PageOverview = () => {
       return;
     }
     for (let i = 0; i < result?.length; i++) {
-      if(result[i]?.followers_count){
-
-        totalFollowers += (result[i]?.followers_count);
+      if (result[i]?.followers_count) {
+        totalFollowers += result[i]?.followers_count;
       }
-      totalPosts += (result[i].post);
-      totalStories += (result[i].story);
-      totalBoths += (result[i].both_);
+      totalPosts += result[i].post;
+      totalStories += result[i].story;
+      totalBoths += result[i].both_;
     }
     setTableFollowers(totalFollowers);
     setTablePosts(totalPosts);
@@ -302,33 +248,109 @@ const PageOverview = () => {
 
   useEffect(() => {
     if (pageList) {
-      if (decodedToken.role_id !== 1) {
-        setVendorTypes(pageList);
-        //   pageList?.filter((item) => item.created_by == decodedToken.id)
-        // );
-        setFilterData(pageList);
-        //   pageList?.filter((item) => item.created_by == decodedToken.id)
-        // );
-        calculateAndSetTotals(pageList);
-        //   pageList?.filter((item) => item.created_by == decodedToken.id)
-        // );
-        setTabFilterData(pageList);
-        //   pageList?.filter((item) => item.created_by == decodedToken.id)
-        // );
-      } else {
-        setVendorTypes(pageList);
-        setFilterData(pageList);
-        calculateAndSetTotals(pageList);
-        setTabFilterData(pageList);
-      }
+      setVendorTypes(pageList);
+      setFilterData(pageList);
+      calculateAndSetTotals(pageList);
+      setTabFilterData(pageList);
+      setNewFilterData(pageList);
     }
   }, [pageList]);
 
-  // useEffect(() => {}, [tableFollowers, tablePosts, tableStories, tableBoths]);
+  // useEffect(() => {
+  //   pageHealthToggleCheck();
+  // }, [isPageListLoading, isPagestatLoading, filterData]);
 
- 
+  useEffect(() => {
+    if (userID && !contextData) {
+      axios
+        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
+        .then((res) => {
+          if (res.data[33].view_value === 1) {
+            setContextData(true);
+          }
+          if (res.data[57].view_value === 1) {
+            setPageUpdateAuth(true);
+          }
+          if (res.data[56].view_value === 1) {
+            setPageStatsAuth(true);
+          }
+        });
+    }
 
- 
+    getData();
+    fetchWhatsAppLinks();
+  }, []);
+
+  useEffect(() => {
+    if (pageList) {
+      const pageCategoryCount = {};
+      const categoryVendorMap = {};
+      const categoryFollowerMap = {};
+      const postMap = {};
+      const storyMap = {};
+
+      for (let i = 0; i < pageList?.length; i++) {
+        const categoryId = pageList[i]?.page_category_id;
+        const vendorId = pageList[i]?.vendor_id;
+        const followers = pageList[i]?.followers_count || 0;
+        const storys = pageList[i]?.story || 0;
+        const posts = pageList[i]?.post || 0;
+
+        if (categoryId) {
+          if (pageCategoryCount[categoryId]) {
+            pageCategoryCount[categoryId] += 1;
+          } else {
+            pageCategoryCount[categoryId] = 1;
+          }
+
+          if (!categoryVendorMap[categoryId]) {
+            categoryVendorMap[categoryId] = new Set();
+          }
+          if (vendorId) {
+            categoryVendorMap[categoryId].add(vendorId);
+          }
+
+          if (categoryFollowerMap[categoryId]) {
+            categoryFollowerMap[categoryId] += followers;
+          } else {
+            categoryFollowerMap[categoryId] = followers;
+          }
+
+          if (storyMap[categoryId]) {
+            storyMap[categoryId] += storys;
+          } else {
+            storyMap[categoryId] = storys;
+          }
+
+          if (postMap[categoryId]) {
+            postMap[categoryId] += posts;
+          } else {
+            postMap[categoryId] = posts;
+          }
+        }
+      }
+
+      const finalResult = [];
+      for (let j = 0; j < cat?.length; j++) {
+        const categoryId = cat[j]?._id;
+        const categoryName = cat[j]?.page_category;
+
+        if (pageCategoryCount[categoryId]) {
+          finalResult.push({
+            id: categoryId,
+            category_name: categoryName,
+            category_used: pageCategoryCount[categoryId],
+            vendor_count: categoryVendorMap[categoryId]?.size || 0,
+            total_followers: categoryFollowerMap[categoryId] || 0,
+            total_stories: storyMap[categoryId] || 0,
+            total_posts: postMap[categoryId] || 0,
+          });
+        }
+      }
+
+      setCategoryData(finalResult);
+    }
+  }, [vendorTypes, vendorData, cat, pageList]);
   // Update localPriceData when new data is fetched
   useEffect(() => {
     if (priceData) {
@@ -342,8 +364,6 @@ const PageOverview = () => {
       setShowPriceModal(true);
     };
   };
-
-
 
   const handleFollowerLogs = (row) => {
     setOpenFollowerModal(true);
@@ -363,21 +383,23 @@ const PageOverview = () => {
     setOpenPriceLogModal(false);
   };
 
-  const whatsAppData = async (data) => {
-    setLoading(true);
-    const result = await axios
-      .get(`${baseUrl}v1/vendor_group_link_vendor_id/${data.vendor_id}`, {
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
-          "Content-Type": "application/json",
-        },
-      })
-      .then((res) => {
-        setWaData(res.data.data);
-        setLoading(false);
-      });
+  // const whatsAppData = async (data) => {
+  //   setLoading(true);
+  //   const result = await axios
+  //     .get(`${baseUrl}v1/vendor_group_link_vendor_id/${data.vendor_id}`, {
+  //       headers: {
+  //         Authorization: `Bearer ${storedToken}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setWaData(res.data.data);
+  //       setLoading(false);
+  //     });
+  // };
+  const handlewhatsAppData = (row) => {
+    setWaData(row);
   };
-
   const deletePhpData = async (row) => {
     await axios.delete(baseUrl + `node_data_to_php_delete_page`, {
       p_id: row.p_id,
@@ -427,8 +449,410 @@ const PageOverview = () => {
   const editInNewTab = (_id) => {
     window.open(`/admin/pms-page-edit/${_id}`, "_blank");
     sessionStorage.setItem("token", storedToken);
-  }
-// console.log(vendorData,"vendorData")
+  };
+  // console.log(vendorData,"vendorData")
+  const dataSecondGridColumns = [
+    {
+      key: "Add",
+      name: "Add",
+      width: 130,
+      renderRowCell: (row) => {
+        const totalPercentage = row.totalPercentage;
+        return (
+          <>
+            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
+              <button
+                type="button"
+                className="btn cmnbtn btn_sm btn-outline-primary"
+                onClick={handleSetState()}
+              >
+                Add Stats
+              </button>
+            </Link>
+          </>
+        );
+      },
+    },
+   {
+      key: "history",
+      width: 150,
+      name: "History",
+      renderRowCell: (row) => {
+        return (
+          <button
+            type="button"
+            className="btn cmnbtn btn_sm btn-outline-primary"
+            onClick={() => handleHistoryRowClick(row)}
+          >
+            See History
+          </button>
+        );
+      },
+    },
+   {
+      key: "statsUpdate",
+      width: 150,
+      name: "Stats Update",
+      renderRowCell: (row) => {
+        return (
+          row?.pageId && (
+            <Link
+              to={{
+                pathname: `/admin/pageStats/${row.pageId}`,
+                state: { update: true },
+              }}
+            >
+              <button
+                type="button"
+                className="btn cmnbtn btn_sm btn-outline-primary"
+                onClick={handleUpdateRowClick}
+              >
+                Update
+              </button>
+            </Link>
+          )
+        );
+      },
+    },
+   {
+      key: "Age_13_17_percent",
+      width: 150,
+      name: "Age 13-17 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_13_17_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_18_24_percent",
+      width: 150,
+      name: "Age 18-24 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_18_24_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_25_34_percent",
+      width: 150,
+      name: "Age 25-34 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_25_34_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_35_44_percent",
+      width: 150,
+      name: "Age 35-44 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_35_44_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_45_54_percent",
+      width: 150,
+      name: "Age 45-54 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_45_54_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_55_64_percent",
+      width: 150,
+      name: "Age 55-64 %",
+      renderRowCell: (row) => {
+        let data = row?.Age_55_64_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "Age_65_plus_percent",
+      width: 150,
+      name: "Age 65+ %",
+      renderRowCell: (row) => {
+        let data = row?.Age_65_plus_percent;
+        return +data ? data + "%" : "NA";
+      },
+    },
+
+   {
+      key: "city1_name",
+      width: 150,
+      name: "City 1 and %",
+      renderRowCell: (row) => {
+        let data = row?.city1_name;
+        let percentage = row?.percentage_city1_name;
+        return data ? data + ` (${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "city2_name",
+      width: 150,
+      name: "City 2 and %",
+      renderRowCell: (row) => {
+        let data = row?.city2_name;
+        let percentage = row?.percentage_city2_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "city3_name",
+      width: 150,
+      name: "City 3 and %",
+      renderRowCell: (row) => {
+        let data = row?.city3_name;
+        let percentage = row?.percentage_city3_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "city4_name",
+      width: 150,
+      name: "City 4 and %",
+      renderRowCell: (row) => {
+        let data = row?.city4_name;
+        let percentage = row?.percentage_city4_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "city5_name",
+      width: 150,
+      name: "City 5 and %",
+      renderRowCell: (row) => {
+        let data = row?.city5_name;
+        let percentage = row?.percentage_city5_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "city_image_url",
+      width: 150,
+      name: "City Image",
+      renderRowCell: (row) => {
+        let data = row?.city_image_url;
+        return data ? (
+          <a href={data} target="_blank" rel="noopener noreferrer">
+            <img src={data} style={{ width: "50px", height: "50px" }} />
+          </a>
+        ) : (
+          "NA"
+        );
+      },
+    },
+   {
+      key: "country1_name",
+      width: 150,
+      name: "Country 1  and %",
+      renderRowCell: (row) => {
+        let data = row?.country1_name;
+        let percentage = row?.percentage_country1_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "country2_name",
+      width: 150,
+      name: "Country 2 and %",
+      renderRowCell: (row) => {
+        let data = row?.country2_name;
+        let percentage = row?.percentage_country2_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "country3_name",
+      width: 150,
+      name: "Country 3 and %",
+      renderRowCell: (row) => {
+        let data = row?.country3_name;
+        let percentage = row?.percentage_country3_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "country4_name",
+      width: 150,
+      name: "Country 4 and %",
+      renderRowCell: (row) => {
+        let data = row?.country4_name;
+        let percentage = row?.percentage_country4_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "country5_name",
+      width: 150,
+      name: "Country 5 and %",
+      renderRowCell: (row) => {
+        let data = row?.country5_name;
+        let percentage = row?.percentage_country5_name;
+        return data ? data + `(${percentage}%)` : "NA";
+      },
+    },
+   {
+      key: "country_image_url",
+      width: 150,
+      name: "Country Image",
+      renderRowCell: (row) => {
+        let data = row?.country_image_url;
+        return data ? (
+          <a href={data} target="_blank" rel="noopener noreferrer">
+            <img src={data} style={{ width: "50px", height: "50px" }} />
+          </a>
+        ) : (
+          "NA"
+        );
+      },
+    },
+   {
+      key: "createdAt",
+      width: 150,
+      name: "Creation Date",
+      renderRowCell: (row) => {
+        let data = row?.createdAt;
+        return data
+          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
+          : "NA";
+      },
+    },
+
+   {
+      key: "engagement",
+      width: 150,
+      name: "Engagement",
+      renderRowCell: (row) => {
+        let data = row?.engagement;
+        let dataimg = row?.engagement_image_url;
+        return data ? (
+          <a href={dataimg} target="_blank" rel="noopener noreferrer">
+            {data}
+          </a>
+        ) : (
+          "NA"
+        );
+      },
+    },
+   {
+      key: "impression",
+      width: 150,
+      name: "Impression",
+      renderRowCell: (row) => {
+        let data = row?.impression;
+        let dataimg = row?.impression_image_url;
+        return data ? (
+          <a href={dataimg} target="_blank" rel="noopener noreferrer">
+            {data}
+            {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
+          </a>
+        ) : (
+          "NA"
+        );
+      },
+    },
+   {
+      key: "female_percent",
+      width: 150,
+      name: "Female Percentage",
+      renderRowCell: (row) => {
+        let data = row?.female_percent;
+        return data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "male_percent",
+      width: 150,
+      name: "Male Percentage",
+      renderRowCell: (row) => {
+        let data = row?.male_percent;
+        return data ? data + "%" : "NA";
+      },
+    },
+   {
+      key: "profile_visit",
+      width: 150,
+      name: "Profile Visit",
+      renderRowCell: (row) => {
+        let data = row?.profile_visit;
+        return data ? data : "NA";
+      },
+      // editable: true,
+      // customEditElement: (row,
+      //   index,
+      //   setEditFlag,
+      //   editflag,
+      //   handelchange,
+      //   column) => {
+      //   return (
+      //     <>
+      //       <input type="number" value={row.profile_visit} autoFocus onChange={e=>{
+      //         handelchange(e, index, column)
+      //       }}/>
+      //       <button className="btn btn-success" onClick={(e)=>handleProfileChange(e,setEditFlag,row)}><SaveAsIcon /></button>
+      //     </>
+      //   );
+      // }
+    },
+   {
+      key: "reach",
+      width: 150,
+      name: "Reach",
+      renderRowCell: (row) => {
+        let data = row?.reach;
+        let dataimg = row?.reach_image_url;
+        return data ? (
+          <a href={dataimg} target="_blank" rel="noopener noreferrer">
+            {data}
+          </a>
+        ) : (
+          "NA"
+        );
+      },
+    },
+   {
+      key: "start_date",
+      width: 150,
+      name: "Start Date",
+      renderRowCell: (row) => {
+        let data = row?.start_date;
+        return data ? <DateFormattingComponent date={data} /> : "NA";
+      },
+    },
+   {
+      key: "endDate",
+      width: 150,
+      name: "End Date",
+      renderRowCell: (row) => {
+        let data = row?.end_date;
+        return data ? <DateFormattingComponent date={data} /> : "NA";
+      },
+    },
+   {
+      key: "story_view",
+      width: 150,
+      name: "Story View",
+      renderRowCell: (row) => {
+        let data = row?.story_view;
+        return data ? data : "NA";
+      },
+    },
+   {
+      key: "story_view_image_url",
+      width: 150,
+      name: "Story View Image",
+      renderRowCell: (row) => {
+        let data = row?.story_view_image_url;
+        return data ? (
+          <img src={data} style={{ width: "50px", height: "50px" }} />
+        ) : (
+          "NA"
+        );
+      },
+    },
+  ]
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -450,7 +874,8 @@ const PageOverview = () => {
           <div
             data-toggle="modal"
             data-target="#waModal"
-            onClick={() => whatsAppData(row)}
+            onClick={() => handlewhatsAppData(row)}
+            // onClick={<WhatsapplinksModel data={row} />}
             style={{ cursor: "pointer" }}
           >
             {countName}
@@ -462,9 +887,7 @@ const PageOverview = () => {
       key: "Bio",
       name: "Bio",
       width: 80,
-      renderRowCell: (row) => (
-        <div>{row.bio ? row.bio : "NA "}</div>
-      )
+      renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
     },
     {
       key: "page_name",
@@ -651,7 +1074,6 @@ const PageOverview = () => {
       },
       // editable: true,
       compare: true,
-
     },
     {
       key: "followers_count",
@@ -678,7 +1100,6 @@ const PageOverview = () => {
       },
       width: 200,
       compare: true,
-
     },
     {
       key: "platform_active_on",
@@ -691,42 +1112,7 @@ const PageOverview = () => {
         return data?.map((item) => item.platform_name).join(", ");
       },
     },
-    // {
-    //   key: "tags_page_category",
-    //   name: "Tag Category",
-    //   width: 200,
-    //   renderRowCell: (row) => {
-    //     let data = cat
-    //       ?.filter((item) => {
-    //         return row?.tags_page_category?.includes(item._id);
-    //       })
-    //       .map((item) => item.page_category);
-    //     return (
-    //       <div
-    //         style={{
-    //           width: "200px",
-    //           whiteSpace: "nowrap",
-    //           overflow: "hidden",
-    //           textOverflow: "ellipsis",
-    //         }}
-    //       >
-    //         {data?.map((item, i) => {
-    //           return (
-    //             <p
-    //               key={i}
-    //               onClick={handleTagCategory(data)}
-    //               style={{ display: "inline", cursor: "pointer" }}
-    //             >
-    //               {item}
-    //               {i !== data?.length - 1 && ","}
-    //             </p>
-    //           );
-    //         })}
-    //       </div>
-    //     );
-    //   },
-    //   compare: true,
-    // },
+
     {
       key: "page_closed_by",
       name: "Closed By",
@@ -766,7 +1152,6 @@ const PageOverview = () => {
         return StoryData ? StoryData : 0;
       },
       compare: true,
-
     },
     {
       key: "Both Price",
@@ -777,7 +1162,6 @@ const PageOverview = () => {
         return BothData ? BothData : 0;
       },
       compare: true,
-
     },
     {
       key: "page_price_multiple",
@@ -844,7 +1228,7 @@ const PageOverview = () => {
       name: "Action",
       width: 500,
       renderRowCell: (row) => (
-        <div  className="flexCenter colGap8">
+        <div className="flexCenter colGap8">
           {pageUpdateAuth && (
             <Link
               className="mt-2"
@@ -855,7 +1239,7 @@ const PageOverview = () => {
               <button
                 title="Edit"
                 className="btn btn-outline-primary btn-sm user-button"
-                onClick={()=>editInNewTab(row._id)}
+                onClick={() => editInNewTab(row._id)}
               >
                 <FaEdit />{" "}
               </button>
@@ -881,406 +1265,7 @@ const PageOverview = () => {
       ),
     },
 
-    {
-      key: "Add",
-      name: "Add",
-      width: 130,
-      renderRowCell: (row) => {
-        const totalPercentage = row.totalPercentage;
-        return (
-          <>
-            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleSetState()}
-              >
-                Add Stats
-              </button>
-            </Link>
-          </>
-        );
-      },
-    },
-    {
-      key: "history",
-      width: 150,
-      name: "History",
-      renderRowCell: (row) => {
-        return (
-          <button
-            type="button"
-            className="btn cmnbtn btn_sm btn-outline-primary"
-            onClick={() => handleHistoryRowClick(row)}
-          >
-            See History
-          </button>
-        );
-      },
-    },
-    {
-      key: "statsUpdate",
-      width: 150,
-      name: "Stats Update",
-      renderRowCell: (row) => {
-        return (
-          row?.pageId && (
-            <Link
-              to={{
-                pathname: `/admin/pageStats/${row.pageId}`,
-                state: { update: true },
-              }}
-            >
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleUpdateRowClick}
-              >
-                Update
-              </button>
-            </Link>
-          )
-        );
-      },
-    },
-    {
-      key: "Age_13_17_percent",
-      width: 150,
-      name: "Age 13-17 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_13_17_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_18_24_percent",
-      width: 150,
-      name: "Age 18-24 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_18_24_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_25_34_percent",
-      width: 150,
-      name: "Age 25-34 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_25_34_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_35_44_percent",
-      width: 150,
-      name: "Age 35-44 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_35_44_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_45_54_percent",
-      width: 150,
-      name: "Age 45-54 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_45_54_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_55_64_percent",
-      width: 150,
-      name: "Age 55-64 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_55_64_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_65_plus_percent",
-      width: 150,
-      name: "Age 65+ %",
-      renderRowCell: (row) => {
-        let data = row?.Age_65_plus_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-
-    {
-      key: "city1_name",
-      width: 150,
-      name: "City 1 and %",
-      renderRowCell: (row) => {
-        let data = row?.city1_name;
-        let percentage = row?.percentage_city1_name;
-        return data ? data + ` (${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city2_name",
-      width: 150,
-      name: "City 2 and %",
-      renderRowCell: (row) => {
-        let data = row?.city2_name;
-        let percentage = row?.percentage_city2_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city3_name",
-      width: 150,
-      name: "City 3 and %",
-      renderRowCell: (row) => {
-        let data = row?.city3_name;
-        let percentage = row?.percentage_city3_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city4_name",
-      width: 150,
-      name: "City 4 and %",
-      renderRowCell: (row) => {
-        let data = row?.city4_name;
-        let percentage = row?.percentage_city4_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city5_name",
-      width: 150,
-      name: "City 5 and %",
-      renderRowCell: (row) => {
-        let data = row?.city5_name;
-        let percentage = row?.percentage_city5_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city_image_url",
-      width: 150,
-      name: "City Image",
-      renderRowCell: (row) => {
-        let data = row?.city_image_url;
-        return data ? (
-          <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "country1_name",
-      width: 150,
-      name: "Country 1  and %",
-      renderRowCell: (row) => {
-        let data = row?.country1_name;
-        let percentage = row?.percentage_country1_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country2_name",
-      width: 150,
-      name: "Country 2 and %",
-      renderRowCell: (row) => {
-        let data = row?.country2_name;
-        let percentage = row?.percentage_country2_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country3_name",
-      width: 150,
-      name: "Country 3 and %",
-      renderRowCell: (row) => {
-        let data = row?.country3_name;
-        let percentage = row?.percentage_country3_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country4_name",
-      width: 150,
-      name: "Country 4 and %",
-      renderRowCell: (row) => {
-        let data = row?.country4_name;
-        let percentage = row?.percentage_country4_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country5_name",
-      width: 150,
-      name: "Country 5 and %",
-      renderRowCell: (row) => {
-        let data = row?.country5_name;
-        let percentage = row?.percentage_country5_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country_image_url",
-      width: 150,
-      name: "Country Image",
-      renderRowCell: (row) => {
-        let data = row?.country_image_url;
-        return data ? (
-          <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "createdAt",
-      width: 150,
-      name: "Creation Date",
-      renderRowCell: (row) => {
-        let data = row?.createdAt;
-        return data
-          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
-          : "NA";
-      },
-    },
-
-    {
-      key: "engagement",
-      width: 150,
-      name: "Engagement",
-      renderRowCell: (row) => {
-        let data = row?.engagement;
-        let dataimg = row?.engagement_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "impression",
-      width: 150,
-      name: "Impression",
-      renderRowCell: (row) => {
-        let data = row?.impression;
-        let dataimg = row?.impression_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-            {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "female_percent",
-      width: 150,
-      name: "Female Percentage",
-      renderRowCell: (row) => {
-        let data = row?.female_percent;
-        return data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "male_percent",
-      width: 150,
-      name: "Male Percentage",
-      renderRowCell: (row) => {
-        let data = row?.male_percent;
-        return data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "profile_visit",
-      width: 150,
-      name: "Profile Visit",
-      renderRowCell: (row) => {
-        let data = row?.profile_visit;
-        return data ? data : "NA";
-      },
-      // editable: true,
-      // customEditElement: (row,
-      //   index,
-      //   setEditFlag,
-      //   editflag,
-      //   handelchange,
-      //   column) => {
-      //   return (
-      //     <>
-      //       <input type="number" value={row.profile_visit} autoFocus onChange={e=>{
-      //         handelchange(e, index, column)
-      //       }}/>
-      //       <button className="btn btn-success" onClick={(e)=>handleProfileChange(e,setEditFlag,row)}><SaveAsIcon /></button>
-      //     </>
-      //   );
-      // }
-    },
-    {
-      key: "reach",
-      width: 150,
-      name: "Reach",
-      renderRowCell: (row) => {
-        let data = row?.reach;
-        let dataimg = row?.reach_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "start_date",
-      width: 150,
-      name: "Start Date",
-      renderRowCell: (row) => {
-        let data = row?.start_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
-      },
-    },
-    {
-      key: "endDate",
-      width: 150,
-      name: "End Date",
-      renderRowCell: (row) => {
-        let data = row?.end_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
-      },
-    },
-    {
-      key: "story_view",
-      width: 150,
-      name: "Story View",
-      renderRowCell: (row) => {
-        let data = row?.story_view;
-        return data ? data : "NA";
-      },
-    },
-    {
-      key: "story_view_image_url",
-      width: 150,
-      name: "Story View Image",
-      renderRowCell: (row) => {
-        let data = row?.story_view_image_url;
-        return data ? (
-          <img src={data} style={{ width: "50px", height: "50px" }} />
-        ) : (
-          "NA"
-        );
-      },
-    },
+   
   ];
 
   const handleLevelChange = async (event, setEditFlag, row) => {
@@ -1388,93 +1373,9 @@ const PageOverview = () => {
     }
   };
 
-  useEffect(() => {
-    fetchWhatsAppLinks();
-  }, []);
-
-  useEffect(() => {
-    const result = axios
-      .get(
-        `https://purchase.creativefuel.io/webservices/RestController.php?view=toppurchasevendor`
-      )
-      .then((res) => {
-        setTopVendorData(res.data.body);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (pageList) {
-      const pageCategoryCount = {};
-      const categoryVendorMap = {};
-      const categoryFollowerMap = {};
-      const postMap = {};
-      const storyMap = {};
-
-      for (let i = 0; i < pageList?.length; i++) {
-        const categoryId = pageList[i]?.page_category_id;
-        const vendorId = pageList[i]?.vendor_id;
-        const followers = pageList[i]?.followers_count || 0;
-        const storys = pageList[i]?.story || 0;
-        const posts = pageList[i]?.post || 0;
-
-        if (categoryId) {
-          if (pageCategoryCount[categoryId]) {
-            pageCategoryCount[categoryId] += 1;
-          } else {
-            pageCategoryCount[categoryId] = 1;
-          }
-
-          if (!categoryVendorMap[categoryId]) {
-            categoryVendorMap[categoryId] = new Set();
-          }
-          if (vendorId) {
-            categoryVendorMap[categoryId].add(vendorId);
-          }
-
-          if (categoryFollowerMap[categoryId]) {
-            categoryFollowerMap[categoryId] += followers;
-          } else {
-            categoryFollowerMap[categoryId] = followers;
-          }
-
-          if (storyMap[categoryId]) {
-            storyMap[categoryId] += storys;
-          } else {
-            storyMap[categoryId] = storys;
-          }
-
-          if (postMap[categoryId]) {
-            postMap[categoryId] += posts;
-          } else {
-            postMap[categoryId] = posts;
-          }
-        }
-      }
-
-      const finalResult = [];
-      for (let j = 0; j < cat?.length; j++) {
-        const categoryId = cat[j]?._id;
-        const categoryName = cat[j]?.page_category;
-
-        if (pageCategoryCount[categoryId]) {
-          finalResult.push({
-            id: categoryId,
-            category_name: categoryName,
-            category_used: pageCategoryCount[categoryId],
-            vendor_count: categoryVendorMap[categoryId]?.size || 0,
-            total_followers: categoryFollowerMap[categoryId] || 0,
-            total_stories: storyMap[categoryId] || 0,
-            total_posts: postMap[categoryId] || 0,
-          });
-        }
-      }
-
-      setCategoryData(finalResult);
-    }
-  }, [vendorTypes, vendorData, cat, pageList]);
-
   return (
     <>
+      {waData && <WhatsapplinksModel waData={waData} setWaData={setWaData} />}
       <FollowerLogsModal
         open={openFollowerModal}
         onClose={handleCloseFollowerModal}
@@ -1495,10 +1396,16 @@ const PageOverview = () => {
           />
         )}
         <button
+          className={activeTab === "Tab0" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab0")}
+        >
+          Overview
+        </button>
+        <button
           className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab1")}
         >
-          Overview
+          Page-Health
         </button>
         <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
@@ -1520,136 +1427,16 @@ const PageOverview = () => {
         </button>
       </div>
 
-      <div className="modal fade" id="myModal" role="dialog">
-        <div className="modal-dialog">
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" data-dismiss="modal">
-                &times;
-              </button>
-              <h4 className="modal-title"></h4>
-            </div>
-            <div className="modal-body">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>Vendor Name</th>
-                    <th>Profile Count</th>
-                    <th>Total Sales</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topVendorData &&
-                    topVendorData.map((item) => (
-                      <tr key={item.vendor_id}>
-                        <td>
-                          <a href={item.vendor_id} target="blank">
-                            {item.vendor_name}
-                          </a>
-                        </td>
-                        <td>{item.page_id_count}</td>
-                        <td>{item.total_credit}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-default"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="waModal" className="modal fade" role="dialog">
-        <div className="modal-dialog" style={{ maxWidth: "40%" }}>
-          <div className="modal-content">
-            <div className="modal-header">
-              <button type="button" className="close" data-dismiss="modal">
-                &times;
-              </button>
-              <h4 className="modal-title"></h4>
-            </div>
-            <div className="modal-body">
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>S.no</th>
-                    <th>Type</th>
-                    <th>Link</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {loading ? (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "80vh",
-                      }}
-                    >
-                      <CircularProgress />
-                    </div>
-                  ) : waData.length > 0 ? (
-                    waData.map((item, index) => (
-                      <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>
-                          {
-                            linkType?.data.find(
-                              (type) => type?._id == item.type
-                            )?.link_type
-                          }
-                        </td>
-                        <td>
-                          <a
-                            href={item.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.link}
-                          </a>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="3" style={{ textAlign: "center" }}>
-                        No data available
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn btn-default"
-                data-dismiss="modal"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="content">
+        {activeTab === "Tab0" && (
+          <PageOverviewWithoutHealth columns={dataGridcolumns} />
+        )}
         {activeTab === "Tab1" && (
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
                 <h5 className="card-title flexCenterBetween">
-                  {
+                  {/* {
                     pageStatsAuth && ""
                     // <Switch
                     //   checked={showPageHealthColumn}
@@ -1660,7 +1447,7 @@ const PageOverview = () => {
                     //   name="Profile Health"
                     //   color="primary"
                     // />
-                  }
+                  } */}
                   <Typography>Profile Health</Typography>
                   <Typography>: {filterData?.length}</Typography>
                 </h5>
@@ -1677,14 +1464,6 @@ const PageOverview = () => {
                   >
                     Vendor <KeyboardArrowRightIcon />
                   </Link>
-                  {/* {decodedToken.role_id == 1 && (
-                    <Link
-                      to={`/admin/pms-page-cat-assignment-overview`}
-                      className="btn cmnbtn btn_sm btn-outline-primary"
-                    >
-                      Assign User <KeyboardArrowRightIcon />
-                    </Link>
-                  )} */}
                 </div>
               </div>
               <div className="card-body pb4">
@@ -1807,7 +1586,7 @@ const PageOverview = () => {
                     </Box>
                   ) : (
                     <View
-                      columns={dataGridcolumns}
+                     columns={[...dataGridcolumns, ...dataSecondGridColumns]}
                       data={newFilterData}
                       isLoading={false}
                       title={"Page Overview"}

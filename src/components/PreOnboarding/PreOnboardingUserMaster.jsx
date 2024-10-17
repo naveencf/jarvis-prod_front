@@ -4,11 +4,7 @@ import jwtDecode from "jwt-decode";
 import "./onboardcss/onboard_style.css";
 import "./onboardcss/onboard_responsive.css";
 import "./onboardcss/onboard_animate.min.css";
-import profilepic from "../../assets/imgs/user/naruto.png";
-import hourGlass from "../../assets/imgs/other/hourglass.gif";
 import welcomeImage from "../../assets/imgs/other/welcome.png";
-import welcomeText from "../../assets/imgs/other/welcometext.gif";
-import Select from "react-select";
 import { useGlobalContext } from "../../Context/Context";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "@mui/material";
@@ -42,9 +38,7 @@ import imageTest28 from "../../assets/img/product/Avtar28.png";
 import imageTest29 from "../../assets/img/product/Avtar29.png";
 import imageTest30 from "../../assets/img/product/Avtar30.png";
 
-// import rocketVideoLink from "../../assets/video/Rocket.mp4";
 import rocketVideoLink from "../../assets/video/rocketAnimation.gif";
-// import rocketAudioLink from "../../assets/video/RocketAudio.mpeg";
 
 import Modal from "react-modal";
 import ExtendJoining from "./ExtendJoining";
@@ -54,15 +48,12 @@ import ContactNumber from "../ReusableComponents/ContactNumber";
 import DocumentTab from "./DocumentTab";
 import FAQTab from "./FAQTab";
 import ReadyToOnboardContent from "./ReadyToOnboardContent";
-// import { City, State } from "country-state-city";
 import IndianCitiesMui from "../ReusableComponents/IndianCitiesMui";
-import GuardianFields from "./GuardianFields";
 import FamilyFields from "./FamilyFields";
 import EducationFields from "./EducationFields";
 import CocTabPreonboarding from "./CocTabPreonboarding";
 import { baseUrl } from "../../utils/config";
 import ImageSelector from "./ImageSelector";
-import RocketAnimation from "./RocketAnimation";
 import { FormatName } from "../../utils/FormatName";
 import Slider from "react-slick";
 
@@ -107,7 +98,7 @@ const bloodGroupData = [
   "O- (O Negative)",
 ];
 
-const maritialStatusData = ["Single", "Married"]; //,"Divorced","Widowed","Separated"
+const maritialStatusData = ["Single", "Married"];
 
 const genderData = ["Male", "Female", "Other"];
 
@@ -119,19 +110,6 @@ const initialGuardianDetailsGroup = {
   relation_with_guardian: "",
 };
 
-const guardianDisplayFields = [
-  "guardian_name",
-  "guardian_contact",
-  "guardian_address",
-  "relation_with_guardian",
-];
-
-const guardianFieldLabels = {
-  guardian_name: "Guardian Name",
-  guardian_contact: "Guardian Contact",
-  guardian_address: "Guardian Address",
-  relation_with_guardian: " Relation",
-};
 
 //Family
 const initialFamilyDetailsGroup = {
@@ -340,34 +318,21 @@ const PreOnboardingUserMaster = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFullNameChange = (event) => {
-    // Extract the value from the event object
     let userName = event.target.value;
-
-    // Remove extra white spaces and trim the userName
-    // userName = userName.replace(/\s{2,}/g, ' ').trim();
-
-    // Define a regular expression to match only letters
     const lettersOnly = /^[A-Za-z]+$/;
 
-    // Split the userName into parts, correct each part, and join them back together
     const correctedNameParts = userName.split(" ").map((part) => {
-      // Remove numbers and special characters from each part
       let filteredPart = part
         .split("")
         .filter((char) => char.match(lettersOnly))
         .join("");
 
-      // Ensure the first letter is uppercase and the rest of the part is lowercase
       return (
         filteredPart.charAt(0).toUpperCase() +
         filteredPart.slice(1).toLowerCase()
       );
     });
-
-    // Join the corrected parts back into a single string, ensuring only a single space between names
-    // const correctedUserName = correctedNameParts.join(" ").trim();
-
-    // Update the state with the validated and corrected user name
+    
     setUserName(correctedNameParts.join(" "));
   };
 
@@ -391,24 +356,7 @@ const PreOnboardingUserMaster = () => {
     };
 
     getLocation();
-    // console.log(State.getStatesOfCountry("IN"));
-    // console.log(City.getCitiesOfCountry("IN"));
-    // console.log(City.getCitiesOfState("IN", "CT"));
   }, []);
-
-  // const fetchCOCData = async () => {
-  //   try {
-  //     const response = await axios.get(
-  //       baseUrl+"get_all_cocs"
-  //     );
-  //     const data = response.data;
-  //     setCocData(data.data);
-  //   } catch (error) {
-  //     console.error("Error fetching data:", error);
-  //   }
-  // };
-  // const newDate = new Date();
-  // const currectDate = `${newDate.getDate()}-${newDate.getMonth() + 1}-${newDate.getFullYear()}`;
 
   const fetchCOCData = async () => {
     try {
@@ -429,36 +377,6 @@ const PreOnboardingUserMaster = () => {
     }
     if (id) getGuardian();
   }, [id]);
-
-  // Step 1: Group data by display_sequence
-  // const groupedData = cocData?.reduce((result, item) => {
-  //   const displaySequence = item.display_sequence;
-  //   if (!result[displaySequence]) {
-  //     result[displaySequence] = [];
-  //   }
-  //   result[displaySequence].push(item);
-  //   return result;
-  // }, {});
-  // Step 2: Render the list
-  // const renderList = () => {
-  //   return Object.entries(groupedData).map(([displaySequence, items]) => (
-  //     <div className="thm_textbx" key={displaySequence}>
-  //       <h3>
-  //         {displaySequence} {items[0].heading}
-  //       </h3>
-  //       <p> {items[0].heading_desc}</p>
-  //       {items.map((item, index) => (
-  //         <div className="thm_textbx" key={index}>
-  //           <h5>
-  //             {item.sub_heading_sequence} {item.sub_heading}
-  //           </h5>
-  //           <p>{item.sub_heading_desc}</p>
-  //         </div>
-  //       ))}
-  //       <p> {items[0].description}</p>
-  //     </div>
-  //   ));
-  // };
 
   const openReadyToOnboardModal = () => {
     setReadyToOnboard(true);
@@ -732,9 +650,6 @@ const PreOnboardingUserMaster = () => {
     getDocuments();
   }, [id]);
 
-  // const handleHobbiesChange = (event, selectedOptions) => {
-  //   setHobbies(selectedOptions || []);
-  // };
 
   function validateAndCorrectUserName(userName) {
     userName = userName.replace(/\s{2,}/g, " ").trim();
@@ -1422,21 +1337,6 @@ const PreOnboardingUserMaster = () => {
         appElement={document.getElementById("root")}
         shouldCloseOnOverlayClick={false}
       >
-        {/* <RocketAnimation
-          isShowRocket={isShowRocket}
-          closeRocket={closeRocket}
-          videoLink={rocketVideoLink}
-          audioLink={rocketAudioLink}
-        /> */}
-        {/* <video
-          width="100%"
-          height="100%"
-          autoPlay
-          playsInline
-          onEnded={closeRocket}
-        >
-          <source src={rocketVideoLink} type="video/mp4" />
-        </video> */}
         <img src={rocketVideoLink} alt="my-gif" />
       </Modal>
 
@@ -1594,12 +1494,6 @@ const PreOnboardingUserMaster = () => {
                     }`}
                     id="sidebarLetterBox"
                     onClick={() => setActiveTab(5)}
-                    // style={{
-                    //   opacity: joiningDate <= formattedDate ? 0.5 : 1,
-                    //   // cursor: joiningDate <= formattedDate ? "not-allowed" : "pointer",
-                    //   pointerEvents:
-                    //     joiningDate <= formattedDate ? "none" : "auto",
-                    // }}
                   >
                     <div className="progress-circle progressing pp-26">
                       <div className="progress-circle-border">
@@ -2125,22 +2019,6 @@ const PreOnboardingUserMaster = () => {
                                   }
                                 />
                               </div>
-
-                              {/* <GuardianFields
-                                guardianDetails={guardianDetails}
-                                guardianDisplayFields={guardianDisplayFields}
-                                guardianFieldLabels={guardianFieldLabels}
-                                guardianContactErrors={guardianContactErrors}
-                                handleGuardianDetailsChange={
-                                  handleGuardianDetailsChange
-                                }
-                                handleAddGuardianDetails={
-                                  handleAddGuardianDetails
-                                }
-                                handleRemoveGuardianDetails={
-                                  handleRemoveGuardianDetails
-                                }
-                              /> */}
                               <hr />
 
                               <FamilyFields

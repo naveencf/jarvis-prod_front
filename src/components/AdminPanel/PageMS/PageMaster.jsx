@@ -84,7 +84,7 @@ const PageMaster = () => {
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("Non Adult");
   const [content, setContent] = useState("By CF");
-  const [ownerType, setOwnerType] = useState("66ab43f41068e2b9eea495a9");
+  const [ownerType, setOwnerType] = useState("6655bd6b0f9216140c64f956");
   const [vendorId, setVendorId] = useState("");
   const [languageId, setLanguageId] = useState([]);
   const [followCount, setFollowCount] = useState("");
@@ -137,7 +137,7 @@ const PageMaster = () => {
   const dispatch = useDispatch();
 
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
-  console.log(ownerShipData , 'ownership')
+  console.log(ownerShipData, "ownership");
 
   const { data: profileData } = useGetAllProfileListQuery();
 
@@ -152,7 +152,7 @@ const PageMaster = () => {
 
   const { data: vendor } = useGetAllVendorQuery();
 
-  const vendorData = vendor?.data || [];
+  const vendorData = vendor || [];
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
   const { refetch: refetchPageList, data: pageList } = useGetAllPageListQuery();
@@ -243,7 +243,6 @@ const PageMaster = () => {
     }
   }, [singlePageLoading]);
 
-
   const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
@@ -254,7 +253,7 @@ const PageMaster = () => {
   };
 
   useEffect(() => {
-    getLanguage()
+    getLanguage();
   }, []);
 
   useEffect(() => {
@@ -495,7 +494,7 @@ const PageMaster = () => {
       rate_type: rateType.value,
       variable_type: rateType.value == "Variable" ? variableType.value : null,
       page_price_multiple: rowCount,
-      page_language_id : languageId.map((item)=>item),
+      page_language_id: languageId.map((item) => item),
       primary_page: primary.value,
       post:
         rowCount.find((e) => e.page_price_type_id == "667e6c7412fbbf002179f6d6")
@@ -621,9 +620,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-        value: initialVendor._id,
-        label: formatString(initialVendor.vendor_name),
-      }
+          value: initialVendor._id,
+          label: formatString(initialVendor.vendor_name),
+        }
       : null;
   };
 
@@ -695,10 +694,15 @@ const PageMaster = () => {
             }
           )
           .then((fallbackResult) => {
-            setFollowCount(fallbackResult?.data?.data[0]?.creatorDetails?.followers);
+            setFollowCount(
+              fallbackResult?.data?.data[0]?.creatorDetails?.followers
+            );
           })
           .catch((fallbackError) => {
-            console.error("Error fetching followers from the fallback API:", fallbackError);
+            console.error(
+              "Error fetching followers from the fallback API:",
+              fallbackError
+            );
           });
       });
   };
@@ -804,8 +808,10 @@ const PageMaster = () => {
                   isMulti
                   required={true}
                   onChange={(selectedOptions) => {
-                    const selectedValues = selectedOptions.map(option => option.value);
-                    setLanguageId(selectedValues); 
+                    const selectedValues = selectedOptions.map(
+                      (option) => option.value
+                    );
+                    setLanguageId(selectedValues);
                     if (selectedValues.length > 0) {
                       setValidateFields((prev) => ({
                         ...prev,
@@ -1256,7 +1262,8 @@ const PageMaster = () => {
                 <label className="form-label">
                   Ownership Type<sup style={{ color: "red" }}>*</sup>
                 </label>
-                {/* <Select
+
+                <Select
                   className="w-100"
                   options={ownerShipData?.map((option) => ({
                     value: option._id,
@@ -1270,61 +1277,37 @@ const PageMaster = () => {
                         ?.company_type_name || "",
                   }}
                   onChange={(e) => {
-                    setOwnerType(e.value);
-                    if (e.value) {
+                    const selectedId = e.value;
+                    const specificId = "6655bd6b0f9216140c64f956";
+
+                    if (selectedId === specificId) {
+                      setOwnerType(selectedId);
                       setValidateFields((prev) => ({
                         ...prev,
                         ownerType: false,
                       }));
+                    } else {
+                      Swal.fire({
+                        title: "Are you sure?",
+                        text: "Do you want to select this option?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, select it!",
+                        cancelButtonText: "No, cancel!",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          setOwnerType(selectedId);
+                          setValidateFields((prev) => ({
+                            ...prev,
+                            ownerType: false,
+                          }));
+                        } else {
+                          Swal.fire("Selection canceled", "", "info");
+                        }
+                      });
                     }
                   }}
-                /> */}
-<Select
-  className="w-100"
-  options={ownerShipData?.map((option) => ({
-    value: option._id,
-    label: option.company_type_name,
-  }))}
-  required={true}
-  value={{
-    value: ownerType,
-    label:
-      ownerShipData?.find((role) => role._id === ownerType)
-        ?.company_type_name || "",
-  }}
-  onChange={(e) => {
-    const selectedId = e.value;
-    const specificId = "6655bd6b0f9216140c64f956"; 
-
-    if (selectedId === specificId) {
-      setOwnerType(selectedId);
-      setValidateFields((prev) => ({
-        ...prev,
-        ownerType: false,
-      }));
-    } else {
-      Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to select this option?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, select it!",
-        cancelButtonText: "No, cancel!",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          setOwnerType(selectedId);
-          setValidateFields((prev) => ({
-            ...prev,
-            ownerType: false,
-          }));
-        } else {
-          Swal.fire("Selection canceled", "", "info");
-        }
-      });
-    }
-  }}
-/>
-
+                />
               </div>
               {validateFields.ownerType && (
                 <small style={{ color: "red" }}>
