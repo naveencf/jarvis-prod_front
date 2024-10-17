@@ -165,7 +165,7 @@ const Page = () => {
     isLoading: vendorIsLoading,
   } = useGetAllVendorQuery();
 
-  const vendorData = vendor?.data || [];
+  const vendorData = vendor || [];
 
   const {
     data: profile,

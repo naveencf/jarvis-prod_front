@@ -27,6 +27,7 @@ export default function MergeSubCategory() {
   console.log(subCategoryData, "subCategoryData--->>>");
   const [preference, setPreference] = React.useState("");
   const [remove, setRemove] = React.useState("");
+  const token = sessionStorage.getItem("token");
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -57,7 +58,14 @@ export default function MergeSubCategory() {
             flag: 2,
             start_date: startDate,
             end_date: currentDate,
-          })
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        )
           .then(() => {
             Swal.fire({
               title: "Merged!",
