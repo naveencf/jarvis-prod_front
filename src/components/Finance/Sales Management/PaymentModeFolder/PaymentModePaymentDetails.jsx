@@ -100,7 +100,6 @@ const PaymentModePaymentDetails = () => {
               <sup style={{ color: "red" }}>*</sup>
             </label>
             <input
-              // value={requestedAmountField}
               type="text"
               placeholder="Request Amount"
               className="form-control"
@@ -122,9 +121,6 @@ const PaymentModePaymentDetails = () => {
               {paymentMode?.map((data) => (
                 <option value={data._id}>{data.payment_mode_name}</option>
               ))}
-              {/* <option value="UPI">UPI</option>
-              <option value="PayPal">PAYPAL</option>
-              <option value="Kotak">KOTAK</option> */}
             </select>
           </div>
           <div className="form-group">
@@ -133,7 +129,7 @@ const PaymentModePaymentDetails = () => {
             </label>
             <input
               type="text"
-              placeholder="Request Amount"
+              placeholder="Details"
               className="form-control"
               onChange={(e) => {
                 setDetails(e.target.value);

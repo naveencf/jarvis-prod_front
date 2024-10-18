@@ -95,12 +95,17 @@ export default function MergeCategory() {
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
          fullWidth={true} // Ensures the dialog takes full width based on maxWidth
         maxWidth="md"
+        PaperProps={{
+          style: {
+            height: '550px',
+            maxHeight: '80vh',
+          },
+        }}
       >
         <DialogTitle>{"Merge Category"}</DialogTitle>
-        <DialogContent>
+        <DialogContent >
           <DialogContentText id="alert-dialog-slide-description">
             <div className="form-group col-12">
               <label className="form-label">

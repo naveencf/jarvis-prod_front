@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { useState } from 'react';
 
 const Filters = ({
   priceFilterType,
@@ -13,8 +13,8 @@ const Filters = ({
   setMinFollowers,
   maxFollowers,
   setMaxFollowers,
-  followerFilterType,
-  handleFollowerRangeChange,
+  selectedFollowers,
+  setSelectedFollowers,
   selectedCategory,
   handleCategoryChange,
   cat,
@@ -23,17 +23,42 @@ const Filters = ({
   handleCombinedFilter,
   handleFollowersBlur,
   selectAllRows,
+  deSelectAllRows
 }) => {
+  const [customFollowerRange, setCustomFollowerRange] = useState(false);
+
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
 
+  const handleFollowerSelection = (e) => {
+    const value = e.target.value;
+
+    if (value === 'custom') {
+      setCustomFollowerRange(true);
+      setSelectedFollowers([]);
+      return;
+    }
+
+    if (selectedFollowers.includes(value)) {
+      setCustomFollowerRange(false);
+      setSelectedFollowers(selectedFollowers.filter((f) => f !== value));
+    } else {
+      setCustomFollowerRange(false);
+      setSelectedFollowers([...selectedFollowers, value]);
+    }
+  };
+
+  const removeFollowerSelection = (follower) => {
+    setSelectedFollowers(selectedFollowers.filter((f) => f !== follower));
+  };
+
   return (
     <div className="row">
+      {/* Price filter dropdown */}
       <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-   
         <label>Filter by:</label>
         <select
           className="filter-dropdown form-control"
@@ -67,35 +92,15 @@ const Filters = ({
         />
         <p>{formatNumber(maxPrice)}</p>
       </div>
-      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-        <label className="filter-label">Min Followers:</label>
-        <input
-          type="number"
-          className="filter-input form-control"
-          value={minFollowers || ''}
-          onChange={(e) => setMinFollowers(e.target.value)}
-          onBlur={handleFollowersBlur}
-        />
-        <p>{formatNumber(minFollowers)}</p>
-      </div>
-      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-        <label className="filter-label">Max Followers:</label>
-        <input
-          type="number"
-          className="filter-input form-control"
-          value={maxFollowers || ''}
-          onChange={(e) => setMaxFollowers(e.target.value)}
-          onBlur={handleFollowersBlur}
-        />
-        <p>{formatNumber(maxFollowers)}</p>
-      </div>
+
+      {/* Follower Filter */}
       <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
         <label htmlFor="follower-filter">Follower Filter</label>
         <select
           id="follower-filter"
           className="filter-dropdown form-control"
-          value={followerFilterType}
-          onChange={handleFollowerRangeChange}
+          onChange={handleFollowerSelection}
+          onBlur={handleFollowersBlur}
         >
           <option value="" disabled>
             Select Follower Range
@@ -105,9 +110,58 @@ const Filters = ({
           <option value="20Kto50K">20k to 50k</option>
           <option value="50Kto100K">50k to 100k</option>
           <option value="100Kto200K">100k to 200k</option>
-          <option value="moreThan200K">More than 200k</option>
+          <option value="200Kto500K">200k to 500k</option>
+          <option value="500Kto1000K">500k to 1000k</option>
+          {/* <option value="100Kto200K">100k to 200k</option> */}
+          {/* <option value="moreThan200K">More than 200k</option> */}
+          {/* <option value="custom">Custom</option> */}
         </select>
       </div>
+
+      {/* Custom Follower Range Inputs */}
+      {customFollowerRange && (
+        <>
+          <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
+            <label className="filter-label">Min Followers:</label>
+            <input
+              type="number"
+              className="filter-input form-control"
+              value={minFollowers || ''}
+              onChange={(e) => setMinFollowers(e.target.value)}
+              onBlur={handleFollowersBlur}
+            />
+            <p>{formatNumber(minFollowers)}</p>
+          </div>
+          <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
+            <label className="filter-label">Max Followers:</label>
+            <input
+              type="number"
+              className="filter-input form-control"
+              value={maxFollowers || ''}
+              onChange={(e) => setMaxFollowers(e.target.value)}
+              onBlur={handleFollowersBlur}
+            />
+            <p>{formatNumber(maxFollowers)}</p>
+          </div>
+        </>
+      )}
+
+      {/* Display Selected Followers as Badges */}
+      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
+        <label>Selected Followers:</label>
+        <div className="selectBadge">
+          {selectedFollowers.map((follower) => (
+            <div className="selectBadgeItem" key={follower}>
+              {follower.replace(/([A-Z])/g, ' $1').trim()} {/* Formatting */}
+              <button onClick={() => removeFollowerSelection(follower)}>
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Filter by Category */}
       <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
         <label htmlFor="categoryFilter">Filter by Category:</label>
         <select
@@ -124,6 +178,7 @@ const Filters = ({
           ))}
         </select>
       </div>
+
       {/* Selected categories as tags */}
       <div className="form-group col-lg-6 col-md-6 col-sm-12 col-12">
         <label>&nbsp;</label>
@@ -140,6 +195,8 @@ const Filters = ({
             })}
         </div>
       </div>
+
+      {/* Action Buttons */}
       <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
         <div className="flexCenter colGap12">
           <button
@@ -148,12 +205,14 @@ const Filters = ({
           >
             Remove All Filter
           </button>
-          {/* Filter button */}
           <button className="cmnbtn btn-success" onClick={handleCombinedFilter}>
             Apply Filter
           </button>
           <button className="cmnbtn btn-primary" onClick={selectAllRows}>
             Select All Rows
+          </button>
+          <button className="cmnbtn btn-danger" onClick={deSelectAllRows}>
+           Deselect All Rows
           </button>
         </div>
       </div>

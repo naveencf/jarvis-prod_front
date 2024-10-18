@@ -56,6 +56,7 @@ import { baseUrl } from "../../utils/config";
 import ImageSelector from "./ImageSelector";
 import { FormatName } from "../../utils/FormatName";
 import Slider from "react-slick";
+import OnboardingForm from "./OnboardingForm";
 
 var settings = {
   arrows: false,
@@ -1736,7 +1737,9 @@ const PreOnboardingUserMaster = () => {
 
                   {/* Form Screen Start */}
                   {activeTab == 1 && (
+
                     <form onSubmit={handleSubmit}>
+{/* <OnboardingForm/> */}
                       <div className="formarea">
                         <div className="row spacing_lg">
                           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
