@@ -167,7 +167,6 @@ function ExecutionPending() {
       })
 
       .then((res) => {
-        console.log(res?.data?.data,"res?.data?.data")
         setSaimyualCamp(res?.data?.data);
         setData(res?.data?.data);
         setFilterData(res?.data?.data.reverse());
@@ -281,7 +280,6 @@ function ExecutionPending() {
       headerName: "Booking ID",
       width: 150,
     },
-
     // {
     //   field: "sales_executive_name",
     //   headerName: "Sales Executive",
@@ -806,6 +804,7 @@ function ExecutionPending() {
       headerName: "Branch Category Name",
       width: 150,
     },
+    
     {
       field: "no_of_posts",
       headerName: "Posts",
