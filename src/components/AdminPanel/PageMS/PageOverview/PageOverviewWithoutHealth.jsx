@@ -9,7 +9,7 @@ function PageOverviewWithoutHealth({ columns }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const [pagequery,setpagequery] = useState("page=1&limit=50")
+  const [pagequery,setpagequery] = useState("page_name=sar")
 
   const {
     data: pageList,
@@ -27,8 +27,8 @@ function PageOverviewWithoutHealth({ columns }) {
             data={pageList}
             isLoading={false}
             // title={"Page Overview"}
+            Pagination={[100, 200, 1000]}
             rowSelectable={true}
-            pagination={[100, 200, 1000]}
             tableName={"PageOverview_without_health"}
           />}
         </div>

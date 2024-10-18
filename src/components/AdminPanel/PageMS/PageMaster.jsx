@@ -173,10 +173,15 @@ const PageMaster = () => {
       setSubCategoryId(singlePageData?.page_sub_category_id);
 
       setPageLevel(singlePageData?.preference_level);
-      if (singlePageData.status == 1) {
-        setPageStatus("Active");
-      } else {
-        setPageStatus("Inactive");
+      if (singlePageData.page_activeness == 'dead') {
+        setPageStatus("dead");
+      }else if (singlePageData.page_activeness == 'semi_active') {
+        setPageStatus("semi_active");
+      } else if (singlePageData.page_activeness == 'super_active') {
+        setPageStatus("super_active");
+      } 
+      else {
+        setPageStatus("active");
       }
       setCloseBy(singlePageData?.page_closed_by);
       setPageType(singlePageData?.page_name_type);

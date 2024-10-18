@@ -22,7 +22,12 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
   } = useGetAllVendorQuery(); 
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md">
+    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md"  PaperProps={{
+      style: {
+        height: '550px',
+        maxHeight: '80vh',
+      },
+    }}>
       <DialogTitle>{"Upload Bulk Vendor "}</DialogTitle>
       <DialogContent>
         <div className="form-group col-12">
@@ -51,7 +56,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <UploadBulkVendorPages getRowData={vendorName} from={"pages"} />
+        <UploadBulkVendorPages getRowData={vendorName} onClose={onClose} from={"pages"} />
       </DialogActions>
     </Dialog>
   );

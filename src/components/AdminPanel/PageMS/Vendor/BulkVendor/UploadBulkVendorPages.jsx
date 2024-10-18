@@ -17,7 +17,7 @@ import { baseUrl } from "../../../../../utils/config";
 import axios from "axios";
 const storedToken = sessionStorage.getItem("token");
 
-const UploadBulkVendorPages = ({ getRowData,from }) => {
+const UploadBulkVendorPages = ({ getRowData,from, onClose }) => {
   console.log(getRowData , 'getrow data')
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
@@ -95,9 +95,15 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
           "Content-Type": "multipart/form-data",
         },
       });
+      toastAlert("Bulk Vendor Updated Succefully")
+      onClose()
       console.log(res);
     } catch (error) {
+      onClose()
+      toastError(error,"")
       console.error(error);
+      
+
     }
 
     setOpen(false);
@@ -137,7 +143,7 @@ const UploadBulkVendorPages = ({ getRowData,from }) => {
         Download Template
       </Button>
 
-      {/* Button to upload the Excel file */}
+     
       <Button
         component="label"
         className="btn cmnbtn btn_sm btn-outline-primary"

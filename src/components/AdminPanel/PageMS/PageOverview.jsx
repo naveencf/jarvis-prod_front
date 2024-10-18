@@ -158,7 +158,7 @@ const PageOverview = () => {
 
     setNewFilterData(filteredData);
   };
-console.log(allVendorWhats,platformData,"test")
+// console.log(allVendorWhats,platformData,"test")
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
@@ -891,6 +891,12 @@ console.log(allVendorWhats,platformData,"test")
       renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
     },
     {
+      key: "page_activeness",
+      name: "Activeness",
+      width: 80,
+      renderRowCell: (row) => {return formatString(row?.page_activeness)},
+    },
+    {
       key: "page_name",
       name: "User Name",
       width: 200,
@@ -953,51 +959,51 @@ console.log(allVendorWhats,platformData,"test")
         );
       },
     },
-    {
-      key: "page_mast_status",
-      name: "Status",
-      width: 200,
-      editable: true,
-      renderRowCell: (row) => {
-        let status;
-        if (row.page_mast_status == 0) {
-          status = "Active";
-        } else if (row.page_mast_status == 1) {
-          status = "Inactive";
-        } else if (row.page_mast_status == 2) {
-          status = "Delete";
-        } else if (row.page_mast_status == 3) {
-          status = "Semiactive";
-        }
-        return status;
-      },
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        return (
-          <select
-            className="form-select"
-            value={row.page_mast_status}
-            onChange={(e) => {
-              handelchange(e, index, column);
-              handleStatusChange(e, setEditFlag, row);
-            }}
-            autoFocus
-          >
-            <option value="0">Active</option>
-            <option value="1">Inactive</option>
-            <option value="2">Disabled</option>
-            <option value="3">Semiactive</option>
-          </select>
-        );
-      },
-      compare: true,
-    },
+    // {
+    //   key: "page_mast_status",
+    //   name: "Status",
+    //   width: 200,
+    //   // editable: true,
+    //   renderRowCell: (row) => {
+    //     let status;
+    //     if (row.page_mast_status == 0) {
+    //       status = "Active";
+    //     } else if (row.page_mast_status == 1) {
+    //       status = "Inactive";
+    //     } else if (row.page_mast_status == 2) {
+    //       status = "Delete";
+    //     } else if (row.page_mast_status == 3) {
+    //       status = "Semiactive";
+    //     }
+    //     return status;
+    //   },
+    //   customEditElement: (
+    //     row,
+    //     index,
+    //     setEditFlag,
+    //     editflag,
+    //     handelchange,
+    //     column
+    //   ) => {
+    //     return (
+    //       <select
+    //         className="form-select"
+    //         value={row.page_mast_status}
+    //         onChange={(e) => {
+    //           handelchange(e, index, column);
+    //           handleStatusChange(e, setEditFlag, row);
+    //         }}
+    //         autoFocus
+    //       >
+    //         <option value="0">Active</option>
+    //         <option value="1">Inactive</option>
+    //         <option value="2">Disabled</option>
+    //         <option value="3">Semiactive</option>
+    //       </select>
+    //     );
+    //   },
+    //   compare: true,
+    // },
     {
       key: "content_creation",
       name: "Content Creation",
@@ -1436,19 +1442,7 @@ console.log(allVendorWhats,platformData,"test")
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
-                <h5 className="card-title flexCenterBetween">
-                  {/* {
-                    pageStatsAuth && ""
-                    // <Switch
-                    //   checked={showPageHealthColumn}
-                    //   value={showPageHealthColumn}
-                    //   onChange={() =>
-                    //     dispatch(setShowPageHealthColumn(!showPageHealthColumn))
-                    //   }
-                    //   name="Profile Health"
-                    //   color="primary"
-                    // />
-                  } */}
+                <h5 className="card-title flexCenterBetween">                 
                   <Typography>Profile Health</Typography>
                   <Typography>: {filterData?.length}</Typography>
                 </h5>

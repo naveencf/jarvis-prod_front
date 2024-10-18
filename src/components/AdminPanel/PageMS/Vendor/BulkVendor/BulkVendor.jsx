@@ -121,7 +121,8 @@ const BulkVendor = () => {
           <button
             onClick={() => handleOpenModal()}
             title="Edit"
-            className="btn btn-outline-primary"
+            // className="btn btn-outline-primary"
+            className="btn cmnbtn btn_sm btn-outline-primary"
           >
             Upload Bulk Vendor
           </button>
