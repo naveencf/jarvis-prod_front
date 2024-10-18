@@ -665,9 +665,8 @@ const PaymentDoneTransactionList = lazy(() =>
   )
 );
 const PageStats = lazy(() => import('./PageMS/PageStats'));
-// const PlanMaking = lazy(() => import("../AdminPanel/PageMS/PlanMaking"));
 const PlanMaking = lazy(() =>
-  import('../../components/Inventory/plan-making/PlanMaking')
+  import('../../components/Inventory/plan-making/index')
 );
 const PlanMakingTable = lazy(() =>
   import('../../components/Inventory/plan-making/PlanMaking')
