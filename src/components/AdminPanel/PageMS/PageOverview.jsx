@@ -158,7 +158,7 @@ const PageOverview = () => {
 
     setNewFilterData(filteredData);
   };
-
+console.log(allVendorWhats,platformData,"test")
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
@@ -1102,17 +1102,17 @@ const PageOverview = () => {
       width: 200,
       compare: true,
     },
-    {
-      key: "platform_active_on",
-      name: "Active Platform",
-      width: 200,
-      renderRowCell: (row) => {
-        let data = platformData?.filter((item) => {
-          return row.platform_active_on?.includes(item._id);
-        });
-        return data?.map((item) => item.platform_name).join(", ");
-      },
-    },
+    // {
+    //   key: "platform_active_on",
+    //   name: "Active Platform",
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     let data = platformData?.filter((item) => {
+    //       return row.platform_active_on?.includes(item._id);
+    //     });
+    //     return data?.map((item) => item.platform_name).join(", ");
+    //   },
+    // },
 
     {
       key: "page_closed_by",
