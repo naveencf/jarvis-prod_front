@@ -4,6 +4,10 @@ import { useState } from 'react';
 
 const Filters = ({
   priceFilterType,
+  handleStoryCountChange,
+  handlePostCountChange,
+  postCountDefault,
+  storyCountDefault,
   setPriceFilterType,
   minPrice,
   setMinPrice,
@@ -23,7 +27,7 @@ const Filters = ({
   handleCombinedFilter,
   handleFollowersBlur,
   selectAllRows,
-  deSelectAllRows
+  deSelectAllRows,
 }) => {
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
 
@@ -212,8 +216,22 @@ const Filters = ({
             Select All Rows
           </button>
           <button className="cmnbtn btn-danger" onClick={deSelectAllRows}>
-           Deselect All Rows
+            Deselect All Rows
           </button>
+          <input
+            type="number"
+            className="filter-input form-contro"
+            placeholder="Post Count"
+            value={postCountDefault || ''}
+            onChange={handlePostCountChange}
+          />
+          <input
+            type="number"
+            className="filter-input form-contro"
+            placeholder="Story Count"
+            value={storyCountDefault || ''}
+            onChange={handleStoryCountChange}
+          />
         </div>
       </div>
     </div>

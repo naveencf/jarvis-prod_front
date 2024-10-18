@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  TextField,
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -78,6 +79,8 @@ const PlanMaking = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
+  const [storyCountDefault, setStoryCountDefault] = useState(0); // Default story count
+  const [postCountDefault, setPostCountDefault] = useState(0);
   const [selectedFollowers, setSelectedFollowers] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [totalFollowers, setTotalFollowers] = useState(0);
@@ -101,26 +104,6 @@ const PlanMaking = () => {
   const { pageDetail } = usePageDetail(id);
   const { sendPlanDetails } = useSendPlanDetails(id);
   const { planDetails } = useFetchPlanDetails(id);
-
-  useEffect(() => {
-    if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            // setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
-    }
-
-    getData();
-  }, []);
 
   const sellingPrice = planDetails && planDetails[0]?.selling_price;
 
@@ -189,30 +172,7 @@ const PlanMaking = () => {
     const pageData = pageList?.filter((item) => item.followers_count > 0);
     setFilterData(pageData);
   };
-  useEffect(() => {
-    if (pageList) {
-      const pageData = pageList?.filter((item) => item.followers_count > 0);
-      setFilterData(pageData);
-      const initialPostValues = {};
-      const initialStoryValues = {};
-      const initialCostPerPostValues = {};
-      const initialCostPerStoryValues = {};
-      const initialCostPerBothValues = {};
-      pageList?.forEach((page) => {
-        initialPostValues[page._id] = 0;
-        initialStoryValues[page._id] = 0;
-        initialCostPerPostValues[page._id] = page.price_details.Insta_Post || 0;
-        initialCostPerStoryValues[page._id] =
-          page.price_details.Insta_Story || 0;
-        initialCostPerBothValues[page._id] = page.price_details.Both || 0;
-      });
-      setPostPerPageValues(initialPostValues);
-      setStoryPerPageValues(initialStoryValues);
-      setCostPerPostValues(initialCostPerPostValues);
-      setCostPerStoryValues(initialCostPerStoryValues);
-      setCostPerBothValues(initialCostPerBothValues);
-    }
-  }, [pageList]);
+
   // const { data: priceData, isLoading: isPriceLoading } =
   //   useGetMultiplePagePriceQuery();
 
@@ -312,7 +272,6 @@ const PlanMaking = () => {
         costPerStoryValues[row._id],
         costPerBothValues[row._id]
       );
-      console.log(updatedSelectedRows);
       // Now, map updated planxData with the latest postPerPage values
       const planxData = updatedSelectedRows.map(
         ({ _id, price_details, page_name }) => ({
@@ -383,10 +342,6 @@ const PlanMaking = () => {
 
     updateStatistics(selectedRows);
   };
-
-  useEffect(() => {
-    updateStatistics(selectedRows);
-  }, [storyPerPageValues, postPerPageValues]);
 
   const handleStoryPerPageChange = (row) => (event) => {
     const updatedStoryValues = {
@@ -462,8 +417,10 @@ const PlanMaking = () => {
     setSelectedCategory(updatedCategories);
 
     // Filter data based on the updated selected categories
-    const filtered = pageList?.filter((item) =>
-      updatedCategories?.includes(item.page_category_id)
+    const filtered = pageList?.filter(
+      (item) =>
+        item.followers_count > 0 &&
+        updatedCategories?.includes(item.page_category_id)
     );
     setFilterData(filtered);
   };
@@ -558,11 +515,6 @@ const PlanMaking = () => {
   const clearSearch = () => {
     setSearchInput('');
   };
-  useEffect(() => {
-    if (selectedRows?.length == 0) {
-      setToggleShowBtn(false);
-    }
-  }, [selectedRows]);
 
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
@@ -706,7 +658,7 @@ const PlanMaking = () => {
       setNotFoundPages([]);
     }
   };
-  console.log(selectedFollowers);
+
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -727,35 +679,6 @@ const PlanMaking = () => {
     setOpenDialog(false);
   };
 
-  useEffect(() => {
-    // Call your function to handle automatic selection
-    if (filterData?.length > 0 && pageDetail?.length > 0) {
-      handleAutomaticSelection(pageDetail);
-    }
-  }, [filterData, pageDetail]);
-
-  useEffect(() => {
-    // Fetch user-specific data and page data
-    if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            // setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
-    }
-
-    // Fetch all necessary data
-    getData();
-  }, []);
-
   const handleFollowersBlur = () => {
     const parseRange = (range) => {
       const [min, max] = range.split('to').map((val) => {
@@ -764,7 +687,6 @@ const PlanMaking = () => {
       });
       return { min, max };
     };
-
     let filteredData = [];
 
     selectedFollowers.forEach((range) => {
@@ -778,20 +700,18 @@ const PlanMaking = () => {
 
       // Merge current range's filtered data with the overall result
       filteredData = [...filteredData, ...rangeFilteredData];
-      console.log('max=', max, 'min=', min);
     });
-
-    console.log('unique', filteredData);
     setFilterData(filteredData);
   };
 
   const clearRecentlySelected = () => {
+    const pageData = pageList?.filter((item) => item.followers_count > 0);
     // Reset all the states
     setSelectedRows([]);
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
-    setFilterData(pageList);
+    setFilterData(pageData);
 
     // Optionally clear the search input
     setSearchInput('');
@@ -799,17 +719,18 @@ const PlanMaking = () => {
   // Function to sort rows: checked rows come first
   const sortedRows = (rows, selectedRows) => {
     // Create a shallow copy of the rows to avoid modifying the original array
-    const rowsCopy = [...rows];
-
-    return rowsCopy.sort((a, b) => {
-      const aChecked = selectedRows.some(
-        (selectedRow) => selectedRow._id === a._id
-      );
-      const bChecked = selectedRows.some(
-        (selectedRow) => selectedRow._id === b._id
-      );
-      return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
-    });
+    if (rows) {
+      const rowsCopy = [...rows];
+      return rowsCopy?.sort((a, b) => {
+        const aChecked = selectedRows.some(
+          (selectedRow) => selectedRow._id === a._id
+        );
+        const bChecked = selectedRows.some(
+          (selectedRow) => selectedRow._id === b._id
+        );
+        return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
+      });
+    }
   };
 
   const selectAllRows = () => {
@@ -818,25 +739,26 @@ const PlanMaking = () => {
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
 
+    // Iterate over the filtered data and update counts and selections
     filterData.forEach((row) => {
       const isAlreadySelected = updatedSelectedRows.some(
         (selectedRow) => selectedRow._id === row._id
       );
 
-      // If not already selected, push the row to updatedSelectedRows
+      // If not already selected, add this row to selected rows
       if (!isAlreadySelected) {
         updatedSelectedRows.push(row);
       }
 
-      // Assuming post_count and story_count come from row, adjust as needed
-      updatedPostValues[row._id] = row.post_count || 1;
-      updatedStoryValues[row._id] = row.story_count || 0;
+      // Use row values or default values if not present
+      updatedPostValues[row._id] = row.post_count || postCountDefault || 1;
+      updatedStoryValues[row._id] = row.story_count || storyCountDefault || 0;
 
       // Calculate costs (if applicable)
       const costPerPost = row.m_post_price || 0;
       const costPerStory = row.m_story_price || 0;
 
-      // Assuming a function exists for cost calculation
+      // Assuming a function exists to calculate total cost
       calculateTotalCost(
         row._id,
         updatedPostValues[row._id],
@@ -846,11 +768,14 @@ const PlanMaking = () => {
         costPerPost + costPerStory
       );
 
-      // Mark this row's cost as 'true' in updatedShowTotalCost
+      // Mark this row's cost visibility as 'true'
       updatedShowTotalCost[row._id] = true;
+
+      // Optional: Auto-check this row if needed (commented out in your logic)
       // handleCheckboxChange(row)({ target: { checked: true } });
     });
 
+    // Prepare the plan data to send
     const planxData = updatedSelectedRows.map(
       ({ _id, m_story_price, page_name, m_post_price }) => ({
         _id,
@@ -861,14 +786,15 @@ const PlanMaking = () => {
         story_count: Number(updatedStoryValues[_id]) || 0,
       })
     );
-    sendPlanDetails(planxData);
 
-    // Update all states after processing
+    // Send plan details and update the state
+    sendPlanDetails(planxData);
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
     setSelectedRows(updatedSelectedRows);
     setShowTotalCost(updatedShowTotalCost);
-    // sendPlanDetails(savePlan)
+
+    // Optional: Reset any automatic check flag if needed
     // setIsAutomaticCheck(false);
   };
 
@@ -877,6 +803,7 @@ const PlanMaking = () => {
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
+    setTotalCostValues({});
     const payload = [];
     sendPlanDetails(payload);
   };
@@ -893,6 +820,78 @@ const PlanMaking = () => {
   //   }
   // }, [percentageRemaining]);
 
+  useEffect(() => {
+    if (selectedFollowers?.length === 0) {
+      const pageData = pageList?.filter((item) => item.followers_count > 0);
+      setFilterData(pageData);
+      return;
+    }
+  }, [selectedFollowers]);
+
+  useEffect(() => {
+    if (userID && !contextData) {
+      axios
+        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
+        .then((res) => {
+          if (res.data[33].view_value === 1) {
+            setContextData(true);
+          }
+          if (res.data[57].view_value === 1) {
+            // setPageUpdateAuth(true);
+          }
+          if (res.data[56].view_value === 1) {
+            setPageStatsAuth(true);
+          }
+        });
+    }
+
+    getData();
+  }, []);
+
+  useEffect(() => {
+    if (pageList) {
+      const pageData = pageList?.filter((item) => item.followers_count > 0);
+      setFilterData(pageData);
+      const initialPostValues = {};
+      const initialStoryValues = {};
+      const initialCostPerPostValues = {};
+      const initialCostPerStoryValues = {};
+      const initialCostPerBothValues = {};
+      pageList?.forEach((page) => {
+        initialPostValues[page._id] = 0;
+        initialStoryValues[page._id] = 0;
+        initialCostPerPostValues[page._id] = page.price_details.Insta_Post || 0;
+        initialCostPerStoryValues[page._id] =
+          page.price_details.Insta_Story || 0;
+        initialCostPerBothValues[page._id] = page.price_details.Both || 0;
+      });
+      setPostPerPageValues(initialPostValues);
+      setStoryPerPageValues(initialStoryValues);
+      setCostPerPostValues(initialCostPerPostValues);
+      setCostPerStoryValues(initialCostPerStoryValues);
+      setCostPerBothValues(initialCostPerBothValues);
+    }
+  }, [pageList]);
+
+  useEffect(() => {
+    // Call your function to handle automatic selection
+    if (filterData?.length > 0 && pageDetail?.length > 0) {
+      handleAutomaticSelection(pageDetail);
+    }
+  }, [filterData, pageDetail]);
+
+  useEffect(() => {
+    if (selectedRows?.length == 0) {
+      setToggleShowBtn(false);
+    }
+  }, [selectedRows]);
+
+  useEffect(() => {
+    updateStatistics(selectedRows);
+  }, [storyPerPageValues, postPerPageValues]);
+
+  const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
+  const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
   return (
     <>
       <Dialog open={openDialog} onClose={handleCloseDialog}>
@@ -1043,6 +1042,11 @@ const PlanMaking = () => {
                 handleCombinedFilter={handleCombinedFilter}
                 handleFollowersBlur={handleFollowersBlur}
                 selectAllRows={selectAllRows}
+                handleStoryCountChange={handleStoryCountChange}
+                handlePostCountChange={handlePostCountChange}
+                storyCountDefault= {storyCountDefault}
+                 postCountDefault={postCountDefault}
+                
               />
             )}
           </AccordionDetails>
