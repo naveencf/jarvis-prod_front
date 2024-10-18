@@ -42,13 +42,12 @@ const getPlatformName = (platformId) => {
 const calculateOwnershipCounts = (selectedRow, postCount, storyPerPage) =>
   selectedRow?.reduce(
     (acc, page) => {
-      const postCountForPage = postCount[page._id] || 0;
-      const storyCountForPage = storyPerPage[page._id] || 0;
+      const postCountForPage = Number(postCount[page._id] || 0);
+      const storyCountForPage = Number(storyPerPage[page._id] || 0);
       const totalCost =
-        postCountForPage * page.m_post_price +
-        storyCountForPage * page.m_story_price;
+        (postCountForPage * (page.m_post_price || 0)) +
+        (storyCountForPage * (page.m_story_price || 0));
 
-      // Update the ownership counts and total costs based on the ownership type
       if (page.ownership_type === 'Own') {
         acc.own.count += 1;
         acc.own.totalCost += totalCost;
@@ -59,14 +58,15 @@ const calculateOwnershipCounts = (selectedRow, postCount, storyPerPage) =>
         acc.solo.count += 1;
         acc.solo.totalCost += totalCost;
       }
-      return acc; // Return the accumulator for the next iteration
+      return acc;
     },
     {
-      own: { count: 0, totalCost: 0 }, // Initial counts for 'Own' type
-      vendor: { count: 0, totalCost: 0 }, // Initial counts for 'Vendor' type
-      solo: { count: 0, totalCost: 0 }, // Initial counts for 'Solo' type
+      own: { count: 0, totalCost: 0 },
+      vendor: { count: 0, totalCost: 0 },
+      solo: { count: 0, totalCost: 0 },
     }
   );
+
 
 // Function to download selected data as an Excel file
 const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
@@ -203,7 +203,6 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
       const platformSheet = XLSX.utils.json_to_sheet(platformSheetData); // Convert platform data to a sheet
       addHyperlinksAndAdjustWidths(platformSheet, platformSheetData); // Add hyperlinks and adjust column widths
       applyCellStyles(platformSheet, platformSheetData); // Apply cell styles
-      console.log(platformSheet);
       XLSX.utils.book_append_sheet(workbook, platformSheet, platform); // Append to workbook
 
       // Calculate cost for the platform
@@ -288,7 +287,6 @@ const applyCellStyles = (sheet,) => {
   for (let C = range.s.c; C <= range.e.c; ++C) {
     const address = XLSX.utils.encode_cell({ c: C, r: headerRow });
     if (!sheet[address]) continue;
-    // console.log("sheet", sheet[address]);
     sheet[address].s = {
       font: { bold: true, color: { rgb: 'FF0000' } },
       alignment: { horizontal: 'center', vertical: 'center' },
@@ -431,6 +429,7 @@ const PlanStatics = ({
   const handleToggle = () => {
     setExpanded((prev) => !prev);
   };
+
   return (
     <>
       <Accordion className="card" expanded={expanded}>

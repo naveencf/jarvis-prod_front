@@ -1,11 +1,5 @@
-import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-} from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from "@mui/material";
 import FieldContainer from "../FieldContainer";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
@@ -19,9 +13,16 @@ export default function VendorMPriceModal({ open, onClose, rowData }) {
   const [mWiseStoryPrice, setMWiseStoryPrice] = useState(0);
   const [mWiseBothPrice, setMWiseBothPrice] = useState(0);
 
+  useEffect(() => {
+    if (!open) {
+      setMWisePostPrice(0);
+      setMWiseStoryPrice(0);
+      setMWiseBothPrice(0);
+    }
+  }, [open]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       const response = await axios.put(
         baseUrl + "v1/update_m_price_with_vendor_id",
@@ -54,7 +55,6 @@ export default function VendorMPriceModal({ open, onClose, rowData }) {
         });
       }
       onClose();
-      console.log("Price update successful");
     } catch (error) {
       console.error("Error updating prices:", error);
       Swal.fire({

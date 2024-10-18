@@ -65,7 +65,7 @@ const PageMaster = () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-
+  const [pagequery,setpagequery] = useState("")
   const { toastAlert, toastError } = useGlobalContext();
   const [pageName, setPageName] = useState("");
   const [link, setLink] = useState("");
@@ -137,7 +137,7 @@ const PageMaster = () => {
   const dispatch = useDispatch();
 
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
-  console.log(ownerShipData, "ownership");
+  // console.log(ownerShipData, "ownership");
 
   const { data: profileData } = useGetAllProfileListQuery();
 
@@ -155,13 +155,11 @@ const PageMaster = () => {
   const vendorData = vendor || [];
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
-  const { refetch: refetchPageList, data: pageList } = useGetAllPageListQuery();
+  const { refetch: refetchPageList, data: pageList } = useGetAllPageListQuery({ decodedToken, userID ,pagequery});
 
   const { data: platformPriceData, isLoading: isPriceLoading } =
     useGetPlatformPriceQuery();
 
-  const [showAll, setShowAll] = useState(true);
-  // const optionsToShow = showAll ? userData : userData.slice(0, 5);
   const [existError, setExistError] = useState("");
   const [messageColor, setMessageColor] = useState("");
   const { usersDataContext } = useContext(AppContext);
@@ -277,16 +275,6 @@ const PageMaster = () => {
     }
   }, [platformPriceData, isPriceLoading]);
 
-  // useEffect(() => {
-  //   if (!isPriceLoading && pageMast_id && priceData.length > 0) {
-  //     setRowCount(
-  //       priceData?.map((e) => ({
-  //         page_price_type_id: e.page_price_type_id,
-  //         price: e.price,
-  //       }))
-  //     );
-  //   }
-  // }, [priceData]);
 
   const PageLevels = [
     { value: "Level 1 (High)", label: "Level 1 (High)" },
@@ -346,23 +334,6 @@ const PageMaster = () => {
     };
   };
 
-  const getData = () => {
-    // axios
-    //   .get(baseUrl + "get_all_users", {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //       "Content-Type": "application/json", // Adjust content type as needed
-    //     },
-    //   })
-    //   .then((res) => {
-    //     setUserData(res.data.data);
-    //   });
-  };
-
-  useEffect(() => {
-    getData();
-  }, []);
-
   const handleRateTypeChange = (selectedOption) => {
     setRateType(selectedOption);
   };
@@ -416,12 +387,6 @@ const PageMaster = () => {
     if (profileId === "") {
       setValidateFields((prev) => ({ ...prev, profileId: true }));
     }
-    // if (platformActive?.length == 0 || platformActive == null) {
-    //   setValidateFields((prev) => ({ ...prev, platformActive: true }));
-    // }
-    // if (rate === "") {
-    //   setValidateFields((prev) => ({ ...prev, rate: true }));
-    // }
     if (description === "") {
       setValidateFields((prev) => ({ ...prev, description: true }));
     }
@@ -431,10 +396,6 @@ const PageMaster = () => {
     if (rateType === "") {
       setValidateFields((prev) => ({ ...prev, rateType: true }));
     }
-    // if (tag.length == 0) {
-    //   setValidateFields((prev) => ({ ...prev, tag: true }));
-    // }
-
     // because db saving label not id of ownership
     const convertOwnerIdToLabel =
       ownerShipData?.find((role) => role._id == ownerType)?.company_type_name ||
@@ -544,13 +505,11 @@ const PageMaster = () => {
           } else {
             toastError(errorMessage);
           }
-          // toastError(error.response.data.message);
         });
     }
   };
 
   if (isFormSubmitted) {
-    // return <Navigate to="/admin/pms-page-overview" />;
     return navigate("/admin/pms-page-overview");
   }
 
@@ -593,36 +552,14 @@ const PageMaster = () => {
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
   };
 
-  // see more button inside close by
-  // const MenuList = (props) => {
-  //   return (
-  //     <components.MenuList {...props}>
-  //       {props.children}
-  //       {!showAll && userData.length > 5 && (
-  //         <div
-  //           style={{
-  //             padding: "10px",
-  //             textAlign: "center",
-  //             cursor: "pointer",
-  //             color: "#007bff",
-  //           }}
-  //           onClick={() => setShowAll(true)}
-  //         >
-  //           See More
-  //         </div>
-  //       )}
-  //     </components.MenuList>
-  //   );
-  // };
-
   const getInitialValue = () => {
     const initialId = vendorId || vendorDetails._id;
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-          value: initialVendor._id,
-          label: formatString(initialVendor.vendor_name),
-        }
+        value: initialVendor._id,
+        label: formatString(initialVendor.vendor_name),
+      }
       : null;
   };
 
@@ -709,24 +646,77 @@ const PageMaster = () => {
 
   const setPageNameFun = (e) => {
     setPageName(e);
-    const checkPageExist = pageList.data.find(
-      (item) => item.page_name.toLowerCase() == e.toLowerCase()
-    );
-    if (checkPageExist == undefined) {
-      setExistError("Page Is Not Exist, You Can Use This");
-      setMessageColor("green");
-    } else {
-      setExistError("Page Is Already Exist, Enter Another One");
-      setMessageColor("red");
+    // const checkPageExist = pageList.find(
+    //   (item) => item.page_name.toLowerCase() == e.toLowerCase()
+    // );
+    // console.log(e,"eeee",pageList)
+    // if (checkPageExist == undefined) {
+    //   setExistError("Page Is Not Exist, You Can Use This");
+    //   setMessageColor("green");
+    // } else {
+    //   setExistError("Page Is Already Exist, Enter Another One");
+    //   setMessageColor("red");
+    // }
+  };
+
+  const handleUpadteFollowers = async () => {
+    const payload = {
+      creators: [pageName.toLowerCase()],
+      department: "65c38781c52b3515f77b0815",
+      userId: 111111,
+    };
+    const payloadUpdate = {
+      creators: [pageName.toLowerCase()],
+      department: "65c38781c52b3515f77b0815",
+      userId: 111111,
+      creatorType: 0
+    };
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
+    const headers = {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    };
+
+    try {
+      const response = await axios.post(
+        `https://insights.ist:8080/api/v1/creators_details_v3`,
+        payload,
+        { headers }
+      );
+
+      if (response.status === 200) {
+        console.log(response?.data?.data[0]?.isCreatorExists);
+        if (response?.data?.data[0]?.isCreatorExists == true) {
+          const followerData = response?.data?.data[0]?.creatorDetails?.followers;
+          setFollowCount(followerData)
+          toastAlert("Followers updated successfully!");
+        } else {
+          const res = await axios.post(
+            `https://insights.ist:8080/api/v1/creator_details_operation_multiple`,
+            payloadUpdate,
+            { headers }
+          );
+          
+          console.log(res, ' saim mishra');
+        }
+
+      } else {
+        console.log('Response was not successful:', response.status);
+      }
+
+    } catch (error) {
+      console.error("Error fetching followers:", error);
+      toastError("An error occurred while updating followers.");
     }
   };
 
+
   return (
     <>
+
       <FormContainer
         mainTitle={!pageMast_id ? "Profile Master" : ""}
         link={true}
-        // handleSubmit={handleSubmit}
         submitButton={false}
       />
       <div
@@ -740,6 +730,7 @@ const PageMaster = () => {
       >
         <ArrowBackIcon onClick={goBack} />
       </div>
+
       <div className="parent_of_tab" style={{ display: "flex" }}>
         {platformData?.map((item) => (
           <div key={item._id} className="tabs">
@@ -767,6 +758,14 @@ const PageMaster = () => {
         )}
         <div className="card-body pb4">
           <div className="row thm_form">
+            <button
+              type="button"
+              title="Update Followers"
+              className="btn btn-primary mt-2 btn-sm"
+              onClick={() => handleUpadteFollowers()}
+            >
+              Update Followers
+            </button>
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -820,9 +819,7 @@ const PageMaster = () => {
                     }
                   }}
                 />
-                {/* {validateFields.vendorId && (
-                  <small style={{ color: "red" }}>Please select Vendor</small>
-                )} */}
+
               </div>
             </div>
             <div className="col-md-6 mb16">
@@ -938,27 +935,7 @@ const PageMaster = () => {
                       }
                     }}
                   />
-                  {/* <Select
-                    className="w-100"
-                    options={['Theme','Influencer'].map((option) => ({
-                      value: option,
-                      label: option,
-                    }))}
-                    required={true}
-                    value={{
-                      value: singleVendor.vendor_category,
-                      label: singleVendor.vendor_category,
-                    }}
-                    onChange={(e) => {
-                      setProfileId(e.value);
-                      if (e.value) {
-                        setValidateFields((prev) => ({
-                          ...prev,
-                          profileId: false,
-                        }));
-                      }
-                    }}
-                  /> */}
+
                   <IconButton
                     onClick={handleAddProfileTypeClick}
                     variant="contained"
@@ -1149,7 +1126,7 @@ const PageMaster = () => {
                 onChange={(e) => {
                   // setPageName(e.target.value);
                   setPageNameFun(e.target.value);
-                  getPageFollowers(e.target.value);
+                  // getPageFollowers(e.target.value);
                   if (e.target.value) {
                     if (
                       platformData.some(
@@ -1185,7 +1162,11 @@ const PageMaster = () => {
                 value={link}
                 required={true}
                 onChange={(e) => {
-                  setLink(e.target.value);
+                  // setLink(e.target.value);
+                  // console.log(e)
+                  setLink(
+                        () => `https://www.instagram.com/${e.target.value}`
+                      );
                   if (e.target.value) {
                     setValidateFields((prev) => ({ ...prev, link: false }));
                   }
@@ -1339,27 +1320,7 @@ const PageMaster = () => {
                 )}
               </div>
             </div>
-            {/* <div className="col-md-6 p0 mb16">
-              <FieldContainer
-                label="Primary"
-                astric={true}
-                fieldGrid={12}
-                value={primary}
-                required={true}
-                onChange={(e) => {
-                  setPrimary(e.target.value);
-                  if (e.target.value) {
-                    setValidateFields((prev) => ({
-                      ...prev,
-                      primary: false,
-                    }));
-                  }
-                }}
-              />
-              {validateFields.primary && (
-                <small style={{ color: "red" }}>Please Fill Primary Type</small>
-              )}
-            </div> */}
+
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -1425,36 +1386,7 @@ const PageMaster = () => {
                 )}
               </div>
             </div>
-            {/* <div className="col-md-6 mb16">
-              <div className="form-group m0">
-                <label className="form-label">
-                  Platform Active On <sup style={{ color: 'red' }}>*</sup>
-                </label>
-                <Select
-                  required={true}
-                  options={platformData.map((option) => ({
-                    value: option._id,
-                    label: option.platform_name,
-                  }))}
-                  isMulti
-                  value={platformActive}
-                  onChange={(e) => {
-                    setPlatformActive(e);
-                    if (e) {
-                      setValidateFields((prev) => ({
-                        ...prev,
-                        platformActive: false,
-                      }));
-                    }
-                  }}
-                ></Select>
-                {validateFields.platformActive && (
-                  <small style={{ color: 'red' }}>
-                    Please select Platform Active On
-                  </small>
-                )}
-              </div>
-            </div> */}
+
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -1489,7 +1421,6 @@ const PageMaster = () => {
             <div className="col-md-6 p0 mb16">
               <FieldContainer
                 label="Engagement Rate"
-                // astric={true}
                 type="text"
                 fieldGrid={12}
                 value={rate}
@@ -1502,16 +1433,8 @@ const PageMaster = () => {
                     return;
                   }
                   setRate(e.target.value);
-                  // if (e.target.value) {
-                  //   setValidateFields((prev) => ({ ...prev, rate: false }));
-                  // }
                 }}
               />
-              {/* {validateFields.rate && (
-                <small style={{ color: "red" }}>
-                  Please Fill Engagement Rate
-                </small>
-              )} */}
             </div>
             <div className="col-md-6 p0 mb16">
               <FieldContainer
@@ -1531,41 +1454,6 @@ const PageMaster = () => {
                 onChange={(e) => setBio(e.target.value)}
               />
             </div>
-            {/* <div className="col-md-6 mb16">
-              <div className="form-group m0">
-                <label className="form-label">
-                  Platform ID <sup style={{ color: "red" }}>*</sup>
-                </label>
-                <Select
-                  options={platformData.map((option) => ({
-                    value: option._id,
-                    label: option.platform_name,
-                  }))}
-                  value={{
-                    value: platformId,
-                    label:
-                      platformData.find((role) => role._id === platformId)
-                        ?.platform_name || "",
-                  }}
-                  onChange={(e) => {
-                    setPlatformId(e.value);
-                    if (e.value) {
-                      setValidateFields((prev) => ({
-                        ...prev,
-                        platformId: false,
-                      }));
-                    }
-                  }}
-                ></Select>
-                {
-                  validateFields.platformId && (
-                    <small style={{ color: "red" }}>
-                      Please select Platform
-                    </small>
-                  ) // Platform ID
-                }
-              </div>
-            </div> */}
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -1632,22 +1520,6 @@ const PageMaster = () => {
                         }}
                         onChange={(e) => handlePriceTypeChange(e, index)}
                       />
-                      {/* <IconButton
-                        onClick={handleOpenPageModal("Price Type")}
-                        variant="contained"
-                        color="primary"
-                        aria-label="Add Price Type.."
-                      >
-                        <AddIcon />
-                      </IconButton>
-                      <IconButton
-                        onClick={handleOpenInfoModal("Price Type Info")}
-                        variant="contained"
-                        color="primary"
-                        aria-label="Price Type Info.."
-                      >
-                        <InfoIcon />
-                      </IconButton> */}
                     </div>
                   </div>
                 </div>
@@ -1677,7 +1549,6 @@ const PageMaster = () => {
                       onClick={() => {
                         setRowCount(
                           (prev) => prev.filter((e, i) => i !== index)
-                          // handleFilterPriceType()
                         );
                       }}
                     >

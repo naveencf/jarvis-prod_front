@@ -92,7 +92,16 @@ console.log(row,"row")
   }, [row, subCatData]);
 
   return (
+<<<<<<< Updated upstream
+    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md" PaperProps={{
+      style: {
+        height: '550px',
+        maxHeight: '80vh',
+      },
+    }}>
+=======
     <Dialog open={open} onClose={onClose} >
+>>>>>>> Stashed changes
       <DialogTitle>{"Update Page Cat Assignment To User"}</DialogTitle>
       <DialogContent>
         <div className="form-group col-12">

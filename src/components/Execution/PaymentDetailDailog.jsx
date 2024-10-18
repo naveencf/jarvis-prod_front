@@ -18,15 +18,15 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 export default function PaymentDetailDailog({
-  handleClosePaymentDetailDialog,
   openPaymentDetailDialog,
   paymentDialogDetails,
+  setOpenPaymentDetaliDialog,
 }) {
+  const handleClosePaymentDetailDialog = () => {
+    setOpenPaymentDetaliDialog(false);
+  };
   return (
     <div>
-      {/* <Button variant="outlined" onClick={handleClickOpenPaymentDetailDialog}>
-        Open dialog
-      </Button> */}
       <BootstrapDialog
         onClose={handleClosePaymentDetailDialog}
         aria-labelledby="customized-dialog-title"
@@ -59,8 +59,15 @@ export default function PaymentDetailDailog({
           </Typography>
           <hr />
           <Typography gutterBottom>
-  Credit Approval Date: {new Date(paymentDialogDetails?.credit_approval_date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: '2-digit' })}
-</Typography>
+            Credit Approval Date:{" "}
+            {new Date(
+              paymentDialogDetails?.credit_approval_date
+            ).toLocaleDateString("en-GB", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "2-digit",
+            })}
+          </Typography>
 
           <hr />
           <Typography gutterBottom>

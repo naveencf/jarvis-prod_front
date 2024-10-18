@@ -96,9 +96,14 @@ export default function MergeSubCategory() {
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
         fullWidth={true}
         maxWidth="md"
+        PaperProps={{
+          style: {
+            height: '550px',
+            maxHeight: '80vh',
+          },
+        }}
       >
         <DialogTitle>{"Merge Sub Category"}</DialogTitle>
         <DialogContent>

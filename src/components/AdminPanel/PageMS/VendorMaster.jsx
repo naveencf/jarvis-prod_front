@@ -917,49 +917,57 @@ const VendorMaster = () => {
   };
 
   const handleFinalSubmit = async() => {
-    setOpenPreviewModal(false);
+
 
     if (!_id) {
       setIsFormSubmitting(true);
       addVendor(previewData)
         .then((res) => {
-          setIsFormSubmitted(true);
-          toastAlert('Data Submitted Successfully');
+          console.log(res,"res")
           setIsFormSubmitting(false);
-          const resID = res.data.data._id;
-
-          // Add company data and documents (same as original logic)
-          addCompanyData({
-            vendor_id: resID,
-            company_name: compName,
-            address: compAddress,
-            city: compCity,
-            pincode: compPin,
-            state: compState,
-            threshold_limit: limit,
-            created_by: userID,
-          })
-            .then((res) => {
-              // Handle successful company data submission
+          if(res?.status == 200){
+            setIsFormSubmitted(true);
+            setOpenPreviewModal(false);
+            toastAlert('Data Submitted Successfully');
+            const resID = res.data.data._id;
+  
+            // Add company data and documents (same as original logic)
+            addCompanyData({
+              vendor_id: resID,
+              company_name: compName,
+              address: compAddress,
+              city: compCity,
+              pincode: compPin,
+              state: compState,
+              threshold_limit: limit,
+              created_by: userID,
             })
-            .catch((err) => {
-              toastError(err.message);
-            });
-
-          for (let i = 0; i < docDetails?.length; i++) {
-            const formData = new FormData();
-            formData.append('vendor_id', resID);
-            formData.append('document_name', docDetails[i].docName);
-            formData.append('document_no', docDetails[i].docNumber);
-            formData.append('document_image_upload', docDetails[i].docImage);
-
-            addVendorDocument(formData)
               .then((res) => {
-                // Handle successful document submission
+                // Handle successful company data submission
               })
               .catch((err) => {
                 toastError(err.message);
               });
+  
+            for (let i = 0; i < docDetails?.length; i++) {
+              const formData = new FormData();
+              formData.append('vendor_id', resID);
+              formData.append('document_name', docDetails[i].docName);
+              formData.append('document_no', docDetails[i].docNumber);
+              formData.append('document_image_upload', docDetails[i].docImage);
+  
+              addVendorDocument(formData)
+                .then((res) => {
+                  // Handle successful document submission
+                })
+                .catch((err) => {
+                  toastError(err.message);
+                });
+            }
+          }else if (res?.error?.status == 409){
+            toastError('Vendor is already registered with this mobile number');
+          }else{
+            toastError('There is some error while adding this vendor');
           }
         })
         .catch((err) => {
@@ -1098,14 +1106,15 @@ const VendorMaster = () => {
 
   const setVendorNameFun = (e) =>{
     setVendorName(e); 
-    const checkVendorExist = allVendorData.data.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
-    if(checkVendorExist == undefined){
-      setExistError('Vendor Is Not Exist, You Can Use This')
-      setMessageColor('green');
-    }else{
-      setExistError('Vendor Is Already Exist, Enter Another One Or ')
-      setMessageColor('red');
-    }
+    // const checkVendorExist = allVendorData?.data?.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
+    // console.log(checkVendorExist)
+    // if(checkVendorExist == undefined){
+    //   setExistError('Vendor Is Not Exist, You Can Use This')
+    //   setMessageColor('green');
+    // }else{
+    //   setExistError('Vendor Is Already Exist, Enter Another One Or ')
+    //   setMessageColor('red');
+    // }
   }
 
   return (
@@ -1147,14 +1156,16 @@ const VendorMaster = () => {
           <div className="row thm_form">
             <div className="col-md-6 mb16">
               <div className="form-group m0">
-                <label className="form-label">Business Type</label>
+                <label className="form-label">Business Type <sup style={{ color: 'red' }}>*</sup></label>
                 <Select
                   options={
                     busiTypeData.map((option) => ({
                     value: option._id,
                     label: option.busi_type_name,
                   }))}
+                  astric={true}
                   required={true}
+                  // required={true}
                   value={{
                     value: busiType,
                     label: (busiTypeData?.find((role) => role._id == busiType)?.busi_type_name) || '',

@@ -4,16 +4,7 @@ import { DataGrid, GridActionsCellItem } from "@mui/x-data-grid";
 import ListAltOutlinedIcon from "@mui/icons-material/ListAltOutlined";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  TextField,
-} from "@mui/material";
+import { Button } from "@mui/material";
 import Confirmation from "./Confirmation";
 import jwtDecode from "jwt-decode";
 import { GridToolbar } from "@mui/x-data-grid";
@@ -22,12 +13,12 @@ import PaymentDetailDailog from "./PaymentDetailDailog";
 import PointOfSaleTwoToneIcon from "@mui/icons-material/PointOfSaleTwoTone";
 import { baseUrl } from "../../utils/config";
 import FormContainer from "../AdminPanel/FormContainer";
-import { styled } from "@mui/material/styles";
 import { useGlobalContext } from "../../Context/Context";
 import { useGetAllBrandQuery } from "../Store/API/Sales/BrandApi";
 import { ButtonGroup } from "react-bootstrap";
 import formatString from "../AdminPanel/Operation/CampaignMaster/WordCapital";
 import CaseStudyOpenUpdate from "./CaseStudyOpenUpdate";
+import ExecutionPendingHold from "./ExecutionPendingHold";
 
 function ExecutionPending() {
   const token = sessionStorage.getItem("token");
@@ -41,8 +32,7 @@ function ExecutionPending() {
   const [data, setData] = useState([]);
   const [alert, setAlert] = useState([]);
   const [reload, setReload] = useState(false);
-  const [contextData, setContextData] = useState(true);
-  const [caseStudyOpen, setCaseStudyOpen] = useState(false);
+  const [contextData, setContextData] = useState(false);
   const [executionStatus, setExecutionStatus] = useState();
   const [saimyualCamp, setSaimyualCamp] = useState([]);
   const [caseStudyOpenRowData, setCaseStudyOpenRowData] = useState("");
@@ -52,7 +42,6 @@ function ExecutionPending() {
   const [multipleToken, setMultipleToken] = useState("");
   const [filterData, setFilterData] = useState([]);
   const [holdDialog, setShowHoldDialog] = useState(false);
-  const [reason, setReason] = useState("");
   const [caseStudyDialog, setCaseStudyDialog] = useState(false);
   const [apiStatus, setApiStatus] = useState("sent_for_execution");
   const [totalExecutionCounts, setTotalExecutionCounts] = useState("");
@@ -60,59 +49,27 @@ function ExecutionPending() {
   const [caseStudyCloseData, setCaseStudyCloseData] = useState([]);
   const [isCaseStudyClose, setIsCaseStudyClose] = useState(false);
 
-  const handleHoldSubmit = () => {
-    let payload = {
-      // execution_token: token,
-      execution_status: "execution_paused",
-      sale_booking_id: rowData.sale_booking_id,
+  const handleReleaseRow = (row) => async () => {
+    const payload = {
+      execution_status: "sent_for_execution",
+      sale_booking_id: row.sale_booking_id,
     };
-    axios
-      .put(`${baseUrl}sales/execution_status/${rowData._id}`, payload, {
+
+    try {
+      await axios.put(`${baseUrl}sales/execution_status/${row._id}`, payload, {
         headers: {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
-      })
-      .then((res) => {
-        setReload((preVal) => !preVal);
-        handleClose();
-      })
-
-      .catch((err) => {
-        console.log(err);
       });
-  };
-
-  const handleClose = () => {
-    setShowHoldDialog(false);
-  };
-
-  const handleReleaseRow = (row) => {
-    return () => {
-      let payload = {
-        execution_status: "sent_for_execution",
-        sale_booking_id: row.sale_booking_id,
-      };
-      axios
-        .put(`${baseUrl}sales/execution_status/${row._id}`, payload, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        })
-        .then((res) => {
-          setReload((preVal) => !preVal);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+      setReload((prevVal) => !prevVal);
+    } catch (error) {
+      console.error("Error updating execution status:", error);
+    }
   };
 
   const handleClickOpenPaymentDetailDialog = (data) => {
     setPaymentDialogDetails(data);
     setOpenPaymentDetaliDialog(true);
-  };
-  const handleClosePaymentDetailDialog = () => {
-    setOpenPaymentDetaliDialog(false);
   };
 
   const handleRowHold = (row, hold_execution_status) => {
@@ -122,17 +79,19 @@ function ExecutionPending() {
       setExecutionStatus(hold_execution_status);
     };
   };
-  const handleMultipleVerification = (e) => {
+
+  const handleMultipleVerification = async (e) => {
     e.preventDefault();
     let filteredRow = saimyualCamp?.find(
       (e) => e?.execution_token == multipleToken
     );
+
     if (filteredRow) {
       let payload = {
         execution_status: "execution_accepted",
         sale_booking_id: filteredRow.sale_booking_id,
       };
-      axios
+      await axios
         .put(`${baseUrl}sales/execution_status/${filteredRow._id}`, payload, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -174,25 +133,29 @@ function ExecutionPending() {
   }, [reload]);
 
   const fetchData = async () => {
-    // try {
-    //   if (userID && contextData == false) {
-    //     axios
-    //       .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
-    //       .then((res) => {
-    //         if (res.data[26].view_value == 1) {
-    //           setContextData(true);
-    //           setAlert(res.data);
-    //         }
-    //       });
-    //   }
-    // } catch (error) {
-    //   console.error("Error fetching data:", error);
-    // }
-    axios.get(baseUrl + `sales/sales_booking_execution?status=${apiStatus}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    try {
+      if (userID && contextData == false) {
+        await axios
+          .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
+          .then((res) => {
+            if (res.data[26].view_value == 1) {
+              setContextData(true);
+
+              setAlert(res.data);
+            }
+          });
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+    await axios.get(
+      baseUrl + `sales/sales_booking_execution?status=${apiStatus}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
   };
 
   let executionAPI = async (status = "sent_for_execution") => {
@@ -204,7 +167,6 @@ function ExecutionPending() {
       })
 
       .then((res) => {
-        console.log(res, "response--->>>-->>>");
         setSaimyualCamp(res?.data?.data);
         setData(res?.data?.data);
         setFilterData(res?.data?.data.reverse());
@@ -220,7 +182,6 @@ function ExecutionPending() {
       })
 
       .then((res) => {
-        console.log(res, "--->>>CaseStudyClose-->>>");
         setCaseStudyCloseData(res?.data);
       });
   };
@@ -244,13 +205,7 @@ function ExecutionPending() {
   }, []);
 
   const handleViewClick = (id) => {
-    const selected = data.find((ele) => ele.sale_booking_id == id);
-  };
-
-  const handleStartExecutions = (params) => {
-    navigate("/admin/op-register-campaign", {
-      state: { sale_id: params?.row?.sale_booking_id },
-    });
+    const selected = data?.find((ele) => ele.sale_booking_id == id);
   };
 
   const theme = createTheme({
@@ -260,12 +215,14 @@ function ExecutionPending() {
       },
     },
   });
+
   const addSerialNumber = (rows) => {
     return rows?.map((row, index) => ({
       ...row,
       S_No: index + 1,
     }));
   };
+
   const handleOpenCaseStudyDialog = async (e, row) => {
     e.preventDefault();
     setCaseStudyDialog(true);
@@ -357,19 +314,6 @@ function ExecutionPending() {
               >
                 In Progress
               </Button>
-              {/* {params?.row?.execution_excel &&
-                params.row?.execution_status == "execution_accepted" && (
-                  <Button
-                    size="small"
-                    color="success"
-                    variant="outlined"
-                    className="btn btn_sm cmnbtn"
-                    fontSize="inherit"
-                    onClick={() => handleStartExecutions(params)}
-                  >
-                    Start Execution
-                  </Button>
-                )} */}
             </>
           );
         } else if (params.row.execution_status == "execution_completed") {
@@ -547,12 +491,12 @@ function ExecutionPending() {
           : 0;
       },
     },
-  {
+    {
       field: "payment_type",
       headerName: "Payment Status",
       width: 150,
     },
-  {
+    {
       field: "payment_status_show",
       headerName: "Credit Status",
       width: 150,
@@ -1094,7 +1038,6 @@ function ExecutionPending() {
                   ? caseStudyCloseData
                   : addSerialNumber(saimyualCamp)
               }
-              // columns={columns}
               columns={isCaseStudyClose ? caseStudyColumn : columns}
               getRowId={(row) => row?._id}
               slots={{ toolbar: GridToolbar }}
@@ -1109,9 +1052,9 @@ function ExecutionPending() {
       </ThemeProvider>
       <PaymentDetailDailog
         handleClickOpenPaymentDetailDialog={handleClickOpenPaymentDetailDialog}
-        handleClosePaymentDetailDialog={handleClosePaymentDetailDialog}
         openPaymentDetailDialog={openPaymentDetailDialog}
         paymentDialogDetails={paymentDialogDetails}
+        setOpenPaymentDetaliDialog={setOpenPaymentDetaliDialog}
       />
       <CaseStudyOpenUpdate
         setCaseStudyDialog={setCaseStudyDialog}
@@ -1121,41 +1064,12 @@ function ExecutionPending() {
         executionAPI={executionAPI}
         getCaseStudyExecution={getCaseStudyExecution}
       />
-
-      <Dialog
-        fullWidth={"sm"}
-        maxWidth={"sm"}
-        open={holdDialog}
-        onClose={handleClose}
-      >
-        <DialogTitle>PLEASE ENTER THE REASON FOR HOLD</DialogTitle>
-        <DialogContent>
-          <Box
-            noValidate
-            component="form"
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              m: "auto",
-              width: "fit-content",
-            }}
-          >
-            <FormControl sx={{ mt: 2, minWidth: 120 }}>
-              <TextField
-                multiline
-                rows={2}
-                columns={5}
-                variant="outlined"
-                placeholder="Enter Reason"
-                onChange={(e) => setReason(e.target.value)}
-              />
-            </FormControl>
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleHoldSubmit}>Submit</Button>
-        </DialogActions>
-      </Dialog>
+      <ExecutionPendingHold
+        setShowHoldDialog={setShowHoldDialog}
+        holdDialog={holdDialog}
+        rowData={rowData}
+        setReload={setReload}
+      />
     </>
   );
 }

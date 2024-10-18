@@ -110,11 +110,11 @@ export const PageBaseURL = createApi({
     //Page
    
     getAllPageList: builder.query({
-      query: ({ decodedToken, userID }) => {
+      query: ({ decodedToken, userID , pagequery }) => {
         // Check if the role is admin (role_id == 1)
         if (decodedToken?.role_id === 1) {
           return {
-            url: `v1/pageMaster`, // Use GET request for admin
+            url: `v1/pageMaster?${pagequery}`, // Use GET request for admin
             method: "GET",
           };
         } else {

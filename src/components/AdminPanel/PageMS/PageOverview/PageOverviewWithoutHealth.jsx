@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import View from "../../Sales/Account/View/View";
 import CustomTable from "../../../CustomTable/CustomTable";
 import jwtDecode from "jwt-decode";
@@ -9,12 +9,13 @@ function PageOverviewWithoutHealth({ columns }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
+  const [pagequery,setpagequery] = useState("page=1&limit=50")
 
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID });
+  } = useGetAllPageListQuery({ decodedToken, userID ,pagequery});
 
   return (
     <div className="card">

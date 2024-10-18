@@ -90,6 +90,7 @@ const PageOverview = () => {
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
+  const [pagequery,setpagequery] = useState("")
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
@@ -114,7 +115,7 @@ const PageOverview = () => {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID });
+  } = useGetAllPageListQuery({ decodedToken, userID ,pagequery});
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();

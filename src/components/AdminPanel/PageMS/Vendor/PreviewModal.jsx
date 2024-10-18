@@ -11,7 +11,7 @@ const PreviewModal = ({
   docDetails,
   handleFinalSubmit,
 }) => {
-  console.log(previewData);
+  // console.log(previewData);
   return (
     <Modal
       open={open}

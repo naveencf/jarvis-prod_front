@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
-  Snackbar,
   Typography,
 } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -41,9 +40,7 @@ import {
 } from './apiServices';
 import CustomTable from '../../CustomTable/CustomTable';
 
-
 const PlanMaking = () => {
-  
   // const { id } = useParams();
   const [activeTabPlatfrom, setActiveTabPlatform] = useState(
     '666818824366007df1df1319'
@@ -62,8 +59,7 @@ const PlanMaking = () => {
   const dispatch = useDispatch();
 
   const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery({decodedToken, userID});
-    
+    useGetAllPageListQuery({ decodedToken, userID });
 
   const { data: vendorTypeData } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
@@ -82,6 +78,7 @@ const PlanMaking = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
+  const [selectedFollowers, setSelectedFollowers] = useState([]);
   const [expanded, setExpanded] = useState(false);
   const [totalFollowers, setTotalFollowers] = useState(0);
   // const [planSuccess, setPlanSuccess] = useState();
@@ -96,7 +93,7 @@ const PlanMaking = () => {
   const [maxFollowers, setMaxFollowers] = useState(null);
   const [notFoundPages, setNotFoundPages] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
- 
+
   // const [pageDetail, setPageDetails] = useState([]);
 
   const { id } = useParams();
@@ -127,7 +124,7 @@ const PlanMaking = () => {
 
   const sellingPrice = planDetails && planDetails[0]?.selling_price;
 
-  const percentageRemaining = ((sellingPrice - totalCost) / sellingPrice) * 100;
+  const percentageRemaining = (totalCost / sellingPrice) * 100;
 
   // setPercentageRemaining(percentage);
 
@@ -164,11 +161,11 @@ const PlanMaking = () => {
 
       // Handle the price filter based on the selected type
       if (priceFilterType === 'post') {
-        price = page.price_details?.Insta_Post || 0; // Access Insta_Post price
+        price = page.price_details?.Insta_Post || 0;
       } else if (priceFilterType === 'story') {
-        price = page.price_details?.Insta_Story || 0; // Access Insta_Story price
+        price = page.price_details?.Insta_Story || 0;
       } else if (priceFilterType === 'both') {
-        price = page.price_details?.Both || 0; // Access Both price
+        price = page.price_details?.Both || 0;
       }
 
       const followers = page?.followers_count;
@@ -189,11 +186,13 @@ const PlanMaking = () => {
   };
 
   const handleRemoveFilter = () => {
-    setFilterData(pageList);
+    const pageData = pageList?.filter((item) => item.followers_count > 0);
+    setFilterData(pageData);
   };
   useEffect(() => {
     if (pageList) {
-      setFilterData(pageList);
+      const pageData = pageList?.filter((item) => item.followers_count > 0);
+      setFilterData(pageData);
       const initialPostValues = {};
       const initialStoryValues = {};
       const initialCostPerPostValues = {};
@@ -202,9 +201,10 @@ const PlanMaking = () => {
       pageList?.forEach((page) => {
         initialPostValues[page._id] = 0;
         initialStoryValues[page._id] = 0;
-        initialCostPerPostValues[page._id] = page.m_post_price || 0;
-        initialCostPerStoryValues[page._id] = page.m_story_price || 0;
-        initialCostPerBothValues[page._id] = page.m_both_price || 0;
+        initialCostPerPostValues[page._id] = page.price_details.Insta_Post || 0;
+        initialCostPerStoryValues[page._id] =
+          page.price_details.Insta_Story || 0;
+        initialCostPerBothValues[page._id] = page.price_details.Both || 0;
       });
       setPostPerPageValues(initialPostValues);
       setStoryPerPageValues(initialStoryValues);
@@ -279,8 +279,7 @@ const PlanMaking = () => {
         ...prevValues,
         [row._id]: postPerPage,
       };
-
-      if (callback) callback(newValues); // Trigger callback with the updated values
+      if (callback) callback(newValues);
       return newValues;
     });
   };
@@ -303,7 +302,6 @@ const PlanMaking = () => {
 
     // Set postPerPage values and calculate cost with latest values
     const postPerPage = isChecked ? 1 : 0;
-
     // Update postPerPage and after updating, calculate total cost with the latest values
     handlePostPerValue(row, postPerPage, (updatedPostValues) => {
       calculateTotalCost(
@@ -314,21 +312,23 @@ const PlanMaking = () => {
         costPerStoryValues[row._id],
         costPerBothValues[row._id]
       );
-
+      console.log(updatedSelectedRows);
       // Now, map updated planxData with the latest postPerPage values
       const planxData = updatedSelectedRows.map(
-        ({ _id, m_story_price, page_name, m_post_price }) => ({
+        ({ _id, price_details, page_name }) => ({
           _id,
           page_name,
-          post_price: m_post_price,
-          story_price: m_story_price,
+          post_price: price_details.price_details,
+          story_price: price_details.Insta_Story,
           post_count: Number(updatedPostValues[_id]) || 0,
           story_count: Number(storyPerPageValues[_id]) || 0,
         })
       );
+
       if (!isAutomaticCheck) {
         debouncedSendPlanDetails(planxData);
       }
+
       // sendPlanDetails(planxData);
     });
 
@@ -387,8 +387,6 @@ const PlanMaking = () => {
   useEffect(() => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
-
-console.log("pagelist", pageList);
 
   const handleStoryPerPageChange = (row) => (event) => {
     const updatedStoryValues = {
@@ -530,6 +528,7 @@ console.log("pagelist", pageList);
     } else {
       totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
     }
+
     setTotalCostValues((prevValues) => ({
       ...prevValues,
       [id]: totalCost,
@@ -571,7 +570,7 @@ console.log("pagelist", pageList);
     setFilterData(platform);
   };
   const handleAutomaticSelection = (incomingData) => {
-    setIsAutomaticCheck(true);
+    // setIsAutomaticCheck(true);
     const updatedSelectedRows = [...selectedRows];
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
@@ -595,10 +594,9 @@ console.log("pagelist", pageList);
         // Update post and story counts
         updatedPostValues[matchingPage._id] = incomingPage.post_count;
         updatedStoryValues[matchingPage._id] = incomingPage.story_count;
-
         // Calculate the cost
-        const costPerPost = matchingPage.m_post_price;
-        const costPerStory = matchingPage.m_story_price;
+        const costPerPost = matchingPage?.price_details?.Insta_Post;
+        const costPerStory = matchingPage?.price_details?.Insta_Story;
         const costPerBoth = costPerPost + costPerStory;
 
         calculateTotalCost(
@@ -621,7 +619,7 @@ console.log("pagelist", pageList);
     setSelectedRows(updatedSelectedRows);
     setShowTotalCost(updatedShowTotalCost);
 
-    setIsAutomaticCheck(false);
+    // setIsAutomaticCheck(false);
   };
 
   const filterAndSelectRows = (searchTerms) => {
@@ -708,7 +706,7 @@ console.log("pagelist", pageList);
       setNotFoundPages([]);
     }
   };
-
+  console.log(selectedFollowers);
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -759,15 +757,32 @@ console.log("pagelist", pageList);
   }, []);
 
   const handleFollowersBlur = () => {
-    const followerFilteredData = pageList?.filter((page) => {
-      const followers = page?.followers_count;
-      return (
-        (minFollowers === '' || followers >= parseInt(minFollowers)) &&
-        (maxFollowers === '' || followers <= parseInt(maxFollowers))
-      );
+    const parseRange = (range) => {
+      const [min, max] = range.split('to').map((val) => {
+        const value = parseInt(val.replace('K', '')) * 1000; // Convert 'K' to thousand
+        return value;
+      });
+      return { min, max };
+    };
+
+    let filteredData = [];
+
+    selectedFollowers.forEach((range) => {
+      const { min, max } = parseRange(range);
+
+      // Filter the pageList for the current range
+      const rangeFilteredData = pageList?.filter((page) => {
+        const followers = page?.followers_count;
+        return followers >= min && followers <= max;
+      });
+
+      // Merge current range's filtered data with the overall result
+      filteredData = [...filteredData, ...rangeFilteredData];
+      console.log('max=', max, 'min=', min);
     });
 
-    setFilterData(followerFilteredData);
+    console.log('unique', filteredData);
+    setFilterData(filteredData);
   };
 
   const clearRecentlySelected = () => {
@@ -857,15 +872,26 @@ console.log("pagelist", pageList);
     // setIsAutomaticCheck(false);
   };
 
+  const deSelectAllRows = () => {
+    setSelectedRows([]);
+    setPostPerPageValues({});
+    setStoryPerPageValues({});
+    setPageCategoryCount({});
+    const payload = [];
+    sendPlanDetails(payload);
+  };
+
   const displayPercentage = Math.floor(percentageRemaining);
 
-  useEffect(() => {
-    if (percentageRemaining  >=45 && percentageRemaining<=50) {
-      alert('You have reached 50%!');
-    } else if (percentageRemaining >=15 && percentageRemaining<=20) {
-      alert('you have reached 20%');
-    }
-  }, [percentageRemaining]);
+  // useEffect(() => {
+  //   if (percentageRemaining >= 50 && percentageRemaining <= 45) {
+  //     alert('You have reached 50%!');
+  //   } else if (percentageRemaining >= 75 && percentageRemaining <= 80) {
+  //     alert('You have reached 80%');
+  //   } else if (percentageRemaining >= 100) {
+  //     alert('You have reached 100%');
+  //   }
+  // }, [percentageRemaining]);
 
   return (
     <>
@@ -964,7 +990,7 @@ console.log("pagelist", pageList);
             aria-controls="panel1-content"
             id="panel2-header"
           >
-            <Box
+            {/* <Box
               sx={{
                 position: 'relative',
                 display: 'inline-flex',
@@ -972,19 +998,8 @@ console.log("pagelist", pageList);
                 justifyContent: 'center',
               }}
             >
-              <CircularProgress
-                variant="determinate"
-                value={displayPercentage}
-                sx={{ position: 'absolute' }}
-              />
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{ position: 'absolute', color: 'primary.main' }}
-              >
-                {`${displayPercentage}%`}
-              </Typography>
-            </Box>
+              <p>{`${displayPercentage}%`} achived</p>
+            </Box> */}
             <h5 className="card-title">Category Filters</h5>
           </AccordionSummary>
           <AccordionDetails className="card-body">
@@ -1005,8 +1020,10 @@ console.log("pagelist", pageList);
             </div>
             {activeTabPlatfrom === '666818824366007df1df1319' && (
               <Filters
-                percentageRemaining={percentageRemaining}
                 priceFilterType={priceFilterType}
+                deSelectAllRows={deSelectAllRows}
+                selectedFollowers={selectedFollowers}
+                setSelectedFollowers={setSelectedFollowers}
                 setPriceFilterType={setPriceFilterType}
                 minPrice={minPrice}
                 setMinPrice={setMinPrice}
