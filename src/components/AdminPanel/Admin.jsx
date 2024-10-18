@@ -12,6 +12,7 @@ import InventoryDashboard from './PageMS/InventoryDashboard/InventoryDashboard';
 import CategoryOverview from './PageMS/Category/CategoryOverview';
 
 import SubCategoryOverview from './PageMS/SubCategory/SubCategoryOverview';
+// import PlanMaking from '../../components/Inventory/plan-making/PlanMaking';
 
 const ViewSalesPoc = lazy(() =>
   import('../CustomTable/TableComponent/ViewSalesPoc')
@@ -666,7 +667,7 @@ const PaymentDoneTransactionList = lazy(() =>
 const PageStats = lazy(() => import('./PageMS/PageStats'));
 // const PlanMaking = lazy(() => import("../AdminPanel/PageMS/PlanMaking"));
 const PlanMaking = lazy(() =>
-  import('../../components/Inventory/plan-making/index')
+  import('../../components/Inventory/plan-making/PlanMaking')
 );
 const PlanMakingTable = lazy(() =>
   import('../../components/Inventory/plan-making/PlanMaking')
