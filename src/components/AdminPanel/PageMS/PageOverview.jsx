@@ -279,7 +279,7 @@ const PageOverview = () => {
     }
 
     getData();
-    fetchWhatsAppLinks();
+    // fetchWhatsAppLinks();
   }, []);
 
   useEffect(() => {
