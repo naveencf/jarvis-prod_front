@@ -1191,13 +1191,13 @@ const PageOverviewNew = () => {
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
-          {pageUpdateAuth && (
+          {/* {pageUpdateAuth && (
             <Link
               className="mt-2"
               to={`/admin/pms-page-edit/${row._id}`}
               target="_blank"
               rel="noopener noreferrer"
-            >
+            > */}
               <button
                 title="Edit"
                 className="btn btn-outline-primary btn-sm user-button"
@@ -1205,8 +1205,8 @@ const PageOverviewNew = () => {
               >
                 <FaEdit />{" "}
               </button>
-            </Link>
-          )}
+            {/* </Link>
+          )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
               <DeleteButton
