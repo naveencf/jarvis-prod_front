@@ -39,6 +39,7 @@ const TableToolkit = ({
   setApiFilters,
   setColumns,
   originalData1,
+  sortedData,
 }) => {
   const containerRef = useRef(null);
   const [ModalOpen, setModalOpen] = useState(false);
@@ -86,7 +87,7 @@ const TableToolkit = ({
 
 
   useEffect(() => {
-    const selectedRowData = selectedRowsIndex?.map((index) => data[index]);
+    const selectedRowData = selectedRowsIndex?.map((index) => sortedData[index]);
     if (JSON.stringify(selectedRowData) !== JSON.stringify(selectedRowsData)) {
       setSelectedRowsData(selectedRowData);
     }

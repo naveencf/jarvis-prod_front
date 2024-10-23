@@ -20,6 +20,8 @@ const ServiceIncentiveSharing = ({
     executiveEditFlag,
     editIndex,
     insetServiceIncentivePercentage,
+    userRole,
+    accountInfo,
 
 }) => {
     const [selectedExecutive, setSelectedExecutive] = useState();
@@ -65,39 +67,83 @@ const ServiceIncentiveSharing = ({
 
 
     const handleExecutiveSelect = (executiveId, percent, isprev) => {
-        const selectedUser = availableUsers?.find(
-            (user) => user?.user_id === executiveId
-        );
-        setSelectedExecutive(executiveId);
+        console.log(executiveId, percent, "inside handleExecutiveSelect");
 
-
-
-        if (selectedUser) {
-            setExecutiveFields(
-                preExec => [
-                    ...preExec,
-                    { user_id: executiveId, user_percentage: `${isprev ? percent : ""}` },
-                ]);
-            setAvailableUsers(
-                availableUsers?.filter((user) => user?.user_id !== executiveId)
+        setAvailableUsers((prevAvailableUsers) => {
+            const selectedUser = prevAvailableUsers?.find(
+                (user) => user?.user_id === executiveId
             );
-        }
+            console.log(selectedUser, "selectedUser");
+
+            if (selectedUser) {
+                setSelectedExecutive(executiveId);
+
+                // Use functional update to ensure the latest state is captured
+                setExecutiveFields((prevExecFields) => {
+                    const executiveExists = prevExecFields.some(
+                        (field) => field.user_id === executiveId
+                    );
+
+                    if (executiveExists) {
+                        return prevExecFields;
+                    }
+
+                    return [
+                        ...prevExecFields,
+                        { user_id: executiveId, user_percentage: isprev ? percent : "" },
+                    ];
+                });
+
+                // Remove the selected user from the available users
+                return prevAvailableUsers?.filter((user) => user?.user_id !== executiveId);
+            }
+            return prevAvailableUsers; // Return unchanged if user not found
+        });
     };
 
+    // Automatically select executive based on user role
     useEffect(() => {
-        if (incentiveSharing?.length === 0) {
-            handleExecutiveSelect(loginUser, 100);
 
-        } else {
 
-            setExecutiveFields(incentiveSharing)
+        handleExecutiveSelect(
+            accountInfo?.[0]?.created_by,
+            100,
+            true // Assuming 'true' for the initial case
+        );
+
+
+        // handleExecutiveSelect(
+        //     userRole !== 1 ? loginUser : accountInfo?.[0]?.created_by,
+        //     100,
+        //     false // Assuming 'false' for the initial case
+        // );
+
+    }, [selectedService]);
+
+    // When `executiveFields` changes, log the updated value to check the state
+    useEffect(() => {
+        console.log(executiveFields, "executiveFields updated");
+    }, [executiveFields]);
+
+    // Handling incentive sharing update on dependency change
+    useEffect(() => {
+        if (incentiveSharing.length !== 0) {
+            setExecutiveFields(incentiveSharing);
         }
-    }, [userContextData, incentiveSharing, selectedService, selectedExecutive
-    ]);
+    }, [incentiveSharing]);
+
+
 
 
     const handlePercentageChange = useCallback(
-        (index, value) => {
+        (index, value, flag) => {
+            if (flag) {
+                const newFields = executiveFields?.map((field, i) =>
+                    i === index ? { ...field, user_percentage: value * 100 / 4 } : field
+                );
+                setExecutiveFields(newFields);
+                return;
+            }
             const newFields = executiveFields?.map((field, i) =>
                 i === index ? { ...field, user_percentage: value } : field
             );
@@ -232,6 +278,21 @@ const ServiceIncentiveSharing = ({
                                 value={field.user_percentage}
                                 onChange={(e) =>
                                     handlePercentageChange(index, e.target.value)
+                                }
+                            // disabled={index === executiveFields.length - 1}
+                            />
+                        </div>
+                        <div className="col-2">
+                            <label className="form-label">value</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                placeholder="Percentage"
+                                value={field?.user_percentage * 4 / 100}
+                                onChange={(e) => {
+                                    if (e.target.value <= 4)
+                                        handlePercentageChange(index, e.target.value, 1)
+                                }
                                 }
                             // disabled={index === executiveFields.length - 1}
                             />

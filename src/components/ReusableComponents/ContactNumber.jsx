@@ -43,7 +43,9 @@ const ContactNumber = ({
         type="text"
         inputProps={{ maxLength: 10, pattern: "[0-9]*" }}
         InputProps={{
-          disabled: label === "Emergency Contact 1" || label === "Emergency Contact 2" ? false : true,
+          disabled: label === "Emergency Contact 1" || 
+                    label === "Emergency Contact 2" || 
+                    label === "Alternate Contact" ? false : true,
         }}
         value={contact}
         onChange={handleContactChange}

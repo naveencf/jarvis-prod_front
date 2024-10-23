@@ -21,7 +21,9 @@ const EditIncentiveSharing = ({
     handelSubmit,
     loginUser,
     userContextData,
-    removeServices
+    removeServices,
+    userRole,
+    accountInfo
 }) => {
     const [check, setCheck] = useState(false);
     const [error, setError] = useState(false);
@@ -158,6 +160,8 @@ const EditIncentiveSharing = ({
                         executiveEditFlag={executiveEditFlag}
                         editIndex={editIndex}
                         insetServiceIncentivePercentage={insetServiceIncentivePercentage}
+                        userRole={userRole}
+                        accountInfo={accountInfo}
                     />
                 )}
             </div>

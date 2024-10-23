@@ -479,6 +479,8 @@ const CustomTable = ({
         setColumns={setColumns}
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
+        sortedData={sortedData}
+
       />
       {showTotal && (
         <TotalRow

@@ -25,7 +25,6 @@ const Filters = ({
   removeCategory,
   handleRemoveFilter,
   handleCombinedFilter,
-  handleFollowersBlur,
   selectAllRows,
   deSelectAllRows,
 }) => {
@@ -103,8 +102,10 @@ const Filters = ({
         <select
           id="follower-filter"
           className="filter-dropdown form-control"
-          onChange={handleFollowerSelection}
-          onBlur={handleFollowersBlur}
+          onChange={(e) => {
+            handleFollowerSelection(e);
+          }}
+          value={selectedFollowers[0] || ''}
         >
           <option value="" disabled>
             Select Follower Range
@@ -132,7 +133,7 @@ const Filters = ({
               className="filter-input form-control"
               value={minFollowers || ''}
               onChange={(e) => setMinFollowers(e.target.value)}
-              onBlur={handleFollowersBlur}
+              // onBlur={handleFollowersBlur}
             />
             <p>{formatNumber(minFollowers)}</p>
           </div>
@@ -143,7 +144,7 @@ const Filters = ({
               className="filter-input form-control"
               value={maxFollowers || ''}
               onChange={(e) => setMaxFollowers(e.target.value)}
-              onBlur={handleFollowersBlur}
+              // onBlur={handleFollowersBlur}
             />
             <p>{formatNumber(maxFollowers)}</p>
           </div>

@@ -14,6 +14,7 @@ import BalanceReleaseIncentive from "../IncentiveComponents/Components/BalanceRe
 import IncentiveFilters from "./Components/IncentiveFilters";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import { ConstructionOutlined } from "@mui/icons-material";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const IncentivePayment = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -37,6 +38,9 @@ const IncentivePayment = () => {
   const [uniqueSalesExecutiveData, setUniqueSalesExecutiveData] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [viewPendingStatus, setViewPendingStatus] = useState(true);
+  const [tableSelectedData, setTableSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
@@ -156,6 +160,7 @@ const IncentivePayment = () => {
   );
 
   const getData = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.get(
         baseUrl + "sales/incentive_request_list_for_finance",
@@ -169,6 +174,7 @@ const IncentivePayment = () => {
       const fetchedData = response?.data?.data;
 
       const filteredData = filterDataBasedOnSelection(fetchedData);
+      setIsLoading(false);
       setData(fetchedData);
       setFilterData(filteredData);
       calculateUniqueData(fetchedData);
@@ -364,33 +370,51 @@ const IncentivePayment = () => {
         setBalanceReleaseAmount={setBalanceReleaseAmount}
         balanceReleaseAmount={balanceReleaseAmount}
       />
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Incentive Release</h5>
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn_sm btn-primary"
-              onClick={(e) => handlePendingFilterData(e)}
-            >
-              Pending
-            </button>
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => handleCompletedFilterData(e)}
-            >
-              Completed
-            </button>
-            <button
-              className="btn cmnbtn btn_sm btn-secondary"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-        <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-          <div>
-            <DataGrid
+      <div>
+        <View
+          columns={incentivePaymentColumns({
+            filterData,
+            setSelectedData,
+            setBalanceReleaseAmount,
+            setAccountNo,
+            setRemarks,
+            setPaymentRef,
+            setModalOpen,
+            calculateAging,
+            viewPendingStatus,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Incentive"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"incentive_request_list_for_finance"}
+          selectedData={setTableSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-primary"
+                onClick={(e) => handlePendingFilterData(e)}
+              >
+                Pending
+              </button>
+              <button
+                className="btn cmnbtn btn_sm btn-success"
+                onClick={(e) => handleCompletedFilterData(e)}
+              >
+                Completed
+              </button>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
+
+        {/* <DataGrid
               rows={filterData}
               columns={incentivePaymentColumns({
                 filterData,
@@ -414,9 +438,7 @@ const IncentivePayment = () => {
               }}
               // rowCount={filterData?.length - 1}
               getRowId={(row) => row?._id}
-            />
-          </div>
-        </div>
+            /> */}
       </div>
     </div>
   );

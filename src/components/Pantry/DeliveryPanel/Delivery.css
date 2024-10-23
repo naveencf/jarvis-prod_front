@@ -1695,7 +1695,7 @@ body[theme="dark"] .sec_bg {
   border-radius: 10px;
   padding: 0px;
   transition: var(--u-transition);
-  height: 100%;
+  /* height: 100%; */
   position: relative !important;
   overflow: hidden;
 }

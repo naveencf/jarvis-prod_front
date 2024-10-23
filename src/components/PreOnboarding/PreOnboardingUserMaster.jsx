@@ -8,6 +8,7 @@ import welcomeImage from "../../assets/imgs/other/welcome.png";
 import { useGlobalContext } from "../../Context/Context";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "@mui/material";
+import { MenuItem } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
 import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
 import Tour from "reactour";
@@ -56,7 +57,11 @@ import { baseUrl } from "../../utils/config";
 import ImageSelector from "./ImageSelector";
 import { FormatName } from "../../utils/FormatName";
 import Slider from "react-slick";
-import OnboardingForm from "./OnboardingForm";
+import OnboardingBankDetails from "./OnboardingForms/OnboardingBankDetails";
+import OtherDetails from "./OnboardingForms/OtherDetails";
+import IdentityDetails from "./OnboardingForms/IdentityDetails";
+import WorkExperience from "./OnboardingForms/WorkExperience";
+import JobSection from "./OnboardingForms/JobSection";
 
 var settings = {
   arrows: false,
@@ -99,8 +104,6 @@ const bloodGroupData = [
   "O- (O Negative)",
 ];
 
-const maritialStatusData = ["Single", "Married"];
-
 const genderData = ["Male", "Female", "Other"];
 
 //Guardian
@@ -111,11 +114,10 @@ const initialGuardianDetailsGroup = {
   relation_with_guardian: "",
 };
 
-
 //Family
 const initialFamilyDetailsGroup = {
   name: "",
-  // DOB: "",
+  DOB: "",
   contact: "",
   occupation: "",
   annual_income: "",
@@ -124,7 +126,7 @@ const initialFamilyDetailsGroup = {
 
 const familyDisplayFields = [
   "name",
-  // "DOB",
+  "DOB",
   "contact",
   "occupation",
   "relation",
@@ -133,7 +135,7 @@ const familyDisplayFields = [
 
 const familyFieldLabels = {
   name: "Full Name",
-  // DOB: "Date of Birth",
+  DOB: "Date of Birth",
   contact: "Contact Number",
   occupation: "Occupation",
   annual_income: "Annual Income",
@@ -172,6 +174,7 @@ const educationFieldLabels = {
 };
 
 const PreOnboardingUserMaster = () => {
+  const [workExperiences , setWorkExperiences] = useState('')
   const [isShowRocket, setIsShowRocket] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const whatsappApi = WhatsappAPI();
@@ -211,9 +214,21 @@ const PreOnboardingUserMaster = () => {
   const [hobbiesData, setHobbiesData] = useState([]);
   const [bloodGroup, setBloodGroup] = useState("");
 
-  const [maritialStatus, setMaritialStatus] = useState("");
-  const [dateOfMarraige, setDateOfMarraige] = useState("");
+  // const [maritialStatus, setMaritialStatus] = useState("");
+  // const [dateOfMarraige, setDateOfMarraige] = useState("");
   const [spouseName, setSpouseName] = useState("");
+
+  // New Fiels Add on ----------------------------------
+  const casteOptions = ["General", "OBC", "SC", "ST"];
+  const [cast, setCast] = useState("");
+  const [employeeID, setEmployeeID] = useState("");
+  const [reportL1, setReportL1] = useState("");
+  const [departmentName, setDepartmentName] = useState("");
+  const [designationName, setDesignationName] = useState("");
+
+  const [maritalStatus, setMaritalStatus] = useState("");
+  const [dateOfMarriage, setDateOfMarriage] = useState("");
+  const maritalStatusData = ["Married", "Unmarried"];
 
   // Documents states
   const [XMarksheet, setXMarksheet] = useState(null);
@@ -280,7 +295,6 @@ const PreOnboardingUserMaster = () => {
   const [guardianDetails, setGuardianDetails] = useState([
     initialGuardianDetailsGroup,
   ]);
-  const [guardianContactErrors, setGuardianContactErrors] = useState({});
 
   //Family Fields
   const [familyDetails, setFamilyDetails] = useState([
@@ -294,7 +308,6 @@ const PreOnboardingUserMaster = () => {
   ]);
 
   //coc
-  const [acceptCoc, setAcceptCoc] = useState(false);
   const [cocFlag, setCocFlag] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState();
@@ -315,6 +328,7 @@ const PreOnboardingUserMaster = () => {
 
   const [showMandotaryPer, setShowMandotaryPer] = useState(0);
   const [showNonMandotaryPer, setShowNonMandotaryPer] = useState(0);
+  const [alternateContact , setAlternateContact] = useState(0)
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -333,7 +347,7 @@ const PreOnboardingUserMaster = () => {
         filteredPart.slice(1).toLowerCase()
       );
     });
-    
+
     setUserName(correctedNameParts.join(" "));
   };
 
@@ -503,7 +517,6 @@ const PreOnboardingUserMaster = () => {
   const gettingData = () => {
     axios.get(`${baseUrl}` + `get_single_user/${id}`).then((res) => {
       const fetchedData = res.data;
-
       const preselectedHobbies = fetchedData?.Hobbies?.map((hobbyId) => ({
         value: hobbyId,
         label: hobbiesData?.find((hobby) => hobby?.hobby_id == hobbyId)
@@ -557,6 +570,12 @@ const PreOnboardingUserMaster = () => {
         image,
         coc_flag,
         designation_name,
+        Report_L1N,
+        user_id,
+        department_name,
+        cast_type,
+        work_experience,
+        emergency_contact2
       } = fetchedData;
       setDesignation(designation_name);
       setAllUserData(fetchedData);
@@ -568,6 +587,7 @@ const PreOnboardingUserMaster = () => {
       setPersonalEmail(PersonalEmail);
       setFatherName(fatherName);
       setMotherName(motherName);
+      setCast(cast_type);
       setGender(Gender);
       setBloodGroup(BloodGroup);
       {
@@ -581,9 +601,10 @@ const PreOnboardingUserMaster = () => {
         joining_date?.split("T")[0].split("-").reverse().join("-")
       );
       setDaysLeftToJoining(joining_date);
-      setMaritialStatus(MartialStatus);
+      setMaritalStatus(MartialStatus);
       setDateOfBirth(DOB?.split("T")?.[0]);
-      setDateOfMarraige(DateOfMarriage);
+      setDateOfMarriage(DateOfMarriage);
+      setWorkExperiences(work_experience)
       setSpouseName(spouse_name);
       {
         tenth_marksheet_validate !== "" &&
@@ -630,8 +651,9 @@ const PreOnboardingUserMaster = () => {
       setcurrentCity(current_city);
       setcurrentState(current_state);
       setcurrentPincode(current_pin_code);
-      setEmergencyContact(alternate_contact);
-      setEmergencyContact2(emergency_contact1);
+      setAlternateContact(alternate_contact)
+      setEmergencyContact(emergency_contact1);
+      setEmergencyContact2(emergency_contact2);
       setGetProfile(image_url);
       setGetNickName(nick_name);
       setProfileImage(image);
@@ -639,6 +661,11 @@ const PreOnboardingUserMaster = () => {
         showOnboardingModal && openReadyToOnboardModal();
       }
       setCocFlag(coc_flag);
+
+      setReportL1(Report_L1N);
+      setEmployeeID(user_id);
+      setDepartmentName(department_name);
+      setDesignationName(designation_name);
     });
   };
 
@@ -650,7 +677,6 @@ const PreOnboardingUserMaster = () => {
     fetchCOCData();
     getDocuments();
   }, [id]);
-
 
   function validateAndCorrectUserName(userName) {
     userName = userName.replace(/\s{2,}/g, " ").trim();
@@ -680,21 +706,18 @@ const PreOnboardingUserMaster = () => {
       return toastError("Father Name is Required");
     } else if (!motherName || motherName == "") {
       return toastError("Mother Name is Required");
-    }else if (!currentAddress || currentAddress == "") {
+    } else if (!currentAddress || currentAddress == "") {
       return toastError("Current address is Required");
-    }
-    else if (!currentState || currentState == "") {
+    } else if (!currentState || currentState == "") {
       return toastError("Current State is Required");
-    }
-    else if (!currentCity || currentCity == "") {
+    } else if (!currentCity || currentCity == "") {
       return toastError("Current City is Required");
-    }
-    else if (!currentPincode || currentPincode == "") {
+    } else if (!currentPincode || currentPincode == "") {
       return toastError("Current Pincode is Required");
     }
 
     setIsSubmitting(true);
-  
+
     const formData = new FormData();
     formData.append("user_id", id);
     formData.append("user_name", validateAndCorrectUserName(username));
@@ -703,9 +726,14 @@ const PreOnboardingUserMaster = () => {
     formData.append("user_login_password", password);
     formData.append("user_contact_no", Number(contact));
     formData.append("personal_number", personalContact);
+    formData.append("alternate_contact", alternateContact); 
     formData.append("Personal_email", personalEmail);
-    formData.append("alternate_contact", Number(emergencyContact));
-    formData.append("emergency_contact1", Number(emergencyContact2));
+    formData.append("cast_type", cast);
+    formData.append("MartialStatus", maritalStatus);
+    formData.append("spouse_name", spouseName);
+    formData.append("DateOfMarriage", dateOfMarriage);
+    formData.append("emergency_contact1", Number(emergencyContact));
+    formData.append("emergency_contact2", Number(emergencyContact2));
 
     // document open ---------->
     formData.append("tenth_marksheet", XMarksheet);
@@ -718,6 +746,8 @@ const PreOnboardingUserMaster = () => {
     formData.append("pre_off_letter", previousOfferLetter);
     formData.append("pre_relieving_letter", previousRelievingLetter);
     formData.append("bankPassBook_Cheque", passbookCheque);
+    formData.append("work_experience", workExperiences);
+
     // document close ---------->
 
     // document verification open----------->
@@ -754,9 +784,6 @@ const PreOnboardingUserMaster = () => {
       hobbies.map((hobby) => hobby.value)
     );
     formData.append("BloodGroup", bloodGroup);
-    formData.append("MartialStatus", maritialStatus);
-    formData.append("DateofMarriage", dateOfMarraige);
-    formData.append("spouse_name", spouseName);
 
     //Permanent address ------------>
     formData.append("permanent_address", permanentAddress);
@@ -782,26 +809,6 @@ const PreOnboardingUserMaster = () => {
         "Content-Type": "multipart/form-data",
       },
     });
-
-    //Posting/Update Guardian Details
-    for (const elements of guardianDetails) {
-      let payload = {
-        user_id: id,
-        guardian_name: elements.guardian_name,
-        guardian_contact: elements.guardian_contact,
-        guardian_address: elements.guardian_address,
-        relation_with_guardian: elements.relation_with_guardian,
-      };
-      if (elements.guardian_id) {
-        payload.guardian_id = elements.guardian_id;
-      }
-
-      try {
-        const response = await axios.put(baseUrl + "update_guardian", payload);
-      } catch (error) {
-        console.error("Error Update/Creating Guardian", error);
-      }
-    }
 
     //family
     for (const elements of familyDetails) {
@@ -863,42 +870,32 @@ const PreOnboardingUserMaster = () => {
     setIsSubmitting(false);
 
     // After update send mail
-    axios
-      .post(baseUrl + "add_send_user_mail", {
-        email: "lalit@creativefuel.io",
-        subject: "User Pre Onboarding",
-        text: "Pre Onboarding Data Update Successfully",
-        attachment: "",
-        login_id: loginId,
-        name: username,
-        password: password,
-      })
-      .then((res) => {
-        console.log("Email sent successfully:", res.data);
-      })
-      .catch((error) => {
-        console.log("Failed to send email:", error);
-      });
-    whatsappApi.callWhatsAPI("CF_Document_upload", "9826116769", username, [
-      username,
-    ]);
+    // axios
+    //   .post(baseUrl + "add_send_user_mail", {
+    //     email: "lalit@creativefuel.io",
+    //     subject: "User Pre Onboarding",
+    //     text: "Pre Onboarding Data Update Successfully",
+    //     attachment: "",
+    //     login_id: loginId,
+    //     name: username,
+    //     password: password,
+    //   })
+    //   .then((res) => {
+    //     console.log("Email sent successfully:", res.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Failed to send email:", error);
+    //   });
+    // whatsappApi.callWhatsAPI("CF_Document_upload", "9826116769", username, [
+    //   username,
+    // ]);
 
     Swal.fire({
       title: "Good job!",
       text: "Details Submitted Successfully!",
       icon: "success",
     });
-    // toastAlert("User Update");
-    // gettingData();
   };
-
-  // useEffect(() => {
-  //   if (isShowRocket) {
-  //     setTimeout(() => {
-  //       setIsShowRocket(false);
-  //     }, 3000);
-  //   }
-  // }, [isShowRocket]);
 
   useEffect(() => {
     async function getDetails() {
@@ -913,56 +910,6 @@ const PreOnboardingUserMaster = () => {
     }
     getDetails();
   }, [id]);
-
-  //Guardian
-  const handleAddGuardianDetails = () => {
-    setGuardianDetails([
-      ...guardianDetails,
-      { ...initialGuardianDetailsGroup },
-    ]);
-  };
-
-  const handleGuardianDetailsChange = (index, event) => {
-    const { name, value } = event.target;
-
-    const updatedGuardianDetails = guardianDetails?.map((detail, idx) => {
-      if (idx === index) {
-        return { ...detail, [name]: value };
-      }
-      return detail;
-    });
-    setGuardianDetails(updatedGuardianDetails);
-
-    if (name === "guardian_contact") {
-      const isValidPhoneNumber =
-        value.length >= 10 &&
-        /^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(value);
-
-      setGuardianContactErrors({
-        ...guardianContactErrors,
-        [index]: !isValidPhoneNumber,
-      });
-    }
-  };
-
-  async function handleRemoveGuardianDetails(index) {
-    const itemToRemove = guardianDetails[index];
-    if (itemToRemove && itemToRemove.guardian_id) {
-      try {
-        await axios.delete(
-          `${baseUrl}` + `delete_guardian/${itemToRemove.guardian_id}`
-        );
-      } catch (error) {
-        console.error("Error Deleting Guardian", error);
-        return;
-      }
-    }
-
-    const newGuardianDetails = guardianDetails.filter(
-      (_, idx) => idx !== index
-    );
-    setGuardianDetails(newGuardianDetails);
-  }
 
   //familyDetails
   const handleAddFamilyDetails = () => {
@@ -1020,7 +967,7 @@ const PreOnboardingUserMaster = () => {
     const detailToUpdate = updatedEducationDetails[index];
 
     if (name === "percentage" && value > 100) {
-      return toastError("Can't input value greater than 100");
+      return console.log("Can't input value greater than 100");
     }
 
     detailToUpdate[name] = value;
@@ -1056,20 +1003,6 @@ const PreOnboardingUserMaster = () => {
     }
     const newEducationDetails = educationDetails.filter((_, i) => i !== index);
     setEducationDetails(newEducationDetails);
-  };
-
-  // Password Auto Genrate
-  const generatePassword = () => {
-    const length = 8;
-    const charset =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let generatePassword = "";
-
-    for (let i = 0; i < length; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      generatePassword += charset[randomIndex];
-    }
-    setPassword(generatePassword);
   };
 
   useEffect(() => {
@@ -1151,20 +1084,6 @@ const PreOnboardingUserMaster = () => {
     ["", null, 0, undefined]
   );
 
-  function daysUntil(isoDateString) {
-    const oneDay = 24 * 60 * 60 * 1000;
-    const currentDate = new Date();
-    const futureDate = new Date(isoDateString);
-
-    const diffInTime = futureDate.getTime() - currentDate.getTime();
-
-    const days = Math.ceil(diffInTime / oneDay);
-    if (days < 0) return 0;
-    return days;
-  }
-
-  const daysLeftCount = daysUntil(daysLeftToJoining);
-
   const images = [
     imageTest1,
     imageTest2,
@@ -1232,19 +1151,19 @@ const PreOnboardingUserMaster = () => {
     // }, 3000);
   };
 
-  const handleCOC = async () => {
-    const formData = new FormData();
-    formData.append("user_id", id);
-    formData.append("coc_flag", true);
+  // const handleCOC = async () => {
+  //   const formData = new FormData();
+  //   formData.append("user_id", id);
+  //   formData.append("coc_flag", true);
 
-    await axios.put(`${baseUrl}` + `update_user`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    toastAlert("Success");
-    gettingData();
-  };
+  //   await axios.put(`${baseUrl}` + `update_user`, formData, {
+  //     headers: {
+  //       "Content-Type": "multipart/form-data",
+  //     },
+  //   });
+  //   toastAlert("Success");
+  //   gettingData();
+  // };
 
   const handleGetOnboard = async () => {
     await axios.put(`${baseUrl}` + `update_user`, {
@@ -1378,14 +1297,9 @@ const PreOnboardingUserMaster = () => {
             </div>
             <div className="topnavbarRight">
               <div className="navbar_menu">
-                   <div className="daysLeft">
-                    {/* <img src={hourGlass} alt="welcome" /> */}
-                    <h3 style={{fontWeight:'bold'}}>
-                      {/* <span>{daysLeftCount}</span> */}
-                       JARVIS
-                    </h3>
-                  </div>
-                  
+                <div className="daysLeft">
+                  <h3 style={{ fontWeight: "bold" }}>JARVIS</h3>
+                </div>
               </div>
 
               <div className="user_box">
@@ -1434,7 +1348,6 @@ const PreOnboardingUserMaster = () => {
                     id="sidebarFormBox"
                     onClick={() => setActiveTab(1)}
                   >
-                    {/* pp-100 is percentage of document procedure */}
                     <div
                       className={`progress-circle progressing pp-${formFieldProgressPercentage}`}
                     >
@@ -1630,12 +1543,6 @@ const PreOnboardingUserMaster = () => {
                       }`}
                       id="sidebarLetterBox"
                       onClick={() => setActiveTab(5)}
-                      // style={{
-                      //   opacity: joiningDate <= formattedDate ? 0.5 : 1,
-                      //   // cursor: joiningDate <= formattedDate ? "not-allowed" : "pointer",
-                      //   pointerEvents:
-                      //     joiningDate <= formattedDate ? "none" : "auto",
-                      // }}
                     >
                       <div className="progress-circle progressing pp-26">
                         <div className="progress-circle-border">
@@ -1650,19 +1557,12 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* )} */}
                     <div
-                      // className={`sidebar_itembox  ${
-                      //   activeTab == 3 ? "sidebar_item_active" : ""
-                      // }`}
                       className={`sidebar_itembox ${
                         activeTab === 3 && documentPercentage < 90
                           ? "sidebar_item_active"
                           : ""
                       }`}
                       id="sidebarPolicyBox"
-                      // style={{
-                      //   pointerEvents: documentPercentage < 90 ? "none" : "auto",
-                      //   opacity: documentPercentage < 90 ? 0.5 : 1,
-                      // }}
                       onClick={() => setActiveTab(3)}
                     >
                       <div className="progress-circle progressing pp-100">
@@ -1708,8 +1608,6 @@ const PreOnboardingUserMaster = () => {
             <div className="page_area">
               <div className="dashboard_body">
                 <div className="dashboard_body_inner">
-                  {/* Welcome Screen Start */}
-
                   {activeTab == 0 && (
                     <div className="welcome_board">
                       <div className="welcome_board_heading">
@@ -1717,43 +1615,40 @@ const PreOnboardingUserMaster = () => {
                         <h2>{loginUserName}</h2>
                         <h1>To start your onboarding please click the form</h1>
                       </div>
-                      {/* <button
-                      className="btn btn-success d-block w-100"
-                      onClick={openModal}
-                    >
-                      Profile
-                    </button> */}
                       <div className="welcome_board_img">
                         <div className="imgone">
                           <img src={welcomeImage} alt="welcome" />
                         </div>
-                        {/* <div className="imgtwo">
-                          <img src={welcomeText} alt="welcome" />
-                        </div> */}
                       </div>
                     </div>
                   )}
-                  {/* Welcome Screen End */}
 
                   {/* Form Screen Start */}
                   {activeTab == 1 && (
-
                     <form onSubmit={handleSubmit}>
-{/* <OnboardingForm/> */}
                       <div className="formarea">
                         <div className="row spacing_lg">
                           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                          <div className="board_form board_form_flex">
+                            <JobSection
+                              employeeID={employeeID}
+                              joiningDate={joiningDate}
+                              designationName={designationName}
+                              departmentName={departmentName}
+                              reportL1={reportL1}
+                            />
+                            </div>
                             <div className="board_form board_form_flex">
-                              <h2>On-Boarding Form</h2>
+                              <h2>Personal Details</h2>
                               <h3>
-                                Your Current Joning Date is : &nbsp;
-                                <span>{joiningDate}</span>
+                                {/* Your Current Joning Date is : &nbsp;
+                                <span>{joiningDate}</span> */}
                                 <button
                                   className="btn btn-primary extndBtn"
                                   type="button"
                                   onClick={openReactModal}
                                 >
-                                  Extend
+                                  Extend Joining Date
                                 </button>
                                 <Modal
                                   className="onboardModal2"
@@ -1815,6 +1710,49 @@ const PreOnboardingUserMaster = () => {
                                   parentComponentContact={personalContact}
                                 />
                               </div>
+                              <div className="form-group">
+                                <ContactNumber
+                                  label="Alternate Contact"
+                                  setParentComponentContact={setAlternateContact}
+                                  parentComponentContact={alternateContact}
+                                />
+                              </div>
+
+                              <div className="form-group">
+                                <ContactNumber
+                                  label="Emergency Contact 1"
+                                  parentComponentContact={emergencyContact}
+                                  setParentComponentContact={
+                                    setEmergencyContact
+                                  }
+                                />
+                              </div>
+                              <div className="form-group">
+                                <ContactNumber
+                                  label="Emergency Contact 2"
+                                  parentComponentContact={emergencyContact2}
+                                  setParentComponentContact={
+                                    setEmergencyContact2
+                                  }
+                                />
+                              </div>
+
+                              <div className="form-group Muiform_date">
+                                <TextField
+                                  disabled
+                                  id="outlined-basic"
+                                  label="Date Of Birth"
+                                  variant="outlined"
+                                  InputProps={{
+                                    readOnly: true,
+                                  }}
+                                  type="date"
+                                  value={dateOfBirth}
+                                  onChange={(e) =>
+                                    setDateOfBirth(e.target.value)
+                                  }
+                                />
+                              </div>
 
                               <div className="form-group form_select">
                                 <Autocomplete
@@ -1838,7 +1776,8 @@ const PreOnboardingUserMaster = () => {
                                   id="outlined-basic"
                                   label={
                                     <span>
-                                      Father Name<span style={{ color: "red" }}> *</span>
+                                      Father Name
+                                      <span style={{ color: "red" }}> *</span>
                                     </span>
                                   }
                                   variant="outlined"
@@ -1856,7 +1795,8 @@ const PreOnboardingUserMaster = () => {
                                   id="outlined-basic"
                                   label={
                                     <span>
-                                      Mother Name<span style={{ color: "red" }}> *</span>
+                                      Mother Name
+                                      <span style={{ color: "red" }}> *</span>
                                     </span>
                                   }
                                   variant="outlined"
@@ -1865,6 +1805,22 @@ const PreOnboardingUserMaster = () => {
                                   onChange={(e) => {
                                     setMotherName(FormatName(e.target.value));
                                   }}
+                                />
+                              </div>
+                              <div className="form-group">
+                                <Autocomplete
+                                  options={casteOptions}
+                                  getOptionLabel={(option) => option}
+                                  value={cast}
+                                  onChange={(e, newValue) => setCast(newValue)}
+                                  renderInput={(params) => (
+                                    <TextField
+                                      {...params}
+                                      label="Caste"
+                                      variant="outlined"
+                                      fullWidth
+                                    />
+                                  )}
                                 />
                               </div>
 
@@ -1910,38 +1866,6 @@ const PreOnboardingUserMaster = () => {
                                 />
                               </div>
 
-                              {maritialStatus === "Married  " && (
-                                <div className="form-group">
-                                  <TextField
-                                    id="outlined-basic"
-                                    label="Spouse Name"
-                                    variant="outlined"
-                                    type="text"
-                                    value={spouseName}
-                                    onChange={(e) =>
-                                      setSpouseName(e.target.value)
-                                    }
-                                  />
-                                </div>
-                              )}
-                              {maritialStatus == "Married" && (
-                                <div className="form-group">
-                                  <TextField
-                                    id="outlined-basic"
-                                    label="Date Of Marriage"
-                                    variant="outlined"
-                                    InputProps={{
-                                      readOnly: true,
-                                    }}
-                                    type="date"
-                                    value={dateOfMarraige}
-                                    onChange={(e) =>
-                                      setDateOfMarraige(e.target.value)
-                                    }
-                                  />
-                                </div>
-                              )}
-
                               <div className="form-group">
                                 <Autocomplete
                                   multiple
@@ -1960,34 +1884,9 @@ const PreOnboardingUserMaster = () => {
                                 />
                               </div>
 
-                              <div className="form-group Muiform_date">
-                                <TextField
-                                  id="outlined-basic"
-                                  label="Date Of Birth"
-                                  variant="outlined"
-                                  InputProps={{
-                                    readOnly: true,
-                                  }}
-                                  type="date"
-                                  value={dateOfBirth}
-                                  onChange={(e) =>
-                                    setDateOfBirth(e.target.value)
-                                  }
-                                />
-                              </div>
                               <div className="form-group">
-                                {/* <TextField
-                                  id="outlined-basic"
-                                  label="Nationality"
-                                  variant="outlined"
-                                  type="text"
-                                  value={nationality}
-                                  onChange={(e) =>
-                                    setNationality(e.target.value)
-                                  }
-                                /> */}
-
                                 <Autocomplete
+                                  disabled
                                   options={nationalityData}
                                   value={nationality}
                                   readOnly
@@ -2005,39 +1904,72 @@ const PreOnboardingUserMaster = () => {
                               </div>
 
                               <div className="form-group">
-                                <ContactNumber
-                                  label="Emergency Contact 1"
-                                  parentComponentContact={emergencyContact}
-                                  setParentComponentContact={
-                                    setEmergencyContact
+                                <TextField
+                                  select
+                                  label="Select Marital Status"
+                                  value={maritalStatus}
+                                  onChange={(e) =>
+                                    setMaritalStatus(e.target.value)
                                   }
-                                />
-                              </div>
-                              <div className="form-group">
-                                <ContactNumber
-                                  label="Emergency Contact 2"
-                                  parentComponentContact={emergencyContact2}
-                                  setParentComponentContact={
-                                    setEmergencyContact2
-                                  }
-                                />
-                              </div>
-                              <hr />
+                                  fullWidth
+                                  variant="outlined"
+                                  required={false}
+                                >
+                                  {maritalStatusData.map((option) => (
+                                    <MenuItem key={option} value={option}>
+                                      {option}
+                                    </MenuItem>
+                                  ))}
+                                </TextField>
 
-                              <FamilyFields
-                                familyDetails={familyDetails}
-                                familyDisplayFields={familyDisplayFields}
-                                familyFieldLabels={familyFieldLabels}
-                                familyValidationErrors={familyValidationErrors}
-                                handleFamilyDetailsChange={
-                                  handleFamilyDetailsChange
-                                }
-                                handleAddFamilyDetails={handleAddFamilyDetails}
-                                handleRemoveFamilyDetails={
-                                  handleRemoveFamilyDetails
-                                }
-                              />
-                              <hr />
+                                {maritalStatus === "Married" && (
+                                  <>
+                                    <div
+                                      style={{ marginTop: "20px" }}
+                                      className="form-group"
+                                    >
+                                      <TextField
+                                        label="Spouse Name"
+                                        value={spouseName}
+                                        onChange={(e) =>
+                                          setSpouseName(e.target.value)
+                                        }
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
+                                        fullWidth
+                                        variant="outlined"
+                                        required={false}
+                                      />
+                                    </div>
+                                    <div
+                                      style={{ marginTop: "20px" }}
+                                      className="form-group"
+                                    >
+                                      <TextField
+                                        label="Date Of Marriage"
+                                        type="date"
+                                        value={dateOfMarriage}
+                                        onChange={(e) =>
+                                          setDateOfMarriage(e.target.value)
+                                        }
+                                        InputLabelProps={{
+                                          shrink: true,
+                                        }}
+                                        fullWidth
+                                        variant="outlined"
+                                        required={false}
+                                      />
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+
+                              
+                            </div>
+                            <IdentityDetails />
+                            <div className="board_form board_form_flex">
+                              <h2>Education Details</h2>
                               <EducationFields
                                 educationDetails={educationDetails}
                                 educationDispalyFields={educationDispalyFields}
@@ -2063,7 +1995,8 @@ const PreOnboardingUserMaster = () => {
                                   id="outlined-basic"
                                   label={
                                     <span>
-                                      Current Address<span style={{ color: "red" }}> *</span>
+                                      Current Address
+                                      <span style={{ color: "red" }}> *</span>
                                     </span>
                                   }
                                   variant="outlined"
@@ -2186,6 +2119,41 @@ const PreOnboardingUserMaster = () => {
                                 />
                               </div>
                             </div>
+                            <div className="board_form board_form_flex">
+                            <div className="form-group">
+                              <TextField
+                                select
+                                label="Work Experience"
+                                variant="outlined"
+                                fullWidth
+                                value={workExperiences}
+                                onChange={(e) => setWorkExperiences(e.target.value)}
+                              >
+                                <MenuItem value="Fresher">Fresher</MenuItem>
+                                <MenuItem value="Experience">Experience</MenuItem>
+                              </TextField>
+                            </div>
+                            </div>
+                            {workExperiences == "Experience" &&(<WorkExperience userID={id} />)}
+                            <OnboardingBankDetails />
+                            <OtherDetails />
+                            <div className="board_form board_form_flex">
+                              <h2>Family Details</h2>
+                              <FamilyFields
+                                familyDetails={familyDetails}
+                                familyDisplayFields={familyDisplayFields}
+                                familyFieldLabels={familyFieldLabels}
+                                familyValidationErrors={familyValidationErrors}
+                                handleFamilyDetailsChange={
+                                  handleFamilyDetailsChange
+                                }
+                                handleAddFamilyDetails={handleAddFamilyDetails}
+                                handleRemoveFamilyDetails={
+                                  handleRemoveFamilyDetails
+                                }
+                              />
+                            </div>
+                            
                           </div>
                           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div className="form-group ml-auto mr-auto text-center">
@@ -2245,7 +2213,6 @@ const PreOnboardingUserMaster = () => {
           </div>
         </div>
       </section>
-      {/* Dashboard Section End */}
     </>
   );
 };

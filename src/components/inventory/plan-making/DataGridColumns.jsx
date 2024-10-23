@@ -28,18 +28,14 @@ const DataGridColumns = ({
     {
       key: 'serial_no',
       name: 'Count',
-      renderRowCell: (row, ) => (
-        <div>{filterData?.indexOf(row) + 1}</div>
-      ),
+      renderRowCell: (row) => <div>{filterData?.indexOf(row) + 1}</div>,
       width: 80,
       showCol: true,
     },
     {
       key: 'page_name',
       name: 'Page Name',
-      renderRowCell: (row) => (
-        <div>{formatString(row?.page_name)}</div>
-      ),
+      renderRowCell: (row) => <div>{formatString(row?.page_name)}</div>,
       width: 200,
       showCol: true,
     },
@@ -91,7 +87,9 @@ const DataGridColumns = ({
       key: 'followers_count',
       name: 'Followers',
       renderRowCell: (row) => (
-        <div title={row.followers_count}>{formatNumber(row.followers_count)}</div>
+        <div title={row.followers_count}>
+          {formatNumber(row.followers_count)}
+        </div>
       ),
       width: 100,
       showCol: true,
@@ -99,9 +97,7 @@ const DataGridColumns = ({
     {
       key: 'ownership_type',
       name: 'Ownership',
-      renderRowCell: (row) => (
-        <div>{row.ownership_type}</div>
-      ),
+      renderRowCell: (row) => <div>{row.ownership_type}</div>,
       width: 100,
       showCol: true,
     },
@@ -110,7 +106,9 @@ const DataGridColumns = ({
       name: 'Selection',
       renderRowCell: (row) => (
         <Checkbox
-          checked={selectedRows?.some((selectedRow) => selectedRow?._id === row?._id)}
+          checked={selectedRows?.some(
+            (selectedRow) => selectedRow?._id === row?._id
+          )}
           onChange={handleCheckboxChange(row)}
         />
       ),
@@ -151,9 +149,7 @@ const DataGridColumns = ({
       renderRowCell: (row) => (
         <div style={{ border: '1px solid red', padding: '10px' }}>
           {'₹'}
-          {showTotalCost[row?._id]
-            ? totalCostValues[row?._id] || 0
-            : '-'}
+          {showTotalCost[row?._id] ? totalCostValues[row?._id] || 0 : '-'}
         </div>
       ),
       width: 100,
@@ -162,9 +158,7 @@ const DataGridColumns = ({
     {
       key: 'preference_level',
       name: 'Level',
-      renderRowCell: (row) => (
-        <div>{row?.preference_level}</div>
-      ),
+      renderRowCell: (row) => <div>{row?.preference_level}</div>,
       width: 200,
       showCol: true,
     },
@@ -210,9 +204,7 @@ const DataGridColumns = ({
     {
       key: 'page_status',
       name: 'Status',
-      renderRowCell: (row) => (
-        <div>{row?.page_status}</div>
-      ),
+      renderRowCell: (row) => <div>{row?.page_status}</div>,
       width: 100,
       showCol: true,
     },
@@ -222,11 +214,16 @@ const DataGridColumns = ({
     {
       key: 'm_post_price',
       name: 'Cost Per Post',
-      renderRowCell: ( row ) => {
-        const mPostPrice = row?.m_post_price;
-        const postPrice = row?.post;
-  
-        return <div>{postPrice ?? mPostPrice}</div>;
+      renderRowCell: (row) => {
+        const mPostPrice = row?.page_price_list;
+        const postDetail = mPostPrice?.find(
+          (item) => item.instagram_post !== undefined
+        );
+        const postPrice = postDetail?.instagram_post;
+        // console.log('most', mPostPrice);
+        // const postPrice = row?.post;
+        // return <div>{postPrice ?? mPostPrice}</div>;
+        return <div>{postPrice ?? 'Price is not available'}</div>;
       },
       width: 150,
       showCol: true,
@@ -234,10 +231,15 @@ const DataGridColumns = ({
     {
       key: 'm_story_price',
       name: 'Cost Per Story',
-      renderRowCell: (row ) => {
-        const mStoryPrice = row?.m_story_price;
-        const storyPrice = row?.story;
-        return <div>{storyPrice ?? mStoryPrice}</div>;
+      renderRowCell: (row) => {
+        const mStoryPrice = row?.page_price_list;
+        const postDetail = mStoryPrice?.find(
+          (item) => item.instagram_story !== undefined
+        );
+        const storyPrice = postDetail?.instagram_story;
+        // const storyPrice = row?.story;
+        // return <div>{storyPrice ?? mStoryPrice}</div>;
+        return <div>{storyPrice ?? 'Price is not available'}</div>;
       },
       width: 150,
       showCol: true,
@@ -245,10 +247,15 @@ const DataGridColumns = ({
     {
       key: 'm_both_price',
       name: 'Both Price',
-      renderRowCell: ( row ) => {
-        const mBothPrice = row?.m_both_price;
-        const bothPrice = row?.both_;
-        return <div>{bothPrice ?? mBothPrice}</div>;
+      renderRowCell: (row) => {
+        const mBothPrice = row?.page_price_list;
+        const postDetail = mBothPrice?.find(
+          (item) => item.instagram_both !== undefined
+        );
+        const bothPrice = postDetail?.instagram_both;
+        // const bothPrice = row?.both_;
+        // return <div>{bothPrice ?? mBothPrice}</div>;
+        return <div>{bothPrice ?? 'Price is not available'}</div>;
       },
       width: 150,
       showCol: true,

@@ -23,23 +23,23 @@ const FamilyFields = ({
         <div className="board_form_flex" key={index}>
           {Object.keys(detail)?.map((key) => {
             switch (key) {
-              // case "DOB":
-              //   return (
-              //     <div className="form-group">
-              //       <TextField
-              //         key={key}
-              //         name={key}
-              //         type="date"
-              //         label="Date of Birth"
-              //         variant="outlined"
-              //         fullWidth
-              //         value={
-              //           detail[key] ? detail[key].split("T")[0] : detail[key]
-              //         }
-              //         onChange={(e) => handleFamilyDetailsChange(index, e)}
-              //       />
-              //     </div>
-              //   );
+              case "DOB":
+                return (
+                  <div className="form-group">
+                    <TextField
+                      key={key}
+                      name={key}
+                      type="date"
+                      label="Date of Birth"
+                      variant="outlined"
+                      fullWidth
+                      value={
+                        detail[key] ? detail[key].split("T")[0] : detail[key]
+                      }
+                      onChange={(e) => handleFamilyDetailsChange(index, e)}
+                    />
+                  </div>
+                );
 
               case "relation":
                 return (

@@ -6,6 +6,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { FaRegFilePdf } from "react-icons/fa";
 import { constant } from "../../utils/constants";
+import { IoTrashBin } from "react-icons/io5";
 
 const DocumentTab = ({
   documentData,
@@ -385,11 +386,13 @@ const DocumentTab = ({
                           <div className="flex-row" style={{display:'flex'}}>
 
                             <button
+                            title="delete"
                               className="btn icon-1  btn-danger btn-sm"
                               onClick={() => handleDocDelete(item._id)}
                               style={{ borderRadius: 17, padding: 7 }}
                             >
-                              <i style={{ color: "white" }} className="bi bi-trash"></i>
+                              < IoTrashBin  color="white"/>
+                              {/* <i style={{ color: "white" }} className="bi bi-trash"></i> */}
                             </button>
                             {item.status == "Verification Pending" && (RoleID === constant.CONST_ADMIN_ROLE || RoleID === constant.CONST_HR_ROLE) &&
                               <button

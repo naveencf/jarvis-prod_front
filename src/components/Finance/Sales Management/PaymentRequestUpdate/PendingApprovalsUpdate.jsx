@@ -14,6 +14,7 @@ import {
 import PendingApprovalFilters from "./Components/PendingApprovalFilters";
 import CommonDialogBox from "../../CommonDialog/CommonDialogBox";
 import { CommonFilterFunction } from "../../CommonDialog/CommonFilterFunction";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 const PendingApprovalUpdate = () => {
   const { toastAlert } = useGlobalContext();
@@ -37,12 +38,13 @@ const PendingApprovalUpdate = () => {
   const [invoiceCount, setInvoiceCount] = useState(0);
   const [nonInvoiceCount, setNonInvoiceCount] = useState(0);
   const [nonGstCount, setNonGstCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState("");
   const [statusDialog, setStatusDialog] = useState(false);
   const [reasonField, setReasonField] = useState(false);
   const [paymentModeArray, setPaymentModeArray] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedData, setSelectedData] = useState([]);
 
   const token = sessionStorage.getItem("token");
 
@@ -111,7 +113,7 @@ const PendingApprovalUpdate = () => {
   };
 
   const getData = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const { data } = await axios.get(
         `${baseUrl}sales/payment_update?status=pending`,
@@ -152,10 +154,11 @@ const PendingApprovalUpdate = () => {
       // Apply date filter
       const dateFilteredData = CommonFilterFunction(sortedData, dateFilter);
       setFilterData(dateFilteredData);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching payment update data", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -312,22 +315,36 @@ const PendingApprovalUpdate = () => {
         setDateFilter={setDateFilter}
         dateFilter={dateFilter}
       />
-
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Pending Approval</h5>
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn_sm btn-secondary"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-        <div className="card-body thm_table fx-head data_tbl table-responsive">
-          {/* {!loading ? ( */}
-          <DataGrid
+      {/* {!loading ? ( */}
+      <div>
+        <View
+          columns={pendingApprovalColumn({
+            filterData,
+            handleCopyDetail,
+            paymentModeArray,
+            handleStatusChange,
+            setViewImgSrc,
+            setViewImgDialog,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Pending Approval"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"payment_update"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
+        {/* <DataGrid
             rows={filterData}
             columns={pendingApprovalColumn({
               filterData,
@@ -345,22 +362,14 @@ const PendingApprovalUpdate = () => {
               },
             }}
             getRowId={(row) => filterData?.indexOf(row)}
+          /> */}
+
+        {viewImgDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            setViewImgDialog={setViewImgDialog}
           />
-          {/* ) : ( */}
-          {/* <Skeleton
-                  sx={{ bgcolor: "grey.900", borderRadius: "0.25rem" }}
-                  variant="rectangular"
-                  width="100%"
-                  height={200}
-                />
-              )} */}
-          {viewImgDialog && (
-            <ImageView
-              viewImgSrc={viewImgSrc}
-              setViewImgDialog={setViewImgDialog}
-            />
-          )}
-        </div>
+        )}
       </div>
       {/* Unique Accounts Dialog Box */}
       <CommonDialogBox

@@ -71,15 +71,12 @@ const PageMaster = () => {
   const [link, setLink] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [platformId, setPlatformId] = useState("666818824366007df1df1319");
-
   const [primary, setPrimary] = useState({ value: "Yes", label: "Yes" });
-
   const [categoryId, setCategoryId] = useState("");
   const [subCategoryId, setSubCategoryId] = useState("");
   const [tag, setTag] = useState([]);
   const [pageLevel, setPageLevel] = useState("");
-  // const [pageStatus, setPageStatus] = useState('Active');
-  const [pageStatus, setPageStatus] = useState(0);
+  const [pageStatus, setPageStatus] = useState("super_active");
   const [languages, setLanguages] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("Non Adult");
@@ -131,27 +128,19 @@ const PageMaster = () => {
     setVariableType(selectedOption);
   };
   const [rowCount, setRowCount] = useState([
-    { page_price_type_id: "", price: "" },
+    { page_price_type_name:"",page_price_type_id: "", price: "" },
   ]);
 
   const dispatch = useDispatch();
-
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
-  // console.log(ownerShipData, "ownership");
-
   const { data: profileData } = useGetAllProfileListQuery();
-
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data || [];
-
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
-
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
-  const subCategoryData = subCategory?.data || [];
-
+  const subCategoryData = subCategory?.data || []
   const { data: vendor } = useGetAllVendorQuery();
-
   const vendorData = vendor || [];
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
@@ -164,87 +153,89 @@ const PageMaster = () => {
   const [messageColor, setMessageColor] = useState("");
   const { usersDataContext } = useContext(AppContext);
 
-  useEffect(() => {
-    if (!singlePageLoading && pageMast_id) {
-      setPageName(singlePageData?.page_name);
-      setLink(singlePageData?.page_link);
-      setPlatformId(singlePageData?.platform_id);
-      setCategoryId(singlePageData?.page_category_id);
-      setSubCategoryId(singlePageData?.page_sub_category_id);
 
-      setPageLevel(singlePageData?.preference_level);
-      if (singlePageData.page_activeness == 'dead') {
-        setPageStatus("dead");
-      }else if (singlePageData.page_activeness == 'semi_active') {
-        setPageStatus("semi_active");
-      } else if (singlePageData.page_activeness == 'super_active') {
-        setPageStatus("super_active");
-      } 
-      else {
-        setPageStatus("active");
-      }
-      setCloseBy(singlePageData?.page_closed_by);
-      setPageType(singlePageData?.page_name_type);
-      setContent(singlePageData?.content_creation);
-      setOwnerType(singlePageData?.ownership_type);
-      setVendorId(singlePageData.vendor_id);
-      setFollowCount(singlePageData?.followers_count);
-      setProfileId(singlePageData?.page_profile_type_id);
-      const platformActiveData = platformData?.filter((e) =>
-        singlePageData?.platform_active_on?.includes(e._id)
-      );
-      let platformActiveDataList = platformActiveData?.map((e) => ({
-        value: e._id,
-        label: e.platform_name,
-      }));
-      setPlatformActive(platformActiveDataList ? platformActiveDataList : []);
-      setRate(singlePageData?.engagment_rate);
-      setDescription(singlePageData?.description);
-      setBio(singlePageData?.bio);
-      setRateType({
-        value: singlePageData?.rate_type,
-        label: singlePageData?.rate_type,
-      });
-      setVariableType({
-        value: singlePageData?.variable_type,
-        label: singlePageData?.variable_type,
-      });
+  // console.log(singlePageLoading,"singlePageLoading")
+  // useEffect(() => {
+  //   if (!singlePageLoading && pageMast_id) {
+  //     setPageName(singlePageData?.page_name);
+  //     setLink(singlePageData?.page_link);
+  //     setPlatformId(singlePageData?.platform_id);
+  //     setCategoryId(singlePageData?.page_category_id);
+  //     setSubCategoryId(singlePageData?.page_sub_category_id);
 
-      setPrimary({
-        value: singlePageData?.primary_page,
-        label: singlePageData?.primary_page,
-      });
+  //     setPageLevel(singlePageData?.preference_level);
+  //     if (singlePageData.page_activeness == 'dead') {
+  //       setPageStatus("dead");
+  //     }else if (singlePageData.page_activeness == 'semi_active') {
+  //       setPageStatus("semi_active");
+  //     } else if (singlePageData.page_activeness == 'super_active') {
+  //       setPageStatus("super_active");
+  //     } 
+  //     else {
+  //       setPageStatus("active");
+  //     }
+  //     setCloseBy(singlePageData?.page_closed_by);
+  //     setPageType(singlePageData?.page_name_type);
+  //     setContent(singlePageData?.content_creation);
+  //     setOwnerType(singlePageData?.ownership_type);
+  //     setVendorId(singlePageData.vendor_id);
+  //     setFollowCount(singlePageData?.followers_count);
+  //     setProfileId(singlePageData?.page_profile_type_id);
+  //     const platformActiveData = platformData?.filter((e) =>
+  //       singlePageData?.platform_active_on?.includes(e._id)
+  //     );
+  //     let platformActiveDataList = platformActiveData?.map((e) => ({
+  //       value: e._id,
+  //       label: e.platform_name,
+  //     }));
+  //     setPlatformActive(platformActiveDataList ? platformActiveDataList : []);
+  //     setRate(singlePageData?.engagment_rate);
+  //     setDescription(singlePageData?.description);
+  //     setBio(singlePageData?.bio);
+  //     setRateType({
+  //       value: singlePageData?.rate_type,
+  //       label: singlePageData?.rate_type,
+  //     });
+  //     setVariableType({
+  //       value: singlePageData?.variable_type,
+  //       label: singlePageData?.variable_type,
+  //     });
 
-      const tags = categoryData?.filter((e) =>
-        singlePageData?.tags_page_category?.includes(e._id)
-      );
-      let tagData = tags?.map((e) => ({
-        value: e?._id,
-        label: e?.page_category,
-        // label: e?.category_name,
-      }));
-      setTag(tagData);
+  //     setPrimary({
+  //       value: singlePageData?.primary_page,
+  //       label: singlePageData?.primary_page,
+  //     });
 
-      let story = singlePageData?.story;
-      let post = singlePageData?.post;
-      let both_ = singlePageData?.both_;
+  //     const tags = categoryData?.filter((e) =>
+  //       singlePageData?.tags_page_category?.includes(e._id)
+  //     );
+  //     let tagData = tags?.map((e) => ({
+  //       value: e?._id,
+  //       label: e?.page_category,
+  //     }));
+  //     setTag(tagData);
 
-      setRowCount([
-        {
-          page_price_type_id: "667e6c7412fbbf002179f6d6",
-          price: post,
-        },
-        {
-          page_price_type_id: "667e6c9112fbbf002179f72c",
-          price: story,
-        },
-        {
-          page_price_type_id: "667e6c9c12fbbf002179f72f",
-          price: both_,
-        },
-      ]);
-    }
-  }, [singlePageLoading]);
+  //     let story = singlePageData?.story;
+  //     let post = singlePageData?.post;
+  //     let both_ = singlePageData?.both_;
+
+  //     setRowCount([
+  //       {
+          
+  //         page_price_type_id: "667e6c7412fbbf002179f6d6",
+  //         price: post,
+  //       },
+  //       {
+  //         page_price_type_id: "667e6c9112fbbf002179f72c",
+  //         price: story,
+  //       },
+  //       {
+  //         page_price_type_id: "667e6c9c12fbbf002179f72f",
+  //         price: both_,
+  //       },
+  //     ]);
+  //   }
+  // }, [singlePageLoading]);
 
   const getLanguage = async () => {
     try {
@@ -282,16 +273,16 @@ const PageMaster = () => {
 
 
   const PageLevels = [
-    { value: "Level 1 (High)", label: "Level 1 (High)" },
-    { value: "Level 2 (Medium)", label: "Level 2 (Medium)" },
-    { value: "Level 3 (Low)", label: "Level 3 (Low)" },
+    { value: "high", label: "Level 1 (High)" ,index :0 },
+    { value: "medium", label: "Level 2 (Medium)" ,index :1 },
+    { value: "low", label: "Level 3 (Low)" ,index :2 },
   ];
 
   const PageStatus = [
-    { value: 0, label: "Super Active" },
-    { value: 1, label: "Active" },
-    { value: 2, label: "Semiactive" },
-    { value: 3, label: "Dead" },
+    { value: "super_active", label: "Super Active" },
+    { value: "active", label: "Active" },
+    { value: "semi_active", label: "Semi Active" },
+    { value: 'dead', label: "Dead" },
   ];
 
   const PageTypes = [
@@ -346,7 +337,6 @@ const PageMaster = () => {
   const handlePrimaryChange = (selectedOption) => {
     setPrimary(selectedOption);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -430,29 +420,28 @@ const PageMaster = () => {
     ) {
       return toastError("Please Fill All Required Fields");
     }
-    // console.warn("NO ERROR");
-    // return
     const payload = {
       page_name: pageName,
       page_link: link,
       platform_id: platformId,
+      platform_name:platformData?.find((res)=>res._id == platformId)?.platform_name?.toLowerCase(),
       page_category_id: categoryId,
+      page_category_name: categoryData?.find((role) => role._id === categoryId)?.page_category?.toLowerCase(),
       page_sub_category_id: subCategoryId,
-      tags_page_category: tag.map((e) => e.value),
-      preference_level: pageLevel,
-      // page_mast_status: pageStatus,
+      page_sub_category_name: subCategoryData.find((role) => role._id === subCategoryId)?.page_sub_category,
+      tags_page_category: tag?.map((e) => e?.value),
+      tags_page_category_name: tag?.map((e) => e?.label?.toLowerCase()),//send name of category
+      preference_level: pageLevel?.value,
       page_activeness: pageStatus,
-      // page_status: pageStatus == 'Active' ? 1 : 0,
-      // status: pageStatus == 'Active' ? 1 : 0,
       page_closed_by: closeBy,
       page_name_type: pageType,
       content_creation: content,
-      // ownership_type: ownerType,
       ownership_type: convertOwnerIdToLabel,
       vendor_id: vendorId,
+      vendor_name:vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_name?.toLowerCase(),
       followers_count: followCount,
       page_profile_type_id: profileId,
-      // platform_active_on: platformActive.map((e) => e.value),
+      page_profile_type_name :profileData?.data?.find((role) => role?._id === profileId)?.profile_type?.toLowerCase(),
       engagment_rate: rate,
       description: description,
       bio: bio,
@@ -460,18 +449,13 @@ const PageMaster = () => {
       rate_type: rateType.value,
       variable_type: rateType.value == "Variable" ? variableType.value : null,
       page_price_multiple: rowCount,
-      page_language_id: languageId.map((item) => item),
+      page_language_id: languageId.map((item) => item?.value),
+      page_language_name:languageId.map((item) => item?.label),
       primary_page: primary.value,
-      post:
-        rowCount.find((e) => e.page_price_type_id == "667e6c7412fbbf002179f6d6")
-          ?.price ?? 0,
-      story:
-        rowCount.find((e) => e.page_price_type_id == "667e6c9112fbbf002179f72c")
-          ?.price ?? 0,
-      both_:
-        rowCount.find((e) => e.page_price_type_id == "667e6c9c12fbbf002179f72f")
-          ?.price ?? 0,
+      page_price_list:rowCount.map(item => { return { [item.page_price_type_name]: item.price} }),
     };
+    console.log(payload,"payload")
+    // return;
     if (pageMast_id) {
       payload.last_updated_by = userID;
       delete payload.created_by;
@@ -521,15 +505,17 @@ const PageMaster = () => {
   const addPriceRow = () => {
     setRowCount((rowCount) => [
       ...rowCount,
-      { page_price_type_id: "", price: "" },
+      { page_price_type_name:"",page_price_type_id: "", price: 0 },
     ]);
   };
 
   const handlePriceTypeChange = (e, index) => {
     const newRowCount = [...rowCount];
     newRowCount[index].page_price_type_id = e.value;
+    newRowCount[index].page_price_type_name = e.label;
     setRowCount(newRowCount);
   };
+  
   //Milion convert format function
   const formatNumber = (value) => {
     if (value >= 1000000) {
@@ -701,8 +687,7 @@ const PageMaster = () => {
             payloadUpdate,
             { headers }
           );
-          
-          console.log(res, ' saim mishra');
+          toastError(res?.data?.data[0]?.message);
         }
 
       } else {
@@ -744,9 +729,10 @@ const PageMaster = () => {
                 activeTab === item._id ? "active btn btn-info" : "btn btn-link"
               }
               onClick={() => {
+                
                 setActiveTab(item._id);
                 setPlatformId(item._id);
-                setRowCount([{ page_price_type_id: "", price: "" }]);
+                setRowCount([{page_price_type_name:"", page_price_type_id: "", price: 0 }]);
               }}
             >
               {item.platform_name}
@@ -759,18 +745,21 @@ const PageMaster = () => {
         {!pageMast_id && (
           <div className="card-header">
             <h5 className="card-title">Profile Master</h5>
-          </div>
-        )}
-        <div className="card-body pb4">
-          <div className="row thm_form">
             <button
               type="button"
               title="Update Followers"
-              className="btn btn-primary mt-2 btn-sm"
+              // className="btn btn-primary mt-2 btn-sm"
+               className="btn cmnbtn btn_sm btn-primary"
               onClick={() => handleUpadteFollowers()}
             >
               Update Followers
             </button>
+         
+          </div>
+        )}
+        <div className="card-body pb4">
+          <div className="row thm_form">
+          
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
@@ -812,8 +801,9 @@ const PageMaster = () => {
                   isMulti
                   required={true}
                   onChange={(selectedOptions) => {
+                
                     const selectedValues = selectedOptions.map(
-                      (option) => option.value
+                      (option) => option
                     );
                     setLanguageId(selectedValues);
                     if (selectedValues.length > 0) {
@@ -827,7 +817,7 @@ const PageMaster = () => {
 
               </div>
             </div>
-            <div className="col-md-6 mb16">
+            {/* <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
                   Platform <sup style={{ color: "red" }}>*</sup>
@@ -877,7 +867,7 @@ const PageMaster = () => {
                   <small style={{ color: "red" }}>Please select Platform</small>
                 )}
               </div>
-            </div>
+            </div> */}
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
@@ -980,7 +970,7 @@ const PageMaster = () => {
                     (option) => option.value == pageStatus
                   )}
                   onChange={(selectedOption) => {
-                    setPageStatus(selectedOption?.label);
+                    setPageStatus(selectedOption?.value);
                     if (selectedOption.value) {
                       setValidateFields((prev) => ({
                         ...prev,
@@ -1162,16 +1152,13 @@ const PageMaster = () => {
               <FieldContainer
                 fieldGrid={12}
                 label="Link"
-                // disabled
                 astric={true}
                 value={link}
                 required={true}
                 onChange={(e) => {
-                  // setLink(e.target.value);
-                  // console.log(e)
                   setLink(
-                        () => `https://www.instagram.com/${e.target.value}`
-                      );
+                    e.target.value
+                  );
                   if (e.target.value) {
                     setValidateFields((prev) => ({ ...prev, link: false }));
                   }
@@ -1227,7 +1214,8 @@ const PageMaster = () => {
                     (option) => option.value === pageLevel
                   )}
                   onChange={(selectedOption) => {
-                    setPageLevel(selectedOption.value);
+                    console.log(selectedOption,"selectedOption")
+                    setPageLevel(selectedOption);
                     if (selectedOption.value) {
                       setValidateFields((prev) => ({
                         ...prev,
@@ -1339,11 +1327,11 @@ const PageMaster = () => {
                   }))}
                   required={true}
                   value={{
-                    value: singleVendor.closed_by || closeBy,
+                    value: singleVendor?.closed_by || closeBy,
                     label:
-                      usersDataContext.find(
+                      usersDataContext?.find(
                         (role) =>
-                          role.user_id == singleVendor.closed_by ||
+                          role.user_id == singleVendor?.closed_by ||
                           role.user_id == closeBy
                       )?.user_name || "",
                   }}

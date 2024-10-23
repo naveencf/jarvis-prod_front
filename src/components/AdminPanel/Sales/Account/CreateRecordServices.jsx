@@ -15,6 +15,8 @@ const RecordServices = ({
   isValidRec,
   setIsValidRec,
   getincentiveSharingData,
+  setRemainingAmount,
+  remainingAmount,
 }) => {
   const { usersDataContext } = useGlobalContext();
 
@@ -23,10 +25,12 @@ const RecordServices = ({
     records?.map(() => "")
   );
   const [serviceFieldsData, setServiceFieldsData] = useState([]);
-  const [remainingAmount, setRemainingAmount] = useState(0);
   const [error, setError] = useState(""); // New state for error handling
 
   const { toastError } = useGlobalContext();
+
+
+
   useEffect(() => {
     if (serviceFieldsData.length > 0) {
       setValidateService(serviceFieldsData);
@@ -65,10 +69,15 @@ const RecordServices = ({
 
     if (baseAmount > totalAmount) {
       setRemainingAmount(baseAmount - totalAmount);
+
     } else {
       setRemainingAmount(0);
     }
+
+
   }, [records, baseAmount]);
+
+
 
   const handleRecordChange = (index, key, value) => {
     if (value < 0) {
@@ -96,12 +105,14 @@ const RecordServices = ({
 
       if (baseAmount > totalAmount) {
         setRemainingAmount(baseAmount - totalAmount);
+
       }
 
       if (totalAmount > baseAmount) {
         toastError(`Total amount cannot exceed ${baseAmount}`);
         return; // Early return if validation fails
       }
+
     }
 
     setRecords(updatedRecords);
@@ -194,7 +205,7 @@ const RecordServices = ({
 
                 <div className="col-12">
                   {
-                    getincentiveSharingData?.services?.find(data => data.service_id === record?.sales_service_master_id)?.service_percentage  &&
+                    getincentiveSharingData?.services?.find(data => data.service_id === record?.sales_service_master_id)?.service_percentage &&
                     <div className="card gstinfo-card">
 
                       {

@@ -1,6 +1,6 @@
-import React from 'react';
-import CustomTable from '../../../../CustomTable/CustomTable';
-import CustomTableWrapper from '../../../../ReusableComponents/CustomTableWrapper';
+import React from "react";
+import CustomTable from "../../../../CustomTable/CustomTable";
+import CustomTableWrapper from "../../../../ReusableComponents/CustomTableWrapper";
 
 //c
 const View = ({
@@ -13,9 +13,10 @@ const View = ({
   tableName,
   selectedData,
   showTotal = false,
+  addHtml,
 }) => {
   return (
-    <CustomTableWrapper title={title}>
+    <CustomTableWrapper title={title} addHtml={addHtml}>
       <CustomTable
         columns={columns}
         data={data}

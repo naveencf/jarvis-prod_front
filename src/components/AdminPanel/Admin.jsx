@@ -478,7 +478,7 @@ const PMSplatformPriceTypeMast = lazy(() =>
 );
 const VendorGroupLink = lazy(() => import('./PageMS/VendorGroupLink'));
 const PageMaster = lazy(() => import('./PageMS/PageMaster'));
-const PageOverview = lazy(() => import('./PageMS/PageOverview'));
+const PageOverviewNew = lazy(() => import('./PageMS/PageOverviewNew'));
 const PageAssignmentUser = lazy(() => import('./PageMS/PageAssignmentUser'));
 const PageAssignmentUserAdd = lazy(() =>
   import('./PageMS/PageAssignmentUserAdd')
@@ -1983,7 +1983,7 @@ const Admin = () => {
                     />
                     <Route
                       path="/pms-page-overview"
-                      element={<PageOverview />}
+                      element={<PageOverviewNew />}
                     />
                     <Route
                       path="/pms-purchase-price/:id"

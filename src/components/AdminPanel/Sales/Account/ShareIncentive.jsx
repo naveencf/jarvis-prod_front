@@ -21,6 +21,7 @@ const ShareIncentive = ({ closeModal, accountInfo }) => {
   const [allSalesServiceData, setAllSalesServiceData] = useState([]);
   const token = getDecodedToken();
   const loginUser = token.id;
+  const userRole = token.role_id;
   const {
     refetch: getIncentiveSharingDetails,
     data: getincentiveSharingData,
@@ -234,6 +235,8 @@ const ShareIncentive = ({ closeModal, accountInfo }) => {
             loginUser={loginUser}
             userContextData={userContextData}
             removeServices={removeServices}
+            userRole={userRole}
+            accountInfo={accountInfo}
 
           />
       }

@@ -18,8 +18,10 @@ import MergeSubCategory from "../InventoryDashboard/MergeSubCategory";
 import Swal from "sweetalert2";
 import moment from "moment/moment";
 import { FormatName } from "../../../../utils/FormatName";
+import {  useNavigate } from "react-router-dom";
 
 const SubCategoryOverview = () => {
+  const navigate = useNavigate()
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
   const dispatch = useDispatch();
@@ -151,6 +153,12 @@ const SubCategoryOverview = () => {
           >
             Add Sub Category
           </button>
+          {/* <button
+            className="btn cmnbtn btn-primary btn_sm"
+            onClick={() => navigate("/admin/pms-inventory-category-overview")}
+          >
+             Category
+          </button> */}
         </div>
       </div>
       <View

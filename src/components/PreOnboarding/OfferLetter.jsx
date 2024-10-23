@@ -273,7 +273,7 @@ const OfferLetter = ({ allUserData, image64 }) => {
         <View style={styles.section}>
           <View style={styles.section}>
             <Text>
-              Welcome to the 2squad! We are all here because someone, somewhere,
+              Welcome to the squad! We are all here because someone, somewhere,
               once said, “I think marketing could be fun.”
             </Text>
           </View>

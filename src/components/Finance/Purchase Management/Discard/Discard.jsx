@@ -24,6 +24,7 @@ import jwtDecode from "jwt-decode";
 import moment from "moment";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 export default function Discard() {
   const token = sessionStorage.getItem("token");
@@ -63,8 +64,12 @@ export default function Discard() {
   const [dateFilter, setDateFilter] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [columnsData, setColumnsData] = useState([]);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const callApi = () => {
+    setIsLoading(true);
+
     axios.get(baseUrl + "phpvendorpaymentrequest").then((res) => {
       const x = res.data.modifiedData;
       setNodeData(x);
@@ -88,6 +93,7 @@ export default function Discard() {
             ? ["s_no", "name", "vendor_name", "page_name", "total_paid"]
             : ["s_no", "vendor_name", "page_name", "total_paid"];
 
+          setIsLoading(false);
           setData(u);
           setFilterData(u);
           setColumnsData(initialColumns);
@@ -591,28 +597,22 @@ export default function Discard() {
   ];
   const columns = [
     {
-      field: "S.NO",
-      headerName: "S.NO",
+      key: "S.NO",
+      name: "S.NO",
       width: 90,
       editable: false,
-      renderCell: (params) => {
-        const rowIndex = filterData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      renderRowCell: (row, index) => index + 1,
     },
     {
-      field: "invc_img",
-      headerName: "Invoice Image",
-      renderCell: (params) => {
+      key: "invc_img",
+      name: "Invoice Image",
+      renderRowCell: (row) => {
         // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.invc_img
-          .split(".")
-          .pop()
-          .toLowerCase();
+        const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
         const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
-        return params.row.invc_img ? (
+        const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
+        return row?.invc_img ? (
           isPdf ? (
             <iframe
               onClick={() => {
@@ -641,30 +641,27 @@ export default function Discard() {
       width: 250,
     },
     {
-      field: "request_date",
-      headerName: "Requested Date",
+      key: "request_date",
+      name: "Requested Date",
       width: 150,
-      renderCell: (params) => {
-        new Date(params.row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.request_date).toLocaleTimeString("en-IN");
-      },
+      renderRowCell: (row) =>
+        moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
     },
     {
-      field: "name",
-      headerName: "Requested By",
+      key: "name",
+      name: "Requested By",
       width: 150,
-      renderCell: (params) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == params.row.request_id
+      renderRowCell: (row) => {
+        const reminder = phpRemainderData?.filter(
+          (item) => item.request_id == row?.request_id
         );
 
         return (
           <>
-            <span>{params.row.name}</span> &nbsp;{" "}
+            <span>{row?.name}</span> &nbsp;{" "}
             <span>
-              {reminder.length > 0 ? (
-                <Badge badgeContent={reminder.length} color="primary">
+              {reminder?.length > 0 ? (
+                <Badge badgeContent={reminder?.length} color="primary">
                   <NotificationsActiveTwoToneIcon
                     onClick={() => handleRemainderModal(reminder)}
                   />{" "}
@@ -678,26 +675,24 @@ export default function Discard() {
       },
     },
     {
-      field: "vendor_name",
-      headerName: "Vendor Name",
+      key: "vendor_name",
+      name: "Vendor Name",
       width: 200,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
               style={{ cursor: "pointer", marginRight: "20px" }}
-              onClick={() => handleOpenSameVender(params.row.vendor_name)}
+              onClick={() => handleOpenSameVender(row?.vendor_name)}
             >
-              {params.row.vendor_name}
+              {row?.vendor_name}
             </div>
             {/* <div onClick={() => handleOpenBankDetail()}>
               <AccountBalanceIcon style={{ fontSize: "25px" }} />
             </div> */}
             <Button
               disabled={
-                params.row.payment_details
-                  ? !params.row.payment_details.length > 0
-                  : true
+                row?.payment_details ? !row?.payment_details.length > 0 : true
               }
               onClick={() => handleOpenBankDetail(params.row)}
             >
@@ -708,28 +703,27 @@ export default function Discard() {
       },
     },
     {
-      field: "page_name",
-      headerName: "Page Name",
+      key: "page_name",
+      name: "Page Name",
       width: 150,
     },
     {
-      field: "total_paid",
-      headerName: "Total Paid",
+      key: "total_paid",
+      name: "Total Paid",
       width: 150,
-      renderCell: (params) => {
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
+      renderRowCell: (row) => {
+        return nodeData.filter((e) => e.vendor_name === row?.vendor_name)
           .length > 0 ? (
           <span className="row ml-2 ">
             <h5
-              onClick={() => handleOpenPaymentHistory(params.row, "TP")}
+              onClick={() => handleOpenPaymentHistory(row, "TP")}
               style={{ cursor: "pointer" }}
-              className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+              className=" pointer font-sm lead  text-decoration-underline text-black-50"
             >
               {/* Total Paid */}
               {nodeData
                 .filter(
-                  (e) =>
-                    e.vendor_name === params.row.vendor_name && e.status == 1
+                  (e) => e.vendor_name === row?.vendor_name && e.status == 1
                 )
                 .reduce((acc, item) => acc + +item.payment_amount, 0)}
             </h5>
@@ -737,7 +731,7 @@ export default function Discard() {
         ) : (
           <h5
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+            className=" pointer font-sm lead  text-decoration-underline text-black-50"
           >
             0
           </h5>
@@ -745,10 +739,10 @@ export default function Discard() {
       },
     },
     {
-      field: "F.Y",
-      headerName: "F.Y",
+      key: "F.Y",
+      name: "F.Y",
       width: 150,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
@@ -761,26 +755,26 @@ export default function Discard() {
             isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
           }`
         );
-        const dataFY = nodeData.filter((e) => {
+        const dataFY = nodeData?.filter((e) => {
           const paymentDate = new Date(e.request_date);
           return (
             paymentDate >= startDate &&
             paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
+            e.vendor_name === row?.vendor_name &&
             e.status !== 0 &&
             e.status !== 2
           );
         });
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-          .length > 0 ? (
+        return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+          ?.length > 0 ? (
           <h5
-            onClick={() => handleOpenPaymentHistory(params.row, "FY")}
+            onClick={() => handleOpenPaymentHistory(row, "FY")}
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+            className="font-sm lead  text-decoration-underline text-black-50"
           >
             {/* Financial Year */}
 
-            {dataFY.reduce(
+            {dataFY?.reduce(
               (acc, item) => acc + parseFloat(item.payment_amount),
               0
             )}
@@ -788,7 +782,7 @@ export default function Discard() {
         ) : (
           <h5
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+            className="font-sm lead  text-decoration-underline text-black-50"
           >
             0
           </h5>
@@ -796,12 +790,12 @@ export default function Discard() {
       },
     },
     {
-      field: "Pan Img",
-      headerName: "Pan Img",
-      renderCell: (params) => {
-        return params.row.pan_img ? (
+      key: "pan_img",
+      name: "Pan Img",
+      renderRowCell: (row) => {
+        return row?.pan_img ? (
           <img
-            src={params.row.pan_img}
+            src={row?.pan_img}
             alt="Pan"
             style={{ width: "40px", height: "40px" }}
           />
@@ -811,69 +805,59 @@ export default function Discard() {
       },
     },
     {
-      field: "remark_audit",
-      headerName: "Remark",
+      key: "remark_audit",
+      name: "Remark",
       width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
+      renderRowCell: (row) => {
+        return row?.remark_audit;
       },
     },
     {
-      field: "priority",
-      headerName: "Priority",
+      key: "priority",
+      name: "Priority",
       width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
+      renderRowCell: (row) => {
+        return row?.priority;
       },
     },
     {
-      field: "request_amount",
-      headerName: "Requested Amount",
+      key: "request_amount",
+      name: "Requested Amount",
       width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.request_amount}</p>;
       },
     },
     {
-      field: "base_amount",
-      headerName: "Base Amount",
+      key: "base_amount",
+      name: "Base Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount ? (
-          <p> &#8377; {params.row.base_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
       },
     },
     {
-      field: "gst_amount",
-      headerName: "GST Amount",
+      key: "gst_amount",
+      name: "GST Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount ? (
-          <p>&#8377; {params.row.gst_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return row?.gst_amount ? <p>&#8377; {row?.gst_amount}</p> : "NA";
       },
     },
     {
-      field: "outstandings",
-      headerName: "OutStanding ",
+      key: "outstandings",
+      name: "OutStanding ",
       width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.outstandings}</p>;
       },
     },
     {
-      field: "aging",
-      headerName: "Aging",
+      key: "aging",
+      name: "Aging",
       width: 150,
-      renderCell: (params) => {
-        return (
-          <p> {calculateDays(params.row.request_date, new Date())} Days</p>
-        );
+      renderRowCell: (row) => {
+        return <p> {calculateDays(row?.request_date, new Date())} Days</p>;
       },
     },
   ];
@@ -965,51 +949,6 @@ export default function Discard() {
         return apiData;
     }
   };
-  const handleRowSelectionModelChange = async (rowIds) => {
-    setRowSelectionModel(rowIds);
-  };
-
-  // csv download----
-  const handleDownloadInvoices = async () => {
-    const zip = new JSZip();
-
-    // Generate CSVs and add them to the zip
-    rowSelectionModel.forEach((rowId) => {
-      const rowData = filterData.find((row) => row.request_id === rowId); // Adjusted to find the correct row data
-      if (rowData) {
-        // Prepare CSV content
-        let csvContent = ""; // Initialize CSV content
-
-        // Generate headers row
-        const headers = Object.keys(rowData);
-        csvContent += headers.join(",") + "\n";
-
-        // Generate CSV content for the row
-        const values = Object.values(rowData);
-        const rowContent = values.map((value) => `"${value}"`).join(",");
-        csvContent += `${rowContent}\n`;
-
-        // Add CSV to the zip
-        zip.file(`invoice_${rowId}.csv`, csvContent);
-      }
-    });
-
-    // Generate the zip file
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-
-    // Save the zip file
-    saveAs(zipBlob, "invoices.zip");
-  };
-  function CustomColumnMenu(props) {
-    return (
-      <GridColumnMenu
-        {...props}
-        slots={{
-          columnMenuColumnsItem: null,
-        }}
-      />
-    );
-  }
 
   return (
     <div>
@@ -1110,7 +1049,7 @@ export default function Discard() {
                 showQuickFilter: true,
               },
             }}
-            getRowId={(row) => uniqueVendorData.indexOf(row)}
+            getRowId={(row) => uniqueVendorData?.indexOf(row)}
           />
         </DialogContent>
       </Dialog>
@@ -1135,7 +1074,6 @@ export default function Discard() {
                     <option value="thisWeek">This Week</option>
                     <option value="lastWeek">Last Week</option>
                     <option value="currentMonth">Current Month</option>
-                    {/* <option value="nextMonth">Next Month</option> */}
                     <option value="currentQuarter">This Quarter</option>
                   </select>
                 </div>
@@ -1162,7 +1100,7 @@ export default function Discard() {
                           variant="outlined"
                           InputProps={{
                             ...params.InputProps,
-                            className: "form-control", // Apply Bootstrap's form-control class
+                            className: "form-control",
                           }}
                           style={{
                             borderRadius: "0.25rem",
@@ -1270,120 +1208,89 @@ export default function Discard() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body thm_table">
-              {rowSelectionModel.length > 0 && (
-                <Button
-                  className="btn btn-primary ml-3 mb-2"
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={handleDownloadInvoices}
-                >
-                  Download PDF Zip
-                </Button>
-              )}
-              <DataGrid
-                rows={filterData}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                disableSelectionOnClick
-                checkboxSelection
-                autoHeight
-                slots={{ toolbar: GridToolbar }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                getRowId={(row) => row?.request_id}
-                onRowSelectionModelChange={(rowIds) => {
-                  handleRowSelectionModelChange(rowIds);
-                }}
-                rowSelectionModel={rowSelectionModel}
-              />
-              {/* <TableData
-                setColumnsData={setColumnsData}
-                columnsData={columnsData}
-                filterData={filterData}
-              /> */}
-              {openImageDialog && (
-                <ImageView
-                  viewImgSrc={viewImgSrc}
-                  setViewImgDialog={setOpenImageDialog}
-                />
-              )}
-              {paymentHistory && (
-                <PaymentHistoryDialog
-                  handleClose={setPaymentHistory}
-                  paymentDetailColumns={paymentDetailColumns}
-                  filterData={historyData}
-                />
-              )}
-              {/* Bank Detail dialog */}
-              <Dialog
-                open={bankDetail}
-                onClose={handleCloseBankDetail}
-                // fullWidth={"md"}
-                // maxWidth={"md"}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <DialogTitle>Bank Details</DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={handleCloseBankDetail}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-                <TextField
-                  id="outlined-multiline-static"
-                  // label="Multiline"
-                  multiline
-                  value={bankDetailRowData[0]?.payment_details}
-                  rows={4}
-                  defaultValue="Default Value"
-                  variant="outlined"
-                />
+      <div>
+        <View
+          columns={columns}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Discard"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"finance-discard"}
+          selectedData={setSelectedData}
+        />
 
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      bankDetailRowData[0]?.payment_details
-                    );
-                    toastAlert("Copied to clipboard");
-                  }}
-                >
-                  Copy
-                </Button>
-              </Dialog>
-              {remainderDialog && (
-                <ShowDataModal
-                  handleClose={setRemainderDialog}
-                  rows={reminderData}
-                  columns={remainderDialogColumns}
-                  aknowledgementDialog={aknowledgementDialog}
-                  setAknowledgementDialog={setAknowledgementDialog}
-                  userName={userName}
-                  callApi={callApi}
-                  setRemainderDialo={setRemainderDialog}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {openImageDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            setViewImgDialog={setOpenImageDialog}
+          />
+        )}
+        {paymentHistory && (
+          <PaymentHistoryDialog
+            handleClose={setPaymentHistory}
+            paymentDetailColumns={paymentDetailColumns}
+            filterData={historyData}
+          />
+        )}
+        {/* Bank Detail dialog */}
+        <Dialog
+          open={bankDetail}
+          onClose={handleCloseBankDetail}
+          // fullWidth={"md"}
+          // maxWidth={"md"}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <DialogTitle>Bank Details</DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseBankDetail}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <TextField
+            id="outlined-multiline-static"
+            // label="Multiline"
+            multiline
+            value={bankDetailRowData[0]?.payment_details}
+            rows={4}
+            defaultValue="Default Value"
+            variant="outlined"
+          />
+
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                bankDetailRowData[0]?.payment_details
+              );
+              toastAlert("Copied to clipboard");
+            }}
+          >
+            Copy
+          </Button>
+        </Dialog>
+        {remainderDialog && (
+          <ShowDataModal
+            handleClose={setRemainderDialog}
+            rows={reminderData}
+            columns={remainderDialogColumns}
+            aknowledgementDialog={aknowledgementDialog}
+            setAknowledgementDialog={setAknowledgementDialog}
+            userName={userName}
+            callApi={callApi}
+            setRemainderDialo={setRemainderDialog}
+          />
+        )}
       </div>
     </div>
   );

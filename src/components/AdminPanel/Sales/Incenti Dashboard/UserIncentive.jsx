@@ -258,7 +258,7 @@ const UserIncentive = () => {
             <div
               title={
                 disabledsate &&
-                releaseButtonConditiondata?.finance_status === "pending"
+                  releaseButtonConditiondata?.finance_status === "pending"
                   ? "Pending from finance side"
                   : ""
               }
@@ -275,40 +275,42 @@ const UserIncentive = () => {
         </div>
 
         <div className="row mt24">
-          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            <div className="card">
-              <div className="card-body pb20 flexCenter colGap14">
-                <div className="iconBadge bgPrimaryLight m-0">
-                  <span>
-                    <Blueprint weight="duotone" />
-                  </span>
-                </div>
-                <div>
-                  <h6 className="colorMedium">Total Incentive Amount</h6>
-                  <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalIncentiveAmount.toFixed(2)}
-                  </h6>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            <div className="card">
-              <div className="card-body pb20 flexCenter colGap14">
-                <div className="iconBadge bgSecondaryLight m-0">
-                  <span>
-                    <CurrencyDollar weight="duotone" />
-                  </span>
-                </div>
-                <div>
-                  <h6 className="colorMedium">Total Earned Incentive</h6>
-                  <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalEarnedIncentiveAmount.toFixed(2)}
-                  </h6>
+          {loginUserRole === 1 &&
+            <>
+              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                <div className="card">
+                  <div className="card-body pb20 flexCenter colGap14">
+                    <div className="iconBadge bgPrimaryLight m-0">
+                      <span>
+                        <Blueprint weight="duotone" />
+                      </span>
+                    </div>
+                    <div>
+                      <h6 className="colorMedium">Total Incentive Amount</h6>
+                      <h6 className="mt8 fs_16">
+                        {userIncentiveData?.totalIncentiveAmount.toFixed(2)}
+                      </h6>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                <div className="card">
+                  <div className="card-body pb20 flexCenter colGap14">
+                    <div className="iconBadge bgSecondaryLight m-0">
+                      <span>
+                        <CurrencyDollar weight="duotone" />
+                      </span>
+                    </div>
+                    <div>
+                      <h6 className="colorMedium">Total Earned Incentive</h6>
+                      <h6 className="mt8 fs_16">
+                        {userIncentiveData?.totalEarnedIncentiveAmount.toFixed(2)}
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div></>}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
@@ -326,7 +328,7 @@ const UserIncentive = () => {
               </div>
             </div>
           </div>
-          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+          {loginUserRole === 1 && <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
                 <div className="iconBadge bgSuccessLight m-0">
@@ -344,7 +346,7 @@ const UserIncentive = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
@@ -364,7 +366,7 @@ const UserIncentive = () => {
               </div>
             </div>
           </div>
-          <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+          {loginUserRole === 1 && <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
                 <div className="iconBadge bgWarningLight m-0">
@@ -380,7 +382,7 @@ const UserIncentive = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
 
         <View

@@ -27,6 +27,7 @@ import {
   pendingPaymentRequestColumns,
   pendingPaymentUniqueVendorColumns,
 } from "../../CommonColumn/Columns";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
@@ -76,6 +77,8 @@ export default function PendingPaymentRequest() {
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [bulkPayThroughVendor, setBulkPayThroughVendor] = useState("");
   const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState("");
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
@@ -90,6 +93,7 @@ export default function PendingPaymentRequest() {
 
   const callApi = async () => {
     //Reminder API
+    setIsLoading(true);
     let remindData = "";
     await axios
       .get(
@@ -169,7 +173,7 @@ export default function PendingPaymentRequest() {
               // Add aging sorting logic if required
               return b.aging - a.aging;
             });
-
+            setIsLoading(false);
             setData(mergedArray);
             setFilterData(mergedArray);
             setPendingRequestCount(mergedArray.length);
@@ -795,110 +799,83 @@ export default function PendingPaymentRequest() {
             </div>
           ))}
         </div>
-
-        <div className="card">
-          <div className="card-header sb">
-            <div className="caard-title">Pending Payment Overview</div>
-            <div className="pack w-75">
-              {rowSelectionModel.length > 0 && (
-                <Button
-                  className="btn btn-primary cmnbtn btn_sm"
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={handleDownloadInvoices}
-                >
-                  Download PDF Zip
-                </Button>
-              )}
-              <Button
-                className="btn cmnbtn btn_sm btn-secondary ms-2"
-                onClick={(e) => handleClearSameRecordFilter(e)}
-              >
-                Clear
-              </Button>
-              {/* <Button
-                className="btn btn-success cmnbtn btn_sm ms-2"
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={handleOpenPayThroughVendor}
-              >
-                Pay Through Vendor
-              </Button> */}
-              <Button
-                className="btn btn-success cmnbtn btn_sm ms-2"
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={handleOpenBulkPayThroughVendor}
-              >
-                Bulk Pay Through Vendor
-              </Button>
-            </div>
-          </div>
-          <div className="card-body thm_table fx-head">
-            {(activeAccordionIndex === 0 ||
-              activeAccordionIndex === 1 ||
-              activeAccordionIndex === 2) && (
-              <DataGrid
-                rows={
-                  activeAccordionIndex === 0
-                    ? filterData
-                    : activeAccordionIndex === 1
-                    ? filterData?.filter((d) => d.status === "3")
-                    : activeAccordionIndex === 2
-                    ? filterData?.filter((d) => d.status === "0")
-                    : []
-                }
-                columns={pendingPaymentRequestColumns({
-                  activeAccordionIndex,
-                  filterData,
-                  setOpenImageDialog,
-                  setViewImgSrc,
-                  phpRemainderData,
-                  handleRemainderModal,
-                  handleOpenBankDetail,
-                  handleOpenSameVender,
-                  handleOpenPaymentHistory,
-                  getStatusText,
-                  handlePayClick,
-                  handleDiscardClick,
-                  handleZohoStatusUpload,
-                  nodeData,
-                })}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                h
-                getRowClassName={getValidationCSSForRemainder}
-                slots={{ toolbar: GridToolbar }}
-                checkboxSelection
-                disableSelectionOnClick
-                disableColumnMenu
-                getRowId={(row) => row?.request_id}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                onRowSelectionModelChange={(rowIds) => {
-                  handleRowSelectionModelChange(rowIds);
-                }}
-                rowSelectionModel={rowSelectionModel}
-              />
-            )}
-            {openImageDialog && (
-              <ImageView
-                viewImgSrc={viewImgSrc}
-                fullWidth={true}
-                maxWidth={"md"}
-                setViewImgDialog={setOpenImageDialog}
-                openImageDialog={openImageDialog}
-              />
-            )}
-          </div>
+        <div>
+          {(activeAccordionIndex === 0 ||
+            activeAccordionIndex === 1 ||
+            activeAccordionIndex === 2) && (
+            <View
+              columns={pendingPaymentRequestColumns({
+                activeAccordionIndex,
+                filterData,
+                setOpenImageDialog,
+                setViewImgSrc,
+                phpRemainderData,
+                handleRemainderModal,
+                handleOpenBankDetail,
+                handleOpenSameVender,
+                handleOpenPaymentHistory,
+                getStatusText,
+                handlePayClick,
+                handleDiscardClick,
+                handleZohoStatusUpload,
+                nodeData,
+              })}
+              data={
+                activeAccordionIndex === 0
+                  ? filterData
+                  : activeAccordionIndex === 1
+                  ? filterData?.filter((d) => d.status === "3")
+                  : activeAccordionIndex === 2
+                  ? filterData?.filter((d) => d.status === "0")
+                  : []
+              }
+              isLoading={isLoading}
+              title={"Pending Payment Request"}
+              rowSelectable={true}
+              pagination={[100, 200]}
+              tableName={"finance-pending-payment-request"}
+              selectedData={setSelectedData}
+              addHtml={
+                <>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary ms-2"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
+                    Clear
+                  </button>
+                  <button
+                    className="btn btn-success cmnbtn btn_sm ms-2"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={handleOpenBulkPayThroughVendor}
+                  >
+                    Bulk Pay Through Vendor
+                  </button>
+                </>
+              }
+            />
+          )}
+          {openImageDialog && (
+            <ImageView
+              viewImgSrc={viewImgSrc}
+              fullWidth={true}
+              maxWidth={"md"}
+              setViewImgDialog={setOpenImageDialog}
+              openImageDialog={openImageDialog}
+            />
+          )}
         </div>
 
+        {openImageDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            fullWidth={true}
+            maxWidth={"md"}
+            setViewImgDialog={setOpenImageDialog}
+            openImageDialog={openImageDialog}
+          />
+        )}
         {payThroughVendor && (
           <PayThroughVendorDialog
             setPayThroughVendor={setPayThroughVendor}

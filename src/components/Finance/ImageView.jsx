@@ -29,7 +29,7 @@ export default function ImageView({
   const [isPDF, setIsPDF] = React.useState(false);
 
   useEffect(() => {
-    let verify = viewImgSrc.split(".").pop().toLowerCase() === "pdf";
+    let verify = viewImgSrc?.split(".")?.pop()?.toLowerCase() === "pdf";
     setIsPDF(verify);
   }, [viewImgSrc]);
 

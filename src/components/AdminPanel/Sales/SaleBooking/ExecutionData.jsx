@@ -5,8 +5,11 @@ import RecordServices from "../Account/CreateRecordServices";
 import { useGetAllRecordServicesQuery } from "../../../Store/API/Sales/RecordServicesApi";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import { useGlobalContext } from "../../../../Context/Context";
+import { useGetAllBrandQuery } from "../../../Store/API/Sales/BrandApi";
 
 const ExecutionData = ({ selectedRowData }) => {
+  console.log(selectedRowData);
+
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
@@ -14,12 +17,16 @@ const ExecutionData = ({ selectedRowData }) => {
     loginUserId = token.id;
   }
   const { toastAlert, toastError } = useGlobalContext();
-  console.log(selectedRowData);
   const {
     data: RecordServiceData,
     isLoading: RecordsLoading,
     isError: RecordsError,
   } = useGetAllRecordServicesQuery(loginUserId);
+  const {
+    data: BrandData,
+    isLoading: BrandLoading,
+    isError: BrandError,
+  } = useGetAllBrandQuery();
   console.log(RecordServiceData);
   const column = [
     {
@@ -59,7 +66,11 @@ const ExecutionData = ({ selectedRowData }) => {
           className="icon-1"
           onClick={async () => {
             try {
-              await navigator.clipboard.writeText(row?.execution_token);
+              await navigator.clipboard.writeText(`
+                Campaign Name: ${selectedRowData?.campaign_name}
+                Account Name: ${selectedRowData?.account_name}
+                Brand Name: ${BrandData?.find(data => data?._id === selectedRowData.brand_id).brand_name}
+                Token No.: ${row?.execution_token}`);
               toastAlert("Token Copied");
             } catch (err) {
               toastError("Failed to copy text");
@@ -79,7 +90,7 @@ const ExecutionData = ({ selectedRowData }) => {
       <View
         data={selectedRowData?.executionData}
         columns={column}
-        isLoading={RecordsLoading}
+        isLoading={RecordsLoading || BrandLoading}
         tableName={"ExecutionDataTable"}
         title={"Overview"}
       />

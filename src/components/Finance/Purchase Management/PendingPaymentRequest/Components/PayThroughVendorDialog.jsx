@@ -40,43 +40,37 @@ const PayThroughVendorDialog = (props) => {
         console.error("Error: Token not received.");
         return;
       }
-
-      // Step 2: Ensure rowSelectionModel and filterData are valid
-      if (!rowSelectionModel || rowSelectionModel.length === 0) {
+      if (!rowSelectionModel || rowSelectionModel?.length === 0) {
         console.error("Error: No rows selected.");
         return;
       }
-      if (!filterData || filterData.length === 0) {
+      if (!filterData || filterData?.length === 0) {
         console.error("Error: Filter data is empty or missing.");
         return;
       }
-
-      // Step 3: Map rowSelectionModel to corresponding rows in filterData
       const selectedRow = filterData.find(
         (row) => row.request_id === rowSelectionModel[0]
-      ); // Only select the first row for now
-
+      );
       if (!selectedRow) {
         console.error("Error: Selected row not found in filterData.");
         return;
       }
 
-      console.log("Selected Row:", selectedRow);
+      console.log(selectedRow, "selectedRow--->>>");
 
-      // Step 4: Create the payment payload dynamically based on the selected row
       const paymentPayload = {
-        clientReferenceId: selectedRow?.request_id || "defaultReferenceId",
-        payeeName: selectedRow?.vendor_name || "defaultPayeeName",
-        accountNumber: selectedRow?.account_no || "defaultAccountNumber",
-        branchCode: selectedRow?.ifsc || "defaultBranchCode",
-        email: selectedRow?.email || "defaultEmail",
-        phone: selectedRow?.mob1 || "defaultPhone",
+        clientReferenceId: selectedRow?.request_id || "0",
+        payeeName: selectedRow?.vendor_name,
+        accountNumber: selectedRow?.account_no,
+        branchCode: selectedRow?.ifsc,
+        email: selectedRow?.email || "naveen@creativefuel.io",
+        phone: selectedRow?.mob1 || "9109102483",
         amount: {
           currency: "INR",
           value: selectedRow?.balance_amount || 0,
         },
-        mode: selectedRow?.payment_mode || "RTGS",
-        remarks: selectedRow?.remark_audit || "Testing transaction",
+        mode: "NEFT",
+        remarks: selectedRow?.remark_audit || "No Remark",
       };
 
       const payResponse = await axios.post(

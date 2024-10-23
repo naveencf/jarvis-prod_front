@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
   reducerPath: "PageBaseURL",
-  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList"],
+  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList","pageClosedbyList"],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
@@ -108,15 +108,20 @@ export const PageBaseURL = createApi({
     }),
 
     //Page
-   
+
     getAllPageList: builder.query({
-      query: ({ decodedToken, userID , pagequery }) => {
+      query: ({ decodedToken, userID, pagequery }) => {
         // Check if the role is admin (role_id == 1)
-        if (decodedToken?.role_id === 1) {
-          return {
-            url: `v1/pageMaster?${pagequery}`, // Use GET request for admin
-            method: "GET",
-          };
+        // console.log(pagequery,"pagequery")
+        if (  decodedToken?.role_id === 1) {
+          // if(pagequery){
+
+            return {
+              url: `v1/get_all_pages?${pagequery}`, // Use GET request for admin
+              method: "GET",
+            };
+          // }
+          return;
         } else {
           return {
             url: `v1/get_all_pages_for_users`, // Use POST request for non-admin
@@ -125,7 +130,7 @@ export const PageBaseURL = createApi({
           };
         }
       },
-      transformResponse: (response) => response.data, // Optionally transform the response data
+      transformResponse: (response) => response.data.pageData, // Optionally transform the response data
     }),
 
     getPageById: builder.query({
@@ -208,7 +213,7 @@ export const PageBaseURL = createApi({
             page_sub_category: payload.sub_category_name,
             description: payload.description,
             last_updated_by: payload.last_updated_by,
-            ...payload
+            ...payload,
           },
         };
       },
@@ -239,6 +244,16 @@ export const PageBaseURL = createApi({
       },
       invalidatesTags: ["categoryList"],
     }),
+
+    //PageCloseby
+    // getAllPageClosebyList: builder.query({
+    //   query: (bodyData) => ({
+    //     url: `v1/get_page_count`,
+    //     method: "POST",
+    //     body: bodyData,
+    //   }),
+    //   providesTags: ["pageClosedbyList"],
+    // }),
   }),
 });
 
@@ -269,4 +284,5 @@ export const {
   useDeletePageSubCategoryMutation,
   useGetAllPageSubCategoryQuery,
   useDeletePageCategoryMutation,
+  useGetAllPageClosebyListQuery,
 } = PageBaseURL;

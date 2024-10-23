@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { tr } from "date-fns/locale";
 import { baseUrl } from "../../../../../utils/config";
-import FormatString from "../../../FormateString/FormatString";
+import ImageView from "../../../ImageView";
+
 import {
   Autocomplete,
   Button,
@@ -24,6 +24,7 @@ import {
   uniqueSaleBookingAccountColumn,
   uniqueSaleBookingSalesExecutiveColumn,
 } from "../../../CommonColumn/Columns";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const SaleBookingClose = ({
   onHandleOpenUniqueSalesExecutiveChange,
@@ -33,7 +34,6 @@ const SaleBookingClose = ({
   setUniquesalesexecutiveCount,
 }) => {
   const { toastAlert } = useGlobalContext();
-  const [displaySeq, setDisplaySeq] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -49,8 +49,6 @@ const SaleBookingClose = ({
   const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
-  const [sameCustomerDialog, setSameCustomerDialog] = useState(false);
-  const [sameCustomerData, setSameCustomerData] = useState([]);
   const [uniqueSalesExecutiveCount, setUniqueSalesExecutiveCount] =
     useState("");
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
@@ -61,35 +59,72 @@ const SaleBookingClose = ({
   const [balAmount, setBalAmount] = useState("");
   const [remark, setRemark] = useState("");
   const [row, setRow] = useState({});
-  const [openBtnCount, setOpenBtnCount] = useState(0);
-  const [closeBtnCount, setCloseBtnCount] = useState(0);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [viewImgSrc, setViewImgSrc] = useState("");
+  const [viewImgDialog, setViewImgDialog] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
 
-  const getData = () => {
-    axios
-      .get(baseUrl + "sales/sale_booking_tds_status_wise_data", {
+  const getData = async () => {
+    setIsLoading(true);
+    await axios
+      .get(baseUrl + "sales/sale_booking_tds_status_wise_data?status=close", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
-        const sortData = res?.data?.data?.sort(
-          (a, b) => new Date(b?.createdAt) - new Date(a?.createdAt)
-        );
-        setData(sortData);
-        setFilterData(sortData);
-        calculateUniqueData(sortData);
+        const transformedData = res?.data?.data?.reduce((acc, object) => {
+          if (object?.salesInvoiceRequestData?.length > 0) {
+            const invoices = object?.salesInvoiceRequestData?.map(
+              (invoice) => ({
+                ...invoice,
+                account_id: object.account_id,
+                sale_booking_date: object.sale_booking_date,
+                campaign_amount: object.campaign_amount,
+                base_amount: object.base_amount,
+                gst_amount: object.gst_amount,
+                tds_status: object.tds_status,
+                tds_percentage: object.tds_percentage,
+                tds_amount: object.tds_amount,
+                tds_verified_amount: object.tds_verified_amount,
+                created_by: object.created_by,
+                createdAt: object.createdAt,
+                updatedAt: object.updatedAt,
+                sale_booking_id: object.sale_booking_id,
+                account_name: object.account_name,
+                created_by_name: object.created_by_name,
+                paid_amount: object.paid_amount,
+                booking_created_date: object.booking_created_date,
+                invoice_file_url: object.invoice_file_url,
+              })
+            );
+            acc?.push(...invoices);
+          } else {
+            acc?.push({
+              ...object,
+            });
+          }
+          return acc;
+        }, []);
+        const reversedData = transformedData?.reverse();
+        console.log(transformedData, "Transformed Data --->>");
+        setIsLoading(false);
+        setData(reversedData);
+        setFilterData(reversedData);
+        calculateUniqueData(reversedData);
 
-        const dateFilterData = filterDataBasedOnSelection(sortData);
+        const dateFilterData = filterDataBasedOnSelection(reversedData);
         setFilterData(dateFilterData);
       })
       .catch((error) =>
         console.log(error, "Error while getting sale booking data")
       );
   };
+  console.log(filterData, "filterData---->>>>", "Transformed Data --->>");
 
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName) => {
@@ -814,57 +849,38 @@ const SaleBookingClose = ({
           </div>
         </div>
       </div>
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Sale Booking Close</h5>
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn_sm btn-secondary"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </button>
-            {/* <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => open(e)}
-            >
-              Open ({openBtnCount})
-            </button> */}
-            {/* <button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={(e) => close(e)}
-            >
-              TDS Open({closeBtnCount})
-            </button> */}
-          </div>
-        </div>
-        <div className="card-body thm_table fx-head data_tbl table-responsive">
-          <DataGrid
-            rows={filterData}
-            columns={saleBookingCloseColumns({
-              filterData,
-              handleOpenVerifyDialog,
-            })}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-            autoHeight={false}
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
-            }}
-            state={{
-              keyboard: {
-                cell: null,
-                columnHeader: null,
-                isMultipleKeyPressed: false,
-              },
-            }}
-            getRowId={(row) => row?._id}
+      <div>
+        <View
+          columns={saleBookingCloseColumns({
+            filterData,
+            handleOpenVerifyDialog,
+            setViewImgSrc,
+            setViewImgDialog,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Sale Booking"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"sale_booking_tds_status_wise_data"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
+        {viewImgDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            setViewImgDialog={setViewImgDialog}
           />
-        </div>
+        )}
       </div>
     </>
   );

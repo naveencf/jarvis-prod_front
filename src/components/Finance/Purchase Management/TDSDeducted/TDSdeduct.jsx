@@ -19,6 +19,8 @@ import { useGlobalContext } from "../../../../Context/Context";
 import moment from "moment";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import { NearMeDisabled } from "@mui/icons-material";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 export default function TDSdeduct() {
   const [search, setSearch] = useState("");
@@ -50,8 +52,11 @@ export default function TDSdeduct() {
   const [dateFilter, setDateFilter] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const callApi = () => {
+    setIsLoading(true);
     axios.get(baseUrl + "phpvendorpaymentrequest").then((res) => {
       setNodeData(res.data.modifiedData);
       const x = res.data.modifiedData;
@@ -75,6 +80,7 @@ export default function TDSdeduct() {
                 item2.tds_Deduction_Bool == true
             );
           });
+          setIsLoading(false);
           setData(u);
           setFilterData(u);
           setPendingRequestCount(u.length);
@@ -578,27 +584,20 @@ export default function TDSdeduct() {
 
   const columns = [
     {
-      field: "S.NO",
-      headerName: "S.NO",
+      key: "s_no",
+      name: "S.NO",
       width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex = filterData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      renderRowCell: (row, index) => index + 1,
     },
     {
-      field: "invc_img",
-      headerName: "Invoice Image",
-      renderCell: (params) => {
+      key: "invc_img",
+      name: "Invoice Image",
+      renderRowCell: (row) => {
         // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.invc_img
-          .split(".")
-          .pop()
-          .toLowerCase();
+        const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
         const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+        const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
         return isPdf ? (
           // <iframe
           //   onClick={() => {
@@ -648,62 +647,57 @@ export default function TDSdeduct() {
       width: 250,
     },
     {
-      field: "request_date",
-      headerName: "Requested Date",
+      key: "request_date",
+      name: "Requested Date",
       width: 150,
-      renderCell: (params) => {
-        new Date(params.row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.request_date).toLocaleTimeString("en-IN");
+      renderRowCell: (row) =>
+        moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+    },
+    {
+      key: "name",
+      name: "Requested By",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.name;
       },
     },
     {
-      field: "name",
-      headerName: "Requested By",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.name;
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
+      key: "vendor_name",
+      name: "Vendor Name",
       width: 200,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             {/* Hold for confirmation of sourabh sir */}
             <Button
               disabled={
-                params.row.payment_details
-                  ? !params.row.payment_details.length > 0
-                  : true
+                row?.payment_details ? !row?.payment_details.length > 0 : true
               }
-              onClick={() => handleOpenBankDetail(params.row)}
+              onClick={() => handleOpenBankDetail(row)}
             >
               <AccountBalanceIcon style={{ fontSize: "25px" }} />
             </Button>
             <div
               style={{ cursor: "pointer", marginRight: "20px" }}
-              onClick={() => handleOpenSameVender(params.row.vendor_name)}
+              onClick={() => handleOpenSameVender(row?.vendor_name)}
             >
-              {params.row.vendor_name}
+              {row?.vendor_name}
             </div>
           </div>
         );
       },
     },
     {
-      field: "page_name",
-      headerName: "Page Name",
+      key: "page_name",
+      name: "Page Name",
       width: 150,
     },
     {
-      field: "total_paid",
-      headerName: "Total Paid",
+      key: "total_paid",
+      name: "Total Paid",
       width: 150,
-      renderCell: (params) => {
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
+      renderRowCell: (row) => {
+        return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
           .length > 0 ? (
           <span className="row ml-2 ">
             <h5
@@ -714,8 +708,7 @@ export default function TDSdeduct() {
               {/* Total Paid */}
               {nodeData
                 .filter(
-                  (e) =>
-                    e.vendor_name === params.row.vendor_name && e.status == 1
+                  (e) => e.vendor_name === row?.vendor_name && e.status == 1
                 )
                 .reduce((acc, item) => acc + +item.payment_amount, 0)}
             </h5>
@@ -731,10 +724,10 @@ export default function TDSdeduct() {
       },
     },
     {
-      field: "F.Y",
-      headerName: "F.Y",
+      key: "F.Y",
+      name: "F.Y",
       width: 150,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
@@ -752,17 +745,17 @@ export default function TDSdeduct() {
           return (
             paymentDate >= startDate &&
             paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
+            e.vendor_name === row?.vendor_name &&
             e.status !== 0 &&
             e.status !== 2
           );
         });
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
+        return nodeData.filter((e) => e.vendor_name === row?.vendor_name)
           .length > 0 ? (
           <h5
             onClick={() => handleOpenPaymentHistory(params.row, "FY")}
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+            className=" font-sm lead  text-decoration-underline text-black-50"
           >
             {/* Financial Year */}
 
@@ -774,7 +767,7 @@ export default function TDSdeduct() {
         ) : (
           <h5
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+            className=" font-sm lead  text-decoration-underline text-black-50"
           >
             0
           </h5>
@@ -782,11 +775,11 @@ export default function TDSdeduct() {
       },
     },
     {
-      field: "Pan Img",
-      headerName: "Pan Img",
-      renderCell: (params) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${params?.row?.pan_img}`;
-        return params?.row?.pan_img?.includes("uploads") ? (
+      key: "Pan Img",
+      name: "Pan Img",
+      renderRowCell: (row) => {
+        const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+        return row?.pan_img?.includes("uploads") ? (
           <img
             onClick={() => {
               setOpenImageDialog(true);
@@ -802,121 +795,107 @@ export default function TDSdeduct() {
       },
     },
     {
-      field: "pan",
-      headerName: "PAN",
+      key: "pan",
+      name: "PAN",
       width: 200,
     },
     {
-      field: "gst",
-      headerName: "GST",
+      key: "gst",
+      name: "GST",
       width: 200,
     },
     {
-      field: "remark_audit",
-      headerName: "Remark",
+      key: "remark_audit",
+      name: "Remark",
       width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
+      renderCell: (row) => {
+        return row?.remark_audit;
       },
     },
     {
-      field: "priority",
-      headerName: "Priority",
+      key: "priority",
+      name: "Priority",
       width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
+      renderRowCell: (row) => {
+        return row?.priority;
       },
     },
     {
-      field: "request_amount",
-      headerName: "Requested Amount",
+      key: "request_amount",
+      name: "Requested Amount",
       width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.request_amount}</p>;
       },
     },
     {
-      field: "base_amount",
-      headerName: "Base Amount",
+      key: "base_amount",
+      name: "Base Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount ? (
-          <p> &#8377; {params.row.base_amount}</p>
+      renderRowCell: (row) => {
+        return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
+      },
+    },
+    {
+      key: "gst_amount",
+      name: "GST Amount",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.gst_amount ? <p>&#8377; {row?.gst_amount}</p> : "NA";
+      },
+    },
+    {
+      key: "gst_hold_amount",
+      name: "GST Hold Amount",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.gst_hold_amount ? (
+          <p>&#8377; {row?.gst_hold_amount}</p>
         ) : (
           "NA"
         );
       },
     },
     {
-      field: "gst_amount",
-      headerName: "GST Amount",
+      key: "tds_deduction",
+      name: "TDS Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount ? (
-          <p>&#8377; {params.row.gst_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return row?.tds_deduction ? <p>&#8377; {row?.tds_deduction}</p> : "NA";
       },
     },
     {
-      field: "gst_hold_amount",
-      headerName: "GST Hold Amount",
+      key: "outstandings",
+      name: "OutStanding ",
       width: 150,
-      renderCell: (params) => {
-        return params.row.gst_hold_amount ? (
-          <p>&#8377; {params.row.gst_hold_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.outstandings}</p>;
       },
     },
     {
-      field: "tds_deduction",
-      headerName: "TDS Amount",
+      key: "payment_amount",
+      name: "Payment Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.tds_deduction ? (
-          <p>&#8377; {params.row.tds_deduction}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "outstandings",
-      headerName: "OutStanding ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
-      },
-    },
-    {
-      filed: "payment_amount",
-      headerName: "Payment Amount",
-      width: 150,
-      renderCell: (params) => {
-        const paymentAmount = nodeData.filter(
-          (e) => e.request_id == params.row.request_id
+      renderRowCell: (row) => {
+        const paymentAmount = nodeData?.filter(
+          (e) => e.request_id == row?.request_id
         )[0]?.payment_amount;
         return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
       },
     },
     {
-      field: "aging",
-      headerName: "Aging",
+      key: "aging",
+      name: "Aging",
       width: 150,
-      renderCell: (params) => {
-        return (
-          <p> {calculateDays(params.row.request_date, new Date())} Days</p>
-        );
+      renderRowCell: (row) => {
+        return <p> {calculateDays(row?.request_date, new Date())} Days</p>;
       },
     },
     {
-      field: "gst_Hold_Bool",
-      headerName: "GST Hold",
-      renderCell: (params) => {
-        return params.row.gstHold == 1 ? "Yes" : "No";
+      key: "gst_Hold_Bool",
+      name: "GST Hold",
+      renderRowCell: (row) => {
+        return row?.gstHold == 1 ? "Yes" : "No";
       },
     },
   ];
@@ -1313,145 +1292,119 @@ export default function TDSdeduct() {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12">
-          <div className="card">
-            <div className="card-body thm_table">
-              {rowSelectionModel.length > 0 && (
-                <Button
-                  className="btn btn-primary ml-3 mb-2"
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  onClick={handleDownloadInvoices}
-                >
-                  Download PDF Zip
-                </Button>
-              )}
-              <DataGrid
-                rows={filterData}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                disableSelectionOnClick
-                checkboxSelection
-                slots={{ toolbar: GridToolbar, columnMenu: CustomColumnMenu }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                getRowId={(row) => row?.request_id}
-                onRowSelectionModelChange={(rowIds) => {
-                  handleRowSelectionModelChange(rowIds);
-                }}
-                rowSelectionModel={rowSelectionModel}
-              />
-              {openImageDialog && (
-                <ImageView
-                  viewImgSrc={viewImgSrc}
-                  setViewImgDialog={setOpenImageDialog}
-                />
-              )}
-              {/* Bank Detail */}
-              <Dialog
-                open={bankDetail}
-                onClose={handleCloseBankDetail}
-                fullWidth={"md"}
-                maxWidth={"md"}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <DialogTitle>Bank Details</DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={handleCloseBankDetail}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
+      <div>
+        <View
+          columns={columns}
+          data={filterData}
+          isLoading={isLoading}
+          title={"TDS Deduct"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"finance-tds-deduct"}
+          selectedData={setSelectedData}
+        />
+        {openImageDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            setViewImgDialog={setOpenImageDialog}
+          />
+        )}
+        {/* Bank Detail */}
+        <Dialog
+          open={bankDetail}
+          onClose={handleCloseBankDetail}
+          fullWidth={"md"}
+          maxWidth={"md"}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <DialogTitle>Bank Details</DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseBankDetail}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
 
-                <TextField
-                  id="outlined-multiline-static"
-                  multiline
-                  value={
-                    bankDetailRowData[0]?.payment_details +
-                    "\n" +
-                    "Mob:" +
-                    bankDetailRowData[0]?.mob1 +
-                    "\n" +
-                    (bankDetailRowData[0]?.email
-                      ? "Email:" + bankDetailRowData[0]?.email
-                      : "")
-                  }
-                  rows={4}
-                  defaultValue="Default Value"
-                  variant="outlined"
-                />
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      bankDetailRowData[0]?.payment_details
-                    );
-                    toastAlert("Copied to clipboard");
-                  }}
-                >
-                  Copy
-                </Button>
-              </Dialog>
-              {/* Pyament History */}
-              <Dialog
-                open={paymentHistory}
-                onClose={handleClosePaymentHistory}
-                fullWidth={"md"}
-                maxWidth={"md"}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <DialogTitle>Payment History</DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={handleClosePaymentHistory}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
+          <TextField
+            id="outlined-multiline-static"
+            multiline
+            value={
+              bankDetailRowData[0]?.payment_details +
+              "\n" +
+              "Mob:" +
+              bankDetailRowData[0]?.mob1 +
+              "\n" +
+              (bankDetailRowData[0]?.email
+                ? "Email:" + bankDetailRowData[0]?.email
+                : "")
+            }
+            rows={4}
+            defaultValue="Default Value"
+            variant="outlined"
+          />
+          <Button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                bankDetailRowData[0]?.payment_details
+              );
+              toastAlert("Copied to clipboard");
+            }}
+          >
+            Copy
+          </Button>
+        </Dialog>
+        {/* Pyament History */}
+        <Dialog
+          open={paymentHistory}
+          onClose={handleClosePaymentHistory}
+          fullWidth={"md"}
+          maxWidth={"md"}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <DialogTitle>Payment History</DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={handleClosePaymentHistory}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
 
-                <DataGrid
-                  rows={historyData}
-                  columns={paymentDetailColumns}
-                  pageSize={5}
-                  rowsPerPageOptions={[5]}
-                  disableSelectionOnClick
-                  autoHeight
-                  slots={{ toolbar: GridToolbar }}
-                  slotProps={{
-                    toolbar: {
-                      showQuickFilter: true,
-                    },
-                  }}
-                  getRowId={(row) => row.request_id}
-                />
-              </Dialog>
-            </div>
-          </div>
-        </div>
+          <DataGrid
+            rows={historyData}
+            columns={paymentDetailColumns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            disableSelectionOnClick
+            autoHeight
+            slots={{ toolbar: GridToolbar }}
+            slotProps={{
+              toolbar: {
+                showQuickFilter: true,
+              },
+            }}
+            getRowId={(row) => row.request_id}
+          />
+        </Dialog>
       </div>
     </div>
   );

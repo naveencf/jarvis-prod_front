@@ -6,133 +6,176 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Autocomplete, Badge, Button, TextField } from "@mui/material";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
+import {
+  KeyOff,
+  NearMeDisabledOutlined,
+  NearMeDisabledSharp,
+} from "@mui/icons-material";
 
 export const saleBookingCloseColumns = ({
-  filterData = [],
   handleOpenVerifyDialog,
+  setViewImgSrc,
+  setViewImgDialog,
 }) => [
   {
-    field: "s_no",
-    headerName: "S.No",
-    renderCell: (params) => (
-      <div>{[...filterData].indexOf(params.row) + 1}</div>
-    ),
-    sortable: true,
+    key: "s_no",
+    name: "S.NO",
+    width: 70,
+    renderRowCell: (row, index) => index + 1,
   },
   {
-    field: "sale_booking_id",
-    headerName: "Booking Id",
-    renderCell: (params) => {
-      return <div>{params.row.sale_booking_id}</div>;
+    key: "sale_booking_id",
+    name: "Booking Id",
+    renderRowCell: (row) => {
+      return <div>{row?.sale_booking_id}</div>;
     },
     width: 150,
   },
   {
-    field: "account_name",
-    headerName: "Account Name",
-    renderCell: (params) => {
-      return <div>{FormatString(params.row.account_name)}</div>;
+    key: "account_name",
+    name: "Account Name",
+    renderRowCell: (row) => {
+      return <div>{FormatString(row?.account_name)}</div>;
     },
     width: 150,
   },
   {
-    field: "created_by_name",
-    headerName: "Sales Executive Name",
-    renderCell: (params) => (
-      <div>{FormatString(params.row.created_by_name)}</div>
-    ),
+    key: "created_by_name",
+    name: "Sales Executive Name",
+    renderRowCell: (row) => <div>{FormatString(row?.created_by_name)}</div>,
     width: 200,
   },
   {
-    field: "sale_booking_date",
-    headerName: "Booking Date",
-    renderCell: (params) =>
-      moment(params.row.sale_booking_date).format("DD/MM/YYYY"),
+    key: "sale_booking_date",
+    name: "Booking Date",
+    renderRowCell: (row) =>
+      moment(row?.sale_booking_date)?.format("DD/MM/YYYY"),
     width: 150,
   },
   {
-    field: "campaign_amount",
-    headerName: "Campaign Amount",
-    renderCell: (params) => params.row.campaign_amount,
+    key: "campaign_amount",
+    name: "Campaign Amount",
+    renderRowCell: (row) => row?.campaign_amount,
     width: 150,
   },
 
   {
-    field: "base_amount",
-    headerName: "Base Amount",
-    renderCell: (params) => params.row.base_amount,
+    key: "base_amount",
+    name: "Base Amount",
+    renderRowCell: (row) => row?.base_amount,
     width: 150,
   },
   {
-    field: "tds_amount",
-    headerName: "TDS Amount",
+    key: "tds_amount",
+    name: "TDS Amount",
     width: 150,
-    renderCell: (params) => (
-      <div>{params.row.tds_amount !== "" ? params.row.tds_amount : 0}</div>
+    renderRowCell: (row) => (
+      <div>{row?.tds_amount !== "" ? row?.tds_amount : 0}</div>
     ),
   },
   {
-    field: "tds_percentage",
-    headerName: "TDS Percentage",
+    key: "tds_percentage",
+    name: "TDS Percentage",
     width: 150,
-    renderCell: (params) => <div>{params.row.tds_percentage} %</div>,
+    renderRowCell: (row) => <div>{row?.tds_percentage} %</div>,
   },
   {
-    field: "gst_amount",
-    headerName: "GST Amount",
-    renderCell: (params) => params.row.gst_amount,
-    width: 150,
-  },
-  {
-    field: "paid_amount",
-    headerName: "Paid Amount",
-    renderCell: (params) => params.row.paid_amount,
+    key: "gst_amount",
+    name: "GST Amount",
+    renderRowCell: (row) => row?.gst_amount,
     width: 150,
   },
-
-  // {
-  //   field: "total_refund_amount",
-  //   headerName: "Refund Amount",
-  //   width: 150,
-
-  //   renderCell: (params) => params.row.total_refund_amount,
-  // },
-  // {
-  //   field: "balance_refund_amount",
-  //   headerName: "Refund Balance Amount",
-  //   width: 250,
-
-  //   renderCell: (params) => params.row.balance_refund_amount,
-  // },
-  // {
-  //   field: "net_balance_amount_to_pay_percentage",
-  //   headerName: "Net Bal Cust to pay Amt (%)",
-  //   renderCell: (params) => params.row.net_balance_amount_to_pay_percentage,
-  //   width: 250,
-  // },
   {
-    field: "booking_created_date",
-    headerName: "Booking Created Date",
-    renderCell: (params) => params.row.booking_created_date,
-    width: 200,
+    key: "paid_amount",
+    name: "Paid Amount",
+    renderRowCell: (row) => row?.paid_amount,
+    width: 150,
   },
   {
-    field: "tds_status",
-    headerName: "Status",
-    renderCell: (params) => FormatString(params.row.tds_status),
+    key: "invoice_number",
+    name: "Invoice Number",
+    renderRowCell: (row) => row?.invoice_number,
+    width: 150,
   },
   {
-    field: "Transaction History",
-    headerName: "Transaction History",
-    width: 190,
-    renderCell: (params) => (
+    key: "invoice_uploaded_date",
+    name: "Invoice Date",
+    renderRowCell: (row) =>
+      moment(row?.invoice_uploaded_date).format("DD/MM/YYYY hh:mm"),
+    width: 150,
+  },
+  {
+    key: "Invoice File",
+    name: "Invoice File",
+    width: 150,
+    renderRowCell: (row) => {
+      const invoiceData = row?.invoice_file !== "" ? row?.invoice_file : null;
+      // console.log(invoiceData, "invoiceData --->>>>");
+
+      const imgUrl = `${row?.invoice_file_url}/${invoiceData}`;
+
+      return invoiceData ? (
+        invoiceData?.endsWith(".pdf") ? (
+          <img
+            src={pdfImg}
+            onClick={() => {
+              setViewImgSrc(imgUrl);
+              setViewImgDialog(true);
+            }}
+            style={{ width: "40px", height: "40px" }}
+            alt="PDF Icon"
+          />
+        ) : invoiceData?.endsWith(".xls") || invoiceData?.endsWith(".xlsx") ? (
+          <img
+            src={pdfImg}
+            onClick={() => {
+              setViewImgSrc(imgUrl);
+              setViewImgDialog(true);
+            }}
+            style={{ width: "40px", height: "40px" }}
+            alt="PDF Icon"
+          />
+        ) : (
+          <img
+            onClick={() => {
+              setViewImgSrc(imgUrl);
+              setViewImgDialog(true);
+            }}
+            src={imgUrl}
+            alt="payment screenshot"
+            style={{ width: "50px", height: "50px" }}
+          />
+        )
+      ) : (
+        "No Image"
+      );
+    },
+  },
+  {
+    key: "booking_created_date",
+    name: "Booking Created Date",
+    width: 150,
+    renderRowCell: (row) =>
+      moment(row?.booking_created_date).format("DD/MM/YYYY hh:mm"),
+  },
+  {
+    key: "tds_status",
+    name: "Status",
+    width: 150,
+    renderRowCell: (row) => FormatString(row?.tds_status),
+  },
+  {
+    key: "Transaction History",
+    name: "Transaction History",
+    width: 150,
+    renderRowCell: (row) => (
       <div className="flex-row">
-        {params.row.tds_status === "close" && (
+        {row?.tds_status === "close" && (
           <Link
-            to={`/admin/finance-transaction-list/${params.row.sale_booking_id}`}
+            to={`/admin/finance-transaction-list/${row?.sale_booking_id}`}
             className="link-primary"
           >
-            {params.row.paid_amount > 0 ? (
+            {row?.paid_amount > 0 ? (
               <button className="icon-1" title="Transaction History">
                 <i className="bi bi-file-earmark-text-fill"></i>
               </button>
@@ -145,15 +188,15 @@ export const saleBookingCloseColumns = ({
     ),
   },
   {
-    field: "Action",
-    headerName: "Action",
-    renderCell: (params) => {
+    key: "Action",
+    name: "Action",
+    renderRowCell: (params) => {
       return (
         <div className="flex-row gap16">
           {/* {params.row.tds_status === "close" ? ( */}
           <button
             className="btn cmnbtn btn_sm btn-outline-primary mr4"
-            onClick={(e) => handleOpenVerifyDialog(e, params.row)}
+            onClick={(e) => handleOpenVerifyDialog(e, row)}
           >
             Verify
           </button>
@@ -486,77 +529,74 @@ export const uniqueSaleBookingSalesExecutiveColumn = ({
 
 export const saleBookingVerifyColumn = ({ filterData }) => [
   {
-    field: "S.No",
+    key: "s_no",
+    name: "S.No",
     width: 80,
-
-    renderCell: (params, index) => (
-      <div>{[...filterData].indexOf(params.row) + 1}</div>
-    ),
-    sortable: true,
+    renderRowCell: (row, index) => index + 1,
   },
   {
-    field: "sale_booking_id",
-    headerName: "Booking Id",
-    renderCell: (params) => {
-      return <div>{params.row.sale_booking_id}</div>;
+    key: "sale_booking_id",
+    name: "Booking Id",
+    renderRowCell: (row) => {
+      return <div>{row?.sale_booking_id}</div>;
     },
     width: 150,
   },
   {
-    field: "account_name",
-    headerName: "Account Name",
-    renderCell: (params) => FormatString(params.row.account_name),
+    key: "account_name",
+    name: "Account Name",
+    renderRowCell: (row) => FormatString(row?.account_name),
     width: 150,
   },
   {
-    field: "created_by_name",
-    headerName: "Sales Executive Name",
-    renderCell: (params) => FormatString(params.row.created_by_name),
+    key: "created_by_name",
+    name: "Sales Executive Name",
+    renderRowCell: (row) => FormatString(row?.created_by_name),
     width: 150,
   },
   {
-    field: "sale_booking_date",
-    headerName: "Booking Date",
+    key: "sale_booking_date",
+    name: "Booking Date",
     width: 150,
-    renderCell: (params) =>
-      moment(params.row.sale_booking_date).format("DD-MM-YYYY HH:MM"),
+    renderRowCell: (row) =>
+      moment(row?.sale_booking_date)?.format("DD-MM-YYYY HH:MM"),
   },
   {
-    field: "campaign_amount",
-    headerName: "Campaign Amount",
-    renderCell: (params) => params.row.campaign_amount,
-    width: 150,
-  },
-  {
-    field: "base_amount",
-    headerName: "Base Amount",
-    renderCell: (params) => params.row.base_amount,
+    key: "campaign_amount",
+    name: "Campaign Amount",
+    renderRowCell: (row) => row?.campaign_amount,
     width: 150,
   },
   {
-    field: "tds_amount",
-    headerName: "TDS Amount",
+    key: "base_amount",
+    name: "Base Amount",
+    renderRowCell: (row) => row?.base_amount,
     width: 150,
-    renderCell: (params) => (
-      <div>{params.row.tds_amount !== "" ? params.row.tds_amount : 0}</div>
+  },
+  {
+    key: "tds_amount",
+    name: "TDS Amount",
+    width: 150,
+    renderRowCell: (row) => (
+      <div>{row?.tds_amount !== "" ? row?.tds_amount : 0}</div>
     ),
   },
   {
-    field: "tds_percentage",
-    headerName: "TDS Percentage",
+    key: "tds_percentage",
+    name: "TDS Percentage",
     width: 150,
-    renderCell: (params) => <div>{params.row.tds_percentage}</div>,
+    renderRowCell: (row) => row?.tds_percentage,
   },
   {
-    field: "gst_amount",
-    headerName: "GST Amount",
-    renderCell: (params) => params.row.gst_amount,
+    key: "gst_amount",
+    name: "GST Amount",
+    renderRowCell: (row) => row?.gst_amount,
     width: 150,
   },
   {
-    field: "paid_amount",
-    headerName: "Paid Amount",
-    renderCell: (params) => params.row.paid_amount,
+    key: "paid_amount",
+    name: "Paid Amount",
+    renderRowCell: (row) => row?.paid_amount,
     width: 150,
   },
   // {
@@ -575,10 +615,10 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
   //   width: 200,
   // },
   {
-    field: "Balance Amount",
-    headerName: "Balance Amount",
-    renderCell: (params) => {
-      return params.row.campaign_amount - params.row.paid_amount;
+    key: "Balance Amount",
+    name: "Balance Amount",
+    renderRowCell: (params) => {
+      return row?.campaign_amount - row?.paid_amount;
     },
     width: 150,
   },
@@ -595,10 +635,9 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
   //   width: 200,
   // },
   {
-    field: "createdAt",
-    headerName: "Booking Created Date",
-    renderCell: (params) =>
-      moment(params.row.createdAt).format("DD-MM-YYYY HH:MM"),
+    key: "createdAt",
+    name: "Booking Created Date",
+    renderRowCell: (row) => moment(row?.createdAt).format("DD-MM-YYYY HH:MM"),
     width: 200,
   },
 ];
@@ -873,77 +912,78 @@ export const pendingApprovalColumn = ({
   setViewImgDialog,
 }) => [
   {
-    field: "s_no",
-    headerName: "S.NO",
+    key: "s_no",
+    name: "S.NO",
     width: 70,
-    renderCell: (params, index) => (
-      <div>{[...filterData].indexOf(params.row) + 1}</div>
-    ),
+    compare: true,
+    renderRowCell: (row, index) => index + 1,
   },
   {
-    field: "account_name",
-    headerName: "Account Name",
+    key: "account_name",
+    name: "Account Name",
     width: 260,
-    renderCell: (params) => (
+    compare: true,
+    renderRowCell: (row) => (
       <div
         style={{ cursor: "pointer" }}
-        onClick={() => handleOpenSameAccounts(params.row.account_name)}
+        onClick={() => handleOpenSameAccounts(row?.account_name)}
       >
-        {FormatString(params.row.account_name)}{" "}
+        {FormatString(row?.account_name)}
       </div>
     ),
   },
   {
-    headerName: "Requested By",
-    field: "created_by_name",
+    name: "Requested By",
+    key: "created_by_name",
     width: 180,
-    name: <div style={{ whiteSpace: "normal" }}>Requested By</div>,
-    renderCell: (params, index) => (
-      <div>{FormatString(params.row.created_by_name)} </div>
-    ),
+    renderRowCell: (row) => <div>{FormatString(row?.created_by_name)} </div>,
   },
   {
-    headerName: "Sale Booking Date & Time",
-    field: "sale_booking_date",
+    name: "Sale Booking Date & Time",
+    key: "sale_booking_date",
     width: 180,
-    renderCell: (params) =>
-      moment(params.row.sale_booking_date).format("DD/MM/YYYY HH:MM"),
+    compare: true,
+    renderRowCell: (row) =>
+      moment(row?.sale_booking_date).format("DD/MM/YYYY HH:MM"),
   },
 
   {
-    headerName: "Campaign Amount",
-    field: "campaign_amount",
+    name: "Campaign Amount",
+    key: "campaign_amount",
     width: 180,
-    renderCell: (params) => <div>{params.row.campaign_amount} </div>,
+    compare: true,
+    showCol: true,
+    renderRowCell: (row) => <div>{row?.campaign_amount} </div>,
   },
   {
-    headerName: "Campaign Amount Without GST",
-    field: "base_amount",
+    name: "Campaign Amount Without GST",
+    key: "base_amount",
     width: 180,
-    renderCell: (params) => <div>{params.row.base_amount} </div>,
+    compare: true,
+    showCol: true,
+    renderRowCell: (row) => <div>{row?.base_amount} </div>,
   },
   {
-    field: "balance_payment_ondate",
-    headerName: "Payment On Date",
+    key: "balance_payment_ondate",
+    name: "Payment On Date",
     width: 180,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div>
-        {moment(params.row.balance_payment_ondate).format("DD/MM/YYYY HH:MM")}
+        {moment(row?.balance_payment_ondate).format("DD/MM/YYYY HH:MM")}
       </div>
     ),
   },
   {
-    headerName: "Payment Screenshot",
-    field: "payment_screenshot",
+    name: "Payment Screenshot",
+    key: "payment_screenshot",
     width: 180,
-    renderCell: (params) => {
-      const imgUrl = params.row.payment_screenshot_url;
+    renderRowCell: (row) => {
+      const imgUrl = row?.payment_screenshot_url;
 
       if (!imgUrl) {
         return "No Image";
       }
 
-      // Extract file extension and check if it's a PDF
       const fileExtension = imgUrl?.split(".")?.pop()?.toLowerCase();
       const isPdf = fileExtension === "pdf";
 
@@ -953,7 +993,7 @@ export const pendingApprovalColumn = ({
             setViewImgDialog(true);
             setViewImgSrc(imgUrl);
           }}
-          src={pdfImg} // Display a PDF icon
+          src={pdfImg}
           alt="PDF Preview"
           style={{ width: "40px", height: "40px", cursor: "pointer" }}
           title="PDF Preview"
@@ -972,89 +1012,85 @@ export const pendingApprovalColumn = ({
     },
   },
   {
-    headerName: "Balance Amount",
-    field: "Balance Amount",
+    key: "Balance Amount",
+    name: "Balance Amount",
     width: 180,
-    renderCell: (params) => (
-      <div>{params.row.campaign_amount - params.row.payment_amount} </div>
+    compare: true,
+    renderRowCell: (row) => (
+      <div>{row?.campaign_amount - row?.payment_amount} </div>
     ),
   },
   {
-    headerName: "Payment Amount",
-    field: "payment_amount",
+    name: "Payment Amount",
+    key: "payment_amount",
     width: 180,
-    renderCell: (params) => <div>{params.row.payment_amount} </div>,
+    renderRowCell: (row) => <div>{row?.payment_amount} </div>,
   },
   {
-    headerName: "Payment Mode",
+    name: "Payment Mode",
     field: "payment_mode",
     width: 180,
-    renderCell: (params) => {
-      // const pmData =
-      //   paymentModeArray.find((mode) => mode._id === params.row.payment_mode)
-      //     ?.payment_mode_name || "";
-
-      return <div>{params.row.payment_mode_name} </div>;
+    compare: true,
+    renderRowCell: (row) => {
+      return <div>{row?.payment_mode_name} </div>;
     },
   },
   {
-    headerName: "Payment Status",
-    field: "payment_approval_status",
+    name: "Payment Status",
+    key: "payment_approval_status",
     width: 190,
-    renderCell: (params) => (
-      <div>
-        {params.row.payment_approval_status === "pending" ? "Pending" : ""}
-      </div>
+    renderRowCell: (row) => (
+      <div>{row?.payment_approval_status === "pending" ? "Pending" : ""}</div>
     ),
   },
   {
-    headerName: "Bank Name ",
-    field: "title",
+    name: "Bank Name ",
+    key: "title",
     width: 180,
-    renderCell: (params) => (
-      <div>{FormatString(params.row.payment_detail.title)} </div>
-    ),
+    compare: true,
+    renderRowCell: (row) => FormatString(row?.payment_detail?.title),
   },
   {
-    headerName: "Bank Detail ",
-    field: "detail",
+    name: "Bank Detail ",
+    Key: "details",
     width: 490,
-    renderCell: (params) => (
-      <div className="flexCenter colGap8">
+    compare: true,
+    renderRowCell: (row) => (
+      (
         <button
           className="btn tableIconBtn btn_sm "
-          onClick={() => handleCopyDetail(params.row.payment_detail.details)}
+          onClick={() => handleCopyDetail(row?.payment_detail?.details)}
         >
           <ContentCopyIcon />
           {/* or any other icon */}
         </button>
-        {FormatString(params.row.payment_detail.details)}
-      </div>
+      ),
+      FormatString(row?.payment_detail?.details)
     ),
     // width: 150,
   },
   {
-    headerName: "Reference No ",
-    field: "payment_ref_no",
+    name: "Reference No ",
+    key: "payment_ref_no",
     width: 190,
-    renderCell: (params) => <div>{params.row.payment_ref_no} </div>,
+    renderRowCell: (row) => <div>{row?.payment_ref_no} </div>,
   },
   {
-    headerName: "Remarks ",
-    field: "remarks",
+    name: "Remarks ",
+    key: "remarks",
     width: 200,
-    renderCell: (params) => <div>{FormatString(params.row.remarks)} </div>,
+    renderRowCell: (row) => <div>{FormatString(row?.remarks)} </div>,
   },
   {
     width: 200,
-    // field: "Status",
-    headerName: "Status",
-    renderCell: ({ row }) => (
+    key: "Status",
+    name: "Status",
+    renderRowCell: (row) => (
       <>
         <Autocomplete
           className="my-2"
           id="combo-box-demo"
-          value={row.statusDropdown || null}
+          value={row?.statusDropdown || null}
           options={[
             { label: "Approved", value: "approval" },
             { label: "Rejected", value: "reject" },
@@ -1073,15 +1109,14 @@ export const pendingApprovalColumn = ({
       </>
     ),
   },
-
   {
-    headerName: "Payment Requested Date and Time ",
-    field: "createdAt",
+    name: "Payment Requested Date and Time ",
+    key: "createdAt",
     width: 180,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div>
-        {params.row.createdAt
-          ? moment(params.row.createdAt).format("DD/MM/YYYY HH:MM")
+        {row?.createdAt
+          ? moment(row?.createdAt)?.format("DD/MM/YYYY HH:MM")
           : ""}{" "}
       </div>
     ),
@@ -1240,7 +1275,6 @@ export const uniquePendingApprovalCustomerColumn = ({
   },
   {
     width: 200,
-    // field: "Status",
     headerName: "Status",
     renderCell: ({ row }) => (
       <>
@@ -1254,7 +1288,6 @@ export const uniquePendingApprovalCustomerColumn = ({
           ]}
           getOptionLabel={(option) => option?.label}
           onChange={(event, newValue) => {
-            // console.log(newValue, "newValue--- newValueData---");
             handleStatusChange(row, newValue?.value);
             row.statusDropdown = newValue;
           }}
@@ -1269,93 +1302,84 @@ export const uniquePendingApprovalCustomerColumn = ({
 ];
 
 export const pendingInvoiceColumn = ({
-  filterData = [],
   setOpenImageDialog,
   setViewImgSrc,
   handleOpenEditFieldAction,
 }) => [
   {
     width: 60,
-    headerName: "S.No",
-    field: "s_no",
-    renderCell: (params, index) => (
-      <div>{[...filterData]?.indexOf(params.row) + 1}</div>
-    ),
+    name: "S.No",
+    key: "s_no",
+    compare: true,
+    renderRowCell: (row, index) => index + 1,
   },
   {
     width: 150,
-    headerName: "Sale Booking ID",
-    field: "sale_booking_id",
-    renderCell: (params, index) => <div>{params.row.sale_booking_id}</div>,
+    name: "Sale Booking ID",
+    key: "sale_booking_id",
+    showCol: true,
+    renderRowCell: (row, index) => <div>{row?.sale_booking_id || ""}</div>,
   },
   {
-    headerName: "Sales Person name",
-    field: "user_name",
+    name: "Sales Person name",
+    key: "user_name",
     width: 220,
-    height: "200px",
-    renderCell: (params) => {
-      return <div>{FormatString(params.row.user_name)} </div>;
+    renderRowCell: (row) => {
+      return <div>{FormatString(row?.user_name || "")} </div>;
     },
   },
   {
-    headerName: " Requested On",
-    field: "createdAt",
+    name: " Requested On",
+    key: "createdAt",
     width: 220,
-    renderCell: (params) => {
-      return moment(params.row.createdAt).format("DD/MM/YYYY HH:MM");
+    renderRowCell: (row) => {
+      return moment(row?.createdAt)?.format("DD/MM/YYYY HH:MM");
     },
   },
   {
-    headerName: "Sale Booking Date",
-    field: "sale_booking_date",
+    name: "Sale Booking Date",
+    key: "sale_booking_date",
     width: 220,
-    renderCell: (params) => {
-      return moment(params.row.saleData.sale_booking_date).format(
+    renderRowCell: (row) => {
+      return moment(row?.saleData?.sale_booking_date).format(
         "DD/MM/YYYY HH:MM"
       );
     },
   },
-  // {
-  //   headerName: "Sale Booking Description",
-  //   field: "description",
-  //   width: 220,
-  //   renderCell: (params) => params.row.saleData.description,
-  // },
   {
-    headerName: "Account Name",
-    field: "account_name",
+    name: "Account Name",
+    key: "account_name",
     width: 220,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <>
         <Link
           className="text-primary"
-          to={`/admin/finance-pending-invoice/customer-details/${params.row.saleData.account_id}`}
+          to={`/admin/finance-pending-invoice/customer-details/${row?.saleData?.account_id}`}
         >
-          {FormatString(params.row.saleData.account_name)}
+          {FormatString(row?.saleData?.account_name)}
         </Link>
       </>
     ),
   },
   {
-    headerName: "Invoice Particular Name",
-    field: "invoice_particular_name",
+    name: "Invoice Particular Name",
+    key: "invoice_particular_name",
     width: 200,
-    renderCell: (params) =>
-      FormatString(params.row.saleData.invoice_particular_name),
+    renderRowCell: (row) =>
+      FormatString(row?.saleData?.invoice_particular_name),
   },
   {
-    field: "po_file",
-    headerName: "PO File",
+    key: "po_file",
+    name: "PO File",
     width: 210,
-    renderCell: (params) => {
-      // Extract file extension and check if it's a PDF
-      const fileExtension = params.row.purchase_order_upload_url
+    renderRowCell: (row) => {
+      const fileExtension = row?.purchase_order_upload_url
         ?.split(".")
         .pop()
         .toLowerCase();
       const isPdf = fileExtension === "pdf";
 
-      const imgUrl = params.row.purchase_order_upload_url;
+      const imgUrl = row?.purchase_order_upload_url;
 
       return isPdf ? (
         <img
@@ -1381,52 +1405,54 @@ export const pendingInvoiceColumn = ({
     },
   },
   {
-    field: "po_number",
-    headerName: "PO Number",
+    key: "purchase_order_number",
+    name: "PO Number",
     width: 210,
-    renderCell: (params) => params.row.purchase_order_number,
+    renderRowCell: (row) => row?.purchase_order_number,
   },
   {
-    headerName: "Invoice Type",
-    field: "invoice_type_id",
+    name: "Invoice Type",
+    key: "invoice_type_id",
     width: 180,
-    renderCell: (params) => FormatString(params.row.invoice_type_id),
+    renderRowCell: (row) => FormatString(row?.invoice_type_id),
   },
   {
-    field: "invoice_amount",
-    headerName: "Invoice Amount",
+    key: "invoice_amount",
+    name: "Invoice Amount",
     width: 200,
-    renderCell: (params) =>
-      params.row.invoice_amount ? params.row.invoice_amount : 0,
+    compare: true,
+    renderRowCell: (row) => (row?.invoice_amount ? row?.invoice_amount : 0),
   },
   {
-    headerName: "Base Amount",
-    field: "base_amount",
+    name: "Base Amount",
+    key: "base_amount",
     width: 180,
-    renderCell: (params) =>
-      params.row.saleData.base_amount ? params.row.saleData.base_amount : 0,
+    compare: true,
+    renderRowCell: (row) =>
+      row?.saleData?.base_amount ? row?.saleData.base_amount : 0,
   },
   {
-    headerName: "GST Amount",
+    name: "GST Amount",
     field: "gst_amount",
     width: 180,
-    renderCell: (params) =>
-      params.row.saleData.gst_amount ? params.row.saleData.gst_amount : 0,
+    compare: true,
+    renderRowCell: (row) =>
+      row?.saleData?.gst_amount ? row?.saleData?.gst_amount : 0,
   },
   {
-    headerName: "Campaign Amount",
-    field: "campaign_amount",
+    name: "Campaign Amount",
+    key: "campaign_amount",
     width: 180,
-    renderCell: (params) =>
-      params.row.saleData.campaign_amount
-        ? params.row.saleData.campaign_amount
-        : 0,
+    compare: true,
+    renderRowCell: (row) =>
+      row?.saleData?.campaign_amount ? row?.saleData?.campaign_amount : 0,
   },
   {
-    field: "invoice_action_reason",
-    headerName: "Invoice Reason",
+    key: "invoice_action_reason",
+    name: "Invoice Reason",
     width: 200,
-    renderCell: (params) => FormatString(params.row.invoice_action_reason),
+    compare: true,
+    renderRowCell: (row) => FormatString(row?.invoice_action_reason),
   },
   // {
   //   field: "aging",
@@ -1438,14 +1464,15 @@ export const pendingInvoiceColumn = ({
   //   },
   // },
   {
-    field: "Action",
-    headerName: "Action",
+    key: "Action",
+    name: "Action",
     width: 180,
-    renderCell: (params) => (
+    compare: true,
+    renderRowCell: (row) => (
       <div>
         <Button
           variant="contained"
-          onClick={() => handleOpenEditFieldAction(params.row)}
+          onClick={() => handleOpenEditFieldAction(row)}
         >
           Invoice Update
         </Button>
@@ -2169,99 +2196,45 @@ export const outstandingColumns = ({
 }) => [
   {
     width: 70,
-    field: "sno",
-    headerName: "S.No",
-    valueGetter: (params) => {
-      // Apply the filter logic once
-      const invcForCreated =
-        activeAccordionIndex === 3
-          ? filterData?.filter((invc) => invc.invoice_type_id !== "proforma")
-          : activeAccordionIndex === 0
-          ? filterData?.filter(
-              (invc) =>
-                invc.invoice_type_id === "tax-invoice" &&
-                invc.invoice_creation_status !== "pending" &&
-                invc.gst_status === true &&
-                invc.paid_amount <= invc.campaign_amount * 0.9
-            )
-          : activeAccordionIndex === 1
-          ? filterData?.filter(
-              (invc) =>
-                invc.invoice_type_id !== "tax-invoice" ||
-                invc.invoice_creation_status === "pending"
-            )
-          : [];
-
-      // Return the index for the S.No
-      return invcForCreated.indexOf(params?.row) + 1;
-    },
-    renderCell: (params) => {
-      // Reuse the same filter logic
-      const invcForCreated =
-        activeAccordionIndex === 3
-          ? filterData?.filter((invc) => invc.invoice_type_id !== "proforma")
-          : activeAccordionIndex === 0
-          ? filterData?.filter(
-              (invc) =>
-                invc.invoice_type_id === "tax-invoice" &&
-                invc.invoice_creation_status !== "pending" &&
-                invc.gst_status === true &&
-                invc.paid_amount <= invc.campaign_amount * 0.9
-            )
-          : activeAccordionIndex === 1
-          ? filterData?.filter(
-              (invc) =>
-                invc.invoice_type_id !== "tax-invoice" ||
-                invc.invoice_creation_status === "pending"
-            )
-          : [];
-      // Render the serial number in the cell
-      return <div>{invcForCreated.indexOf(params?.row) + 1}</div>;
-    },
-    sortable: true,
+    key: "s_no",
+    name: "S.No",
+    renderRowCell: (row, index) => index + 1,
   },
   {
-    field: "sale_booking_id",
-    headerName: "Booking Id",
-    renderCell: (params) => <div>{params.row.sale_booking_id}</div>,
+    key: "sale_booking_id",
+    name: "Booking Id",
+    renderRowCell: (row) => <div>{row?.sale_booking_id}</div>,
   },
   {
-    field: "aging",
-    headerName: "Aging",
-    valueGetter: (params) => {
-      const hours = calculateAging(params.row.sale_booking_date, new Date());
-      const days = Math.round(hours / 24);
-      return `${days} Days`;
-    },
-    renderCell: (params) => {
-      const hours = calculateAging(params.row.sale_booking_date, new Date());
+    key: "aging",
+    name: "Aging",
+    renderRowCell: (row) => {
+      const hours = calculateAging(row?.sale_booking_date, new Date());
       const days = Math.round(hours / 24);
       return `${days} Days`;
     },
   },
   {
-    field: "account_name",
-    headerName: "Account Name",
+    key: "account_name",
+    name: "Account Name",
     width: 320,
-    renderCell: (params) => FormatString(params.row.account_name),
-    sortable: true,
+    renderRowCell: (row) => FormatString(row?.account_name),
   },
   {
-    field: "created_by_name",
-    headerName: "Sales Executive Name",
+    key: "created_by_name",
+    name: "Sales Executive Name",
     width: 190,
-    fieldName: "username",
-    renderCell: (params) => FormatString(params.row.created_by_name),
+    renderRowCell: (row) => FormatString(row?.created_by_name),
   },
   {
-    field: "party_name",
-    headerName: "Party Name",
+    key: "party_name",
+    name: "Party Name",
     width: 210,
-    renderCell: (params) => FormatString(params.row.party_name),
+    renderRowCell: (row) => FormatString(row?.party_name),
   },
   {
-    field: "invoice_number",
-    headerName: "Invoice Number",
+    key: "invoice_number",
+    name: "Invoice Number",
     width: 190,
     // renderCell: (params) => {
     //   const salesInvoiceData = params?.row?.salesInvoiceRequestData[0];
@@ -2269,80 +2242,73 @@ export const outstandingColumns = ({
     // },
   },
   {
-    field: "invoice_uploaded_date",
-    headerName: "Invoice Date",
+    key: "invoice_uploaded_date",
+    name: "Invoice Date",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
-        {moment(params.row.invoice_uploaded_date).format("DD/MM/YYYY")}
+        {moment(row?.invoice_uploaded_date).format("DD/MM/YYYY")}
       </div>
     ),
   },
   {
-    field: "balance_payment_ondate",
-    headerName: "Expected Payment Receive Date",
+    key: "balance_payment_ondate",
+    name: "Expected Payment Receive Date",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
-        {moment(params.row.balance_payment_ondate).format("DD/MM/YYYY")}
+        {moment(row?.balance_payment_ondate).format("DD/MM/YYYY")}
       </div>
     ),
   },
   {
-    field: "sale_booking_date",
-    headerName: "Sale Booking Date",
+    key: "sale_booking_date",
+    name: "Sale Booking Date",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
-        {moment(params.row.sale_booking_date).format("DD/MM/YYYY")}
+        {moment(row?.sale_booking_date).format("DD/MM/YYYY")}
       </div>
     ),
   },
   {
-    field: "campaign_amount",
-    headerName: "Campaign Amount",
+    key: "campaign_amount",
+    name: "Campaign Amount",
     width: 190,
-    renderCell: (params) => params.row.campaign_amount,
+    renderRowCell: (row) => row?.campaign_amount,
   },
   {
-    field: "paid_amount",
-    headerName: "Paid Amount",
+    key: "paid_amount",
+    name: "Paid Amount",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
-        {params.row.paid_amount ? params.row.paid_amount : 0}
+        {row?.paid_amount ? row?.paid_amount : 0}
       </div>
     ),
   },
   {
-    field: "Balance Amount",
-    headerName: "Balance Amount",
-    valueGetter: (params) => {
-      return params.row.campaign_amount - params.row.paid_amount || 0;
-    },
-
-    renderCell: (params) =>
-      params.row.campaign_amount - params.row.paid_amount || 0,
+    name: "Balance Amount",
+    key: "Balance Amount",
+    renderRowCell: (row) => row?.campaign_amount - row?.paid_amount || 0,
   },
   {
-    field: "base_amount",
-    headerName: "Base Amount",
-    renderCell: (params) => params.row.base_amount,
+    key: "base_amount",
+    name: "Base Amount",
+    renderRowCell: (row) => row?.base_amount,
   },
   {
-    field: "gst_status",
-    headerName: "GST",
-    renderCell: (params) =>
-      params.row.gst_status === true ? "GST" : "Non GST",
+    key: "gst_status",
+    name: "GST",
+    renderRowCell: (row) => (row.gst_status === true ? "GST" : "Non GST"),
   },
   {
-    field: "invoice_file",
-    headerName: "Screen Shot",
+    key: "invoice_file",
+    name: "Screen Shot",
     width: 190,
-    renderCell: (params) => {
-      const invoiceData =
-        params?.row?.invoice_file !== "" ? params.row.invoice_file : null;
-      const imgUrl = `${params.row.url}/${invoiceData}`;
+    renderRowCell: (row) => {
+      const invoiceData = row?.invoice_file !== "" ? row?.invoice_file : null;
+      const imgUrl = `${row?.url}/${invoiceData}`;
 
       return invoiceData ? (
         invoiceData?.endsWith(".pdf") ? (
@@ -2394,25 +2360,25 @@ export const outstandingColumns = ({
   // />
 
   activeAccordionIndex == 0 && {
-    field: "status",
-    headerName: "Status",
+    key: "status",
+    name: "Status",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <button
         className="btn cmnbtn btn_sm btn-outline-primary"
-        onClick={(e) => handleImageClick(e, params.row)}
+        onClick={(e) => handleImageClick(e, row)}
       >
         Balance Update
       </button>
     ),
   },
   activeAccordionIndex == 0 && {
-    field: "Action",
-    headerName: "Action",
+    key: "Action",
+    name: "Action",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div className="flex-row">
-        {params.row.gst_status === false ? (
+        {row?.gst_status === false ? (
           <button
             variant="contained"
             autoFocus
@@ -2426,10 +2392,10 @@ export const outstandingColumns = ({
           ""
         )}
         <Link
-          to={`/admin/finance-transaction-list/${params.row.sale_booking_id}`}
+          to={`/admin/finance-transaction-list/${row?.sale_booking_id}`}
           className="link-primary"
         >
-          {params.row.paid_amount > 0 ? (
+          {row?.paid_amount > 0 ? (
             <button className="icon-1" title="Transaction History">
               <i className="bi bi-file-earmark-text-fill"></i>
             </button>
@@ -2442,14 +2408,11 @@ export const outstandingColumns = ({
   },
   // activeAccordionIndex == 1 &&
   {
-    field: "Edit Action",
-    headerName: "Edit Action",
-    renderCell: (params) => (
+    key: "Edit Action",
+    name: "Edit Action",
+    renderRowCell: (row) => (
       <div>
-        <Button
-          variant="contained"
-          onClick={() => handleOpenEditAction(params?.row)}
-        >
+        <Button variant="contained" onClick={() => handleOpenEditAction(row)}>
           Edit
         </Button>
       </div>
@@ -2470,86 +2433,83 @@ export const incentivePaymentColumns = ({
 }) => [
   {
     width: 70,
-    headerName: "S.No",
-    field: "s_no",
-    renderCell: (params, index) =>
-      params.row.sales_executive_name !== "Total" ? (
-        <div>{[...filterData].indexOf(params.row) + 1}</div>
-      ) : null,
-    sortable: true,
+    name: "S.No",
+    key: "s_no",
+    renderRowCell: (row, index) =>
+      row?.sales_executive_name !== "Total" ? <div>{index + 1}</div> : null,
   },
   {
-    headerName: "Sales Executive Name",
+    name: "Sales Executive Name",
     width: 230,
-    field: "sales_executive_name",
-    renderCell: (params) =>
-      params.row.sales_executive_name !== "Total" ? (
+    key: "sales_executive_name",
+    renderRowCell: (row) =>
+      row?.sales_executive_name !== "Total" ? (
         <Link
-          to={`/admin/Incentive-Request-Released-List/${params.row._id}`}
+          to={`/admin/Incentive-Request-Released-List/${row?._id}`}
           className="link-primary"
         >
-          {params.row.sales_executive_name}
+          {row?.sales_executive_name}
         </Link>
       ) : (
         <div className="fs-6 font-bold text-black-50">
           {" "}
-          {params.row.sales_executive_name}
+          {row?.sales_executive_name}
         </div>
       ),
   },
   {
-    headerName: "Created Date & Time",
+    name: "Created Date & Time",
     width: 230,
-    field: "createdAt",
-    renderCell: (params) =>
-      params.row.sales_executive_name !== "Total"
-        ? new Date(params.row.createdAt).toLocaleDateString("en-IN") +
+    key: "createdAt",
+    renderRowCell: (row) =>
+      row?.sales_executive_name !== "Total"
+        ? new Date(row?.createdAt).toLocaleDateString("en-IN") +
           " " +
-          new Date(params.row.createdAt).toLocaleTimeString("en-IN")
+          new Date(row?.createdAt).toLocaleTimeString("en-IN")
         : null,
   },
   {
-    headerName: "User Requested Amount",
+    name: "User Requested Amount",
     width: 230,
-    field: "user_requested_amount",
-    renderCell: (params) =>
-      params.row.sales_executive_name !== "Total" ? (
-        params.row.user_requested_amount
+    key: "user_requested_amount",
+    renderRowCell: (row) =>
+      row?.sales_executive_name !== "Total" ? (
+        row?.user_requested_amount
       ) : (
         <div className="fs-6 font-bold text-black-50">
-          {params.row.user_requested_amount?.toFixed(2)}
+          {row?.user_requested_amount?.toFixed(2)}
         </div>
       ),
   },
   {
-    headerName: "Admin Approved Amount",
+    name: "Admin Approved Amount",
     width: 180,
-    field: "admin_approved_amount",
-    renderCell: (params) =>
-      params.row.sales_executive_name !== "Total" ? (
-        params.row.admin_approved_amount
+    key: "admin_approved_amount",
+    renderRowCell: (row) =>
+      row?.sales_executive_name !== "Total" ? (
+        row?.admin_approved_amount
       ) : (
         <div className="fs-6 font-bold text-black-50">
-          {params.row.admin_approved_amount?.toFixed(2)}
+          {row?.admin_approved_amount?.toFixed(2)}
         </div>
       ),
   },
   viewPendingStatus !== true && {
-    headerName: "Released Amount",
-    field: "finance_released_amount",
-    renderCell: (params) =>
-      params.row.sales_executive_name !== "Total" ? (
+    name: "Released Amount",
+    key: "finance_released_amount",
+    renderRowCell: (params) =>
+      row?.sales_executive_name !== "Total" ? (
         <Link
-          to={`/admin/Incentive-balance-Released/${params.row._id}`}
+          to={`/admin/Incentive-balance-Released/${row?._id}`}
           className="link-primary"
         >
-          {params.row.finance_released_amount
-            ? params.row.finance_released_amount?.toLocaleString("en-IN")
+          {row?.finance_released_amount
+            ? row?.finance_released_amount?.toLocaleString("en-IN")
             : 0}
         </Link>
       ) : (
         <div className="fs-6 font-bold text-black-50">
-          {params.row.finance_released_amount?.toLocaleString("en-IN")}
+          {row?.finance_released_amount?.toLocaleString("en-IN")}
         </div>
       ),
   },
@@ -2567,11 +2527,11 @@ export const incentivePaymentColumns = ({
   //     ),
   // },
   viewPendingStatus && {
-    field: "Status",
-    headerName: "Status",
+    key: "Status",
+    name: "Status",
     width: 230,
-    renderCell: (params) => {
-      return params.row.sales_executive_name === "Total" ? (
+    renderRowCell: (row) => {
+      return row?.sales_executive_name === "Total" ? (
         ""
       ) : (
         // <span>Released</span>
@@ -2581,8 +2541,8 @@ export const incentivePaymentColumns = ({
           // data-target="#incentiveModal"
           onClick={(e) => {
             e.preventDefault();
-            setSelectedData(params.row),
-              setBalanceReleaseAmount(params.row.balance_release_amount);
+            setSelectedData(row),
+              setBalanceReleaseAmount(row?.balance_release_amount);
             setAccountNo("");
             setRemarks("");
             setPaymentRef("");
@@ -2595,13 +2555,13 @@ export const incentivePaymentColumns = ({
     },
   },
   viewPendingStatus && {
-    field: "Aging",
-    headerName: "Aging",
-    renderCell: (params) => {
-      if (params.row.sales_executive_name === "Total") {
+    key: "Aging",
+    name: "Aging",
+    renderRowCell: (row) => {
+      if (row?.sales_executive_name === "Total") {
         return "";
       } else {
-        const hours = calculateAging(params.row.createdAt, new Date());
+        const hours = calculateAging(row?.createdAt, new Date());
         const days = Math.round(hours / 24);
         return `${days} Days`;
       }
@@ -2740,35 +2700,33 @@ export const pendingPaymentRequestColumns = ({
   nodeData,
 }) => [
   {
-    field: "S.NO",
-    headerName: "S.NO",
+    key: "s_no",
+    name: "S.NO",
     width: 70,
     editable: false,
-    valueGetter: (params) => filterData?.indexOf(params.row) + 1,
-    renderCell: (params) => {
-      // const rowIndex = filterData.indexOf(params.row);
+    renderRowCell: (row) => {
       const rowIndex =
         activeAccordionIndex == 0
-          ? filterData.indexOf(params.row)
+          ? filterData?.indexOf(row)
           : activeAccordionIndex == 1
-          ? filterData.filter((d) => d.status === "3").indexOf(params.row)
-          : filterData.filter((d) => d.status === "0").indexOf(params.row);
+          ? filterData?.filter((d) => d.status === "3").indexOf(row)
+          : filterData?.filter((d) => d.status === "0").indexOf(row);
 
       return <div>{rowIndex + 1}</div>;
     },
   },
   {
-    field: "invc_img",
-    headerName: "Invoice Image",
-    renderCell: (params) => {
-      if (!params.row.invc_img) {
+    key: "invc_img",
+    name: "Invoice Image",
+    renderRowCell: (row) => {
+      if (!row?.invc_img) {
         return "No Image";
       }
       // Extract file extension and check if it's a PDF
-      const fileExtension = params.row.invc_img.split(".").pop().toLowerCase();
+      const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
       const isPdf = fileExtension === "pdf";
 
-      const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+      const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
 
       return isPdf ? (
         <img
@@ -2795,76 +2753,61 @@ export const pendingPaymentRequestColumns = ({
     width: 130,
   },
   {
-    field: "zoho_status",
-    headerName: "Zoho Status",
+    key: "zoho_status",
+    name: "Zoho Status",
     width: 130,
-    editable: false,
-    valueGetter: (params) => filterData?.indexOf(params.row) + 1,
-    renderCell: (params) => {
-      return <div>{params.row.zoho_status === "1" ? "Uploaded" : ""}</div>;
+    renderRowCell: (row) => {
+      return <div>{row?.zoho_status === "1" ? "Uploaded" : ""}</div>;
     },
   },
   {
-    field: "invc_no",
-    headerName: "Invoice Number",
+    key: "invc_no",
+    name: "Invoice Number",
     width: 150,
-    renderCell: (params) => {
-      return <div>{params.row.invc_no}</div>;
+    renderRowCell: (row) => {
+      return <div>{row?.invc_no}</div>;
     },
   },
   {
-    field: "invc_Date",
-    headerName: "Invoice Date",
+    key: "invc_Date",
+    name: "Invoice Date",
     width: 150,
-    renderCell: (params) => {
-      new Date(params.row.invc_Date).toLocaleDateString("en-IN") +
-        " " +
-        new Date(params.row.invc_Date).toLocaleTimeString("en-IN");
-    },
+    renderRowCell: (row) => moment(row?.invc_Date).format("DD/MM/YYYY hh:mm"),
   },
 
   {
-    field: "request_date",
-    headerName: "Requested Date",
+    key: "request_date",
+    name: "Requested Date",
     width: 150,
-    renderCell: (params) => {
-      new Date(params.row.request_date).toLocaleDateString("en-IN") +
-        " " +
-        new Date(params.row.request_date).toLocaleTimeString("en-IN");
-    },
+    renderRowCell: (row) =>
+      moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
   },
   {
-    field: "name",
-    headerName: "Requested By",
+    key: "name",
+    name: "Requested By",
     width: 150,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       return (
         <>
-          <span>{params.row.name}</span> &nbsp;{" "}
+          <span>{row?.name}</span> &nbsp;{" "}
         </>
       );
     },
   },
   {
-    field: "Reminder",
-    headerName: "Reminder",
+    key: "Reminder",
+    name: "Reminder",
     width: 150,
-    valueGetter: (params) => {
-      const reminder = phpRemainderData.filter(
-        (item) => item.request_id == params.row.request_id
-      );
-      return reminder.length;
-    },
-    renderCell: (params) => {
-      const reminder = phpRemainderData.filter(
-        (item) => item.request_id == params.row.request_id
+    renderRowCell: (row) => {
+      const reminder = phpRemainderData?.filter(
+        (item) => item.request_id == row?.request_id
       );
 
       return (
         <>
           <span>
-            {reminder.length > 0 ? (
-              <Badge badgeContent={reminder.length} color="primary">
+            {reminder?.length > 0 ? (
+              <Badge badgeContent={reminder?.length} color="primary">
                 <NotificationsActiveTwoToneIcon
                   onClick={() => handleRemainderModal(reminder)}
                 />
@@ -2878,68 +2821,58 @@ export const pendingPaymentRequestColumns = ({
     },
   },
   {
-    field: "vendor_name",
-    headerName: "Vendor Name",
+    key: "vendor_name",
+    name: "Vendor Name",
     width: 200,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
           {/* Hold for confirmation of sourabh sir */}
           <Button
             disabled={
-              params.row.payment_details
-                ? !params.row.payment_details.length > 0
-                : true
+              row?.payment_details ? !row?.payment_details.length > 0 : true
             }
-            onClick={() => handleOpenBankDetail(params.row)}
+            onClick={() => handleOpenBankDetail(row)}
           >
             <AccountBalanceIcon style={{ fontSize: "25px" }} />
           </Button>
           <a
             style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
-            onClick={() => handleOpenSameVender(params.row.vendor_name)}
+            onClick={() => handleOpenSameVender(row?.vendor_name)}
           >
-            {params.row.vendor_name}
+            {row?.vendor_name}
           </a>
         </div>
       );
     },
   },
   {
-    field: "page_name",
-    headerName: "Page Name",
+    key: "page_name",
+    name: "Page Name",
     width: 150,
   },
   {
-    field: "payment_cycle",
-    headerName: "Payment Cycle",
+    key: "payment_cycle",
+    name: "Payment Cycle",
     width: 150,
   },
   {
-    field: "total_paid",
-    headerName: "Total Paid",
+    key: "total_paid",
+    name: "Total Paid",
     width: 150,
-    valueGetter: (params) => {
-      const totalPaid = nodeData
-        .filter(
-          (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-        )
-        .reduce((acc, item) => acc + +item.payment_amount, 0);
-      return totalPaid;
-    },
-    renderCell: (params) => {
-      return nodeData?.filter((e) => e.vendor_name === params.row.vendor_name)
+    renderRowCell: (row) => {
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
         .length > 0 ? (
         <span className="row ml-2 ">
           <h5
-            onClick={() => handleOpenPaymentHistory(params.row, "TP")}
+            onClick={() => handleOpenPaymentHistory(row, "TP")}
             style={{ cursor: "pointer" }}
             className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
           >
             {/* Total Paid */}
             {nodeData
               .filter(
-                (e) => e.vendor_name === params.row.vendor_name && e.status == 1
+                (e) => e.vendor_name === row?.vendor_name && e.status == 1
               )
               .reduce((acc, item) => acc + +item.payment_amount, 0)}
           </h5>
@@ -2955,10 +2888,10 @@ export const pendingPaymentRequestColumns = ({
     },
   },
   {
-    field: "F.Y",
-    headerName: "F.Y",
+    key: "F.Y",
+    name: "F.Y",
     width: 150,
-    valueGetter: (params) => {
+    renderRowCell: (row) => {
       const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
       const currentYear = new Date().getFullYear();
       const startDate = new Date(
@@ -2971,54 +2904,21 @@ export const pendingPaymentRequestColumns = ({
           isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
         }`
       );
-
-      const dataFY = nodeData.filter((e) => {
-        const paymentDate = new Date(e?.request_date);
-        return (
-          paymentDate >= startDate &&
-          paymentDate <= endDate &&
-          e?.vendor_name === params?.row?.vendor_name &&
-          e.status !== 0 &&
-          e.status !== 2 &&
-          e.status !== 3
-        );
-      });
-
-      const totalFY = dataFY.reduce(
-        (acc, item) => acc + parseFloat(item.payment_amount),
-        0
-      );
-
-      return totalFY;
-    },
-    renderCell: (params) => {
-      const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-      const currentYear = new Date().getFullYear();
-      const startDate = new Date(
-        `04/01/${
-          isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-        }`
-      );
-      const endDate = new Date(
-        `03/31/${
-          isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-        }`
-      );
-      const dataFY = nodeData.filter((e) => {
+      const dataFY = nodeData?.filter((e) => {
         const paymentDate = new Date(e.request_date);
         return (
           paymentDate >= startDate &&
           paymentDate <= endDate &&
-          e.vendor_name === params.row.vendor_name &&
+          e.vendor_name === row?.vendor_name &&
           e.status !== 0 &&
           e.status !== 2 &&
           e.status !== 3
         );
       });
-      return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
         .length > 0 ? (
         <h5
-          onClick={() => handleOpenPaymentHistory(params.row, "FY")}
+          onClick={() => handleOpenPaymentHistory(row, "FY")}
           style={{ cursor: "pointer" }}
           className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
         >
@@ -3040,13 +2940,11 @@ export const pendingPaymentRequestColumns = ({
     },
   },
   {
-    field: "Pan Img",
-    headerName: "Pan Img",
-    valueGetter: (params) =>
-      params.row.pan_img.includes("uploads") ? params.row.pan_img : "NA",
-    renderCell: (params) => {
-      const ImgUrl = `https://purchase.creativefuel.io/${params.row.pan_img}`;
-      return params.row.pan_img.includes("uploads") ? (
+    key: "pan_img",
+    name: "Pan Img",
+    renderRowCell: (row) => {
+      const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+      return row?.pan_img.includes("uploads") ? (
         <img
           onClick={() => {
             setOpenImageDialog(true);
@@ -3062,98 +2960,90 @@ export const pendingPaymentRequestColumns = ({
     },
   },
   {
-    field: "pan",
-    headerName: "Pan",
+    key: "pan",
+    name: "Pan",
     width: 150,
   },
   {
-    field: "gst",
-    headerName: "GST",
+    key: "gst",
+    NearMeDisabledOutlined: "GST",
     width: 200,
   },
   {
-    field: "remark_audit",
-    headerName: "Remark",
+    key: "remark_audit",
+    name: "Remark",
     width: 150,
-    renderCell: (params) => {
-      return params.row.remark_audit;
+    renderRowCell: (row) => {
+      return row?.remark_audit;
     },
   },
   {
-    field: "priority",
-    headerName: "Priority",
+    key: "priority",
+    name: "Priority",
     width: 150,
-    renderCell: (params) => {
-      return params.row.priority;
+    renderRowCell: (row) => {
+      return row?.priority;
     },
   },
   {
-    field: "request_amount",
-    headerName: "Requested Amount",
+    key: "request_amount",
+    name: "Requested Amount",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.request_amount}</p>;
+    renderCell: (row) => {
+      return <p> &#8377; {row?.request_amount}</p>;
     },
   },
   {
-    field: "paid_amount",
-    headerName: "Paid Amount",
+    key: "paid_amount",
+    name: "Paid Amount",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.paid_amount}</p>;
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.paid_amount}</p>;
     },
   },
   {
-    field: "balance_amount",
-    headerName: "Balance Amount",
+    key: "balance_amount",
+    name: "Balance Amount",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.balance_amount}</p>;
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.balance_amount}</p>;
     },
   },
   {
-    field: "base_amount",
-    headerName: "Base Amount",
+    key: "base_amount",
+    name: "Base Amount",
     width: 150,
-    renderCell: (params) => {
-      return params.row.base_amount ? (
-        <p> &#8377; {params.row.base_amount}</p>
-      ) : (
-        "NA"
-      );
+    renderRowCell: (row) => {
+      return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
     },
   },
   {
-    field: "gst_amount",
-    headerName: "GST Amount",
+    key: "gst_amount",
+    name: "GST Amount",
     width: 150,
-    renderCell: (params) => {
-      return params.row.gst_amount ? (
-        <p>&#8377; {params.row.gst_amount}</p>
-      ) : (
-        "NA"
-      );
+    renderRowCell: (row) => {
+      return row?.gst_amount ? <p>&#8377; {row?.gst_amount}</p> : "NA";
     },
   },
   {
-    field: "outstandings",
-    headerName: "OutStanding ",
+    key: "outstandings",
+    name: "OutStanding ",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.outstandings}</p>;
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.outstandings}</p>;
     },
   },
   {
-    field: "TDSDeduction",
-    headerName: "TDS Deducted ",
+    key: "TDSDeduction",
+    name: "TDS Deducted ",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.TDSDeduction === "1" ? "Yes" : "No"}</p>;
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.TDSDeduction === "1" ? "Yes" : "No"}</p>;
     },
   },
   {
-    field: "aging",
-    headerName: "Aging",
+    key: "aging",
+    name: "Aging",
     width: 150,
     // valueGetter: (params) => {
     //   const hours = calculateHours(params.row.request_date, new Date());
@@ -3161,9 +3051,9 @@ export const pendingPaymentRequestColumns = ({
     //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
     //   return `${days} Days`;
     // },
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <p>
-        {params.row.aging}
+        {row?.aging}
         Days
       </p>
     ),
@@ -3191,46 +3081,45 @@ export const pendingPaymentRequestColumns = ({
   //   },
   // },
   {
-    field: "Status",
-    headerName: "Status",
+    key: "status",
+    name: "Status",
     width: 150,
-    valueGetter: (params) => getStatusText(params.row.status),
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div>
-        {params.row.status === "0"
+        {row?.status === "0"
           ? "Pending"
-          : params.row.status === "1"
+          : row?.status === "1"
           ? "Paid"
-          : params.row.status === "2"
+          : row?.status === "2"
           ? "Discard"
-          : params.row.status === "3"
+          : row?.status === "3"
           ? "Partial"
           : ""}
       </div>
     ),
   },
   {
-    field: "Action",
-    headerName: "Action",
+    key: "Action",
+    name: "Action",
     width: 400,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       return (
         <div className="flexCenter colGap8">
           <button
             className="btn cmnbtn btn_sm btn-success"
-            onClick={(e) => handlePayClick(e, params.row)}
+            onClick={(e) => handlePayClick(e, row)}
           >
             Pay
           </button>
           <button
             className="btn cmnbtn btn_sm btn-danger"
-            onClick={(e) => handleDiscardClick(e, params.row)}
+            onClick={(e) => handleDiscardClick(e, row)}
           >
             Discard
           </button>
           <button className="btn cmnbtn btn_sm btn-success">
             <Link
-              to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${params.row.request_id}`}
+              to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
             >
               Transaction List
             </Link>
@@ -3531,28 +3420,23 @@ export const paymentDoneColumns = ({
   handleOpenBankDetail,
 }) => [
   {
-    field: "S.NO",
-    headerName: "S.NO",
+    key: "s_no",
+    name: "S.NO",
     width: 90,
-    editable: false,
-    valueGetter: (params) => filterData?.indexOf(params.row) + 1,
-    renderCell: (params) => {
-      const rowIndex = filterData?.indexOf(params.row);
-      return <div>{rowIndex + 1}</div>;
-    },
+    renderRowCell: (row, index) => index + 1,
   },
   {
-    field: "invc_img",
-    headerName: "Invoice Image",
-    renderCell: (params) => {
-      if (!params.row.invc_img) {
+    key: "invc_img",
+    name: "Invoice Image",
+    renderRowCell: (row) => {
+      if (!row?.invc_img) {
         return "No Image";
       }
       // Extract file extension and check if it's a PDF
-      const fileExtension = params.row.invc_img.split(".").pop().toLowerCase();
+      const fileExtension = row?.invc_img?.split(".")?.pop()?.toLowerCase();
       const isPdf = fileExtension === "pdf";
 
-      const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+      const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
       return isPdf ? (
         <div
           style={{ position: "relative", overflow: "hidden", height: "40px" }}
@@ -3602,17 +3486,17 @@ export const paymentDoneColumns = ({
     width: 250,
   },
   {
-    field: "evidence",
-    headerName: "Payment Screenshot",
-    renderCell: (params) => {
-      if (!params.row.evidence) {
+    key: "evidence",
+    name: "Payment Screenshot",
+    renderRowCell: (row) => {
+      if (!row?.evidence) {
         return "No Image";
       }
       // Extract file extension and check if it's a PDF
-      const fileExtension = params.row.invc_img.split(".").pop().toLowerCase();
+      const fileExtension = row?.invc_img?.split(".")?.pop()?.toLowerCase();
       const isPdf = fileExtension === "pdf";
 
-      const imgUrl = `https://purchase.creativefuel.io/${params.row.evidence}`;
+      const imgUrl = `https://purchase.creativefuel.io/${row?.evidence}`;
 
       return isPdf ? (
         <img
@@ -3639,46 +3523,36 @@ export const paymentDoneColumns = ({
     width: 130,
   },
   {
-    field: "request_date",
-    headerName: "Requested Date",
-    width: 150,
-    valueGetter: (params) =>
-      moment(params.row.request_date).format("DD-MM-YYYY HH:MM A"),
-    renderCell: (params) => {
-      return moment(params?.row?.request_date).format("DD-MM-YYYY HH:MM A");
+    key: "request_date",
+    name: "Requested Date",
+    width: 200,
+    renderRowCell: (row) => {
+      return moment(row?.request_date)?.format("DD-MM-YYYY HH:MM A");
     },
   },
   {
-    field: "payment_date",
-    headerName: "Payment Date",
-    width: 150,
-    valueGetter: (params) =>
-      moment(params?.row?.payment_date).format("DD-MM-YYYY HH:MM A"),
-    renderCell: (params) => {
-      return moment(params.row.payment_date).format("DD-MM-YYYY HH:MM A");
+    key: "payment_date",
+    name: "Payment Date",
+    width: 200,
+    renderRowCell: (row) => {
+      return moment(row?.payment_date).format("DD-MM-YYYY HH:MM A");
     },
   },
   {
-    field: "name",
-    headerName: "Requested By",
-    width: 150,
-    valueGetter: (params) => {
+    key: "name",
+    name: "Requested By",
+    width: 300,
+    renderRowCell: (row) => {
       const reminder = phpRemainderData?.filter(
-        (item) => item.request_id == params.row.request_id
-      );
-      return reminder.length;
-    },
-    renderCell: (params) => {
-      const reminder = phpRemainderData?.filter(
-        (item) => item.request_id == params.row.request_id
+        (item) => item?.request_id == row?.request_id
       );
 
       return (
         <>
-          <span>{params.row.name}</span> &nbsp;{" "}
+          <span>{row?.name}</span> &nbsp;{" "}
           <span>
-            {reminder.length > 0 ? (
-              <Badge badgeContent={reminder.length} color="primary">
+            {reminder?.length > 0 ? (
+              <Badge badgeContent={reminder?.length} color="primary">
                 <NotificationsActiveTwoToneIcon
                   onClick={() => handleRemainderModal(reminder)}
                 />{" "}
@@ -3692,71 +3566,61 @@ export const paymentDoneColumns = ({
     },
   },
   {
-    field: "vendor_name",
-    headerName: "Vendor Name",
+    key: "vendor_name",
+    name: "Vendor Name",
     width: 200,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       return (
         <div style={{ display: "flex", alignItems: "center" }}>
           {/* Hold for confirmation of sourabh sir */}
           <Button
             disabled={
-              params.row.payment_details
-                ? !params.row.payment_details.length > 0
-                : true
+              row?.payment_details ? !row?.payment_details?.length > 0 : true
             }
-            onClick={() => handleOpenBankDetail(params.row)}
+            onClick={() => handleOpenBankDetail(row)}
           >
             <AccountBalanceIcon style={{ fontSize: "25px" }} />
           </Button>
           <div
             style={{ cursor: "pointer", marginRight: "20px" }}
-            onClick={() => handleOpenSameVender(params.row.vendor_name)}
+            onClick={() => handleOpenSameVender(row?.vendor_name)}
           >
-            {params.row.vendor_name}
+            {row?.vendor_name}
           </div>
         </div>
       );
     },
   },
   {
-    field: "page_name",
-    headerName: "Page Name",
+    key: "page_name",
+    name: "Page Name",
     width: 150,
   },
   {
-    field: "total_paid",
-    headerName: "Total Paid",
+    key: "total_paid",
+    name: "Total Paid",
     width: 150,
-    valueGetter: (params) => {
-      const totalPaid = nodeData
-        ?.filter(
-          (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-        )
-        ?.reduce((acc, item) => acc + +item.payment_amount, 0);
-      return totalPaid;
-    },
-    renderCell: (params) => {
-      return nodeData?.filter((e) => e.vendor_name === params.row.vendor_name)
+    renderRowCell: (row) => {
+      return nodeData?.filter((e) => e?.vendor_name === row?.vendor_name)
         .length > 0 ? (
         <span className="row ml-2 ">
           <h5
-            onClick={() => handleOpenPaymentHistory(params.row, "TP")}
+            onClick={() => handleOpenPaymentHistory(row, "TP")}
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+            className="pointer font-sm lead  text-decoration-underline text-black-50"
           >
             {/* Total Paid */}
             {nodeData
-              .filter(
-                (e) => e.vendor_name === params.row.vendor_name && e.status == 1
+              ?.filter(
+                (e) => e?.vendor_name === row?.vendor_name && e?.status == 1
               )
-              .reduce((acc, item) => acc + +item.payment_amount, 0)}
+              ?.reduce((acc, item) => acc + +item.payment_amount, 0)}
           </h5>
         </span>
       ) : (
         <h5
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+          className=" pointer font-sm lead  text-decoration-underline text-black-50"
         >
           0
         </h5>
@@ -3764,10 +3628,10 @@ export const paymentDoneColumns = ({
     },
   },
   {
-    field: "F.Y",
-    headerName: "F.Y",
+    key: "F.Y",
+    name: "F.Y",
     width: 150,
-    valueGetter: (params) => {
+    renderRowCell: (row) => {
       const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
       const currentYear = new Date().getFullYear();
       const startDate = new Date(
@@ -3785,46 +3649,17 @@ export const paymentDoneColumns = ({
         return (
           paymentDate >= startDate &&
           paymentDate <= endDate &&
-          e.vendor_name === params.row.vendor_name &&
+          e.vendor_name === row?.vendor_name &&
           e.status !== 0 &&
           e.status !== 2
         );
       });
-      const totalFY = dataFY.reduce(
-        (acc, item) => acc + parseFloat(item.payment_amount),
-        0
-      );
-      return totalFY;
-    },
-    renderCell: (params) => {
-      const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-      const currentYear = new Date().getFullYear();
-      const startDate = new Date(
-        `04/01/${
-          isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-        }`
-      );
-      const endDate = new Date(
-        `03/31/${
-          isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-        }`
-      );
-      const dataFY = nodeData.filter((e) => {
-        const paymentDate = new Date(e.request_date);
-        return (
-          paymentDate >= startDate &&
-          paymentDate <= endDate &&
-          e.vendor_name === params.row.vendor_name &&
-          e.status !== 0 &&
-          e.status !== 2
-        );
-      });
-      return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-        .length > 0 ? (
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+        ?.length > 0 ? (
         <h5
-          onClick={() => handleOpenPaymentHistory(params.row, "FY")}
+          onClick={() => handleOpenPaymentHistory(row, "FY")}
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+          className="font-sm lead  text-decoration-underline text-black-50"
         >
           {/* Financial Year */}
 
@@ -3836,7 +3671,7 @@ export const paymentDoneColumns = ({
       ) : (
         <h5
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+          className="font-sm lead  text-decoration-underline text-black-50"
         >
           0
         </h5>
@@ -3844,13 +3679,11 @@ export const paymentDoneColumns = ({
     },
   },
   {
-    field: "Pan Img",
-    headerName: "Pan Img",
-    valueGetter: (params) =>
-      params?.row?.pan_img?.includes("uploads") ? params?.row?.pan_img : "NA",
-    renderCell: (params) => {
-      const ImgUrl = `https://purchase.creativefuel.io/${params?.row?.pan_img}`;
-      return params?.row?.pan_img?.includes("uploads") ? (
+    key: "pan_img",
+    name: "Pan Img",
+    renderRowCell: (row) => {
+      const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+      return row?.pan_img?.includes("uploads") ? (
         <img
           onClick={() => {
             setOpenImageDialog(true);
@@ -3866,156 +3699,135 @@ export const paymentDoneColumns = ({
     },
   },
   {
-    field: "pan",
-    headerName: "PAN",
+    key: "pan",
+    name: "PAN",
     width: 200,
   },
   {
-    field: "gst",
-    headerName: "GST",
+    key: "gst",
+    name: "GST",
     width: 200,
   },
   {
-    field: "remark_audit",
-    headerName: "Remark",
+    key: "remark_audit",
+    name: "Remark",
     width: 150,
-    renderCell: (params) => {
-      return params.row.remark_audit;
+    renderRowCell: (row) => {
+      return row?.remark_audit;
     },
   },
   {
-    field: "priority",
-    headerName: "Priority",
+    key: "priority",
+    name: "Priority",
     width: 150,
-    renderCell: (params) => {
-      return params.row.priority;
+    renderRowCell: (row) => {
+      return row?.priority;
     },
   },
   {
-    field: "request_amount",
-    headerName: "Requested Amount",
+    key: "request_amount",
+    name: "Requested Amount",
     width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.request_amount}</p>;
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.request_amount}</p>;
     },
   },
   {
-    field: "base_amount",
-    headerName: "Base Amount",
+    key: "base_amount",
+    name: "Base Amount",
     width: 150,
-    renderCell: (params) => {
-      return params.row.base_amount ? (
-        <p> &#8377; {params.row.base_amount}</p>
+    renderRowCell: (row) => {
+      return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
+    },
+  },
+  {
+    key: "paid_amount",
+    name: "Paid Amount",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.paid_amount ? <p> &#8377; {row?.paid_amount}</p> : "NA";
+    },
+  },
+  {
+    key: "gst_amount",
+    name: "GST Amount",
+    width: 150,
+    renderRowCell: (row) => {
+      return row.gst_amount ? <p>&#8377; {row.gst_amount}</p> : "NA";
+    },
+  },
+  {
+    key: "gst_hold_amount",
+    name: "GST Hold Amount",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.gst_hold_amount ? (
+        <p>&#8377; {row?.gst_hold_amount}</p>
       ) : (
         "NA"
       );
     },
   },
   {
-    field: "paid_amount",
-    headerName: "Paid Amount",
+    key: "tds_deduction",
+    name: "TDS Amount",
     width: 150,
-    renderCell: (params) => {
-      return params.row.paid_amount ? (
-        <p> &#8377; {params.row.paid_amount}</p>
-      ) : (
-        "NA"
-      );
+    renderRowCell: (row) => {
+      return row?.tds_deduction ? <p>&#8377; {row?.tds_deduction}</p> : "NA";
     },
   },
   {
-    field: "gst_amount",
-    headerName: "GST Amount",
+    key: "tds_percentage",
+    name: "TDS Percentage",
     width: 150,
-    renderCell: (params) => {
-      return params.row.gst_amount ? (
-        <p>&#8377; {params.row.gst_amount}</p>
-      ) : (
-        "NA"
-      );
+    renderRowCell: (row) => {
+      return row?.tds_percentage ? <p>{row?.tds_percentage} %</p> : "NA";
     },
   },
   {
-    field: "gst_hold_amount",
-    headerName: "GST Hold Amount",
+    key: "outstandings",
+    name: "OutStanding ",
     width: 150,
-    renderCell: (params) => {
-      return params.row.gst_hold_amount ? (
-        <p>&#8377; {params.row.gst_hold_amount}</p>
-      ) : (
-        "NA"
-      );
+    renderRowCell: (row) => {
+      return <p> &#8377; {row?.outstandings}</p>;
     },
   },
   {
-    field: "tds_deduction",
-    headerName: "TDS Amount",
+    key: "payment_amount",
+    name: "Payment Amount",
     width: 150,
-    renderCell: (params) => {
-      return params.row.tds_deduction ? (
-        <p>&#8377; {params.row.tds_deduction}</p>
-      ) : (
-        "NA"
-      );
-    },
-  },
-  {
-    field: "tds_percentage",
-    headerName: "TDS Percentage",
-    width: 150,
-    renderCell: (params) => {
-      return params.row.tds_percentage ? (
-        <p>{params.row.tds_percentage} %</p>
-      ) : (
-        "NA"
-      );
-    },
-  },
-  {
-    field: "outstandings",
-    headerName: "OutStanding ",
-    width: 150,
-    renderCell: (params) => {
-      return <p> &#8377; {params.row.outstandings}</p>;
-    },
-  },
-  {
-    field: "payment_amount",
-    headerName: "Payment Amount",
-    width: 150,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       const paymentAmount = nodeData?.filter(
-        (e) => e.request_id == params.row.request_id
+        (e) => e.request_id == row?.request_id
       )[0]?.payment_amount;
       return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
     },
   },
   {
-    field: "payment_by",
-    headerName: "Payment By",
+    key: "payment_by",
+    name: "Payment By",
     width: 150,
-    renderCell: (params) => <div>{params.row.payment_by}</div>,
+    renderRowCell: (row) => <div>{row?.payment_by}</div>,
   },
   {
-    field: "aging",
-    headerName: "Aging",
+    key: "aging",
+    name: "Aging",
     width: 150,
-    renderCell: (params) => {
-      return <p> {params.row.aging} Days</p>;
+    renderRowCell: (row) => {
+      return <p> {row?.aging} Days</p>;
     },
   },
   {
-    field: "Status",
-    headerName: "Status",
+    key: "status",
+    name: "Status",
     width: 150,
-    valueGetter: (params) => getStatusText(params.row.status),
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div>
-        {params.row.status === "1"
+        {row?.status === "1"
           ? "Paid"
-          : params.row.status === "2"
+          : row?.status === "2"
           ? "Discard"
-          : params.row.status === "3"
+          : row?.status === "3"
           ? "Partial"
           : ""}
       </div>
@@ -4032,29 +3844,29 @@ export const paymentDoneColumns = ({
   //   },
   // },
   {
-    field: "gstHold",
-    headerName: "GST Hold",
+    key: "gstHold",
+    name: "GST Hold",
     width: 150,
-    renderCell: (params) => {
-      return params.row.gstHold == 1 ? "Yes" : "No";
+    renderRowCell: (row) => {
+      return row?.gstHold == 1 ? "Yes" : "No";
     },
   },
   {
-    field: "TDSDeduction",
-    headerName: "TDS Deduction",
+    key: "TDSDeduction",
+    name: "TDS Deduction",
     width: 150,
-    renderCell: (params) => {
-      return params.row.TDSDeduction == 1 ? "Yes" : "No";
+    renderRowCell: (row) => {
+      return row?.TDSDeduction == 1 ? "Yes" : "No";
     },
   },
   {
-    field: "Action",
-    headerName: "Action",
+    key: "Action",
+    name: "Action",
     width: 150,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <Button variant="outline" className="btn cmnbtn btn-primary">
         <Link
-          to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${params.row.request_id}`}
+          to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
         >
           Transaction List
           {/* ({totalCount}) */}

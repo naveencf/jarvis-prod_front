@@ -52,6 +52,7 @@ import FollowerLogsModal from "./FollowerLogsModal";
 import PriceLogs from "./PriceLogs";
 import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
 import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
+import StatsOfOverview from "./PageOverview/StatsOfOverview";
 const PageOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -81,6 +82,7 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
+  console.log(newFilterData,"new data");
   const [waData, setWaData] = useState(null);
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
@@ -91,6 +93,7 @@ const PageOverview = () => {
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
   const [pagequery,setpagequery] = useState("")
+  
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
@@ -868,7 +871,7 @@ const PageOverview = () => {
 
       renderRowCell: (row) => {
         let name = allVendorWhats?.filter(
-          (item) => item.vendor_id == row?.vendor_id
+          (item) => item?.vendor_id == row?.vendor_id
         );
         let countName = name?.length;
         return (
@@ -922,11 +925,17 @@ const PageOverview = () => {
       renderRowCell: (row) => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
-          <Avatar
-            src={name}
-            alt={row.page_name}
-            style={{ width: "50px", height: "50px" }}
+          <div className="profile-sec sb">
+          <div className="profile-img">
+
+          <img
+          
+          src={name}
+          alt={row.page_name}
+          width={40}
           />
+          </div>
+          </div>
         );
       },
     },
@@ -934,76 +943,33 @@ const PageOverview = () => {
       key: "preference_level",
       name: "Level",
       width: 200,
-      // editable: true,
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        return (
-          <select
-            className="form-select"
-            value={row.preference_level}
-            onChange={(e) => {
-              handelchange(e, index, column);
-              handleLevelChange(e, setEditFlag, row);
-            }}
-          >
-            <option value="Level 1 (High)">Level 1 (High)</option>
-            <option value="Level 2 (Medium)">Level 2 (Medium)</option>
-            <option value="Level 3 (Low)">Level 3 (Low)</option>
-          </select>
-        );
-      },
+      renderRowCell: (row) => {return formatString(row.preference_level)} 
+      // // editable: true,
+      // customEditElement: (
+      //   row,
+      //   index,
+      //   setEditFlag,
+      //   editflag,
+      //   handelchange,
+      //   column
+      // ) => {
+      //   return (
+      //     <select
+      //       className="form-select"
+      //       value={row.preference_level}
+      //       onChange={(e) => {
+      //         handelchange(e, index, column);
+      //         handleLevelChange(e, setEditFlag, row);
+      //       }}
+      //     >
+      //       <option value="Level 1 (High)">Level 1 (High)</option>
+      //       <option value="Level 2 (Medium)">Level 2 (Medium)</option>
+      //       <option value="Level 3 (Low)">Level 3 (Low)</option>
+      //     </select>
+      //   );
+      // },
     },
-    // {
-    //   key: "page_mast_status",
-    //   name: "Status",
-    //   width: 200,
-    //   // editable: true,
-    //   renderRowCell: (row) => {
-    //     let status;
-    //     if (row.page_mast_status == 0) {
-    //       status = "Active";
-    //     } else if (row.page_mast_status == 1) {
-    //       status = "Inactive";
-    //     } else if (row.page_mast_status == 2) {
-    //       status = "Delete";
-    //     } else if (row.page_mast_status == 3) {
-    //       status = "Semiactive";
-    //     }
-    //     return status;
-    //   },
-    //   customEditElement: (
-    //     row,
-    //     index,
-    //     setEditFlag,
-    //     editflag,
-    //     handelchange,
-    //     column
-    //   ) => {
-    //     return (
-    //       <select
-    //         className="form-select"
-    //         value={row.page_mast_status}
-    //         onChange={(e) => {
-    //           handelchange(e, index, column);
-    //           handleStatusChange(e, setEditFlag, row);
-    //         }}
-    //         autoFocus
-    //       >
-    //         <option value="0">Active</option>
-    //         <option value="1">Inactive</option>
-    //         <option value="2">Disabled</option>
-    //         <option value="3">Semiactive</option>
-    //       </select>
-    //     );
-    //   },
-    //   compare: true,
-    // },
+
     {
       key: "content_creation",
       name: "Content Creation",
@@ -1018,77 +984,69 @@ const PageOverview = () => {
       width: 200,
     },
     {
-      key: "platform_id",
+      key: "platform_name",
       name: "Platform",
-      renderRowCell: (row) => {
-        let name = platformData?.find(
-          (item) => item?._id == row.platform_id
-        )?.platform_name;
-        return <div>{name}</div>;
-      },
+      renderRowCell: (row) => {return formatString(row.platform_name)} ,
+   
       width: 200,
     },
     {
-      key: "page_catg_name",
+      key: "page_category_name",
       name: "Category",
       width: 200,
-      compare: true,
-      renderRowCell: (row) => {
-        // let name = cat?.find((item) => item?.page_category_id == row.row?.temp_page_cat_id)?.page_category;
-        let name = cat?.find(
-          (item) => item?._id == row?.page_category_id
-        )?.page_category;
-        return name;
-      },
+      renderRowCell: (row) => {return formatString(row.page_category_name)} 
+
+      // compare: true,
+      // renderRowCell: (row) => {
+      //   // let name = cat?.find((item) => item?.page_category_id == row.row?.temp_page_cat_id)?.page_category;
+      //   let name = cat?.find(
+      //     (item) => item?._id == row?.page_category_id
+      //   )?.page_category;
+      //   return name;
+      // },
       // editable: true,
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        return (
-          <select
-            className="form-select"
-            value={row.page_category_id}
-            onChange={(e) => {
-              handelchange(e, index, column);
-              handleCategoryChange(e, setEditFlag, row);
-            }}
-            autoFocus
-          >
-            {cat.map((status, idx) => (
-              <option key={idx} value={status._id}>
-                {" "}
-                {status.page_category}{" "}
-              </option>
-            ))}
-          </select>
-        );
-      },
+      // customEditElement: (
+      //   row,
+      //   index,
+      //   setEditFlag,
+      //   editflag,
+      //   handelchange,
+      //   column
+      // ) => {
+      //   return (
+      //     <select
+      //       className="form-select"
+      //       value={row.page_category_id}
+      //       onChange={(e) => {
+      //         handelchange(e, index, column);
+      //         handleCategoryChange(e, setEditFlag, row);
+      //       }}
+      //       autoFocus
+      //     >
+      //       {cat.map((status, idx) => (
+      //         <option key={idx} value={status._id}>
+      //           {" "}
+      //           {status.page_category}{" "}
+      //         </option>
+      //       ))}
+      //     </select>
+      //   );
+      // },
     },
     {
       key: "page_sub_category_name",
       name: "Sub Category",
       width: 200,
-      renderRowCell: (row) => {
-        let name = subCat?.find(
-          (item) => item?._id == row?.page_sub_category_id
-        )?.page_sub_category;
-        return name;
-      },
-      // editable: true,
-      compare: true,
+      renderRowCell: (row) => {return formatString(row.page_sub_category_name)} ,
+    
+      // compare: true,
     },
     {
       key: "followers_count",
       name: "Followers",
       width: 200,
-      renderRowCell: (row) => {
-        return <div>{formatNumber(row.followers_count)}</div>;
-      },
+      renderRowCell: (row) => { return formatNumber(row.followers_count)}
+      
     },
     {
       key: "vendor_id",
@@ -1145,7 +1103,7 @@ const PageOverview = () => {
       name: "Post Price",
       width: 200,
       renderRowCell: (row) => {
-        let PostData = row?.price_details?.Insta_Post;
+        let PostData = row?.page_price_list[0]?.instagram_post;
         return PostData ? PostData : 0;
       },
       compare: true,
@@ -1155,7 +1113,7 @@ const PageOverview = () => {
       name: "Story Price",
       width: 200,
       renderRowCell: (row) => {
-        let StoryData = row?.price_details?.Insta_Story;
+        let StoryData = row?.page_price_list[1]?.instagram_story;
         return StoryData ? StoryData : 0;
       },
       compare: true,
@@ -1165,7 +1123,7 @@ const PageOverview = () => {
       name: "Both Price",
       width: 200,
       renderRowCell: (row) => {
-        let BothData = row?.price_details?.Both;
+        let BothData = row?.page_price_list[2]?.instagram_both;
         return BothData ? BothData : 0;
       },
       compare: true,
@@ -1374,7 +1332,7 @@ const PageOverview = () => {
   const fetchWhatsAppLinks = async () => {
     try {
       const response = await axios.get("/api/whatsAppLinks");
-      setAllVendorWhats(response.data);
+      setAllVendorWhats(response?.data);
     } catch (error) {
       console.error("Error fetching WhatsApp links", error);
     }
@@ -1409,17 +1367,17 @@ const PageOverview = () => {
           Overview
         </button>
         <button
-          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab1")}
+          className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab5")}
         >
-          Page-Health
+            Statistics
         </button>
-        <button
+        {/* <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab2")}
         >
-          Statistics
-        </button>
+          OLD-Statistics
+        </button> */}
         <button
           className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab3")}
@@ -1432,11 +1390,22 @@ const PageOverview = () => {
         >
           Page Added Details
         </button>
+      
+        <button
+          className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
+        >
+          Page Health
+        </button>
       </div>
 
       <div className="content">
         {activeTab === "Tab0" && (
+          <>
+
           <PageOverviewWithoutHealth columns={dataGridcolumns} />
+        
+          </>
         )}
         {activeTab === "Tab1" && (
           <div className="">
@@ -1608,7 +1577,7 @@ const PageOverview = () => {
             <PageDetail />
           </div>
         )}
-        {activeTab === "Tab2" && (
+        {/* {activeTab === "Tab2" && (
           <StatisticsWisePageOverview
             tabFilterData={tabFilterData}
             setTabFilterData={setTabFilterData}
@@ -1617,7 +1586,7 @@ const PageOverview = () => {
             allVendorWhats={allVendorWhats}
             newFilterData={newFilterData}
           />
-        )}
+        )} */}
         {activeTab === "Tab3" && (
           <CategoryWisePageOverview
             categoryData={categoryData}
@@ -1629,6 +1598,7 @@ const PageOverview = () => {
           />
         )}
         {activeTab === "Tab4" && <PageClosedByDetails />}
+        {activeTab === "Tab5" && <StatsOfOverview />}
       </div>
     </>
   );
