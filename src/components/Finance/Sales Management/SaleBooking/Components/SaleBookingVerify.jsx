@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import FormContainer from "../../../../AdminPanel/FormContainer";
 import { useGlobalContext } from "../../../../../Context/Context";
-import DataTable from "react-data-table-component";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import Modal from "react-modal";
 import { set } from "date-fns";
@@ -18,12 +16,12 @@ import {
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import FormatString from "../../../FormateString/FormatString";
 import {
   saleBookingVerifyColumn,
   uniqueAccountVerifyColumn,
   uniqueSalesExeVerifyColumn,
 } from "../../../CommonColumn/Columns";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const SaleBookingVerify = ({
   onHandleOpenUniqueSalesExecutiveChange,
@@ -61,6 +59,8 @@ const SaleBookingVerify = ({
   const [uniqueSalesExecutiveData, setUniqueSalesExecutiveData] = useState("");
   const [sameSalesExecutiveDialog, setSameSalesExecutiveDialog] = useState("");
   const [sameSalesExecutiveData, setSameSalesExecutiveData] = useState("");
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -104,6 +104,8 @@ const SaleBookingVerify = ({
   };
 
   const getData = async () => {
+    setIsLoading(true);
+
     await axios
       .get(
         baseUrl + "sales/sale_booking_tds_status_wise_data?status=tds_verified",
@@ -117,6 +119,7 @@ const SaleBookingVerify = ({
         const sortData = res?.data?.data?.sort(
           (a, b) => new Date(b?.createdAt) - new Date(a?.createdAt)
         );
+        setIsLoading(false);
         setFilterData(sortData);
         setData(sortData);
         calculateUniqueData(sortData);
@@ -442,7 +445,7 @@ const SaleBookingVerify = ({
                       variant="outlined"
                       InputProps={{
                         ...params.InputProps,
-                        className: "form-control", // Apply Bootstrap's form-control class
+                        className: "form-control",
                       }}
                       style={{
                         borderRadius: "0.25rem",
@@ -563,8 +566,8 @@ const SaleBookingVerify = ({
           </div>
         </div>
       </div>
+
       <div className="card-header flexCenterBetween">
-        {/* <h5 className="card-title">Sale Booking Verify</h5> */}
         <div className="flexCenter colGap12">
           <button
             className="btn cmnbtn btn_sm btn-secondary"
@@ -574,36 +577,30 @@ const SaleBookingVerify = ({
           </button>
         </div>
       </div>
-      <div className="card">
-        <div className="card-header sb">
-          <h5 className="card-title">Sale Booking Verify</h5>
-          <input
-            type="text"
-            placeholder="Search here"
-            className="w-25 form-control"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="card-body thm_table">
-          <DataGrid
-            rows={filterData || []}
-            columns={saleBookingVerifyColumn({
-              filterData,
-            })}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-            autoHeight
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
-            }}
-            getRowId={(row) => filterData?.indexOf(row)}
-          />
-        </div>
+
+      <div>
+        <View
+          columns={saleBookingVerifyColumn({
+            filterData,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Invoice Created"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"sale_booking_tds_status_wise_data"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
       </div>
       <Modal
         isOpen={ImageModalOpen}

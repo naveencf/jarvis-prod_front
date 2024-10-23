@@ -21,6 +21,7 @@ import {
   PaymentDoneRemainderDialogColumns,
   paymentDoneUniqueVendorColumns,
 } from "../../CommonColumn/Columns";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 export default function PaymentDone() {
   const token = sessionStorage.getItem("token");
@@ -53,8 +54,11 @@ export default function PaymentDone() {
   const { toastAlert, toastError } = useGlobalContext();
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [tdsDeductionCount, setTdsDeductedCount] = useState(0);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const callApi = () => {
+    setIsLoading(true);
     axios.get(baseUrl + "phpvendorpaymentrequest").then((res) => {
       setNodeData(res.data.modifiedData);
       const x = res.data.modifiedData;
@@ -74,12 +78,13 @@ export default function PaymentDone() {
           let u = res?.data?.body?.filter((item) => {
             return y?.some((item2) => item.request_id == item2.request_id);
           });
+          setIsLoading(false);
           setData(u);
           setFilterData(u);
           setPendingRequestCount(u?.length);
-          // with nd without invoice count
+          // with and without invoice count
           const withInvoiceImage = u?.filter(
-            (item) => item.invc_img && item.invc_img.length > 0
+            (item) => item?.invc_img && item?.invc_img?.length > 0
           );
           const withoutInvoiceImage = u?.filter(
             (item) => !item.invc_img || item.invc_img.length === 0
@@ -88,11 +93,11 @@ export default function PaymentDone() {
           setWithoutInvoiceCount(withoutInvoiceImage.length);
           // ==============================================================
           const uniqueVendors = new Set(u?.map((item) => item?.vendor_name));
-          setUniqueVendorCount(uniqueVendors.size);
+          setUniqueVendorCount(uniqueVendors?.size);
           const uvData = [];
           uniqueVendors?.forEach((vendorName) => {
             const vendorRows = u?.filter(
-              (item) => item.vendor_name === vendorName
+              (item) => item?.vendor_name === vendorName
             );
             uvData?.push(vendorRows[0]);
           });
@@ -113,11 +118,11 @@ export default function PaymentDone() {
         "https://purchase.creativefuel.io//webservices/RestController.php?view=getpaymentrequest"
       )
       .then((res) => {
-        setPhpRemainderData(res.data.body);
+        setPhpRemainderData(res?.data?.body);
       });
 
     axios.get(`${baseUrl}` + `get_single_user/${userID}`).then((res) => {
-      setUserName(res.data.user_name);
+      setUserName(res?.data?.user_name);
     });
   };
 
@@ -168,8 +173,6 @@ export default function PaymentDone() {
   };
 
   const handleOpenSameVender = (vendorName) => {
-    setSameVendorDialog(true);
-
     const sameNameVendors = data?.filter(
       (item) => item?.vendor_name === vendorName
     );
@@ -243,9 +246,9 @@ export default function PaymentDone() {
         const formattedRowData = {
           ...rowData,
           request_date:
-            moment(rowData.request_date)?.format("DD-MM-YYYY HH:MM A") || "",
-          payment_date: rowData.payment_date
-            ? moment(rowData.payment_date)?.format("DD-MM-YYYY HH:MM A")
+            moment(rowData?.request_date)?.format("DD-MM-YYYY HH:MM A") || "",
+          payment_date: rowData?.payment_date
+            ? moment(rowData?.payment_date)?.format("DD-MM-YYYY HH:MM A")
             : "",
         };
 
@@ -422,8 +425,7 @@ export default function PaymentDone() {
         </div>
         <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
           <div>
-            <DataGrid
-              rows={filterData}
+            <View
               columns={paymentDoneColumns({
                 filterData,
                 setOpenImageDialog,
@@ -434,21 +436,23 @@ export default function PaymentDone() {
                 handleOpenPaymentHistory,
                 handleOpenBankDetail,
               })}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              disableSelectionOnClick
-              checkboxSelection
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              getRowId={(row) => row?.request_id}
-              onRowSelectionModelChange={(rowIds) => {
-                handleRowSelectionModelChange(rowIds);
-              }}
-              rowSelectionModel={rowSelectionModel}
+              data={filterData}
+              isLoading={isLoading}
+              title={" Payment Done"}
+              rowSelectable={true}
+              pagination={[100, 200]}
+              tableName={"finance-payment-done"}
+              selectedData={setSelectedData}
+              addHtml={
+                <>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary ms-2"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
+                    Clear
+                  </button>
+                </>
+              }
             />
           </div>
 

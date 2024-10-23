@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../../../../utils/config";
 import ImageView from "../../../ImageView";
 import {
@@ -15,6 +13,7 @@ import EditInvoiceActionDialog from "../PendingInvoice/EditInvoiceActionDialog";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import PendingInvoiceFilters from "./PendingInvoiceFilters";
 import PendingInvoiceDiscard from "./PendingInvoiceDiscard";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const PendingInvoice = ({
   setUniqueCustomerCount,
@@ -30,7 +29,6 @@ const PendingInvoice = ({
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
   const [filterData, setFilterData] = useState([]);
-  const [filterDataInvoice, setFilterDataInvoice] = useState([]);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
   const [sameCustomerDialog, setSameCustomerDialog] = useState(false);
@@ -45,10 +43,14 @@ const PendingInvoice = ({
   const [proformaData, setProformaData] = useState([]);
   const [InvcCreatedRowData, setInvcCreatedRowData] = useState("");
   const [preview, setPreview] = useState("");
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
 
   const getData = useCallback(async () => {
+    setIsLoading(true);
+
     try {
       const { data } = await axios.get(
         `${baseUrl}sales/invoice_request?status=pending`,
@@ -76,6 +78,7 @@ const PendingInvoice = ({
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
 
+        setIsLoading(false);
         setData(sortedData);
         setFilterData(sortedData);
         calculateUniqueData(sortedData);
@@ -89,7 +92,6 @@ const PendingInvoice = ({
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName, isAccountName) =>
       data.reduce((acc, curr) => {
-        // Determine key based on account_name or user_name
         const key = isAccountName
           ? curr?.saleData?.account_name
           : curr?.[keyName];
@@ -113,7 +115,7 @@ const PendingInvoice = ({
         existingEntry.saleData.gst_amount += curr?.saleData?.gst_amount ?? 0;
         existingEntry.invoice_amount += curr?.invoice_amount ?? 0;
 
-        acc[key] = existingEntry; // Update accumulator
+        acc[key] = existingEntry;
 
         return acc;
       }, {});
@@ -330,6 +332,8 @@ const PendingInvoice = ({
           setViewImgSrc={setViewImgSrc}
         />
       )}
+
+      {/* Filters */}
       <PendingInvoiceFilters
         setProformaDialog={setProformaDialog}
         setUniqueCustomerCount={setUniqueCustomerCount}
@@ -339,57 +343,40 @@ const PendingInvoice = ({
         setFilterData={setFilterData}
         datas={datas}
       />
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Pending Invoice</h5>
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn_sm btn-secondary"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-        <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-          <div>
-            <DataGrid
-              rows={filterData}
-              columns={pendingInvoiceColumn({
-                filterData,
-                setOpenImageDialog,
-                setViewImgSrc,
-                handleOpenEditFieldAction,
-                handleDiscardOpenDialog,
-              })}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              disableSelectionOnClick
-              autoHeight
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              state={{
-                keyboard: {
-                  cell: null,
-                  columnHeader: null,
-                  isMultipleKeyPressed: false,
-                },
-              }}
-              getRowId={(row) => row._id}
-            />
-          </div>
-          {openImageDialog && (
-            <ImageView
-              viewImgSrc={viewImgSrc}
-              setViewImgDialog={setOpenImageDialog}
-            />
-          )}
-        </div>
+      <div>
+        <View
+          columns={pendingInvoiceColumn({
+            filterData,
+            setOpenImageDialog,
+            setViewImgSrc,
+            handleOpenEditFieldAction,
+            handleDiscardOpenDialog,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          title={"Pending Invoice"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"invoice_request"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
       </div>
+      {openImageDialog && (
+        <ImageView
+          viewImgSrc={viewImgSrc}
+          setViewImgDialog={setOpenImageDialog}
+        />
+      )}
     </div>
   );
 };

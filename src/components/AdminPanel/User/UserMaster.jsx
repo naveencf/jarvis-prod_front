@@ -2910,9 +2910,6 @@ const UserMaster = () => {
                   ? IndianBankList.find((bank) => bank.value === bankName)
                   : null
               }
-              // onChange={(selectedOption) => {
-              //   setBankName(selectedOption ? selectedOption.value : null);
-              // }}
               getOptionLabel={(option) => option.label}
               getOptionValue={(option) => option.value}
               onChange={(selectedOption) => {

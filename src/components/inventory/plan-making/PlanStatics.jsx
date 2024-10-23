@@ -45,8 +45,8 @@ const calculateOwnershipCounts = (selectedRow, postCount, storyPerPage) =>
       const postCountForPage = Number(postCount[page._id] || 0);
       const storyCountForPage = Number(storyPerPage[page._id] || 0);
       const totalCost =
-        (postCountForPage * (page.m_post_price || 0)) +
-        (storyCountForPage * (page.m_story_price || 0));
+        postCountForPage * (page.m_post_price || 0) +
+        storyCountForPage * (page.m_story_price || 0);
 
       if (page.ownership_type === 'Own') {
         acc.own.count += 1;
@@ -66,7 +66,6 @@ const calculateOwnershipCounts = (selectedRow, postCount, storyPerPage) =>
       solo: { count: 0, totalCost: 0 },
     }
   );
-
 
 // Function to download selected data as an Excel file
 const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
@@ -279,7 +278,7 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
 
 // Helper function to apply cell styles
 // const applyCellStyles = (sheet, data) => {
-const applyCellStyles = (sheet,) => {
+const applyCellStyles = (sheet) => {
   const range = XLSX.utils.decode_range(sheet['!ref']);
   const headerRow = range.s.r;
 
@@ -330,7 +329,7 @@ const applyCellStyles = (sheet,) => {
 
 // Function to add hyperlinks and adjust column widths
 // const addHyperlinksAndAdjustWidths = (worksheet, ßdata) => {
-const addHyperlinksAndAdjustWidths = (worksheet, ) => {
+const addHyperlinksAndAdjustWidths = (worksheet) => {
   const range = XLSX.utils.decode_range(worksheet['!ref']);
 
   // Apply column widths
@@ -399,7 +398,7 @@ const PlanStatics = ({
     setPageDetails(selectedRow?.filter((page) => page.ownership_type === type)); // Filter pages by ownership type
     setOpenModal(true); // Open the modal
   };
-
+ 
   // Filter all rows to get only 'Own' type pages
   const ownPages = allrows?.filter((item) => item?.ownership_type === 'Own');
   const handlePreviewExcel = () => {

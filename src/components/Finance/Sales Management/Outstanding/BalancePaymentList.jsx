@@ -29,6 +29,7 @@ import BalancePaymentListFilter from "../Outstanding/Sales/BalancePaymentListFil
 import TDSDialog from "../Outstanding/Sales/Dialog/TDSDialog";
 import DialogforBalancePaymentUpdate from "../Outstanding/Sales/Dialog/DialogforBalancePaymentUpdate";
 import { outstandingColumns } from "../../CommonColumn/Columns";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -101,6 +102,8 @@ const BalancePaymentList = () => {
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [editActionDialog, setEditActionDialog] = useState(false);
   const [outstandingRowData, setOutstandingRowData] = useState([]);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [invcDate, setInvcDate] = useState("");
 
@@ -163,37 +166,37 @@ const BalancePaymentList = () => {
   };
 
   const getData = () => {
+    setIsLoading(true);
     axios
       .get(baseUrl + "sales/sales_booking_outstanding_for_finanace", {
         headers: {
           Authorization: `Bearer ${token}`,
-          // "Content-Type": "application/json",
         },
       })
       .then((res) => {
-        console.log(res.data.data, "response--->>>>");
-
         // Create a new array with transformed data
         const transformedData = res?.data?.data?.reduce((acc, object) => {
           if (object?.salesInvoiceRequestData?.length > 0) {
-            const invoices = object?.salesInvoiceRequestData.map((invoice) => ({
-              ...invoice,
-              account_id: object.account_id,
-              sale_booking_date: object.sale_booking_date,
-              campaign_amount: object.campaign_amount,
-              base_amount: object.base_amount,
-              balance_payment_ondate: object.balance_payment_ondate,
-              gst_status: object.gst_status,
-              created_by: object.created_by,
-              createdAt: object.createdAt,
-              updatedAt: object.updatedAt,
-              sale_booking_id: object.sale_booking_id,
-              url: object.url,
-              account_name: object.account_name,
-              created_by_name: object.created_by_name,
-              paid_amount: object.paid_amount,
-            }));
-            acc.push(...invoices);
+            const invoices = object?.salesInvoiceRequestData?.map(
+              (invoice) => ({
+                ...invoice,
+                account_id: object.account_id,
+                sale_booking_date: object.sale_booking_date,
+                campaign_amount: object.campaign_amount,
+                base_amount: object.base_amount,
+                balance_payment_ondate: object.balance_payment_ondate,
+                gst_status: object.gst_status,
+                created_by: object.created_by,
+                createdAt: object.createdAt,
+                updatedAt: object.updatedAt,
+                sale_booking_id: object.sale_booking_id,
+                url: object.url,
+                account_name: object.account_name,
+                created_by_name: object.created_by_name,
+                paid_amount: object.paid_amount,
+              })
+            );
+            acc?.push(...invoices);
           } else {
             const tempObject = {
               ...object,
@@ -203,6 +206,7 @@ const BalancePaymentList = () => {
           return acc;
         }, []);
         const reversedData = transformedData?.reverse();
+        setIsLoading(false);
         setData(reversedData);
         setFilterData(reversedData);
 
@@ -278,7 +282,7 @@ const BalancePaymentList = () => {
   };
 
   function calculateAging(date1, date2) {
-    const oneHour = 60 * 60 * 1000; // minutes * seconds * milliseconds
+    const oneHour = 60 * 60 * 1000;
     const firstDate = new Date(date1);
     const secondDate = new Date(date2);
     const diffHours = Math.round(Math.abs((firstDate - secondDate) / oneHour));
@@ -530,7 +534,7 @@ const BalancePaymentList = () => {
           )}
         </div>
         <div className="card-body thm_table fx-head">
-          {(activeAccordionIndex === 3 ||
+          {/* {(activeAccordionIndex === 3 ||
             activeAccordionIndex === 0 ||
             activeAccordionIndex === 1) && (
             <DataGrid
@@ -575,6 +579,59 @@ const BalancePaymentList = () => {
                 },
               }}
               getRowId={(row) => row?._id}
+            />
+          )} */}
+          {(activeAccordionIndex === 3 ||
+            activeAccordionIndex === 0 ||
+            activeAccordionIndex === 1) && (
+            <View
+              columns={outstandingColumns({
+                filterData,
+                calculateAging,
+                setViewImgSrc,
+                setViewImgDialog,
+                handleImageClick,
+                handleDiscardOpenDialog,
+                handleOpenEditAction,
+                activeAccordionIndex,
+              })}
+              data={
+                activeAccordionIndex === 3
+                  ? filterData?.filter(
+                      (invc) => invc.invoice_type_id !== "proforma"
+                    )
+                  : activeAccordionIndex === 0
+                  ? filterData?.filter(
+                      (invc) =>
+                        invc.invoice_type_id === "tax-invoice" &&
+                        invc.invoice_creation_status !== "pending" &&
+                        invc.gst_status === true &&
+                        invc.paid_amount <= invc.campaign_amount * 0.9
+                    )
+                  : activeAccordionIndex === 1
+                  ? filterData?.filter(
+                      (invc) =>
+                        invc.invoice_type_id !== "tax-invoice" ||
+                        invc.invoice_creation_status === "pending"
+                    )
+                  : []
+              }
+              isLoading={isLoading}
+              title={"Outstanding"}
+              rowSelectable={true}
+              pagination={[100, 200]}
+              tableName={"sales_booking_outstanding_for_finanace"}
+              selectedData={setSelectedData}
+              addHtml={
+                <>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
+                    Clear
+                  </button>
+                </>
+              }
             />
           )}
 

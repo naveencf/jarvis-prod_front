@@ -3,16 +3,7 @@ import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  IconButton,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { IconButton, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch } from 'react-redux';
@@ -40,6 +31,9 @@ import {
   useSendPlanDetails,
 } from './apiServices';
 import CustomTable from '../../CustomTable/CustomTable';
+import PageDialog from './PageDialog';
+import CustomAlert from '../../../utils/CustomAlert';
+import LeftSideBar from './LeftSideBar';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -54,13 +48,15 @@ const PlanMaking = () => {
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
+
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const dispatch = useDispatch();
 
+  const pagequery = '';
   const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery({ decodedToken, userID });
+    useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   const { data: vendorTypeData } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
@@ -79,7 +75,7 @@ const PlanMaking = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
   const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
-  const [storyCountDefault, setStoryCountDefault] = useState(0); // Default story count
+  const [storyCountDefault, setStoryCountDefault] = useState(0);
   const [postCountDefault, setPostCountDefault] = useState(0);
   const [selectedFollowers, setSelectedFollowers] = useState([]);
   const [expanded, setExpanded] = useState(false);
@@ -88,26 +84,26 @@ const PlanMaking = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
-
+  const [alertData, setAlertData] = useState(null);
   const [priceFilterType, setPriceFilterType] = useState('post'); // Dropdown value
   const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(10000);
+  const [maxPrice, setMaxPrice] = useState(0);
   const [minFollowers, setMinFollowers] = useState(null);
   const [maxFollowers, setMaxFollowers] = useState(null);
   const [notFoundPages, setNotFoundPages] = useState([]);
+  const [toggleLeftNavbar, setToggleLeftNavbar] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
-
   // const [pageDetail, setPageDetails] = useState([]);
 
   const { id } = useParams();
 
   const { pageDetail } = usePageDetail(id);
   const { sendPlanDetails } = useSendPlanDetails(id);
-  const { planDetails } = useFetchPlanDetails(id);
+  // const { planDetails } = useFetchPlanDetails(id);
 
-  const sellingPrice = planDetails && planDetails[0]?.selling_price;
+  // const sellingPrice = planDetails && planDetails[0]?.selling_price;
 
-  const percentageRemaining = (totalCost / sellingPrice) * 100;
+  // const percentageRemaining = (totalCost / sellingPrice) * 100;
 
   // setPercentageRemaining(percentage);
 
@@ -122,6 +118,9 @@ const PlanMaking = () => {
       }, delay);
     };
   };
+  const handleToggleLeftNavbar = () => {
+    setToggleLeftNavbar(!toggleLeftNavbar);
+  };
   const navigate = useNavigate();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
@@ -130,27 +129,68 @@ const PlanMaking = () => {
   const cat = pageCate?.data;
 
   const { data: vendor } = useGetAllVendorQuery();
-  const vendorData = vendor?.data;
+  const vendorData = vendor;
+
   const getData = () => {
     // axios.get(baseUrl + 'get_all_users').then((res) => {
     axios.get(baseUrl + 'get_all_users').then(() => {
       setProgress(70);
     });
   };
+  const getPriceDetail = (priceDetails, key) => {
+    const detail = priceDetails?.find((item) => item[key] !== undefined);
+    return detail ? detail[key] : 0;
+  };
+
+  const handlePriceFilter = (data) => {
+    let newFilteredData = data?.filter((page) => {
+      let price = 0;
+
+      const postPrice = getPriceDetail(page.page_price_list, 'instagram_post');
+      const storyPrice = getPriceDetail(
+        page.page_price_list,
+        'instagram_story'
+      );
+      const bothPrice = getPriceDetail(page.page_price_list, 'instagram_both');
+
+      // Determine the price based on the selected filter type
+      switch (priceFilterType) {
+        case 'post':
+          price = postPrice || 0;
+          break;
+        case 'story':
+          price = storyPrice || 0;
+          break;
+        case 'both':
+          price = bothPrice || 0;
+          break;
+        default:
+          price = 0; // Default to 0 if no valid type selected
+      }
+      // Apply price filter
+      return !priceFilterType || (price >= minPrice && price <= maxPrice);
+    });
+    return newFilteredData;
+  };
 
   const handleCombinedFilter = () => {
     let newFilteredData = filterData?.filter((page) => {
       let price = 0;
 
+      const postPrice = getPriceDetail(page.page_price_list, 'instagram_post');
+      const storyPrice = getPriceDetail(
+        page.page_price_list,
+        'instagram_story'
+      );
+      const bothPrice = getPriceDetail(page.page_price_list, 'instagram_both');
       // Handle the price filter based on the selected type
       if (priceFilterType === 'post') {
-        price = page.price_details?.Insta_Post || 0;
+        price = postPrice || 0;
       } else if (priceFilterType === 'story') {
-        price = page.price_details?.Insta_Story || 0;
+        price = storyPrice || 0;
       } else if (priceFilterType === 'both') {
-        price = page.price_details?.Both || 0;
+        price = bothPrice || 0;
       }
-
       const followers = page?.followers_count;
 
       // Apply follower range filter if min and max are defined
@@ -164,73 +204,28 @@ const PlanMaking = () => {
         isFollowerInRange
       );
     });
-
+    setAlertData({
+      title: 'Success!',
+      text: 'Filter applied successfully.',
+      icon: 'success',
+    });
     setFilterData(newFilteredData);
   };
 
   const handleRemoveFilter = () => {
     const pageData = pageList?.filter((item) => item.followers_count > 0);
     setFilterData(pageData);
+    setSelectedFollowers([]);
+    setSelectedCategory([]);
+    setMinPrice(0);
+    setMaxPrice(0);
   };
 
   // const { data: priceData, isLoading: isPriceLoading } =
   //   useGetMultiplePagePriceQuery();
 
-  let followerFilteredData = pageList?.filter((page) => {
-    const followers = page?.followers_count;
-    return (
-      (minFollowers === null || followers >= minFollowers) &&
-      (maxFollowers === null || followers <= maxFollowers)
-    );
-  });
   const handleToggle = () => {
     setExpanded((prev) => !prev);
-  };
-
-  const handleFollowerRangeChange = (e) => {
-    const selectedRange = e.target.value;
-    setFollowerFilterType(selectedRange);
-
-    let minFollowers = null;
-    let maxFollowers = null;
-
-    // Update min and max followers based on the selected range
-    switch (selectedRange) {
-      case 'lessThan10K':
-        minFollowers = 0;
-        maxFollowers = 10000;
-        break;
-      case '10Kto20K':
-        minFollowers = 10000;
-        maxFollowers = 20000;
-        break;
-      case '20Kto50K':
-        minFollowers = 20000;
-        maxFollowers = 50000;
-        break;
-      case '50Kto100K':
-        minFollowers = 50000;
-        maxFollowers = 100000;
-        break;
-      case '100Kto200K':
-        minFollowers = 100000;
-        maxFollowers = 200000;
-        break;
-      case 'moreThan200K':
-        minFollowers = 200000;
-        maxFollowers = null;
-        break;
-      default:
-        minFollowers = null;
-        maxFollowers = null;
-    }
-
-    // Set the follower state
-    setMinFollowers(minFollowers);
-    setMaxFollowers(maxFollowers);
-
-    // Update the filtered data state
-    setFilterData(followerFilteredData);
   };
 
   const handlePostPerValue = (row, postPerPage, callback) => {
@@ -246,69 +241,66 @@ const PlanMaking = () => {
 
   const handleCheckboxChange = (row) => (event) => {
     const isChecked = event.target.checked;
-
-    // Update selected rows
+  
+    // 1. Manage selected rows state
     const updatedSelectedRows = isChecked
       ? [...selectedRows, row]
       : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
-
+  
     setSelectedRows(updatedSelectedRows);
-
-    // Update total cost state
+  
+    // 2. Update showTotalCost to reflect the change
     setShowTotalCost((prevCost) => ({
       ...prevCost,
       [row._id]: isChecked,
     }));
-
-    // Set postPerPage values and calculate cost with latest values
+  
+    // 3. Handle postPerPage value change and cost calculation
     const postPerPage = isChecked ? 1 : 0;
-    // Update postPerPage and after updating, calculate total cost with the latest values
+  
+    // 4. Safely handle async post value updates and calculations
     handlePostPerValue(row, postPerPage, (updatedPostValues) => {
-      calculateTotalCost(
-        row._id,
-        updatedPostValues[row._id],
-        storyPerPageValues[row._id],
-        costPerPostValues[row._id],
-        costPerStoryValues[row._id],
-        costPerBothValues[row._id]
-      );
-      // Now, map updated planxData with the latest postPerPage values
-      const planxData = updatedSelectedRows.map(
-        ({ _id, price_details, page_name }) => ({
-          _id,
-          page_name,
-          post_price: price_details.price_details,
-          story_price: price_details.Insta_Story,
-          post_count: Number(updatedPostValues[_id]) || 0,
-          story_count: Number(storyPerPageValues[_id]) || 0,
-        })
-      );
-
+      // Get safe values with fallback to prevent NaN
+      const postCount = updatedPostValues[row._id] ?? 0;
+      const storyCount = storyPerPageValues[row._id] ?? 0;
+      const postCost = costPerPostValues[row._id] ?? 0;
+      const storyCost = costPerStoryValues[row._id] ?? 0;
+      const bothCost = costPerBothValues[row._id] ?? 0;
+  
+      // Perform total cost calculation with valid data
+      calculateTotalCost(row._id, postCount, storyCount, postCost, storyCost, bothCost);
+  
+      // Update plan data with the latest selections
+      const planxData = updatedSelectedRows.map(({ _id, page_price_list, page_name }) => ({
+        _id,
+        page_name,
+        post_price: getPriceDetail(page_price_list, 'instagram_post'),
+        story_price: getPriceDetail(page_price_list, 'instagram_story'),
+        post_count: Number(updatedPostValues[_id]) || 0,
+        story_count: Number(storyPerPageValues[_id]) || 0,
+      }));
+  
+      // Debounce plan details to avoid rapid state updates
       if (!isAutomaticCheck) {
         debouncedSendPlanDetails(planxData);
       }
-
-      // sendPlanDetails(planxData);
     });
-
-    // Update the page category count
+  
+    // 5. Update page category count safely
     const categoryId = row.page_category_id;
     setPageCategoryCount((prevCount) => {
       const newCount = { ...prevCount };
-      if (isChecked) {
-        newCount[categoryId] = (newCount[categoryId] || 0) + 1;
-      } else {
-        newCount[categoryId] = (newCount[categoryId] || 0) - 1;
-        if (newCount[categoryId] <= 0) {
-          delete newCount[categoryId];
-        }
+      newCount[categoryId] = (newCount[categoryId] || 0) + (isChecked ? 1 : -1);
+      if (newCount[categoryId] <= 0) {
+        delete newCount[categoryId];
       }
       return newCount;
     });
-
-    // Update statistics
+  
+    // 6. Trigger any other required state updates or statistics
     updateStatistics(updatedSelectedRows);
   };
+  
 
   const debouncedSendPlanDetails = useCallback(
     debounce(sendPlanDetails, 5000),
@@ -410,36 +402,106 @@ const PlanMaking = () => {
       (option) => option.value
     );
 
-    // Update selected categories state, ensuring categories accumulate
+    // Accumulate the selected categories
     const updatedCategories = [
       ...new Set([...selectedCategory, ...selectedOptions]),
     ];
     setSelectedCategory(updatedCategories);
 
-    // Filter data based on the updated selected categories
-    const filtered = pageList?.filter(
-      (item) =>
-        item.followers_count > 0 &&
-        updatedCategories?.includes(item.page_category_id)
-    );
+    // Start filtering from the original `pageList`
+    let filtered = pageList.filter((item) => {
+      const isInCategory = updatedCategories.includes(item.page_category_id);
+      const hasFollowers = item.followers_count > 0;
+      return isInCategory && hasFollowers;
+    });
+
+    // Incorporate follower range filtering
+    const parseRange = (range) => {
+      if (range === 'lessThan10K') {
+        return { min: 0, max: 10000 };
+      }
+      const [min, max] = range
+        .split('to')
+        .map((val) => parseInt(val.replace('K', '')) * 1000);
+      return { min, max };
+    };
+
+    // Filter based on selected follower ranges
+    if (selectedFollowers.length) {
+      let followerFiltered = [];
+      selectedFollowers.forEach((range) => {
+        const { min, max } = parseRange(range);
+        const rangeFilteredData = filtered.filter((page) => {
+          const followers = page?.followers_count;
+          return followers >= min && followers <= max;
+        });
+
+        // Merge the results from different ranges
+        followerFiltered = [...followerFiltered, ...rangeFilteredData];
+      });
+      filtered = followerFiltered;
+    }
+
+    // Apply the price filter on the already category and follower filtered data
+    filtered = handlePriceFilter(filtered);
+
+    // Update the filtered data in state
     setFilterData(filtered);
   };
 
   const removeCategory = (categoryId) => {
-    const updatedCategories =
-      selectedCategory?.filter((id) => id !== categoryId) || [];
+    // Remove the category from the selected categories
+    const updatedCategories = selectedCategory.filter(
+      (id) => id !== categoryId
+    );
     setSelectedCategory(updatedCategories);
 
-    const filtered =
-      pageList?.filter((item) =>
-        updatedCategories.includes(item.page_category_id)
-      ) || [];
+    // Filter data based on the updated categories
+    let filtered = pageList.filter((item) => {
+      const isInCategory =
+        !updatedCategories.length ||
+        updatedCategories.includes(item.page_category_id);
+      const hasFollowers = item.followers_count > 0;
+      return isInCategory && hasFollowers;
+    });
 
-    if (filtered?.length) {
-      setFilterData(filtered);
-    } else {
-      setFilterData(pageList);
+    // Incorporate follower range filtering
+    const parseRange = (range) => {
+      if (range === 'lessThan10K') {
+        return { min: 0, max: 10000 };
+      }
+      const [min, max] = range
+        .split('to')
+        .map((val) => parseInt(val.replace('K', '')) * 1000);
+      return { min, max };
+    };
+
+    // Apply follower filtering if follower ranges are selected
+    if (selectedFollowers.length) {
+      let followerFiltered = [];
+      selectedFollowers.forEach((range) => {
+        const { min, max } = parseRange(range);
+        const rangeFilteredData = filtered.filter((page) => {
+          const followers = page?.followers_count;
+          return followers >= min && followers <= max;
+        });
+
+        // Merge the results from different ranges
+        followerFiltered = [...followerFiltered, ...rangeFilteredData];
+      });
+      filtered = followerFiltered;
     }
+
+    // Apply the price filter on the category and follower-filtered data
+    filtered = handlePriceFilter(filtered);
+
+    // Handle fallback: If no results, apply only price filter on the full dataset
+    if (!filtered.length) {
+      filtered = handlePriceFilter(pageList);
+    }
+
+    // Update the filtered data in state
+    setFilterData(filtered);
   };
 
   const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
@@ -515,6 +577,9 @@ const PlanMaking = () => {
   const clearSearch = () => {
     setSearchInput('');
   };
+  // const formatFollowers = (followers) => {
+  //   return (followers / 1000000).toFixed(1) + 'M';
+  // };
 
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
@@ -547,8 +612,18 @@ const PlanMaking = () => {
         updatedPostValues[matchingPage._id] = incomingPage.post_count;
         updatedStoryValues[matchingPage._id] = incomingPage.story_count;
         // Calculate the cost
-        const costPerPost = matchingPage?.price_details?.Insta_Post;
-        const costPerStory = matchingPage?.price_details?.Insta_Story;
+
+        const postPrice = getPriceDetail(
+          matchingPage.page_price_list,
+          'instagram_post'
+        );
+        const storyPrice = getPriceDetail(
+          matchingPage.page_price_list,
+          'instagram_story'
+        );
+
+        const costPerPost = postPrice;
+        const costPerStory = storyPrice;
         const costPerBoth = costPerPost + costPerStory;
 
         calculateTotalCost(
@@ -573,14 +648,22 @@ const PlanMaking = () => {
 
     // setIsAutomaticCheck(false);
   };
+  const normalize = (str) => {
+    // Replace leading/trailing underscores and non-printable characters
+    return str
+      .replace(/^\_+|\_+$/g, '')
+      .replace(/[^\x20-\x7E]/g, '') // Remove non-printable characters
+      .toLowerCase();
+  };
 
   const filterAndSelectRows = (searchTerms) => {
+    console.log('search', searchTerms);
     // If there are search terms
     if (searchTerms?.length > 0) {
       // Filter data based on search terms
       const filtered = pageList?.filter((item) =>
-        searchTerms?.some((term) =>
-          item?.page_name?.toLowerCase().includes(term.toLowerCase())
+        searchTerms.some((term) =>
+          normalize(item?.page_name || '').includes(normalize(term))
         )
       );
 
@@ -618,12 +701,11 @@ const PlanMaking = () => {
 
       // Identify pages not found
       const filteredPageNames = new Set(
-        filtered?.map((item) => item.page_name.toLowerCase())
+        filtered.map((item) => normalize(item.page_name || ''))
       );
 
-      // Check for terms that do not match any filtered items
       const notFound = searchTerms.filter(
-        (term) => !filteredPageNames.has(term.toLowerCase()) // Case-insensitive check
+        (term) => !filteredPageNames.has(normalize(term))
       );
 
       // Show not found pages if any
@@ -641,7 +723,6 @@ const PlanMaking = () => {
       );
 
       // Update filterData with the unselected rows for display
-      // setFilterData((prevData) => {
       setFilterData(() => {
         return [
           ...filtered,
@@ -679,8 +760,11 @@ const PlanMaking = () => {
     setOpenDialog(false);
   };
 
-  const handleFollowersBlur = () => {
+  const handleFollowersFilter = () => {
     const parseRange = (range) => {
+      if (range === 'lessThan10K') {
+        return { min: 0, max: 10000 };
+      }
       const [min, max] = range.split('to').map((val) => {
         const value = parseInt(val.replace('K', '')) * 1000; // Convert 'K' to thousand
         return value;
@@ -691,7 +775,6 @@ const PlanMaking = () => {
 
     selectedFollowers.forEach((range) => {
       const { min, max } = parseRange(range);
-
       // Filter the pageList for the current range
       const rangeFilteredData = pageList?.filter((page) => {
         const followers = page?.followers_count;
@@ -701,19 +784,22 @@ const PlanMaking = () => {
       // Merge current range's filtered data with the overall result
       filteredData = [...filteredData, ...rangeFilteredData];
     });
-    setFilterData(filteredData);
+    // filteredData?.filter((item) => )
+    if (minPrice || maxPrice) {
+      const filtered = handlePriceFilter(filteredData);
+      setFilterData(filtered);
+    } else {
+      setFilterData(filteredData);
+    }
   };
 
   const clearRecentlySelected = () => {
-    const pageData = pageList?.filter((item) => item.followers_count > 0);
-    // Reset all the states
     setSelectedRows([]);
+    setTotalCostValues({});
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
-    setFilterData(pageData);
 
-    // Optionally clear the search input
     setSearchInput('');
   };
   // Function to sort rows: checked rows come first
@@ -751,12 +837,16 @@ const PlanMaking = () => {
       }
 
       // Use row values or default values if not present
-      updatedPostValues[row._id] = row.post_count || postCountDefault || 1;
-      updatedStoryValues[row._id] = row.story_count || storyCountDefault || 0;
+      updatedPostValues[row._id] = postCountDefault || 1;
+      updatedStoryValues[row._id] = storyCountDefault || 0;
+      // updatedStoryValues[row._id] = row.story_count || storyCountDefault || 0;
 
       // Calculate costs (if applicable)
-      const costPerPost = row.m_post_price || 0;
-      const costPerStory = row.m_story_price || 0;
+      const postPrice = getPriceDetail(row.page_price_list, 'instagram_post');
+      const storyPrice = getPriceDetail(row.page_price_list, 'instagram_story');
+
+      const costPerPost = postPrice || 0;
+      const costPerStory = storyPrice || 0;
 
       // Assuming a function exists to calculate total cost
       calculateTotalCost(
@@ -777,13 +867,13 @@ const PlanMaking = () => {
 
     // Prepare the plan data to send
     const planxData = updatedSelectedRows.map(
-      ({ _id, m_story_price, page_name, m_post_price }) => ({
+      ({ _id, page_price_list, page_name }) => ({
         _id,
         page_name,
-        post_price: m_post_price,
-        story_price: m_story_price,
+        post_price: getPriceDetail(page_price_list, 'instagram_post'),
+        story_price: getPriceDetail(page_price_list, 'instagram_story'),
         post_count: Number(updatedPostValues[_id]) || 0,
-        story_count: Number(updatedStoryValues[_id]) || 0,
+        story_count: Number(storyPerPageValues[_id]) || 0,
       })
     );
 
@@ -800,15 +890,20 @@ const PlanMaking = () => {
 
   const deSelectAllRows = () => {
     setSelectedRows([]);
+    // const pageData = pageList?.filter((item) => item.followers_count > 0);
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
     setTotalCostValues({});
+
+    // setFilterData(pageData);
     const payload = [];
     sendPlanDetails(payload);
   };
 
-  const displayPercentage = Math.floor(percentageRemaining);
+  console.log('showTotalCost', showTotalCost);
+  console.log('totalCostValues', totalCostValues);
+  // const displayPercentage = Math.floor(percentageRemaining);
 
   // useEffect(() => {
   //   if (percentageRemaining >= 50 && percentageRemaining <= 45) {
@@ -819,14 +914,6 @@ const PlanMaking = () => {
   //     alert('You have reached 100%');
   //   }
   // }, [percentageRemaining]);
-
-  useEffect(() => {
-    if (selectedFollowers?.length === 0) {
-      const pageData = pageList?.filter((item) => item.followers_count > 0);
-      setFilterData(pageData);
-      return;
-    }
-  }, [selectedFollowers]);
 
   useEffect(() => {
     if (userID && !contextData) {
@@ -849,6 +936,62 @@ const PlanMaking = () => {
   }, []);
 
   useEffect(() => {
+    const parseRange = (range) => {
+      if (range === 'lessThan10K') {
+        return { min: 0, max: 10000 };
+      }
+      const [min, max] = range.split('to').map((val) => {
+        const value = parseInt(val.replace('K', '')) * 1000;
+        return value;
+      });
+      return { min, max };
+    };
+
+    if (pageList) {
+      const pageData = pageList.filter((item) => item.followers_count > 0);
+      let filtered = [...pageData];
+
+      // 1. Apply the category filter (if any)
+      if (selectedCategory?.length > 0) {
+        filtered = filtered.filter((item) =>
+          selectedCategory.includes(item.page_category_id)
+        );
+      }
+
+      // 2. Apply the follower range filter (if any)
+      if (selectedFollowers?.length > 0) {
+        let followerFilteredData = [];
+        selectedFollowers.forEach((range) => {
+          const { min, max } = parseRange(range);
+          const rangeData = filtered.filter(
+            (page) => page.followers_count >= min && page.followers_count <= max
+          );
+          followerFilteredData.push(...rangeData);
+        });
+        filtered = followerFilteredData;
+      }
+
+      // 3. Apply the price filter (if min or max price is set)
+      if (minPrice || maxPrice) {
+        filtered = handlePriceFilter(filtered);
+      }
+
+      // 4. If no filters are applied, fallback to the full page list
+      if (
+        selectedFollowers?.length === 0 &&
+        selectedCategory?.length === 0 &&
+        !minPrice &&
+        !maxPrice
+      ) {
+        filtered = pageList;
+      }
+
+      // 5. Update the state with the final filtered data
+      setFilterData(filtered);
+    }
+  }, [selectedFollowers, selectedCategory, minPrice, maxPrice, pageList]);
+
+  useEffect(() => {
     if (pageList) {
       const pageData = pageList?.filter((item) => item.followers_count > 0);
       setFilterData(pageData);
@@ -858,12 +1001,23 @@ const PlanMaking = () => {
       const initialCostPerStoryValues = {};
       const initialCostPerBothValues = {};
       pageList?.forEach((page) => {
+        const postPrice = getPriceDetail(
+          page.page_price_list,
+          'instagram_post'
+        );
+        const storyPrice = getPriceDetail(
+          page.page_price_list,
+          'instagram_story'
+        );
+        const bothPrice = getPriceDetail(
+          page.page_price_list,
+          'instagram_both'
+        );
         initialPostValues[page._id] = 0;
         initialStoryValues[page._id] = 0;
-        initialCostPerPostValues[page._id] = page.price_details.Insta_Post || 0;
-        initialCostPerStoryValues[page._id] =
-          page.price_details.Insta_Story || 0;
-        initialCostPerBothValues[page._id] = page.price_details.Both || 0;
+        initialCostPerPostValues[page._id] = postPrice || 0;
+        initialCostPerStoryValues[page._id] = storyPrice || 0;
+        initialCostPerBothValues[page._id] = bothPrice || 0;
       });
       setPostPerPageValues(initialPostValues);
       setStoryPerPageValues(initialStoryValues);
@@ -894,25 +1048,52 @@ const PlanMaking = () => {
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
   return (
     <>
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Unfetched Pages</DialogTitle>
-        <DialogContent>
-          <Typography sx={{ mt: 2 }}>
-            The following pages were not found:
-          </Typography>
-          <ul>
-            {notFoundPages.map((page, index) => (
-              <li key={index}>{page}</li>
-            ))}
-          </ul>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-
+      <PageDialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        notFoundPages={notFoundPages}
+      />
+      {/* <button onClick={handleToggleLeftNavbar} style={{ maxWidth: '120px' }}>
+        {!toggleLeftNavbar ? 'show navbar' : 'hide navbar'}
+      </button> */}
+      {alertData && (
+        <CustomAlert
+          title={alertData.title}
+          text={alertData.text}
+          icon={alertData.icon}
+          onConfirm={() => setAlertData(null)}
+          showAlert={true}
+        />
+      )}
+      {/* {toggleLeftNavbar && (
+        <LeftSideBar
+          totalFollowers={totalFollowers}
+          totalCost={totalCost}
+          totalPostsPerPage={totalPostsPerPage}
+          totalPagesSelected={totalPagesSelected}
+          totalDeliverables={totalDeliverables}
+          totalStoriesPerPage={totalStoriesPerPage}
+          pageCategoryCount={pageCategoryCount}
+          handleToggleBtn={handleToggleBtn}
+          selectedRow={selectedRows}
+          ownPages={ownPages}
+          handleOwnPage={handleOwnPage}
+          HandleSavePlan={HandleSavePlan}
+          category={cat}
+        />
+      )} */}
+      {/* <h2
+        style={{
+          backgroundColor: 'red',
+          position: 'absolute',
+          right: '0rem',
+          width: '50%',
+          height: '100%',
+          zIndex: 20000,
+        }}
+      >
+        lorem test
+      </h2> */}
       <div className="scrollWrapper">
         <div className="table-responsive topStickty">
           <div className="data_tbl thm_table">
@@ -989,16 +1170,8 @@ const PlanMaking = () => {
             aria-controls="panel1-content"
             id="panel2-header"
           >
-            {/* <Box
-              sx={{
-                position: 'relative',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <p>{`${displayPercentage}%`} achived</p>
-            </Box> */}
+            {/* <p>{`${displayPercentage}%`} achived</p> */}
+
             <h5 className="card-title">Category Filters</h5>
           </AccordionSummary>
           <AccordionDetails className="card-body">
@@ -1033,20 +1206,18 @@ const PlanMaking = () => {
                 maxFollowers={maxFollowers}
                 setMaxFollowers={setMaxFollowers}
                 followerFilterType={followerFilterType}
-                handleFollowerRangeChange={handleFollowerRangeChange}
                 selectedCategory={selectedCategory}
                 handleCategoryChange={handleCategoryChange}
                 cat={cat}
                 removeCategory={removeCategory}
                 handleRemoveFilter={handleRemoveFilter}
                 handleCombinedFilter={handleCombinedFilter}
-                handleFollowersBlur={handleFollowersBlur}
+                handleFollowersFilter={handleFollowersFilter}
                 selectAllRows={selectAllRows}
                 handleStoryCountChange={handleStoryCountChange}
                 handlePostCountChange={handlePostCountChange}
-                storyCountDefault= {storyCountDefault}
-                 postCountDefault={postCountDefault}
-                
+                storyCountDefault={storyCountDefault}
+                postCountDefault={postCountDefault}
               />
             )}
           </AccordionDetails>

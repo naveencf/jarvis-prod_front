@@ -37,12 +37,13 @@ const ViewOutstanding = () => {
     isSuccess: userWiseStatusSuccess,
     isLoading: userWiseStatusLoading,
     isError: userWiseStatusError,
-  } = useGetUserWiseStatusQuery(loginUserId);
+  } = useGetUserWiseStatusQuery(loginUserId, { skip: loginUserRole !== 1 });
+
   useEffect(() => {
     if (accountWiseStatus) {
-      setActiveData(accountWiseStatus);
+      setActiveData(accountWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
     }
-  }, [accountWiseStatus, userWiseStatus]);
+  }, [accountWiseStatusLoading]);
 
   const onTabClick = (index) => {
     setActiveTab(index);
@@ -50,11 +51,11 @@ const ViewOutstanding = () => {
 
   useEffect(() => {
     if (activeTab === 0) {
-      setActiveData(accountWiseStatus);
+      setActiveData(accountWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
     } else {
-      setActiveData(userWiseStatus);
+      setActiveData(userWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
     }
-  }, [onTabClick]);
+  }, [activeTab]);
 
   const accountColumns = [
     {
@@ -69,10 +70,9 @@ const ViewOutstanding = () => {
       name: "Account Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${
-            allAccountData?.find((data) => data?.account_id === row?.account_id)
-              ?._id
-          }`}
+          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row?.account_id)
+            ?._id
+            }`}
         >
           {row.account_name}
         </Link>
@@ -163,14 +163,15 @@ const ViewOutstanding = () => {
     },
   ];
 
+
   return (
     <div>
       <FormContainer mainTitle={"Outstanding"} link={"true"} />
-      <Tab
+      {loginUserRole === 1 && <Tab
         tabName={tabName}
         activeTabindex={activeTab}
         onTabClick={onTabClick}
-      />
+      />}
       <View
         title={"Outstanding View"}
         columns={accountColumns}

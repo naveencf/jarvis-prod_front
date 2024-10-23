@@ -110,6 +110,8 @@ const CreateSaleBooking = () => {
   const [campaignName, setCampaignName] = useState("");
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [selectedBrand, setSelectedBrand] = useState(null);
+  const [remainingAmount, setRemainingAmount] = useState(0);
+
   const [bookingDate, setBookingDate] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -710,7 +712,7 @@ const CreateSaleBooking = () => {
       {
         sale_booking_id: "",
         sales_service_master_id: "",
-        amount: "",
+        amount: remainingAmount,
         no_of_hours: "",
         goal: "",
         day: "",
@@ -1057,12 +1059,12 @@ const CreateSaleBooking = () => {
                   });
                 }}
               />
-              <span className="successText">
-                {convertNumberToIndianString(baseAmount)}
-              </span>
               {isValidate.baseAmount && (
                 <div className="form-error">Please enter Base Amount</div>
               )}
+              <span className="successText">
+                {convertNumberToIndianString(baseAmount)}
+              </span>
 
               {/* <div className="col-md-6 flex-row">
                 <button
@@ -1088,9 +1090,7 @@ const CreateSaleBooking = () => {
                   +18% GST
                 </label>
               </div>
-              <span className="successText">
-                {convertNumberToIndianString(gstAmount)}
-              </span>
+
               {/* <div className="flex-col gap-1 ">
                   <p>Gst Amount: Rs.{gstAmount}</p>
                   <p>Net / Campaign Amount: Rs.{netAmount}</p>
@@ -1099,23 +1099,32 @@ const CreateSaleBooking = () => {
 
             {
               <>
-                <FieldContainer
-                  label="GST Amount"
-                  fieldGrid={4}
-                  type="number"
-                  value={gstAmount}
-                  disabled={true}
-                />
-                <FieldContainer
-                  label="Net / Campaign Amount"
-                  fieldGrid={4}
-                  type="number"
-                  value={netAmount}
-                  disabled={true}
-                />
-                <span className="successText">
-                  {convertNumberToIndianString(gstAmount)}
-                </span>
+                <div className="col-4">
+
+                  <FieldContainer
+                    label="GST Amount"
+                    fieldGrid={12}
+                    type="number"
+                    value={gstAmount}
+                    disabled={true}
+                  />
+                  <span className="successText">
+                    {convertNumberToIndianString(gstAmount)}
+                  </span>
+                </div>
+                <div className="col-4">
+
+                  <FieldContainer
+                    label="Net / Campaign Amount"
+                    fieldGrid={12}
+                    type="number"
+                    value={netAmount}
+                    disabled={true}
+                  />
+                  <span className="successText">
+                    {convertNumberToIndianString(netAmount)}
+                  </span>
+                </div>
               </>
             }
 
@@ -1302,6 +1311,8 @@ const CreateSaleBooking = () => {
           isValidRec={isValidRec}
           setIsValidRec={setIsValidRec}
           getincentiveSharingData={getincentiveSharingData}
+          setRemainingAmount={setRemainingAmount}
+          remainingAmount={remainingAmount}
         />
         {/* <ExcelToInputFields /> */}
         <div className="flex-row sb">

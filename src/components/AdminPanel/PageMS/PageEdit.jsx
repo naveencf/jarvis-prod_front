@@ -28,18 +28,20 @@ import { useContext } from "react";
 import { IconButton, Stack } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/Info";
-import { setOpenShowAddModal, setModalType, setOpenShowPageInfoModal } from "../../Store/PageMaster";
+import {
+  setOpenShowAddModal,
+  setModalType,
+  setOpenShowPageInfoModal,
+} from "../../Store/PageMaster";
 import PageAddMasterModal from "./PageAddMasterModal";
 import PageInfoModal from "./PageInfoModal";
 
-setOpenShowAddModal
-const Page = () => {
-  const {
-    refetch: refetchPageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery();
+setOpenShowAddModal;
+const Page = ({pageMast_id}) => {
+  const { refetch: refetchPageList, isLoading: isPageListLoading } =
+    useGetAllPageListQuery();
   const navigate = useNavigate();
-  const { pageMast_id } = useParams();
+  // const { pageMast_id } = useParams();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const dispatch = useDispatch();
   const { toastAlert, toastError } = useGlobalContext();
@@ -58,6 +60,7 @@ const Page = () => {
   const [tag, setTag] = useState([]);
   const [pageLevel, setPageLevel] = useState("");
   const [pageStatus, setPageStatus] = useState("");
+  // console.log(pageStatus, "new data saim ");
   // const [userData, setUserData] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("");
@@ -78,7 +81,8 @@ const Page = () => {
 
   const [priceDataNew, setPriceDataNew] = useState([]);
   const [rateType, setRateType] = useState("Fixed");
-
+  const [languages, setLanguages] = useState([]);
+  const [languageId, setLanguageId] = useState([]);
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
@@ -86,19 +90,17 @@ const Page = () => {
   const { usersDataContext } = useContext(AppContext);
 
   const PageLevels = [
-    { value: "Level 1 (High)", label: "Level 1 (High)" },
-    { value: "Level 2 (Medium)", label: "Level 2 (Medium)" },
-    { value: "Level 3 (Low)", label: "Level 3 (Low)" },
+    { value: "high", label: "Level 1 (High)" },
+    { value: "medium", label: "Level 2 (Medium)" },
+    { value: "low", label: "Level 3 (Low)" },
   ];
 
   const PageStatus = [
- 
-    { value: 0, label: "Super Active" },
-    { value: 1, label: "Active" },
-    { value: 2, label: "Semiactive" },
-    { value: 3, label: "Dead" },
+    { value: "super_active", label: "Super Active" },
+    { value: "active", label: "Active" },
+    { value: "semi_active", label: "Semi Active" },
+    { value: 'dead', label: "Dead" },
   ];
-
   const PageTypes = [
     { value: "Non Adult", label: "Non Adult" },
     { value: "Adult", label: "Adult" },
@@ -129,6 +131,7 @@ const Page = () => {
         },
       })
       .then((res) => {
+        // console.log(res.data.data, "res.data.data");
         setPriceDataNew(res.data.data);
       });
   };
@@ -223,6 +226,7 @@ const Page = () => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
+          console.log(res?.data?.data, "res?.data?.data");
         });
     }
   }, [platformId]);
@@ -271,7 +275,18 @@ const Page = () => {
             return { value: e._id, label: e.page_category };
           })
         );
-        setPageLevel(data[0].preference_level);
+        // setPageLevel(data[0].preference_level);
+        setPageLevel(data[0]?.preference_level);
+        if (data[0].page_activeness == 'dead') {
+          setPageStatus("dead");
+        }else if (data[0].page_activeness == 'semi_active') {
+          setPageStatus("semi_active");
+        } else if (data[0].page_activeness == 'super_active') {
+          setPageStatus("super_active");
+        } 
+        else {
+          setPageStatus("active");
+        }
         setPageStatus(data[0].page_activeness);
         setCloseBy(data[0].page_closed_by);
         setPageType(data[0].page_name_type);
@@ -281,35 +296,51 @@ const Page = () => {
         setFollowCount(data[0].followers_count);
         setBio(data[0].bio);
         setProfileId(data[0].page_profile_type_id);
-        const platformActive = platformData.filter((e) =>
-          data[0].platform_active_on.includes(e._id)
-        );
-        setPlatformActive(
-          platformActive.map((e) => {
-            return { value: e._id, label: e.platform_name };
-          })
-        );
+        // const platformActive = platformData.filter((e) =>
+        //   data[0].platform_active_on.includes(e._id)
+        // );
+        // setPlatformActive(
+        //   platformActive.map((e) => {
+        //     return { value: e._id, label: e.platform_name };
+        //   })
+        // );
         setRate(data[0].engagment_rate);
         setRateType(data[0].rate_type);
         setEngagment(data[0]?.engagment_rate);
         setDescription(data[0].description);
         setP_id(data[0].pageMast_id);
         setSinglePage(data[0]);
+        setLanguageId(data[0].page_language_name)
+        console.log(data[0].page_language_name,"data[0].page_language_name")
       });
   }, [platformData]);
 
   useEffect(() => {
-    axios
-      .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setSingleVendor(res?.data?.data);
-      });
+    console.log(singlePage, "singlePage");
+    if (singlePage && singlePage.length > 0) {
+      axios
+        .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          // console.log(res?.data?.data)
+          setSingleVendor(res?.data?.data);
+        });
+      }
+      getLanguage()
   }, [singlePage]);
+
+  const getLanguage = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
+      setLanguages(res?.data?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const handleSubmit = async (e, flag) => {
     e.preventDefault();
@@ -332,10 +363,6 @@ const Page = () => {
       toastAlert("Page Level is required");
       return;
     }
-    // else if (!pageStatus) {
-    //   toastAlert('Page Status is required');
-    //   return;
-    // }
     else if (!closeBy) {
       toastAlert("Close by is required");
       return;
@@ -358,14 +385,6 @@ const Page = () => {
       toastAlert("Profile Type is required");
       return;
     }
-    //  else if (!platformActive) {
-    //   toastAlert('Platform active on is required');
-    //   return;
-    // }
-    // else if (!rate) {
-    //   toastAlert("Engagement Rate is required");
-    //   return;
-    // }
 
     const payload = {
       page_name: pageName,
@@ -376,26 +395,51 @@ const Page = () => {
       tags_page_category: tag.map((e) => e.value),
       preference_level: pageLevel,
       page_activeness: pageStatus,
-      // status: pageStatus == 'Active' ? 1 : 0,
-      // page_status: pageStatus == 'Active' ? 1 : 0,
       page_closed_by: closeBy,
       page_name_type: pageType,
       content_creation: content,
       ownership_type: ownerType,
       vendor_id: vendorId,
-      // followers_count: followCount,
       followers_count: followCount,
-
       bio: bio,
       page_profile_type_id: profileId,
-      // platform_active_on: platformActive.map((e) => e.value),
       rate_type: rateType || "",
-
       updated_by: userID,
       engagment_rate: engagment || 0,
       variable_type: rateType == "Variable" ? variableType.value : null,
-    };
 
+      platform_name: platformData
+        ?.find((res) => res._id == platformId)
+        ?.platform_name?.toLowerCase(),
+
+      page_category_name: categoryData
+        ?.find((role) => role._id === categoryId)
+        ?.page_category?.toLowerCase(),
+      page_sub_category_name: subCategoryData.find(
+        (role) => role._id === subCategoryId
+      )?.page_sub_category,
+
+      vendor_name: vendorData
+        ?.find((vendor) => vendor._id === vendorId)
+        ?.vendor_name?.toLowerCase(),
+
+      page_profile_type_name: profileData
+        ?.find((role) => role?._id === profileId)
+        ?.profile_type?.toLowerCase(),
+
+      // page_language_name: ["Hindi"],
+      page_language_name: languageId.map((item) => item?.label),
+      tags_page_category_name: tag.map((e) => e.label),
+      page_price_list: rowCount.map((item) => {
+        return {
+          [priceTypeList?.find(
+            (priceobject) => priceobject?._id == item.page_price_type_id
+          )?.name]: item.price,
+        };
+      }),
+    };
+    // console.log(payload, "payload",rowCount,priceTypeList);
+    // return;
     await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
         headers: {
@@ -437,7 +481,7 @@ const Page = () => {
         };
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => { })
+          .then(() => {})
           .catch((err) => {
             console.log(err);
           });
@@ -453,7 +497,7 @@ const Page = () => {
       });
 
     for (let i = 0; i < rowCount.length; i++) {
-      let matchingObject = priceDataNew.find(
+      let matchingObject = priceDataNew?.find(
         (obj) => obj.page_price_type_id === rowCount[i].page_price_type_id
       );
 
@@ -550,11 +594,10 @@ const Page = () => {
 
       if (followerData > 0) {
         setFollowCount(followerData);
-        toastAlert(" Followers updated successfully!")
+        toastAlert(" Followers updated successfully!");
       } else {
         toastError("Page disabled or private.");
       }
-
     } catch (error) {
       console.error("Error fetching followers:", errorMessage);
     }
@@ -625,12 +668,15 @@ const Page = () => {
         ></Select>
       </div>
 
-      <div className="form-group col-6">
-        <label className="form-label">
+
+
+
+
+      <div className="col-md-6 mb16">
+        <label className="form-group m0">
           Category <sup style={{ color: "red" }}>*</sup>
         </label>
         <div className="input-group inputAddGroup">
-
           <Select
             options={categoryData.map((option) => ({
               value: option._id,
@@ -662,7 +708,6 @@ const Page = () => {
           >
             <InfoIcon />
           </IconButton>
-
         </div>
       </div>
 
@@ -671,7 +716,6 @@ const Page = () => {
           Sub Category <sup style={{ color: "red" }}>*</sup>
         </label>
         <div className="input-group inputAddGroup">
-
           <Select
             options={subCategoryData?.map((option) => ({
               value: option._id,
@@ -747,8 +791,11 @@ const Page = () => {
           className="basic-multi-select"
           classNamePrefix="select"
           value={PageStatus.find(
-            (option) => option.value === Number(pageStatus)
+            (option) => option.value === pageStatus
           )}
+          // value={PageStatus.find(
+          //   (option) => console.log(option.label)
+          // )}
           onChange={(selectedOption) => setPageStatus(selectedOption.value)}
         />
       </div>
@@ -845,6 +892,31 @@ const Page = () => {
             setVendorId(e.value);
           }}
         ></Select>
+      </div>
+      <div className="col-md-6 mb16">
+        <div className="form-group m0">
+          <label className="form-label">
+            Language <sup style={{ color: "red" }}>*</sup>
+          </label>
+          <Select
+            options={languages.map((option) => ({
+              value: option._id,
+              label: formatString(option.language_name),
+            }))}
+            value={languages
+              .filter((lang) => languageId.includes(lang.language_name))
+              .map((option) => ({
+                value: option._id,
+                label: formatString(option.language_name),
+              }))}
+            isMulti
+            required={true}
+            onChange={(selectedOptions) => {
+              const selectedValues = selectedOptions.map((option) => option);
+              setLanguageId(selectedValues);
+            }}
+          />
+        </div>
       </div>
       <FieldContainer
         label="Followers Count *"
@@ -1063,8 +1135,8 @@ const Page = () => {
   );
 };
 
-const PageEdit = () => {
-  const { pageMast_id } = useParams();
+const PageEdit = ({pageMast_id ,handleEditClose}) => {
+  // const { pageMast_id } = useParams();
   const navigate = useNavigate();
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
@@ -1091,7 +1163,7 @@ const PageEdit = () => {
           cursor: "pointer",
         }}
       >
-        <ArrowBackIcon onClick={goBack} />
+        <ArrowBackIcon onClick={()=>handleEditClose()} />
       </div>
 
       <FormContainer
@@ -1103,7 +1175,7 @@ const PageEdit = () => {
         onAccordionButtonClick={handleAccordionButtonClick}
         submitButton={true}
       >
-        {activeAccordionIndex === 0 && <Page />}
+        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} />}
         {/* {activeAccordionIndex === 1 && <PageHealth />} */}
         {activeAccordionIndex === 1 &&
           navigate(`/admin/exe-history/${pageMast_id}`)}

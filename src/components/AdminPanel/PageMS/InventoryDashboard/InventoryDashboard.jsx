@@ -15,11 +15,11 @@ const InventoryDashboard = () => {
           <Link to="/admin/pms-inventory-category-overview">
             <button className="btn cmnbtn btn-primary btn_sm">Category</button>
           </Link>
-          <Link to="/admin/pms-page-sub-category">
+          {/* <Link to="/admin/pms-page-sub-category">
             <button className="btn cmnbtn btn-primary btn_sm">
               Sub Category
             </button>
-          </Link>
+          </Link> */}
           <Link
             to={`/admin/pms-page-cat-assignment-overview`}
             className="btn cmnbtn btn_sm btn-primary"

@@ -18,6 +18,7 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { baseUrl } from "../../../../../../utils/config";
 import { useGlobalContext } from "../../../../../../Context/Context";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function DialogforBalancePaymentUpdate(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -51,6 +52,7 @@ function DialogforBalancePaymentUpdate(props) {
   const [showField, setShowField] = useState(false);
 
   const [paymentType, setPaymentType] = useState({ label: "", value: "" });
+  const [loading, setLoading] = useState(false);
 
   const handleCloseImageModal = () => {
     setImageModalOpen(false);
@@ -65,6 +67,7 @@ function DialogforBalancePaymentUpdate(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const formData = new FormData();
     formData.append("sale_booking_id", +singleRow?.sale_booking_id);
@@ -85,6 +88,7 @@ function DialogforBalancePaymentUpdate(props) {
       })
       .then((res) => {
         if (res.status === 200) {
+          setLoading(false);
           getData();
           setBalAmount("");
           setPaymentRefNo("");
@@ -337,7 +341,7 @@ function DialogforBalancePaymentUpdate(props) {
           autoFocus
           onClick={(e) => handleSubmit(e)}
         >
-          Save
+          {loading ? <CircularProgress size={24} /> : "Save"}
         </Button>
         {paidPercentage === 90 || paidPercentage >= 90 ? (
           <Button variant="contained" autoFocus onClick={handleOpenTDSFields}>

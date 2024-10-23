@@ -58,14 +58,16 @@ function TDSDialog(props) {
         },
       })
       .then((res) => {
-        const formData = new FormData();
-        formData.append("tds_amount", balAmount - paidAmount);
-        formData.append("tds_percentage", tdsPercentage);
+        const tdsClosePayload = {
+          tds_amount: balAmount - paidAmount,
+          tds_percentage: tdsPercentage,
+        };
+
         axios
           .put(
             baseUrl +
               `sales/booking_closed_with_tds_amount/${tdsFieldSaleBookingId}`,
-            formData,
+            tdsClosePayload,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

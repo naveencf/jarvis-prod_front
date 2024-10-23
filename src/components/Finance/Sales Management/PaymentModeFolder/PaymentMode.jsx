@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 const PaymentMode = () => {
   const { toastAlert } = useGlobalContext();
@@ -36,6 +37,8 @@ const PaymentMode = () => {
   const [gst, setGST] = useState("");
   const [hideRowDialog, setHideRowDialog] = useState(false);
   const [hiddenDataArray, setHiddenData] = useState(false);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -52,6 +55,8 @@ const PaymentMode = () => {
     setIsFormSubmitted(true);
   };
   const getData = () => {
+    setIsLoading(true);
+
     axios
       .get(baseUrl + "sales/payment_details", {
         headers: {
@@ -60,6 +65,7 @@ const PaymentMode = () => {
         },
       })
       .then((res) => {
+        setIsLoading(false);
         setData(res?.data?.data);
         setFilterData(res?.data?.data);
       })
@@ -188,65 +194,61 @@ const PaymentMode = () => {
 
   const columns = [
     {
-      headerName: "S.No",
-      field: "s_no",
-      renderCell: (params) => {
-        const visibleRows = filterData?.filter(
-          (data) => data?.is_hide === false
-        );
-        const index = visibleRows?.indexOf(params.row);
-        return <div>{index + 1}</div>;
+      name: "S.No",
+      key: "s_no",
+      renderRowCell: (row, index) => {
+        index + 1;
       },
     },
     {
-      field: "title",
-      headerName: "Title",
+      key: "title",
+      name: "Title",
       width: 200,
       // renderCell: (params) => <div>{params.row.title}</div>,
       // sortable: false,
     },
     {
-      headerName: "Details",
-      field: "details",
+      name: "Details",
+      key: "details",
       width: 700,
       // selector: (row) =>  <div style={{ whiteSpace: 'normal' }}>{row.detail}
       //   <Button key={row.detail} variant="contained" color="primary" onClick={console.log('clicked')} style={{marginLeft: "10px"}}>Copy</Button>
       // </div>,
-      renderCell: (params) => (
+      renderRowCell: (row) => (
         <div className="flexCenter colGap8">
           <button
             className="btn tableIconBtn btn_sm "
-            key={params.row.details}
-            onClick={() => handleCopyDetail(params.row.details)}
+            key={row?.details}
+            onClick={() => handleCopyDetail(row?.details)}
           >
             <ContentCopyIcon />
           </button>
-          {params.row.details}
+          {row?.details}
         </div>
       ),
     },
     {
-      field: "payment_type",
-      headerName: "Payment Type",
+      key: "payment_type",
+      name: "Payment Type",
       width: 200,
-      renderCell: (params) => params.row.payment_mode_name,
+      renderRowCell: (row) => row?.payment_mode_name,
     },
     {
-      headerName: "GST Bank",
-      field: "gst_bank",
+      name: "GST Bank",
+      key: "gst_bank",
       width: 200,
-      renderCell: (params) => {
-        return <div>{params.row.gst_bank === true ? "GST" : "Non GST"}</div>;
+      renderRowCell: (row) => {
+        return <div>{row?.gst_bank === true ? "GST" : "Non GST"}</div>;
       },
     },
     {
-      headerName: "Action",
-      field: "Action",
-      renderCell: (params) => {
+      key: "Action",
+      name: "Action",
+      renderRowCell: (row) => {
         return (
           <div className="d-flex gap-10">
             <button
-              onClick={() => handleHideRowData(params.row)}
+              onClick={() => handleHideRowData(row)}
               className="btn cmnbtn btn_sm btn-outline-primary"
             >
               Hide
@@ -258,11 +260,11 @@ const PaymentMode = () => {
     {
       // headerName: "",
       // field: "Action",
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         return (
           <div className="d-flex gap-10">
             <Link
-              to={`/admin/finance-payment-mode-transactionlist/${params.row._id}`}
+              to={`/admin/finance-payment-mode-transactionlist/${row?._id}`}
               className="link-primary"
             >
               <button className="icon-1" title="Transaction History">
@@ -341,6 +343,7 @@ const PaymentMode = () => {
       },
     },
   ];
+
   return (
     <div>
       <FormContainer
@@ -589,27 +592,17 @@ const PaymentMode = () => {
         </div>
       </div>
 
-      <div className="row">
-        <div className="col-12">
-          <div className="card" style={{ maxHeight: "600px" }}>
-            <div className="card-body thm_table">
-              <DataGrid
-                rows={filterData?.filter((data) => data.is_hide === false)}
-                columns={columns}
-                pageSize={5}
-                rowsPerPageOptions={[5]}
-                disableSelectionOnClick
-                slots={{ toolbar: GridToolbar }}
-                slotProps={{
-                  toolbar: {
-                    showQuickFilter: true,
-                  },
-                }}
-                getRowId={(row) => filterData?.indexOf(row)}
-              />
-            </div>
-          </div>
-        </div>
+      <div>
+        <View
+          columns={columns}
+          data={filterData?.filter((data) => data?.is_hide === false)}
+          isLoading={isLoading}
+          title={"Payment Mode"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"payment_details"}
+          selectedData={setSelectedData}
+        />
       </div>
     </div>
   );

@@ -6,10 +6,30 @@ const UserSingleTab2 = ({ user, hobbiesData }) => {
     <>
       <div className="profileInfo_area">
         <div className="row profileInfo_row pt-0">
+          <h3>Job Section</h3>
           <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
             <div className="profileInfo_box">
               <h3>Employe ID</h3>
               <h4>{user.user_id ? user.user_id : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Designation</h3>
+              <h4>{user.designation_name}</h4>
+            </div>
+          </div>
+
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Department</h3>
+              <h4>{user.department_name}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Sub Department</h3>
+              <h4>{user.sub_dept_name ? user.sub_dept_name : "NA"}</h4>
             </div>
           </div>
           <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
@@ -91,6 +111,7 @@ const UserSingleTab2 = ({ user, hobbiesData }) => {
           </div>
         </div>
         <hr />
+        <h3>Finance Details</h3>
         <div className="row profileInfo_row">
           <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
             <div className="profileInfo_box">
@@ -120,6 +141,30 @@ const UserSingleTab2 = ({ user, hobbiesData }) => {
           <div className="profileInfo_box">
             <h3>Pan Number</h3>
             <h4>{user.pan_no ? user.pan_no : "NA"}</h4>
+          </div>
+        </div>
+        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+          <div className="profileInfo_box">
+            <h3>Old PF Number</h3>
+            <h4>{user.old_pf_number ? user.old_pf_number : "NA"}</h4>
+          </div>
+        </div>
+        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+          <div className="profileInfo_box">
+            <h3>UAN Number</h3>
+            <h4>{user.uan_number ? user.uan_number : "NA"}</h4>
+          </div>
+        </div>
+        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+          <div className="profileInfo_box">
+            <h3>Old Esic Number</h3>
+            <h4>{user.old_esic_number ? user.old_esic_number : "NA"}</h4>
+          </div>
+        </div>
+        <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+          <div className="profileInfo_box">
+            <h3>UPI</h3>
+            <h4>{user.upi_Id ? user.upi_Id : "NA"}</h4>
           </div>
         </div>
         </div>

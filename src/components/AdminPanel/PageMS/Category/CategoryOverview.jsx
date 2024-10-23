@@ -157,6 +157,11 @@ const CategoryOverview = () => {
           >
             Add Category
           </button>
+          <Link to="/admin/pms-page-sub-category">
+            <button className="btn cmnbtn btn-primary btn_sm">
+              Sub Category
+            </button>
+          </Link>
         </div>
       </div>
       <View

@@ -67,7 +67,7 @@
     max-height: 50px;
     background-color: var(--theme-bg);
     font-size: 14px;
-    z-index: 1000;
+
   }
 
   th {
@@ -298,7 +298,7 @@ th .table-header {
   border-left: none;
   border-right: none;
   padding: 12px 12px;
-  z-index: 1001;
+
 
   .dropdown {
     .dropdown-btn {
@@ -331,7 +331,6 @@ th .table-header {
     overflow-y: scroll;
     top: 40px;
     left: 0;
-    z-index: 999;
     max-height: 400px;
 
     ul {

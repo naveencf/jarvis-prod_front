@@ -283,7 +283,7 @@ const ViewSaleBooking = () => {
 
   function pivotDataFunction() {
     const ranges = [{ range: "0-100K" }, { range: "100-200K" }, { range: "200-300K" }, { range: "300-400K" }, { range: "400-500K" }, { range: "500-600K" }, { range: "600-700K" }, { range: "700-800K" }, { range: "800-900K" }, { range: "900-1000K" }, { range: "10L+" }];
-    const newPivot = ranges.map((data) => {
+    const newPivot = ranges?.map((data) => {
       let range = data?.range;
       let rangeData = allSaleBooking?.filter((item) => {
         let amount = item?.base_amount;
@@ -323,8 +323,8 @@ const ViewSaleBooking = () => {
       });
       return {
         ...data,
-        count: rangeData.length,
-        total: rangeData.reduce((acc, item) => acc + item.base_amount, 0),
+        count: rangeData?.length,
+        total: rangeData?.reduce((acc, item) => acc + item.base_amount, 0),
       }
     })
     setPivotData(newPivot);
@@ -422,7 +422,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) => {
         if (row.record_service_counts)
           return (
-            <a
+            <div
               onClick={() => {
                 setModalName("testModal");
                 setExecutionModal(row?.is_execution_token_show);
@@ -430,7 +430,7 @@ const ViewSaleBooking = () => {
               }}
             >
               {row?.record_service_counts}
-            </a>
+            </div>
           );
         else return 0;
       },
@@ -707,14 +707,16 @@ const ViewSaleBooking = () => {
           {
             !row?.is_dummy_sale_booking &&
             <div className="flex-row">
-              {row.incentive_earning_status === "un-earned" && <Link
+              {/* {row.incentive_earning_status === "un-earned" &&  */}
+              <Link
                 title="Edit sale booking"
                 to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
               >
                 <div className="icon-1">
                   <i className="bi bi-pencil" />
                 </div>
-              </Link>}
+              </Link>
+              {/* } */}
 
               {loginUserRole == 1 && (
                 <button

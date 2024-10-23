@@ -16,6 +16,9 @@ import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
 import AddIcon from '@mui/icons-material/Add';
+import FormContainer from '../../AdminPanel/FormContainer';
+import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
+import jwtDecode from 'jwt-decode';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -47,12 +50,13 @@ function PlanHome() {
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
   const storedToken = sessionStorage.getItem('token');
+  const { id } = jwtDecode(storedToken);
+
   const { usersDataContext } = useContext(AppContext);
 
   const salesUsers = usersDataContext?.filter(
     (user) => user?.department_name === 'Sales'
   );
-
   const globalFilteredUsers = usersDataContext?.filter((user) =>
     user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase())
   );
@@ -68,7 +72,6 @@ function PlanHome() {
       });
 
       const data = await response.json();
-
       if (data.success) {
         setAccounts(data.data);
       }
@@ -110,6 +113,8 @@ function PlanHome() {
           postCount: plan.post_count,
           storyCount: plan.story_count,
           description: plan.description,
+          account_id: plan.account_id,
+          sales_executive_id: plan.sales_executive_id,
         }));
         setPlanRows(formattedRows);
       }
@@ -125,6 +130,11 @@ function PlanHome() {
     navigate(`/admin/pms-plan-making/${planId}`);
   };
   const handleEditClick = (row) => {
+    const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
+    const selectedUser = usersDataContext.find(
+      (user) => user.user_id === row.sales_executive_id
+    );
+
     setPlanDetails({
       planName: row.planName,
       costPrice: row.costPrice,
@@ -140,6 +150,8 @@ function PlanHome() {
       planStatus: row.plan_status,
       planSaved: false,
       createdBy: row.created_by, // Assuming it's already available in the row
+      accountName: selectedAccount ? selectedAccount.account_name : '',
+      salesExecutiveName: selectedUser ? selectedUser.user_name : '',
     });
     setSelectedPlanId(row.id); // Store the plan ID
     setIsEdit(true); // Switch to edit mode
@@ -191,6 +203,7 @@ function PlanHome() {
       }));
     }
   };
+
   const handleFormSubmit = async () => {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -206,7 +219,7 @@ function PlanHome() {
       post_count: parseInt(planDetails.postCount, 10),
       story_count: parseInt(planDetails.storyCount, 10),
       description: planDetails.description,
-      sales_executive_id: parseInt(planDetails.salesExecutiveId, 10),
+      sales_executive_id: parseInt(id),
       account_id: planDetails.accountId,
       brand_id: planDetails.brandId,
       brief: planDetails.brief,
@@ -216,6 +229,9 @@ function PlanHome() {
     };
     if (isEdit) {
       planData.id = selectedPlanId;
+    }
+    if (duplicatePlanId) {
+      planData.duplicate_planx_id = duplicatePlanId;
     }
 
     try {
@@ -235,6 +251,10 @@ function PlanHome() {
         Swal.fire({
           icon: 'success',
           title: 'Plan saved successfully!',
+          preConfirm: () => {
+            const planId = result.data._id;
+            isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
+          },
         });
         if (isEdit) {
           fetchPlans();
@@ -288,8 +308,9 @@ function PlanHome() {
       createdBy: 938,
     });
 
-    setOpenDialog(true); // Open the dialog
+    setOpenDialog(true);
   };
+
   const columns = [
     {
       key: 'serial_no',
@@ -349,7 +370,9 @@ function PlanHome() {
       key: 'plan_status',
       name: 'Plan Status',
       renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.plan_status}</div>
+        <div className="badge badge-danger" style={{ cursor: 'pointer' }}>
+          {row?.plan_status}
+        </div>
       ),
       width: 150,
       showCol: true,
@@ -414,24 +437,25 @@ function PlanHome() {
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
           <button
+            title="Duplicate"
             onClick={() => handleDuplicateClick(row)}
-            className="btn btn-primary cmnbtn btn_sm"
+            className="btn icon"
           >
-            Duplicate
+            <CopySimple />
           </button>
           <button
             title="View"
-            className="btn btn-outline-primary btn-sm user-button"
+            className="btn icon"
             onClick={() => handleRowClick(row)}
           >
-            View
+            <Eye />
           </button>
           <button
             title="Edit"
-            className="btn btn-outline-primary btn-sm user-button"
+            className="btn icon"
             onClick={() => handleEditClick(row)}
           >
-            <FaEdit />{' '}
+            <PencilSimple />
           </button>
         </div>
       ),
@@ -439,7 +463,6 @@ function PlanHome() {
       showCol: true,
     },
   ];
-  console.log(planRows,"planRows")
   return (
     <div>
       {/* <Button variant="contained" onClick={handlePlanMaking}>
@@ -447,92 +470,115 @@ function PlanHome() {
       </Button> */}
 
       {/* Plan Making Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog}>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        sx={{
+          minWidth: 500,
+        }}
+      >
         <DialogTitle>{isEdit ? 'Edit Plan' : 'Create a New Plan'}</DialogTitle>
         <DialogContent>
-          <TextField
-            margin="dense"
-            label="Plan Name *"
-            name="planName"
-            fullWidth
-            value={planDetails.planName}
-            onChange={handleInputChange}
-            error={!!errors.planName}
-            helperText={errors.planName}
-          />
-          <Autocomplete
-            options={accounts}
-            getOptionLabel={(option) => option.account_name || ''}
-            isOptionEqualToValue={(option, value) => option._id === value._id}
-            onChange={(event, value) => {
-              setPlanDetails((prevDetails) => ({
-                ...prevDetails,
-                accountId: value ? value._id : '',
-                accountName: value ? value.account_name : '',
-                brandId: value ? value.brand_id : '',
-              }));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Account Name *"
-                error={!!errors.accountName}
-                helperText={errors.accountName}
-              />
-            )}
-          />
-          <TextField
-            margin="dense"
-            label="Description"
-            name="description"
-            fullWidth
-            value={planDetails.description}
-            onChange={handleInputChange}
-          />
-          <TextField
-            margin="dense"
-            label="Budget *"
-            name="sellingPrice"
-            fullWidth
-            value={planDetails.sellingPrice}
-            onChange={handleInputChange}
-            error={!!errors.sellingPrice}
-            helperText={errors.sellingPrice}
-          />
-          <Autocomplete
-            options={searchInput ? globalFilteredUsers : salesUsers}
-            getOptionLabel={(option) => option.user_name || ''}
-            isOptionEqualToValue={(option, value) => option._id === value._id}
-            onInputChange={(event, value) => setSearchInput(value)}
-            onChange={(event, value) => {
-              setPlanDetails((prevDetails) => ({
-                ...prevDetails,
-                salesExecutiveId: value ? value._id : '',
-                salesExecutiveName: value ? value.user_name : '',
-              }));
-            }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Sales Executive *"
-                error={!!errors.salesExecutiveId}
-                helperText={errors.salesExecutiveId}
-              />
-            )}
-          />
+          <div
+            className="thm_form pt8 d-flex flex-column rowGap12"
+            style={{ width: '30rem' }}
+          >
+            <TextField
+              className="mb16"
+              margin="dense"
+              label="Plan Name *"
+              name="planName"
+              fullWidth
+              value={planDetails.planName}
+              onChange={handleInputChange}
+              error={!!errors.planName}
+              helperText={errors.planName}
+            />
+            <Autocomplete
+              options={accounts}
+              getOptionLabel={(option) => option.account_name || ''}
+              isOptionEqualToValue={(option, value) =>
+                option._id === value?._id
+              }
+              defaultValue={
+                accounts.find(
+                  (acc) => acc.account_name === planDetails.accountName
+                ) || null
+              } // Set the default value correctly
+              onChange={(event, value) => {
+                setPlanDetails((prevDetails) => ({
+                  ...prevDetails,
+                  accountId: value ? value._id : '',
+                  accountName: value ? value.account_name : '',
+                  brandId: value ? value.brand_id : '',
+                }));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Account Name *"
+                  error={!!errors.accountName}
+                  helperText={errors.accountName}
+                />
+              )}
+            />
 
-          <TextField
-            margin="dense"
-            label="Brief"
-            name="brief"
-            fullWidth
-            value={planDetails.brief}
-            onChange={handleInputChange}
-          />
+            <TextField
+              margin="dense"
+              label="Description"
+              name="description"
+              fullWidth
+              value={planDetails.description}
+              onChange={handleInputChange}
+            />
+            <TextField
+              margin="dense"
+              label="Budget *"
+              name="sellingPrice"
+              fullWidth
+              value={planDetails.sellingPrice}
+              onChange={handleInputChange}
+              error={!!errors.sellingPrice}
+              helperText={errors.sellingPrice}
+            />
+            <Autocomplete
+              options={searchInput ? globalFilteredUsers : salesUsers}
+              getOptionLabel={(option) => option.user_name || ''}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
+              onInputChange={(event, value) => setSearchInput(value)}
+              onChange={(event, value) => {
+                setPlanDetails((prevDetails) => ({
+                  ...prevDetails,
+                  salesExecutiveId: value ? value._id : '',
+                  salesExecutiveName: value ? value.user_name : '',
+                }));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Sales Executive *"
+                  error={!!errors.salesExecutiveId}
+                  helperText={errors.salesExecutiveId}
+                />
+              )}
+            />
+
+            <TextField
+              margin="dense"
+              label="Brief"
+              name="brief"
+              fullWidth
+              value={planDetails.brief}
+              onChange={handleInputChange}
+            />
+          </div>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button className="btn cmnbtn btn-danger" onClick={handleCloseDialog}>
+            Cancel
+          </Button>
           <Button
+            className="btn cmnbtn btn-primary"
             onClick={handleFormSubmit}
             variant="contained"
             disabled={isSubmitDisabled}
@@ -541,42 +587,42 @@ function PlanHome() {
           </Button>
         </DialogActions>
       </Dialog>
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <div className="flexCenter colGap8">
-            <Link
-              onClick={handlePlanMaking}
-              // to={`/admin/pms-page-master`}
-              className="btn cmnbtn btn_sm btn-outline-primary"
-            >
-              Create Plan <AddIcon />
-            </Link>
-          </div>
-        </div>
-      </div>
-      <div className="tabs">
+
+      {/* <div className="tabs">
         <button
-          className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab1')}
+          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
         >
           Overview
         </button>
-
         <button
-          className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'}
-          onClick={() => setActiveTab('Tab3')}
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
         >
           Plan Pricing
         </button>
-      </div>
+      </div> */}
+
       <div className="card">
-        <div className="card-body p0">
+        <div className="card-header flexCenterBetween">
+          <h5 className="card-title">Plan Overview</h5>
+          <div className="flexCenter colGap8">
+            <Link onClick={handlePlanMaking}>
+              <button className="btn cmnbtn btn-primary btn_sm">
+                Create Plan <AddIcon />
+              </button>
+            </Link>
+            <button className="btn cmnbtn btn-primary btn_sm">
+              Plan Pricing
+            </button>
+          </div>
+        </div>
+        <div className="card-body p0 noCardHeader">
           <div className="data_tbl thm_table table-responsive">
             {activeTab === 'Tab1' && (
               <View
                 isLoading={loading}
                 columns={columns}
-                title={'Plan Overview'}
                 data={planRows?.reverse()}
                 pagination={[100, 200]}
                 tableName={'PlanMakingDetails'}

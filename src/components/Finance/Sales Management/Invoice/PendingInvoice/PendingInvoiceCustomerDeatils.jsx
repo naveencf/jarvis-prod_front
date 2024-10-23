@@ -28,10 +28,9 @@ const getFileIcon = (fileName) => {
 
 const PendingInvoiceCustomerDeatils = () => {
   const { id } = useParams();
-  const { toastAlert } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const [gstNumClick, setGSTNumClick] = useState([]);
   const [singleAccountData, setSingleAccountData] = useState([]);
-  // const [loading, setLoading] = useState(true);
 
   const gstApiToken =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
@@ -46,12 +45,10 @@ const PendingInvoiceCustomerDeatils = () => {
         },
       })
       .then((res) => {
-        console.log(res);
         const matchedData = res?.data?.data?.filter(
           (overview) =>
             overview.document_master_id == "665dbc0d1df407940c078fd5"
         );
-        console.log(matchedData, "matchedData--->>");
         setSingleAccountData(matchedData);
       })
       .catch((error) => console.error("Error fetching data:", error));
@@ -62,29 +59,91 @@ const PendingInvoiceCustomerDeatils = () => {
   }, []);
 
   const handleGSTNumberClick = async (data) => {
-    console.log(data?.document_no?.trim(),"data-->>-->>>")
+    const gstNumber = data?.document_no?.trim();
 
-    const payload = {
-      flag: 2,
-      gstNo: data?.document_no?.trim(),
+    const flag1Payload = {
+      flag: 1,
+      gstNo: gstNumber,
     };
 
-    await axios
-      .post(`https://insights.ist:8080/api/v1/get_gst_details`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${gstApiToken}`,
-        },
-      })
-      .then((res) => {
-        setGSTNumClick(res?.data?.data);
-      })
-      .catch((error) => {
-        console.log(error, "ERROR---------------");
-      });
+    const flag2Payload = {
+      flag: 2,
+      gstNo: gstNumber,
+    };
+
+    try {
+      const flag1Response = await axios.post(
+        `https://insights.ist:8080/api/v1/get_gst_details`,
+        flag1Payload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${gstApiToken}`,
+          },
+        }
+      );
+      const flag1ResponseData = flag1Response?.data?.data;
+
+      if (flag1ResponseData) {
+        const gstArray = [
+          {
+            trade_name: flag1ResponseData?.trade_name,
+            legal_business_name: flag1ResponseData?.legal_business_name,
+            constitution_of_business:
+              flag1ResponseData?.constitution_of_business,
+            principal_place_of_business:
+              flag1ResponseData?.principal_place_of_business,
+            gstin: flag1ResponseData?.gstin,
+          },
+        ];
+        setGSTNumClick(gstArray);
+        toastAlert("GST Detail Processed Sucessfully");
+      } else {
+        toastError("Failed to fetch GST details");
+      }
+    } catch (error) {
+      try {
+        const flag2Response = await axios.post(
+          `https://insights.ist:8080/api/v1/get_gst_details`,
+          flag2Payload,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${gstApiToken}`,
+            },
+          }
+        );
+
+        const flag2ResponseData =
+          flag2Response?.data?.data?.enrichment_details?.online_provider
+            ?.details;
+
+        if (flag2ResponseData) {
+          const gstArray = [
+            {
+              trade_name: flag2ResponseData.trade_name?.value || "",
+              legal_business_name: flag2ResponseData.legal_name?.value || "",
+              constitution_of_business:
+                flag2ResponseData.constitution?.value || "",
+              principal_place_of_business:
+                // flag2ResponseData.primary_address?.value ||
+                "",
+              gstin: flag2ResponseData.gstin?.value || "",
+            },
+          ];
+          setGSTNumClick(gstArray);
+          toastAlert(
+            "GST details processed successfully, but this API could not provide the address"
+          );
+        } else {
+          toastAlert("Failed to fetch GST details");
+        }
+      } catch (flag2Error) {
+        toastAlert("Failed to fetch both the GST details api");
+      }
+    }
   };
 
-  console.log("gstNumClick:", gstNumClick);
   return (
     <div>
       <FormContainer title="Account Detail" submitButton={false}>
@@ -239,7 +298,7 @@ const PendingInvoiceCustomerDeatils = () => {
             </div>
           </section>
         ))}
-        {gstNumClick && Object.keys(gstNumClick).length > 0 && (
+        {gstNumClick?.map((data) => (
           <section id="DetailView">
             <div className="cardAccordion">
               <Accordion>
@@ -261,13 +320,8 @@ const PendingInvoiceCustomerDeatils = () => {
                           <ul className="saleAccDetailInfo">
                             <li>
                               <span> Trade Name</span>
-                              {gstNumClick?.enrichment_details?.online_provider
-                                ?.details?.trade_name?.value || "N/A"}
+                              {data?.trade_name || "N/A"}
                             </li>
-                            {/* <li>
-                        <span>Descriptions:</span>
-                        {SingleAccount?.description || "N/A"}
-                      </li> */}
                           </ul>
                         </div>
                       </div>
@@ -281,8 +335,7 @@ const PendingInvoiceCustomerDeatils = () => {
                           <ul className="saleAccDetailInfo">
                             <li>
                               <span> Legal Business Name</span>
-                              {gstNumClick?.enrichment_details?.online_provider
-                                ?.details?.legal_name?.value || "N/A"}
+                              {data?.legal_business_name || "N/A"}
                             </li>
                           </ul>
                         </div>
@@ -300,8 +353,7 @@ const PendingInvoiceCustomerDeatils = () => {
                           <ul className="saleAccDetailInfo">
                             <li>
                               <span>Constitution OF Business:</span>
-                              {gstNumClick?.enrichment_details?.online_provider
-                                ?.details?.constitution?.value || "N/A"}
+                              {data?.constitution_of_business || "N/A"}
                             </li>
                           </ul>
                         </div>
@@ -310,26 +362,20 @@ const PendingInvoiceCustomerDeatils = () => {
                     {/* )} */}
                   </div>
                   <div className="row">
-                    <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
+                    <div className="col-xl-12 col-lg-12 col-md-12 col-sm-24 col-24">
                       <div className="card saleAccDetailCard">
                         <div className="card-header">
                           <h4 className="card-title">Address</h4>
                         </div>
                         <div className="card-body">
                           <ul className="saleAccDetailInfo">
-                            {/* <li>
-                        <span>Connected Office:</span>
-                        {SingleAccountSalesBooking?.connected_office || "N/A"}
-                      </li> */}
                             <li>
                               <span>Address:</span>
-                              {gstNumClick?.enrichment_details?.online_provider
-                                ?.details?.primary_address?.value || "N/A"}
+                              {data?.principal_place_of_business || "N/A"}
                             </li>
                             <li>
                               <span>GST In:</span>
-                              {gstNumClick?.enrichment_details?.online_provider
-                                ?.details?.gstin?.value || "N/A"}
+                              {data?.gstin || "N/A"}
                             </li>
                           </ul>
                         </div>
@@ -340,7 +386,7 @@ const PendingInvoiceCustomerDeatils = () => {
               </Accordion>
             </div>
           </section>
-        )}
+        ))}
       </FormContainer>
     </div>
   );

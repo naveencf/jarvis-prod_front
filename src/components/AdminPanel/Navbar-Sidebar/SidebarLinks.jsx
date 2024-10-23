@@ -811,24 +811,24 @@ const SidebarLinks = () => {
                       >
                         <i className="bi bi-dot"></i> Pending
                       </NavLink>{" "}
-                      <NavLink
+                      {/* <NavLink
                         className="collapse-item"
                         to="/admin/exeexecution/done"
                       >
                         <i className="bi bi-dot"></i> Executed
-                      </NavLink>{" "}
+                      </NavLink>{" "} */}
                       {/* <NavLink
                           className="collapse-item"
                           to="/admin/exeexecution/accepted"
                         >
                           In Progress
                         </NavLink>{" "} */}
-                      <NavLink
+                      {/* <NavLink
                         className="collapse-item"
                         to="/admin/exeexecution/rejected"
                       >
                         <i className="bi bi-dot"></i> Rejected
-                      </NavLink>
+                      </NavLink> */}
                     </div>
                   </div>
                 </li>
@@ -1762,14 +1762,13 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
-   
               {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
                 <NavLink
-                className="collapse-item"
-                to="/admin/pms-inventory-dashboard"
-              >
-                <i className="bi bi-dot"></i>Dashboard
-              </NavLink>
+                  className="collapse-item"
+                  to="/admin/pms-inventory-dashboard"
+                >
+                  <i className="bi bi-dot"></i>Dashboard
+                </NavLink>
               )}
               <NavLink
                 className="collapse-item"
@@ -1787,13 +1786,13 @@ const SidebarLinks = () => {
               ) : (
                 ""
               )}
-               {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
-              <NavLink
-                className="collapse-item"
-                to="/admin/pms-bulk-vendor-overview"
-              >
-                <i className="bi bi-dot"></i>Bulk Vendor
-              </NavLink>
+              {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pms-bulk-vendor-overview"
+                >
+                  <i className="bi bi-dot"></i>Bulk Vendor
+                </NavLink>
               )}
               {/* {contextData &&
               contextData[0] &&

@@ -20,6 +20,7 @@ import jsPDF from "jspdf";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import FormContainer from "../../../AdminPanel/FormContainer";
+import View from "../../../AdminPanel/Sales/Account/View/View";
 
 export default function GSThold() {
   const { toastAlert } = useGlobalContext();
@@ -51,8 +52,11 @@ export default function GSThold() {
   const [phpData, setPhpData] = useState([]);
   const [dateFilter, setDateFilter] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const callApi = () => {
+    setIsLoading(true);
     axios.get(baseUrl + "phpvendorpaymentrequest").then((res) => {
       setNodeData(res.data.modifiedData);
       const x = res.data.modifiedData;
@@ -76,6 +80,7 @@ export default function GSThold() {
                 item2.gst_Hold_Bool == true
             );
           });
+          setIsLoading(false);
           setData(u);
           setFilterData(u);
           setPendingRequestCount(u.length);
@@ -363,7 +368,7 @@ export default function GSThold() {
     // },
   ];
 
-  // unique vender column :-
+  // unique vender column :-renderRowCell
   const uniqueVendorColumns = [
     {
       field: "S.NO",
@@ -561,28 +566,20 @@ export default function GSThold() {
 
   const columns = [
     {
-      field: "s_no",
-      headerName: "S.NO",
+      key: "s_no",
+      name: "S.NO",
       width: 90,
-      editable: false,
-      valueGetter: (params) => filterData.indexOf(params.row) + 1,
-      renderCell: (params) => {
-        const rowIndex = filterData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      renderRowCell: (row, index) => index + 1,
     },
     {
-      field: "invc_img",
-      headerName: "Invoice Image",
-      renderCell: (params) => {
+      key: "invc_img",
+      name: "Invoice Image",
+      renderRowCell: (row) => {
         // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.invc_img
-          .split(".")
-          .pop()
-          .toLowerCase();
+        const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
         const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+        const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
         return isPdf ? (
           <>
             <iframe
@@ -623,82 +620,68 @@ export default function GSThold() {
       width: 250,
     },
     {
-      field: "request_date",
-      headerName: "Requested Date",
+      key: "request_date",
+      name: "Requested Date",
       width: 150,
-      renderCell: (params) => {
-        new Date(params.row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.request_date).toLocaleTimeString("en-IN");
+      renderRowCell: (row) =>
+        moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+    },
+    {
+      key: "name",
+      name: "Requested By",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.name;
       },
     },
     {
-      field: "name",
-      headerName: "Requested By",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.name;
-      },
-    },
-    {
-      field: "vendor_name",
-      headerName: "Vendor Name",
+      key: "vendor_name",
+      name: "Vendor Name",
       width: 200,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         return (
           <div style={{ display: "flex", alignItems: "center" }}>
             {/* Hold for confirmation of sourabh sir */}
             <Button
               disabled={
-                params.row.payment_details
-                  ? !params.row.payment_details.length > 0
-                  : true
+                row?.payment_details ? !row?.payment_details.length > 0 : true
               }
-              onClick={() => handleOpenBankDetail(params.row)}
+              onClick={() => handleOpenBankDetail(row)}
             >
               <AccountBalanceIcon style={{ fontSize: "25px" }} />
             </Button>
             <div
               style={{ cursor: "pointer", marginRight: "20px" }}
-              onClick={() => handleOpenSameVender(params.row.vendor_name)}
+              onClick={() => handleOpenSameVender(row?.vendor_name)}
             >
-              {params.row.vendor_name}
+              {row?.vendor_name}
             </div>
           </div>
         );
       },
     },
     {
-      field: "page_name",
-      headerName: "Page Name",
+      key: "page_name",
+      name: "Page Name",
       width: 150,
     },
     {
-      field: "total_paid",
-      headerName: "Total Paid",
+      key: "total_paid",
+      name: "Total Paid",
       width: 150,
-      valueGetter: (params) => {
-        const totalPaid = nodeData
-          .filter(
-            (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-          )
-          .reduce((acc, item) => acc + +item.payment_amount, 0);
-        return totalPaid;
-      },
-      renderCell: (params) => {
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
+      renderRowCell: (row) => {
+        return nodeData.filter((e) => e.vendor_name === row?.vendor_name)
           .length > 0 ? (
           <span className="row ml-2 ">
             <h5
-              onClick={() => handleOpenPaymentHistory(params.row, "TP")}
+              onClick={() => handleOpenPaymentHistory(row, "TP")}
               style={{ cursor: "pointer" }}
-              className="fs-5 col-3 pointer font-sm lead text-decoration-underline text-black-50"
+              className="pointer font-sm lead text-decoration-underline text-black-50"
             >
               {/* Total Paid */}
               {nodeData
                 .filter(
-                  (e) =>
-                    e.vendor_name === params.row.vendor_name && e.status == 1
+                  (e) => e.vendor_name === row?.vendor_name && e.status == 1
                 )
                 .reduce((acc, item) => acc + +item.payment_amount, 0)}
             </h5>
@@ -706,7 +689,7 @@ export default function GSThold() {
         ) : (
           <h5
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+            className="pointer font-sm lead  text-decoration-underline text-black-50"
           >
             0
           </h5>
@@ -714,10 +697,10 @@ export default function GSThold() {
       },
     },
     {
-      field: "F.Y",
-      headerName: "F.Y",
+      key: "F.Y",
+      name: "F.Y",
       width: 150,
-      valueGetter: (params) => {
+      renderRowCell: (row) => {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
@@ -735,7 +718,7 @@ export default function GSThold() {
           return (
             paymentDate >= startDate &&
             paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
+            e.vendor_name === row?.vendor_name &&
             e.status !== 0 &&
             e.status !== 2
           );
@@ -794,13 +777,13 @@ export default function GSThold() {
       // },
     },
     {
-      field: "Pan Img",
-      headerName: "Pan Img",
-      valueGetter: (params) =>
-        params?.row?.pan_img.includes("uploads") ? params?.row?.pan_img : "NA",
-      renderCell: (params) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${params?.row?.pan_img}`;
-        return params?.row?.pan_img?.includes("uploads") ? (
+      key: "Pan Img",
+      name: "Pan Img",
+      valueGetter: (row) =>
+        row?.pan_img.includes("uploads") ? row?.pan_img : "NA",
+      renderRowCell: (row) => {
+        const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+        return row?.pan_img?.includes("uploads") ? (
           <img
             onClick={() => {
               setOpenImageDialog(true);
@@ -816,121 +799,107 @@ export default function GSThold() {
       },
     },
     {
-      field: "pan",
-      headerName: "PAN",
+      key: "pan",
+      name: "PAN",
       width: 200,
     },
     {
-      field: "gst",
-      headerName: "GST",
+      key: "gst",
+      name: "GST",
       width: 200,
     },
     {
-      field: "remark_audit",
-      headerName: "Remark",
+      key: "remark_audit",
+      name: "Remark",
       width: 150,
-      renderCell: (params) => {
-        return params.row.remark_audit;
+      renderRowCell: (row) => {
+        return row?.remark_audit;
       },
     },
     {
-      field: "priority",
-      headerName: "Priority",
+      key: "priority",
+      name: "Priority",
       width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
+      renderRowCell: (row) => {
+        return row?.priority;
       },
     },
     {
-      field: "request_amount",
-      headerName: "Requested Amount",
+      key: "request_amount",
+      name: "Requested Amount",
       width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.request_amount}</p>;
       },
     },
     {
-      field: "base_amount",
-      headerName: "Base Amount",
+      key: "base_amount",
+      name: "Base Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount ? (
-          <p> &#8377; {params.row.base_amount}</p>
+      renderRowCell: (row) => {
+        return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
+      },
+    },
+    {
+      key: "gst_amount",
+      name: "GST Amount",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.gst_amount ? <p>&#8377; {row?.gst_amount}</p> : "NA";
+      },
+    },
+    {
+      key: "gst_hold_amount",
+      name: "GST Hold Amount",
+      width: 150,
+      renderRowCell: (row) => {
+        return row?.gst_hold_amount ? (
+          <p>&#8377; {row?.gst_hold_amount}</p>
         ) : (
           "NA"
         );
       },
     },
     {
-      field: "gst_amount",
-      headerName: "GST Amount",
+      key: "tds_deduction",
+      name: "TDS Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount ? (
-          <p>&#8377; {params.row.gst_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return row?.tds_deduction ? <p>&#8377; {row?.tds_deduction}</p> : "NA";
       },
     },
     {
-      field: "gst_hold_amount",
-      headerName: "GST Hold Amount",
+      key: "outstandings",
+      name: "OutStanding ",
       width: 150,
-      renderCell: (params) => {
-        return params.row.gst_hold_amount ? (
-          <p>&#8377; {params.row.gst_hold_amount}</p>
-        ) : (
-          "NA"
-        );
+      renderRowCell: (row) => {
+        return <p> &#8377; {row?.outstandings}</p>;
       },
     },
     {
-      field: "tds_deduction",
-      headerName: "TDS Amount",
+      key: "payment_amount",
+      name: "Payment Amount",
       width: 150,
-      renderCell: (params) => {
-        return params.row.tds_deduction ? (
-          <p>&#8377; {params.row.tds_deduction}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "outstandings",
-      headerName: "OutStanding ",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.outstandings}</p>;
-      },
-    },
-    {
-      filed: "payment_amount",
-      headerName: "Payment Amount",
-      width: 150,
-      renderCell: (params) => {
+      renderRowCell: (row) => {
         const paymentAmount = nodeData.filter(
-          (e) => e.request_id == params.row.request_id
+          (e) => e.request_id == row?.request_id
         )[0]?.payment_amount;
         return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
       },
     },
     {
-      field: "aging",
-      headerName: "Aging",
+      key: "aging",
+      name: "Aging",
       width: 150,
-      renderCell: (params) => {
-        return (
-          <p> {calculateDays(params.row.request_date, new Date())} Days</p>
-        );
+      renderRowCell: (row) => {
+        return <p> {calculateDays(row.request_date, new Date())} Days</p>;
       },
     },
     {
-      field: "gst_Hold_Bool",
-      headerName: "GST Hold",
-      renderCell: (params) => {
-        return params.row.gstHold == 1 ? "Yes" : "No";
+      key: "gst_Hold_Bool",
+      name: "GST Hold",
+      renderRowCell: (row) => {
+        return row.gstHold == 1 ? "Yes" : "No";
       },
     },
   ];
@@ -1338,24 +1307,15 @@ export default function GSThold() {
               Download PDF Zip
             </Button>
           )}
-          <DataGrid
-            rows={filterData}
+          <View
             columns={columns}
-            pageSize={5}
-            rowsPerPageOptions={[5]}
-            disableSelectionOnClick
-            checkboxSelection
-            slots={{ toolbar: GridToolbar, columnMenu: CustomColumnMenu }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
-            }}
-            getRowId={(row) => row?.request_id}
-            onRowSelectionModelChange={(rowIds) => {
-              handleRowSelectionModelChange(rowIds);
-            }}
-            rowSelectionModel={rowSelectionModel}
+            data={filterData}
+            isLoading={isLoading}
+            title={"GST Hold"}
+            rowSelectable={true}
+            pagination={[100, 200]}
+            tableName={"finance-gst-hold"}
+            selectedData={setSelectedData}
           />
           {openImageDialog && (
             <ImageView

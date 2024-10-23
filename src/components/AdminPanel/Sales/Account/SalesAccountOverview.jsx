@@ -510,6 +510,8 @@ const SalesAccountOverview = () => {
             marginRight: "-50%",
             transform: "translate(-50%, -50%)",
             background: "#fff",
+            zIndex: "100000",
+
 
           },
         }}

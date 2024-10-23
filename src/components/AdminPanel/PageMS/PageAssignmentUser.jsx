@@ -1,43 +1,24 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
+import { useState } from "react";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link } from "react-router-dom";
-import jwtDecode from "jwt-decode";
 import View from "../Sales/Account/View/View";
 import AddIcon from "@mui/icons-material/Add";
 import { useGlobalContext } from "../../../Context/Context";
 import PageAssignmentUpdate from "./PageAssignmentUpdate";
 import { useGetAllCatAssignmentQuery } from "../../Store/API/Inventory/CatAssignment";
-
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import formatString from "../../../utils/formatString";
 
 const PageAssignmentUser = () => {
   const { toastAlert } = useGlobalContext();
   const { data: authData, isLoading } = useGetAllCatAssignmentQuery();
-  
-
-  // const [user, setUser] = useState([]);
-  // const [authData, setAuthData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const [openCategoryModal, setOpenCategoryModal] = useState(false); // State for category modal
   const [selectedRowData, setSelectedRowData] = useState(null);
+  const [categories, setCategories] = useState([]); // State to store categories
 
-  // const storedToken = sessionStorage.getItem("token");
-  // const decodedToken = jwtDecode(storedToken);
-  // const token = sessionStorage.getItem("token");
-
-  // const getData = () => {
-  //   axios.get(baseUrl + "v1/get_all_page_cat_assignment").then((res) => {
-  //     setAuthData(res.data.data);
-  //     console.log(res.data.data,"res.data.data",authData)
-  //   });
-  // };
-
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-
-  // Function to group data by user and their respective page categories
   const groupByPageName = (data) => {
     const groupedData = {};
 
@@ -77,6 +58,16 @@ const PageAssignmentUser = () => {
     setSelectedRowData(null);
   };
 
+  const handleOpenCategoryModal = (categories) => {
+    setCategories(categories); // Set the selected categories
+    setOpenCategoryModal(true); // Open the modal
+  };
+
+  const handleCloseCategoryModal = () => {
+    setOpenCategoryModal(false); // Close the modal
+    setCategories([]); // Clear the selected categories
+  };
+
   // Defining columns for the table
   const dataGridColumns = [
     {
@@ -95,7 +86,16 @@ const PageAssignmentUser = () => {
       key: "page_categories",
       name: "Page Categories",
       width: 300,
-      renderRowCell: (row) => row.page_categories.join(", "), 
+      renderRowCell: (row) => {
+        return (
+          <button
+            className="btn cmnbtn btn_sm btn-outline-primary"
+            onClick={() => handleOpenCategoryModal(row.page_categories)}
+          >
+            {row.page_categories.length}
+          </button>
+        );
+      },
     },
     {
       key: "Action",
@@ -124,6 +124,45 @@ const PageAssignmentUser = () => {
         onClose={handleCloseModal}
         row={selectedRowData}
       />
+
+      {/* Category Modal */}
+      <Modal open={openCategoryModal} onClose={handleCloseCategoryModal}>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: 400,
+            bgcolor: "background.paper",
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          <h5>Page Categories</h5>
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">S.No.</th>
+                <th scope="col">Category</th>
+              </tr>
+            </thead>
+            {categories.map((category, index) => (
+              <tbody key={index}>
+                <tr>
+                  <th scope="row">{index + 1}</th>
+                  <td>{formatString(category)}</td>
+
+                </tr>
+              </tbody>
+            ))}
+          </table>
+
+          <button onClick={handleCloseCategoryModal} className="btn cmnbtn btn-outline-primary">
+            Close
+          </button>
+        </Box>
+      </Modal>
 
       <div className="content">
         <div className="">
