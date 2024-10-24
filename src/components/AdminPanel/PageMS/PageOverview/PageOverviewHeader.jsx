@@ -99,6 +99,54 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
     sortField,
     sortOrder,
   ]);
+  // Utility function to count matching pages based on filter
+  const getCount = (list, filterKey, value) => {
+    return (
+      list?.filter(
+        (page) => page[filterKey]?.toLowerCase() === value?.toLowerCase()
+      ).length || 0
+    );
+  };
+
+  const subCategoryOptionsWithCount = subCategoryData.map((res) => {
+    const count = getCount(
+      pageList,
+      "page_sub_category_name",
+      res.page_sub_category
+    );
+    return `${formatString(res.page_sub_category)} (${count})`;
+  });
+
+  const platformOptionsWithCount = platformData.map((res) => {
+    const count = getCount(pageList, "platform_name", res.platform_name);
+    return `${formatString(res.platform_name)} (${count})`;
+  });
+
+  const activenessOptionsWithCount = activenessOptions.map((res) => {
+    const count = getCount(pageList, "page_activeness", res.label);
+    return `${formatString(res.label)} (${count})`;
+  });
+  const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
+    const count = getCount(pageList, "ownership_type", res); // Pass the string directly
+    return `${formatString(res)} (${count})`; // Format the result with the count
+  });
+  // console.log(profileDataOptions,platformData)
+  const profileDataOptionsWithCount = profileDataOptions.map((res) => {
+    const count = getCount(
+      pageList,
+      "page_profile_type_name",
+      res.profile_type
+    );
+    return `${formatString(res.profile_type)} (${count})`;
+  });
+
+  // Helper function to extract just the label (before parentheses)
+  const extractLabel = (optionWithCount) => {
+    if (optionWithCount) {
+      return optionWithCount.split(" (")[0];
+    }
+    return null;
+  };
 
   return (
     <div className="card">
@@ -181,13 +229,14 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
                 )}
               />
             </div>
+
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={subCategoryFilter}
-                onChange={(event, newValue) => setSubCategoryFilter(newValue)}
-                options={subCategoryData?.map((res) =>
-                  formatString(res.page_sub_category)
-                )}
+                onChange={(event, newValue) =>
+                  setSubCategoryFilter(extractLabel(newValue))
+                }
+                options={subCategoryOptionsWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Subcategory" />
                 )}
@@ -196,10 +245,10 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={profileTypeFilter}
-                onChange={(event, newValue) => setProfileTypeFilter(newValue)}
-                options={profileDataOptions?.map((res) =>
-                  formatString(res.profile_type)
-                )}
+                onChange={(event, newValue) =>
+                  setProfileTypeFilter(extractLabel(newValue))
+                }
+                options={profileDataOptionsWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Profile Type" />
                 )}
@@ -208,10 +257,10 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={platformFilter}
-                onChange={(event, newValue) => setPlatformFilter(newValue)}
-                options={platformData?.map((res) =>
-                  formatString(res.platform_name)
-                )}
+                onChange={(event, newValue) =>
+                  setPlatformFilter(extractLabel(newValue))
+                }
+                options={platformOptionsWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Platform" />
                 )}
@@ -221,18 +270,23 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={ownershipFilter}
-                onChange={(event, newValue) => setOwnershipFilter(newValue)}
-                options={["Vendor", "Own", "PatnerShip"]}
+                onChange={(event, newValue) =>
+                  setOwnershipFilter(extractLabel(newValue))
+                }
+                options={ownershipWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Ownership" />
                 )}
               />
             </div>
+
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={activenessFilter}
-                onChange={(event, newValue) => setActivenessFilter(newValue)}
-                options={activenessOptions.map((option) => option.label)}
+                onChange={(event, newValue) => {
+                  setActivenessFilter(extractLabel(newValue)); // Set only the label, not the count
+                }}
+                options={activenessOptionsWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Activeness" />
                 )}
