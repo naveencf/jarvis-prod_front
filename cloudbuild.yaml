@@ -37,7 +37,10 @@ steps:
     args:
       - '-c'
       - |
-        gcloud compute ssh icreativefuel@node-prod-instance --zone=us-central1-a --command="mv /var/www/html/dist/* /var/www/html/ && rm -rf /var/www/html/dist/"
+        gcloud compute ssh icreativefuel@node-prod-instance --zone=us-central1-a --command="sudo rsync -a /var/www/html/dist/ /var/www/html/ && rm -rf /var/www/html/dist/"
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+
+# sudo rsync -a /var/www/html/dist/ /var/www/html/ &&

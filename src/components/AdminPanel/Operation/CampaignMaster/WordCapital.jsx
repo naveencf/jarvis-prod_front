@@ -2,7 +2,7 @@
     let formattedString = s?.replace(/^_+/, "");
     if (formattedString) {
       formattedString = formattedString
-        .split(" ")
+        .split("_")
         .map((word) => {
           return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })

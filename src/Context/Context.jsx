@@ -1,15 +1,15 @@
-import { createContext, useEffect, useContext, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
-import { baseUrl } from "../utils/config";
+import { createContext, useEffect, useContext, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios';
+import { baseUrl } from '../utils/config';
 
 const AppContext = createContext();
 const AppProvider = ({ children }) => {
   const [showAlert, setShowAlert] = useState(false);
-  const [alertText, setAlertText] = useState("");
+  const [alertText, setAlertText] = useState('');
   const [data, setData] = useState([]);
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState('');
 
   // Get All Categroy Data API State here
   const [categoryDataContext, setCategoryData] = useState([]);
@@ -30,20 +30,20 @@ const AppProvider = ({ children }) => {
   };
 
   const getAllCategoryContextFunction = () => {
-    axios.get(baseUrl + "get_all_asset_category").then((res) => {
+    axios.get(baseUrl + 'get_all_asset_category').then((res) => {
       setCategoryData(res?.data.data.asset_categories);
     });
   };
   async function getBrandData() {
-    const res = await axios.get(baseUrl + "get_all_asset_brands");
+    const res = await axios.get(baseUrl + 'get_all_asset_brands');
     setBrandDataContext(res?.data.data);
   }
   async function getAssetData() {
-    const res = await axios.get(baseUrl + "get_all_sims");
+    const res = await axios.get(baseUrl + 'get_all_sims');
     setAssetDataContext(res?.data.data);
   }
   async function getUserAPIData() {
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + 'get_all_users').then((res) => {
       setUsersContextData(res?.data.data);
     });
   }

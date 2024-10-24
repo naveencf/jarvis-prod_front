@@ -10,6 +10,10 @@ import * as XLSX from "xlsx";
       JobType: data.job_type,
       Email: data.user_email_id,
       Contact: data.user_contact_no,
+      Address:data.permanent_address,
+      City:data.permanent_city,
+      State:data.permanent_state,
+      PinCode:data.permanent_pin_code
     }));
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();
