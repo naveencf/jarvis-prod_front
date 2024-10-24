@@ -17715,6 +17715,21 @@ col,
   border: 0;
 }
 
+.ReactModal__Overlay {
+  background-color: rgb(18 17 17 / 75%) !important;
+  z-index: 10000;
+
+  .ReactModal__Content {
+    background-color: var(--body-bg) !important;
+
+  }
+
+  .ReactModal__Content::-webkit-scrollbar {
+    display: none;
+  }
+
+}
+
 
 /* Anmol CSS Start */
 
@@ -19863,10 +19878,6 @@ hr:not([size]) {
   }
 }
 
-.card.tableCard {
-  margin: 0;
-}
-
 .card.tableCard .card-header {
   border-bottom: none;
 }
@@ -21263,4 +21274,102 @@ hr:not([size]) {
   line-height: 18px;
   padding: 6px 12px;
   border-radius: 4px;
+}
+
+.planLeftSideWrapper {
+  background-color: var(--sidebar-bg);
+  width: 260px;
+  height: calc(100vh - 70px);
+  overflow: visible;
+  position: fixed;
+  z-index: 0;
+  top: 70px;
+  left: 0px;
+  bottom: 0;
+  transition: var(--transition);
+
+  .planLeftSideBody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px 0px;
+    padding: 0px 14px 14px;
+    height: calc(100vh - 129px);
+    overflow: scroll;
+
+    .planSmall {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--sidebar-sub-bg);
+      border: 1px solid #2e3753;
+      border-radius: var(--radiusM);
+
+      h6 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--sidemenu-text);
+        font-size: 13px;
+        line-height: 18px;
+        font-weight: 400;
+        padding: 10px 12px;
+        border-bottom: 1px solid #2e3753;
+
+        &:nth-last-child(1) {
+          border-bottom: none;
+        }
+      }
+    }
+  }
+
+  .planLeftSideFooter {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background-color: var(--sidebar-sub-bg);
+    border-top: 1px solid #2e3753;
+    padding: 12px 0px;
+    height: 64px;
+
+    .icon,
+    .icon-1 {
+      background-color: var(--sidebar-sub-bg);
+      border-color: #4f556c;
+      color: var(--white-text);
+
+      &:hover {
+        background-color: var(--body-sub-bg);
+        border-color: var(--body-sub-bg);
+        color: var(--sidebar-bg);
+
+        svg {
+          color: var(--sidebar-bg);
+        }
+      }
+
+      svg {
+        color: var(--white-text);
+      }
+    }
+  }
+}
+
+
+.planLeftSideBody::-webkit-scrollbar {
+  width: 0px;
+}
+
+.planLeftSideBody::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.planLeftSideBody::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.planLeftSideBody::-webkit-scrollbar-thumb:hover {
+  background: transparent;
 }
