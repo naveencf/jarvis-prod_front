@@ -54,6 +54,7 @@ import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
 import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
 import StatsOfOverview from "./PageOverview/StatsOfOverview";
 import PageEdit from "./PageEdit";
+import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
 const PageOverviewNew = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -92,41 +93,41 @@ const PageOverviewNew = () => {
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
-  const [pagequery,setPagequery] = useState("page_category_name=meme")
-  const [editMode,setEditMode] = useState(false)
-  const [editID,setEditID] = useState(null)
+  const [pagequery, setPagequery] = useState("page_category_name=meme")
+  const [editMode, setEditMode] = useState(false)
+  const [editID, setEditID] = useState(null)
 
-  
-//   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
-//   const { data: platData } = useGetPmsPlatformQuery();
-//   const platformData = platData?.data;
-//   const showPageHealthColumn = useSelector(
-//     (state) => state.PageOverview.showPageHelathColumn
-//   );
 
-//   const {
-//     data: pageCate,
-//     refetch: refetchPageCate,
-//     isLoading: isPageCateLoading,
-//   } = useGetAllPageCategoryQuery();
-//   const cat = pageCate?.data;
+  //   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
+  //   const { data: platData } = useGetPmsPlatformQuery();
+  //   const platformData = platData?.data;
+  //   const showPageHealthColumn = useSelector(
+  //     (state) => state.PageOverview.showPageHelathColumn
+  //   );
 
-//   const { data: subCategory } = useGetAllPageSubCategoryQuery();
-//   const subCat = subCategory?.data || [];
-//   const { data: vendor } = useGetAllVendorQuery();
-//   const vendorData = vendor;
-//   const { data: priceData, isLoading: isPriceLoading } =
-//     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
+  //   const {
+  //     data: pageCate,
+  //     refetch: refetchPageCate,
+  //     isLoading: isPageCateLoading,
+  //   } = useGetAllPageCategoryQuery();
+  //   const cat = pageCate?.data;
+
+  //   const { data: subCategory } = useGetAllPageSubCategoryQuery();
+  //   const subCat = subCategory?.data || [];
+  //   const { data: vendor } = useGetAllVendorQuery();
+  //   const vendorData = vendor;
+  //   const { data: priceData, isLoading: isPriceLoading } =
+  //     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID ,pagequery});
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
-//   const { data: pageStates, isLoading: isPagestatLoading } =
-//     useGetPageStateQuery();
-//   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-//   const { data: profileData } = useGetAllProfileListQuery();
+  //   const { data: pageStates, isLoading: isPagestatLoading } =
+  //     useGetPageStateQuery();
+  //   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
+  //   const { data: profileData } = useGetAllProfileListQuery();
 
   // Handle price type change
   const handlePriceTypeChange = (e) => {
@@ -164,7 +165,7 @@ const PageOverviewNew = () => {
 
     setNewFilterData(filteredData);
   };
-// console.log(allVendorWhats,platformData,"test")
+  // console.log(allVendorWhats,platformData,"test")
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
@@ -253,118 +254,118 @@ const PageOverviewNew = () => {
     setTableBoths(totalBoths);
   };
 
-//   useEffect(() => {
-//     if (pageList) {
-//       setVendorTypes(pageList);
-//       setFilterData(pageList);
-//       calculateAndSetTotals(pageList);
-//       setTabFilterData(pageList);
-//       // setNewFilterData(pageList);
-//     }
-//   }, [pageList]);
+  //   useEffect(() => {
+  //     if (pageList) {
+  //       setVendorTypes(pageList);
+  //       setFilterData(pageList);
+  //       calculateAndSetTotals(pageList);
+  //       setTabFilterData(pageList);
+  //       // setNewFilterData(pageList);
+  //     }
+  //   }, [pageList]);
 
-//   useEffect(() => {
-//     pageHealthToggleCheck();
-//   }, [isPageListLoading, isPagestatLoading, filterData]);
+  //   useEffect(() => {
+  //     pageHealthToggleCheck();
+  //   }, [isPageListLoading, isPagestatLoading, filterData]);
 
-//   useEffect(() => {
-//     if (userID && !contextData) {
-//       axios
-//         .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-//         .then((res) => {
-//           if (res.data[33].view_value === 1) {
-//             setContextData(true);
-//           }
-//           if (res.data[57].view_value === 1) {
-//             setPageUpdateAuth(true);
-//           }
-//           if (res.data[56].view_value === 1) {
-//             setPageStatsAuth(true);
-//           }
-//         });
-//     }
+  //   useEffect(() => {
+  //     if (userID && !contextData) {
+  //       axios
+  //         .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
+  //         .then((res) => {
+  //           if (res.data[33].view_value === 1) {
+  //             setContextData(true);
+  //           }
+  //           if (res.data[57].view_value === 1) {
+  //             setPageUpdateAuth(true);
+  //           }
+  //           if (res.data[56].view_value === 1) {
+  //             setPageStatsAuth(true);
+  //           }
+  //         });
+  //     }
 
-//     getData();
-//     // fetchWhatsAppLinks();
-//   }, []);
+  //     getData();
+  //     // fetchWhatsAppLinks();
+  //   }, []);
 
-//   useEffect(() => {
-//     if (pageList) {
-//       const pageCategoryCount = {};
-//       const categoryVendorMap = {};
-//       const categoryFollowerMap = {};
-//       const postMap = {};
-//       const storyMap = {};
+  //   useEffect(() => {
+  //     if (pageList) {
+  //       const pageCategoryCount = {};
+  //       const categoryVendorMap = {};
+  //       const categoryFollowerMap = {};
+  //       const postMap = {};
+  //       const storyMap = {};
 
-//       for (let i = 0; i < pageList?.length; i++) {
-//         const categoryId = pageList[i]?.page_category_id;
-//         const vendorId = pageList[i]?.vendor_id;
-//         const followers = pageList[i]?.followers_count || 0;
-//         const storys = pageList[i]?.story || 0;
-//         const posts = pageList[i]?.post || 0;
+  //       for (let i = 0; i < pageList?.length; i++) {
+  //         const categoryId = pageList[i]?.page_category_id;
+  //         const vendorId = pageList[i]?.vendor_id;
+  //         const followers = pageList[i]?.followers_count || 0;
+  //         const storys = pageList[i]?.story || 0;
+  //         const posts = pageList[i]?.post || 0;
 
-//         if (categoryId) {
-//           if (pageCategoryCount[categoryId]) {
-//             pageCategoryCount[categoryId] += 1;
-//           } else {
-//             pageCategoryCount[categoryId] = 1;
-//           }
+  //         if (categoryId) {
+  //           if (pageCategoryCount[categoryId]) {
+  //             pageCategoryCount[categoryId] += 1;
+  //           } else {
+  //             pageCategoryCount[categoryId] = 1;
+  //           }
 
-//           if (!categoryVendorMap[categoryId]) {
-//             categoryVendorMap[categoryId] = new Set();
-//           }
-//           if (vendorId) {
-//             categoryVendorMap[categoryId].add(vendorId);
-//           }
+  //           if (!categoryVendorMap[categoryId]) {
+  //             categoryVendorMap[categoryId] = new Set();
+  //           }
+  //           if (vendorId) {
+  //             categoryVendorMap[categoryId].add(vendorId);
+  //           }
 
-//           if (categoryFollowerMap[categoryId]) {
-//             categoryFollowerMap[categoryId] += followers;
-//           } else {
-//             categoryFollowerMap[categoryId] = followers;
-//           }
+  //           if (categoryFollowerMap[categoryId]) {
+  //             categoryFollowerMap[categoryId] += followers;
+  //           } else {
+  //             categoryFollowerMap[categoryId] = followers;
+  //           }
 
-//           if (storyMap[categoryId]) {
-//             storyMap[categoryId] += storys;
-//           } else {
-//             storyMap[categoryId] = storys;
-//           }
+  //           if (storyMap[categoryId]) {
+  //             storyMap[categoryId] += storys;
+  //           } else {
+  //             storyMap[categoryId] = storys;
+  //           }
 
-//           if (postMap[categoryId]) {
-//             postMap[categoryId] += posts;
-//           } else {
-//             postMap[categoryId] = posts;
-//           }
-//         }
-//       }
+  //           if (postMap[categoryId]) {
+  //             postMap[categoryId] += posts;
+  //           } else {
+  //             postMap[categoryId] = posts;
+  //           }
+  //         }
+  //       }
 
-//       const finalResult = [];
-//       for (let j = 0; j < cat?.length; j++) {
-//         const categoryId = cat[j]?._id;
-//         const categoryName = cat[j]?.page_category;
+  //       const finalResult = [];
+  //       for (let j = 0; j < cat?.length; j++) {
+  //         const categoryId = cat[j]?._id;
+  //         const categoryName = cat[j]?.page_category;
 
-//         if (pageCategoryCount[categoryId]) {
-//           finalResult.push({
-//             id: categoryId,
-//             category_name: categoryName,
-//             category_used: pageCategoryCount[categoryId],
-//             vendor_count: categoryVendorMap[categoryId]?.size || 0,
-//             total_followers: categoryFollowerMap[categoryId] || 0,
-//             total_stories: storyMap[categoryId] || 0,
-//             total_posts: postMap[categoryId] || 0,
-//           });
-//         }
-//       }
+  //         if (pageCategoryCount[categoryId]) {
+  //           finalResult.push({
+  //             id: categoryId,
+  //             category_name: categoryName,
+  //             category_used: pageCategoryCount[categoryId],
+  //             vendor_count: categoryVendorMap[categoryId]?.size || 0,
+  //             total_followers: categoryFollowerMap[categoryId] || 0,
+  //             total_stories: storyMap[categoryId] || 0,
+  //             total_posts: postMap[categoryId] || 0,
+  //           });
+  //         }
+  //       }
 
-//       setCategoryData(finalResult);
-//     }
-//   }, [vendorTypes, vendorData, cat, pageList]);
+  //       setCategoryData(finalResult);
+  //     }
+  //   }, [vendorTypes, vendorData, cat, pageList]);
 
   // Update localPriceData when new data is fetched
-//   useEffect(() => {
-//     if (priceData) {
-//       setLocalPriceData(priceData);
-//     }
-//   }, [priceData]);
+  //   useEffect(() => {
+  //     if (priceData) {
+  //       setLocalPriceData(priceData);
+  //     }
+  //   }, [priceData]);
 
   const handlePriceClick = (row) => {
     return function () {
@@ -461,7 +462,7 @@ const PageOverviewNew = () => {
     setEditID(_id)
   };
   const handleEditClose = () => {
-    
+
     setEditMode(false)
     setEditID(null)
   };
@@ -488,7 +489,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "history",
       width: 150,
       name: "History",
@@ -504,7 +505,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "statsUpdate",
       width: 150,
       name: "Stats Update",
@@ -529,7 +530,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "Age_13_17_percent",
       width: 150,
       name: "Age 13-17 %",
@@ -538,7 +539,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_18_24_percent",
       width: 150,
       name: "Age 18-24 %",
@@ -547,7 +548,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_25_34_percent",
       width: 150,
       name: "Age 25-34 %",
@@ -556,7 +557,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_35_44_percent",
       width: 150,
       name: "Age 35-44 %",
@@ -565,7 +566,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_45_54_percent",
       width: 150,
       name: "Age 45-54 %",
@@ -574,7 +575,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_55_64_percent",
       width: 150,
       name: "Age 55-64 %",
@@ -583,7 +584,7 @@ const PageOverviewNew = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_65_plus_percent",
       width: 150,
       name: "Age 65+ %",
@@ -593,7 +594,7 @@ const PageOverviewNew = () => {
       },
     },
 
-   {
+    {
       key: "city1_name",
       width: 150,
       name: "City 1 and %",
@@ -603,7 +604,7 @@ const PageOverviewNew = () => {
         return data ? data + ` (${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city2_name",
       width: 150,
       name: "City 2 and %",
@@ -613,7 +614,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city3_name",
       width: 150,
       name: "City 3 and %",
@@ -623,7 +624,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city4_name",
       width: 150,
       name: "City 4 and %",
@@ -633,7 +634,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city5_name",
       width: 150,
       name: "City 5 and %",
@@ -643,7 +644,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city_image_url",
       width: 150,
       name: "City Image",
@@ -658,7 +659,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "country1_name",
       width: 150,
       name: "Country 1  and %",
@@ -668,7 +669,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country2_name",
       width: 150,
       name: "Country 2 and %",
@@ -678,7 +679,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country3_name",
       width: 150,
       name: "Country 3 and %",
@@ -688,7 +689,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country4_name",
       width: 150,
       name: "Country 4 and %",
@@ -698,7 +699,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country5_name",
       width: 150,
       name: "Country 5 and %",
@@ -708,7 +709,7 @@ const PageOverviewNew = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country_image_url",
       width: 150,
       name: "Country Image",
@@ -723,7 +724,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "createdAt",
       width: 150,
       name: "Creation Date",
@@ -735,7 +736,7 @@ const PageOverviewNew = () => {
       },
     },
 
-   {
+    {
       key: "engagement",
       width: 150,
       name: "Engagement",
@@ -751,7 +752,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "impression",
       width: 150,
       name: "Impression",
@@ -768,7 +769,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "female_percent",
       width: 150,
       name: "Female Percentage",
@@ -777,7 +778,7 @@ const PageOverviewNew = () => {
         return data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "male_percent",
       width: 150,
       name: "Male Percentage",
@@ -786,7 +787,7 @@ const PageOverviewNew = () => {
         return data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "profile_visit",
       width: 150,
       name: "Profile Visit",
@@ -794,9 +795,9 @@ const PageOverviewNew = () => {
         let data = row?.profile_visit;
         return data ? data : "NA";
       },
-  
+
     },
-   {
+    {
       key: "reach",
       width: 150,
       name: "Reach",
@@ -812,7 +813,7 @@ const PageOverviewNew = () => {
         );
       },
     },
-   {
+    {
       key: "start_date",
       width: 150,
       name: "Start Date",
@@ -821,7 +822,7 @@ const PageOverviewNew = () => {
         return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
-   {
+    {
       key: "endDate",
       width: 150,
       name: "End Date",
@@ -830,7 +831,7 @@ const PageOverviewNew = () => {
         return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
-   {
+    {
       key: "story_view",
       width: 150,
       name: "Story View",
@@ -839,7 +840,7 @@ const PageOverviewNew = () => {
         return data ? data : "NA";
       },
     },
-   {
+    {
       key: "story_view_image_url",
       width: 150,
       name: "Story View Image",
@@ -893,7 +894,7 @@ const PageOverviewNew = () => {
       key: "page_activeness",
       name: "Activeness",
       width: 80,
-      renderRowCell: (row) => {return formatString(row?.page_activeness)},
+      renderRowCell: (row) => { return formatString(row?.page_activeness) },
     },
     {
       key: "page_name",
@@ -922,15 +923,15 @@ const PageOverviewNew = () => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
           <div className="profile-sec sb">
-          <div className="profile-img">
+            <div className="profile-img">
 
-          <img
-          
-          src={name}
-          alt={row.page_name}
-          width={40}
-          />
-          </div>
+              <img
+
+                src={name}
+                alt={row.page_name}
+                width={40}
+              />
+            </div>
           </div>
         );
       },
@@ -939,7 +940,7 @@ const PageOverviewNew = () => {
       key: "preference_level",
       name: "Level",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.preference_level)} 
+      renderRowCell: (row) => { return formatString(row.preference_level) }
       // // editable: true,
       // customEditElement: (
       //   row,
@@ -982,15 +983,15 @@ const PageOverviewNew = () => {
     {
       key: "platform_name",
       name: "Platform",
-      renderRowCell: (row) => {return formatString(row.platform_name)} ,
-   
+      renderRowCell: (row) => { return formatString(row.platform_name) },
+
       width: 200,
     },
     {
       key: "page_category_name",
       name: "Category",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.page_category_name)} 
+      renderRowCell: (row) => { return formatString(row.page_category_name) }
 
       // compare: true,
       // renderRowCell: (row) => {
@@ -1033,33 +1034,33 @@ const PageOverviewNew = () => {
       key: "page_sub_category_name",
       name: "Sub Category",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.page_sub_category_name)} ,
-    
+      renderRowCell: (row) => { return formatString(row.page_sub_category_name) },
+
       // compare: true,
     },
     {
       key: "followers_count",
       name: "Followers",
       width: 200,
-      renderRowCell: (row) => { return formatNumber(row.followers_count)}
-      
+      renderRowCell: (row) => { return formatNumber(row.followers_count) }
+
     },
     {
       key: "vendor_name",
       name: "Vendor",
-      renderRowCell: (row) => {return formatString(row.vendor_name)} ,
-    //   renderRowCell: (row) => {
-    //     let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
-    //     let name = vendor ? vendor.vendor_name : "Unknown Vendor";
-    //     return (
-    //       <a
-    //         className="link-primary pointer"
-    //         onClick={() => handleVendorClick(vendor?._id)}
-    //       >
-    //         {formatString(name)}
-    //       </a>
-    //     );
-    //   },
+      renderRowCell: (row) => { return formatString(row.vendor_name) },
+      //   renderRowCell: (row) => {
+      //     let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
+      //     let name = vendor ? vendor.vendor_name : "Unknown Vendor";
+      //     return (
+      //       <a
+      //         className="link-primary pointer"
+      //         onClick={() => handleVendorClick(vendor?._id)}
+      //       >
+      //         {formatString(name)}
+      //       </a>
+      //     );
+      //   },
       width: 200,
       compare: true,
     },
@@ -1227,7 +1228,7 @@ const PageOverviewNew = () => {
       ),
     },
 
-   
+
   ];
 
   const handleLevelChange = async (event, setEditFlag, row) => {
@@ -1337,76 +1338,76 @@ const PageOverviewNew = () => {
 
   return (
     <>
-    {!editMode ?<>
+      {!editMode ? <>
 
-      {waData && <WhatsapplinksModel waData={waData} setWaData={setWaData} />}
-      <FollowerLogsModal
-        open={openFollowerModal}
-        onClose={handleCloseFollowerModal}
-        rowData={rowDataFollower}
+        {waData && <WhatsapplinksModel waData={waData} setWaData={setWaData} />}
+        <FollowerLogsModal
+          open={openFollowerModal}
+          onClose={handleCloseFollowerModal}
+          rowData={rowDataFollower}
         // allPriceTypeList={allPriceTypeList}
-      />
-      <PriceLogs
-        open={openPriceLogModal}
-        onClose={handleClosePriceModal}
-        rowData={rowDataPriceLog}
+        />
+        <PriceLogs
+          open={openPriceLogModal}
+          onClose={handleClosePriceModal}
+          rowData={rowDataPriceLog}
         // allPriceTypeList={allPriceTypeList}
-      />
-      <div className="tabs">
-        {vendorDetails && (
-          <VendorDetails
-            vendorDetails={vendorDetails}
-            setVendorDetails={setVendorDetails}
-          />
-        )}
-        <button
-          className={activeTab === "Tab0" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab0")}
-        >
-          Overview
-        </button>
-        <button
-          className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab5")}
-        >
+        />
+        <div className="tabs">
+          {vendorDetails && (
+            <VendorDetails
+              vendorDetails={vendorDetails}
+              setVendorDetails={setVendorDetails}
+            />
+          )}
+          <button
+            className={activeTab === "Tab0" ? "active btn btn-primary" : "btn"}
+            onClick={() => setActiveTab("Tab0")}
+          >
+            Overview
+          </button>
+          <button
+            className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
+            onClick={() => setActiveTab("Tab5")}
+          >
             Statistics
-        </button>
-        {/* <button
+          </button>
+          {/* <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab2")}
         >
           OLD-Statistics
         </button> */}
-        {/* <button
-          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab3")}
-        >
-          Category Wise
-        </button> */}
-        <button
-          className={activeTab === "Tab4" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab4")}
-        >
-          Page Added Details
-        </button>
-      
-        {/* <button
+          <button
+            className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+            onClick={() => setActiveTab("Tab3")}
+          >
+            Category Wise
+          </button>
+          <button
+            className={activeTab === "Tab4" ? "active btn btn-primary" : "btn"}
+            onClick={() => setActiveTab("Tab4")}
+          >
+            Page Added Details
+          </button>
+
+          {/* <button
           className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab1")}
         >
           Page Health
         </button> */}
-      </div>
+        </div>
 
-      <div className="content">
-        {activeTab === "Tab0" && (
-          <>
+        <div className="content">
+          {activeTab === "Tab0" && (
+            <>
 
-          <PageOverviewWithoutHealth columns={dataGridcolumns} pagequery={pagequery} setPagequery={setPagequery} />
-        
-          </>
-        )}
-        {/* {activeTab === "Tab1" && (
+              <PageOverviewWithoutHealth columns={dataGridcolumns} pagequery={pagequery} setPagequery={setPagequery} />
+
+            </>
+          )}
+          {/* {activeTab === "Tab1" && (
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
@@ -1574,7 +1575,7 @@ const PageOverviewNew = () => {
             <PageDetail />
           </div>
         )} */}
-        {/* {activeTab === "Tab2" && (
+          {/* {activeTab === "Tab2" && (
           <StatisticsWisePageOverview
             tabFilterData={tabFilterData}
             setTabFilterData={setTabFilterData}
@@ -1584,20 +1585,23 @@ const PageOverviewNew = () => {
             newFilterData={newFilterData}
           />
         )} */}
-        {activeTab === "Tab3" && (
-          <CategoryWisePageOverview
-            categoryData={categoryData}
-            setFilterData={setFilterData}
-            pageList={pageList}
-            setActiveTab={setActiveTab}
-            vendorTypes={vendorTypes}
-            vendorData={vendorData}
-          />
-        )}
-        {activeTab === "Tab4" && <PageClosedByDetails />}
-        {activeTab === "Tab5" && <StatsOfOverview />}
-      </div>
-    </>:<PageEdit pageMast_id={editID} handleEditClose={handleEditClose} /> }
+          {activeTab === "Tab3" && (
+
+            // <CategoryWisePageOverview
+            //   categoryData={categoryData}
+            //   setFilterData={setFilterData}
+            //   pageList={pageList}
+            //   setActiveTab={setActiveTab}
+            //   vendorTypes={vendorTypes}
+            //   vendorData={vendorData}
+
+            // />
+            <CategoryWisePageOverviewNew dataTable={dataGridcolumns}/>
+          )}
+          {activeTab === "Tab4" && <PageClosedByDetails />}
+          {activeTab === "Tab5" && <StatsOfOverview dataGridcolumns={dataGridcolumns}/>}
+        </div>
+      </> : <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />}
     </>
   );
 };

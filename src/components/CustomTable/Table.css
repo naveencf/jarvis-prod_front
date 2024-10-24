@@ -392,6 +392,7 @@ th .table-header {
   left: 0;
   padding: 0px 0px;
   overflow-y: scroll;
+  z-index: 10000;
 
   .dragging {
     pointer-events: none;

@@ -376,6 +376,8 @@ const PlanStatics = ({
   clearRecentlySelected,
   clearSearch,
   HandleSavePlan,
+  handleToggleLeftNavbar,
+  toggleLeftNavbar,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
@@ -398,7 +400,7 @@ const PlanStatics = ({
     setPageDetails(selectedRow?.filter((page) => page.ownership_type === type)); // Filter pages by ownership type
     setOpenModal(true); // Open the modal
   };
- 
+
   // Filter all rows to get only 'Own' type pages
   const ownPages = allrows?.filter((item) => item?.ownership_type === 'Own');
   const handlePreviewExcel = () => {
@@ -434,15 +436,24 @@ const PlanStatics = ({
       <Accordion className="card" expanded={expanded}>
         <AccordionSummary
           className="card-header"
-          expandIcon={
-            <IconButton onClick={handleToggle}>
-              <ExpandMoreIcon />
-            </IconButton>
-          }
+          // expandIcon={
+          //   <IconButton onClick={handleToggle}>
+          //     <ExpandMoreIcon />
+          //   </IconButton>
+          // }
           aria-controls="panel1-content"
           id="panel1-header"
         >
-          <h5 className="card-title">Plan Making</h5>
+          <h5 className="card-title">
+            <div className="">
+              <button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={handleToggleLeftNavbar}
+              >
+                {!toggleLeftNavbar ? 'show navbar' : 'hide navbar'}
+              </button>
+            </div>
+          </h5>
           <div className="flexCenterBetween colGap10 mr10">
             <div className="w-50">
               <div className="input-group primaryInputGroup">
@@ -477,15 +488,15 @@ const PlanStatics = ({
               >
                 Clear Recenty Selected
               </Button>
-              <Button
+              {/* <Button
                 variant="contained"
                 className="btn btn_sm cmnbtn btn-outline-primary"
                 onClick={handlePreviewExcel}
               >
                 Preview Excel
-              </Button>
+              </Button> */}
               {/* Button to download Excel report */}
-              <Button
+              {/* <Button
                 className="btn btn_sm cmnbtn btn-outline-primary"
                 variant="contained"
                 onClick={() =>
@@ -493,20 +504,20 @@ const PlanStatics = ({
                 }
               >
                 Download Excel
-              </Button>
-              <Button
+              </Button> */}
+              {/* <Button
                 className="btn btn_sm cmnbtn btn-success"
                 variant="contained"
                 onClick={() => HandleSavePlan()}
               >
                 Save Plan
-              </Button>
+              </Button> */}
             </div>
           </div>
         </AccordionSummary>
         <AccordionDetails className="card-body p0">
           {/* Display summary information */}
-          <div className="row p16 pb-3 border-bottom">
+          {/* <div className="row p16 pb-3 border-bottom">
             <div className="col-lg-2 col-md-4 col-sm-6 col-12">
               <div className="flexCenter colGap12 border-right">
                 <h6 className="colorMedium ">Total Followers</h6>
@@ -543,10 +554,10 @@ const PlanStatics = ({
                 <h6 className="colorDark">{totalPagesSelected}</h6>
               </div>
             </div>
-            {/* <hr /> */}
-          </div>
+        
+          </div> */}
           {/* Render each category with its count */}
-          <div className="row pl16 pr16 border-bottom">
+          {/* <div className="row pl16 pr16 border-bottom">
             {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
               const categoryName =
                 category?.find((item) => item?._id === categoryId)
@@ -573,9 +584,9 @@ const PlanStatics = ({
                 </div>
               );
             })}
-          </div>
+          </div> */}
           {/* Display remaining pages */}
-          <div className="row p16 border-bottom">
+          {/* <div className="row p16 border-bottom">
             <div className="col-lg-3 col-md-4 col-sm-6 col-12">
               <div onClick={handleOwnPage}>
                 <div className="flexCenter colGap14">
@@ -597,9 +608,9 @@ const PlanStatics = ({
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
           {/* Render ownership types with counts and details button */}
-          <div className="row p16">
+          {/* <div className="row p16">
             {['own', 'vendor', 'solo'].map((type) => (
               <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={type}>
                 <div onClick={handleOwnPage}>
@@ -630,7 +641,7 @@ const PlanStatics = ({
                 </div>
               </div>
             ))}
-          </div>
+          </div> */}
         </AccordionDetails>
       </Accordion>
 

@@ -19,6 +19,7 @@ import AddIcon from '@mui/icons-material/Add';
 import FormContainer from '../../AdminPanel/FormContainer';
 import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
 import jwtDecode from 'jwt-decode';
+import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ function PlanHome() {
     accountId: '',
     brandId: '',
     brief: '',
-    planStatus: 'close',
+    planStatus: 'open',
     planSaved: false,
     createdBy: 938,
   });
@@ -51,7 +52,11 @@ function PlanHome() {
   const [searchInput, setSearchInput] = useState('');
   const storedToken = sessionStorage.getItem('token');
   const { id } = jwtDecode(storedToken);
-
+  const decodedToken = jwtDecode(storedToken);
+  const pagequery = '';
+  const { data: pageList, isLoading: isPageListLoading } =
+    useGetAllPageListQuery({ decodedToken, id, pagequery });
+ 
   const { usersDataContext } = useContext(AppContext);
 
   const salesUsers = usersDataContext?.filter(
@@ -143,8 +148,8 @@ function PlanHome() {
       postCount: row.postCount,
       storyCount: row.storyCount,
       description: row.description,
-      salesExecutiveId: row.salesExecutiveId,
-      accountId: row.accountId,
+      salesExecutiveId: row.sales_executive_id,
+      accountId: row.account_id,
       brandId: row.brandId,
       brief: row.brief,
       planStatus: row.plan_status,
@@ -233,7 +238,7 @@ function PlanHome() {
     if (duplicatePlanId) {
       planData.duplicate_planx_id = duplicatePlanId;
     }
-
+    console.log('plan-statis', planData);
     try {
       const method = isEdit ? 'PUT' : 'POST';
       const response = await fetch(`${baseUrl}v1/planxlogs`, {
@@ -303,7 +308,7 @@ function PlanHome() {
       accountId: '',
       brandId: '',
       brief: '',
-      planStatus: 'close',
+      planStatus: 'open',
       planSaved: false,
       createdBy: 938,
     });
@@ -370,7 +375,12 @@ function PlanHome() {
       key: 'plan_status',
       name: 'Plan Status',
       renderRowCell: (row) => (
-        <div className="badge badge-danger" style={{ cursor: 'pointer' }}>
+        <div
+          className={`badge ${
+            row?.plan_status === 'open' ? 'badge-success' : 'badge-danger'
+          }`}
+          style={{ cursor: 'pointer' }}
+        >
           {row?.plan_status}
         </div>
       ),
@@ -504,7 +514,7 @@ function PlanHome() {
                 accounts.find(
                   (acc) => acc.account_name === planDetails.accountName
                 ) || null
-              } // Set the default value correctly
+              }
               onChange={(event, value) => {
                 setPlanDetails((prevDetails) => ({
                   ...prevDetails,
@@ -544,6 +554,11 @@ function PlanHome() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
+              defaultValue={
+                usersDataContext.find(
+                  (user) => user.user_id === planDetails.salesExecutiveId
+                ) || null
+              }
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {
