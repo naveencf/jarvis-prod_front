@@ -26,7 +26,7 @@ import { Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../utils/config";
 import axios from "axios";
-import { useGetPageCountMutation } from "../../../Store/PageBaseURL";
+import { useGetPageCountQuery } from "../../../Store/PageBaseURL";
 
 
 const filterOptions = [
@@ -45,7 +45,8 @@ const PageClosedByDetails = ({ pagequery }) => {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const [getPageCount] = useGetPageCountMutation();
+
+
 
   // Set default start_date and end_date to the start and end of the current month
   const defaultStartDate = startOfMonth(new Date());
@@ -98,6 +99,19 @@ const PageClosedByDetails = ({ pagequery }) => {
         return { start: startOfToday(), end: endOfDay(now) };
     }
   };
+  const { start, end } = getDateRange();
+    
+  const {data:getcount} = useGetPageCountQuery({
+    start_date: start.toISOString().split("T")[0],
+    end_date: end.toISOString().split("T")[0],
+  });
+  console.log(getcount , 'count tdata')
+  useEffect(() => {
+    if (getcount) {
+      setRows(getcount.data);
+      setIndividualData(getcount.data);
+    }
+  }, [getcount]);
 
   const handleIndex = (index) => {
     if (index === activeIndex) {
@@ -114,36 +128,22 @@ const PageClosedByDetails = ({ pagequery }) => {
   };
 
 
-  const getCountData = async ()=>{
-    const { start, end } = getDateRange();
-    try{
-      const payload = {
-        start_date: start.toISOString().split("T")[0],
-        end_date: end.toISOString().split("T")[0],
-      };
-      const res = await getPageCount(payload).unwrap();
-      setRows(res.data);
-        setIndividualData(res.data);
-        console.log(res , 'hello world');
-    }catch{
-    }
-  }
-  useEffect(() => {
-    // const { start, end } = getDateRange();
-    // axios
-    //   .post(`${baseUrl}v1/get_page_count`, {
-    //     start_date: start.toISOString().split("T")[0],
-    //     end_date: end.toISOString().split("T")[0],
-    //   })
-      // .then((res) => {
-      //   setRows(res.data.data);
-      //   setIndividualData(res.data.data);
-      //   console.log(res.data.data);
-      // });
-      getCountData()
-     
-   
-  }, [filterOption, customStartDate, customEndDate]);
+  // const getCountData = async ()=>{
+  //   const { start, end } = getDateRange();
+  //   try{
+  //     const payload = {
+  //       start_date: start.toISOString().split("T")[0],
+  //       end_date: end.toISOString().split("T")[0],
+  //     };
+  //     const res = await getPageCount(payload).unwrap();
+  //     setRows(res.data);
+  //       setIndividualData(res.data);
+  //   }catch{
+  //   }
+  // }
+  // useEffect(() => {
+  //     getCountData()
+  // }, [filterOption, customStartDate, customEndDate]);
 
   return (
     <div>

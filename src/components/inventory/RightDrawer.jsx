@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
-import SwipeableDrawer from '@mui/material/SwipeableDrawer';
-import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+import React, { useState } from "react";
+import Box from "@mui/material/Box";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import Button from "@mui/material/Button";
+import List from "@mui/material/List";
+import Divider from "@mui/material/Divider";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import { Checks, StackMinus, StackPlus, Trash } from "@phosphor-icons/react";
 
 const RightDrawer = ({
   priceFilterType,
@@ -44,15 +45,15 @@ const RightDrawer = ({
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
 
   const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num;
   };
 
   const handleFollowerSelection = (e) => {
     const value = e.target.value;
 
-    if (value === 'custom') {
+    if (value === "custom") {
       setCustomFollowerRange(true);
       setSelectedFollowers([]);
       return;
@@ -76,202 +77,215 @@ const RightDrawer = ({
   };
 
   const drawerList = (
-    <Box sx={{ width: 250 }} role="presentation">
-      <div className="row">
-        {/* Price filter dropdown */}
-        <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-          <label>Filter by:</label>
-          <select
-            className="filter-dropdown form-control"
-            value={priceFilterType}
-            onChange={(e) => setPriceFilterType(e.target.value)}
-          >
-            <option value="post">Post Price</option>
-            <option value="story">Story Price</option>
-            <option value="both">Both Price</option>
-          </select>
-        </div>
-
-        {/* Range input for minimum and maximum price */}
-        <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-          <label className="filter-label">Min Price:</label>
-          <input
-            type="number"
-            className="filter-input form-control"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-          />
-          <p>{formatNumber(minPrice)}</p>
-        </div>
-        <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-          <label className="filter-label">Max Price:</label>
-          <input
-            type="number"
-            className="filter-input form-control"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-          />
-          <p>{formatNumber(maxPrice)}</p>
-        </div>
-
-        {/* Follower Filter */}
-        <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-          <label htmlFor="follower-filter">Follower Filter</label>
-          <select
-            id="follower-filter"
-            className="filter-dropdown form-control"
-            onChange={(e) => {
-              handleFollowerSelection(e);
-            }}
-            value={selectedFollowers[0] || ''}
-          >
-            <option value="" disabled>
-              Select Follower Range
-            </option>
-            <option value="lessThan10K">Less than 10k</option>
-            <option value="10Kto20K">10k to 20k</option>
-            <option value="20Kto50K">20k to 50k</option>
-            <option value="50Kto100K">50k to 100k</option>
-            <option value="100Kto200K">100k to 200k</option>
-            <option value="200Kto500K">200k to 500k</option>
-            <option value="500Kto1000K">500k to 1000k</option>
-            {/* <option value="100Kto200K">100k to 200k</option> */}
-            {/* <option value="moreThan200K">More than 200k</option> */}
-            {/* <option value="custom">Custom</option> */}
-          </select>
-        </div>
-
-        {/* Custom Follower Range Inputs */}
-        {customFollowerRange && (
-          <>
-            <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-              <label className="filter-label">Min Followers:</label>
-              <input
-                type="number"
-                className="filter-input form-control"
-                value={minFollowers || ''}
-                onChange={(e) => setMinFollowers(e.target.value)}
-                // onBlur={handleFollowersBlur}
-              />
-              <p>{formatNumber(minFollowers)}</p>
-            </div>
-            <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-              <label className="filter-label">Max Followers:</label>
-              <input
-                type="number"
-                className="filter-input form-control"
-                value={maxFollowers || ''}
-                onChange={(e) => setMaxFollowers(e.target.value)}
-                // onBlur={handleFollowersBlur}
-              />
-              <p>{formatNumber(maxFollowers)}</p>
-            </div>
-          </>
-        )}
-
-        {/* Display Selected Followers as Badges */}
-        <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-          <label>Selected Followers:</label>
-          <div className="selectBadge">
-            {selectedFollowers.map((follower) => (
-              <div className="selectBadgeItem" key={follower}>
-                {follower.replace(/([A-Z])/g, ' $1').trim()} {/* Formatting */}
-                <button onClick={() => removeFollowerSelection(follower)}>
-                  ×
-                </button>
+    <>
+      <div className="filterWrapper" role="presentation">
+        <div className="filterWrapperBody">
+          <div className="row">
+            <div className="form-group col-12 mb16">
+              <div className="dropdown w-100">
+                <select
+                  value={activeTabPlatform}
+                  onChange={(e) => handlePlatform(e.target.value)}
+                  className="form-select form-control"
+                >
+                  {platformData?.map((item) => (
+                    <option key={item._id} value={item._id}>
+                      {item.platform_name}
+                    </option>
+                  ))}
+                </select>
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="dropdown">
-          <select
-            value={activeTabPlatform}
-            onChange={(e) => handlePlatform(e.target.value)}
-            className="form-select"
-          >
-            {platformData?.map((item) => (
-              <option key={item._id} value={item._id}>
-                {item.platform_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        {/* Filter by Category */}
-        <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-          <label htmlFor="categoryFilter">Filter by Category:</label>
-          <select
-            className="form-control"
-            id="categoryFilter"
-            value={selectedCategory}
-            onChange={handleCategoryChange}
-          >
-            <option value="">Select a category</option>
-            {cat?.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.page_category}
-              </option>
-            ))}
-          </select>
-        </div>
+            </div>
+            {/* Price filter dropdown */}
+            <div className="form-group col-12 mb16">
+              <label>Filter by:</label>
+              <select
+                className="filter-dropdown form-control"
+                value={priceFilterType}
+                onChange={(e) => setPriceFilterType(e.target.value)}
+              >
+                <option value="post">Post Price</option>
+                <option value="story">Story Price</option>
+                <option value="both">Both Price</option>
+              </select>
+            </div>
+            {/* Range input for minimum and maximum price */}
+            <div className="form-group col-12 mb16">
+              <label className="filter-label flexCenterBetween">
+                Min Price: <p>{formatNumber(minPrice)}</p>
+              </label>
+              <input
+                type="number"
+                className="filter-input form-control"
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+              />
+            </div>
+            <div className="form-group col-12 mb16">
+              <label className="filter-label flexCenterBetween">
+                Max Price: <p>{formatNumber(maxPrice)}</p>
+              </label>
+              <input
+                type="number"
+                className="filter-input form-control"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+              />
+            </div>
 
-        {/* Selected categories as tags */}
-        <div className="form-group col-lg-6 col-md-6 col-sm-12 col-12">
-          <label>&nbsp;</label>
-          <div className="selectBadge">
-            {selectedCategory?.length > 0 &&
-              selectedCategory?.map((categoryId) => {
-                const category = cat?.find((c) => c._id === categoryId);
-                return (
-                  <div className="selectBadgeItem" key={categoryId}>
-                    {category.page_category}
-                    <button onClick={() => removeCategory(categoryId)}>
+            {/* Follower Filter */}
+            <div className="form-group col-12 mb8">
+              <label htmlFor="follower-filter">Follower Filter</label>
+              <select
+                id="follower-filter"
+                className="filter-dropdown form-control"
+                onChange={(e) => {
+                  handleFollowerSelection(e);
+                }}
+                value={selectedFollowers[0] || ""}
+              >
+                <option value="" disabled>
+                  Select Follower Range
+                </option>
+                <option value="lessThan10K">Less than 10k</option>
+                <option value="10Kto20K">10k to 20k</option>
+                <option value="20Kto50K">20k to 50k</option>
+                <option value="50Kto100K">50k to 100k</option>
+                <option value="100Kto200K">100k to 200k</option>
+                <option value="200Kto500K">200k to 500k</option>
+                <option value="500Kto1000K">500k to 1000k</option>
+                {/* <option value="100Kto200K">100k to 200k</option> */}
+                {/* <option value="moreThan200K">More than 200k</option> */}
+                {/* <option value="custom">Custom</option> */}
+              </select>
+            </div>
+
+            {/* Display Selected Followers as Badges */}
+            <div className="form-group col-12 mb16">
+              {/* <label>Selected Followers:</label> */}
+              <div className="selectBadge">
+                {selectedFollowers.map((follower) => (
+                  <div className="selectBadgeItem" key={follower}>
+                    {follower.replace(/([A-Z])/g, " $1").trim()}{" "}
+                    {/* Formatting */}
+                    <button onClick={() => removeFollowerSelection(follower)}>
                       ×
                     </button>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Follower Range Inputs */}
+            {customFollowerRange && (
+              <>
+                <div className="form-group col-12 mb16">
+                  <label className="filter-label">Min Followers:</label>
+                  <input
+                    type="number"
+                    className="filter-input form-control"
+                    value={minFollowers || ""}
+                    onChange={(e) => setMinFollowers(e.target.value)}
+                    // onBlur={handleFollowersBlur}
+                  />
+                  <p>{formatNumber(minFollowers)}</p>
+                </div>
+                <div className="form-group col-12 mb16">
+                  <label className="filter-label">Max Followers:</label>
+                  <input
+                    type="number"
+                    className="filter-input form-control"
+                    value={maxFollowers || ""}
+                    onChange={(e) => setMaxFollowers(e.target.value)}
+                    // onBlur={handleFollowersBlur}
+                  />
+                  <p>{formatNumber(maxFollowers)}</p>
+                </div>
+              </>
+            )}
+
+            {/* Filter by Category */}
+            <div className="form-group col-12 mb8">
+              <label htmlFor="categoryFilter">Filter by Category:</label>
+              <select
+                className="form-control"
+                id="categoryFilter"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value="">Select a category</option>
+                {cat?.map((category) => (
+                  <option key={category._id} value={category._id}>
+                    {category.page_category}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Selected categories as tags */}
+            <div className="form-group col-12 mb16">
+              <div className="selectBadge">
+                {selectedCategory?.length > 0 &&
+                  selectedCategory?.map((categoryId) => {
+                    const category = cat?.find((c) => c._id === categoryId);
+                    return (
+                      <div className="selectBadgeItem" key={categoryId}>
+                        {category.page_category}
+                        <button onClick={() => removeCategory(categoryId)}>
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
           </div>
         </div>
-
-        {/* Action Buttons */}
-        <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn-outline-danger"
-              onClick={handleRemoveFilter}
-            >
-              Remove All Filter
-            </button>
-            <button
-              className="cmnbtn btn-success"
-              onClick={handleCombinedFilter}
-            >
-              Apply Filter
-            </button>
-            <button className="cmnbtn btn-primary" onClick={selectAllRows}>
-              Select All Rows
-            </button>
-            <button className="cmnbtn btn-danger" onClick={deSelectAllRows}>
-              Deselect All Rows
-            </button>
-            <input
+        <div className="filterWrapperFooter">
+          <div className="row">
+            <div className="col-6">
+              <input
               type="number"
-              className="filter-input form-contro"
+              className="filter-input form-control"
               placeholder="Post Count"
-              value={postCountDefault || ''}
+              value={postCountDefault || ""}
               onChange={handlePostCountChange}
             />
-            <input
+            </div>
+            <div className="col-6">
+              <input
               type="number"
-              className="filter-input form-contro"
+              className="filter-input form-control"
               placeholder="Story Count"
-              value={storyCountDefault || ''}
+              value={storyCountDefault || ""}
               onChange={handleStoryCountChange}
             />
+            </div>
+          </div>
+          {/* Action Buttons */}
+          <div className="flexCenterBetween">
+            <button
+              className="btn icon btn-outline-danger" title="Remove All Filter"
+              onClick={handleRemoveFilter}
+            >
+              <Trash />
+            </button>
+            <button
+              className="btn icon btn-outline-success" title="Apply Filter"
+              onClick={handleCombinedFilter}
+            >
+              <Checks />
+            </button>
+            <button className="btn icon btn-outline-primary" title="Select All Rows" onClick={selectAllRows}>
+              <StackPlus />
+            </button>
+            <button className="btn icon btn-outline-danger" title="Deselect All Rows" onClick={deSelectAllRows}>
+              <StackMinus />
+            </button>
           </div>
         </div>
       </div>
-    </Box>
+    </>
   );
 
   return (

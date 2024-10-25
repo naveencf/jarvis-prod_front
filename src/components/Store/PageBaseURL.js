@@ -259,13 +259,18 @@ export const PageBaseURL = createApi({
     }),
 
     // get page counts
-    getPageCount: builder.mutation({
-      query: (data) => ({
-        url: `v1/get_page_count`,
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: ["getPageCount"],
+getPageCount: builder.query({
+  query: ({ start_date, end_date }) => ({
+    url: `v1/get_page_count?start_date=${start_date}&end_date=${end_date}`,
+    method: "GET",
+  }),
+}),
+
+
+    //get category wise invetory details
+    getAllCategoryWiseInventory: builder.query({
+      query: () => `v1/category_wise_inventory_details`,
+      transformResponse:(response)=>response.data
     }),
   }),
 });
@@ -299,5 +304,6 @@ export const {
   useDeletePageCategoryMutation,
   useGetAllCountsQuery,
   useGetAllPageClosebyListQuery,
-  useGetPageCountMutation,
+  useGetPageCountQuery,
+  useGetAllCategoryWiseInventoryQuery
 } = PageBaseURL;

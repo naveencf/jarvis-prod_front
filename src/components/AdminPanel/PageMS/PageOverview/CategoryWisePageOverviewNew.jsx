@@ -5,7 +5,7 @@ import View from '../../Sales/Account/View/View';
 import {Box,Modal} from '@mui/material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import formatString from '../../../../utils/formatString';
-import { useGetAllPageListQuery } from '../../../Store/PageBaseURL';
+import { useGetAllPageListQuery , useGetAllCategoryWiseInventoryQuery } from '../../../Store/PageBaseURL';
 import jwtDecode from 'jwt-decode';
 import Loader from '../../../Finance/Loader/Loader';
 
@@ -34,8 +34,10 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
         refetch: refetchPageList,
         isLoading: isPageListLoading,
     } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+    const {data:categoryWiseData} = useGetAllCategoryWiseInventoryQuery()
+    console.log(categoryWiseData , 'hell inventory')
 
-    const [categoryWiseData, setCategoryWiseData] = useState([]);
+    // const [categoryWiseData, setCategoryWiseData] = useState([]);
     const [open, setOpen] = useState(false);
     const [recordsLoading, setRecordsLoading] = useState(true);
     const [selectedSubCategories, setSelectedSubCategories] = useState([]);
@@ -45,15 +47,6 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
             setRecordsLoading(false)
         }
     }, [pageList])
-
-    const getCategoryWiseData = async () => {
-        try {
-            const res = await axios.get(`${baseUrl}v1/category_wise_inventory_details`);
-            setCategoryWiseData(res?.data?.data || []);
-        } catch (err) {
-            console.error('Error fetching category-wise data:', err);
-        }
-    };
 
     const handleClick = (key, val) => {
         setPagequery(`${key}=${val}`);
@@ -68,9 +61,6 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
         setRecordsLoading(true)
         setOpen(false)
     };
-    useEffect(() => {
-        getCategoryWiseData();
-    }, []);
 
     const handleSubCategory = (subCategories) => {
         setSelectedSubCategories(subCategories);
