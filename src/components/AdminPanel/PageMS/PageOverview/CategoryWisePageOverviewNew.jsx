@@ -14,7 +14,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: 600,
+    width: 850,
     bgcolor: 'background.paper',
     border: '2px solid #000',
     boxShadow: 24,
@@ -25,7 +25,6 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
     const [pagequery, setPagequery] = useState("")
     const [activeSection, setActiveSection] = useState(null)
     const [activeSectionCat, setActiveSectionCat] = useState(null)
-
     const storedToken = sessionStorage.getItem("token");
     const decodedToken = jwtDecode(storedToken);
     const userID = decodedToken.id;
@@ -55,14 +54,11 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
             console.error('Error fetching category-wise data:', err);
         }
     };
-    console.log(pageList?.length,
-        "kjkdjksjk", recordsLoading
-    );
+
     const handleClick = (key, val) => {
         setPagequery(`${key}=${val}`);
         setActiveSection(key);
         setRecordsLoading(true)
-        // console.log(`${key}=${val}`, "val console");
         setOpen(false)
     };
     const handleClickCatData = (key, val) => {
@@ -70,7 +66,6 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
         setPagequery(`${key}=${val}`);
         setActiveSectionCat(key);
         setRecordsLoading(true)
-        // console.log(`${key}=${val}`, "val console");
         setOpen(false)
     };
     useEffect(() => {
@@ -129,6 +124,25 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
             renderRowCell: (row) => <div>{row.uniqueVendorCount}</div>,
         },
         {
+            key: "Post Price",
+            name: "Post Price",
+            width: 200,
+            renderRowCell: (row) => <div>{row.totalInstagramPostPrice}</div>,
+        },
+        {
+            key: "Story Price",
+            name: "Story Price",
+            width: 200,
+            renderRowCell: (row) => <div>{row.totalInstagramStoryPrice}</div>,
+        },
+        // "totalInstagramBothPrice": 86553,
+        {
+            key: "Both Price",
+            name: "Both Price",
+            width: 200,
+            renderRowCell: (row) => <div>{row.totalInstagramBothPrice}</div>,
+        },
+        {
             key: "Sub Category",
             name: "Sub Category Count",
             width: 200,
@@ -177,10 +191,14 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                     <table class="table">
                         <thead>
                             <tr>
-                                <th scope="col">S. No. </th>
+                                <th scope="col">S.N. </th>
                                 <th scope="col">Sub Category</th>
                                 <th scope="col">Total Follower</th>
                                 <th scope="col">Vendor Count</th>
+                                <th scope="col">Page Count</th>
+                                <th scope="col">Post Price</th>
+                                <th scope="col">Story Price</th>
+                                <th scope="col">Both Price</th>
                             </tr>
                         </thead>
                         {selectedSubCategories.length > 0 && selectedSubCategories.map((item, index) => (
@@ -197,6 +215,10 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                                     </td>
                                     <td>{formatNumber(item.totalFollowersCount)}</td>
                                     <td>{item.uniqueVendorCount}</td>
+                                    <td>{item.pageCount}</td>
+                                    <td>{item.totalInstagramPostPrice}</td>
+                                    <td>{item.totalInstagramStoryPrice}</td>
+                                    <td>{item.totalInstagramBothPrice}</td>
                                 </tr>
                             </tbody>
                         ))}

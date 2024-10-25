@@ -53,7 +53,7 @@ function PlanHome() {
   const storedToken = sessionStorage.getItem('token');
   const { id } = jwtDecode(storedToken);
   const decodedToken = jwtDecode(storedToken);
-  const pagequery = '';
+ const [pagequery, setPagequery] = useState("")
   const { data: pageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery({ decodedToken, id, pagequery });
  

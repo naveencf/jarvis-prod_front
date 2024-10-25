@@ -37,7 +37,7 @@ import PageAddMasterModal from "./PageAddMasterModal";
 import PageInfoModal from "./PageInfoModal";
 
 setOpenShowAddModal;
-const Page = ({pageMast_id}) => {
+const Page = ({ pageMast_id ,handleEditClose}) => {
   const { refetch: refetchPageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery();
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ const Page = ({pageMast_id}) => {
     { value: "super_active", label: "Super Active" },
     { value: "active", label: "Active" },
     { value: "semi_active", label: "Semi Active" },
-    { value: 'dead', label: "Dead" },
+    { value: "dead", label: "Dead" },
   ];
   const PageTypes = [
     { value: "Non Adult", label: "Non Adult" },
@@ -226,7 +226,7 @@ const Page = ({pageMast_id}) => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
-          console.log(res?.data?.data, "res?.data?.data");
+          // console.log(res?.data?.data, "res?.data?.data");
         });
     }
   }, [platformId]);
@@ -277,13 +277,13 @@ const Page = ({pageMast_id}) => {
         );
         // setPageLevel(data[0].preference_level);
         setPageLevel(data[0]?.preference_level);
-        if (data[0].page_activeness == 'dead') {
+        if (data[0].page_activeness == "dead") {
           setPageStatus("dead");
-        }else if (data[0].page_activeness == 'semi_active') {
+        } else if (data[0].page_activeness == 'semi_active') {
           setPageStatus("semi_active");
-        } else if (data[0].page_activeness == 'super_active') {
+        } else if (data[0].page_activeness == "super_active") {
           setPageStatus("super_active");
-        } 
+        }
         else {
           setPageStatus("active");
         }
@@ -311,12 +311,12 @@ const Page = ({pageMast_id}) => {
         setP_id(data[0].pageMast_id);
         setSinglePage(data[0]);
         setLanguageId(data[0].page_language_name)
-        console.log(data[0].page_language_name,"data[0].page_language_name")
+        // console.log(data[0].page_language_name, "data[0].page_language_name")
       });
   }, [platformData]);
 
   useEffect(() => {
-    console.log(singlePage, "singlePage");
+    // console.log(singlePage, "singlePage");
     if (singlePage && singlePage.length > 0) {
       axios
         .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
@@ -329,8 +329,8 @@ const Page = ({pageMast_id}) => {
           // console.log(res?.data?.data)
           setSingleVendor(res?.data?.data);
         });
-      }
-      getLanguage()
+    }
+    getLanguage()
   }, [singlePage]);
 
   const getLanguage = async () => {
@@ -344,6 +344,7 @@ const Page = ({pageMast_id}) => {
 
   const handleSubmit = async (e, flag) => {
     e.preventDefault();
+  
     if (!pageName) {
       toastAlert("Page Name is required");
       return;
@@ -362,8 +363,7 @@ const Page = ({pageMast_id}) => {
     } else if (!pageLevel) {
       toastAlert("Page Level is required");
       return;
-    }
-    else if (!closeBy) {
+    } else if (!closeBy) {
       toastAlert("Close by is required");
       return;
     } else if (!pageType) {
@@ -385,7 +385,7 @@ const Page = ({pageMast_id}) => {
       toastAlert("Profile Type is required");
       return;
     }
-
+    
     const payload = {
       page_name: pageName,
       page_link: link,
@@ -425,10 +425,8 @@ const Page = ({pageMast_id}) => {
 
       page_profile_type_name: profileData
         ?.find((role) => role?._id === profileId)
-        ?.profile_type?.toLowerCase(),
-
-      // page_language_name: ["Hindi"],
-      page_language_name: languageId.map((item) => item?.label),
+        ?.profile_type?.toLowerCase(),   
+      page_language_name: languageId,
       tags_page_category_name: tag.map((e) => e.label),
       page_price_list: rowCount.map((item) => {
         return {
@@ -438,7 +436,7 @@ const Page = ({pageMast_id}) => {
         };
       }),
     };
-    // console.log(payload, "payload",rowCount,priceTypeList);
+    // console.log(payload, "payload");
     // return;
     await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
@@ -481,17 +479,19 @@ const Page = ({pageMast_id}) => {
         };
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => {})
+          .then(() => { })
           .catch((err) => {
             console.log(err);
           });
-
-        if (flag) {
+          if (flag) {
+          // console.log(flag,"flag")
           toastAlert("Submitted");
           refetchPageList();
           navigate("/admin/pms-page-overview");
+          handleEditClose()
         }
         if (!flag) {
+          // console.log(flag,"flagfddgfdgfgf",)
           toastAlert("Submitted");
         }
       });
@@ -668,46 +668,45 @@ const Page = ({pageMast_id}) => {
         ></Select>
       </div>
 
-
-
-
-
       <div className="col-md-6 mb16">
-        <label className="form-group m0">
-          Category <sup style={{ color: "red" }}>*</sup>
-        </label>
-        <div className="input-group inputAddGroup">
-          <Select
-            options={categoryData.map((option) => ({
-              value: option._id,
-              label: option.page_category,
-            }))}
-            value={{
-              value: categoryId,
-              label:
-                categoryData.find((role) => role._id === categoryId)
-                  ?.page_category || "",
-            }}
-            onChange={(e) => {
-              setCategoryId(e.value);
-            }}
-          />
-          <IconButton
-            onClick={handleOpenPageModal("Category")}
-            variant="contained"
-            color="primary"
-            aria-label="Add Platform.."
-          >
-            <AddIcon />
-          </IconButton>
-          <IconButton
-            onClick={handleOpenInfoModal("Category Info")}
-            variant="contained"
-            color="primary"
-            aria-label="Platform Info.."
-          >
-            <InfoIcon />
-          </IconButton>
+        <div className="form-group m0">
+          <label className="form-label">
+            Category <sup style={{ color: "red" }}>*</sup>
+          </label>
+          <div className="input-group inputAddGroup">
+            <Select
+              className="w-100"
+              options={categoryData.map((option) => ({
+                value: option._id,
+                label: option.page_category,
+              }))}
+              value={{
+                value: categoryId,
+                label:
+                  categoryData.find((role) => role._id === categoryId)
+                    ?.page_category || "",
+              }}
+              onChange={(e) => {
+                setCategoryId(e.value);
+              }}
+            />
+            <IconButton
+              onClick={handleOpenPageModal("Category")}
+              variant="contained"
+              color="primary"
+              aria-label="Add Platform.."
+            >
+              <AddIcon />
+            </IconButton>
+            <IconButton
+              onClick={handleOpenInfoModal("Category Info")}
+              variant="contained"
+              color="primary"
+              aria-label="Platform Info.."
+            >
+              <InfoIcon />
+            </IconButton>
+          </div>
         </div>
       </div>
 
@@ -717,6 +716,7 @@ const Page = ({pageMast_id}) => {
         </label>
         <div className="input-group inputAddGroup">
           <Select
+          className="w-100"
             options={subCategoryData?.map((option) => ({
               value: option._id,
               label: option.page_sub_category,
@@ -790,9 +790,7 @@ const Page = ({pageMast_id}) => {
           options={PageStatus}
           className="basic-multi-select"
           classNamePrefix="select"
-          value={PageStatus.find(
-            (option) => option.value === pageStatus
-          )}
+          value={PageStatus.find((option) => option.value === pageStatus)}
           // value={PageStatus.find(
           //   (option) => console.log(option.label)
           // )}
@@ -912,7 +910,10 @@ const Page = ({pageMast_id}) => {
             isMulti
             required={true}
             onChange={(selectedOptions) => {
-              const selectedValues = selectedOptions.map((option) => option);
+              const selectedValues = selectedOptions.map(
+                (option) => option.label
+              );
+              // console.log(selectedValues,"selectedValues")
               setLanguageId(selectedValues);
             }}
           />
@@ -1135,7 +1136,7 @@ const Page = ({pageMast_id}) => {
   );
 };
 
-const PageEdit = ({pageMast_id ,handleEditClose}) => {
+const PageEdit = ({ pageMast_id, handleEditClose }) => {
   // const { pageMast_id } = useParams();
   const navigate = useNavigate();
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
@@ -1163,7 +1164,7 @@ const PageEdit = ({pageMast_id ,handleEditClose}) => {
           cursor: "pointer",
         }}
       >
-        <ArrowBackIcon onClick={()=>handleEditClose()} />
+        <ArrowBackIcon onClick={() => handleEditClose()} />
       </div>
 
       <FormContainer
@@ -1175,7 +1176,7 @@ const PageEdit = ({pageMast_id ,handleEditClose}) => {
         onAccordionButtonClick={handleAccordionButtonClick}
         submitButton={true}
       >
-        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} />}
+        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />}
         {/* {activeAccordionIndex === 1 && <PageHealth />} */}
         {activeAccordionIndex === 1 &&
           navigate(`/admin/exe-history/${pageMast_id}`)}

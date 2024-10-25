@@ -12,8 +12,6 @@ import {
 } from "date-fns";
 import { Box, Grid, Stack, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-// import { useGetAllPageClosebyListQuery } from "../../../Store/PageBaseURL";
-import { AppContext } from "../../../../Context/Context";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
@@ -28,6 +26,8 @@ import { Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../utils/config";
 import axios from "axios";
+import { useGetPageCountMutation } from "../../../Store/PageBaseURL";
+
 
 const filterOptions = [
   { label: "Today", value: "today" },
@@ -45,26 +45,15 @@ const PageClosedByDetails = ({ pagequery }) => {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
+  const [getPageCount] = useGetPageCountMutation();
 
   // Set default start_date and end_date to the start and end of the current month
   const defaultStartDate = startOfMonth(new Date());
   const defaultEndDate = endOfDay(new Date());
 
-  const formatDate = (date) => date.toISOString().split("T")[0];
 
-  const [bodyData, setBodyData] = useState({
-    start_date: formatDate(defaultStartDate),
-    end_date: formatDate(defaultEndDate),
-  });
-
-  // const {
-  //   data: pageClosedbyList,
-  //   refetch: refetchPageClosedbyList,
-  //   isLoading: isPageListLoading,
-  // } = useGetAllPageClosebyListQuery({ bodyData });
 
   // const pageData = pageClosedbyList?.data;
-  const { usersDataContext } = useContext(AppContext);
   const [filterOption, setFilterOption] = useState("thisMonth");
   const [individualData, setIndividualData] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
@@ -118,67 +107,43 @@ const PageClosedByDetails = ({ pagequery }) => {
     setActiveIndex(index);
   };
 
-  const filterData = () => {
-    const { start, end } = getDateRange();
-    return (
-      pageData?.filter((item) => {
-        const createdAt = new Date(item.createdAt); // Convert to Date object directly
-        return isWithinInterval(createdAt, { start, end });
-      }) || []
-    );
-  };
-
-  // Group the filtered data by created_by
-  const groupByCreatedBy = (filteredData) => {
-    return filteredData.reduce((acc, item) => {
-      const key = item.created_by;
-      if (!acc[key]) {
-        acc[key] = [];
-      }
-      acc[key].push(item);
-      return acc;
-    }, {});
-  };
 
   // Handle filter change
   const handleFilterChange = (event, newValue) => {
     setFilterOption(newValue.value);
   };
 
-  // useEffect(() => {
-  //   // const filteredData = filterData();
-  //   const groupedData = groupByCreatedBy(filteredData);
-  //   setIndividualData(groupedData);
-  // }, [filterOption, pageData, customStartDate, customEndDate]);
 
-  useEffect(() => {
+  const getCountData = async ()=>{
     const { start, end } = getDateRange();
-    // setBodyData({
-    //   start_date: start.toISOString().split('T')[0],
-    //   end_date: end.toISOString().split('T')[0],
-    // });
-    axios
-      .post(`${baseUrl}v1/get_page_count`, {
+    try{
+      const payload = {
         start_date: start.toISOString().split("T")[0],
         end_date: end.toISOString().split("T")[0],
-      })
-      .then((res) => {
-        setRows(res.data.data);
-        setIndividualData(res.data.data);
-        console.log(res.data.data);
-      });
-    setBodyData({
-      start_date: "2024-09-30",
-      end_date: "2024-10-22",
-    });
+      };
+      const res = await getPageCount(payload).unwrap();
+      setRows(res.data);
+        setIndividualData(res.data);
+        console.log(res , 'hello world');
+    }catch{
+    }
+  }
+  useEffect(() => {
+    // const { start, end } = getDateRange();
+    // axios
+    //   .post(`${baseUrl}v1/get_page_count`, {
+    //     start_date: start.toISOString().split("T")[0],
+    //     end_date: end.toISOString().split("T")[0],
+    //   })
+      // .then((res) => {
+      //   setRows(res.data.data);
+      //   setIndividualData(res.data.data);
+      //   console.log(res.data.data);
+      // });
+      getCountData()
+     
+   
   }, [filterOption, customStartDate, customEndDate]);
-
-  const getUserName = (userId) => {
-    const userName = usersDataContext?.find(
-      (ele) => ele.user_id === userId
-    )?.user_name;
-    return userName;
-  };
 
   return (
     <div>
@@ -218,10 +183,10 @@ const PageClosedByDetails = ({ pagequery }) => {
           <h3 style={{ marginBottom: "10px" }}>
             Page Details Added By Individuals
           </h3>
-          {individualData.length === 0 ? (
+          {individualData?.length === 0 ? (
             <p>No data available</p>
           ) : (
-            individualData.map((dataItem, index) => (
+            individualData?.map((dataItem, index) => (
               <div key={dataItem._id} style={{ marginBottom: "10px" }}>
                 <button
                   style={{

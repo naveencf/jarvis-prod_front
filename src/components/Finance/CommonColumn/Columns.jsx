@@ -108,10 +108,9 @@ export const saleBookingCloseColumns = ({
     key: "Invoice File",
     name: "Invoice File",
     width: 150,
+    conpare: true,
     renderRowCell: (row) => {
       const invoiceData = row?.invoice_file !== "" ? row?.invoice_file : null;
-      // console.log(invoiceData, "invoiceData --->>>>");
-
       const imgUrl = `${row?.invoice_file_url}/${invoiceData}`;
 
       return invoiceData ? (
@@ -952,26 +951,22 @@ export const pendingApprovalColumn = ({
     key: "campaign_amount",
     width: 180,
     compare: true,
-    showCol: true,
-    renderRowCell: (row) => <div>{row?.campaign_amount} </div>,
+    renderRowCell: (row) => row?.campaign_amount,
   },
   {
-    name: "Campaign Amount Without GST",
+    name: "Base Amount",
     key: "base_amount",
     width: 180,
     compare: true,
-    showCol: true,
-    renderRowCell: (row) => <div>{row?.base_amount} </div>,
+    renderRowCell: (row) => row?.base_amount,
   },
   {
     key: "balance_payment_ondate",
     name: "Payment On Date",
     width: 180,
-    renderRowCell: (row) => (
-      <div>
-        {moment(row?.balance_payment_ondate).format("DD/MM/YYYY HH:MM")}
-      </div>
-    ),
+    compare: true,
+    renderRowCell: (row) =>
+      moment(row?.balance_payment_ondate).format("DD/MM/YYYY HH:MM"),
   },
   {
     name: "Payment Screenshot",
@@ -1016,9 +1011,7 @@ export const pendingApprovalColumn = ({
     name: "Balance Amount",
     width: 180,
     compare: true,
-    renderRowCell: (row) => (
-      <div>{row?.campaign_amount - row?.payment_amount} </div>
-    ),
+    renderRowCell: (row) => row?.campaign_amount - row?.payment_amount,
   },
   {
     name: "Payment Amount",
@@ -2185,7 +2178,6 @@ export const invoiceCreatedUniqueSalesExecutiveColumns = ({
 ];
 
 export const outstandingColumns = ({
-  filterData = [],
   calculateAging,
   setViewImgSrc,
   setViewImgDialog,
@@ -2193,6 +2185,7 @@ export const outstandingColumns = ({
   handleDiscardOpenDialog,
   handleOpenEditAction,
   activeAccordionIndex,
+  handleOpenCreditNote,
 }) => [
   {
     width: 70,
@@ -2290,6 +2283,7 @@ export const outstandingColumns = ({
   {
     name: "Balance Amount",
     key: "Balance Amount",
+    compare: true,
     renderRowCell: (row) => row?.campaign_amount - row?.paid_amount || 0,
   },
   {
@@ -2364,12 +2358,20 @@ export const outstandingColumns = ({
     name: "Status",
     width: 190,
     renderRowCell: (row) => (
-      <button
-        className="btn cmnbtn btn_sm btn-outline-primary"
-        onClick={(e) => handleImageClick(e, row)}
-      >
-        Balance Update
-      </button>
+      <div className="d-flex">
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary"
+          onClick={(e) => handleImageClick(e, row)}
+        >
+          Balance Update
+        </button>
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary ms-2"
+          onClick={(e) => handleOpenCreditNote(e, row)}
+        >
+          Credit Note
+        </button>
+      </div>
     ),
   },
   activeAccordionIndex == 0 && {
@@ -2863,11 +2865,11 @@ export const pendingPaymentRequestColumns = ({
     renderRowCell: (row) => {
       return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
         .length > 0 ? (
-        <span className="row ml-2 ">
-          <h5
+        <span>
+          <h6
             onClick={() => handleOpenPaymentHistory(row, "TP")}
             style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+            className="pointer lead  text-decoration-underline text-black-50"
           >
             {/* Total Paid */}
             {nodeData
@@ -2875,15 +2877,15 @@ export const pendingPaymentRequestColumns = ({
                 (e) => e.vendor_name === row?.vendor_name && e.status == 1
               )
               .reduce((acc, item) => acc + +item.payment_amount, 0)}
-          </h5>
+          </h6>
         </span>
       ) : (
-        <h5
+        <h6
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
+          className="pointer lead  text-decoration-underline text-black-50"
         >
           0
-        </h5>
+        </h6>
       );
     },
   },
@@ -2920,7 +2922,7 @@ export const pendingPaymentRequestColumns = ({
         <h5
           onClick={() => handleOpenPaymentHistory(row, "FY")}
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+          className="pointer font-sm lead  text-decoration-underline text-black-50"
         >
           {/* Financial Year */}
 
@@ -2932,7 +2934,7 @@ export const pendingPaymentRequestColumns = ({
       ) : (
         <h5
           style={{ cursor: "pointer" }}
-          className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
+          className="pointer font-sm lead  text-decoration-underline text-black-50"
         >
           0
         </h5>

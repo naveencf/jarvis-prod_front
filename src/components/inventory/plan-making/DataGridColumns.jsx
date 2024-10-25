@@ -39,22 +39,38 @@ const DataGridColumns = ({
       width: 200,
       showCol: true,
     },
+    // {
+    //   key: 'logo',
+    //   name: 'Logo',
+    //   renderRowCell: (row) => {
+    //     const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row?.page_name}.jpeg`;
+    //     return (
+    //       <Avatar
+    //         src={name}
+    //         alt={row?.page_name}
+    //         style={{ width: '50px', height: '50px' }}
+    //       />
+    //     );
+    //   },
+    //   width: 150,
+    //   showCol: true,
+    // },
     {
       key: 'logo',
       name: 'Logo',
+      width: 150,
       renderRowCell: (row) => {
-        const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row?.page_name}.jpeg`;
+        const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
-          <Avatar
-            src={name}
-            alt={row?.page_name}
-            style={{ width: '50px', height: '50px' }}
-          />
+          <div className="profile-sec sb">
+            <div className="profile-img">
+              <img src={name} alt={row.page_name} width={40} />
+            </div>
+          </div>
         );
       },
-      width: 150,
-      showCol: true,
     },
+
     {
       key: 'vendor',
       name: 'Vendor',
@@ -105,7 +121,8 @@ const DataGridColumns = ({
       key: 'selection',
       name: 'Selection',
       renderRowCell: (row) => (
-        <Checkbox
+        <input
+          type="checkbox"
           checked={selectedRows?.some(
             (selectedRow) => selectedRow?._id === row?._id
           )}

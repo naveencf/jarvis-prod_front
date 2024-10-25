@@ -1,0 +1,193 @@
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  TextField,
+} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import { useGlobalContext } from "../../../../../../Context/Context";
+import { ErrorBar } from "recharts";
+import jwtDecode from "jwt-decode";
+import { baseUrl } from "../../../../../../utils/config";
+import axios from "axios";
+
+const CreditNoteDialog = (props) => {
+  const {
+    setCreditNotesDialog,
+    creditNotesDialog,
+    rowDataForCreditNote,
+    setViewImgDialog,
+    setViewImgSrc,
+    getData,
+  } = props;
+  const { toastAlert, toastError } = useGlobalContext();
+  const [creditNoteReason, setCreditNoteReason] = useState("");
+  const [creditNoteFile, setCreditNoteFile] = useState("");
+  const [preview, setPreview] = useState(null);
+  const [isPDF, setIsPDF] = useState(false);
+
+  const token = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const loginUserId = decodedToken.id;
+
+  const handleCloseCreditNote = () => {
+    setCreditNotesDialog(false);
+
+    setCreditNoteReason("");
+    setCreditNoteFile("");
+    setPreview(null);
+    setIsPDF(false);
+  };
+
+  const handleFileChange = (e) => {
+    const file = e?.target?.files[0];
+    if (file) {
+      setCreditNoteFile(file);
+      const filePreview = URL.createObjectURL(file);
+      setPreview(filePreview);
+      setViewImgSrc(filePreview);
+
+      // Check if the uploaded file is a PDF
+      const isFilePDF = file?.type === "application/pdf";
+      setIsPDF(isFilePDF);
+    }
+  };
+
+  console.log(rowDataForCreditNote, "row credit note===>>>");
+
+  const handleCreditNoteUpdate = async (e) => {
+    e?.preventDefault();
+
+    const confirmation = confirm(
+      `Are you sure you want to mark this sale booking of ${rowDataForCreditNote?.campaign_amount} as a credit note?`
+    );
+
+    if (confirmation) {
+      const formData = new FormData();
+      formData.append("invoice_action_reason", creditNoteReason);
+      formData.append("updated_by", loginUserId);
+      formData.append("credit_note_file", creditNoteFile);
+
+      try {
+        const res = await axios.put(
+          baseUrl + `sales/credit_note_by_finance/${rowDataForCreditNote?._id}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (res.status === 200) {
+          toastAlert("Credit Note Data Updated Successfully");
+          handleCloseCreditNote();
+          getData();
+        }
+      } catch (err) {
+        console.log("Error While Updating Credit Note: ", ErrorBar);
+      }
+    }
+  };
+
+  return (
+    <div>
+      <Dialog
+        open={creditNotesDialog}
+        onClose={handleCloseCreditNote}
+        fullWidth
+        maxWidth="md"
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <DialogTitle>Invoice Update</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseCreditNote}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent
+          dividers={true}
+          sx={{ maxHeight: "80vh", overflowY: "auto" }}
+        >
+          <div className="row">
+            <TextField
+              value={rowDataForCreditNote?.invoice_number}
+              style={{ background: "#F0F0F0" }}
+              label="Invoice Number"
+              disable={true}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+            <TextField
+              type="text"
+              label="Reason"
+              value={creditNoteReason}
+              className="mt-3"
+              onChange={(e) => setCreditNoteReason(e.target.value)}
+            />
+            <div className="col-3">
+              <label className="form-label mt-2">
+                File <sup style={{ color: "red" }}>*</sup>
+              </label>
+              <input type="file" onChange={(e) => handleFileChange(e)} />
+              {preview && (
+                <div className="mt-2">
+                  {!isPDF ? (
+                    <img
+                      src={preview}
+                      alt="Preview"
+                      style={{ maxWidth: "70px", cursor: "pointer" }}
+                      onClick={() => setViewImgDialog(true)}
+                    />
+                  ) : (
+                    <img
+                      src="/pdf-icon.png"
+                      alt="PDF Preview"
+                      style={{ maxWidth: "40px", cursor: "pointer" }}
+                      onClick={() => setViewImgDialog(true)}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="d-flex">
+            <Button
+              type="button"
+              className="mt-3"
+              variant="contained"
+              onClick={(e) => handleCreditNoteUpdate(e)}
+            >
+              YES
+            </Button>
+            <Button
+              type="button"
+              className="mt-3 ms-3"
+              variant="contained"
+              onClick={(e) => handleCloseCreditNote(e)}
+            >
+              No
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default CreditNoteDialog;

@@ -120,7 +120,7 @@ function PayVendorDialog(props) {
     formData.append("request_by", rowData.request_by);
     formData.append("request_amount", rowData.request_amount);
     formData.append("priority", rowData.priority);
-    formData.append("status", 1); //status will be Change Soon
+    formData.append("status", 1);
     formData.append("evidence", payMentProof);
     formData.append("payment_mode", paymentMode);
     formData.append("payment_amount", paymentAmout);
@@ -334,16 +334,12 @@ function PayVendorDialog(props) {
           <CloseIcon />
         </IconButton>
         <DialogContent>
-          {/* <div className="row gap-3"> */}
-
           <ReadableList rowData={rowData} />
           <Divider />
 
-          {/* <Divider /> */}
           <div className="row gap-3">
             <>
               <FormControlLabel
-                // className="col-md-3"
                 control={
                   <Checkbox
                     onChange={handleTDSDeduction}
@@ -574,8 +570,6 @@ function PayVendorDialog(props) {
 
             {TDSValue && (
               <TextField
-                // onChange={(e) => setAdjustAmount(e.target.value)}
-                // multiline
                 className="col"
                 autoFocus
                 margin="dense"

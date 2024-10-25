@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
   reducerPath: "PageBaseURL",
-  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList","pageClosedbyList"],
+  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList","pageClosedbyList","getPageCount" ,],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
@@ -65,7 +65,6 @@ export const PageBaseURL = createApi({
     updatePageCategory: builder.mutation({
       query: (data) => {
         const { _id, category_name } = data;
-        console.log(category_name, "category_name--->>>", data);
         return {
           url: `v1/page_category/${_id}`,
           method: "PUT",
@@ -254,6 +253,20 @@ export const PageBaseURL = createApi({
     //   }),
     //   providesTags: ["pageClosedbyList"],
     // }),
+    getAllCounts: builder.query({
+      query: () => `v1/get_all_counts`,
+      transformResponse:(response)=>response.data
+    }),
+
+    // get page counts
+    getPageCount: builder.mutation({
+      query: (data) => ({
+        url: `v1/get_page_count`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["getPageCount"],
+    }),
   }),
 });
 
@@ -284,5 +297,7 @@ export const {
   useDeletePageSubCategoryMutation,
   useGetAllPageSubCategoryQuery,
   useDeletePageCategoryMutation,
+  useGetAllCountsQuery,
   useGetAllPageClosebyListQuery,
+  useGetPageCountMutation,
 } = PageBaseURL;

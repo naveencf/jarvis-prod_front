@@ -1378,12 +1378,12 @@ const PageOverviewNew = () => {
         >
           OLD-Statistics
         </button> */}
-          {/* <button
+          <button
             className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
             onClick={() => setActiveTab("Tab3")}
           >
             Category Wise
-          </button> */}
+          </button>
           <button
             className={activeTab === "Tab4" ? "active btn btn-primary" : "btn"}
             onClick={() => setActiveTab("Tab4")}

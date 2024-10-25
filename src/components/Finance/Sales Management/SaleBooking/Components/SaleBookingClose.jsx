@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { baseUrl } from "../../../../../utils/config";
 import ImageView from "../../../ImageView";
-
 import {
   Autocomplete,
   Button,
@@ -17,14 +14,13 @@ import {
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import moment from "moment";
-import { set } from "date-fns";
-import { Link } from "react-router-dom";
 import {
   saleBookingCloseColumns,
   uniqueSaleBookingAccountColumn,
   uniqueSaleBookingSalesExecutiveColumn,
 } from "../../../CommonColumn/Columns";
 import View from "../../../../AdminPanel/Sales/Account/View/View";
+import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 
 const SaleBookingClose = ({
   onHandleOpenUniqueSalesExecutiveChange,
@@ -39,7 +35,6 @@ const SaleBookingClose = ({
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
   const [filterData, setFilterData] = useState([]);
-  const [aboutToClose, setAboutToClose] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [salesExecutive, setSalesExecutive] = useState("");
   const [fromDate, setFromDate] = useState("");
@@ -65,8 +60,6 @@ const SaleBookingClose = ({
   const [viewImgDialog, setViewImgDialog] = useState(false);
 
   const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const loginUserId = decodedToken.id;
 
   const getData = async () => {
     setIsLoading(true);
@@ -189,16 +182,11 @@ const SaleBookingClose = ({
     const filteredData = datas?.filter((item) => item);
     setFilterData(filteredData);
   };
-  console.log(filterData, "filter data sale booking ---->>>>");
 
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
-    const initialFilteredData = datas?.filter(
-      (item) => item.tds_status === "open"
-    );
-    setFilterData(initialFilteredData);
+    setFilterData(datas);
   };
-
   useEffect(() => {
     getData();
   }, []);
@@ -343,12 +331,7 @@ const SaleBookingClose = ({
     );
     onHandleOpenUniqueCustomerClickChange(() => handleOpenUniqueCustomerClick);
   }, []);
-  // Total base amount:-
-  // const baseAmountTotal = filterData?.reduce(
-  //   (total, item) => total + parseFloat(item?.base_amount) || 0,
-  //   0
-  // );
-  // setBaseamountTotal(baseAmountTotal);
+
   // For Verify :-
   const handleOpenVerifyDialog = (e, row) => {
     e.preventDefault();
@@ -380,7 +363,7 @@ const SaleBookingClose = ({
         }
       )
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           toastAlert("TDS Verification Successfully Completed");
           handleCloseVerifyDialog();
           getData();
@@ -479,23 +462,6 @@ const SaleBookingClose = ({
     }
   };
 
-  // useEffect(() => {
-  //     const openCount = datas?.filter(
-  //       (item) => item.tds_status === "open"
-  //     )?.length;
-  //     setOpenBtnCount(openCount);
-
-  //   const closeCount = datas?.filter(
-  //     (item) => item.tds_status === "close"
-  //   )?.length;
-  //   setCloseBtnCount(closeCount);
-
-  //   const initialFilteredData = datas?.filter(
-  //     (item) => item.tds_status === "open"
-  //   );
-  //   setFilterData(closeCount);
-  // }, [datas]);
-
   return (
     <>
       {/* verify dialog box */}
@@ -578,110 +544,29 @@ const SaleBookingClose = ({
         </DialogContent>
       </Dialog>
       {/* Unique Sales Executive Dialog Box */}
-      <Dialog
-        open={uniqueSalesExecutiveDialog}
-        onClose={handleCloseUniquesalesExecutive}
-        fullWidth={"md"}
-        maxWidth={"md"}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>Unique Sales Executive</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseUniquesalesExecutive}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          <div className="thm_table fx-head">
-            <DataGrid
-              rows={uniqueSalesExecutiveData}
-              columns={uniqueSaleBookingSalesExecutiveColumn({
-                uniqueSalesExecutiveData,
-                handleOpenVerifyDialog,
-                handleOpenSameSalesExecutive,
-              })}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              disableSelectionOnClick
-              autoHeight
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              getRowId={(row) => uniqueSalesExecutiveData?.indexOf(row)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CommonDialogBox
+        data={uniqueSalesExecutiveData}
+        columns={uniqueSaleBookingSalesExecutiveColumn({
+          uniqueSalesExecutiveData,
+          handleOpenVerifyDialog,
+          handleOpenSameSalesExecutive,
+        })}
+        setDialog={setUniqueSalesExecutiveDialog}
+        dialog={uniqueSalesExecutiveDialog}
+        title="Unique Sales Executive"
+      />
       {/* Unique Accounts Dialog Box */}
-      <Dialog
-        open={uniqueCustomerDialog}
-        onClose={handleCloseUniqueCustomer}
-        fullWidth={"md"}
-        maxWidth={"md"}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>Unique Accounts</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseUniqueCustomer}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          <div className="thm_table fx-head">
-            <DataGrid
-              rows={uniqueCustomerData}
-              columns={uniqueSaleBookingAccountColumn({
-                uniqueCustomerData,
-                handleOpenVerifyDialog,
-                handleOpenSameAccount,
-              })}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              disableSelectionOnClick
-              autoHeight
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              getRowId={(row) => uniqueCustomerData?.indexOf(row)}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
-
+      <CommonDialogBox
+        data={uniqueCustomerData}
+        columns={uniqueSaleBookingAccountColumn({
+          uniqueCustomerData,
+          handleOpenVerifyDialog,
+          handleOpenSameAccount,
+        })}
+        setDialog={setUniqueCustomerDialog}
+        dialog={uniqueCustomerDialog}
+        title="Unique Accounts"
+      />
       <div className="card">
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Search by filter</h5>
@@ -719,7 +604,7 @@ const SaleBookingClose = ({
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Customer Name"
+                      label="Account Name"
                       type="text"
                       variant="outlined"
                       InputProps={{
