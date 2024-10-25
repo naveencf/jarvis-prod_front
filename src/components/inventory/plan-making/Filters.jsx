@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 
-import { useState } from "react";
+import { useState } from 'react';
+import CustomSelect from '../../ReusableComponents/CustomSelect';
 
 const Filters = ({
   priceFilterType,
@@ -15,6 +16,7 @@ const Filters = ({
   setMaxPrice,
   minFollowers,
   setMinFollowers,
+  setSelectedCategory,
   maxFollowers,
   setMaxFollowers,
   selectedFollowers,
@@ -31,15 +33,15 @@ const Filters = ({
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
 
   const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
-    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
 
   const handleFollowerSelection = (e) => {
     const value = e.target.value;
 
-    if (value === "custom") {
+    if (value === 'custom') {
       setCustomFollowerRange(true);
       setSelectedFollowers([]);
       return;
@@ -57,7 +59,21 @@ const Filters = ({
   const removeFollowerSelection = (follower) => {
     setSelectedFollowers(selectedFollowers.filter((f) => f !== follower));
   };
+  // Prepare categories for CustomSelect
+  const categoryOptions = cat?.map((category) => ({
+    value: category._id,
+    label: category.page_category,
+  }));
 
+  const followerOptions = [
+    { id: 'lessThan10K', label: 'Less than 10k' },
+    { id: '10Kto20K', label: '10k to 20k' },
+    { id: '20Kto50K', label: '20k to 50k' },
+    { id: '50Kto100K', label: '50k to 100k' },
+    { id: '100Kto200K', label: '100k to 200k' },
+    { id: '200Kto500K', label: '200k to 500k' },
+    { id: '500Kto1000K', label: '500k to 1M' },
+  ];
   return (
     <div className="row">
       {/* Price filter dropdown */}
@@ -97,30 +113,17 @@ const Filters = ({
       </div>
 
       {/* Follower Filter */}
-      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-        <label htmlFor="follower-filter">Follower Filter</label>
-        <select
-          id="follower-filter"
-          className="filter-dropdown form-control"
-          onChange={(e) => {
-            handleFollowerSelection(e);
-          }}
-          value={selectedFollowers[0] || ""}
-        >
-          <option value="" disabled>
-            Select Follower Range
-          </option>
-          <option value="lessThan10K">Less than 10k</option>
-          <option value="10Kto20K">10k to 20k</option>
-          <option value="20Kto50K">20k to 50k</option>
-          <option value="50Kto100K">50k to 100k</option>
-          <option value="100Kto200K">100k to 200k</option>
-          <option value="200Kto500K">200k to 500k</option>
-          <option value="500Kto1000K">500k to 1000k</option>
-          {/* <option value="100Kto200K">100k to 200k</option> */}
-          {/* <option value="moreThan200K">More than 200k</option> */}
-          {/* <option value="custom">Custom</option> */}
-        </select>
+      <div className="form-group col-lg-12col-md-12 col-sm-12 col-12">
+        <label>Follower Filter</label>
+        <CustomSelect
+          label="Select Follower Range"
+          dataArray={followerOptions}
+          optionId="id"
+          optionLabel="label"
+          selectedId={selectedFollowers}
+          setSelectedId={setSelectedFollowers}
+          multiple={true}
+        />
       </div>
 
       {/* Custom Follower Range Inputs */}
@@ -131,7 +134,7 @@ const Filters = ({
             <input
               type="number"
               className="filter-input form-control"
-              value={minFollowers || ""}
+              value={minFollowers || ''}
               onChange={(e) => setMinFollowers(e.target.value)}
               // onBlur={handleFollowersBlur}
             />
@@ -142,7 +145,7 @@ const Filters = ({
             <input
               type="number"
               className="filter-input form-control"
-              value={maxFollowers || ""}
+              value={maxFollowers || ''}
               onChange={(e) => setMaxFollowers(e.target.value)}
               // onBlur={handleFollowersBlur}
             />
@@ -152,40 +155,36 @@ const Filters = ({
       )}
 
       {/* Display Selected Followers as Badges */}
-      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
+      {/* <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
         <label>Selected Followers:</label>
         <div className="selectBadge">
           {selectedFollowers.map((follower) => (
             <div className="selectBadgeItem" key={follower}>
-              {follower.replace(/([A-Z])/g, " $1").trim()} {/* Formatting */}
-              <button onClick={() => removeFollowerSelection(follower)}>
+              {follower.replace(/([A-Z])/g, ' $1').trim()}  {/* Formatting */}
+      {/* <button onClick={() => removeFollowerSelection(follower)}>
                 ×
               </button>
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Filter by Category */}
-      <div className="form-group col-lg-4 col-md-4 col-sm-12 col-12">
-        <label htmlFor="categoryFilter">Filter by Category:</label>
-        <select
-          className="form-control"
-          id="categoryFilter"
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-        >
-          <option value="">Select a category</option>
-          {cat?.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.page_category}
-            </option>
-          ))}
-        </select>
+      <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
+        <label htmlFor="categoryFilter">Category Filter</label>
+        <CustomSelect
+          label="Filter by Category"
+          dataArray={categoryOptions}
+          optionId="value"
+          optionLabel="label"
+          selectedId={selectedCategory}
+          setSelectedId={setSelectedCategory}
+          multiple={true}
+        />
       </div>
 
       {/* Selected categories as tags */}
-      <div className="form-group col-lg-6 col-md-6 col-sm-12 col-12">
+      {/* <div className="form-group col-lg-6 col-md-6 col-sm-12 col-12">
         <label>&nbsp;</label>
         <div className="selectBadge">
           {selectedCategory?.length > 0 &&
@@ -199,7 +198,7 @@ const Filters = ({
               );
             })}
         </div>
-      </div>
+      </div> */}
 
       {/* Action Buttons */}
       <div className="form-group col-lg-12 col-md-12 col-sm-12 col-12">
@@ -223,14 +222,14 @@ const Filters = ({
             type="number"
             className="filter-input form-contro"
             placeholder="Post Count"
-            value={postCountDefault || ""}
+            value={postCountDefault || ''}
             onChange={handlePostCountChange}
           />
           <input
             type="number"
             className="filter-input form-contro"
             placeholder="Story Count"
-            value={storyCountDefault || ""}
+            value={storyCountDefault || ''}
             onChange={handleStoryCountChange}
           />
         </div>
