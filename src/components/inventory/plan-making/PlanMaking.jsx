@@ -35,6 +35,7 @@ import PageDialog from './PageDialog';
 import CustomAlert from '../../../utils/CustomAlert';
 import LeftSideBar from './LeftSideBar';
 import PlanPricing from './PlanPricing';
+import RightDrawer from '../RightDrawer';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -119,7 +120,6 @@ const PlanMaking = () => {
   const navigate = useNavigate();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
-
   const { data: pageCate } = useGetAllPageCategoryQuery();
   const cat = pageCate?.data;
 
@@ -318,7 +318,7 @@ const PlanMaking = () => {
       costPerStoryValues[row._id],
       costPerBothValues[row._id]
     );
-    console.log('selected', updatedStoryValues);
+
     // updateStatistics(selectedRows);
   };
   const debouncedSendPlanDetails = useCallback(
@@ -336,7 +336,6 @@ const PlanMaking = () => {
 
   const handlePostPerPageChange = (row) => (event) => {
     const value = String(event.target.value);
-    console.log('value', value);
     const updatedPostValues = {
       ...postPerPageValues,
       [row._id]: value,
@@ -612,6 +611,7 @@ const PlanMaking = () => {
     const platform = pageList?.filter((item) => item.platform_id === id);
     setFilterData(platform);
   };
+
   const handleAutomaticSelection = (incomingData) => {
     // setIsAutomaticCheck(true);
     const updatedSelectedRows = [...selectedRows];
@@ -1179,6 +1179,37 @@ const PlanMaking = () => {
                 />
               </>
             )}
+            <RightDrawer
+              priceFilterType={priceFilterType}
+              deSelectAllRows={deSelectAllRows}
+              selectedFollowers={selectedFollowers}
+              setSelectedFollowers={setSelectedFollowers}
+              setPriceFilterType={setPriceFilterType}
+              minPrice={minPrice}
+              setMinPrice={setMinPrice}
+              maxPrice={maxPrice}
+              setMaxPrice={setMaxPrice}
+              minFollowers={minFollowers}
+              setMinFollowers={setMinFollowers}
+              maxFollowers={maxFollowers}
+              setMaxFollowers={setMaxFollowers}
+              followerFilterType={followerFilterType}
+              selectedCategory={selectedCategory}
+              handleCategoryChange={handleCategoryChange}
+              cat={cat}
+              removeCategory={removeCategory}
+              handleRemoveFilter={handleRemoveFilter}
+              handleCombinedFilter={handleCombinedFilter}
+              handleFollowersFilter={handleFollowersFilter}
+              selectAllRows={selectAllRows}
+              handleStoryCountChange={handleStoryCountChange}
+              handlePostCountChange={handlePostCountChange}
+              storyCountDefault={storyCountDefault}
+              postCountDefault={postCountDefault}
+              platformData={platformData}
+              activeTabPlatform={activeTabPlatfrom}
+              handlePlatform={handlePlatform}
+            />
           </div>
         </div>
 
@@ -1198,21 +1229,6 @@ const PlanMaking = () => {
             <h5 className="card-title">Category Filters</h5>
           </AccordionSummary>
           <AccordionDetails className="card-body">
-            <div className="tabs">
-              {platformData?.map((item) => (
-                <button
-                  key={item._id}
-                  className={
-                    activeTabPlatfrom === item._id
-                      ? 'active btn btn-info'
-                      : 'btn'
-                  }
-                  onClick={() => handlePlatform(item._id)}
-                >
-                  {item.platform_name}
-                </button>
-              ))}
-            </div>
             {activeTabPlatfrom === '666818824366007df1df1319' && (
               <Filters
                 priceFilterType={priceFilterType}

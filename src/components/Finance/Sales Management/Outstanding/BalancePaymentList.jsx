@@ -30,6 +30,7 @@ import TDSDialog from "../Outstanding/Sales/Dialog/TDSDialog";
 import DialogforBalancePaymentUpdate from "../Outstanding/Sales/Dialog/DialogforBalancePaymentUpdate";
 import { outstandingColumns } from "../../CommonColumn/Columns";
 import View from "../../../AdminPanel/Sales/Account/View/View";
+import CreditNoteDialog from "./Sales/Dialog/CreditNoteDialog";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -104,8 +105,9 @@ const BalancePaymentList = () => {
   const [outstandingRowData, setOutstandingRowData] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
   const [invcDate, setInvcDate] = useState("");
+  const [creditNotesDialog, setCreditNotesDialog] = useState(false);
+  const [rowDataForCreditNote, setRowDataForCreditNote] = useState({});
 
   const accordionButtons = [
     "Oustanding Invoice",
@@ -174,6 +176,7 @@ const BalancePaymentList = () => {
         },
       })
       .then((res) => {
+        console.log(res?.data?.data, "--->>>>>");
         // Create a new array with transformed data
         const transformedData = res?.data?.data?.reduce((acc, object) => {
           if (object?.salesInvoiceRequestData?.length > 0) {
@@ -194,6 +197,7 @@ const BalancePaymentList = () => {
                 account_name: object.account_name,
                 created_by_name: object.created_by_name,
                 paid_amount: object.paid_amount,
+                invoice_id: object._id,
               })
             );
             acc?.push(...invoices);
@@ -205,7 +209,10 @@ const BalancePaymentList = () => {
           }
           return acc;
         }, []);
+        console.log(transformedData, "transformes--->>");
         const reversedData = transformedData?.reverse();
+        console.log(reversedData, "reversedData--->>");
+
         setIsLoading(false);
         setData(reversedData);
         setFilterData(reversedData);
@@ -293,7 +300,6 @@ const BalancePaymentList = () => {
   const handleOpenUniqueCustomerClick = () => {
     setUniqueCustomerDialog(true);
   };
-
   // For Sales Executive
   const handleOpenUniqueSalesExecutive = () => {
     setUniqueSalesExecutiveDialog(true);
@@ -396,20 +402,11 @@ const BalancePaymentList = () => {
     }
   }, [paymentDetails, paymentModeDropDownData]);
 
-  console.log(
-    filterData?.filter(
-      (invc) =>
-        invc.invoice_type_id === "tax-invoice" &&
-        invc.invoice_creation_status !== "pending" &&
-        invc.gst_status === true &&
-        invc.paid_amount <= invc.campaign_amount * 0.9
-    ),
-    "console filter data ---->>>>"
-  );
-  console.log(
-    filterData?.find((invc) => invc.sale_booking_id == 2043),
-    "find ---->"
-  );
+  const handleOpenCreditNote = (e, row) => {
+    setCreditNotesDialog(true);
+    setRowDataForCreditNote(row);
+  };
+
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -511,6 +508,15 @@ const BalancePaymentList = () => {
             customerList={customerList}
             salesExecutiveList={salesExecutiveList}
           /> */}
+
+          <CreditNoteDialog
+            setCreditNotesDialog={setCreditNotesDialog}
+            creditNotesDialog={creditNotesDialog}
+            rowDataForCreditNote={rowDataForCreditNote}
+            setViewImgDialog={setViewImgDialog}
+            setViewImgSrc={setViewImgSrc}
+            getData={getData}
+          />
         </>
       )}
 
@@ -594,6 +600,7 @@ const BalancePaymentList = () => {
                 handleDiscardOpenDialog,
                 handleOpenEditAction,
                 activeAccordionIndex,
+                handleOpenCreditNote,
               })}
               data={
                 activeAccordionIndex === 3

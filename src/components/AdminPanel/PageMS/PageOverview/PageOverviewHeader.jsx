@@ -76,8 +76,8 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
       activenessFilter
         ? `page_activeness=${
             activenessOptions.find(
-              (option) => option.label === activenessFilter
-            )?.value
+              (option) => option.value === activenessFilter.toLowerCase()
+            )?.value?.toLowerCase()
           }`
         : "",
       searchTerm ? `search=${searchTerm.toLowerCase()}` : "",
@@ -85,7 +85,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
     ]
       .filter(Boolean)
       .join("&");
-
+console.log(newQuery)
     // setPagequery(newQuery);
     onFilterChange(newQuery);
   }, [
@@ -123,9 +123,11 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   });
 
   const activenessOptionsWithCount = activenessOptions.map((res) => {
-    const count = getCount(pageList, "page_activeness", res.label);
-    return `${formatString(res.label)} (${count})`;
+    const count = getCount(pageList, "page_activeness", res.value);
+    return `${formatString(res.value)} (${count})`;
   });
+  // console.log(activenessOptionsWithCount,activenessOptionsWithCount);
+
   const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
     const count = getCount(pageList, "ownership_type", res); // Pass the string directly
     return `${formatString(res)} (${count})`; // Format the result with the count
@@ -143,6 +145,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
+      console.log(optionWithCount.split(" (")[0],"optionWithCount")
       return optionWithCount.split(" (")[0];
     }
     return null;

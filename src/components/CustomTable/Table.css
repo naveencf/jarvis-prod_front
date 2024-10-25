@@ -58,7 +58,7 @@
       padding: 2px 10px;
       height: 30px;
       width: 100%;
-      transition: all .2s ease-in-out;
+      transition: all 0.2s ease-in-out;
     }
   }
 
@@ -67,7 +67,6 @@
     max-height: 50px;
     background-color: var(--theme-bg);
     font-size: 14px;
-
   }
 
   th {
@@ -89,7 +88,7 @@
   }
 
   .col-opt {
-    color: #959DA3;
+    color: #959da3;
     display: flex;
   }
 
@@ -104,7 +103,7 @@
     width: 10px;
     height: 100%;
     cursor: col-resize;
-    color: #959DA3;
+    color: #959da3;
     padding-top: 5px;
   }
 
@@ -113,7 +112,7 @@
     width: 10px;
     height: 100%;
 
-    color: #959DA3;
+    color: #959da3;
     padding-top: 5px;
   }
 
@@ -133,6 +132,7 @@
   .sticky-header {
     position: sticky;
     top: 0;
+    z-index: 2;
   }
 
   table {
@@ -154,12 +154,11 @@
         outline: none;
 
         &:hover {
-
           background-color: var(--body-bg) !important;
           outline: none;
 
           td {
-            outline: none
+            outline: none;
           }
         }
       }
@@ -167,7 +166,6 @@
       height: 100px;
     }
   }
-
 }
 
 th {
@@ -210,7 +208,7 @@ th .table-header {
   .next-button:disabled,
   .prev-button:disabled {
     svg {
-      fill: #959DA3;
+      fill: #959da3;
     }
   }
 
@@ -254,7 +252,6 @@ th .table-header {
   flex-direction: column;
   width: 100%;
   height: max-content;
-
 }
 
 .total-container,
@@ -283,7 +280,6 @@ th .table-header {
 }
 
 @supports not selector(::-webkit-scrollbar) {
-
   .total-container,
   .table-container {
     scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
@@ -298,7 +294,6 @@ th .table-header {
   border-left: none;
   border-right: none;
   padding: 12px 12px;
-
 
   .dropdown {
     .dropdown-btn {
@@ -333,7 +328,6 @@ th .table-header {
     left: 0;
     max-height: 400px;
     z-index: 1;
-
 
     ul {
       display: flex;
@@ -438,7 +432,6 @@ th .table-header {
         transform: rotate(90deg);
         line-height: 0.5;
       }
-
     }
 
     .form-check-input {
@@ -448,10 +441,7 @@ th .table-header {
     .form-check-label {
       margin-left: 40px;
     }
-
   }
-
-
 
   .dropdownIn {
     padding: 14px 14px;
@@ -468,7 +458,6 @@ th .table-header {
         padding: 0px 0px;
         font-size: 14px;
         font-weight: 400;
-
       }
 
       .nav-item .form-group {

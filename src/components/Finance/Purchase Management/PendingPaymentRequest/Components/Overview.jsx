@@ -10,12 +10,14 @@ import {
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const Overview = (props) => {
   const { data, columns } = props;
   const [overviewListDialog, setOverviewListDialog] = useState(false);
   const [overviewListData, setOverviewListData] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [selectedTableData, setSelectedTableData] = useState([]);
   const [selectedRanges, setSelectedRanges] = useState({
     "0-10k": false,
     "10k-20k": false,
@@ -100,6 +102,7 @@ const Overview = (props) => {
   };
 
   const handleOpenUniqueVendorClick = (filteredData) => {
+    console.log(filteredData, "filteredData ---->>");
     setOverviewListData(filteredData);
     setOverviewListDialog(true);
   };
@@ -217,13 +220,24 @@ const Overview = (props) => {
         </DialogTitle>
         <DialogContent dividers>
           <div style={{ height: "600px", width: "100%" }}>
-            <DataGrid
+            {/* <DataGrid
               rows={overviewListData}
               columns={columns}
               pageSize={10}
               rowsPerPageOptions={[10]}
               components={{ Toolbar: GridToolbar }}
-              getRowId={(row) => row.vendor_id}
+              getRowId={(row) => row?.vendor_id}
+            /> */}
+
+            <View
+              columns={columns}
+              data={overviewListData}
+              isLoading={loading}
+              title={"Sale Booking"}
+              rowSelectable={true}
+              pagination={[100, 200]}
+              tableName={"sale_booking_tds_status_wise_data"}
+              selectedData={setSelectedTableData}
             />
           </div>
         </DialogContent>
