@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import { useState } from 'react';
+import { useState } from "react";
 
 const Filters = ({
   priceFilterType,
@@ -31,15 +31,15 @@ const Filters = ({
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
 
   const formatNumber = (num) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num;
   };
 
   const handleFollowerSelection = (e) => {
     const value = e.target.value;
 
-    if (value === 'custom') {
+    if (value === "custom") {
       setCustomFollowerRange(true);
       setSelectedFollowers([]);
       return;
@@ -105,7 +105,7 @@ const Filters = ({
           onChange={(e) => {
             handleFollowerSelection(e);
           }}
-          value={selectedFollowers[0] || ''}
+          value={selectedFollowers[0] || ""}
         >
           <option value="" disabled>
             Select Follower Range
@@ -131,7 +131,7 @@ const Filters = ({
             <input
               type="number"
               className="filter-input form-control"
-              value={minFollowers || ''}
+              value={minFollowers || ""}
               onChange={(e) => setMinFollowers(e.target.value)}
               // onBlur={handleFollowersBlur}
             />
@@ -142,7 +142,7 @@ const Filters = ({
             <input
               type="number"
               className="filter-input form-control"
-              value={maxFollowers || ''}
+              value={maxFollowers || ""}
               onChange={(e) => setMaxFollowers(e.target.value)}
               // onBlur={handleFollowersBlur}
             />
@@ -157,7 +157,7 @@ const Filters = ({
         <div className="selectBadge">
           {selectedFollowers.map((follower) => (
             <div className="selectBadgeItem" key={follower}>
-              {follower.replace(/([A-Z])/g, ' $1').trim()} {/* Formatting */}
+              {follower.replace(/([A-Z])/g, " $1").trim()} {/* Formatting */}
               <button onClick={() => removeFollowerSelection(follower)}>
                 ×
               </button>
@@ -223,14 +223,14 @@ const Filters = ({
             type="number"
             className="filter-input form-contro"
             placeholder="Post Count"
-            value={postCountDefault || ''}
+            value={postCountDefault || ""}
             onChange={handlePostCountChange}
           />
           <input
             type="number"
             className="filter-input form-contro"
             placeholder="Story Count"
-            value={storyCountDefault || ''}
+            value={storyCountDefault || ""}
             onChange={handleStoryCountChange}
           />
         </div>
