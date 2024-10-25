@@ -1,11 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 import {
   ArrowUpRight,
   DownloadSimple,
   Eye,
   FloppyDiskBack,
   StackMinus,
-} from "@phosphor-icons/react";
+} from '@phosphor-icons/react';
 import {
   Box,
   Typography,
@@ -18,20 +18,26 @@ import {
   TableRow,
   Paper,
   Button,
-} from "@mui/material";
-import * as XLSX from "xlsx-js-style";
-import ExcelPreviewModal from "./ExcelPreviewModal";
+} from '@mui/material';
+import * as XLSX from 'xlsx-js-style';
+import ExcelPreviewModal from './ExcelPreviewModal';
+import { post } from 'jquery';
 
 // Function to get the platform name based on the platform ID
 const getPlatformName = (platformId) => {
   const platformMap = {
-    "666818824366007df1df1319": "Instagram",
-    "666818a44366007df1df1322": "Facebook",
-    "666856d34366007df1dfacf6": "YouTube",
-    "666818c34366007df1df1328": "Twitter",
-    "666856e04366007df1dfacfc": "Snapchat",
+    '666818824366007df1df1319': 'Instagram',
+    '666818a44366007df1df1322': 'Facebook',
+    '666856d34366007df1dfacf6': 'YouTube',
+    '666818c34366007df1df1328': 'Twitter',
+    '666856e04366007df1dfacfc': 'Snapchat',
   };
-  return platformMap[platformId] || "Unknown";
+  return platformMap[platformId] || 'Unknown';
+};
+
+const getPriceDetail = (priceDetails, key) => {
+  const detail = priceDetails?.find((item) => item[key] !== undefined);
+  return detail ? detail[key] : 0;
 };
 
 // Function to download selected data as an Excel file
@@ -41,24 +47,25 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
   let totalPostsAndStories = 0;
   let totalCost = 0;
 
-  const platforms = ["Instagram", "Facebook", "YouTube", "Twitter", "Snapchat"];
+  const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat'];
 
   platforms.forEach((platform) => {
     const platformData = selectedRow?.filter(
       (page) => getPlatformName(page.platform_id) === platform // Filter data for the current platform
     );
+
     if (!platformData?.length) return; // Skip if there is no data for the platform
 
     // Variable to store total posts and stories count per platform
     let platformTotalPostsAndStories = 0;
 
     // Handling Instagram platform separately to categorize by page category
-    if (platform === "Instagram") {
+    if (platform === 'Instagram') {
       const categories = platformData.reduce((acc, page) => {
         const categoryId = page.page_category_id; // Get the category ID of the page
         const categoryName =
           category?.find((cat) => cat._id === categoryId)?.page_category ||
-          "Unknown"; // Get the category name or default to 'Unknown'
+          'Unknown'; // Get the category name or default to 'Unknown'
         acc[categoryName] = acc[categoryName] || []; // Initialize array if not present
 
         // Ensure post and story counts are treated as numbers
@@ -67,21 +74,27 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
 
         acc[categoryName].push({
           S_No: acc[categoryName]?.length + 1,
-          "User Name": page.page_name,
-          "Profile Link": page.page_link,
+          'User Name': page.page_name,
+          'Profile Link': page.page_link,
           Followers: page.followers_count,
-          "Post Count": postCountValue,
-          "Story Count": storyCountValue,
+          'Post Count': postCountValue,
+          'Story Count': storyCountValue,
         });
+        const postPrice = getPriceDetail(
+          page.page_price_list,
+          'instagram_post'
+        );
+        const storyPrice = getPriceDetail(
+          page.page_price_list,
+          'instagram_story'
+        );
 
         // Add to platform and overall totals for posts and stories
         platformTotalPostsAndStories += postCountValue + storyCountValue;
         totalPostsAndStories += postCountValue + storyCountValue;
 
         // Calculate total cost
-        totalCost +=
-          postCountValue * page.m_post_price +
-          storyCountValue * page.m_story_price;
+        totalCost += postCountValue * postPrice + storyCountValue * storyPrice;
 
         return acc; // Return the accumulator for the next iteration
       }, {});
@@ -90,21 +103,21 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
       Object.entries(categories).forEach(([categoryName, categoryData]) => {
         // Check if all story counts in this category are 0
         const allStoryCountsZero = categoryData.every(
-          (item) => item["Story Count"] === 0
+          (item) => item['Story Count'] === 0
         );
 
         // Construct the data to write to the sheet, excluding "Story Count" if all are zero
         const sheetData = categoryData.map((item) => {
           const rowData = {
             S_No: item.S_No,
-            "User Name": item["User Name"],
-            "Profile Link": item["Profile Link"],
+            'User Name': item['User Name'],
+            'Profile Link': item['Profile Link'],
             Followers: item.Followers,
-            "Post Count": item["Post Count"],
+            'Post Count': item['Post Count'],
           };
 
           if (!allStoryCountsZero) {
-            rowData["Story Count"] = item["Story Count"];
+            rowData['Story Count'] = item['Story Count'];
           }
 
           return rowData;
@@ -118,24 +131,29 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
         // Calculate category total cost
         const categoryTotalCost = categoryData.reduce((acc, item) => {
           const page = platformData.find(
-            (p) => p.page_name === item["User Name"]
+            (p) => p.page_name === item['User Name']
+          );
+          const postPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_post'
+          );
+          const storyPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_story'
           );
           const postCountValue = Number(postCount[page._id]) || 0;
           const storyCountValue = Number(storyPerPage[page._id]) || 0;
           return (
-            acc +
-            postCountValue * page.m_post_price +
-            storyCountValue * page.m_story_price
+            acc + postCountValue * postPrice + storyCountValue * storyPrice
           );
         }, 0);
-
         overviewData.push({
           S_No: overviewData?.length + 1,
           Description: `Post and Stories on ${categoryName} Pages`,
-          Platform: "Instagram",
+          Platform: 'Instagram',
           Count: `${categoryData.reduce(
             (acc, item) =>
-              acc + item["Post Count"] + (item["Story Count"] || 0),
+              acc + item['Post Count'] + (item['Story Count'] || 0),
             0
           )}`, // Total post and story count for category
           Cost: `₹${categoryTotalCost.toFixed(2)}`, // Calculate cost for category
@@ -150,9 +168,9 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
         // Construct row data based on whether all story counts are zero
         const rowData = {
           S_No: index + 1,
-          "Page Name": page.page_name,
+          'Page Name': page.page_name,
           Followers: page.followers_count,
-          "Post Count": postCountValue,
+          'Post Count': postCountValue,
         };
 
         // Add "Story Count" if story counts are not all zero
@@ -199,54 +217,54 @@ const downloadExcel = (selectedRow, category, postCount, storyPerPage) => {
   // Add GST and total to the overview data
   overviewData.push(
     {
-      S_No: "",
-      Description: "Total Cost",
-      Platform: "",
-      Count: "",
+      S_No: '',
+      Description: 'Total Cost',
+      Platform: '',
+      Count: '',
       Cost: `₹${totalCost.toFixed(2)}`,
     },
     {
-      S_No: "",
-      Description: "GST (18%)",
-      Platform: "",
-      Count: "",
+      S_No: '',
+      Description: 'GST (18%)',
+      Platform: '',
+      Count: '',
       Cost: `₹${gst.toFixed(2)}`,
     },
     {
-      S_No: "",
-      Description: "Total Cost After GST",
-      Platform: "",
-      Count: "",
+      S_No: '',
+      Description: 'Total Cost After GST',
+      Platform: '',
+      Count: '',
       Cost: `₹${totalWithGst.toFixed(2)}`,
     },
     {
-      S_No: "",
-      Description: "Total Count of Posts and Stories",
-      Platform: "",
+      S_No: '',
+      Description: 'Total Count of Posts and Stories',
+      Platform: '',
       Count: totalPostsAndStories,
-      Cost: "",
+      Cost: '',
     } // Updated total count of posts and stories
   );
 
   const overviewSheet = XLSX.utils.json_to_sheet(overviewData); // Convert overview data to a sheet
   addHyperlinksAndAdjustWidths(overviewSheet, overviewData); // Add hyperlinks and adjust column widths
   applyCellStyles(overviewSheet, overviewData); // Apply cell styles
-  XLSX.utils.book_append_sheet(workbook, overviewSheet, "Overview"); // Create overview sheet
+  XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Overview'); // Create overview sheet
 
   // Move the overview sheet to the first position
   workbook.SheetNames = [
-    "Overview",
-    ...workbook.SheetNames.filter((name) => name !== "Overview"),
+    'Overview',
+    ...workbook.SheetNames.filter((name) => name !== 'Overview'),
   ];
 
   // Write the workbook to a file
-  XLSX.writeFile(workbook, "Plan_Statistics.xlsx");
+  XLSX.writeFile(workbook, 'Plan_Statistics.xlsx');
 };
 
 // Helper function to apply cell styles
 // const applyCellStyles = (sheet, data) => {
 const applyCellStyles = (sheet) => {
-  const range = XLSX.utils.decode_range(sheet["!ref"]);
+  const range = XLSX.utils.decode_range(sheet['!ref']);
   const headerRow = range.s.r;
 
   // Style the header row
@@ -254,14 +272,14 @@ const applyCellStyles = (sheet) => {
     const address = XLSX.utils.encode_cell({ c: C, r: headerRow });
     if (!sheet[address]) continue;
     sheet[address].s = {
-      font: { bold: true, color: { rgb: "FF0000" } },
-      alignment: { horizontal: "center", vertical: "center" },
-      fill: { fgColor: { rgb: "BFEE90" } },
+      font: { bold: true, color: { rgb: 'FF0000' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      fill: { fgColor: { rgb: 'BFEE90' } },
       border: {
-        top: { style: "thin" },
-        bottom: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" },
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
       },
     };
   }
@@ -275,10 +293,10 @@ const applyCellStyles = (sheet) => {
         sheet[address].s = {};
       }
       sheet[address].s.border = {
-        top: { style: "thin" },
-        bottom: { style: "thin" },
-        left: { style: "thin" },
-        right: { style: "thin" },
+        top: { style: 'thin' },
+        bottom: { style: 'thin' },
+        left: { style: 'thin' },
+        right: { style: 'thin' },
       };
       sheet[address].s.font = {
         bold: true,
@@ -286,8 +304,8 @@ const applyCellStyles = (sheet) => {
       if (C === 0 || C === 3) {
         // Center align the SNo column and Followers column
         sheet[address].s.alignment = {
-          horizontal: "center",
-          vertical: "center",
+          horizontal: 'center',
+          vertical: 'center',
         };
       }
     }
@@ -297,7 +315,7 @@ const applyCellStyles = (sheet) => {
 // Function to add hyperlinks and adjust column widths
 // const addHyperlinksAndAdjustWidths = (worksheet, ßdata) => {
 const addHyperlinksAndAdjustWidths = (worksheet) => {
-  const range = XLSX.utils.decode_range(worksheet["!ref"]);
+  const range = XLSX.utils.decode_range(worksheet['!ref']);
 
   // Apply column widths
   const columnWidths = [
@@ -308,7 +326,7 @@ const addHyperlinksAndAdjustWidths = (worksheet) => {
     { wch: 15 }, // Post Count
     { wch: 15 }, // Story Count
   ];
-  worksheet["!cols"] = columnWidths;
+  worksheet['!cols'] = columnWidths;
 
   // Add hyperlinks to 'Profile Link' column (assuming it's at index 2)
   for (let R = range.s.r + 1; R <= range.e.r; ++R) {
@@ -317,7 +335,7 @@ const addHyperlinksAndAdjustWidths = (worksheet) => {
     if (profileLink) {
       worksheet[address].l = {
         Target: profileLink,
-        Tooltip: "Click to open profile",
+        Tooltip: 'Click to open profile',
       };
     }
   }
@@ -360,7 +378,7 @@ const LeftSideBar = ({
   };
 
   const formatFollowers = (followers) => {
-    return (followers / 1000000).toFixed(1) + "M";
+    return (followers / 1000000).toFixed(1) + 'M';
   };
 
   const handlePreviewExcel = () => {
@@ -370,15 +388,15 @@ const LeftSideBar = ({
       const storyCountForPage = storyPerPage[page._id] || 0;
 
       return {
-        "Page Name": page.page_name,
+        'Page Name': page.page_name,
         Platform: platformName,
         Followers: page.followers_count,
-        "Post Count": postCountForPage,
-        "Story Count": storyCountForPage,
-        "Post Price": page.m_post_price,
-        "Story Price": page.m_story_price,
-        "Total Post Cost": postCountForPage * page.m_post_price,
-        "Total Story Cost": storyCountForPage * page.m_story_price,
+        'Post Count': postCountForPage,
+        'Story Count': storyCountForPage,
+        'Post Price': page.m_post_price,
+        'Story Price': page.m_story_price,
+        'Total Post Cost': postCountForPage * page.m_post_price,
+        'Total Story Cost': storyCountForPage * page.m_story_price,
         category: page.page_category_id, // Add category ID for filtering
       };
     });
@@ -404,13 +422,13 @@ const LeftSideBar = ({
             postCountForPage * (page.m_post_price || 0) +
             storyCountForPage * (page.m_story_price || 0);
 
-          if (page.ownership_type === "Own") {
+          if (page.ownership_type === 'Own') {
             acc.own.count += 1;
             acc.own.totalCost += totalCost;
-          } else if (page.ownership_type === "Vendor") {
+          } else if (page.ownership_type === 'Vendor') {
             acc.vendor.count += 1;
             acc.vendor.totalCost += totalCost;
-          } else if (page.ownership_type === "Solo") {
+          } else if (page.ownership_type === 'Solo') {
             acc.solo.count += 1;
             acc.solo.totalCost += totalCost;
           }
@@ -462,7 +480,7 @@ const LeftSideBar = ({
           <h6>
             Own Remaining Pages
             <span>
-              {" "}
+              {' '}
               {ownPages?.length - selectedRow?.length > 0
                 ? ownPages?.length - selectedRow?.length
                 : 0}
@@ -481,7 +499,7 @@ const LeftSideBar = ({
           {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
             const categoryName =
               category?.find((item) => item?._id === categoryId)
-                ?.page_category || "Unknown"; // Get category name or default to 'Unknown'
+                ?.page_category || 'Unknown'; // Get category name or default to 'Unknown'
             return (
               <h6 onClick={handleToggleBtn} key={categoryId}>
                 {categoryName}
@@ -497,7 +515,7 @@ const LeftSideBar = ({
           categories={category}
         />
         <div className="planSmall planLarge">
-          {["own", "vendor", "solo"].map((type) => (
+          {['own', 'vendor', 'solo'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
               <h6
                 onClick={() =>
@@ -506,7 +524,7 @@ const LeftSideBar = ({
                   )
                 }
               >
-                {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{" "}
+                {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{' '}
                 {ownershipCounts[type].count} <br />
                 Total Post & Story Cost : ₹ {ownershipCounts[type].totalCost}
                 {/* <h6 className=""></h6> */}
@@ -549,14 +567,14 @@ const LeftSideBar = ({
           {/* Repeated sections for Total Metrics */}
           {[
             {
-              label: "Total Followers",
+              label: 'Total Followers',
               value: formatFollowers(totalFollowers),
             },
-            { label: "Total Cost", value: totalCost },
-            { label: "Total Posts / Page", value: totalPostsPerPage },
-            { label: "Total Stories / Page", value: totalStoriesPerPage },
-            { label: "Total Deliverable", value: totalDeliverables },
-            { label: "Total Pages", value: totalPagesSelected },
+            { label: 'Total Cost', value: totalCost },
+            { label: 'Total Posts / Page', value: totalPostsPerPage },
+            { label: 'Total Stories / Page', value: totalStoriesPerPage },
+            { label: 'Total Deliverable', value: totalDeliverables },
+            { label: 'Total Pages', value: totalPagesSelected },
           ].map(({ label, value }, idx) => (
             <div className="nav-item nav-item-single" key={idx}>
               <div className="nav-btn nav-link">
@@ -576,7 +594,7 @@ const LeftSideBar = ({
               {Object.entries(pageCategoryCount).map(([categoryId, count]) => {
                 const categoryName =
                   category?.find((item) => item._id === categoryId)
-                    ?.page_category || "Unknown";
+                    ?.page_category || 'Unknown';
 
                 return (
                   <div
@@ -629,7 +647,7 @@ const LeftSideBar = ({
           {/* Ownership Types */}
           <div className="nav-item nav-item-single">
             <div className="row p16">
-              {["own", "vendor", "solo"].map((type) => (
+              {['own', 'vendor', 'solo'].map((type) => (
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={type}>
                   <div onClick={handleOwnPage}>
                     <div className="flexCenter colGap14">
@@ -645,11 +663,11 @@ const LeftSideBar = ({
                       </div>
                       <div>
                         <h6>
-                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{" "}
+                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{' '}
                           {ownershipCounts[type]?.count || 0}
                         </h6>
                         <h6 className="mt4">
-                          Total Post & Story Cost : ₹{" "}
+                          Total Post & Story Cost : ₹{' '}
                           {ownershipCounts[type]?.totalCost || 0}
                         </h6>
                       </div>
@@ -671,12 +689,12 @@ const LeftSideBar = ({
       >
         <Box
           sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "80%",
-            bgcolor: "background.paper",
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',
+            bgcolor: 'background.paper',
             boxShadow: 24,
             p: 4,
           }}
@@ -685,7 +703,7 @@ const LeftSideBar = ({
           <Button
             onClick={() => setOpenModal(false)}
             sx={{
-              position: "absolute",
+              position: 'absolute',
               top: 8,
               right: 8,
             }}
@@ -700,7 +718,7 @@ const LeftSideBar = ({
           {/* Table to display page details */}
           <TableContainer
             component={Paper}
-            sx={{ maxHeight: 300, overflowY: "auto" }}
+            sx={{ maxHeight: 300, overflowY: 'auto' }}
           >
             <Table>
               <TableHead>
@@ -717,8 +735,8 @@ const LeftSideBar = ({
                 {(pageDetails || [])?.map((page, index) => (
                   <TableRow key={page?._id || index}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{page?.page_name || "N/A"}</TableCell>
-                    <TableCell>{page?.ownership_type || "Unknown"}</TableCell>
+                    <TableCell>{page?.page_name || 'N/A'}</TableCell>
+                    <TableCell>{page?.ownership_type || 'Unknown'}</TableCell>
                     <TableCell>{page?.followers_count || 0}</TableCell>
                     <TableCell>{postCount?.[page?._id] || 0}</TableCell>
                     <TableCell>{storyPerPage?.[page?._id] || 0}</TableCell>

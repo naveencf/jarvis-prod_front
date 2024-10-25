@@ -456,7 +456,7 @@ const PlanStatics = ({
           </h5>
           <div className="flexCenterBetween colGap10 mr10">
             <div className="w-50">
-              <div className="input-group primaryInputGroup">
+              {/* <div className="input-group primaryInputGroup">
                 <input
                   className="form-control"
                   type="text"
@@ -472,7 +472,7 @@ const PlanStatics = ({
                 >
                   <X />
                 </button>
-              </div>
+              </div> */}
             </div>
             <div className="flexCenter colGap10">
               <ExcelPreviewModal
@@ -481,13 +481,13 @@ const PlanStatics = ({
                 previewData={previewData} // Pass the preview data
                 categories={category}
               />
-              <Button
+              {/* <Button
                 variant="contained"
                 className="btn btn_sm cmnbtn btn-outline-danger"
                 onClick={clearRecentlySelected}
               >
                 Clear Recenty Selected
-              </Button>
+              </Button> */}
               {/* <Button
                 variant="contained"
                 className="btn btn_sm cmnbtn btn-outline-primary"

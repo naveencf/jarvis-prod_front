@@ -854,6 +854,11 @@ const PageOverviewNew = () => {
       },
     },
   ]
+
+  const handleClickVendorName = (params) => {
+    // setVendorDetails(params.row);
+    setVendorDetails(params);
+  };
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -1045,24 +1050,40 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => { return formatNumber(row.followers_count) }
 
     },
+    // {
+    //   key: "vendor_name",
+    //   name: "Vendor",
+    //   renderRowCell: (row) => { return formatString(row.vendor_name) },
+    //   //   renderRowCell: (row) => {
+    //   //     let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
+    //   //     let name = vendor ? vendor.vendor_name : "Unknown Vendor";
+    //   //     return (
+    //   //       <a
+    //   //         className="link-primary pointer"
+    //   //         onClick={() => handleVendorClick(vendor?._id)}
+    //   //       >
+    //   //         {formatString(name)}
+    //   //       </a>
+    //   //     );
+    //   //   },
+    //   width: 200,
+    //   compare: true,
+    // },
     {
       key: "vendor_name",
-      name: "Vendor",
-      renderRowCell: (row) => { return formatString(row.vendor_name) },
-      //   renderRowCell: (row) => {
-      //     let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
-      //     let name = vendor ? vendor.vendor_name : "Unknown Vendor";
-      //     return (
-      //       <a
-      //         className="link-primary pointer"
-      //         onClick={() => handleVendorClick(vendor?._id)}
-      //       >
-      //         {formatString(name)}
-      //       </a>
-      //     );
-      //   },
+      name: "Vendor Name",
       width: 200,
-      compare: true,
+      // editable: true,
+      renderRowCell: (row) => {
+        return (
+          <div
+            onClick={() => handleClickVendorName(row)}
+            className="link-primary cursor-pointer text-truncate"
+          >
+            {formatString(row.vendor_name)}
+          </div>
+        );
+      },
     },
     // {
     //   key: "platform_active_on",
