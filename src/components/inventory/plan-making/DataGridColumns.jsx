@@ -27,9 +27,9 @@ const DataGridColumns = ({
   const dataGridColumns = [
     {
       key: 'serial_no',
-      name: 'Count',
+      name: 'S No',
       renderRowCell: (row) => <div>{filterData?.indexOf(row) + 1}</div>,
-      width: 80,
+      width: 30,
       showCol: true,
     },
     {
@@ -58,13 +58,21 @@ const DataGridColumns = ({
     {
       key: 'logo',
       name: 'Logo',
-      width: 150,
+      width: 50,
       renderRowCell: (row) => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
           <div className="profile-sec sb">
             <div className="profile-img">
-              <img src={name} alt={row.page_name} width={40} />
+              <a
+                target="_blank"
+                rel="noreferrer"
+                href={row.page_link}
+                className="link-primary"
+              >
+
+                <img src={name} alt={row.page_name} width={40} />
+              </a>
             </div>
           </div>
         );
@@ -96,8 +104,8 @@ const DataGridColumns = ({
           {row.page_link}
         </a>
       ),
-      width: 200,
-      showCol: true,
+      width: 30,
+      showCol: false,
     },
     {
       key: 'followers_count',
@@ -129,7 +137,7 @@ const DataGridColumns = ({
           onChange={handleCheckboxChange(row)}
         />
       ),
-      width: 100,
+      width: 50,
       showCol: true,
     },
     {
@@ -143,7 +151,7 @@ const DataGridColumns = ({
           onChange={handlePostPerPageChange(row)}
         />
       ),
-      width: 150,
+      width: 50,
       showCol: true,
     },
     {
@@ -157,7 +165,7 @@ const DataGridColumns = ({
           onChange={handleStoryPerPageChange(row)}
         />
       ),
-      width: 150,
+      width: 50,
       showCol: true,
     },
     {
@@ -169,14 +177,21 @@ const DataGridColumns = ({
           {showTotalCost[row?._id] ? totalCostValues[row?._id] || 0 : '-'}
         </div>
       ),
-      width: 100,
+      width: 50,
       showCol: true,
     },
     {
       key: 'preference_level',
       name: 'Level',
-      renderRowCell: (row) => <div>{row?.preference_level}</div>,
-      width: 200,
+      renderRowCell: (row) => <div>{formatString(row?.preference_level)}</div>,
+      width: 100,
+      showCol: true,
+    },
+    {
+      key: 'page_activeness',
+      name: 'Activeness',
+      renderRowCell: (row) => { return formatString(row?.page_activeness) },
+      width: 100,
       showCol: true,
     },
     {
@@ -191,7 +206,7 @@ const DataGridColumns = ({
         )?.type_name;
         return <div>{finalName}</div>;
       },
-      width: 200,
+      width: 100,
       showCol: true,
     },
     {
@@ -201,9 +216,9 @@ const DataGridColumns = ({
         const name = cat?.find(
           (item) => item?._id === row?.page_category_id
         )?.page_category;
-        return <div>{name}</div>;
+        return <div>{formatString(name)}</div>;
       },
-      width: 200,
+      width: 100,
       showCol: true,
     },
     {

@@ -33,7 +33,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   const profileDataOptions = profileData?.data || [];
 
   // Filter states
-  const [categoryFilter, setCategoryFilter] = useState("Meme");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [subCategoryFilter, setSubCategoryFilter] = useState(null);
   const [profileTypeFilter, setProfileTypeFilter] = useState(null);
   const [platformFilter, setPlatformFilter] = useState(null);
@@ -74,18 +74,17 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
       platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
       ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
       activenessFilter
-        ? `page_activeness=${
-            activenessOptions.find(
-              (option) => option.value === activenessFilter.toLowerCase()
-            )?.value?.toLowerCase()
-          }`
+        ? `page_activeness=${activenessOptions.find(
+          (option) => option.value === activenessFilter.toLowerCase()
+        )?.value?.toLowerCase()
+        }`
         : "",
       searchTerm ? `search=${searchTerm.toLowerCase()}` : "",
       sortField ? `sort_by=${sortField}&order=${sortOrder}` : "",
     ]
       .filter(Boolean)
       .join("&");
-console.log(newQuery)
+    console.log(newQuery)
     // setPagequery(newQuery);
     onFilterChange(newQuery);
   }, [
@@ -145,7 +144,7 @@ console.log(newQuery)
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
-      console.log(optionWithCount.split(" (")[0],"optionWithCount")
+      console.log(optionWithCount.split(" (")[0], "optionWithCount")
       return optionWithCount.split(" (")[0];
     }
     return null;

@@ -93,31 +93,11 @@ const PageOverviewNew = () => {
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
-  const [pagequery, setPagequery] = useState("page_category_name=meme")
+  const [pagequery, setPagequery] = useState("")
   const [editMode, setEditMode] = useState(false)
   const [editID, setEditID] = useState(null)
 
 
-  //   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
-  //   const { data: platData } = useGetPmsPlatformQuery();
-  //   const platformData = platData?.data;
-  //   const showPageHealthColumn = useSelector(
-  //     (state) => state.PageOverview.showPageHelathColumn
-  //   );
-
-  //   const {
-  //     data: pageCate,
-  //     refetch: refetchPageCate,
-  //     isLoading: isPageCateLoading,
-  //   } = useGetAllPageCategoryQuery();
-  //   const cat = pageCate?.data;
-
-  //   const { data: subCategory } = useGetAllPageSubCategoryQuery();
-  //   const subCat = subCategory?.data || [];
-  //   const { data: vendor } = useGetAllVendorQuery();
-  //   const vendorData = vendor;
-  //   const { data: priceData, isLoading: isPriceLoading } =
-  //     useGetMultiplePagePriceQuery(selectedRow, { skip: !selectedRow });
   const {
     data: pageList,
     refetch: refetchPageList,
@@ -254,118 +234,6 @@ const PageOverviewNew = () => {
     setTableBoths(totalBoths);
   };
 
-  //   useEffect(() => {
-  //     if (pageList) {
-  //       setVendorTypes(pageList);
-  //       setFilterData(pageList);
-  //       calculateAndSetTotals(pageList);
-  //       setTabFilterData(pageList);
-  //       // setNewFilterData(pageList);
-  //     }
-  //   }, [pageList]);
-
-  //   useEffect(() => {
-  //     pageHealthToggleCheck();
-  //   }, [isPageListLoading, isPagestatLoading, filterData]);
-
-  //   useEffect(() => {
-  //     if (userID && !contextData) {
-  //       axios
-  //         .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-  //         .then((res) => {
-  //           if (res.data[33].view_value === 1) {
-  //             setContextData(true);
-  //           }
-  //           if (res.data[57].view_value === 1) {
-  //             setPageUpdateAuth(true);
-  //           }
-  //           if (res.data[56].view_value === 1) {
-  //             setPageStatsAuth(true);
-  //           }
-  //         });
-  //     }
-
-  //     getData();
-  //     // fetchWhatsAppLinks();
-  //   }, []);
-
-  //   useEffect(() => {
-  //     if (pageList) {
-  //       const pageCategoryCount = {};
-  //       const categoryVendorMap = {};
-  //       const categoryFollowerMap = {};
-  //       const postMap = {};
-  //       const storyMap = {};
-
-  //       for (let i = 0; i < pageList?.length; i++) {
-  //         const categoryId = pageList[i]?.page_category_id;
-  //         const vendorId = pageList[i]?.vendor_id;
-  //         const followers = pageList[i]?.followers_count || 0;
-  //         const storys = pageList[i]?.story || 0;
-  //         const posts = pageList[i]?.post || 0;
-
-  //         if (categoryId) {
-  //           if (pageCategoryCount[categoryId]) {
-  //             pageCategoryCount[categoryId] += 1;
-  //           } else {
-  //             pageCategoryCount[categoryId] = 1;
-  //           }
-
-  //           if (!categoryVendorMap[categoryId]) {
-  //             categoryVendorMap[categoryId] = new Set();
-  //           }
-  //           if (vendorId) {
-  //             categoryVendorMap[categoryId].add(vendorId);
-  //           }
-
-  //           if (categoryFollowerMap[categoryId]) {
-  //             categoryFollowerMap[categoryId] += followers;
-  //           } else {
-  //             categoryFollowerMap[categoryId] = followers;
-  //           }
-
-  //           if (storyMap[categoryId]) {
-  //             storyMap[categoryId] += storys;
-  //           } else {
-  //             storyMap[categoryId] = storys;
-  //           }
-
-  //           if (postMap[categoryId]) {
-  //             postMap[categoryId] += posts;
-  //           } else {
-  //             postMap[categoryId] = posts;
-  //           }
-  //         }
-  //       }
-
-  //       const finalResult = [];
-  //       for (let j = 0; j < cat?.length; j++) {
-  //         const categoryId = cat[j]?._id;
-  //         const categoryName = cat[j]?.page_category;
-
-  //         if (pageCategoryCount[categoryId]) {
-  //           finalResult.push({
-  //             id: categoryId,
-  //             category_name: categoryName,
-  //             category_used: pageCategoryCount[categoryId],
-  //             vendor_count: categoryVendorMap[categoryId]?.size || 0,
-  //             total_followers: categoryFollowerMap[categoryId] || 0,
-  //             total_stories: storyMap[categoryId] || 0,
-  //             total_posts: postMap[categoryId] || 0,
-  //           });
-  //         }
-  //       }
-
-  //       setCategoryData(finalResult);
-  //     }
-  //   }, [vendorTypes, vendorData, cat, pageList]);
-
-  // Update localPriceData when new data is fetched
-  //   useEffect(() => {
-  //     if (priceData) {
-  //       setLocalPriceData(priceData);
-  //     }
-  //   }, [priceData]);
 
   const handlePriceClick = (row) => {
     return function () {
@@ -392,20 +260,6 @@ const PageOverviewNew = () => {
     setOpenPriceLogModal(false);
   };
 
-  // const whatsAppData = async (data) => {
-  //   setLoading(true);
-  //   const result = await axios
-  //     .get(`${baseUrl}v1/vendor_group_link_vendor_id/${data.vendor_id}`, {
-  //       headers: {
-  //         Authorization: `Bearer ${storedToken}`,
-  //         "Content-Type": "application/json",
-  //       },
-  //     })
-  //     .then((res) => {
-  //       setWaData(res.data.data);
-  //       setLoading(false);
-  //     });
-  // };
   const handlewhatsAppData = (row) => {
     setWaData(row);
   };
@@ -1220,14 +1074,14 @@ const PageOverviewNew = () => {
               target="_blank"
               rel="noopener noreferrer"
             > */}
-              <button
-                title="Edit"
-                className="btn btn-outline-primary btn-sm user-button"
-                onClick={() => editInNewTab(row._id)}
-              >
-                <FaEdit />{" "}
-              </button>
-            {/* </Link>
+          <button
+            title="Edit"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={() => editInNewTab(row._id)}
+          >
+            <FaEdit />{" "}
+          </button>
+          {/* </Link>
           )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
@@ -1617,10 +1471,10 @@ const PageOverviewNew = () => {
             //   vendorData={vendorData}
 
             // />
-            <CategoryWisePageOverviewNew dataTable={dataGridcolumns}/>
+            <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
           )}
           {activeTab === "Tab4" && <PageClosedByDetails />}
-          {activeTab === "Tab5" && <StatsOfOverview dataGridcolumns={dataGridcolumns}/>}
+          {activeTab === "Tab5" && <StatsOfOverview dataGridcolumns={dataGridcolumns} />}
         </div>
       </> : <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />}
     </>

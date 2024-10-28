@@ -5,6 +5,7 @@ import { baseUrl } from "../../../../../utils/config";
 import { Link } from "react-router-dom";
 import UploadBulkVendorPages from "./UploadBulkVendorPages";
 import BulkVendorUploadModal from "../BulkVendorUploadModal";
+import { useGetAllVendorQuery } from "../../../../Store/reduxBaseURL";
 
 const BulkVendor = () => {
   const token = sessionStorage.getItem("token");
@@ -12,6 +13,11 @@ const BulkVendor = () => {
   const [filterData, setFilterData] = useState([]);
   const [getRowData, setGetRowData] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const {
+    data: vendorData,
+    // isLoading: loading,
+    // refetch: refetchVendor,
+  } = useGetAllVendorQuery();
 
   useEffect(() => {
     axios
@@ -116,7 +122,7 @@ const BulkVendor = () => {
           {/* <UploadBulkVendorPages getRowData={getRowData} from={"pages"} /> */}
 
 
-          <BulkVendorUploadModal open={openModal} onClose={handleCloseModal} />
+          {openModal && <BulkVendorUploadModal open={openModal} onClose={handleCloseModal} />}
 
           <button
             onClick={() => handleOpenModal()}
