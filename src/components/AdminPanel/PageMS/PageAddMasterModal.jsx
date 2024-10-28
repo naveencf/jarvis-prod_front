@@ -80,6 +80,7 @@ export default function PageAddMasterModal() {
 
   const formSubmit = (data) => {
     // Check if category is required (for Sub Category or Sub Category Update) and is not selected
+    console.log(data, 'data one two')
     if (
       (modalType === "Sub Category" || modalType === "Sub Category Update") &&
       !selectedCategory
@@ -87,25 +88,27 @@ export default function PageAddMasterModal() {
       toastError("Please select a category before submitting.");
       return; // Stop the form submission if no category is selected
     }
-  
+
     const stateToSend =
       selectedCategory === 96 && currentState
         ? currentState
         : "";
-  
+
     const obj = {
       description: data.description,
       created_by: userID,
       _id: rowData._id,
-      state: stateToSend,
+      // state: stateToSend,
+      ...(modalType.includes("Sub Category") && { state: stateToSend }),
     };
-  
+
     if (modalType === "Sub Category" || modalType === "Sub Category Update") {
       obj.page_sub_category = data.name; // Use `page_sub_category` for subcategories
     } else {
-      obj.name = data.name;
+      obj.page_category = data.name;
+      console.log(obj, 'dataname')
     }
-  
+
     // API calls based on modalType
     if (modalType === "Category") {
       delete obj._id;
@@ -145,7 +148,7 @@ export default function PageAddMasterModal() {
         .catch((err) => toastError(err.message));
     }
   };
-  
+
 
   const { data: categoryData } = useGetAllPageCategoryQuery();
   const categoryOptions = categoryData?.data || [];
@@ -164,7 +167,7 @@ export default function PageAddMasterModal() {
             {/* Category Field: Only show for adding/updating subcategories */}
             {(modalType === "Sub Category" || modalType === "Sub Category Update") && (
               <div className="form-group col-12">
-                <label className="form-label">Category <sup style={{color:"red"}}>*</sup></label>
+                <label className="form-label">Category <sup style={{ color: "red" }}>*</sup></label>
                 <Select
                   className=""
                   options={categoryOptions.map((option) => ({
@@ -196,7 +199,7 @@ export default function PageAddMasterModal() {
                     onChange={(option) => setCurrentState(option ? option : null)}
                   />
                 </div>
-            )}
+              )}
             <TextField
               autoFocus
               margin="dense"

@@ -4,7 +4,7 @@ import { baseUrl } from "../../../utils/config";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link, useNavigate } from "react-router-dom";
-// import { Avatar, Box, Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
 import CircularProgress from "@mui/material/CircularProgress";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import jwtDecode from "jwt-decode";
