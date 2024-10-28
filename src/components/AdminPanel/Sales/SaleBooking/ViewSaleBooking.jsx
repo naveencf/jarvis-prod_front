@@ -545,6 +545,7 @@ const ViewSaleBooking = () => {
       name: "Incentive Amount",
       showCol: true,
       width: 100,
+      getTotal: true,
     },
     {
       key: "earned_incentive_amount",
@@ -553,6 +554,7 @@ const ViewSaleBooking = () => {
       compare: true,
       showCol: true,
       width: 100,
+      getTotal: true,
 
     },
 

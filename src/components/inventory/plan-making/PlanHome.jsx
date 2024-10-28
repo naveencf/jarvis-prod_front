@@ -12,14 +12,15 @@ import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
 import { AppContext } from '../../../Context/Context';
-import { FaEdit } from 'react-icons/fa';
+// import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
 import AddIcon from '@mui/icons-material/Add';
-import FormContainer from '../../AdminPanel/FormContainer';
+// import FormContainer from '../../AdminPanel/FormContainer';
 import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
 import jwtDecode from 'jwt-decode';
 import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
+import PlanXStatusDialog from './StatusDialog';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ function PlanHome() {
   const [errors, setErrors] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState(null);
+  const [statusDialog, setStatusDialog] = useState(false);
+  const [statusDialogPlan, setStatusDialogPlan] = useState(null);
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -53,10 +56,9 @@ function PlanHome() {
   const storedToken = sessionStorage.getItem('token');
   const { id } = jwtDecode(storedToken);
   const decodedToken = jwtDecode(storedToken);
- const [pagequery, setPagequery] = useState("")
-  const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery({ decodedToken, id, pagequery });
- 
+  const [pagequery, setPagequery] = useState("")
+  const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
+
   const { usersDataContext } = useContext(AppContext);
 
   const salesUsers = usersDataContext?.filter(
@@ -120,6 +122,7 @@ function PlanHome() {
           description: plan.description,
           account_id: plan.account_id,
           sales_executive_id: plan.sales_executive_id,
+          account_name: plan.account_name,
         }));
         setPlanRows(formattedRows);
       }
@@ -211,6 +214,7 @@ function PlanHome() {
 
   const handleFormSubmit = async () => {
     const validationErrors = validateForm();
+    console.log("ksddbnjkbb", validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -316,6 +320,11 @@ function PlanHome() {
     setOpenDialog(true);
   };
 
+  const handleStatusChange = (row) => {
+    setStatusDialog(true);
+    setStatusDialogPlan(row);
+    setSelectedPlanId(row.id); // Store the plan ID
+  }
   const columns = [
     {
       key: 'serial_no',
@@ -354,6 +363,15 @@ function PlanHome() {
       showCol: true,
     },
     {
+      key: 'account_name',
+      name: 'Account',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{row?.account_name}</div>
+      ),
+      // renderRowCell: (row) => (<div>{row?.account_name}</div>),
+      width: 200,
+    },
+    {
       key: 'sales_executive_name',
       name: 'Sales Executive Name',
       renderRowCell: (row) => (
@@ -376,10 +394,10 @@ function PlanHome() {
       name: 'Plan Status',
       renderRowCell: (row) => (
         <div
-          className={`badge ${
-            row?.plan_status === 'open' ? 'badge-success' : 'badge-danger'
-          }`}
+          className={`badge ${row?.plan_status === 'close' ? 'badge-success' : 'badge-danger'
+            }`}
           style={{ cursor: 'pointer' }}
+          onClick={() => handleStatusChange(row)}
         >
           {row?.plan_status}
         </div>
@@ -617,10 +635,10 @@ function PlanHome() {
           Plan Pricing
         </button>
       </div> */}
-
+      {statusDialog && <PlanXStatusDialog setPlanDetails={setPlanDetails} statusDialogPlan={statusDialogPlan} statusDialog={statusDialog} setStatusDialog={setStatusDialog} fetchPlans={fetchPlans} />}
       <div className="card">
         <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Plan Overview</h5>
+          <h5 className="card-title">Plan X Overview - {planRows?.length}</h5>
           <div className="flexCenter colGap8">
             <Link onClick={handlePlanMaking}>
               <button className="btn cmnbtn btn-primary btn_sm">

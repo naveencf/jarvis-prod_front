@@ -1781,7 +1781,7 @@ const SidebarLinks = () => {
               </NavLink>
               {decodedToken?.role_id === 1 ? (
                 <NavLink className="collapse-item" to="/admin/pms-plan-making">
-                  <i className="bi bi-dot"></i>Plan Making
+                  <i className="bi bi-dot"></i>Plan X
                 </NavLink>
               ) : (
                 ""
