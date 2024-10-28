@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
   reducerPath: "PageBaseURL",
-  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList","pageClosedbyList","getPageCount" ,],
+  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList", "pageClosedbyList", "getPageCount",],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
@@ -61,21 +61,21 @@ export const PageBaseURL = createApi({
     //   },
     //   invalidatesTags: ["categoryList"],
     // }),
-
     updatePageCategory: builder.mutation({
       query: (data) => {
-        const { _id, category_name } = data;
+        const { _id, ...payload } = data;
+        // console.log(data, 'hello data')
         return {
           url: `v1/page_category/${_id}`,
           method: "PUT",
           body: {
-            page_category: category_name,
-            description: data.description,
-            last_updated_by: data.last_updated_by,
+            page_category: payload.page_category,
+            description: payload.description,
+            last_updated_by: payload.last_updated_by,
+            // ...payload
           },
         };
-      },
-      invalidatesTags: ["categoryList"],
+      }
     }),
 
     //price List
@@ -112,13 +112,13 @@ export const PageBaseURL = createApi({
       query: ({ decodedToken, userID, pagequery }) => {
         // Check if the role is admin (role_id == 1)
         // console.log(pagequery,"pagequery")
-        if (  decodedToken?.role_id === 1) {
+        if (decodedToken?.role_id === 1) {
           // if(pagequery){
 
-            return {
-              url: `v1/get_all_pages?${pagequery}`, // Use GET request for admin
-              method: "GET",
-            };
+          return {
+            url: `v1/get_all_pages?${pagequery}`, // Use GET request for admin
+            method: "GET",
+          };
           // }
           return;
         } else {
@@ -255,22 +255,22 @@ export const PageBaseURL = createApi({
     // }),
     getAllCounts: builder.query({
       query: () => `v1/get_all_counts`,
-      transformResponse:(response)=>response.data
+      transformResponse: (response) => response.data
     }),
 
     // get page counts
-getPageCount: builder.query({
-  query: ({ start_date, end_date }) => ({
-    url: `v1/get_page_count?start_date=${start_date}&end_date=${end_date}`,
-    method: "GET",
-  }),
-}),
+    getPageCount: builder.query({
+      query: ({ start_date, end_date }) => ({
+        url: `v1/get_page_count?start_date=${start_date}&end_date=${end_date}`,
+        method: "GET",
+      }),
+    }),
 
 
     //get category wise invetory details
     getAllCategoryWiseInventory: builder.query({
       query: () => `v1/category_wise_inventory_details`,
-      transformResponse:(response)=>response.data
+      transformResponse: (response) => response.data
     }),
   }),
 });
