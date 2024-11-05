@@ -1,29 +1,29 @@
-import { useState, useEffect, useContext } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
-import { FaEdit } from "react-icons/fa";
-import DeleteButton from "../DeleteButton";
-import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Box, Typography } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import PriceCheckIcon from "@mui/icons-material/PriceCheck";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
-import { addRow } from "../../Store/Executon-Slice";
-import View from "../Sales/Account/View/View";
+import { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/config';
+import { FaEdit } from 'react-icons/fa';
+import DeleteButton from '../DeleteButton';
+import { Link, useNavigate } from 'react-router-dom';
+import { Avatar, Box, Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
+import jwtDecode from 'jwt-decode';
+import { useDispatch, useSelector } from 'react-redux';
+import { addRow } from '../../Store/Executon-Slice';
+import View from '../Sales/Account/View/View';
 
-import DateFormattingComponent from "../../DateFormator/DateFormared";
+import DateFormattingComponent from '../../DateFormator/DateFormared';
 import {
   openTagCategoriesModal,
   setTagCategories,
-} from "../../Store/PageOverview";
-import TagCategoryListModal from "./TagCategoryListModal";
+} from '../../Store/PageOverview';
+import TagCategoryListModal from './TagCategoryListModal';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
   useGetVendorWhatsappLinkTypeQuery,
-} from "../../Store/reduxBaseURL";
-import VendorNotAssignedModal from "./VendorNotAssignedModal";
+} from '../../Store/reduxBaseURL';
+import VendorNotAssignedModal from './VendorNotAssignedModal';
 import {
   useGetAllCitiesQuery,
   useGetAllPageCategoryQuery,
@@ -33,34 +33,34 @@ import {
   useGetpagePriceTypeQuery,
   useGetAllPageSubCategoryQuery,
   useGetAllProfileListQuery,
-} from "../../Store/PageBaseURL";
-import AddIcon from "@mui/icons-material/Add";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import { setStatsUpdate } from "../../Store/PageMaster";
-import PageDetail from "./PageOverview/PageDetail";
-import formatString from "../Operation/CampaignMaster/WordCapital";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
-import PageClosedByDetails from "./Page/PageClosedByDetails";
-import VendorDetails from "./Vendor/VendorDetails";
-import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
-import StatisticsWisePageOverview from "./PageOverview/StatisticsWisePageOverview";
-import { constant } from "../../../utils/constants";
-import { formatNumber } from "../../../utils/formatNumber";
-import FilterWisePageOverview from "./PageOverview/FilterWisePageOverview";
-import PriceModal from "./PageOverview/PriceModal";
-import FollowerLogsModal from "./FollowerLogsModal";
-import PriceLogs from "./PriceLogs";
-import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
-import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
-import StatsOfOverview from "./PageOverview/StatsOfOverview";
-import PageEdit from "./PageEdit";
-import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
+} from '../../Store/PageBaseURL';
+import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { setStatsUpdate } from '../../Store/PageMaster';
+import PageDetail from './PageOverview/PageDetail';
+import formatString from '../Operation/CampaignMaster/WordCapital';
+import { AppContext, useGlobalContext } from '../../../Context/Context';
+import PageClosedByDetails from './Page/PageClosedByDetails';
+import VendorDetails from './Vendor/VendorDetails';
+import CategoryWisePageOverview from './PageOverview/CategoryWisePageOverview';
+import StatisticsWisePageOverview from './PageOverview/StatisticsWisePageOverview';
+import { constant } from '../../../utils/constants';
+import { formatNumber } from '../../../utils/formatNumber';
+import FilterWisePageOverview from './PageOverview/FilterWisePageOverview';
+import PriceModal from './PageOverview/PriceModal';
+import FollowerLogsModal from './FollowerLogsModal';
+import PriceLogs from './PriceLogs';
+import WhatsapplinksModel from './PageOverview/WhatsapplinksModel';
+import PageOverviewWithoutHealth from './PageOverview/PageOverviewWithoutHealth';
+import StatsOfOverview from './PageOverview/StatsOfOverview';
+import PageEdit from './PageEdit';
+import CategoryWisePageOverviewNew from './PageOverview/CategoryWisePageOverviewNew';
 const PageOverviewNew = () => {
   const { toastAlert, toastError } = useGlobalContext();
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ const PageOverviewNew = () => {
   const { usersDataContext } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
   const [vendorTypes, setVendorTypes] = useState([]);
-  const [activeTab, setActiveTab] = useState("Tab0");
+  const [activeTab, setActiveTab] = useState('Tab0');
   const [tabFilterData, setTabFilterData] = useState([]);
   const [tableFollowers, setTableFollowers] = useState(0);
   const [tablePosts, setTablePosts] = useState(0);
@@ -88,15 +88,14 @@ const PageOverviewNew = () => {
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
   const [allVendorWhats, setAllVendorWhats] = useState([]);
-  const [selectedPriceType, setSelectedPriceType] = useState(""); // Holds the selected price type
-  const [inputPrice, setInputPrice] = useState(""); // Holds the input price
+  const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
+  const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
-  const [rowDataFollower, setRowDataFollower] = useState("");
+  const [rowDataFollower, setRowDataFollower] = useState('');
   const [localPriceData, setLocalPriceData] = useState(null);
-  const [pagequery, setPagequery] = useState("")
-  const [editMode, setEditMode] = useState(false)
-  const [editID, setEditID] = useState(null)
-
+  const [pagequery, setPagequery] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const [editID, setEditID] = useState(null);
 
   const {
     data: pageList,
@@ -121,18 +120,18 @@ const PageOverviewNew = () => {
 
   // Filter data when the button is clicked
   const handleFilter = () => {
-    console.log(filterData, "filterData");
+    console.log(filterData, 'filterData');
     const filteredData = filterData?.filter((row) => {
       let price = 0;
       // Get the selected price based on the selectedPriceType
       switch (selectedPriceType) {
-        case "Post Price":
+        case 'Post Price':
           price = row?.price_details?.Insta_Post || 0;
           break;
-        case "Story Price":
+        case 'Story Price':
           price = row?.price_details?.Insta_Story || 0;
           break;
-        case "Both Price":
+        case 'Both Price':
           price = row?.price_details?.Both || 0;
           break;
         default:
@@ -150,7 +149,7 @@ const PageOverviewNew = () => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     setVendorDetails(res?.data?.data);
@@ -180,10 +179,10 @@ const PageOverviewNew = () => {
   const getData = () => {
     setUser(usersDataContext);
     axios
-      .get(baseUrl + "v1/vendor_group_link", {
+      .get(baseUrl + 'v1/vendor_group_link', {
         headers: {
           Authorization: `Bearer ${storedToken}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       })
       .then((res) => {
@@ -234,7 +233,6 @@ const PageOverviewNew = () => {
     setTableBoths(totalBoths);
   };
 
-
   const handlePriceClick = (row) => {
     return function () {
       setSelectedRow(row._id);
@@ -250,7 +248,7 @@ const PageOverviewNew = () => {
     setOpenFollowerModal(false);
   };
   const [openPriceLogModal, setOpenPriceLogModal] = useState(false);
-  const [rowDataPriceLog, setRowDataPriceLog] = useState("");
+  const [rowDataPriceLog, setRowDataPriceLog] = useState('');
 
   const handlePriceLogs = (row) => {
     setOpenPriceLogModal(true);
@@ -272,14 +270,14 @@ const PageOverviewNew = () => {
   const handleUpadteFollowers = async (row) => {
     const payload = {
       creators: [row.page_name],
-      department: "65c38781c52b3515f77b0815",
+      department: '65c38781c52b3515f77b0815',
       userId: 111111,
     };
     const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
     try {
       const result = await axios.post(
@@ -296,15 +294,15 @@ const PageOverviewNew = () => {
           { headers }
         );
       } else {
-        console.error("No follower data found for this creator.");
+        console.error('No follower data found for this creator.');
       }
     } catch (error) {
       if (error.response) {
-        console.error("Error response:", error.response.data.message);
+        console.error('Error response:', error.response.data.message);
         toastError(error.response.data.message);
       } else {
-        console.error("Error fetching followers:", error.message);
-        toastError("An error occurred while fetching the followers.");
+        console.error('Error fetching followers:', error.message);
+        toastError('An error occurred while fetching the followers.');
       }
     }
   };
@@ -312,19 +310,18 @@ const PageOverviewNew = () => {
   const editInNewTab = (_id) => {
     // window.open(`/admin/pms-page-edit/${_id}`, "_blank");
     // sessionStorage.setItem("token", storedToken);
-    setEditMode(true)
-    setEditID(_id)
+    setEditMode(true);
+    setEditID(_id);
   };
   const handleEditClose = () => {
-
-    setEditMode(false)
-    setEditID(null)
+    setEditMode(false);
+    setEditID(null);
   };
   // console.log(vendorData,"vendorData")
   const dataSecondGridColumns = [
     {
-      key: "Add",
-      name: "Add",
+      key: 'Add',
+      name: 'Add',
       width: 130,
       renderRowCell: (row) => {
         const totalPercentage = row.totalPercentage;
@@ -344,9 +341,9 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "history",
+      key: 'history',
       width: 150,
-      name: "History",
+      name: 'History',
       renderRowCell: (row) => {
         return (
           <button
@@ -360,9 +357,9 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "statsUpdate",
+      key: 'statsUpdate',
       width: 150,
-      name: "Stats Update",
+      name: 'Stats Update',
       renderRowCell: (row) => {
         return (
           row?.pageId && (
@@ -385,215 +382,215 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "Age_13_17_percent",
+      key: 'Age_13_17_percent',
       width: 150,
-      name: "Age 13-17 %",
+      name: 'Age 13-17 %',
       renderRowCell: (row) => {
         let data = row?.Age_13_17_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_18_24_percent",
+      key: 'Age_18_24_percent',
       width: 150,
-      name: "Age 18-24 %",
+      name: 'Age 18-24 %',
       renderRowCell: (row) => {
         let data = row?.Age_18_24_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_25_34_percent",
+      key: 'Age_25_34_percent',
       width: 150,
-      name: "Age 25-34 %",
+      name: 'Age 25-34 %',
       renderRowCell: (row) => {
         let data = row?.Age_25_34_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_35_44_percent",
+      key: 'Age_35_44_percent',
       width: 150,
-      name: "Age 35-44 %",
+      name: 'Age 35-44 %',
       renderRowCell: (row) => {
         let data = row?.Age_35_44_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_45_54_percent",
+      key: 'Age_45_54_percent',
       width: 150,
-      name: "Age 45-54 %",
+      name: 'Age 45-54 %',
       renderRowCell: (row) => {
         let data = row?.Age_45_54_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_55_64_percent",
+      key: 'Age_55_64_percent',
       width: 150,
-      name: "Age 55-64 %",
+      name: 'Age 55-64 %',
       renderRowCell: (row) => {
         let data = row?.Age_55_64_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
     {
-      key: "Age_65_plus_percent",
+      key: 'Age_65_plus_percent',
       width: 150,
-      name: "Age 65+ %",
+      name: 'Age 65+ %',
       renderRowCell: (row) => {
         let data = row?.Age_65_plus_percent;
-        return +data ? data + "%" : "NA";
+        return +data ? data + '%' : 'NA';
       },
     },
 
     {
-      key: "city1_name",
+      key: 'city1_name',
       width: 150,
-      name: "City 1 and %",
+      name: 'City 1 and %',
       renderRowCell: (row) => {
         let data = row?.city1_name;
         let percentage = row?.percentage_city1_name;
-        return data ? data + ` (${percentage}%)` : "NA";
+        return data ? data + ` (${percentage}%)` : 'NA';
       },
     },
     {
-      key: "city2_name",
+      key: 'city2_name',
       width: 150,
-      name: "City 2 and %",
+      name: 'City 2 and %',
       renderRowCell: (row) => {
         let data = row?.city2_name;
         let percentage = row?.percentage_city2_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "city3_name",
+      key: 'city3_name',
       width: 150,
-      name: "City 3 and %",
+      name: 'City 3 and %',
       renderRowCell: (row) => {
         let data = row?.city3_name;
         let percentage = row?.percentage_city3_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "city4_name",
+      key: 'city4_name',
       width: 150,
-      name: "City 4 and %",
+      name: 'City 4 and %',
       renderRowCell: (row) => {
         let data = row?.city4_name;
         let percentage = row?.percentage_city4_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "city5_name",
+      key: 'city5_name',
       width: 150,
-      name: "City 5 and %",
+      name: 'City 5 and %',
       renderRowCell: (row) => {
         let data = row?.city5_name;
         let percentage = row?.percentage_city5_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "city_image_url",
+      key: 'city_image_url',
       width: 150,
-      name: "City Image",
+      name: 'City Image',
       renderRowCell: (row) => {
         let data = row?.city_image_url;
         return data ? (
           <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
+            <img src={data} style={{ width: '50px', height: '50px' }} />
           </a>
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
     {
-      key: "country1_name",
+      key: 'country1_name',
       width: 150,
-      name: "Country 1  and %",
+      name: 'Country 1  and %',
       renderRowCell: (row) => {
         let data = row?.country1_name;
         let percentage = row?.percentage_country1_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "country2_name",
+      key: 'country2_name',
       width: 150,
-      name: "Country 2 and %",
+      name: 'Country 2 and %',
       renderRowCell: (row) => {
         let data = row?.country2_name;
         let percentage = row?.percentage_country2_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "country3_name",
+      key: 'country3_name',
       width: 150,
-      name: "Country 3 and %",
+      name: 'Country 3 and %',
       renderRowCell: (row) => {
         let data = row?.country3_name;
         let percentage = row?.percentage_country3_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "country4_name",
+      key: 'country4_name',
       width: 150,
-      name: "Country 4 and %",
+      name: 'Country 4 and %',
       renderRowCell: (row) => {
         let data = row?.country4_name;
         let percentage = row?.percentage_country4_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "country5_name",
+      key: 'country5_name',
       width: 150,
-      name: "Country 5 and %",
+      name: 'Country 5 and %',
       renderRowCell: (row) => {
         let data = row?.country5_name;
         let percentage = row?.percentage_country5_name;
-        return data ? data + `(${percentage}%)` : "NA";
+        return data ? data + `(${percentage}%)` : 'NA';
       },
     },
     {
-      key: "country_image_url",
+      key: 'country_image_url',
       width: 150,
-      name: "Country Image",
+      name: 'Country Image',
       renderRowCell: (row) => {
         let data = row?.country_image_url;
         return data ? (
           <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
+            <img src={data} style={{ width: '50px', height: '50px' }} />
           </a>
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
     {
-      key: "createdAt",
+      key: 'createdAt',
       width: 150,
-      name: "Creation Date",
+      name: 'Creation Date',
       renderRowCell: (row) => {
         let data = row?.createdAt;
         return data
-          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
-          : "NA";
+          ? Intl.DateTimeFormat('en-GB').format(new Date(data))
+          : 'NA';
       },
     },
 
     {
-      key: "engagement",
+      key: 'engagement',
       width: 150,
-      name: "Engagement",
+      name: 'Engagement',
       renderRowCell: (row) => {
         let data = row?.engagement;
         let dataimg = row?.engagement_image_url;
@@ -602,14 +599,14 @@ const PageOverviewNew = () => {
             {data}
           </a>
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
     {
-      key: "impression",
+      key: 'impression',
       width: 150,
-      name: "Impression",
+      name: 'Impression',
       renderRowCell: (row) => {
         let data = row?.impression;
         let dataimg = row?.impression_image_url;
@@ -619,42 +616,41 @@ const PageOverviewNew = () => {
             {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
           </a>
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
     {
-      key: "female_percent",
+      key: 'female_percent',
       width: 150,
-      name: "Female Percentage",
+      name: 'Female Percentage',
       renderRowCell: (row) => {
         let data = row?.female_percent;
-        return data ? data + "%" : "NA";
+        return data ? data + '%' : 'NA';
       },
     },
     {
-      key: "male_percent",
+      key: 'male_percent',
       width: 150,
-      name: "Male Percentage",
+      name: 'Male Percentage',
       renderRowCell: (row) => {
         let data = row?.male_percent;
-        return data ? data + "%" : "NA";
+        return data ? data + '%' : 'NA';
       },
     },
     {
-      key: "profile_visit",
+      key: 'profile_visit',
       width: 150,
-      name: "Profile Visit",
+      name: 'Profile Visit',
       renderRowCell: (row) => {
         let data = row?.profile_visit;
-        return data ? data : "NA";
+        return data ? data : 'NA';
       },
-
     },
     {
-      key: "reach",
+      key: 'reach',
       width: 150,
-      name: "Reach",
+      name: 'Reach',
       renderRowCell: (row) => {
         let data = row?.reach;
         let dataimg = row?.reach_image_url;
@@ -663,51 +659,51 @@ const PageOverviewNew = () => {
             {data}
           </a>
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
     {
-      key: "start_date",
+      key: 'start_date',
       width: 150,
-      name: "Start Date",
+      name: 'Start Date',
       renderRowCell: (row) => {
         let data = row?.start_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
+        return data ? <DateFormattingComponent date={data} /> : 'NA';
       },
     },
     {
-      key: "endDate",
+      key: 'endDate',
       width: 150,
-      name: "End Date",
+      name: 'End Date',
       renderRowCell: (row) => {
         let data = row?.end_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
+        return data ? <DateFormattingComponent date={data} /> : 'NA';
       },
     },
     {
-      key: "story_view",
+      key: 'story_view',
       width: 150,
-      name: "Story View",
+      name: 'Story View',
       renderRowCell: (row) => {
         let data = row?.story_view;
-        return data ? data : "NA";
+        return data ? data : 'NA';
       },
     },
     {
-      key: "story_view_image_url",
+      key: 'story_view_image_url',
       width: 150,
-      name: "Story View Image",
+      name: 'Story View Image',
       renderRowCell: (row) => {
         let data = row?.story_view_image_url;
         return data ? (
-          <img src={data} style={{ width: "50px", height: "50px" }} />
+          <img src={data} style={{ width: '50px', height: '50px' }} />
         ) : (
-          "NA"
+          'NA'
         );
       },
     },
-  ]
+  ];
 
   const handleClickVendorName = (params) => {
     // setVendorDetails(params.row);
@@ -715,14 +711,14 @@ const PageOverviewNew = () => {
   };
   const dataGridcolumns = [
     {
-      key: "S.NO",
-      name: "S.no",
+      key: 'S.NO',
+      name: 'S.no',
       renderRowCell: (row, index) => index + 1,
       width: 80,
     },
     {
-      key: "WA Links",
-      name: "WA Links",
+      key: 'WA Links',
+      name: 'WA Links',
       width: 100,
 
       renderRowCell: (row) => {
@@ -736,7 +732,7 @@ const PageOverviewNew = () => {
             data-target="#waModal"
             onClick={() => handlewhatsAppData(row)}
             // onClick={<WhatsapplinksModel data={row} />}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
           >
             {countName}
           </div>
@@ -744,20 +740,22 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "Bio",
-      name: "Bio",
+      key: 'Bio',
+      name: 'Bio',
       width: 80,
-      renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
+      renderRowCell: (row) => <div>{row.bio ? row.bio : 'NA '}</div>,
     },
     {
-      key: "page_activeness",
-      name: "Activeness",
+      key: 'page_activeness',
+      name: 'Activeness',
       width: 80,
-      renderRowCell: (row) => { return formatString(row?.page_activeness) },
+      renderRowCell: (row) => {
+        return formatString(row?.page_activeness);
+      },
     },
     {
-      key: "page_name",
-      name: "User Name",
+      key: 'page_name',
+      name: 'User Name',
       width: 200,
 
       renderRowCell: (row) => {
@@ -775,31 +773,78 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "Logo",
-      name: "Logo",
+      key: 'Logo',
+      name: 'Logo',
       width: 150,
       renderRowCell: (row) => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
           <div className="profile-sec sb">
             <div className="profile-img">
-
-              <img
-
-                src={name}
-                alt={row.page_name}
-                width={40}
-              />
+              <img src={name} alt={row.page_name} width={40} />
             </div>
           </div>
         );
       },
     },
     {
-      key: "preference_level",
-      name: "Level",
+      key: 'average_post_price',
+      name: 'Average Post Price',
+      renderRowCell: (row) => {
+        const mPostPrice = row?.page_price_list;
+        const postDetail = mPostPrice?.find(
+          (item) => item.instagram_post !== undefined
+        );
+        const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
+        const followerCount = row?.followers_count || 0;
+
+        // Calculate the average price only if followerCount is greater than zero
+        const averagePostPrice = followerCount
+          ? Math.floor(postPrice / (followerCount / 1000000))
+          : '0';
+
+        return (
+          <div style={{ width: '70%' }}>
+            {followerCount ? `₹${averagePostPrice}` : 'Price not available'}
+          </div>
+        );
+      },
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'average_story_price',
+      name: 'Average Story Price',
+      renderRowCell: (row) => {
+        const mStoryPrice = row?.page_price_list;
+        const postDetail = mStoryPrice?.find(
+          (item) => item.instagram_story !== undefined
+        );
+        const storyPrice = postDetail?.instagram_story || 0;
+        const followerCount = row?.followers_count || 0;
+
+        // Calculate the average price only if followerCount is greater than zero
+        const averageStoryPrice = followerCount
+          ? Math.floor(storyPrice / (followerCount / 1000000))
+          : '0';
+
+        return (
+          <div style={{ width: '70%' }}>
+            {followerCount ? `₹${averageStoryPrice}` : 'Price not available'}
+          </div>
+        );
+      },
+      width: 150,
+      showCol: true,
+    },
+
+    {
+      key: 'preference_level',
+      name: 'Level',
       width: 200,
-      renderRowCell: (row) => { return formatString(row.preference_level) }
+      renderRowCell: (row) => {
+        return formatString(row.preference_level);
+      },
       // // editable: true,
       // customEditElement: (
       //   row,
@@ -827,30 +872,34 @@ const PageOverviewNew = () => {
     },
 
     {
-      key: "content_creation",
-      name: "Content Creation",
+      key: 'content_creation',
+      name: 'Content Creation',
       renderRowCell: (row) => {
-        return row.content_creation != 0 ? row.content_creation : "";
+        return row.content_creation != 0 ? row.content_creation : '';
       },
       width: 200,
     },
     {
-      key: "ownership_type",
-      name: "Ownership",
+      key: 'ownership_type',
+      name: 'Ownership',
       width: 200,
     },
     {
-      key: "platform_name",
-      name: "Platform",
-      renderRowCell: (row) => { return formatString(row.platform_name) },
+      key: 'platform_name',
+      name: 'Platform',
+      renderRowCell: (row) => {
+        return formatString(row.platform_name);
+      },
 
       width: 200,
     },
     {
-      key: "page_category_name",
-      name: "Category",
+      key: 'page_category_name',
+      name: 'Category',
       width: 200,
-      renderRowCell: (row) => { return formatString(row.page_category_name) }
+      renderRowCell: (row) => {
+        return formatString(row.page_category_name);
+      },
 
       // compare: true,
       // renderRowCell: (row) => {
@@ -890,19 +939,22 @@ const PageOverviewNew = () => {
       // },
     },
     {
-      key: "page_sub_category_name",
-      name: "Sub Category",
+      key: 'page_sub_category_name',
+      name: 'Sub Category',
       width: 200,
-      renderRowCell: (row) => { return formatString(row.page_sub_category_name) },
+      renderRowCell: (row) => {
+        return formatString(row.page_sub_category_name);
+      },
 
       // compare: true,
     },
     {
-      key: "followers_count",
-      name: "Followers",
+      key: 'followers_count',
+      name: 'Followers',
       width: 200,
-      renderRowCell: (row) => { return formatNumber(row.followers_count) }
-
+      renderRowCell: (row) => {
+        return formatNumber(row.followers_count);
+      },
     },
     // {
     //   key: "vendor_name",
@@ -924,8 +976,8 @@ const PageOverviewNew = () => {
     //   compare: true,
     // },
     {
-      key: "vendor_name",
-      name: "Vendor Name",
+      key: 'vendor_name',
+      name: 'Vendor Name',
       width: 200,
       // editable: true,
       renderRowCell: (row) => {
@@ -952,28 +1004,28 @@ const PageOverviewNew = () => {
     // },
 
     {
-      key: "page_closed_by",
-      name: "Closed By",
+      key: 'page_closed_by',
+      name: 'Closed By',
       width: 200,
       renderRowCell: (row) => {
         let name = user?.find(
           (item) => item?.user_id == row?.page_closed_by
         )?.user_name;
-        return <div>{name ?? "NA"}</div>;
+        return <div>{name ?? 'NA'}</div>;
       },
     },
     {
-      key: "page_name_type",
-      name: "Name Type",
+      key: 'page_name_type',
+      name: 'Name Type',
       width: 200,
       renderRowCell: (row) => {
-        return row.page_name_type != 0 ? row.page_name_type : "";
+        return row.page_name_type != 0 ? row.page_name_type : '';
       },
     },
-    { key: "rate_type", name: "Rate Type", width: 200 },
+    { key: 'rate_type', name: 'Rate Type', width: 200 },
     {
-      key: "Post Price",
-      name: "Post Price",
+      key: 'Post Price',
+      name: 'Post Price',
       width: 200,
       renderRowCell: (row) => {
         let PostData = row?.page_price_list[0]?.instagram_post;
@@ -982,8 +1034,8 @@ const PageOverviewNew = () => {
       compare: true,
     },
     {
-      key: "Story price",
-      name: "Story Price",
+      key: 'Story price',
+      name: 'Story Price',
       width: 200,
       renderRowCell: (row) => {
         let StoryData = row?.page_price_list[1]?.instagram_story;
@@ -992,8 +1044,8 @@ const PageOverviewNew = () => {
       compare: true,
     },
     {
-      key: "Both Price",
-      name: "Both Price",
+      key: 'Both Price',
+      name: 'Both Price',
       width: 200,
       renderRowCell: (row) => {
         let BothData = row?.page_price_list[2]?.instagram_both;
@@ -1002,8 +1054,8 @@ const PageOverviewNew = () => {
       compare: true,
     },
     {
-      key: "page_price_multiple",
-      name: "Price",
+      key: 'page_price_multiple',
+      name: 'Price',
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -1022,8 +1074,8 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "follower logs",
-      name: "Follower Logs",
+      key: 'follower logs',
+      name: 'Follower Logs',
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -1042,8 +1094,8 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "Price_logs",
-      name: "Price Logs",
+      key: 'Price_logs',
+      name: 'Price Logs',
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -1062,8 +1114,8 @@ const PageOverviewNew = () => {
       },
     },
     {
-      key: "Action",
-      name: "Action",
+      key: 'Action',
+      name: 'Action',
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
@@ -1079,7 +1131,7 @@ const PageOverviewNew = () => {
             className="btn btn-outline-primary btn-sm user-button"
             onClick={() => editInNewTab(row._id)}
           >
-            <FaEdit />{" "}
+            <FaEdit />{' '}
           </button>
           {/* </Link>
           )} */}
@@ -1102,8 +1154,6 @@ const PageOverviewNew = () => {
         </div>
       ),
     },
-
-
   ];
 
   const handleLevelChange = async (event, setEditFlag, row) => {
@@ -1116,14 +1166,14 @@ const PageOverviewNew = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert("Data Updated");
+      toastAlert('Data Updated');
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error('Error updating status:', error);
     } finally {
       setEditFlag(false);
     }
@@ -1139,14 +1189,14 @@ const PageOverviewNew = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert("Data Updated");
+      toastAlert('Data Updated');
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error('Error updating status:', error);
     } finally {
       setEditFlag(false);
     }
@@ -1163,14 +1213,14 @@ const PageOverviewNew = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert("Data Updated");
+      toastAlert('Data Updated');
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error('Error updating status:', error);
     } finally {
       setEditFlag(false);
       refetchPageCate();
@@ -1189,14 +1239,14 @@ const PageOverviewNew = () => {
         },
         {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      toastAlert("Data Updated");
+      toastAlert('Data Updated');
     } catch (error) {
-      console.error("Error updating status:", error);
+      console.error('Error updating status:', error);
     } finally {
       setEditFlag(false);
     }
@@ -1204,85 +1254,97 @@ const PageOverviewNew = () => {
   // Fetch data from API
   const fetchWhatsAppLinks = async () => {
     try {
-      const response = await axios.get("/api/whatsAppLinks");
+      const response = await axios.get('/api/whatsAppLinks');
       setAllVendorWhats(response?.data);
     } catch (error) {
-      console.error("Error fetching WhatsApp links", error);
+      console.error('Error fetching WhatsApp links', error);
     }
   };
 
   return (
     <>
-      {!editMode ? <>
-
-        {waData && <WhatsapplinksModel waData={waData} setWaData={setWaData} />}
-        <FollowerLogsModal
-          open={openFollowerModal}
-          onClose={handleCloseFollowerModal}
-          rowData={rowDataFollower}
-        // allPriceTypeList={allPriceTypeList}
-        />
-        <PriceLogs
-          open={openPriceLogModal}
-          onClose={handleClosePriceModal}
-          rowData={rowDataPriceLog}
-        // allPriceTypeList={allPriceTypeList}
-        />
-        <div className="tabs">
-          {vendorDetails && (
-            <VendorDetails
-              vendorDetails={vendorDetails}
-              setVendorDetails={setVendorDetails}
-            />
+      {!editMode ? (
+        <>
+          {waData && (
+            <WhatsapplinksModel waData={waData} setWaData={setWaData} />
           )}
-          <button
-            className={activeTab === "Tab0" ? "active btn btn-primary" : "btn"}
-            onClick={() => setActiveTab("Tab0")}
-          >
-            Overview
-          </button>
-          <button
-            className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
-            onClick={() => setActiveTab("Tab5")}
-          >
-            Statistics
-          </button>
-          {/* <button
+          <FollowerLogsModal
+            open={openFollowerModal}
+            onClose={handleCloseFollowerModal}
+            rowData={rowDataFollower}
+            // allPriceTypeList={allPriceTypeList}
+          />
+          <PriceLogs
+            open={openPriceLogModal}
+            onClose={handleClosePriceModal}
+            rowData={rowDataPriceLog}
+            // allPriceTypeList={allPriceTypeList}
+          />
+          <div className="tabs">
+            {vendorDetails && (
+              <VendorDetails
+                vendorDetails={vendorDetails}
+                setVendorDetails={setVendorDetails}
+              />
+            )}
+            <button
+              className={
+                activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'
+              }
+              onClick={() => setActiveTab('Tab0')}
+            >
+              Overview
+            </button>
+            <button
+              className={
+                activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'
+              }
+              onClick={() => setActiveTab('Tab5')}
+            >
+              Statistics
+            </button>
+            {/* <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab2")}
         >
           OLD-Statistics
         </button> */}
-          <button
-            className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
-            onClick={() => setActiveTab("Tab3")}
-          >
-            Category Wise
-          </button>
-          <button
-            className={activeTab === "Tab4" ? "active btn btn-primary" : "btn"}
-            onClick={() => setActiveTab("Tab4")}
-          >
-            Page Added Details
-          </button>
+            <button
+              className={
+                activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'
+              }
+              onClick={() => setActiveTab('Tab3')}
+            >
+              Category Wise
+            </button>
+            <button
+              className={
+                activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'
+              }
+              onClick={() => setActiveTab('Tab4')}
+            >
+              Page Added Details
+            </button>
 
-          {/* <button
+            {/* <button
           className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab1")}
         >
           Page Health
         </button> */}
-        </div>
+          </div>
 
-        <div className="content">
-          {activeTab === "Tab0" && (
-            <>
-
-              <PageOverviewWithoutHealth columns={dataGridcolumns} pagequery={pagequery} setPagequery={setPagequery} />
-
-            </>
-          )}
-          {/* {activeTab === "Tab1" && (
+          <div className="content">
+            {activeTab === 'Tab0' && (
+              <>
+                <PageOverviewWithoutHealth
+                  columns={dataGridcolumns}
+                  pagequery={pagequery}
+                  setPagequery={setPagequery}
+                />
+              </>
+            )}
+            {/* {activeTab === "Tab1" && (
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
@@ -1450,7 +1512,7 @@ const PageOverviewNew = () => {
             <PageDetail />
           </div>
         )} */}
-          {/* {activeTab === "Tab2" && (
+            {/* {activeTab === "Tab2" && (
           <StatisticsWisePageOverview
             tabFilterData={tabFilterData}
             setTabFilterData={setTabFilterData}
@@ -1460,23 +1522,27 @@ const PageOverviewNew = () => {
             newFilterData={newFilterData}
           />
         )} */}
-          {activeTab === "Tab3" && (
+            {activeTab === 'Tab3' && (
+              // <CategoryWisePageOverview
+              //   categoryData={categoryData}
+              //   setFilterData={setFilterData}
+              //   pageList={pageList}
+              //   setActiveTab={setActiveTab}
+              //   vendorTypes={vendorTypes}
+              //   vendorData={vendorData}
 
-            // <CategoryWisePageOverview
-            //   categoryData={categoryData}
-            //   setFilterData={setFilterData}
-            //   pageList={pageList}
-            //   setActiveTab={setActiveTab}
-            //   vendorTypes={vendorTypes}
-            //   vendorData={vendorData}
-
-            // />
-            <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
-          )}
-          {activeTab === "Tab4" && <PageClosedByDetails />}
-          {activeTab === "Tab5" && <StatsOfOverview dataGridcolumns={dataGridcolumns} />}
-        </div>
-      </> : <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />}
+              // />
+              <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
+            )}
+            {activeTab === 'Tab4' && <PageClosedByDetails />}
+            {activeTab === 'Tab5' && (
+              <StatsOfOverview dataGridcolumns={dataGridcolumns} />
+            )}
+          </div>
+        </>
+      ) : (
+        <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />
+      )}
     </>
   );
 };

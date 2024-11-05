@@ -21,6 +21,7 @@ import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
 import jwtDecode from 'jwt-decode';
 import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
 import PlanXStatusDialog from './StatusDialog';
+import PlanXHeader from './PlanXHeader';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -33,6 +34,8 @@ function PlanHome() {
   const [selectedPlanId, setSelectedPlanId] = useState(null);
   const [statusDialog, setStatusDialog] = useState(false);
   const [statusDialogPlan, setStatusDialogPlan] = useState(null);
+  const [filteredPlans, setFilteredPlans] = useState([]);
+  const [filter, setFilter] = useState('all');
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -56,8 +59,9 @@ function PlanHome() {
   const storedToken = sessionStorage.getItem('token');
   const { id } = jwtDecode(storedToken);
   const decodedToken = jwtDecode(storedToken);
-  const [pagequery, setPagequery] = useState("")
-  const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
+  const [pagequery, setPagequery] = useState('');
+  const { data: pageList, isLoading: isPageListLoading } =
+    useGetAllPageListQuery({ decodedToken, id, pagequery });
 
   const { usersDataContext } = useContext(AppContext);
 
@@ -123,20 +127,61 @@ function PlanHome() {
           account_id: plan.account_id,
           sales_executive_id: plan.sales_executive_id,
           account_name: plan.account_name,
+          createdAt: plan.createdAt,
         }));
         setPlanRows(formattedRows);
+        // setFilteredPlans(formattedRows);
       }
     } catch (error) {
       console.error('Error fetching plans:', error);
     }
     setLoading(false);
   };
+  const filterPlans = (criteria) => {
+    let filtered;
+    const today = new Date();
+    const startOfToday = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const startOfLastMonth = new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      1
+    );
+    const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
+    switch (criteria) {
+      case 'today':
+        filtered = planRows.filter(
+          (plan) => new Date(plan.createdAt) >= startOfToday
+        );
+        break;
+      case 'thisMonth':
+        filtered = planRows.filter(
+          (plan) => new Date(plan.createdAt) >= startOfMonth
+        );
+        break;
+      case 'lastMonth':
+        filtered = planRows.filter((plan) => {
+          const createdAt = new Date(plan.createdAt);
+          return createdAt >= startOfLastMonth && createdAt <= endOfLastMonth;
+        });
+        break;
+      default:
+        filtered = planRows; // Show all plans
+    }
+    console.log(filtered);
+    setFilteredPlans(filtered);
+  };
   // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
     navigate(`/admin/pms-plan-making/${planId}`);
   };
+
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
     const selectedUser = usersDataContext.find(
@@ -214,7 +259,7 @@ function PlanHome() {
 
   const handleFormSubmit = async () => {
     const validationErrors = validateForm();
-    console.log("ksddbnjkbb", validationErrors);
+    console.log('ksddbnjkbb', validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -242,7 +287,7 @@ function PlanHome() {
     if (duplicatePlanId) {
       planData.duplicate_planx_id = duplicatePlanId;
     }
-    console.log('plan-statis', planData);
+
     try {
       const method = isEdit ? 'PUT' : 'POST';
       const response = await fetch(`${baseUrl}v1/planxlogs`, {
@@ -324,7 +369,7 @@ function PlanHome() {
     setStatusDialog(true);
     setStatusDialogPlan(row);
     setSelectedPlanId(row.id); // Store the plan ID
-  }
+  };
   const columns = [
     {
       key: 'serial_no',
@@ -364,7 +409,7 @@ function PlanHome() {
     },
     {
       key: 'account_name',
-      name: 'Account',
+      name: 'Account Name',
       renderRowCell: (row) => (
         <div style={{ cursor: 'pointer' }}>{row?.account_name}</div>
       ),
@@ -394,8 +439,9 @@ function PlanHome() {
       name: 'Plan Status',
       renderRowCell: (row) => (
         <div
-          className={`badge ${row?.plan_status === 'close' ? 'badge-success' : 'badge-danger'
-            }`}
+          className={`badge ${
+            row?.plan_status === 'close' ? 'badge-success' : 'badge-danger'
+          }`}
           style={{ cursor: 'pointer' }}
           onClick={() => handleStatusChange(row)}
         >
@@ -491,6 +537,10 @@ function PlanHome() {
       showCol: true,
     },
   ];
+  const finalPlanList = filteredPlans.length
+    ? filteredPlans
+    : planRows?.reverse();
+
   return (
     <div>
       {/* <Button variant="contained" onClick={handlePlanMaking}>
@@ -621,24 +671,19 @@ function PlanHome() {
         </DialogActions>
       </Dialog>
 
-      {/* <div className="tabs">
-        <button
-          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab1")}
-        >
-          Overview
-        </button>
-        <button
-          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab3")}
-        >
-          Plan Pricing
-        </button>
-      </div> */}
-      {statusDialog && <PlanXStatusDialog setPlanDetails={setPlanDetails} statusDialogPlan={statusDialogPlan} statusDialog={statusDialog} setStatusDialog={setStatusDialog} fetchPlans={fetchPlans} />}
+      {statusDialog && (
+        <PlanXStatusDialog
+          setPlanDetails={setPlanDetails}
+          statusDialogPlan={statusDialogPlan}
+          statusDialog={statusDialog}
+          setStatusDialog={setStatusDialog}
+          fetchPlans={fetchPlans}
+        />
+      )}
       <div className="card">
         <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Plan X Overview - {planRows?.length}</h5>
+          <h5 className="card-title">Plan X Overview </h5>
+          <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
           <div className="flexCenter colGap8">
             <Link onClick={handlePlanMaking}>
               <button className="btn cmnbtn btn-primary btn_sm">
@@ -656,7 +701,7 @@ function PlanHome() {
               <View
                 isLoading={loading}
                 columns={columns}
-                data={planRows?.reverse()}
+                data={finalPlanList}
                 pagination={[100, 200]}
                 tableName={'PlanMakingDetails'}
               />

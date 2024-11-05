@@ -70,7 +70,6 @@ const DataGridColumns = ({
                 href={row.page_link}
                 className="link-primary"
               >
-
                 <img src={name} alt={row.page_name} width={40} />
               </a>
             </div>
@@ -155,6 +154,57 @@ const DataGridColumns = ({
       showCol: true,
     },
     {
+      key: 'average_post_price',
+      name: 'Average Post Price',
+      renderRowCell: (row) => {
+        const mPostPrice = row?.page_price_list;
+        const postDetail = mPostPrice?.find(
+          (item) => item.instagram_post !== undefined
+        );
+        const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
+        const followerCount = row?.followers_count || 0;
+        
+        // Calculate the average price only if followerCount is greater than zero
+        const averagePostPrice = followerCount
+          ? Math.floor(postPrice / (followerCount / 1000000))
+          : '0';
+
+        return (
+          <div style={{ width: '70%' }}>
+            {followerCount ? `₹${averagePostPrice}` : 'Price not available'}
+          </div>
+        );
+      },
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'average_story_price',
+      name: 'Average Story Price',
+      renderRowCell: (row) => {
+        const mStoryPrice = row?.page_price_list;
+        const postDetail = mStoryPrice?.find(
+          (item) => item.instagram_story !== undefined
+        );
+        const storyPrice = postDetail?.instagram_story || 0;
+        const followerCount = row?.followers_count || 0;
+
+        // Calculate the average price only if followerCount is greater than zero
+        const averageStoryPrice = followerCount
+          ? Math.floor(storyPrice / (followerCount / 1000000))
+          : '0';
+
+        return (
+          <div style={{ width: '70%' }}>
+            {followerCount ? `₹${averageStoryPrice}` : 'Price not available'}
+          </div>
+        );
+      },
+      width: 150,
+      showCol: true,
+    },
+
+    {
       key: 'story_per_page',
       name: 'Story Per Page',
       renderRowCell: (row) => (
@@ -190,7 +240,9 @@ const DataGridColumns = ({
     {
       key: 'page_activeness',
       name: 'Activeness',
-      renderRowCell: (row) => { return formatString(row?.page_activeness) },
+      renderRowCell: (row) => {
+        return formatString(row?.page_activeness);
+      },
       width: 100,
       showCol: true,
     },
@@ -210,26 +262,30 @@ const DataGridColumns = ({
       showCol: true,
     },
     {
-      key: 'category',
+      key: 'page_category_name',
       name: 'Category',
-      renderRowCell: (row) => {
-        const name = cat?.find(
-          (item) => item?._id === row?.page_category_id
-        )?.page_category;
-        return <div>{formatString(name)}</div>;
-      },
+      renderRowCell: (row) => (
+        <div>{formatString(row?.page_category_name)}</div>
+      ),
+      // renderRowCell: (row) => {
+      //   const name = cat?.find(
+      //     (item) => item?._id === row?.page_category_id
+      //   )?.page_category;
+      //   return <div>{formatString(name)}</div>;
+      // },
       width: 100,
       showCol: true,
     },
     {
-      key: 'platform',
+      key: 'platform_name',
       name: 'Platform',
-      renderRowCell: (row) => {
-        const name = platformData?.find(
-          (item) => item?._id === row.platform_id
-        )?.platform_name;
-        return <div>{name}</div>;
-      },
+      renderRowCell: (row) => <div>{formatString(row?.platform_name)}</div>,
+      // renderRowCell: (row) => {
+      //   const name = platformData?.find(
+      //     (item) => item?._id === row.platform_id
+      //   )?.platform_name;
+      //   return <div>{name}</div>;
+      // },
       width: 150,
       showCol: true,
     },
