@@ -37,7 +37,7 @@ import PageAddMasterModal from "./PageAddMasterModal";
 import PageInfoModal from "./PageInfoModal";
 
 setOpenShowAddModal;
-const Page = ({ pageMast_id ,handleEditClose}) => {
+const Page = ({ pageMast_id }) => {
   const { refetch: refetchPageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery();
   const navigate = useNavigate();
@@ -99,7 +99,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
     { value: "super_active", label: "Super Active" },
     { value: "active", label: "Active" },
     { value: "semi_active", label: "Semi Active" },
-    { value: "dead", label: "Dead" },
+    { value: 'dead', label: "Dead" },
   ];
   const PageTypes = [
     { value: "Non Adult", label: "Non Adult" },
@@ -226,7 +226,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
-          // console.log(res?.data?.data, "res?.data?.data");
+          console.log(res?.data?.data, "res?.data?.data");
         });
     }
   }, [platformId]);
@@ -277,11 +277,11 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         );
         // setPageLevel(data[0].preference_level);
         setPageLevel(data[0]?.preference_level);
-        if (data[0].page_activeness == "dead") {
+        if (data[0].page_activeness == 'dead') {
           setPageStatus("dead");
         } else if (data[0].page_activeness == 'semi_active') {
           setPageStatus("semi_active");
-        } else if (data[0].page_activeness == "super_active") {
+        } else if (data[0].page_activeness == 'super_active') {
           setPageStatus("super_active");
         }
         else {
@@ -311,12 +311,12 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         setP_id(data[0].pageMast_id);
         setSinglePage(data[0]);
         setLanguageId(data[0].page_language_name)
-        // console.log(data[0].page_language_name, "data[0].page_language_name")
+        console.log(data[0].page_language_name, "data[0].page_language_name")
       });
   }, [platformData]);
 
   useEffect(() => {
-    // console.log(singlePage, "singlePage");
+    console.log(singlePage, "singlePage");
     if (singlePage && singlePage.length > 0) {
       axios
         .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
@@ -344,7 +344,6 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
 
   const handleSubmit = async (e, flag) => {
     e.preventDefault();
-  
     if (!pageName) {
       toastAlert("Page Name is required");
       return;
@@ -363,7 +362,8 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
     } else if (!pageLevel) {
       toastAlert("Page Level is required");
       return;
-    } else if (!closeBy) {
+    }
+    else if (!closeBy) {
       toastAlert("Close by is required");
       return;
     } else if (!pageType) {
@@ -385,7 +385,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
       toastAlert("Profile Type is required");
       return;
     }
-    
+
     const payload = {
       page_name: pageName,
       page_link: link,
@@ -425,8 +425,10 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
 
       page_profile_type_name: profileData
         ?.find((role) => role?._id === profileId)
-        ?.profile_type?.toLowerCase(),   
-      page_language_name: languageId,
+        ?.profile_type?.toLowerCase(),
+
+      // page_language_name: ["Hindi"],
+      page_language_name: languageId.map((item) => item?.label),
       tags_page_category_name: tag.map((e) => e.label),
       page_price_list: rowCount.map((item) => {
         return {
@@ -436,7 +438,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         };
       }),
     };
-    // console.log(payload, "payload");
+    // console.log(payload, "payload",rowCount,priceTypeList);
     // return;
     await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
@@ -483,15 +485,13 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
           .catch((err) => {
             console.log(err);
           });
-          if (flag) {
-          // console.log(flag,"flag")
+
+        if (flag) {
           toastAlert("Submitted");
           refetchPageList();
           navigate("/admin/pms-page-overview");
-          handleEditClose()
         }
         if (!flag) {
-          // console.log(flag,"flagfddgfdgfgf",)
           toastAlert("Submitted");
         }
       });
@@ -569,6 +569,11 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
   const pageInfoModlaOpen = useSelector(
     (state) => state.pageMaster.showInfoModal
   );
+
+  const calculateFollowerCount = (index) => {
+    const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
+    return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
+  };
 
   const handleUpadteFollowers = async () => {
     const payload = {
@@ -668,6 +673,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         ></Select>
       </div>
 
+
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
@@ -716,7 +722,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         </label>
         <div className="input-group inputAddGroup">
           <Select
-          className="w-100"
+            className="w-100"
             options={subCategoryData?.map((option) => ({
               value: option._id,
               label: option.page_sub_category,
@@ -790,7 +796,9 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
           options={PageStatus}
           className="basic-multi-select"
           classNamePrefix="select"
-          value={PageStatus.find((option) => option.value === pageStatus)}
+          value={PageStatus.find(
+            (option) => option.value === pageStatus
+          )}
           // value={PageStatus.find(
           //   (option) => console.log(option.label)
           // )}
@@ -910,10 +918,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
             isMulti
             required={true}
             onChange={(selectedOptions) => {
-              const selectedValues = selectedOptions.map(
-                (option) => option.label
-              );
-              // console.log(selectedValues,"selectedValues")
+              const selectedValues = selectedOptions.map((option) => option);
               setLanguageId(selectedValues);
             }}
           />
@@ -1077,6 +1082,14 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
                 onChange={(e) => handlePriceChange(e, index)}
                 value={rowCount[index].price}
               />
+
+              {rateType == "Variable" && (
+                <p className="ml-3" style={{ color: "blue" }}>
+                  This Profile Cost = {"  Rs "}{" "}
+                  {calculateFollowerCount(index.toFixed(0))}
+                </p>
+              )}
+
               {index !== 0 && (
                 <button
                   className="btn btn-sm btn-danger mt-4 ml-2 col-1 mb-3"
@@ -1176,7 +1189,7 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
         onAccordionButtonClick={handleAccordionButtonClick}
         submitButton={true}
       >
-        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />}
+        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} />}
         {/* {activeAccordionIndex === 1 && <PageHealth />} */}
         {activeAccordionIndex === 1 &&
           navigate(`/admin/exe-history/${pageMast_id}`)}

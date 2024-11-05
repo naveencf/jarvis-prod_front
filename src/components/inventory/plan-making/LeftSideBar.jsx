@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useMemo, useState } from 'react';
 import {
   ArrowUpRight,
   DownloadSimple,
@@ -18,10 +19,11 @@ import {
   TableRow,
   Paper,
   Button,
+  Tooltip,
+  IconButton,
 } from '@mui/material';
 import * as XLSX from 'xlsx-js-style';
 import ExcelPreviewModal from './ExcelPreviewModal';
-import { post } from 'jquery';
 
 // Function to get the platform name based on the platform ID
 const getPlatformName = (platformId) => {
@@ -343,7 +345,6 @@ const addHyperlinksAndAdjustWidths = (worksheet) => {
 const LeftSideBar = ({
   totalFollowers,
   totalCost,
-  searchInputValue,
   totalPostsPerPage,
   totalPagesSelected,
   totalDeliverables,
@@ -351,24 +352,26 @@ const LeftSideBar = ({
   pageCategoryCount,
   handleToggleBtn,
   selectedRow,
-  allrows,
   postCount,
   handleOwnPage,
   category,
   storyPerPage,
-  handleSearchChange,
-  clearRecentlySelected,
-  clearSearch,
+  // searchInputValue,
+  // allrows,
+  // handleSearchChange,
+  // clearRecentlySelected,
+  // clearSearch,
+  // filterData,
+  // pageList,
   HandleSavePlan,
   ownPages,
-  filterData,
-  pageList,
+  planDetails,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
   const [previewData, setPreviewData] = useState([]);
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
-  const [expanded, setExpanded] = useState(false);
+  // const [expanded, setExpanded] = useState(false);
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
     setPageDetails(
@@ -450,6 +453,17 @@ const LeftSideBar = ({
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
+        <div className="planSmall">
+          {' '}
+          <h6>
+            Plan Name
+            <span>{planDetails && planDetails[0]?.plan_name}</span>
+          </h6>
+          <h6>
+            Account Name
+            <span>{planDetails && planDetails[0]?.account_name}</span>
+          </h6>
+        </div>
         <div className="planSmall">
           <h6>
             Total Followers
@@ -534,31 +548,40 @@ const LeftSideBar = ({
         </div>
       </div>
       <div className="planLeftSideFooter">
-        <button className="btn icon" title="Clear Recently Selected">
-          <StackMinus />
+        <button className="btn icon">
+          <Tooltip title="Clear Recently Selected">
+            <IconButton>
+              <StackMinus />
+            </IconButton>
+          </Tooltip>
+        </button>
+        <button className="btn icon" onClick={handlePreviewExcel}>
+          {' '}
+          <Tooltip title="Preview Excel">
+            <IconButton>
+              <Eye />{' '}
+            </IconButton>
+          </Tooltip>
         </button>
         <button
           className="btn icon"
-          title="Preview Excel"
-          onClick={handlePreviewExcel}
-        >
-          <Eye />
-        </button>
-        <button
-          className="btn icon"
-          title="Download Excel"
           onClick={() =>
             downloadExcel(selectedRow, category, postCount, storyPerPage)
           }
         >
-          <DownloadSimple />
+          {' '}
+          <Tooltip title="Download Excel">
+            <IconButton>
+              <DownloadSimple />{' '}
+            </IconButton>
+          </Tooltip>
         </button>
-        <button
-          className="btn icon"
-          title="Save Plan"
-          onClick={() => HandleSavePlan()}
-        >
-          <FloppyDiskBack />
+        <button className="btn icon" onClick={() => HandleSavePlan()}>
+          <Tooltip title="Save Plan">
+            <IconButton>
+              <FloppyDiskBack />{' '}
+            </IconButton>
+          </Tooltip>
         </button>
       </div>
 

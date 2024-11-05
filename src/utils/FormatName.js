@@ -4,7 +4,7 @@ export const FormatName = (name) => {
   const correctedNameParts = name?.split(" ").map((part) => {
     let filteredPart = part
       .split("")
-      .filter((char) => char.match(lettersOnly))
+      .filter((char) => char?.match(lettersOnly))
       ?.join("");
 
     return (
@@ -12,5 +12,5 @@ export const FormatName = (name) => {
     );
   });
 
-  return correctedNameParts.join(" ");
+  return correctedNameParts?.join(" ");
 };

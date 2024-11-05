@@ -1,15 +1,7 @@
-import React, { useState } from 'react';
-import Box from '@mui/material/Box';
+import { useState } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Button from '@mui/material/Button';
-import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
 import {
   Checks,
   Sliders,
@@ -18,6 +10,7 @@ import {
   Trash,
 } from '@phosphor-icons/react';
 import CustomSelect from '../../ReusableComponents/CustomSelect';
+ 
 
 const RightDrawer = ({
   priceFilterType,
@@ -51,7 +44,6 @@ const RightDrawer = ({
 }) => {
   const [open, setOpen] = useState(false);
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
-
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
@@ -89,8 +81,13 @@ const RightDrawer = ({
     { id: '100Kto200K', label: '100k to 200k' },
     { id: '200Kto500K', label: '200k to 500k' },
     { id: '500Kto1000K', label: '500k to 1M' },
+    { id: '1000Kto2000K', label: '1M to 2M' },
+    { id: '1000KPlus', label: '1M+' },
+    { id: '2000KPlus', label: '2M+' },
+    // { id: '2000KPlus', label: '2M+' },
+    // { id: '2MPlus', label: '2M+' },
   ];
-
+  // console.log('selected', selectedFollowers);
   const removeFollowerSelection = (follower) => {
     setSelectedFollowers(selectedFollowers.filter((f) => f !== follower));
   };
@@ -118,6 +115,20 @@ const RightDrawer = ({
                   ))}
                 </select>
               </div>
+            </div>
+            {/* Follower Filter */}
+            <div className="form-group col-12 mb8">
+              <label>Follower Filter</label>
+              <CustomSelect
+                label="Select Follower Range"
+                fieldGrid="12"
+                dataArray={followerOptions}
+                optionId="id"
+                optionLabel="label"
+                selectedId={selectedFollowers}
+                setSelectedId={setSelectedFollowers}
+                multiple={true}
+              />
             </div>
             {/* Price filter dropdown */}
             <div className="form-group col-12 mb16">
@@ -153,21 +164,6 @@ const RightDrawer = ({
                 className="filter-input form-control"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
-              />
-            </div>
-
-            {/* Follower Filter */}
-            <div className="form-group col-12 mb8">
-              <label>Follower Filter</label>
-              <CustomSelect
-                label="Select Follower Range"
-                fieldGrid="12"
-                dataArray={followerOptions}
-                optionId="id"
-                optionLabel="label"
-                selectedId={selectedFollowers}
-                setSelectedId={setSelectedFollowers}
-                multiple={true}
               />
             </div>
 
@@ -277,7 +273,7 @@ const RightDrawer = ({
               title="Remove All Filter"
               onClick={handleRemoveFilter}
             >
-              <Trash />
+              <Trash />{' '}
             </button>
             <button
               className="btn icon btn-outline-success"

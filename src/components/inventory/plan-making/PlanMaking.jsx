@@ -98,6 +98,7 @@ const PlanMaking = () => {
 
   const { pageDetail } = usePageDetail(id);
   const { sendPlanDetails } = useSendPlanDetails(id);
+  const { planDetails } = useFetchPlanDetails(id);
 
   const debounce = (func, delay) => {
     let timeoutId;
@@ -204,7 +205,9 @@ const PlanMaking = () => {
   };
 
   const handleRemoveFilter = () => {
-    const pageData = pageList?.filter((item) => item.followers_count > 0);
+    const pageData = pageList
+      ?.filter((item) => item.followers_count > 0)
+      .sort((a, b) => b.followers_count - a.followers_count);
     setFilterData(pageData);
     setSelectedFollowers([]);
     setSelectedCategory([]);
@@ -546,7 +549,8 @@ const PlanMaking = () => {
       cost += totalCostValues[row._id] || 0;
       posts += Number(postPerPageValues[row._id]) || 0;
       stories += Number(storyPerPageValues[row._id]) || 0;
-      totalDeliverables += (postPerPage + storyPerPage) * rowFollowers;
+      totalDeliverables += postPerPage + storyPerPage;
+      // totalDeliverables += (postPerPage + storyPerPage) * rowFollowers;
       setTotalDeliverables(totalDeliverables);
     });
 
@@ -614,6 +618,7 @@ const PlanMaking = () => {
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
+    const updatedPageCategoryCount = { ...pageCategoryCount };
 
     // Loop through incoming data to calculate costs
     incomingData.forEach((incomingPage) => {
@@ -628,6 +633,12 @@ const PlanMaking = () => {
 
         if (!isAlreadySelected) {
           updatedSelectedRows.push(matchingPage);
+          const categoryId = matchingPage.page_category_id;
+          if (categoryId) {
+            // Ensure categoryId is valid
+            updatedPageCategoryCount[categoryId] =
+              (updatedPageCategoryCount[categoryId] || 0) + 1;
+          }
         }
 
         // Update post and story counts
@@ -678,7 +689,7 @@ const PlanMaking = () => {
     setStoryPerPageValues(updatedStoryValues);
     setSelectedRows(updatedSelectedRows);
     setShowTotalCost(updatedShowTotalCost);
-
+    setPageCategoryCount(updatedPageCategoryCount);
     // setIsAutomaticCheck(false);
   };
   const normalize = (str) => {
@@ -954,7 +965,12 @@ const PlanMaking = () => {
     const parseRange = (range) => {
       if (range === 'lessThan10K') {
         return { min: 0, max: 10000 };
+      } else if (range === '1000KPlus') {
+        return { min: 1000000, max: Infinity };
+      } else if (range === '2000KPlus') {
+        return { min: 2000000, max: Infinity };
       }
+
       const [min, max] = range.split('to').map((val) => {
         const value = parseInt(val.replace('K', '')) * 1000;
         return value;
@@ -1008,7 +1024,9 @@ const PlanMaking = () => {
 
   useEffect(() => {
     if (pageList) {
-      const pageData = pageList?.filter((item) => item.followers_count > 0);
+      const pageData = pageList
+        ?.filter((item) => item.followers_count > 0)
+        .sort((a, b) => b.followers_count - a.followers_count);
       setFilterData(pageData);
       const initialPostValues = {};
       const initialStoryValues = {};
@@ -1059,20 +1077,21 @@ const PlanMaking = () => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
 
+  const sellingPrice = planDetails && planDetails[0]?.selling_price;
+  const percentageRemaining = ((sellingPrice - totalCost) / sellingPrice) * 100;
+  const displayPercentage = Math.floor(percentageRemaining);
+  useEffect(() => {
+    if (percentageRemaining >= 45 && percentageRemaining <= 50) {
+      alert('You have reached 50%!');
+    } else if (percentageRemaining >= 15 && percentageRemaining <= 20) {
+      alert('you have reached 20%');
+    }
+  }, [percentageRemaining]);
+
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
   return (
     <>
-      {/* <div className="action_heading">
-        <div className="action_title">
-          <div className="form-heading">
-            <div className="form_heading_title ">
-              <h2>Plan Making</h2>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
       <PageDialog
         open={openDialog}
         onClose={handleCloseDialog}
@@ -1090,6 +1109,7 @@ const PlanMaking = () => {
       {toggleLeftNavbar && (
         <LeftSideBar
           totalFollowers={totalFollowers}
+          planDetails={planDetails}
           HandleSavePlan={HandleSavePlan}
           clearSearch={clearSearch}
           searchInputValue={searchInput}
@@ -1109,6 +1129,7 @@ const PlanMaking = () => {
           storyPerPage={storyPerPageValues}
           handleOwnPage={handleOwnPage}
           category={cat}
+          ownPages={ownPages}
         />
       )}
 

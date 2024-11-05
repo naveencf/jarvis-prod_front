@@ -3,7 +3,10 @@ import React, { useContext } from "react";
 import { useGetAllPageListQuery } from "../../../Store/PageBaseURL";
 import * as XLSX from 'xlsx-js-style';
 import { AppContext } from "../../../../Context/Context";
+import { FormatName } from "../../../../utils/FormatName";
+
 function ExportInventory({ pageList }) {
+
   const { usersDataContext } = useContext(AppContext);
 
   // console.log(pageList, 'pageList');
@@ -34,17 +37,17 @@ function ExportInventory({ pageList }) {
       });
 
       return {
-        "User Name": row.page_name,
-        "Level": row.preference_level,
-        "Ownership": row.ownership_type,
-        "Vendor": row?.vendor_name,
+        "User Name": FormatName(row.page_name),
+        "Level": FormatName(row.preference_level),
+        "Ownership": FormatName(row.ownership_type),
+        "Vendor": FormatName(row?.vendor_name),
         "Closed By": closeByName,
         "Name Type": row.page_name_type,
         "Content Creation": row.content_creation,
         "Rate Type": row.rate_type,
         // "Variable Type": row.variable_type ,
         "Engagement Rate": row.engagment_rate || 0,
-        "Page Activeness": row.page_activeness,
+        "Page Activeness": FormatName(row.page_activeness),
         "Profile Type": row.page_profile_type_name,
         "Subcategory": row.page_sub_category_name,
         "Tags Category": row.tags_page_category_name.join(", "),
