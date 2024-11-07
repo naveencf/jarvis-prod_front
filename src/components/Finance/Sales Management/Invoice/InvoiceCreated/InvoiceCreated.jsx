@@ -20,10 +20,15 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import ImageView from "../../../ImageView";
-import { invoiceCreatedColumns, invoiceCreatedUniqueAccountsColumns, invoiceCreatedUniqueSalesExecutiveColumns } from "../../../CommonColumn/Columns";
+import {
+  invoiceCreatedColumns,
+  invoiceCreatedUniqueAccountsColumns,
+  invoiceCreatedUniqueSalesExecutiveColumns,
+} from "../../../CommonColumn/Columns";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import InvoiceCreatedFilters from "./Components/InvoiceCreatedFilters";
 import EditInvoiceActionDialog from "../PendingInvoice/EditInvoiceActionDialog";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const InvoiceCreated = ({
   setUniqueCustomerCount,
@@ -48,9 +53,8 @@ const InvoiceCreated = ({
   const [uniqueCustomerInvoiceData, setUniqueCustomerInvoiceData] = useState(
     []
   );
-  const [uniqueSalesExecutiveInvoiceData, setUniqueSalesExecutiveInvoiceData] = useState(
-    []
-  );
+  const [uniqueSalesExecutiveInvoiceData, setUniqueSalesExecutiveInvoiceData] =
+    useState([]);
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
     useState("");
   const [editActionDialog, setEditActionDialog] = useState("");
@@ -61,6 +65,8 @@ const InvoiceCreated = ({
   const [InvcCreatedRowData, setInvcCreatedRowData] = useState("");
   const [preview, setPreview] = useState("");
   const [isPDF, setIsPDF] = useState(false);
+  const [selectedData, setSelectedData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -72,6 +78,8 @@ const InvoiceCreated = ({
   });
 
   const getDataInvoiceCreated = () => {
+    setIsLoading(true);
+
     axios
       .get(
         baseUrl +
@@ -86,22 +94,23 @@ const InvoiceCreated = ({
       .then((res) => {
         const mergedData = res?.data?.data.map((item) => {
           // Find the user data based on created_by field
-          const userData = usersDataContext.find(
+          const userData = usersDataContext?.find(
             (user) => user?.user_id === item?.created_by
           );
           // Merge user data into the current item
           return {
             ...item,
-            user_name: userData?.user_name || null, 
+            user_name: userData?.user_name || null,
           };
         });
 
         const sortData = mergedData?.sort(
           (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
         );
+        setIsLoading(false);
         setDataInvoice(sortData);
         setFilterDataInvoice(sortData);
-        calculateUniqueData([...sortData])
+        calculateUniqueData([...sortData]);
       });
   };
 
@@ -109,10 +118,10 @@ const InvoiceCreated = ({
     const aggregateData = (data, keyExtractor) => {
       return data?.reduce((acc, curr) => {
         const key = keyExtractor(curr);
-  
+
         // Ensure we skip any undefined or null keys
         if (!key) return acc;
-  
+
         if (!acc[key]) {
           acc[key] = {
             account_name: curr?.saleData?.account_name || "",
@@ -123,31 +132,37 @@ const InvoiceCreated = ({
             invoice_amount: 0,
           };
         }
-  
-        acc[key].saleData.campaign_amount += curr?.saleData?.campaign_amount ?? 0;
+
+        acc[key].saleData.campaign_amount +=
+          curr?.saleData?.campaign_amount ?? 0;
         acc[key].invoice_amount += curr?.invoice_amount ?? 0;
-  
+
         return acc;
       }, {});
     };
-  // Aggregate data by account name
-    const aggregatedAccountData = aggregateData(sortedData, (item) => item?.saleData?.account_name || "");
+    // Aggregate data by account name
+    const aggregatedAccountData = aggregateData(
+      sortedData,
+      (item) => item?.saleData?.account_name || ""
+    );
     const uniqueAccData = Object.values(aggregatedAccountData);
     setUniqueCustomerInvoiceData(uniqueAccData);
     setUniqueCustomerCount(uniqueAccData?.length);
-  
+
     // Aggregate data by sales executive name
-    const aggregatedSalesExData = aggregateData(sortedData, (item) => item?.user_name || "");
+    const aggregatedSalesExData = aggregateData(
+      sortedData,
+      (item) => item?.user_name || ""
+    );
     const uniqueSalesExData = Object.values(aggregatedSalesExData);
     setUniqueSalesExecutiveInvoiceData(uniqueSalesExData);
     setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
-  
 
   useEffect(() => {
     getDataInvoiceCreated();
   }, [usersDataContext]);
-  
+
   useEffect(() => {
     const result = datas.filter((d) => {
       return d?.saleData?.account_name
@@ -163,7 +178,7 @@ const InvoiceCreated = ({
     );
     onHandleOpenUniqueCustomerClickChange(() => handleOpenUniqueCustomerClick);
   }, []);
-  
+
   useEffect(() => {
     getDataInvoiceCreated();
     setButtonaccess(
@@ -188,7 +203,7 @@ const InvoiceCreated = ({
       (item) => item?.saleData?.account_name === custName
     );
     setFilterDataInvoice(sameNameCustomersInvoice);
-    handleCloseUniqueCustomer()
+    handleCloseUniqueCustomer();
   };
 
   // For Sales Executive
@@ -205,24 +220,23 @@ const InvoiceCreated = ({
       (item) => item.user_name === salesEName
     );
     setFilterDataInvoice(sameNameSalesExecutiveInvoice);
-    handleCloseUniqueSalesExecutive()
+    handleCloseUniqueSalesExecutive();
   };
 
   // Total amounts:-
-const calculateTotalAmount = (field) => {
-  return filterDataInvoice?.reduce(
-    (total, item) => total + parseFloat(item?.saleData?.[field] || 0),
-    0
-  );
-};
+  const calculateTotalAmount = (field) => {
+    return filterDataInvoice?.reduce(
+      (total, item) => total + parseFloat(item?.saleData?.[field] || 0),
+      0
+    );
+  };
 
-// Setting totals for base and campaign amounts
-const totalBaseAmount = calculateTotalAmount('base_amount');
-setBaseAmountTotal(totalBaseAmount);
+  // Setting totals for base and campaign amounts
+  const totalBaseAmount = calculateTotalAmount("base_amount");
+  setBaseAmountTotal(totalBaseAmount);
 
-const totalCampaignAmount = calculateTotalAmount('campaign_amount');
-setCampaignAmountTotal(totalCampaignAmount);
-
+  const totalCampaignAmount = calculateTotalAmount("campaign_amount");
+  setCampaignAmountTotal(totalCampaignAmount);
 
   // Edit Action Field
   const handleOpenEditFieldAction = (rowData) => {
@@ -237,8 +251,8 @@ setCampaignAmountTotal(totalCampaignAmount);
 
   return (
     <div>
-     {/* Edit Action Field */}
-     <EditInvoiceActionDialog
+      {/* Edit Action Field */}
+      <EditInvoiceActionDialog
         editActionDialog={editActionDialog}
         setEditActionDialog={setEditActionDialog}
         setPreview={setPreview}
@@ -254,20 +268,20 @@ setCampaignAmountTotal(totalCampaignAmount);
         columns={invoiceCreatedUniqueSalesExecutiveColumns({
           uniqueSalesExecutiveInvoiceData,
           handleOpenEditFieldAction,
-          handleOpenSameSalesExecutive
+          handleOpenSameSalesExecutive,
         })}
         setDialog={setUniqueSalesExecutiveDialog}
         dialog={uniqueSalesExecutiveDialog}
         title="Unique Sales Executive"
-      />  
-      
-       {/* Unique Accounts Dialog Box */}
-       <CommonDialogBox
+      />
+
+      {/* Unique Accounts Dialog Box */}
+      <CommonDialogBox
         data={uniqueCustomerInvoiceData}
         columns={invoiceCreatedUniqueAccountsColumns({
           uniqueCustomerInvoiceData,
           handleOpenEditFieldAction,
-          handleOpenSameCustomer
+          handleOpenSameCustomer,
         })}
         setDialog={setUniqueCustomerDialog}
         dialog={uniqueCustomerDialog}
@@ -275,7 +289,10 @@ setCampaignAmountTotal(totalCampaignAmount);
       />
 
       {/* Filters */}
-      <InvoiceCreatedFilters dataInvoice={dataInvoice}setFilterDataInvoice={setFilterDataInvoice}/>
+      <InvoiceCreatedFilters
+        dataInvoice={dataInvoice}
+        setFilterDataInvoice={setFilterDataInvoice}
+      />
 
       <div className="card">
         <div className="card-header flexCenterBetween">
@@ -290,37 +307,43 @@ setCampaignAmountTotal(totalCampaignAmount);
           </div>
         </div>
         <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-                <div>
-                  <DataGrid
-                    rows={filterDataInvoice}
-                     columns={invoiceCreatedColumns({
-                      filterDataInvoice,
-                      setOpenImageDialog,
-                      setViewImgSrc,
-                      handleOpenEditFieldAction
+          <div>
+            <View
+              columns={invoiceCreatedColumns({
+                filterDataInvoice,
+                setOpenImageDialog,
+                setViewImgSrc,
+                handleOpenEditFieldAction,
               })}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
-                    disableSelectionOnClick
-                    autoHeight
-                    slots={{ toolbar: GridToolbar }}
-                    slotProps={{
-                      toolbar: {
-                        showQuickFilter: true,
-                      },
-                    }}
-                    getRowId={(row) => filterDataInvoice.indexOf(row)}
-                  />
-                </div>
-                {openImageDialog && (
-                  <ImageView
-                    viewImgSrc={viewImgSrc}
-                    setViewImgDialog={setOpenImageDialog}
-                  />
-                )}
-              </div>
-            </div>
+              data={filterDataInvoice}
+              isLoading={isLoading}
+              title={"Invoice Created"}
+              rowSelectable={true}
+              setTotal={true}
+              pagination={[100, 200]}
+              tableName={"finance-invoice-created"}
+              selectedData={setSelectedData}
+              addHtml={
+                <>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
+                    Clear
+                  </button>
+                </>
+              }
+            />
           </div>
+          {openImageDialog && (
+            <ImageView
+              viewImgSrc={viewImgSrc}
+              setViewImgDialog={setOpenImageDialog}
+            />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 export default InvoiceCreated;

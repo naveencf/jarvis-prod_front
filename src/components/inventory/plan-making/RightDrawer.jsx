@@ -10,7 +10,7 @@ import {
   Trash,
 } from '@phosphor-icons/react';
 import CustomSelect from '../../ReusableComponents/CustomSelect';
- 
+import formatString from '../../../utils/formatString';
 
 const RightDrawer = ({
   priceFilterType,
@@ -41,6 +41,7 @@ const RightDrawer = ({
   platformData,
   activeTabPlatform,
   handlePlatform,
+  pageList,
 }) => {
   const [open, setOpen] = useState(false);
   const [customFollowerRange, setCustomFollowerRange] = useState(false);
@@ -49,11 +50,11 @@ const RightDrawer = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
-  // Prepare categories for CustomSelect
-  const categoryOptions = cat?.map((category) => ({
-    value: category._id,
-    label: category.page_category,
-  }));
+  // // Prepare categories for CustomSelect
+  // const categoryOptions = cat?.map((category) => ({
+  //   value: category._id,
+  //   label: formatString(category.page_category),
+  // }));
 
   const handleFollowerSelection = (e) => {
     const value = e.target.value;
@@ -72,6 +73,23 @@ const RightDrawer = ({
       setSelectedFollowers([...selectedFollowers, value]);
     }
   };
+
+  // Function to calculate count for each category
+  const getCategoryCount = (categoryName) => {
+    return pageList?.filter(
+      (item) =>
+        item.followers_count > 0 && item.page_category_name === categoryName
+    ).length;
+  };
+
+  // Prepare categories with counts for CustomSelect
+  const categoryOptions = cat?.map((category) => {
+    const count = getCategoryCount(category.page_category);
+    return {
+      value: category._id,
+      label: `${formatString(category.page_category)} (${count})`,
+    };
+  });
 
   const followerOptions = [
     { id: 'lessThan10K', label: 'Less than 10k' },
@@ -110,7 +128,7 @@ const RightDrawer = ({
                 >
                   {platformData?.map((item) => (
                     <option key={item._id} value={item._id}>
-                      {item.platform_name}
+                      {formatString(item.platform_name)}
                     </option>
                   ))}
                 </select>
@@ -304,7 +322,11 @@ const RightDrawer = ({
 
   return (
     <div>
-      <Button className="btn pointer icon" onClick={toggleDrawer(true)}>
+      <Button
+        className="btn pointer icon"
+        onClick={toggleDrawer(true)}
+        title="Right Sidebar"
+      >
         <Sliders />
       </Button>
       <SwipeableDrawer

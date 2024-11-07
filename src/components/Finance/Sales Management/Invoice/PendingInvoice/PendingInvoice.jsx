@@ -356,6 +356,7 @@ const PendingInvoice = ({
           isLoading={isLoading}
           title={"Pending Invoice"}
           rowSelectable={true}
+          setTotal={true}
           pagination={[100, 200]}
           tableName={"invoice_request"}
           selectedData={setSelectedData}

@@ -626,6 +626,7 @@ const BalancePaymentList = () => {
               isLoading={isLoading}
               title={"Outstanding"}
               rowSelectable={true}
+              showTotal={true}
               pagination={[100, 200]}
               tableName={"sales_booking_outstanding_for_finanace"}
               selectedData={setSelectedData}

@@ -320,7 +320,7 @@ export default function SalesDashboard() {
       {graph === 0 && (
         <div className="card">
           <div className="card-body pb0">
-            <div className="card-body cardGrdnt orangeGrdnt">
+            {/* <div className="card-body cardGrdnt orangeGrdnt">
               <Link to="/admin/finance-incentivepayment">
                 <div className="row align-items-center">
                   <div className="col-md-6 financeCardBox border-right ">
@@ -332,12 +332,7 @@ export default function SalesDashboard() {
                         <h2>Pending Incentive Release </h2>
                       </div>
                       <div className="scroll-con pl40">
-                        {/* <div className="scroller"> */}
-                        {/* <h3>0</h3> */}
-                        {/* {incentiveData?.map((item, index) => ( */}
                         <h3>{data?.pendingIncentiveReqCounts}</h3>
-                        {/* ))} */}
-                        {/* </div> */}
                       </div>
                     </div>
                   </div>
@@ -345,25 +340,6 @@ export default function SalesDashboard() {
                     <div className="financeCardBoxIn p0">
                       <div className="financeCardBoxDetails">
                         <ul className="pl32">
-                          {/* <li>
-                            Request Amount
-                            <span>
-                              <span>&#8377; </span>
-                              {incentiveData
-                                .map((item) => +item.request_amount)
-                                .reduce((prev, next) => prev + next, 0)
-                                .toFixed(2)}
-                            </span>
-                          </li>
-                          <li>
-                            Released Amount
-                            <span>
-                              <span>&#8377; </span>
-                              {incentiveData
-                                .map((item) => +item.released_amount)
-                                .reduce((prev, next) => prev + next, 0)}
-                            </span>
-                          </li> */}
                           <li>
                             Balance
                             <span>
@@ -379,6 +355,81 @@ export default function SalesDashboard() {
                   </div>
                 </div>
               </Link>
+            </div> */}
+            <div className="row">
+              <div className="col-md-6">
+                <Link to="/admin/finance-incentivepayment">
+                  <div className="cardGrdnt orangeGrdnt">
+                    <div className="financeCardBox border-bottom">
+                      <div className="financeCardBoxIn">
+                        <div className="financeCardBoxTitle">
+                          <div className="financeCardBoxImg">
+                            <img src={gifone} alt="" />
+                          </div>
+                          <h2>Pending Incentive Release</h2>
+                        </div>
+                        <div className="scroll-con  pl40">
+                          <h3>{data?.pendingIncentiveReqCounts}</h3>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="financeCardBox">
+                      <div className="financeCardBoxIn">
+                        <div className="financeCardBoxDetails">
+                          <ul>
+                            <li>
+                              Balance
+                              <span>{data?.saleBookingtdsCloseCounts}</span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              <div className="col-md-6">
+                <Link to="/admin/finance-payment-release-report">
+                  <div className="cardGrdnt orangeGrdnt">
+                    <div className="financeCardBox border-bottom">
+                      <div className="financeCardBoxIn">
+                        <div className="financeCardBoxTitle">
+                          <div className="financeCardBoxImg">
+                            <img src={gifthree} alt="" />
+                          </div>
+                          <h2>Payment Release Report</h2>
+                        </div>
+                        <div className="scroll-con  pl40"></div>
+                      </div>
+                    </div>
+                    <div className="financeCardBox">
+                      <div className="financeCardBoxIn">
+                        <div className="financeCardBoxDetails">
+                          <ul>
+                            <li>
+                              Total Payment Release Report
+                              <span>
+                                <span>&#8377; </span>
+                                <FormattedNumberWithTooltip
+                                  // value={cstPaymentData
+                                  //   .map(
+                                  //     (item) =>
+                                  //       item.campaign_amount -
+                                  //       item.total_paid_amount
+                                  //   )
+                                  //   .reduce((prev, next) => prev + next, 0)
+                                  //   .toLocaleString("en-IN")}
+                                  value={0}
+                                />
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </div>
             <div className="row">
               <div className="col-md-6">

@@ -55,6 +55,7 @@ export const saleBookingCloseColumns = ({
   {
     key: "campaign_amount",
     name: "Campaign Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount,
     width: 150,
   },
@@ -62,6 +63,7 @@ export const saleBookingCloseColumns = ({
   {
     key: "base_amount",
     name: "Base Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.base_amount,
     width: 150,
   },
@@ -82,12 +84,14 @@ export const saleBookingCloseColumns = ({
   {
     key: "gst_amount",
     name: "GST Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.gst_amount,
     width: 150,
   },
   {
     key: "paid_amount",
     name: "Paid Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.paid_amount,
     width: 150,
   },
@@ -189,7 +193,7 @@ export const saleBookingCloseColumns = ({
   {
     key: "Action",
     name: "Action",
-    renderRowCell: (params) => {
+    renderRowCell: (row) => {
       return (
         <div className="flex-row gap16">
           {/* {params.row.tds_status === "close" ? ( */}
@@ -563,12 +567,14 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
   {
     key: "campaign_amount",
     name: "Campaign Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount,
     width: 150,
   },
   {
     key: "base_amount",
     name: "Base Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.base_amount,
     width: 150,
   },
@@ -589,12 +595,14 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
   {
     key: "gst_amount",
     name: "GST Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.gst_amount,
     width: 150,
   },
   {
     key: "paid_amount",
     name: "Paid Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.paid_amount,
     width: 150,
   },
@@ -616,6 +624,7 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
   {
     key: "Balance Amount",
     name: "Balance Amount",
+    getTotal: true,
     renderRowCell: (params) => {
       return row?.campaign_amount - row?.paid_amount;
     },
@@ -951,6 +960,7 @@ export const pendingApprovalColumn = ({
     key: "campaign_amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount,
   },
   {
@@ -958,6 +968,7 @@ export const pendingApprovalColumn = ({
     key: "base_amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) => row?.base_amount,
   },
   {
@@ -1011,13 +1022,15 @@ export const pendingApprovalColumn = ({
     name: "Balance Amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount - row?.payment_amount,
   },
   {
     name: "Payment Amount",
     key: "payment_amount",
     width: 180,
-    renderRowCell: (row) => <div>{row?.payment_amount} </div>,
+    getTotal: true,
+    renderRowCell: (row) => row?.payment_amount,
   },
   {
     name: "Payment Mode",
@@ -1304,7 +1317,7 @@ export const pendingInvoiceColumn = ({
     name: "S.No",
     key: "s_no",
     compare: true,
-    renderRowCell: (row, index) => index + 1,
+    renderRowCell: (index) => index + 1,
   },
   {
     width: 150,
@@ -1414,6 +1427,7 @@ export const pendingInvoiceColumn = ({
     name: "Invoice Amount",
     width: 200,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) => (row?.invoice_amount ? row?.invoice_amount : 0),
   },
   {
@@ -1421,6 +1435,7 @@ export const pendingInvoiceColumn = ({
     key: "base_amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) =>
       row?.saleData?.base_amount ? row?.saleData.base_amount : 0,
   },
@@ -1429,6 +1444,7 @@ export const pendingInvoiceColumn = ({
     field: "gst_amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) =>
       row?.saleData?.gst_amount ? row?.saleData?.gst_amount : 0,
   },
@@ -1437,6 +1453,7 @@ export const pendingInvoiceColumn = ({
     key: "campaign_amount",
     width: 180,
     compare: true,
+    getTotal: true,
     renderRowCell: (row) =>
       row?.saleData?.campaign_amount ? row?.saleData?.campaign_amount : 0,
   },
@@ -1884,61 +1901,55 @@ export const invoiceCreatedColumns = ({
 }) => [
   {
     width: 60,
-    field: "s_no",
-    renderCell: (params, index) => (
-      <div>{[...filterDataInvoice].indexOf(params.row) + 1}</div>
-    ),
-    sortable: true,
+    key: "s_no",
+    name: "S.No",
+    renderRowCell: (row, index) => index + 1,
   },
   {
     width: 150,
-    headerName: "Sale Booking ID",
-    field: "sale_booking_id",
-    renderCell: (params, index) => <div>{params.row.sale_booking_id}</div>,
+    name: "Sale Booking ID",
+    key: "sale_booking_id",
+    renderRowCell: (row) => <div>{row?.sale_booking_id}</div>,
   },
   {
-    field: "cust_name",
-    headerName: "Account name",
+    key: "cust_name",
+    name: "Account name",
     width: 340,
-    renderCell: (params) => (
-      <div>{FormatString(params?.row?.saleData?.account_name) || ""}</div>
+    renderRowCell: (row) => (
+      <div>{FormatString(row?.saleData?.account_name) || ""}</div>
     ),
   },
   {
-    headerName: "Sales Person name",
-    field: "user_name",
+    name: "Sales Person name",
+    key: "user_name",
     width: 220,
-    height: "200px",
-    renderCell: (params) => {
-      return <div>{FormatString(params.row.user_name) || ""} </div>;
+    renderRowCell: (row) => {
+      return <div>{FormatString(row?.user_name) || ""} </div>;
     },
   },
   {
-    field: "invoice_particular_name",
-    headerName: "Invoice Particular",
+    key: "invoice_particular_name",
+    name: "Invoice Particular",
     width: 200,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       return (
-        <div>
-          {" "}
-          {FormatString(params?.row?.saleData?.invoice_particular_name) || ""}
-        </div>
+        <div> {FormatString(row?.saleData?.invoice_particular_name) || ""}</div>
       );
     },
   },
   {
-    field: "invoice_file",
-    headerName: "Invoice",
+    key: "invoice_file",
+    name: "Invoice",
     width: 210,
-    renderCell: (params) => {
+    renderRowCell: (row) => {
       // Extract file extension and check if it's a PDF
-      const fileExtension = params.row.invoice_file_url
+      const fileExtension = row?.invoice_file_url
         ?.split(".")
         .pop()
         .toLowerCase();
       const isPdf = fileExtension === "pdf";
 
-      const imgUrl = params.row.invoice_file_url;
+      const imgUrl = row?.invoice_file_url;
 
       return isPdf ? (
         <img
@@ -1964,65 +1975,67 @@ export const invoiceCreatedColumns = ({
     },
   },
   {
-    field: "invoice_amount",
-    headerName: "Invoice Amount",
+    key: "invoice_amount",
+    name: "Invoice Amount",
     width: 200,
-    renderCell: (params) => params.row.saleData.invoice_amount,
+    getTotal: true,
+    renderRowCell: (row) => row?.saleData?.invoice_amount,
   },
   {
-    field: "invoice_number",
-    headerName: "Invoice Number",
+    key: "invoice_number",
+    name: "Invoice Number",
     width: 200,
-    renderCell: (params) => params.row.invoice_number,
+    renderRowCell: (row) => row?.invoice_number,
   },
   {
-    field: "invoice_uploaded_date",
-    headerName: "Invoice Date",
+    key: "invoice_uploaded_date",
+    name: "Invoice Date",
     width: 200,
-    renderCell: (params) => params.row.invoice_uploaded_date,
+    renderRowCell: (row) => row?.invoice_uploaded_date,
   },
   {
-    field: "party_name",
-    headerName: "Party Name",
+    key: "party_name",
+    name: "Party Name",
     width: 210,
-    renderCell: (params) => FormatString(params.row.party_name),
+    renderRowCell: (row) => FormatString(row?.party_name),
   },
   {
-    field: "invoice_type_id",
-    headerName: "Invoice Type",
+    key: "invoice_type_id",
+    name: "Invoice Type",
     width: 200,
-    renderCell: (params) => FormatString(params.row.invoice_type_id),
+    renderRowCell: (row) => FormatString(row?.invoice_type_id),
   },
   {
-    field: "createdAt",
-    headerName: "Requested Date",
+    key: "createdAt",
+    name: "Requested Date",
     width: 190,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
-        {moment(params.row.createdAt).format("DD/MM/YYYY")}
+        {moment(row?.createdAt)?.format("DD/MM/YYYY")}
       </div>
     ),
   },
   {
-    headerName: "Campaign Amount",
-    field: "campaign_amount",
+    name: "Campaign Amount",
+    key: "campaign_amount",
     width: 210,
-    renderCell: (params) => params.row.saleData.campaign_amount,
+    getTotal: true,
+    renderRowCell: (row) => row?.saleData?.campaign_amount,
   },
   {
-    headerName: "Reason",
-    field: "invoice_action_reason",
-    renderCell: (params) => FormatString(params.row.invoice_action_reason),
+    name: "Reason",
+    key: "invoice_action_reason",
+    renderRowCell: (row) => FormatString(row?.invoice_action_reason),
   },
   {
-    field: "Action",
-    headerName: "Action",
+    key: "Action",
+    name: "Action",
     width: 180,
-    renderCell: (params) => (
+    renderRowCell: (row) => (
       <div>
         <Button
           variant="contained"
-          onClick={() => handleOpenEditFieldAction(params.row)}
+          onClick={() => handleOpenEditFieldAction(row)}
         >
           Update Invoice
         </Button>
@@ -2268,12 +2281,14 @@ export const outstandingColumns = ({
     key: "campaign_amount",
     name: "Campaign Amount",
     width: 190,
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount,
   },
   {
     key: "paid_amount",
     name: "Paid Amount",
     width: 190,
+    getTotal: true,
     renderRowCell: (row) => (
       <div style={{ whiteSpace: "normal" }}>
         {row?.paid_amount ? row?.paid_amount : 0}
@@ -2284,11 +2299,13 @@ export const outstandingColumns = ({
     name: "Balance Amount",
     key: "Balance Amount",
     compare: true,
+    getTotal: true,
     renderRowCell: (row) => row?.campaign_amount - row?.paid_amount || 0,
   },
   {
     key: "base_amount",
     name: "Base Amount",
+    getTotal: true,
     renderRowCell: (row) => row?.base_amount,
   },
   {
@@ -2474,6 +2491,7 @@ export const incentivePaymentColumns = ({
     name: "User Requested Amount",
     width: 230,
     key: "user_requested_amount",
+    getTotal: true,
     renderRowCell: (row) =>
       row?.sales_executive_name !== "Total" ? (
         row?.user_requested_amount
@@ -2487,6 +2505,7 @@ export const incentivePaymentColumns = ({
     name: "Admin Approved Amount",
     width: 180,
     key: "admin_approved_amount",
+    getTotal: true,
     renderRowCell: (row) =>
       row?.sales_executive_name !== "Total" ? (
         row?.admin_approved_amount
@@ -2499,7 +2518,8 @@ export const incentivePaymentColumns = ({
   viewPendingStatus !== true && {
     name: "Released Amount",
     key: "finance_released_amount",
-    renderRowCell: (params) =>
+    getTotal: true,
+    renderRowCell: (row) =>
       row?.sales_executive_name !== "Total" ? (
         <Link
           to={`/admin/Incentive-balance-Released/${row?._id}`}
@@ -2991,48 +3011,54 @@ export const pendingPaymentRequestColumns = ({
     key: "request_amount",
     name: "Requested Amount",
     width: 150,
+    getTotal: true,
     renderCell: (row) => {
-      return <p> &#8377; {row?.request_amount}</p>;
+      return row?.request_amount;
     },
   },
   {
     key: "paid_amount",
     name: "Paid Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return <p> &#8377; {row?.paid_amount}</p>;
+      return row?.paid_amount;
     },
   },
   {
     key: "balance_amount",
     name: "Balance Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return <p> &#8377; {row?.balance_amount}</p>;
+      return row?.balance_amount;
     },
   },
   {
     key: "base_amount",
     name: "Base Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
+      return row?.base_amount ? row?.base_amount : "NA";
     },
   },
   {
     key: "gst_amount",
     name: "GST Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.gst_amount ? <p>&#8377; {row?.gst_amount}</p> : "NA";
+      return row?.gst_amount ? row?.gst_amount : "NA";
     },
   },
   {
     key: "outstandings",
     name: "OutStanding ",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return <p> &#8377; {row?.outstandings}</p>;
+      return row?.outstandings;
     },
   },
   {
@@ -3731,51 +3757,52 @@ export const paymentDoneColumns = ({
     name: "Requested Amount",
     width: 150,
     renderRowCell: (row) => {
-      return <p> &#8377; {row?.request_amount}</p>;
+      return row?.request_amount;
     },
   },
   {
     key: "base_amount",
     name: "Base Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.base_amount ? <p> &#8377; {row?.base_amount}</p> : "NA";
+      return row?.base_amount ? row?.base_amount : "NA";
     },
   },
   {
     key: "paid_amount",
     name: "Paid Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.paid_amount ? <p> &#8377; {row?.paid_amount}</p> : "NA";
+      return row?.paid_amount ? row?.paid_amount : "NA";
     },
   },
   {
     key: "gst_amount",
     name: "GST Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row.gst_amount ? <p>&#8377; {row.gst_amount}</p> : "NA";
+      return row.gst_amount ? row.gst_amount : "NA";
     },
   },
   {
     key: "gst_hold_amount",
     name: "GST Hold Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.gst_hold_amount ? (
-        <p>&#8377; {row?.gst_hold_amount}</p>
-      ) : (
-        "NA"
-      );
+      return row?.gst_hold_amount ? row?.gst_hold_amount : "NA";
     },
   },
   {
     key: "tds_deduction",
     name: "TDS Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return row?.tds_deduction ? <p>&#8377; {row?.tds_deduction}</p> : "NA";
+      return row?.tds_deduction ? row?.tds_deduction : "NA";
     },
   },
   {
@@ -3790,19 +3817,21 @@ export const paymentDoneColumns = ({
     key: "outstandings",
     name: "OutStanding ",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
-      return <p> &#8377; {row?.outstandings}</p>;
+      return row?.outstandings;
     },
   },
   {
     key: "payment_amount",
     name: "Payment Amount",
     width: 150,
+    getTotal: true,
     renderRowCell: (row) => {
       const paymentAmount = nodeData?.filter(
         (e) => e.request_id == row?.request_id
       )[0]?.payment_amount;
-      return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
+      return paymentAmount ? paymentAmount : "NA";
     },
   },
   {
@@ -4086,6 +4115,1085 @@ export const PaymentDoneRemainderDialogColumns = ({
           </button>
         </div>
       );
+    },
+  },
+];
+export const DiscardColumns = ({
+  phpRemainderData,
+  nodeData,
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleRemainderModal,
+  handleOpenSameVender,
+  calculateDays,
+  handleOpenPaymentHistory,
+  handleOpenBankDetail,
+}) => [
+  {
+    key: "s_no",
+    name: "S.NO",
+    width: 90,
+    editable: false,
+    renderRowCell: (row, index) => index + 1,
+  },
+  {
+    key: "invc_img",
+    name: "Invoice Image",
+    renderRowCell: (row) => {
+      // Extract file extension and check if it's a PDF
+      const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
+      return row?.invc_img ? (
+        isPdf ? (
+          <iframe
+            onClick={() => {
+              setOpenImageDialog(true);
+              setViewImgSrc(imgUrl);
+            }}
+            src={imgUrl}
+            style={{ width: "100px", height: "45px" }}
+            title="PDF Preview"
+          />
+        ) : (
+          <img
+            onClick={() => {
+              setOpenImageDialog(true);
+              setViewImgSrc(imgUrl);
+            }}
+            src={imgUrl}
+            alt="Invoice"
+            style={{ width: "40px", height: "40px" }}
+          />
+        )
+      ) : (
+        ""
+      );
+    },
+    width: 250,
+  },
+  {
+    key: "request_date",
+    name: "Requested Date",
+    width: 150,
+    renderRowCell: (row) =>
+      moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+  },
+  {
+    key: "name",
+    name: "Requested By",
+    width: 150,
+    renderRowCell: (row) => {
+      const reminder = phpRemainderData?.filter(
+        (item) => item.request_id == row?.request_id
+      );
+
+      return (
+        <>
+          <span>{row?.name}</span> &nbsp;{" "}
+          <span>
+            {reminder?.length > 0 ? (
+              <Badge badgeContent={reminder?.length} color="primary">
+                <NotificationsActiveTwoToneIcon
+                  onClick={() => handleRemainderModal(reminder)}
+                />{" "}
+              </Badge>
+            ) : (
+              ""
+            )}
+          </span>
+        </>
+      );
+    },
+  },
+  {
+    key: "vendor_name",
+    name: "Vendor Name",
+    width: 200,
+    renderRowCell: (row) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div
+            style={{ cursor: "pointer", marginRight: "20px" }}
+            onClick={() => handleOpenSameVender(row?.vendor_name)}
+          >
+            {row?.vendor_name}
+          </div>
+          {/* <div onClick={() => handleOpenBankDetail()}>
+            <AccountBalanceIcon style={{ fontSize: "25px" }} />
+          </div> */}
+          <Button
+            disabled={
+              row?.payment_details ? !row?.payment_details.length > 0 : true
+            }
+            onClick={() => handleOpenBankDetail(params.row)}
+          >
+            <AccountBalanceIcon style={{ fontSize: "25px" }} />
+          </Button>
+        </div>
+      );
+    },
+  },
+  {
+    key: "page_name",
+    name: "Page Name",
+    width: 150,
+  },
+  {
+    key: "total_paid",
+    name: "Total Paid",
+    width: 150,
+    renderRowCell: (row) => {
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+        .length > 0 ? (
+        <span className="row ml-2 ">
+          <h5
+            onClick={() => handleOpenPaymentHistory(row, "TP")}
+            style={{ cursor: "pointer" }}
+            className=" pointer font-sm lead  text-decoration-underline text-black-50"
+          >
+            {/* Total Paid */}
+            {nodeData
+              .filter(
+                (e) => e.vendor_name === row?.vendor_name && e.status == 1
+              )
+              .reduce((acc, item) => acc + +item.payment_amount, 0)}
+          </h5>
+        </span>
+      ) : (
+        <h5
+          style={{ cursor: "pointer" }}
+          className=" pointer font-sm lead  text-decoration-underline text-black-50"
+        >
+          0
+        </h5>
+      );
+    },
+  },
+  {
+    key: "F.Y",
+    name: "F.Y",
+    width: 150,
+    renderRowCell: (row) => {
+      const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
+      const currentYear = new Date().getFullYear();
+      const startDate = new Date(
+        `04/01/${
+          isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+        }`
+      );
+      const endDate = new Date(
+        `03/31/${
+          isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+        }`
+      );
+      const dataFY = nodeData?.filter((e) => {
+        const paymentDate = new Date(e.request_date);
+        return (
+          paymentDate >= startDate &&
+          paymentDate <= endDate &&
+          e.vendor_name === row?.vendor_name &&
+          e.status !== 0 &&
+          e.status !== 2
+        );
+      });
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+        ?.length > 0 ? (
+        <h5
+          onClick={() => handleOpenPaymentHistory(row, "FY")}
+          style={{ cursor: "pointer" }}
+          className="font-sm lead  text-decoration-underline text-black-50"
+        >
+          {/* Financial Year */}
+
+          {dataFY?.reduce(
+            (acc, item) => acc + parseFloat(item.payment_amount),
+            0
+          )}
+        </h5>
+      ) : (
+        <h5
+          style={{ cursor: "pointer" }}
+          className="font-sm lead  text-decoration-underline text-black-50"
+        >
+          0
+        </h5>
+      );
+    },
+  },
+  {
+    key: "pan_img",
+    name: "Pan Img",
+    renderRowCell: (row) => {
+      return row?.pan_img ? (
+        <img
+          src={row?.pan_img}
+          alt="Pan"
+          style={{ width: "40px", height: "40px" }}
+        />
+      ) : (
+        "NA"
+      );
+    },
+  },
+  {
+    key: "remark_audit",
+    name: "Remark",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.remark_audit;
+    },
+  },
+  {
+    key: "priority",
+    name: "Priority",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.priority;
+    },
+  },
+  {
+    key: "request_amount",
+    name: "Requested Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.request_amount;
+    },
+  },
+  {
+    key: "base_amount",
+    name: "Base Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.base_amount ? row?.base_amount : "NA";
+    },
+  },
+  {
+    key: "gst_amount",
+    name: "GST Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.gst_amount ? row?.gst_amount : "NA";
+    },
+  },
+  {
+    key: "outstandings",
+    name: "OutStanding ",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.outstandings;
+    },
+  },
+  {
+    key: "aging",
+    name: "Aging",
+    width: 150,
+    renderRowCell: (row) => {
+      return <p> {calculateDays(row?.request_date, new Date())} Days</p>;
+    },
+  },
+];
+export const DiscardUniqueVendorColumns = ({
+  handleOpenSameVender,
+  filterData,
+  uniqueVendorData = [],
+}) => [
+  {
+    field: "S.NO",
+    headerName: "S.NO",
+    width: 90,
+    editable: false,
+    renderCell: (params) => {
+      const rowIndex = uniqueVendorData?.indexOf(params?.row);
+      return <div>{rowIndex + 1}</div>;
+    },
+  },
+  {
+    field: "vendor_name",
+    headerName: "Vendor Name",
+    width: 250,
+    renderCell: (params) => {
+      return (
+        <a
+          href="#"
+          style={{ cursor: "pointer", color: "#" }}
+          onClick={() => handleOpenSameVender(params?.row?.vendor_name)}
+        >
+          {params?.row?.vendor_name}
+        </a>
+      );
+    },
+  },
+  {
+    field: "total_amount",
+    headerName: "Total Amount",
+    width: 150,
+    renderCell: (params) => {
+      const sameVendor = filterData.filter(
+        (e) => e.vendor_name === params?.row.vendor_name
+      );
+
+      const reduceAmt = sameVendor.reduce(
+        (a, b) => a + 1 * b.request_amount,
+        0
+      );
+
+      return <p> &#8377; {reduceAmt}</p>;
+    },
+  },
+  {
+    field: "outstandings",
+    headerName: "OutStanding ",
+    width: 150,
+    renderCell: (params) => {
+      return <p> &#8377; {params?.Daterow?.outstandings}</p>;
+    },
+  },
+];
+
+export const TDSDeductedColumns = ({
+  nodeData,
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleOpenSameVender,
+  calculateDays,
+  handleOpenPaymentHistory,
+  handleOpenBankDetail,
+}) => [
+  {
+    key: "s_no",
+    name: "S.NO",
+    width: 90,
+    renderRowCell: (row, index) => index + 1,
+  },
+  {
+    key: "invc_img",
+    name: "Invoice Image",
+    renderRowCell: (row) => {
+      const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
+      return isPdf ? (
+        <>
+          <iframe
+            allowFullScreen={true}
+            src={imgUrl}
+            title="PDF Preview"
+            style={{ width: "80px", height: "45px" }}
+          />
+          <div
+            onClick={() => {
+              setOpenImageDialog(true);
+              setViewImgSrc(imgUrl);
+            }}
+            style={{
+              position: "absolute",
+              width: "4.2%",
+              height: "29%",
+              top: "107px",
+              left: "104px",
+              cursor: "pointer",
+              background: "rgba(0, 0, 0, 0)",
+              zIndex: 10,
+            }}
+          ></div>
+        </>
+      ) : (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={imgUrl}
+          alt="Invoice"
+          style={{ width: "80px", height: "80px" }}
+        />
+      );
+    },
+    width: 250,
+  },
+  {
+    key: "request_date",
+    name: "Requested Date",
+    width: 150,
+    renderRowCell: (row) =>
+      moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+  },
+  {
+    key: "name",
+    name: "Requested By",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.name;
+    },
+  },
+  {
+    key: "vendor_name",
+    name: "Vendor Name",
+    width: 200,
+    renderRowCell: (row) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* Hold for confirmation of sourabh sir */}
+          <Button
+            disabled={
+              row?.payment_details ? !row?.payment_details.length > 0 : true
+            }
+            onClick={() => handleOpenBankDetail(row)}
+          >
+            <AccountBalanceIcon style={{ fontSize: "25px" }} />
+          </Button>
+          <div
+            style={{ cursor: "pointer", marginRight: "20px" }}
+            onClick={() => handleOpenSameVender(row?.vendor_name)}
+          >
+            {row?.vendor_name}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    key: "page_name",
+    name: "Page Name",
+    width: 150,
+  },
+  {
+    key: "total_paid",
+    name: "Total Paid",
+    width: 150,
+    renderRowCell: (row) => {
+      return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+        .length > 0 ? (
+        <span>
+          <h5
+            onClick={() => handleOpenPaymentHistory(row, "TP")}
+            style={{ cursor: "pointer" }}
+            className=" pointer font-sm lead  text-decoration-underline text-black-50"
+          >
+            {/* Total Paid */}
+            {nodeData
+              .filter(
+                (e) => e.vendor_name === row?.vendor_name && e.status == 1
+              )
+              .reduce((acc, item) => acc + +item.payment_amount, 0)}
+          </h5>
+        </span>
+      ) : (
+        <h5
+          style={{ cursor: "pointer" }}
+          className="pointer font-sm lead  text-decoration-underline text-black-50"
+        >
+          0
+        </h5>
+      );
+    },
+  },
+  {
+    key: "F.Y",
+    name: "F.Y",
+    width: 150,
+    renderRowCell: (row) => {
+      const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
+      const currentYear = new Date().getFullYear();
+      const startDate = new Date(
+        `04/01/${
+          isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+        }`
+      );
+      const endDate = new Date(
+        `03/31/${
+          isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+        }`
+      );
+      const dataFY = nodeData.filter((e) => {
+        const paymentDate = new Date(e.request_date);
+        return (
+          paymentDate >= startDate &&
+          paymentDate <= endDate &&
+          e.vendor_name === row?.vendor_name &&
+          e.status !== 0 &&
+          e.status !== 2
+        );
+      });
+      return nodeData.filter((e) => e.vendor_name === row?.vendor_name).length >
+        0 ? (
+        <h5
+          onClick={() => handleOpenPaymentHistory(row, "FY")}
+          style={{ cursor: "pointer" }}
+          className=" font-sm lead  text-decoration-underline text-black-50"
+        >
+          {/* Financial Year */}
+
+          {dataFY.reduce(
+            (acc, item) => acc + parseFloat(item.payment_amount),
+            0
+          )}
+        </h5>
+      ) : (
+        <h5
+          style={{ cursor: "pointer" }}
+          className=" font-sm lead  text-decoration-underline text-black-50"
+        >
+          0
+        </h5>
+      );
+    },
+  },
+  {
+    key: "Pan Img",
+    name: "Pan Img",
+    renderRowCell: (row) => {
+      const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+      return row?.pan_img?.includes("uploads") ? (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(ImgUrl);
+          }}
+          src={ImgUrl}
+          alt="Pan"
+          style={{ width: "40px", height: "40px" }}
+        />
+      ) : (
+        "NA"
+      );
+    },
+  },
+  {
+    key: "pan",
+    name: "PAN",
+    width: 200,
+  },
+  {
+    key: "gst",
+    name: "GST",
+    width: 200,
+  },
+  {
+    key: "remark_audit",
+    name: "Remark",
+    width: 150,
+    renderCell: (row) => {
+      return row?.remark_audit;
+    },
+  },
+  {
+    key: "priority",
+    name: "Priority",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.priority;
+    },
+  },
+  {
+    key: "request_amount",
+    name: "Requested Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.request_amount;
+    },
+  },
+  {
+    key: "base_amount",
+    name: "Base Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.base_amount ? row?.base_amount : "NA";
+    },
+  },
+  {
+    key: "gst_amount",
+    name: "GST Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.gst_amount ? row?.gst_amount : "NA";
+    },
+  },
+  {
+    key: "gst_hold_amount",
+    name: "GST Hold Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.gst_hold_amount ? row?.gst_hold_amount : "NA";
+    },
+  },
+  {
+    key: "tds_deduction",
+    name: "TDS Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.tds_deduction ? row?.tds_deduction : "NA";
+    },
+  },
+  {
+    key: "outstandings",
+    name: "OutStanding ",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.outstandings;
+    },
+  },
+  {
+    key: "payment_amount",
+    name: "Payment Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      const paymentAmount = nodeData?.filter(
+        (e) => e.request_id == row?.request_id
+      )[0]?.payment_amount;
+      return paymentAmount ? paymentAmount : "NA";
+    },
+  },
+  {
+    key: "aging",
+    name: "Aging",
+    width: 150,
+    renderRowCell: (row) => {
+      return <p> {calculateDays(row?.request_date, new Date())} Days</p>;
+    },
+  },
+  {
+    key: "gst_Hold_Bool",
+    name: "GST Hold",
+    renderRowCell: (row) => {
+      return row?.gstHold == 1 ? "Yes" : "No";
+    },
+  },
+];
+
+export const TDSDeductedUniqueVendorColumns = ({
+  handleOpenSameVender,
+  filterData,
+  uniqueVendorData = [],
+}) => [
+  {
+    field: "S.NO",
+    headerName: "S.NO",
+    width: 90,
+    editable: false,
+    renderCell: (params) => {
+      const rowIndex = uniqueVendorData?.indexOf(params.row);
+      return <div>{rowIndex + 1}</div>;
+    },
+  },
+  {
+    field: "vendor_name",
+    headerName: "Vendor Name",
+    width: 250,
+    renderCell: (params) => {
+      return (
+        <a
+          href="#"
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleOpenSameVender(params?.row.vendor_name)}
+        >
+          {params?.row?.vendor_name}
+        </a>
+      );
+    },
+  },
+  {
+    field: "total_amount",
+    headerName: "Total Amount",
+    width: 150,
+    renderCell: (params) => {
+      const sameVendor = filterData?.filter(
+        (e) => e.vendor_name === params?.row?.vendor_name
+      );
+      const reduceAmt = sameVendor?.reduce(
+        (a, b) => a + 1 * b.request_amount,
+        0
+      );
+      return <p> &#8377; {reduceAmt}</p>;
+    },
+  },
+  {
+    field: "outstandings",
+    headerName: "OutStanding ",
+    width: 150,
+    renderCell: (params) => {
+      const sameVendor = filterData?.filter(
+        (e) => e.vendor_name === params?.row?.vendor_name
+      );
+      const reduceAmt = sameVendor?.reduce((a, b) => a + 1 * b.outstandings, 0);
+      return <p> &#8377; {reduceAmt}</p>;
+    },
+  },
+];
+
+export const GSTHoldColumns = ({
+  setOpenImageDialog,
+  setViewImgSrc,
+  handleOpenBankDetail,
+  handleOpenSameVender,
+  calculateDays,
+  nodeData,
+  handleOpenPaymentHistory,
+}) => [
+  {
+    key: "s_no",
+    name: "S.NO",
+    width: 90,
+    renderRowCell: (row, index) => index + 1,
+  },
+  {
+    key: "invc_img",
+    name: "Invoice Image",
+    renderRowCell: (row) => {
+      // Extract file extension and check if it's a PDF
+      const fileExtension = row?.invc_img?.split(".").pop().toLowerCase();
+      const isPdf = fileExtension === "pdf";
+
+      const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
+      return isPdf ? (
+        <>
+          <iframe
+            allowFullScreen={true}
+            src={imgUrl}
+            title="PDF Preview"
+            style={{ width: "80px", height: "65px", padding: "10px" }}
+          />
+          <div
+            onClick={() => {
+              setOpenImageDialog(true);
+              setViewImgSrc(imgUrl);
+            }}
+            style={{
+              position: "absolute",
+              width: "2.7%",
+              height: "74%",
+              top: "2px",
+              left: "104px",
+              cursor: "pointer",
+              background: "rgba(0, 0, 0, 0)",
+              zIndex: 10,
+            }}
+          ></div>
+        </>
+      ) : (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(imgUrl);
+          }}
+          src={imgUrl}
+          alt="Invoice"
+          style={{ width: "80px", height: "80px" }}
+        />
+      );
+    },
+    width: 250,
+  },
+  {
+    key: "request_date",
+    name: "Requested Date",
+    width: 150,
+    renderRowCell: (row) =>
+      moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+  },
+  {
+    key: "name",
+    name: "Requested By",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.name;
+    },
+  },
+  {
+    key: "vendor_name",
+    name: "Vendor Name",
+    width: 200,
+    renderRowCell: (row) => {
+      return (
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {/* Hold for confirmation of sourabh sir */}
+          <Button
+            disabled={
+              row?.payment_details ? !row?.payment_details.length > 0 : true
+            }
+            onClick={() => handleOpenBankDetail(row)}
+          >
+            <AccountBalanceIcon style={{ fontSize: "25px" }} />
+          </Button>
+          <div
+            style={{ cursor: "pointer", marginRight: "20px" }}
+            onClick={() => handleOpenSameVender(row?.vendor_name)}
+          >
+            {row?.vendor_name}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    key: "page_name",
+    name: "Page Name",
+    width: 150,
+  },
+  {
+    key: "total_paid",
+    name: "Total Paid",
+    width: 150,
+    renderRowCell: (row) => {
+      return nodeData.filter((e) => e.vendor_name === row?.vendor_name).length >
+        0 ? (
+        <span className="row ml-2 ">
+          <h5
+            onClick={() => handleOpenPaymentHistory(row, "TP")}
+            style={{ cursor: "pointer" }}
+            className="pointer font-sm lead text-decoration-underline text-black-50"
+          >
+            {/* Total Paid */}
+            {nodeData
+              .filter(
+                (e) => e.vendor_name === row?.vendor_name && e.status == 1
+              )
+              .reduce((acc, item) => acc + +item.payment_amount, 0)}
+          </h5>
+        </span>
+      ) : (
+        <h5
+          style={{ cursor: "pointer" }}
+          className="pointer font-sm lead  text-decoration-underline text-black-50"
+        >
+          0
+        </h5>
+      );
+    },
+  },
+  {
+    key: "F.Y",
+    name: "F.Y",
+    width: 150,
+    renderRowCell: (row) => {
+      const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
+      const currentYear = new Date().getFullYear();
+      const startDate = new Date(
+        `04/01/${
+          isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+        }`
+      );
+      const endDate = new Date(
+        `03/31/${
+          isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+        }`
+      );
+      const dataFY = nodeData.filter((e) => {
+        const paymentDate = new Date(e.request_date);
+        return (
+          paymentDate >= startDate &&
+          paymentDate <= endDate &&
+          e.vendor_name === row?.vendor_name &&
+          e.status !== 0 &&
+          e.status !== 2
+        );
+      });
+      const totalFY = dataFY.reduce(
+        (acc, item) => acc + parseFloat(item.payment_amount),
+        0
+      );
+      return totalFY;
+    },
+  },
+  {
+    key: "Pan Img",
+    name: "Pan Img",
+    valueGetter: (row) =>
+      row?.pan_img.includes("uploads") ? row?.pan_img : "NA",
+    renderRowCell: (row) => {
+      const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+      return row?.pan_img?.includes("uploads") ? (
+        <img
+          onClick={() => {
+            setOpenImageDialog(true);
+            setViewImgSrc(ImgUrl);
+          }}
+          src={ImgUrl}
+          alt="Pan"
+          style={{ width: "40px", height: "40px" }}
+        />
+      ) : (
+        "NA"
+      );
+    },
+  },
+  {
+    key: "pan",
+    name: "PAN",
+    width: 200,
+  },
+  {
+    key: "gst",
+    name: "GST",
+    width: 200,
+  },
+  {
+    key: "remark_audit",
+    name: "Remark",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.remark_audit;
+    },
+  },
+  {
+    key: "priority",
+    name: "Priority",
+    width: 150,
+    renderRowCell: (row) => {
+      return row?.priority;
+    },
+  },
+  {
+    key: "request_amount",
+    name: "Requested Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.request_amount;
+    },
+  },
+  {
+    key: "base_amount",
+    name: "Base Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.base_amount ? row?.base_amount : "NA";
+    },
+  },
+  {
+    key: "gst_amount",
+    name: "GST Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.gst_amount ? row?.gst_amount : "NA";
+    },
+  },
+  {
+    key: "gst_hold_amount",
+    name: "GST Hold Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.gst_hold_amount ? row?.gst_hold_amount : "NA";
+    },
+  },
+  {
+    key: "tds_deduction",
+    name: "TDS Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.tds_deduction ? row?.tds_deduction : "NA";
+    },
+  },
+  {
+    key: "outstandings",
+    name: "OutStanding ",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      return row?.outstandings;
+    },
+  },
+  {
+    key: "payment_amount",
+    name: "Payment Amount",
+    width: 150,
+    getTotal: true,
+    renderRowCell: (row) => {
+      const paymentAmount = nodeData?.filter(
+        (e) => e.request_id == row?.request_id
+      )[0]?.payment_amount;
+      return paymentAmount ? paymentAmount : "NA";
+    },
+  },
+  {
+    key: "aging",
+    name: "Aging",
+    width: 150,
+    renderRowCell: (row) => {
+      return <p> {calculateDays(row.request_date, new Date())} Days</p>;
+    },
+  },
+  {
+    key: "gst_Hold_Bool",
+    name: "GST Hold",
+    renderRowCell: (row) => {
+      return row.gstHold == 1 ? "Yes" : "No";
+    },
+  },
+];
+
+export const GSTHoldUniqueVendorColumns = ({
+  uniqueVendorData = [],
+  handleOpenSameVender,
+  filterData,
+}) => [
+  {
+    field: "S.NO",
+    headerName: "S.NO",
+    width: 90,
+    editable: false,
+    renderCell: (params) => {
+      const rowIndex = uniqueVendorData?.indexOf(params.row);
+      return <div>{rowIndex + 1}</div>;
+    },
+  },
+  {
+    field: "vendor_name",
+    headerName: "Vendor Name",
+    width: 250,
+    renderCell: (params) => {
+      return (
+        <a
+          href="#"
+          style={{ cursor: "pointer", color: "blue" }}
+          onClick={() => handleOpenSameVender(params.row.vendor_name)}
+        >
+          {params.row.vendor_name}
+        </a>
+      );
+    },
+  },
+  {
+    field: "total_amount",
+    headerName: "Total Amount",
+    width: 150,
+    renderCell: ({ row }) => {
+      const sameVendor = filterData.filter(
+        (e) => e.vendor_name === row.vendor_name
+      );
+
+      const reduceAmt = sameVendor.reduce(
+        (a, b) => a + 1 * b.request_amount,
+        0
+      );
+
+      return <p> &#8377; {reduceAmt}</p>;
+    },
+  },
+  {
+    field: "outstandings",
+    headerName: "OutStanding ",
+    width: 150,
+    renderCell: (params) => {
+      return <p> &#8377; {params.row.outstandings}</p>;
     },
   },
 ];

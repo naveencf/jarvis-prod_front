@@ -40,6 +40,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   const [ownershipFilter, setOwnershipFilter] = useState(null);
   const [activenessFilter, setActivenessFilter] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterFollowers, setFilterFollowers] = useState(null);
 
   const {
     data: pageList,
@@ -59,6 +60,21 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
     { label: "Semi-Active", value: "semi_active" },
     { label: "Dead", value: "dead" },
   ];
+  const FollowerRanges = [
+    { label: '0.1M To 0.3M', value: [100000, 300000] },
+    { label: '0.3M To 0.5M', value: [300000, 500000] },
+    { label: '0.5M To 0.7M', value: [500000, 700000] },
+    { label: '0.7M To 1M', value: [700000, 1000000] },
+    { label: '1M to 2M', value: [1000000, 2000000] },
+    { label: '2M to 5M', value: [2000000, 4000000] },
+    { label: ' 5M', value: [5000000, 40000000] }
+  ];
+
+  const handleSelectionChange = (event, newValue) => {
+    if (newValue) {
+      setFilterFollowers(newValue.value)
+    }
+  };
 
   useEffect(() => {
     const newQuery = [
@@ -73,6 +89,8 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
         : "",
       platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
       ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
+      filterFollowers  ? `minFollower=${filterFollowers[0]}&maxFollower=${filterFollowers[1]}`
+      : "",  
       activenessFilter
         ? `page_activeness=${activenessOptions.find(
           (option) => option.value === activenessFilter.toLowerCase()
@@ -85,6 +103,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
       .filter(Boolean)
       .join("&");
     console.log(newQuery)
+  
     // setPagequery(newQuery);
     onFilterChange(newQuery);
   }, [
@@ -97,6 +116,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
     searchTerm,
     sortField,
     sortOrder,
+    filterFollowers
   ]);
   // Utility function to count matching pages based on filter
   const getCount = (list, filterKey, value) => {
@@ -292,6 +312,14 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
                 renderInput={(params) => (
                   <TextField {...params} label="Activeness" />
                 )}
+              />
+            </div>
+            <div className="col-md-3 mb16">
+              <Autocomplete
+                options={FollowerRanges}
+                getOptionLabel={(option) => option.label}
+                onChange={handleSelectionChange}
+                renderInput={(params) => <TextField {...params} label="Followers" />}
               />
             </div>
 

@@ -330,6 +330,7 @@ const PendingApprovalUpdate = () => {
           isLoading={isLoading}
           title={"Pending Approval"}
           rowSelectable={true}
+          showTotal={true}
           pagination={[100, 200]}
           tableName={"payment_update"}
           selectedData={setSelectedData}

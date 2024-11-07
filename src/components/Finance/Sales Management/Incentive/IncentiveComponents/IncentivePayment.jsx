@@ -383,6 +383,7 @@ const IncentivePayment = () => {
             calculateAging,
             viewPendingStatus,
           })}
+          showTotal={true}
           data={filterData}
           isLoading={isLoading}
           title={"Incentive"}
