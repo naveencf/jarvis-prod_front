@@ -830,6 +830,7 @@ export default function PendingPaymentRequest() {
                   : []
               }
               isLoading={isLoading}
+              showTotal={true}
               title={"Pending Payment Request"}
               rowSelectable={true}
               pagination={[100, 200]}

@@ -32,6 +32,7 @@ import LeftSideBar from './LeftSideBar';
 import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
 import { Sliders, X } from '@phosphor-icons/react';
+import { CiWarning } from 'react-icons/ci';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -369,10 +370,28 @@ const PlanMaking = () => {
 
   const totalPostCount = getTotalPostCount();
   const totalStoryCount = getTotalStoryCount();
+
+  const sendPlanxLogs = async (endpoint, payload) => {
+    try {
+      const response = await fetch(`${baseUrl}${endpoint}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      return response;
+    } catch (error) {
+      console.error('Error making API request:', error);
+      throw error;
+    }
+  };
+
   const HandleSavePlan = async () => {
     const payload = {
       id: id,
-      plan_status: 'close',
+      plan_status: 'open',
       plan_saved: true,
       post_count: totalPostCount,
       story_count: totalStoryCount,
@@ -383,13 +402,7 @@ const PlanMaking = () => {
     try {
       // Perform both the API call and sendPlanDetails in parallel
       const [fetchResponse] = await Promise.all([
-        fetch(`${baseUrl}v1/planxlogs`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        }),
+        sendPlanxLogs('v1/planxlogs', payload),
         sendPlanDetails(planData),
       ]);
 
@@ -1077,25 +1090,50 @@ const PlanMaking = () => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
 
-  const sellingPrice = planDetails && planDetails[0]?.selling_price;
-  const percentageRemaining = ((sellingPrice - totalCost) / sellingPrice) * 100;
-  const displayPercentage = Math.floor(percentageRemaining);
+  const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
+
+  const allNotFoundUnfetched = notFoundPages.every((page) =>
+    unfetechedPages.includes(page)
+  );
+
+  if (!allNotFoundUnfetched) {
+    notFoundPages.forEach((page) => {
+      if (!unfetechedPages.includes(page)) {
+        unfetechedPages.push(page);
+      }
+    });
+  }
+
   useEffect(() => {
-    if (percentageRemaining >= 45 && percentageRemaining <= 50) {
-      alert('You have reached 50%!');
-    } else if (percentageRemaining >= 15 && percentageRemaining <= 20) {
-      alert('you have reached 20%');
+    if (notFoundPages.length && allNotFoundUnfetched) {
+      const payload = {
+        id: id,
+        not_available_pages: unfetechedPages,
+      };
+      sendPlanxLogs('v1/planxlogs', payload);
     }
-  }, [percentageRemaining]);
+  }, [notFoundPages, allNotFoundUnfetched]);
+
+  const sellingPrice = planDetails && planDetails[0]?.selling_price;
+  function calculatePercentage(totalCost, budget) {
+    if (budget === 0) return 0;
+    return (totalCost / budget) * 100;
+  }
+
+  const percentage = calculatePercentage(totalCost, sellingPrice);
+
+  // console.log('total cost', ((sellingPrice - totalCost) / sellingPrice) * 100);
+  const displayPercentage = Math.floor(percentage);
 
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
+
   return (
     <>
       <PageDialog
         open={openDialog}
         onClose={handleCloseDialog}
-        notFoundPages={notFoundPages}
+        notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages}
       />
       {alertData && (
         <CustomAlert
@@ -1141,10 +1179,34 @@ const PlanMaking = () => {
                 className="btn cmnbtn btn-primary btn_sm"
                 onClick={handleToggleLeftNavbar}
               >
-                {!toggleLeftNavbar ? 'show navbar' : 'hide navbar'}
+                {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
+              </button>
+              <button onClick={handleOpenDialog}>
+                <CiWarning />
               </button>
             </div>
           </div>
+          <Box
+            sx={{
+              position: 'relative',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress
+              variant="determinate"
+              value={displayPercentage}
+              sx={{ position: 'absolute' }}
+            />
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ position: 'absolute', color: 'primary.main' }}
+            >
+              {`${displayPercentage}%`}
+            </Typography>
+          </Box>
           <div className="flexCenter colGap12">
             <div className="flexCenter colGap8">
               <div className="input-group primaryInputGroup">
@@ -1204,6 +1266,7 @@ const PlanMaking = () => {
                 platformData={platformData}
                 activeTabPlatform={activeTabPlatfrom}
                 handlePlatform={handlePlatform}
+                pageList={pageList}
               />
             </div>
           </div>

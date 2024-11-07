@@ -21,6 +21,7 @@ import {
 } from "../../../CommonColumn/Columns";
 import View from "../../../../AdminPanel/Sales/Account/View/View";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
+import SaleBookingCloseVerifyDialog from "./SaleBookingCloseVerifyDialog";
 
 const SaleBookingClose = ({
   onHandleOpenUniqueSalesExecutiveChange,
@@ -117,7 +118,6 @@ const SaleBookingClose = ({
         console.log(error, "Error while getting sale booking data")
       );
   };
-  console.log(filterData, "filterData---->>>>", "Transformed Data --->>");
 
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName) => {
@@ -170,12 +170,6 @@ const SaleBookingClose = ({
         false
     );
   }, [dateFilter]);
-
-  // const open = (e) => {
-  //   e.preventDefault();
-  //   const filteredData = datas.filter((item) => item.tds_status === "open");
-  //   setFilterData(filteredData);
-  // };
 
   const close = (e) => {
     e.preventDefault();
@@ -344,6 +338,7 @@ const SaleBookingClose = ({
     setBalAmount("");
     setRemark("");
   };
+
   const handleVerifySubmit = async (e) => {
     e.preventDefault();
 
@@ -354,7 +349,7 @@ const SaleBookingClose = ({
 
     await axios
       .put(
-        baseUrl + `/sales/update_tds_verification/${row.sale_booking_id}`,
+        baseUrl + `/sales/update_tds_verification/${row?.sale_booking_id}`,
         formData,
         {
           headers: {
@@ -371,7 +366,6 @@ const SaleBookingClose = ({
       });
     setIsFormSubmitted(true);
   };
-
   // ========================================================
 
   const filterDataBasedOnSelection = (apiData) => {
@@ -431,17 +425,6 @@ const SaleBookingClose = ({
             "[]"
           )
         );
-      // case "nextMonth":
-      //   const startOfNextMonth = now.clone().add(1, "months").startOf("month");
-      //   const endOfNextMonth = now.clone().add(1, "months").endOf("month");
-      //   return apiData.filter((item) =>
-      //     moment(item.request_date).isBetween(
-      //       startOfNextMonth,
-      //       endOfNextMonth,
-      //       "day",
-      //       "[]"
-      //     )
-      //   );
       case "currentQuarter":
         const quarterStart = moment().startOf("quarter");
         const quarterEnd = moment().endOf("quarter");
@@ -465,84 +448,15 @@ const SaleBookingClose = ({
   return (
     <>
       {/* verify dialog box */}
-      <Dialog
-        open={verifyDialog}
-        onClose={handleCloseVerifyDialog}
-        fullWidth={"md"}
-        maxWidth={"md"}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>Same Sales Executive</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleCloseVerifyDialog}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent
-          dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          <div className="row">
-            <div className="col-md-12 ">
-              <form onSubmit={handleVerifySubmit}>
-                <div className="form-group col-12"></div>
-
-                <div className="form-group">
-                  <label htmlFor="images">Amount:</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="images"
-                    name="images"
-                    value={balAmount}
-                    onChange={(e) => {
-                      // if (e.target.value > row.net_balance_amount_to_pay) {
-                      //   toastError(
-                      //     "Amount is greater than balance amount to pay"
-                      //   );
-                      //   return;
-                      // }
-                      setBalAmount(e.target.value);
-                    }}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="images">Remark:</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="images"
-                    name="images"
-                    value={remark}
-                    onChange={(e) => setRemark(e.target.value)}
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="btn btn-primary"
-                  onClick={handleVerifySubmit}
-                >
-                  Submit
-                </button>
-              </form>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <SaleBookingCloseVerifyDialog
+        setVerifyDialog={setVerifyDialog}
+        verifyDialog={verifyDialog}
+        handleVerifySubmit={handleVerifySubmit}
+        setBalAmount={setBalAmount}
+        balAmount={balAmount}
+        setRemark={setRemark}
+        remark={remark}
+      />
       {/* Unique Sales Executive Dialog Box */}
       <CommonDialogBox
         data={uniqueSalesExecutiveData}
@@ -746,6 +660,7 @@ const SaleBookingClose = ({
           isLoading={isLoading}
           title={"Sale Booking"}
           rowSelectable={true}
+          showTotal={true}
           pagination={[100, 200]}
           tableName={"sale_booking_tds_status_wise_data"}
           selectedData={setSelectedData}

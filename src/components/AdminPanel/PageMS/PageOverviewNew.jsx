@@ -1272,13 +1272,13 @@ const PageOverviewNew = () => {
             open={openFollowerModal}
             onClose={handleCloseFollowerModal}
             rowData={rowDataFollower}
-            // allPriceTypeList={allPriceTypeList}
+          // allPriceTypeList={allPriceTypeList}
           />
           <PriceLogs
             open={openPriceLogModal}
             onClose={handleClosePriceModal}
             rowData={rowDataPriceLog}
-            // allPriceTypeList={allPriceTypeList}
+          // allPriceTypeList={allPriceTypeList}
           />
           <div className="tabs">
             {vendorDetails && (
@@ -1326,12 +1326,12 @@ const PageOverviewNew = () => {
               Page Added Details
             </button>
 
-            {/* <button
-          className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab1")}
-        >
-          Page Health
-        </button> */}
+            <button
+              className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
+              onClick={() => setActiveTab("Tab1")}
+            >
+              Page Health
+            </button>
           </div>
 
           <div className="content">
@@ -1344,174 +1344,174 @@ const PageOverviewNew = () => {
                 />
               </>
             )}
-            {/* {activeTab === "Tab1" && (
-          <div className="">
-            <div className="card">
-              <div className="card-header flexCenterBetween">
-                <h5 className="card-title flexCenterBetween">                 
-                  <Typography>Profile Health</Typography>
-                  <Typography>: {filterData?.length}</Typography>
-                </h5>
-                <div className="flexCenter colGap8">
-                  <Link
-                    to={`/admin/pms-page-master`}
-                    className="btn cmnbtn btn_sm btn-outline-primary"
-                  >
-                    Add Profile <AddIcon />
-                  </Link>
-                  <Link
-                    to={`/admin/pms-vendor-overview`}
-                    className="btn cmnbtn btn_sm btn-outline-primary"
-                  >
-                    Vendor <KeyboardArrowRightIcon />
-                  </Link>
-                </div>
-              </div>
-              <div className="card-body pb4">
-                <FilterWisePageOverview
-                  platformData={platformData}
-                  vendorTypes={vendorTypes}
-                  setFilterData={setFilterData}
-                  setTabFilterData={setTabFilterData}
-                  calculateAndSetTotals={calculateAndSetTotals}
-                  subCat={subCat}
-                  cat={cat}
-                  profileData={profileData}
-                  newFilterData={newFilterData}
-                  vendorData={vendorData}
-                />
-              </div>
-              <div className="card-footer">
-                <div className="flexCenterBetween">
-                  <div>
-                    <h5>
-                      Followers -{" "}
-                      <span className="colorMedium">
-                        {formatNumber(tableFollowers)}
-                      </span>
+            {activeTab === "Tab1" && (
+              <div className="">
+                <div className="card">
+                  <div className="card-header flexCenterBetween">
+                    <h5 className="card-title flexCenterBetween">
+                      <Typography>Profile Health</Typography>
+                      <Typography>: {filterData?.length}</Typography>
                     </h5>
-                  </div>
-                  <div>
-                    <h5>
-                      Posts -{" "}
-                      <span className="colorMedium">
-                        {formatNumber(tablePosts)}
-                      </span>
-                    </h5>
-                  </div>
-                  <div>
-                    <h5>
-                      Stories -{" "}
-                      <span className="colorMedium">
-                        {formatNumber(tableStories)}
-                      </span>
-                    </h5>
-                  </div>
-                  <div>
-                    <h5>
-                      Boths -{" "}
-                      <span className="colorMedium">
-                        {formatNumber(tableBoths)}
-                      </span>
-                    </h5>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div>
- 
-              <select
-                value={selectedPriceType}
-                onChange={handlePriceTypeChange}
-              >
-                <option value="" disabled>
-                  Select Price Type
-                </option>
-                <option value="Post Price">Post Price</option>
-                <option value="Story Price">Story Price</option>
-                <option value="Both Price">Both Price</option>
-              </select>
-
-              {selectedPriceType && (
-                <input
-                  type="number"
-                  placeholder="Enter price"
-                  value={inputPrice}
-                  onChange={handleInputChange}
-                />
-              )}
-
-              <button onClick={handleFilter}>Filter</button>
-            </div>
-            <div className="card">
-              <div className="card-body p0">
-                <div className="data_tbl thm_table table-responsive">
-                  {isPageListLoading ? (
-                    <Box
-                      sx={{
-                        textAlign: "center",
-                        position: "relative",
-                        margin: "auto",
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <CircularProgress
-                        variant="determinate"
-                        value={progress}
-                      />
-                      <Box
-                        sx={{
-                          top: 0,
-                          left: 0,
-                          bottom: 0,
-                          right: 0,
-                          position: "absolute",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
+                    <div className="flexCenter colGap8">
+                      <Link
+                        to={`/admin/pms-page-master`}
+                        className="btn cmnbtn btn_sm btn-outline-primary"
                       >
-                        <Typography
-                          variant="caption"
-                          component="div"
-                          color="text-primary"
-                        >
-                          {`${Math.round(progress)}%`}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ) : (
-                    <View
-                     columns={[...dataGridcolumns, ...dataSecondGridColumns]}
-                      data={newFilterData}
-                      isLoading={false}
-                      title={"Page Overview"}
-                      rowSelectable={true}
-                      pagination={[100, 200, 1000]}
-                      tableName={"Page Overview"}
+                        Add Profile <AddIcon />
+                      </Link>
+                      <Link
+                        to={`/admin/pms-vendor-overview`}
+                        className="btn cmnbtn btn_sm btn-outline-primary"
+                      >
+                        Vendor <KeyboardArrowRightIcon />
+                      </Link>
+                    </div>
+                  </div>
+                  <div className="card-body pb4">
+                    <FilterWisePageOverview
+                      platformData={platformData}
+                      vendorTypes={vendorTypes}
+                      setFilterData={setFilterData}
+                      setTabFilterData={setTabFilterData}
+                      calculateAndSetTotals={calculateAndSetTotals}
+                      subCat={subCat}
+                      cat={cat}
+                      profileData={profileData}
+                      newFilterData={newFilterData}
+                      vendorData={vendorData}
+                    />
+                  </div>
+                  <div className="card-footer">
+                    <div className="flexCenterBetween">
+                      <div>
+                        <h5>
+                          Followers -{" "}
+                          <span className="colorMedium">
+                            {formatNumber(tableFollowers)}
+                          </span>
+                        </h5>
+                      </div>
+                      <div>
+                        <h5>
+                          Posts -{" "}
+                          <span className="colorMedium">
+                            {formatNumber(tablePosts)}
+                          </span>
+                        </h5>
+                      </div>
+                      <div>
+                        <h5>
+                          Stories -{" "}
+                          <span className="colorMedium">
+                            {formatNumber(tableStories)}
+                          </span>
+                        </h5>
+                      </div>
+                      <div>
+                        <h5>
+                          Boths -{" "}
+                          <span className="colorMedium">
+                            {formatNumber(tableBoths)}
+                          </span>
+                        </h5>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+
+                  <select
+                    value={selectedPriceType}
+                    onChange={handlePriceTypeChange}
+                  >
+                    <option value="" disabled>
+                      Select Price Type
+                    </option>
+                    <option value="Post Price">Post Price</option>
+                    <option value="Story Price">Story Price</option>
+                    <option value="Both Price">Both Price</option>
+                  </select>
+
+                  {selectedPriceType && (
+                    <input
+                      type="number"
+                      placeholder="Enter price"
+                      value={inputPrice}
+                      onChange={handleInputChange}
                     />
                   )}
-                </div>
-              </div>
-            </div>
 
-            <PriceModal
-              setShowPriceModal={setShowPriceModal}
-              setSelectedRow={setSelectedRow}
-              setLocalPriceData={setLocalPriceData}
-              showPriceModal={showPriceModal}
-              localPriceData={localPriceData}
-              priceData={priceData}
-              allPriceTypeList={allPriceTypeList}
-            />
-            <TagCategoryListModal />
-            <VendorNotAssignedModal />
-            <PageDetail />
-          </div>
-        )} */}
+                  <button onClick={handleFilter}>Filter</button>
+                </div>
+                <div className="card">
+                  <div className="card-body p0">
+                    <div className="data_tbl thm_table table-responsive">
+                      {isPageListLoading ? (
+                        <Box
+                          sx={{
+                            textAlign: "center",
+                            position: "relative",
+                            margin: "auto",
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <CircularProgress
+                            variant="determinate"
+                            value={progress}
+                          />
+                          <Box
+                            sx={{
+                              top: 0,
+                              left: 0,
+                              bottom: 0,
+                              right: 0,
+                              position: "absolute",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              component="div"
+                              color="text-primary"
+                            >
+                              {`${Math.round(progress)}%`}
+                            </Typography>
+                          </Box>
+                        </Box>
+                      ) : (
+                        <View
+                          columns={[...dataGridcolumns, ...dataSecondGridColumns]}
+                          data={newFilterData}
+                          isLoading={false}
+                          title={"Page Overview"}
+                          rowSelectable={true}
+                          pagination={[100, 200, 1000]}
+                          tableName={"Page Overview"}
+                        />
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <PriceModal
+                  setShowPriceModal={setShowPriceModal}
+                  setSelectedRow={setSelectedRow}
+                  setLocalPriceData={setLocalPriceData}
+                  showPriceModal={showPriceModal}
+                  localPriceData={localPriceData}
+                  priceData={priceData}
+                  allPriceTypeList={allPriceTypeList}
+                />
+                <TagCategoryListModal />
+                <VendorNotAssignedModal />
+                <PageDetail />
+              </div>
+            )}
             {/* {activeTab === "Tab2" && (
           <StatisticsWisePageOverview
             tabFilterData={tabFilterData}

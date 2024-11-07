@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography } from '@mui/material';
+import formatString from '../../../utils/formatString';
 
 const PageDialog = ({ open, onClose, notFoundPages }) => {
   return (
@@ -12,7 +13,7 @@ const PageDialog = ({ open, onClose, notFoundPages }) => {
         </Typography>
         <ul>
           {notFoundPages?.map((page, index) => (
-            <li key={index}>{page}</li>
+            <li key={index}>{formatString(page)}</li>
           ))}
         </ul>
       </DialogContent>

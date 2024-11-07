@@ -1,771 +1,770 @@
-import axios from 'axios';
-import jwtDecode from 'jwt-decode';
-import React, { lazy, Suspense, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import { baseUrl } from '../../utils/config';
-import Loader from '../Finance/Loader/Loader';
-import CategoryWisePagesHistoey from '../SuperTracker/CommunityManagement/CategoryWisePagesHistoey';
-import Profile from '../Pantry/UserPanel/Profile/Profile';
-import PostStats from '../Stats/PostStats';
-import BulkVendor from './PageMS/Vendor/BulkVendor/BulkVendor';
-import InventoryDashboard from './PageMS/InventoryDashboard/InventoryDashboard';
-import CategoryOverview from './PageMS/Category/CategoryOverview';
+import axios from "axios";
+import jwtDecode from "jwt-decode";
+import React, { lazy, Suspense, useEffect, useState } from "react";
+import { Route, Routes } from "react-router-dom";
+import { baseUrl } from "../../utils/config";
+import Loader from "../Finance/Loader/Loader";
+import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
+import Profile from "../Pantry/UserPanel/Profile/Profile";
+import PostStats from "../Stats/PostStats";
+import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor";
+import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard";
+import CategoryOverview from "./PageMS/Category/CategoryOverview";
 
-import SubCategoryOverview from './PageMS/SubCategory/SubCategoryOverview';
+import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
+import OutstandingPaymentReleaseReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReleaseReport";
 
 const ViewSalesPoc = lazy(() =>
-  import('../CustomTable/TableComponent/ViewSalesPoc')
+  import("../CustomTable/TableComponent/ViewSalesPoc")
 );
-const SittingMaster = lazy(() => import('./Sitting/SittingMaster'));
-const NavSideBar = lazy(() => import('./Navbar-Sidebar/NavSideBar'));
-const UserMaster = lazy(() => import('./User/UserMaster'));
-const UserView = lazy(() => import('./User/UserView'));
-const UserUpdate = lazy(() => import('./User/UserUpdate'));
-const UserOverview = lazy(() => import('./User/UserOverview'));
-const RoleMaster = lazy(() => import('./Role/RoleMaster'));
-const RoleOverView = lazy(() => import('./Role/RoleOverview'));
-const RoleMastUpdate = lazy(() => import('./Role/RoleMastUpdate'));
+const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
+const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
+const UserMaster = lazy(() => import("./User/UserMaster"));
+const UserView = lazy(() => import("./User/UserView"));
+const UserUpdate = lazy(() => import("./User/UserUpdate"));
+const UserOverview = lazy(() => import("./User/UserOverview"));
+const RoleMaster = lazy(() => import("./Role/RoleMaster"));
+const RoleOverView = lazy(() => import("./Role/RoleOverview"));
+const RoleMastUpdate = lazy(() => import("./Role/RoleMastUpdate"));
 const DepartmentOverview = lazy(() =>
-  import('./Department/DepartmentOverview')
+  import("./Department/DepartmentOverview")
 );
-const DepartmentMaster = lazy(() => import('./Department/DepartmentMaster'));
-const DepartmentUpdate = lazy(() => import('./Department/DepartmentUpdate'));
-const ProductMaster = lazy(() => import('./Product/ProductMaster'));
-const ProductOverview = lazy(() => import('./Product/ProductOverview'));
-const ProductUpdate = lazy(() => import('./Product/ProductUpdate'));
-const SittingOverview = lazy(() => import('./Sitting/SittingOverview'));
-const SittingUpdate = lazy(() => import('./Sitting/SittingUpdate'));
-const OfficeMast = lazy(() => import('./Office/OfficeMaster'));
-const OfficeMastOverview = lazy(() => import('./Office/OfficeMastOverview'));
-const OfficeMastUpdate = lazy(() => import('./Office/OfficeMastUpdate'));
+const DepartmentMaster = lazy(() => import("./Department/DepartmentMaster"));
+const DepartmentUpdate = lazy(() => import("./Department/DepartmentUpdate"));
+const ProductMaster = lazy(() => import("./Product/ProductMaster"));
+const ProductOverview = lazy(() => import("./Product/ProductOverview"));
+const ProductUpdate = lazy(() => import("./Product/ProductUpdate"));
+const SittingOverview = lazy(() => import("./Sitting/SittingOverview"));
+const SittingUpdate = lazy(() => import("./Sitting/SittingUpdate"));
+const OfficeMast = lazy(() => import("./Office/OfficeMaster"));
+const OfficeMastOverview = lazy(() => import("./Office/OfficeMastOverview"));
+const OfficeMastUpdate = lazy(() => import("./Office/OfficeMastUpdate"));
 const UserResposOverview = lazy(() =>
-  import('./UserResponsbility/UserResposOverview')
+  import("./UserResponsbility/UserResposOverview")
 );
 const UserResponsbility = lazy(() =>
-  import('./UserResponsbility/UserResponsbility')
+  import("./UserResponsbility/UserResponsbility")
 );
 const UserResponsbilityUpdate = lazy(() =>
-  import('./UserResponsbility/userResponsbilityUpdate')
+  import("./UserResponsbility/userResponsbilityUpdate")
 );
-const UserAuthDetail = lazy(() => import('./UserAuthDetail/UserAuthDetail'));
-const ObjectMaster = lazy(() => import('./Object/ObjectMaster'));
-const ObjectOverview = lazy(() => import('./Object/ObjectOverview'));
-const ObjectUpdate = lazy(() => import('./Object/ObjectUpdate'));
+const UserAuthDetail = lazy(() => import("./UserAuthDetail/UserAuthDetail"));
+const ObjectMaster = lazy(() => import("./Object/ObjectMaster"));
+const ObjectOverview = lazy(() => import("./Object/ObjectOverview"));
+const ObjectUpdate = lazy(() => import("./Object/ObjectUpdate"));
 const DeliverdOrder = lazy(() =>
-  import('../Pantry/DeliverdOrder/DeliverdOrder')
+  import("../Pantry/DeliverdOrder/DeliverdOrder")
 );
-const PendingOrder = lazy(() => import('../Pantry/PendingOrder/PendingOrder'));
-const Dashboard = lazy(() => import('./Dashboard/Dashboard'));
-const TransferReq = lazy(() => import('../Pantry/TransferReq/TransferReq'));
-const AllOrder = lazy(() => import('../Pantry/AllOrders/AllOrders'));
+const PendingOrder = lazy(() => import("../Pantry/PendingOrder/PendingOrder"));
+const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
+const TransferReq = lazy(() => import("../Pantry/TransferReq/TransferReq"));
+const AllOrder = lazy(() => import("../Pantry/AllOrders/AllOrders"));
 const DesignationOverview = lazy(() =>
-  import('./Designation/DesignationOverview')
+  import("./Designation/DesignationOverview")
 );
-const Designation = lazy(() => import('./Designation/Designation'));
-const DesignationUpdate = lazy(() => import('./Designation/DesignationUpdate'));
+const Designation = lazy(() => import("./Designation/Designation"));
+const DesignationUpdate = lazy(() => import("./Designation/DesignationUpdate"));
 const LogoCategoryMaster = lazy(() =>
-  import('./LogoCategory/LogoCategoryMaster')
+  import("./LogoCategory/LogoCategoryMaster")
 );
 const LogoCategoryOverview = lazy(() =>
-  import('./LogoCategory/LogoCategoryOverview')
+  import("./LogoCategory/LogoCategoryOverview")
 );
 const LogoCategoryUpdate = lazy(() =>
-  import('./LogoCategory/LogoCategoryUpdate')
+  import("./LogoCategory/LogoCategoryUpdate")
 );
-const PantryHome = lazy(() => import('../Pantry/PantryHome/PantryHome'));
+const PantryHome = lazy(() => import("../Pantry/PantryHome/PantryHome"));
 const ResponsibilityMast = lazy(() =>
-  import('./UserResponsbility/Responsbility/ResponsibilityMast')
+  import("./UserResponsbility/Responsbility/ResponsibilityMast")
 );
 const ResponsiblityOverview = lazy(() =>
-  import('./UserResponsbility/Responsbility/ResponsiblityOverview')
+  import("./UserResponsbility/Responsbility/ResponsiblityOverview")
 );
 const ResponsibilityUpdate = lazy(() =>
-  import('./UserResponsbility/Responsbility/ResponsibilityUpdate')
+  import("./UserResponsbility/Responsbility/ResponsibilityUpdate")
 );
-const IpTypeMaster = lazy(() => import('./IpType/IpTypeMaster'));
-const IpTypeOverview = lazy(() => import('./IpType/IpTypeOverview'));
-const IpTypeUpdate = lazy(() => import('./IpType/IpTypeUpdate'));
-const PlatformMaster = lazy(() => import('./Platform/PlatformMaster'));
-const PlatformOverview = lazy(() => import('./Platform/PlatformOverview'));
-const PlatformUpdate = lazy(() => import('./Platform/PlatformUpdate'));
+const IpTypeMaster = lazy(() => import("./IpType/IpTypeMaster"));
+const IpTypeOverview = lazy(() => import("./IpType/IpTypeOverview"));
+const IpTypeUpdate = lazy(() => import("./IpType/IpTypeUpdate"));
+const PlatformMaster = lazy(() => import("./Platform/PlatformMaster"));
+const PlatformOverview = lazy(() => import("./Platform/PlatformOverview"));
+const PlatformUpdate = lazy(() => import("./Platform/PlatformUpdate"));
 const DeclinedOrder = lazy(() =>
-  import('../Pantry/DeclinedOrder/DeclinedOrder')
+  import("../Pantry/DeclinedOrder/DeclinedOrder")
 );
-const UserDirectory = lazy(() => import('./User/UserDirectory'));
+const UserDirectory = lazy(() => import("./User/UserDirectory"));
 const AdminPreOnboarding = lazy(() =>
-  import('./AdminPreOnboarding/AdminPreOnboarding')
+  import("./AdminPreOnboarding/AdminPreOnboarding")
 );
-const Attendence = lazy(() => import('./WFH/Attendence'));
-const AttendanceOverview = lazy(() => import('./WFH/AttendanceOverview'));
-const UserDashboard = lazy(() => import('./User/UserDashboard/UserDashboard'));
-const KRA = lazy(() => import('./KRA/KRA'));
+const Attendence = lazy(() => import("./WFH/Attendence"));
+const AttendanceOverview = lazy(() => import("./WFH/AttendanceOverview"));
+const UserDashboard = lazy(() => import("./User/UserDashboard/UserDashboard"));
+const KRA = lazy(() => import("./KRA/KRA"));
 const UserWiseResponsibility = lazy(() =>
-  import('./UserResponsbility/UserWiseResponsibility/UserWiseResponsibility')
+  import("./UserResponsbility/UserWiseResponsibility/UserWiseResponsibility")
 );
 const UserWiseDashboard = lazy(() =>
-  import('./User/UserWIseDashboard/UserWiseDashboard')
+  import("./User/UserWIseDashboard/UserWiseDashboard")
 );
-const SalaryWFH = lazy(() => import('./WFH/SalaryGeneration/SalaryWFH'));
-const SalarySummary = lazy(() => import('./WFH/SalarySummary/SalarySummary'));
-const UserHierarchy = lazy(() => import('./User/UserHierarchy'));
-const UserSingle = lazy(() => import('./User/UserSingle'));
-const DashboardWFHUser = lazy(() => import('./WFH/DashboardWFHUser'));
+const SalaryWFH = lazy(() => import("./WFH/SalaryGeneration/SalaryWFH"));
+const SalarySummary = lazy(() => import("./WFH/SalarySummary/SalarySummary"));
+const UserHierarchy = lazy(() => import("./User/UserHierarchy"));
+const UserSingle = lazy(() => import("./User/UserSingle"));
+const DashboardWFHUser = lazy(() => import("./WFH/DashboardWFHUser"));
 const DashboardWFHCardDetails = lazy(() =>
-  import('./WFH/DashboardWFHCardDetails')
+  import("./WFH/DashboardWFHCardDetails")
 );
-const WFHDOverview = lazy(() => import('./WFH/WFHDOverview'));
-const LeadApp = lazy(() => import('../LeadManagement/LeadApp'));
-const LeadManagement = lazy(() => import('../LeadManagement/LeadManagement'));
-const EditLead = lazy(() => import('../LeadManagement/EditLead'));
-const LeadHome = lazy(() => import('../LeadManagement/LeadHome'));
-const SELeadTable = lazy(() => import('../LeadManagement/SELeadTable'));
-const Reason = lazy(() => import('./Reason/Reason'));
+const WFHDOverview = lazy(() => import("./WFH/WFHDOverview"));
+const LeadApp = lazy(() => import("../LeadManagement/LeadApp"));
+const LeadManagement = lazy(() => import("../LeadManagement/LeadManagement"));
+const EditLead = lazy(() => import("../LeadManagement/EditLead"));
+const LeadHome = lazy(() => import("../LeadManagement/LeadHome"));
+const SELeadTable = lazy(() => import("../LeadManagement/SELeadTable"));
+const Reason = lazy(() => import("./Reason/Reason"));
 const SubDepartmentMaster = lazy(() =>
-  import('./Department/SubDepartmentMaster')
+  import("./Department/SubDepartmentMaster")
 );
 const SubDepartmentOverview = lazy(() =>
-  import('./Department/SubDepartmentOverview')
+  import("./Department/SubDepartmentOverview")
 );
 const SubDepartmentUpdate = lazy(() =>
-  import('./Department/SubDepartmentUpdate')
+  import("./Department/SubDepartmentUpdate")
 );
 const ExecutionInventory = lazy(() =>
-  import('../Execution/ExecutionInventory')
+  import("../Execution/ExecutionInventory")
 );
-const ExecutionPending = lazy(() => import('../Execution/ExecutionPending'));
-const OverviewIndex = lazy(() => import('../Execution/overview/OverviewIndex'));
-const ExecutionDetail = lazy(() => import('../Execution/ExecutionDetail'));
+const ExecutionPending = lazy(() => import("../Execution/ExecutionPending"));
+const OverviewIndex = lazy(() => import("../Execution/overview/OverviewIndex"));
+const ExecutionDetail = lazy(() => import("../Execution/ExecutionDetail"));
 const PreOnboardVerifyDetails = lazy(() =>
-  import('./AdminPreOnboarding/PreOnboardVerifyDetails')
+  import("./AdminPreOnboarding/PreOnboardVerifyDetails")
 );
 const PreOnboardUserDetailsProfile = lazy(() =>
-  import('./AdminPreOnboarding/PreOnboardUserDetailsProfile')
+  import("./AdminPreOnboarding/PreOnboardUserDetailsProfile")
 );
 const PreOnboardingOverview = lazy(() =>
-  import('./AdminPreOnboarding/PreOnboardOverview')
+  import("./AdminPreOnboarding/PreOnboardOverview")
 );
 const OnboardExtendDateOverview = lazy(() =>
-  import('./AdminPreOnboarding/OnboardExtendDateOverview')
+  import("./AdminPreOnboarding/OnboardExtendDateOverview")
 );
-const ExecutionDone = lazy(() => import('../Execution/Done/ExecutionDone'));
+const ExecutionDone = lazy(() => import("../Execution/Done/ExecutionDone"));
 const ExecutionAccepted = lazy(() =>
-  import('../Execution/Accepted/ExecutionAccepted')
+  import("../Execution/Accepted/ExecutionAccepted")
 );
 const RegisterCampaign = lazy(() =>
-  import('./RegisterCampaign/RegisterCampaign')
+  import("./RegisterCampaign/RegisterCampaign")
 );
 const ExecutionRejected = lazy(() =>
-  import('../Execution/Rejected/ExecutionRejected')
+  import("../Execution/Rejected/ExecutionRejected")
 );
 const RegisteredCampaign = lazy(() =>
-  import('./RegisterCampaign/RegisteredCampaign')
+  import("./RegisterCampaign/RegisteredCampaign")
 );
 const SalaryDashboard = lazy(() =>
-  import('./WFH/SalaryGeneration/SalaryDashboard')
+  import("./WFH/SalaryGeneration/SalaryDashboard")
 );
-const CampignAdmin = lazy(() => import('./CampaginAdmin/CampignAdmin'));
-const BrandMaster = lazy(() => import('./RegisterCampaign/BrandMaster'));
+const CampignAdmin = lazy(() => import("./CampaginAdmin/CampignAdmin"));
+const BrandMaster = lazy(() => import("./RegisterCampaign/BrandMaster"));
 /* Sarcasm start*/
-const SarcasmDashboard = lazy(() => import('../sarcasm/content-from/index'));
-const SarcasmBlog = lazy(() => import('../sarcasm/blog-managment/index'));
+const SarcasmDashboard = lazy(() => import("../sarcasm/content-from/index"));
+const SarcasmBlog = lazy(() => import("../sarcasm/blog-managment/index"));
 const BlogDetail = lazy(() =>
-  import('../sarcasm/blog-managment/blog-detail/index')
+  import("../sarcasm/blog-managment/blog-detail/index")
 );
 const SarcasmCategory = lazy(() =>
-  import('../sarcasm/category-management/index')
+  import("../sarcasm/category-management/index")
 );
 /* Sarcasm end*/
-const CategoryMaster = lazy(() => import('./RegisterCampaign/CategoryMaster'));
-const ContentType = lazy(() => import('./RegisterCampaign/ContentType'));
+const CategoryMaster = lazy(() => import("./RegisterCampaign/CategoryMaster"));
+const ContentType = lazy(() => import("./RegisterCampaign/ContentType"));
 const CampaignCommitment = lazy(() =>
-  import('./RegisterCampaign/CampaignCommitment')
+  import("./RegisterCampaign/CampaignCommitment")
 );
-const ContentCreater = lazy(() => import('./RegisterCampaign/ContentCreater'));
+const ContentCreater = lazy(() => import("./RegisterCampaign/ContentCreater"));
 const CheckPageFollowers = lazy(() =>
-  import('./RegisterCampaign/CheckPageFollowers')
+  import("./RegisterCampaign/CheckPageFollowers")
 );
 const SubCategoryMaster = lazy(() =>
-  import('./RegisterCampaign/SubCategoryMaster')
+  import("./RegisterCampaign/SubCategoryMaster")
 );
 const CreaterDashboard = lazy(() =>
-  import('./RegisterCampaign/CreaterDashboard')
+  import("./RegisterCampaign/CreaterDashboard")
 );
-const BillingOverview = lazy(() => import('./WFH/Billing/BillingOverview'));
-const BillingMast = lazy(() => import('./WFH/Billing/BillingMast'));
-const BillingUpdate = lazy(() => import('./WFH/Billing/BillingUpdate'));
+const BillingOverview = lazy(() => import("./WFH/Billing/BillingOverview"));
+const BillingMast = lazy(() => import("./WFH/Billing/BillingMast"));
+const BillingUpdate = lazy(() => import("./WFH/Billing/BillingUpdate"));
 const AccountsOverviewWFH = lazy(() =>
-  import('./AccountsDepartment/AccountsOverviewWFH')
+  import("./AccountsDepartment/AccountsOverviewWFH")
 );
-const WFHSingleUser = lazy(() => import('./WFH/WFHSingleUser/WFHSingleUser'));
-const ExecutionAll = lazy(() => import('../Execution/ExecutionAll'));
-const ExecutionOwn = lazy(() => import('../Execution/ExecutionOwn'));
-const ExecutionOther = lazy(() => import('../Execution/ExecutionOther'));
-const CocUpdate = lazy(() => import('./AdminPreOnboarding/CocUpdate'));
-const CocMaster = lazy(() => import('./AdminPreOnboarding/CocMaster'));
-const CocOverview = lazy(() => import('./AdminPreOnboarding/CocOverview'));
+const WFHSingleUser = lazy(() => import("./WFH/WFHSingleUser/WFHSingleUser"));
+const ExecutionAll = lazy(() => import("../Execution/ExecutionAll"));
+const ExecutionOwn = lazy(() => import("../Execution/ExecutionOwn"));
+const ExecutionOther = lazy(() => import("../Execution/ExecutionOther"));
+const CocUpdate = lazy(() => import("./AdminPreOnboarding/CocUpdate"));
+const CocMaster = lazy(() => import("./AdminPreOnboarding/CocMaster"));
+const CocOverview = lazy(() => import("./AdminPreOnboarding/CocOverview"));
 const NotificationHistory = lazy(() =>
-  import('./AdminPreOnboarding/NotificationHistory')
+  import("./AdminPreOnboarding/NotificationHistory")
 );
-const CocHistory = lazy(() => import('./AdminPreOnboarding/CocHistory'));
-const LoginHistory = lazy(() => import('./AdminPreOnboarding/LoginHistory'));
+const CocHistory = lazy(() => import("./AdminPreOnboarding/CocHistory"));
+const LoginHistory = lazy(() => import("./AdminPreOnboarding/LoginHistory"));
 const PreonboardingDocuments = lazy(() =>
-  import('./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocuments')
+  import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocuments")
 );
 const PreonboardingDocumentOverview = lazy(() =>
-  import('./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentOverview')
+  import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentOverview")
 );
 const PreonboardingDocumentsUpdate = lazy(() =>
-  import('./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentsUpdate')
+  import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentsUpdate")
 );
-const PlanOverview = lazy(() => import('./RegisterCampaign/PlanOverview'));
-const ExeUPdate = lazy(() => import('../Execution/ExeUPdate'));
-const ExeHistory = lazy(() => import('../Execution/ExeHistory'));
+const PlanOverview = lazy(() => import("./RegisterCampaign/PlanOverview"));
+const ExeUPdate = lazy(() => import("../Execution/ExeUPdate"));
+const ExeHistory = lazy(() => import("../Execution/ExeHistory"));
 
-const SelfAudit = lazy(() => import('./AssetNotifier/SelfAudit'));
+const SelfAudit = lazy(() => import("./AssetNotifier/SelfAudit"));
 const StatsAllPagesDetail = lazy(() =>
-  import('../Execution/StatsAllPagesDetail')
+  import("../Execution/StatsAllPagesDetail")
 );
 const ExecutionDashboard = lazy(() =>
-  import('../Execution/ExecutionDashboard')
+  import("../Execution/ExecutionDashboard")
 );
 const AllTransactions = lazy(() =>
   import(
-    '../Finance/Sales Management/SalesDashboardAllTransactions/AllTransactions'
+    "../Finance/Sales Management/SalesDashboardAllTransactions/AllTransactions"
   )
 );
-const ApprovalInvoice = lazy(() => import('../Finance/ApprovalInvoice'));
+const ApprovalInvoice = lazy(() => import("../Finance/ApprovalInvoice"));
 const BalancePaymentList = lazy(() =>
-  import('../Finance/Sales Management/Outstanding/BalancePaymentList')
+  import("../Finance/Sales Management/Outstanding/BalancePaymentList")
 );
 const IncentivePayment = lazy(() =>
-  import('../Finance/Sales Management/Incentive/IncentiveParent')
+  import("../Finance/Sales Management/Incentive/IncentiveParent")
 );
 const PaymentMode = lazy(() =>
-  import('../Finance/Sales Management/PaymentModeFolder/PaymentMode')
+  import("../Finance/Sales Management/PaymentModeFolder/PaymentMode")
 );
 const PendingApprovalRefund = lazy(() =>
-  import('../Finance/PendingApprovalRefund')
+  import("../Finance/PendingApprovalRefund")
 );
 const PendingApprovalsUpdate = lazy(() =>
   import(
-    '../Finance/Sales Management/PaymentRequestUpdate/PendingApprovalsUpdate'
+    "../Finance/Sales Management/PaymentRequestUpdate/PendingApprovalsUpdate"
   )
 );
 const PendingInvoice = lazy(() =>
-  import('../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoice')
+  import("../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoice")
 );
-const RefundRequests = lazy(() => import('../Finance/RefundRequests'));
+const RefundRequests = lazy(() => import("../Finance/RefundRequests"));
 const SaleBookingClose = lazy(() =>
-  import('../Finance/Sales Management/SaleBooking/Components/SaleBookingClose')
+  import("../Finance/Sales Management/SaleBooking/Components/SaleBookingClose")
 );
 const SaleBookingVerify = lazy(() =>
-  import('../Finance/Sales Management/SaleBooking/Components/SaleBookingVerify')
+  import("../Finance/Sales Management/SaleBooking/Components/SaleBookingVerify")
 );
-const PaymentSummary = lazy(() => import('../Finance/PaymentSummary'));
+const PaymentSummary = lazy(() => import("../Finance/PaymentSummary"));
 const PendingInvoiceCustomerDeatils = lazy(() =>
   import(
-    '../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoiceCustomerDeatils'
+    "../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoiceCustomerDeatils"
   )
 );
 const InvoiceCreated = lazy(() =>
-  import('../Finance/Sales Management/Invoice/InvoiceCreated/InvoiceCreated')
+  import("../Finance/Sales Management/Invoice/InvoiceCreated/InvoiceCreated")
 );
 const PendingPaymentsList = lazy(() =>
-  import('../Finance/PendingPaymentsList')
+  import("../Finance/PendingPaymentsList")
 );
-const CityMaster = lazy(() => import('../Execution/cityMast/CityMaster'));
-const Experties = lazy(() => import('./RegisterCampaign/Experties/Experties'));
+const CityMaster = lazy(() => import("../Execution/cityMast/CityMaster"));
+const Experties = lazy(() => import("./RegisterCampaign/Experties/Experties"));
 const PagePerformanceDashboard = lazy(() =>
-  import('../Execution/PagePerformanceDashboard')
+  import("../Execution/PagePerformanceDashboard")
 );
 const ExcusionCampaign = lazy(() =>
-  import('./RegisterCampaign/ExcusionCampaign')
+  import("./RegisterCampaign/ExcusionCampaign")
 );
 const ExpertiesOverview = lazy(() =>
-  import('./RegisterCampaign/Experties/ExpertiesOverview')
+  import("./RegisterCampaign/Experties/ExpertiesOverview")
 );
 const ExpertiesUpdate = lazy(() =>
-  import('./RegisterCampaign/Experties/ExpertUpdate')
+  import("./RegisterCampaign/Experties/ExpertUpdate")
 );
 const PhaseDashboard = lazy(() =>
-  import('./RegisterCampaign/PhaseDashboard/PhaseDashboard')
+  import("./RegisterCampaign/PhaseDashboard/PhaseDashboard")
 );
 const ReplacementDashobard = lazy(() =>
-  import('./RegisterCampaign/ReplacementDashboard/ReplacementDashboard')
+  import("./RegisterCampaign/ReplacementDashboard/ReplacementDashboard")
 );
 const AssignmentDashobard = lazy(() =>
-  import('./RegisterCampaign/AssignmentDashboard/AssignmentDashboard')
+  import("./RegisterCampaign/AssignmentDashboard/AssignmentDashboard")
 );
-const WFHUserOverview = lazy(() => import('./WFH/WFHUserOverview'));
-const CreateAssign = lazy(() => import('./RegisterCampaign/CreateAssign'));
+const WFHUserOverview = lazy(() => import("./WFH/WFHUserOverview"));
+const CreateAssign = lazy(() => import("./RegisterCampaign/CreateAssign"));
 const PagePerformanceAnalytics = lazy(() =>
-  import('../Execution/PagePerformanceAnalytics')
+  import("../Execution/PagePerformanceAnalytics")
 );
 const IncompleteProfileUsers = lazy(() =>
-  import('./WFH/IncompleteProfileUsers')
+  import("./WFH/IncompleteProfileUsers")
 );
-const UserGraphs = lazy(() => import('./User/UserGraphs'));
-const Hobbies = lazy(() => import('./Hobbies/Hobbies'));
-const HobbiesOverview = lazy(() => import('./Hobbies/HobbiesOverview'));
-const AddEmailTemp = lazy(() => import('./User/AddEmailTemp'));
-const EmailTempOverview = lazy(() => import('./User/EmailTempOverview'));
-const EditEmailTemp = lazy(() => import('./User/EditEmailTemp'));
+const UserGraphs = lazy(() => import("./User/UserGraphs"));
+const Hobbies = lazy(() => import("./Hobbies/Hobbies"));
+const HobbiesOverview = lazy(() => import("./Hobbies/HobbiesOverview"));
+const AddEmailTemp = lazy(() => import("./User/AddEmailTemp"));
+const EmailTempOverview = lazy(() => import("./User/EmailTempOverview"));
+const EditEmailTemp = lazy(() => import("./User/EditEmailTemp"));
 const ManagerDashboard = lazy(() =>
-  import('./RegisterCampaign/ManagerDashboard/ManagerDashboard')
+  import("./RegisterCampaign/ManagerDashboard/ManagerDashboard")
 );
 const ManagerCampaign = lazy(() =>
-  import('./RegisterCampaign/ManagerCampaignDashboard/ManagerCampaign')
+  import("./RegisterCampaign/ManagerCampaignDashboard/ManagerCampaign")
 );
 const AssetVisibleToTagedPerosn = lazy(() =>
-  import('../Sim/AssetVisibleToTagedPerson/AssetVisibleToTagedPerosn')
+  import("../Sim/AssetVisibleToTagedPerson/AssetVisibleToTagedPerosn")
 );
 const AssetSingleUser = lazy(() =>
-  import('../Sim/AssetSingeUser/AssetSingleUser')
+  import("../Sim/AssetSingeUser/AssetSingleUser")
 );
 const AssetVisibleToHr = lazy(() =>
-  import('../Sim/AssetVisibleToHr/AssetVisibleToHr')
+  import("../Sim/AssetVisibleToHr/AssetVisibleToHr")
 );
-const AssetManager = lazy(() => import('../Sim/AssetManager/AssetManager'));
-const WFHAllSalary = lazy(() => import('./WFH/WFHAllSalary'));
+const AssetManager = lazy(() => import("../Sim/AssetManager/AssetManager"));
+const WFHAllSalary = lazy(() => import("./WFH/WFHAllSalary"));
 
 const PendingPaymentRequest = lazy(() =>
   import(
-    '../Finance/Purchase Management/PendingPaymentRequest/PendingPaymentRequest'
+    "../Finance/Purchase Management/PendingPaymentRequest/PendingPaymentRequest"
   )
 );
 const PaymentDone = lazy(() =>
-  import('../Finance/Purchase Management/PaymentDone/PaymentDone')
+  import("../Finance/Purchase Management/PaymentDone/PaymentDone")
 );
 const PurchaseManagementAllTransaction = lazy(() =>
   import(
-    '../Finance/Purchase Management/PurchaseManagementAllTransactionDashboard/PurchaseManagementAllTransaction'
+    "../Finance/Purchase Management/PurchaseManagementAllTransactionDashboard/PurchaseManagementAllTransaction"
   )
 );
 const Discard = lazy(() =>
-  import('../Finance/Purchase Management/Discard/Discard')
+  import("../Finance/Purchase Management/Discard/Discard")
 );
-const JobTypeMaster = lazy(() => import('../JobType/JobTypeMaster'));
+const JobTypeMaster = lazy(() => import("../JobType/JobTypeMaster"));
 const FinanceWFHDashboard = lazy(() =>
-  import('../Finance Dashboard/FinanceWFHDashboard')
+  import("../Finance Dashboard/FinanceWFHDashboard")
 );
 const WFHTemplateOverview = lazy(() =>
-  import('./WFH/WFHSingleUser/WFHTemplateOverview')
+  import("./WFH/WFHSingleUser/WFHTemplateOverview")
 );
 const ViewEditDigiSignature = lazy(() =>
-  import('./WFH/DigitalSignature/ViewEditDigiSignature')
+  import("./WFH/DigitalSignature/ViewEditDigiSignature")
 );
 const PlancreationNew = lazy(() =>
-  import('./RegisterCampaign/PlancreationNew')
+  import("./RegisterCampaign/PlancreationNew")
 );
 const TempPlanCreation = lazy(() =>
-  import('./RegisterCampaign/tempPlan/TempPlanCreation')
+  import("./RegisterCampaign/tempPlan/TempPlanCreation")
 );
 const PhasecreationNew = lazy(() =>
-  import('./RegisterCampaign/PhasecreationNew')
+  import("./RegisterCampaign/PhasecreationNew")
 );
 const DesiDeptAuth = lazy(() =>
-  import('../AdminPanel/Designation/DesiDeptAuth')
+  import("../AdminPanel/Designation/DesiDeptAuth")
 );
 const PlanDashboard = lazy(() =>
-  import('./RegisterCampaign/PlanDashboard/PlanDashboard')
+  import("./RegisterCampaign/PlanDashboard/PlanDashboard")
 );
 const CreateAgency = lazy(() =>
-  import('./RegisterCampaign/Masters/CreateAgency')
+  import("./RegisterCampaign/Masters/CreateAgency")
 );
-const CreateGoal = lazy(() => import('./RegisterCampaign/Masters/CreateGoal'));
+const CreateGoal = lazy(() => import("./RegisterCampaign/Masters/CreateGoal"));
 const CreateIndustry = lazy(() =>
-  import('./RegisterCampaign/Masters/CreateIndustry')
+  import("./RegisterCampaign/Masters/CreateIndustry")
 );
 const AgencyOverview = lazy(() =>
-  import('./RegisterCampaign/Masters/AgencyOverview')
+  import("./RegisterCampaign/Masters/AgencyOverview")
 );
 const GoalOverview = lazy(() =>
-  import('./RegisterCampaign/Masters/GoalOverview')
+  import("./RegisterCampaign/Masters/GoalOverview")
 );
 const IndustryOverview = lazy(() =>
-  import('./RegisterCampaign/Masters/IndustryOverview')
+  import("./RegisterCampaign/Masters/IndustryOverview")
 );
 const CreateService = lazy(() =>
-  import('./RegisterCampaign/Masters/CreateService')
+  import("./RegisterCampaign/Masters/CreateService")
 );
 const ServicesOverview = lazy(() =>
-  import('./RegisterCampaign/Masters/ServicesOverview')
+  import("./RegisterCampaign/Masters/ServicesOverview")
 );
 const TaskStatusDeptWiseMaster = lazy(() =>
-  import('../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster')
+  import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster")
 );
 const TaskStatusDeptWiseOverview = lazy(() =>
   import(
-    '../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseOverview'
+    "../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseOverview"
   )
 );
 const TaskStatusDeptWiseUpdate = lazy(() =>
-  import('../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseUpdate')
+  import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseUpdate")
 );
-const DisputeOverview = lazy(() => import('./WFH/Dispute/DisputeOverview'));
+const DisputeOverview = lazy(() => import("./WFH/Dispute/DisputeOverview"));
 const FinanceDashboard = lazy(() =>
-  import('../Finance/Dashboard/FinanceDashboard')
+  import("../Finance/Dashboard/FinanceDashboard")
 );
 const SalesExecutiveIncentiveRequestReleaseList = lazy(() =>
-  import('../Finance/SalesExecutiveIncentiveRequestReleaseList')
+  import("../Finance/SalesExecutiveIncentiveRequestReleaseList")
 );
-const AssetDashboard = lazy(() => import('../Sim/AssetDashboard'));
-const CreatePlan = lazy(() => import('./RegisterCampaign/Plan/CreatePlan'));
-const EmailEvent = lazy(() => import('./User/EmailEvent/EmailEvent'));
-const AllPlan = lazy(() => import('./RegisterCampaign/Plan/AllPlanData'));
-const AllPlanData = lazy(() => import('./RegisterCampaign/Plan/AllPlanData'));
+const AssetDashboard = lazy(() => import("../Sim/AssetDashboard"));
+const CreatePlan = lazy(() => import("./RegisterCampaign/Plan/CreatePlan"));
+const EmailEvent = lazy(() => import("./User/EmailEvent/EmailEvent"));
+const AllPlan = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
+const AllPlanData = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
 const AllPlanOverview = lazy(() =>
-  import('./RegisterCampaign/Plan/AllPlanOverview')
+  import("./RegisterCampaign/Plan/AllPlanOverview")
 );
-const AssetSummary = lazy(() => import('../Sim/AssetSummary'));
+const AssetSummary = lazy(() => import("../Sim/AssetSummary"));
 const CaseStudyOperation = lazy(() =>
-  import('./RegisterCampaign/CaseStudies/CaseStudyOperation')
+  import("./RegisterCampaign/CaseStudies/CaseStudyOperation")
 );
-const WFHDRegister = lazy(() => import('./WFH/WFHDRegister/WFHDRegister'));
-const UpdateDocument = lazy(() => import('./WFH/UpdateDocument'));
-const HRTemplateOverview = lazy(() => import('./WFH/HRTemplateOverview'));
-const WFHDUpdate = lazy(() => import('./WFH/WFHDRegister/WFHDUpdate'));
-const WFHDBankUpdate = lazy(() => import('./WFH/WFHDBankUpdate'));
+const WFHDRegister = lazy(() => import("./WFH/WFHDRegister/WFHDRegister"));
+const UpdateDocument = lazy(() => import("./WFH/UpdateDocument"));
+const HRTemplateOverview = lazy(() => import("./WFH/HRTemplateOverview"));
+const WFHDUpdate = lazy(() => import("./WFH/WFHDRegister/WFHDUpdate"));
+const WFHDBankUpdate = lazy(() => import("./WFH/WFHDBankUpdate"));
 const PaymentModeMast = lazy(() =>
-  import('../Finance/Sales Management/PaymentModeFolder/PaymentModeMast')
+  import("../Finance/Sales Management/PaymentModeFolder/PaymentModeMast")
 );
 const PaymentModeTransactionList = lazy(() =>
   import(
-    '../Finance/Sales Management/PaymentModeFolder/PaymentModeTransactionList'
+    "../Finance/Sales Management/PaymentModeFolder/PaymentModeTransactionList"
   )
 );
-const TotalNDG = lazy(() => import('./WFH/TotalNDG'));
-const TaskPending = lazy(() => import('../Finance/TaskPending'));
-const TaskDone = lazy(() => import('../Finance/TaskDone'));
+const TotalNDG = lazy(() => import("./WFH/TotalNDG"));
+const TaskPending = lazy(() => import("../Finance/TaskPending"));
+const TaskDone = lazy(() => import("../Finance/TaskDone"));
 const TDSdeduct = lazy(() =>
-  import('../Finance/Purchase Management/TDSDeducted/TDSdeduct')
+  import("../Finance/Purchase Management/TDSDeducted/TDSdeduct")
 );
 const GSThold = lazy(() =>
-  import('../Finance/Purchase Management/GSTHold/GSThold')
+  import("../Finance/Purchase Management/GSTHold/GSThold")
 );
-const NewExcelFile = lazy(() => import('./RegisterCampaign/Plan/NewExcelFile'));
+const NewExcelFile = lazy(() => import("./RegisterCampaign/Plan/NewExcelFile"));
 const TempExecution = lazy(() =>
-  import('./RegisterCampaign/tempPlan/TempExecution')
+  import("./RegisterCampaign/tempPlan/TempExecution")
 );
-const AccountType = lazy(() => import('./Customer/AccountType'));
-const AccountMaster = lazy(() => import('./Customer/BrandNameType'));
-const OwnershipMaster = lazy(() => import('./Customer/OwnershipMaster'));
-const OpsCustomerMast = lazy(() => import('./Customer/OpsCustomerMast'));
+const AccountType = lazy(() => import("./Customer/AccountType"));
+const AccountMaster = lazy(() => import("./Customer/BrandNameType"));
+const OwnershipMaster = lazy(() => import("./Customer/OwnershipMaster"));
+const OpsCustomerMast = lazy(() => import("./Customer/OpsCustomerMast"));
 const OpsCustomerOverview = lazy(() =>
-  import('./Customer/OpsCustomerOverview')
+  import("./Customer/OpsCustomerOverview")
 );
-const OpsCustomerUpdate = lazy(() => import('./Customer/OpsCustomerUpdate'));
+const OpsCustomerUpdate = lazy(() => import("./Customer/OpsCustomerUpdate"));
 const CustomerContOverview = lazy(() =>
-  import('./Customer/CustomerContOverview')
+  import("./Customer/CustomerContOverview")
 );
-const CustomerContMaster = lazy(() => import('./Customer/CustomerContMaster'));
-const CustomerContUpdate = lazy(() => import('./Customer/CustomerContUpdate'));
-const OpsDocMast = lazy(() => import('./Customer/OpsDocMast'));
-const VendorType = lazy(() => import('./PageMS/VendorType'));
-const PageCategory = lazy(() => import('./PageMS/PageCategory'));
-const ProfileType = lazy(() => import('./PageMS/ProfileType'));
-const PageOwnership = lazy(() => import('./PageMS/PageOwnership'));
-const PmsPlatform = lazy(() => import('./PageMS/PmsPlatform'));
-const PayMethod = lazy(() => import('./PageMS/PayMethod'));
-const PayCycle = lazy(() => import('./PageMS/PayCycle'));
-const GroupLinkType = lazy(() => import('./PageMS/GroupLinkType'));
-const VendorMaster = lazy(() => import('./PageMS/VendorMaster'));
-const VendorOverview = lazy(() => import('./PageMS/VendorOverview'));
-const VendorEdit = lazy(() => import('./PageMS/VendorEdit'));
-const PMSpriceTypeMast = lazy(() => import('./PageMS/PMSpriceTypeMast'));
+const CustomerContMaster = lazy(() => import("./Customer/CustomerContMaster"));
+const CustomerContUpdate = lazy(() => import("./Customer/CustomerContUpdate"));
+const OpsDocMast = lazy(() => import("./Customer/OpsDocMast"));
+const VendorType = lazy(() => import("./PageMS/VendorType"));
+const PageCategory = lazy(() => import("./PageMS/PageCategory"));
+const ProfileType = lazy(() => import("./PageMS/ProfileType"));
+const PageOwnership = lazy(() => import("./PageMS/PageOwnership"));
+const PmsPlatform = lazy(() => import("./PageMS/PmsPlatform"));
+const PayMethod = lazy(() => import("./PageMS/PayMethod"));
+const PayCycle = lazy(() => import("./PageMS/PayCycle"));
+const GroupLinkType = lazy(() => import("./PageMS/GroupLinkType"));
+const VendorMaster = lazy(() => import("./PageMS/VendorMaster"));
+const VendorOverview = lazy(() => import("./PageMS/VendorOverview"));
+const VendorEdit = lazy(() => import("./PageMS/VendorEdit"));
+const PMSpriceTypeMast = lazy(() => import("./PageMS/PMSpriceTypeMast"));
 const PMSplatformPriceTypeMast = lazy(() =>
-  import('./PageMS/PMSplatformPriceTypeMast')
+  import("./PageMS/PMSplatformPriceTypeMast")
 );
-const VendorGroupLink = lazy(() => import('./PageMS/VendorGroupLink'));
-const PageMaster = lazy(() => import('./PageMS/PageMaster'));
-const PageOverviewNew = lazy(() => import('./PageMS/PageOverviewNew'));
-const PageAssignmentUser = lazy(() => import('./PageMS/PageAssignmentUser'));
+const VendorGroupLink = lazy(() => import("./PageMS/VendorGroupLink"));
+const PageMaster = lazy(() => import("./PageMS/PageMaster"));
+const PageOverviewNew = lazy(() => import("./PageMS/PageOverviewNew"));
+const PageAssignmentUser = lazy(() => import("./PageMS/PageAssignmentUser"));
 const PageAssignmentUserAdd = lazy(() =>
-  import('./PageMS/PageAssignmentUserAdd')
+  import("./PageMS/PageAssignmentUserAdd")
 );
-const RepairRetrunSummary = lazy(() => import('../Sim/RepairRetrunSummary'));
+const RepairRetrunSummary = lazy(() => import("../Sim/RepairRetrunSummary"));
 const VendorPagePriceOverview = lazy(() =>
-  import('./PageMS/VendorPagePriceOverview')
+  import("./PageMS/VendorPagePriceOverview")
 );
 const VendorPagePriceMaster = lazy(() =>
-  import('./PageMS/VendorPagePriceMaster')
+  import("./PageMS/VendorPagePriceMaster")
 );
-const EditVendorPagePrice = lazy(() => import('./PageMS/EditVendorPagePrice'));
-const PageEdit = lazy(() => import('./PageMS/PageEdit'));
-const AnnouncementPost = lazy(() => import('./Announcement/AnnoucementPost'));
-const AnnouncementView = lazy(() => import('./Announcement/AnnouncementView'));
-const PMSmaster = lazy(() => import('./PageMS/PMSmaster'));
+const EditVendorPagePrice = lazy(() => import("./PageMS/EditVendorPagePrice"));
+const PageEdit = lazy(() => import("./PageMS/PageEdit"));
+const AnnouncementPost = lazy(() => import("./Announcement/AnnoucementPost"));
+const AnnouncementView = lazy(() => import("./Announcement/AnnouncementView"));
+const PMSmaster = lazy(() => import("./PageMS/PMSmaster"));
 const OperationCampaigns = lazy(() =>
-  import('./RegisterCampaign/OperationCampaigns')
+  import("./RegisterCampaign/OperationCampaigns")
 );
 const OperationDashboards = lazy(() =>
-  import('./RegisterCampaign/OperationDashboards')
+  import("./RegisterCampaign/OperationDashboards")
 );
 const OperationContents = lazy(() =>
-  import('./RegisterCampaign/OperationContents')
+  import("./RegisterCampaign/OperationContents")
 );
 const GstNongstIncentiveReport = lazy(() =>
   import(
-    '../Finance/Sales Management/Incentive/IncentiveComponents/GstNongstIncentiveReport'
+    "../Finance/Sales Management/Incentive/IncentiveComponents/GstNongstIncentiveReport"
   )
 );
-const AssetRepairSummary = lazy(() => import('../Sim/AssetRepairSummaryHR'));
-const VendorSummary = lazy(() => import('../Sim/VendorSummary'));
-const SalesDashboard = lazy(() => import('./Sales/SalesDashboard'));
+const AssetRepairSummary = lazy(() => import("../Sim/AssetRepairSummaryHR"));
+const VendorSummary = lazy(() => import("../Sim/VendorSummary"));
+const SalesDashboard = lazy(() => import("./Sales/SalesDashboard"));
 const SalesServicesOverview = lazy(() =>
-  import('./Sales/SalesServices/SalesServicesOverview')
+  import("./Sales/SalesServices/SalesServicesOverview")
 );
 const SalesServicesCreate = lazy(() =>
-  import('./Sales/SalesServices/SalesServicesCreate')
+  import("./Sales/SalesServices/SalesServicesCreate")
 );
 const SalesServicesUpdate = lazy(() =>
-  import('./Sales/SalesServices/SalesServicesUpdate')
+  import("./Sales/SalesServices/SalesServicesUpdate")
 );
 const Invoice = lazy(() =>
-  import('../Finance/Sales Management/Invoice/Invoice')
+  import("../Finance/Sales Management/Invoice/Invoice")
 );
 const CreditApprovalReasonCreate = lazy(() =>
-  import('./Sales/CreditApprovalReason/CreditApprovalReasonCreate')
+  import("./Sales/CreditApprovalReason/CreditApprovalReasonCreate")
 );
 const CreditApprovalReasonView = lazy(() =>
-  import('./Sales/CreditApprovalReason/CreditApprovalReasonView')
+  import("./Sales/CreditApprovalReason/CreditApprovalReasonView")
 );
 const CreditApprovalReasonUpdate = lazy(() =>
-  import('./Sales/CreditApprovalReason/CreditApprovalReasonUpdate')
+  import("./Sales/CreditApprovalReason/CreditApprovalReasonUpdate")
 );
 const CustomerDocumentMaster = lazy(() =>
-  import('./Customer/CustomerDocumentMaster')
+  import("./Customer/CustomerDocumentMaster")
 );
 const CustomerDocumentOverview = lazy(() =>
-  import('./Customer/CustomerDocumentOverview')
+  import("./Customer/CustomerDocumentOverview")
 );
 const NewExpertUpdate = lazy(() =>
-  import('./RegisterCampaign/Experties/NewExpertUpdate')
+  import("./RegisterCampaign/Experties/NewExpertUpdate")
 );
 const IncentiveCreate = lazy(() =>
-  import('./Sales/IncentivePlan/IncentiveCreate')
+  import("./Sales/IncentivePlan/IncentiveCreate")
 );
 const IncentiveOverview = lazy(() =>
-  import('./Sales/IncentivePlan/IncentiveOverview')
+  import("./Sales/IncentivePlan/IncentiveOverview")
 );
 const IncentiveUpdate = lazy(() =>
-  import('./Sales/IncentivePlan/IncentiveUpdate')
+  import("./Sales/IncentivePlan/IncentiveUpdate")
 );
 const CustomerContactDetails = lazy(() =>
-  import('./Customer/Contectdetailes/CustomerContactDetails')
+  import("./Customer/Contectdetailes/CustomerContactDetails")
 );
-const PurchasePrice = lazy(() => import('./PageMS/PurchasePrice'));
-const UserSummary = lazy(() => import('./WFH/UserSummary/UserSummary'));
+const PurchasePrice = lazy(() => import("./PageMS/PurchasePrice"));
+const UserSummary = lazy(() => import("./WFH/UserSummary/UserSummary"));
 const PageAssignmentUpdate = lazy(() =>
-  import('./ExpenseManagement/ExpenseManagementUpdate')
+  import("./ExpenseManagement/ExpenseManagementUpdate")
 );
 const CustomerDocumentDetails = lazy(() =>
-  import('./Customer/DocumentDetails/CustomerDocumentDetails')
+  import("./Customer/DocumentDetails/CustomerDocumentDetails")
 );
 const CustomerDocumentUpdate = lazy(() =>
-  import('./Customer/CustomerDocumentUpdate')
+  import("./Customer/CustomerDocumentUpdate")
 );
 const OperationDashboard = lazy(() =>
-  import('./RegisterCampaign/OperationDashboard/OperationDashboard')
+  import("./RegisterCampaign/OperationDashboard/OperationDashboard")
 );
 const CreateSaleBooking = lazy(() =>
-  import('./Sales/SaleBooking/CreateSaleBooking')
+  import("./Sales/SaleBooking/CreateSaleBooking")
 );
 const ViewSaleBooking = lazy(() =>
-  import('./Sales/SaleBooking/ViewSaleBooking')
+  import("./Sales/SaleBooking/ViewSaleBooking")
 );
-const Timeline = lazy(() => import('./Navbar-Sidebar/Timeline'));
+const Timeline = lazy(() => import("./Navbar-Sidebar/Timeline"));
 const SaleBooking = lazy(() =>
-  import('../Finance/Sales Management/SaleBooking/SaleBooking')
+  import("../Finance/Sales Management/SaleBooking/SaleBooking")
 );
-const Stats = lazy(() => import('./PageMS/Stats'));
+const Stats = lazy(() => import("./PageMS/Stats"));
 const OperationMasters = lazy(() =>
-  import('./Operation/Masters/OperationMasters')
+  import("./Operation/Masters/OperationMasters")
 );
 const RegisteredCampaigns = lazy(() =>
-  import('./Operation/RegisteredCampaigns')
+  import("./Operation/RegisteredCampaigns")
 );
-const PlanCreation = lazy(() => import('./Operation/PlanCreation'));
-const PhaseCreation = lazy(() => import('./Operation/PhaseCreation'));
+const PlanCreation = lazy(() => import("./Operation/PlanCreation"));
+const PhaseCreation = lazy(() => import("./Operation/PhaseCreation"));
 const CampaignExecutions = lazy(() =>
-  import('./Operation/CampaignExecutionOverview/CampaignExecutions')
+  import("./Operation/CampaignExecutionOverview/CampaignExecutions")
 );
 const CreatePaymentUpdate = lazy(() =>
-  import('./Sales/PaymentUpdate/CreatePaymentUpdate')
+  import("./Sales/PaymentUpdate/CreatePaymentUpdate")
 );
 const CreatePaymentMode = lazy(() =>
-  import('./Sales/PaymentMode/CreatePaymentMode')
+  import("./Sales/PaymentMode/CreatePaymentMode")
 );
 const ViewPaymentMode = lazy(() =>
-  import('./Sales/PaymentMode/ViewPaymentMode')
+  import("./Sales/PaymentMode/ViewPaymentMode")
 );
 const EditPaymentMode = lazy(() =>
-  import('./Sales/PaymentMode/EditPaymentMode')
+  import("./Sales/PaymentMode/EditPaymentMode")
 );
 const CreatePaymentDetails = lazy(() =>
-  import('./Sales/PaymentDetails/CreatePaymentDetails')
+  import("./Sales/PaymentDetails/CreatePaymentDetails")
 );
 const ViewPaymentDetails = lazy(() =>
-  import('./Sales/PaymentDetails/ViewPaymentDetails')
+  import("./Sales/PaymentDetails/ViewPaymentDetails")
 );
 const EditPaymentDetails = lazy(() =>
-  import('./Sales/PaymentDetails/EditPayementDetails')
+  import("./Sales/PaymentDetails/EditPayementDetails")
 );
-const OrgTree = lazy(() => import('./WFH/OrgTree/OrgTree'));
+const OrgTree = lazy(() => import("./WFH/OrgTree/OrgTree"));
 
 const PaymentModePaymentDetails = lazy(() =>
   import(
-    '../Finance/Sales Management/PaymentModeFolder/PaymentModePaymentDetails'
+    "../Finance/Sales Management/PaymentModeFolder/PaymentModePaymentDetails"
   )
 );
 const BalanceTransactionList = lazy(() =>
-  import('../Finance/Sales Management/Outstanding/BalanceTransactionList')
+  import("../Finance/Sales Management/Outstanding/BalanceTransactionList")
 );
 const Overview = lazy(() =>
   import(
-    '../Finance/Purchase Management/PendingPaymentRequest/Components/Overview'
+    "../Finance/Purchase Management/PendingPaymentRequest/Components/Overview"
   )
 );
 const IncentiveParent = lazy(() =>
-  import('../Finance/Sales Management/Incentive/IncentiveParent')
+  import("../Finance/Sales Management/Incentive/IncentiveParent")
 );
 const DeletedSaleBooking = lazy(() =>
-  import('./Sales/SaleBooking/DeletedSaleBooking')
+  import("./Sales/SaleBooking/DeletedSaleBooking")
 );
 const RejectedPaymentRequest = lazy(() =>
-  import('./Sales/PaymentRequest/RejectedPaymentRequest')
+  import("./Sales/PaymentRequest/RejectedPaymentRequest")
 );
 const PendingPaymentRequestSales = lazy(() =>
-  import('./Sales/PaymentRequest/PendingPaymentRequestSales')
+  import("./Sales/PaymentRequest/PendingPaymentRequestSales")
 );
 const RecordServices = lazy(() =>
-  import('./Sales/RecordService/RecordServices')
+  import("./Sales/RecordService/RecordServices")
 );
 const ReleasedAmountIncentive = lazy(() =>
-  import('../Finance/ReleasedAmountIncentive')
+  import("../Finance/ReleasedAmountIncentive")
 );
-const RefundPayment = lazy(() => import('../Finance/RefundPayment'));
-const RegisterCampaigns = lazy(() => import('./Operation/RegisterCampaigns'));
+const RefundPayment = lazy(() => import("../Finance/RefundPayment"));
+const RegisterCampaigns = lazy(() => import("./Operation/RegisterCampaigns"));
 const CreditApproval = lazy(() =>
-  import('../Finance/CreditApproval/CreditApproval')
+  import("../Finance/CreditApproval/CreditApproval")
 );
 const ViewPaymentUpdate = lazy(() =>
-  import('./Sales/PaymentUpdate/ViewPaymentUpdate')
+  import("./Sales/PaymentUpdate/ViewPaymentUpdate")
 );
 const CreateSalesAccount = lazy(() =>
-  import('./Sales/Account/CreateSalesAccount')
+  import("./Sales/Account/CreateSalesAccount")
 );
 const SalesAccountOverview = lazy(() =>
-  import('./Sales/Account/SalesAccountOverview')
+  import("./Sales/Account/SalesAccountOverview")
 );
 const PaymentDoneTransactionList = lazy(() =>
   import(
-    '../Finance/Purchase Management/PaymentDone/Components/PaymentDoneTransactionList'
+    "../Finance/Purchase Management/PaymentDone/Components/PaymentDoneTransactionList"
   )
 );
-const PageStats = lazy(() => import('./PageMS/PageStats'));
-const PlanMaking = lazy(() =>
-  import('../inventory/plan-making/index')
-);
+const PageStats = lazy(() => import("./PageMS/PageStats"));
+const PlanMaking = lazy(() => import("../inventory/plan-making/index"));
 const PlanMakingTable = lazy(() =>
-  import('../inventory/plan-making/PlanMaking')
+  import("../inventory/plan-making/PlanMaking")
 );
 const PlanUpload = lazy(() =>
-  import('../AdminPanel/Inventory/Plan-upload/index')
+  import("../AdminPanel/Inventory/Plan-upload/index")
 );
 const CreateDocumentType = lazy(() =>
-  import('./Sales/Account/CreateDocumentType')
+  import("./Sales/Account/CreateDocumentType")
 );
 const DocumentTypeOverview = lazy(() =>
-  import('./Sales/Account/DocumentTypeOverview')
+  import("./Sales/Account/DocumentTypeOverview")
 );
-const PlanOverView = lazy(() => import('./Operation/Plan/CampPlanOverview'));
+const PlanOverView = lazy(() => import("./Operation/Plan/CampPlanOverview"));
 const CampPlanOverview = lazy(() =>
-  import('./Operation/Plan/CampPlanOverview')
+  import("./Operation/Plan/CampPlanOverview")
 );
-const EditPage = lazy(() => import('./PageMS/EditPage/EditPage'));
+const EditPage = lazy(() => import("./PageMS/EditPage/EditPage"));
 const ViewOutstanding = lazy(() =>
-  import('./Sales/SaleBooking/Outstanding/ViewOutstanding')
+  import("./Sales/SaleBooking/Outstanding/ViewOutstanding")
 );
 const IncentiveDashboard = lazy(() =>
-  import('./Sales/Incenti Dashboard/IncentiveDashboard')
+  import("./Sales/Incenti Dashboard/IncentiveDashboard")
 );
-const NewDocumentCom = lazy(() => import('./WFH/NewDocumentCom'));
+const NewDocumentCom = lazy(() => import("./WFH/NewDocumentCom"));
 const UserIncentive = lazy(() =>
-  import('./Sales/Incenti Dashboard/UserIncentive')
+  import("./Sales/Incenti Dashboard/UserIncentive")
 );
 const EarnedAndUnearned = lazy(() =>
-  import('./Sales/Incenti Dashboard/EarnedAndUnearned')
+  import("./Sales/Incenti Dashboard/EarnedAndUnearned")
 );
 const IncentiveRequest = lazy(() =>
-  import('./Sales/Incenti Dashboard/IncentiveRequest')
+  import("./Sales/Incenti Dashboard/IncentiveRequest")
 );
 const IncentiveSettlement = lazy(() =>
-  import('./Sales/Incentive Settlement/IncentiveSettlement')
+  import("./Sales/Incentive Settlement/IncentiveSettlement")
 );
 const CreateTargetCompetition = lazy(() =>
-  import('./Sales/TargetCompetition/CreateTargetCompetition')
+  import("./Sales/TargetCompetition/CreateTargetCompetition")
 );
 const ViewTargetCompetition = lazy(() =>
-  import('./Sales/TargetCompetition/ViewTargetCompetition')
+  import("./Sales/TargetCompetition/ViewTargetCompetition")
 );
 const ExpenseMangementMaster = lazy(() =>
-  import('./ExpenseManagement/ExpenseMangementMaster')
+  import("./ExpenseManagement/ExpenseMangementMaster")
 );
 const ExpenseOverview = lazy(() =>
-  import('./ExpenseManagement/ExpenseOverview')
+  import("./ExpenseManagement/ExpenseOverview")
 );
 const ExpenseManagementUpdate = lazy(() =>
-  import('./ExpenseManagement/ExpenseManagementUpdate')
+  import("./ExpenseManagement/ExpenseManagementUpdate")
 );
 const ViewInvoiceRequest = lazy(() =>
-  import('./Sales/Invoice/ViewInvoiceRequest')
+  import("./Sales/Invoice/ViewInvoiceRequest")
 );
 const AnalyticDashboard = lazy(() =>
-  import('./WFH/AnalyticDashboard/AnalyticDashboard')
+  import("./WFH/AnalyticDashboard/AnalyticDashboard")
 );
 const CommunityManager = lazy(() =>
-  import('../SuperTracker/CommunityManagement/CommunityManager')
+  import("../SuperTracker/CommunityManagement/CommunityManager")
 );
 const CommunityPageView = lazy(() =>
-  import('../SuperTracker/CommunityManagement/CommunityPageView')
+  import("../SuperTracker/CommunityManagement/CommunityPageView")
 );
 const CommunityHome = lazy(() =>
-  import('../SuperTracker/CommunityManagement/CommunityHome')
+  import("../SuperTracker/CommunityManagement/CommunityHome")
 );
 const CommunityUser = lazy(() =>
-  import('../SuperTracker/CommunityManagement/CommunityUser')
+  import("../SuperTracker/CommunityManagement/CommunityUser")
 );
 const CommunityManagerView = lazy(() =>
-  import('../SuperTracker/CommunityManagement/CommunityManagerView')
+  import("../SuperTracker/CommunityManagement/CommunityManagerView")
 );
 const MeetingPagesOverView = lazy(() =>
-  import('../SuperTracker/MeetingPages/MeetingPagesOverView')
+  import("../SuperTracker/MeetingPages/MeetingPagesOverView")
 );
 const OverviewMeetingVia = lazy(() =>
-  import('../SuperTracker/MeetingPages/OverviewMeetingVia')
+  import("../SuperTracker/MeetingPages/OverviewMeetingVia")
 );
 const PaymentUpdateBankWise = lazy(() =>
-  import('./Sales/PaymentUpdate/PaymentUpdateBankWise')
+  import("./Sales/PaymentUpdate/PaymentUpdateBankWise")
 );
 const MajorDepartmentMast = lazy(() =>
-  import('./Department/MajorDepartment/MajorDepartmentMast')
+  import("./Department/MajorDepartment/MajorDepartmentMast")
 );
 const MajorDepartmentOverview = lazy(() =>
-  import('./Department/MajorDepartment/MajorDepartmentOverview')
+  import("./Department/MajorDepartment/MajorDepartmentOverview")
 );
 const MajorDepartmentUpdate = lazy(() =>
-  import('./Department/MajorDepartment/MajorDepartmentUpdate')
+  import("./Department/MajorDepartment/MajorDepartmentUpdate")
 );
 const AllAssignedCategory = lazy(() =>
-  import('../SuperTracker/CommunityManagement/AllAssignedCategory')
+  import("../SuperTracker/CommunityManagement/AllAssignedCategory")
 );
-const SalesReport = lazy(() => import('./Sales/SaleBooking/SalesReport'));
+const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
 
 const Admin = () => {
   const [contextData, setData] = useState([]);
 
-  const storedToken = sessionStorage.getItem('token');
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   useEffect(() => {
@@ -1286,6 +1285,10 @@ const Admin = () => {
                       element={<IncentivePayment />}
                     />
                     <Route
+                      path="/finance-payment-release-report"
+                      element={<OutstandingPaymentReleaseReport />}
+                    />
+                    <Route
                       path="/finance-paymentmode"
                       element={<PaymentMode />}
                     />
@@ -1323,6 +1326,10 @@ const Admin = () => {
                     <Route
                       path="/finance-pendingrequests"
                       element={<RefundRequests />}
+                    />
+                    <Route
+                      path="/finance-salebooking"
+                      element={<SaleBooking />}
                     />
                     <Route
                       path="/finance-salebooking"
@@ -1616,7 +1623,7 @@ const Admin = () => {
                       path="/exploreleads"
                       element={
                         <LeadApp>
-                          <LeadHome />{' '}
+                          <LeadHome />{" "}
                         </LeadApp>
                       }
                     />

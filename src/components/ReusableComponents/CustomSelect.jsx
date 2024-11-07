@@ -12,9 +12,10 @@ const CustomSelect = ({
   required,
   disabled,
   multiple = false,
-  filterOption
+  filterOption,
 }) => {
-  const findOptionLabelById = (id) => dataArray?.find((option) => option[optionId] === id)?.[optionLabel];
+  const findOptionLabelById = (id) =>
+    dataArray?.find((option) => option[optionId] === id)?.[optionLabel];
 
   const selectAllOption = {
     value: "selectAll",
@@ -25,19 +26,23 @@ const CustomSelect = ({
 
   const valueProp = multiple
     ? selectedId?.map((id) => ({
-      value: id,
-      label: findOptionLabelById(id),
-    }))
+        value: id,
+        label: findOptionLabelById(id),
+      }))
     : dataArray?.find((option) => option[optionId] === selectedId)
-      ? {
+    ? {
         value: selectedId,
         label: findOptionLabelById(selectedId),
       }
-      : null;
+    : null;
 
   const handleChange = (selectedOptions) => {
     if (multiple) {
-      if (selectedOptions?.some((option) => option.value === selectAllOption.value)) {
+      if (
+        selectedOptions?.some(
+          (option) => option.value === selectAllOption.value
+        )
+      ) {
         if (isAllSelected) {
           setSelectedId([]);
         } else {
@@ -68,7 +73,11 @@ const CustomSelect = ({
       <Select
         filterOption={filterOption}
         options={options}
-        value={multiple && isAllSelected ? [selectAllOption, ...valueProp] : valueProp}
+        value={
+          multiple && isAllSelected
+            ? [selectAllOption, ...valueProp]
+            : valueProp
+        }
         onChange={handleChange}
         required={required}
         isDisabled={disabled}

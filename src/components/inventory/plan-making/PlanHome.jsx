@@ -22,11 +22,14 @@ import jwtDecode from 'jwt-decode';
 import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
 import PlanXStatusDialog from './StatusDialog';
 import PlanXHeader from './PlanXHeader';
+import PageDialog from './PageDialog';
+import { formatUTCDate } from '../../../utils/formatUTCDate';
 
 function PlanHome() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('Tab1');
   const [openDialog, setOpenDialog] = useState(false);
+  const [openPageDialog, setPageDialog] = useState(false);
   const [planRows, setPlanRows] = useState([]);
   const [duplicatePlanId, setDuplicatePlanId] = useState(null);
   const [errors, setErrors] = useState({});
@@ -36,6 +39,7 @@ function PlanHome() {
   const [statusDialogPlan, setStatusDialogPlan] = useState(null);
   const [filteredPlans, setFilteredPlans] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [selectedPages, setSelectedPages] = useState([]);
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -128,6 +132,7 @@ function PlanHome() {
           sales_executive_id: plan.sales_executive_id,
           account_name: plan.account_name,
           createdAt: plan.createdAt,
+          not_available_pages: plan.not_available_pages,
         }));
         setPlanRows(formattedRows);
         // setFilteredPlans(formattedRows);
@@ -173,7 +178,6 @@ function PlanHome() {
       default:
         filtered = planRows; // Show all plans
     }
-    console.log(filtered);
     setFilteredPlans(filtered);
   };
   // Updated handleRowClick to handle "Duplicate" action
@@ -221,10 +225,6 @@ function PlanHome() {
     setOpenDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
@@ -257,9 +257,19 @@ function PlanHome() {
     }
   };
 
+  const handleOpenDialog = (pages) => {
+    setSelectedPages(pages);
+    setPageDialog(true);
+  };
+  const handleClosePageDialog = () => {
+    setPageDialog(false);
+  };
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
   const handleFormSubmit = async () => {
     const validationErrors = validateForm();
-    console.log('ksddbnjkbb', validationErrors);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
@@ -390,6 +400,21 @@ function PlanHome() {
       showCol: true,
     },
     {
+      key: 'unfetced_pages',
+      name: 'Unfetched Pages',
+      renderRowCell: (row) => (
+        <div
+          style={{ cursor: 'pointer' }}
+          onClick={() => handleOpenDialog(row.not_available_pages)}
+        >
+          {row.not_available_pages?.length}
+        </div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+
+    {
       key: 'plan_name',
       name: 'Plan Name',
       renderRowCell: (row) => (
@@ -479,6 +504,15 @@ function PlanHome() {
       showCol: true,
     },
     {
+      key: 'createdAt',
+      name: 'Created Date',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>{formatUTCDate(row.createdAt)}</div>
+      ),
+      width: 120,
+      showCol: true,
+    },
+    {
       key: 'post_count',
       name: 'Post Count',
       renderRowCell: (row) => (
@@ -546,7 +580,11 @@ function PlanHome() {
       {/* <Button variant="contained" onClick={handlePlanMaking}>
         Plan Making Button
       </Button> */}
-
+      <PageDialog
+        open={openPageDialog}
+        onClose={handleClosePageDialog}
+        notFoundPages={selectedPages}
+      />
       {/* Plan Making Dialog */}
       <Dialog
         open={openDialog}

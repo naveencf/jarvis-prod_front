@@ -8,8 +8,16 @@ import { FaEdit } from "react-icons/fa";
 import { Box, Button, Typography, Modal } from "@mui/material";
 import FieldContainer from "../../../FieldContainer";
 import FormContainer from "../../../FormContainer";
+import { useGetAllPageListQuery } from "../../../../Store/PageBaseURL";
+import jwtDecode from "jwt-decode";
+import Select, { components } from "react-select";
+
 
 const BulkVendor = () => {
+  const storedToken = sessionStorage.getItem('token');
+  const decodedToken = jwtDecode(storedToken);
+  const userID = decodedToken.id;
+
   const token = sessionStorage.getItem("token");
   const [bulkData, setBulkData] = useState([]);
   const [filterData, setFilterData] = useState([]);
@@ -22,7 +30,6 @@ const BulkVendor = () => {
   const [pageName, setPageName] = useState('');
   const [story, setStory] = useState('');
   const [post, setPost] = useState('');
-  console.log(id, "new daat");
   const [bothData, setBothData] = useState('');
   const [reel, setReel] = useState('');
   const [carousel, setCarousel] = useState('');
@@ -33,6 +40,11 @@ const BulkVendor = () => {
   const {
     data: vendorData,
   } = useGetAllVendorQuery();
+  const {
+    data: pageList,
+    refetch: refetchPageList,
+    isLoading: isPageListLoading,
+  } = useGetAllPageListQuery({ decodedToken, userID });
 
 
   useEffect(() => {
@@ -259,67 +271,116 @@ const BulkVendor = () => {
                 mainTitle="Update Vendor Data "
                 handleSubmit={false}
                 title={'Update Data'}
-              >
-                <FieldContainer
-                  label="Vendor Name"
-                  type="text"
-                  fieldGrid={4}
-                  value={
-                    vendorData?.find((item) => item?._id === venderName)?.vendor_name || "NA"
-                  }
-                  disabled
-                />
-                <FieldContainer
-                  label="Page Name"
-                  type="text"
-                  fieldGrid={4}
-                  value={pageName}
-                  onChange={(e) => setPageName(e.target.value)}
-                />
-                <FieldContainer
-                  label="Story"
-                  type="text"
-                  fieldGrid={4}
-                  value={story}
-                  onChange={(e) => setStory(e.target.value)}
-                />
-                <FieldContainer
-                  label="Post"
-                  type="text"
-                  fieldGrid={4}
-                  value={post}
-                  onChange={(e) => setPost(e.target.value)}
-                />
-                <FieldContainer
-                  label="Both"
-                  type="text"
-                  fieldGrid={4}
-                  value={bothData}
-                  onChange={(e) => setBothData(e.target.value)}
-                />
-                <FieldContainer
-                  label="Reel"
-                  type="text"
-                  fieldGrid={4}
-                  value={reel}
-                  onChange={(e) => setReel(e.target.value)}
+                link={true}
+              />
 
-                />
-                <FieldContainer
-                  label="Carousel"
-                  type="text"
-                  fieldGrid={4}
-                  value={carousel}
-                  onChange={(e) => setCarousel(e.target.value)}
-                />
-                <FieldContainer label="M Post" type="text" fieldGrid={4} value={m_post} onChange={(e) => setM_post(e.target.value)} />
-                <FieldContainer label="M Story" type="text" fieldGrid={4} value={m_story} onChange={(e) => setM_story(e.target.value)} />
-                <FieldContainer label="M Both" type="text" fieldGrid={4} value={m_both} onChange={(e) => setM_both(e.target.value)} />
+              <div className="card">
+                <div className="card-body row">
+                  <FieldContainer
+                    label="Vendor Name"
+                    type="text"
+                    fieldGrid={4}
+                    value={
+                      vendorData?.find((item) => item?._id === venderName)?.vendor_name || "NA"
+                    }
+                    disabled
+                  />
+                  {/* <FieldContainer
+                    label="Page Name"
+                    type="text"
+                    fieldGrid={4}
+                    value={pageName}
+                    onChange={(e) => setPageName(e.target.value)}
+                  /> */}
+                  <div className="col-md-6 mb16">
+                    <div className="form-group m0">
+                      <label className="form-label">
+                        Page Name <sup style={{ color: "red" }}>*</sup>
+                      </label>
+                      <Select
+                        name="Page"
+                        options={pageList?.map((option) => ({
+                          value: option.page_name,
+                          label: option.page_name,
+                        }))}
+                        required={true}
+                        className="basic-multi-select"
+                        value={{
+                          value: pageName,
+                          label: pageName,
+                        }}
+                        onChange={(selectedOption) => {
+                          setPageName(selectedOption?.value);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <FieldContainer
+                    label="Story"
+                    type="text"
+                    fieldGrid={4}
+                    value={story}
+                    onChange={(e) => setStory(e.target.value)}
+                  />
+                  <FieldContainer
+                    label="Post"
+                    type="text"
+                    fieldGrid={4}
+                    value={post}
+                    onChange={(e) => setPost(e.target.value)}
+                  />
+                  <FieldContainer
+                    label="Both"
+                    type="text"
+                    fieldGrid={4}
+                    value={bothData}
+                    onChange={(e) => setBothData(e.target.value)}
+                  />
+                  <FieldContainer
+                    label="Reel"
+                    type="text"
+                    fieldGrid={4}
+                    value={reel}
+                    onChange={(e) => setReel(e.target.value)}
+
+                  />
+                  <FieldContainer
+                    label="Carousel"
+                    type="text"
+                    fieldGrid={4}
+                    value={carousel}
+                    onChange={(e) => setCarousel(e.target.value)}
+                  />
+                  <FieldContainer
+                    label="M Post"
+                    type="text"
+                    fieldGrid={4}
+                    value={m_post}
+                    onChange={(e) => setM_post(e.target.value)}
+                  />
+
+                  <FieldContainer
+                    label="M Story"
+                    type="text"
+                    fieldGrid={4}
+                    value={m_story}
+                    onChange={(e) => setM_story(e.target.value)}
+                  />
+                  <FieldContainer
+                    label="M Both"
+                    type="text"
+                    fieldGrid={4}
+                    value={m_both}
+                    onChange={(e) => setM_both(e.target.value)}
+                  />
 
 
-              </FormContainer>
-              <button 
-               className="btn cmnbtn btn_sm btn-primary"
+
+
+                </div>
+              </div>
+              <button
+                className="btn cmnbtn btn_sm btn-primary"
                 onClick={handleSubmitUpdate}> update</button>
             </Box>
           </Box>

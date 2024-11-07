@@ -8,10 +8,21 @@ import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { useGlobalContext } from "../../../../Context/Context";
 import formatString from "../../../../utils/formatString";
 import getDecodedToken from "../../../../utils/DecodedToken";
-import Modal from "react-modal"
+import Modal from "react-modal";
 import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../FieldContainer";
-import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear, subDays, subWeeks, subMonths, subYears, subQuarters } from 'date-fns';
+import {
+  format,
+  startOfWeek,
+  startOfMonth,
+  startOfQuarter,
+  startOfYear,
+  subDays,
+  subWeeks,
+  subMonths,
+  subYears,
+  subQuarters,
+} from "date-fns";
 import ShareIncentive from "./ShareIncentive";
 
 const SalesAccountOverview = () => {
@@ -35,14 +46,16 @@ const SalesAccountOverview = () => {
   const [selectedData, setSelectedData] = useState([]);
   let [modalHandler, setModalHandler] = useState("SalesAccountPOC");
 
-  const dateFilterArray = [{
-    value: "createdAt",
-    label: "Created Date"
-  }, {
-    value: "lastSaleBookingDate",
-    label: "Last Purchase Date"
-  }];
-
+  const dateFilterArray = [
+    {
+      value: "createdAt",
+      label: "Created Date",
+    },
+    {
+      value: "lastSaleBookingDate",
+      label: "Last Purchase Date",
+    },
+  ];
 
   const dateFilterOptions = [
     { value: "today", label: "Today" },
@@ -55,80 +68,72 @@ const SalesAccountOverview = () => {
     { value: "previous_month", label: "Previous Month" },
     { value: "previous_year", label: "Previous Year" },
     { value: "previous_quarter", label: "Previous Quarter" },
-    { value: "custom", label: "Custom" }
+    { value: "custom", label: "Custom" },
   ];
 
-
   const handleDateFilterChange = () => {
-
     const today = new Date();
     let from, to;
 
     switch (quickFiltring) {
-      case 'today':
+      case "today":
         from = to = today;
         break;
-      case 'this_week':
+      case "this_week":
         from = startOfWeek(today);
         to = today;
         break;
-      case 'this_month':
+      case "this_month":
         from = startOfMonth(today);
         to = today;
         break;
-      case 'this_quarter':
+      case "this_quarter":
         from = startOfQuarter(today);
         to = today;
         break;
-      case 'this_year':
+      case "this_year":
         from = startOfYear(today);
         to = today;
         break;
-      case 'yesterday':
+      case "yesterday":
         from = to = subDays(today, 1);
         break;
-      case 'previous_week':
+      case "previous_week":
         from = startOfWeek(subWeeks(today, 1));
         to = subDays(startOfWeek(today), 1);
         break;
-      case 'previous_month':
+      case "previous_month":
         from = startOfMonth(subMonths(today, 1));
         to = subDays(startOfMonth(today), 1);
         break;
-      case 'previous_quarter':
+      case "previous_quarter":
         from = startOfQuarter(subQuarters(today, 1));
         to = subDays(startOfQuarter(today), 1);
         break;
-      case 'previous_year':
+      case "previous_year":
         from = startOfYear(subYears(today, 1));
         to = subDays(startOfYear(today), 1);
         break;
-      case 'custom':
+      case "custom":
       default:
         from = "";
         to = "";
         break;
     }
 
-    setFromDate(from ? format(from, 'yyyy-MM-dd') : "");
-    setToDate(to ? format(to, 'yyyy-MM-dd') : "");
+    setFromDate(from ? format(from, "yyyy-MM-dd") : "");
+    setToDate(to ? format(to, "yyyy-MM-dd") : "");
   };
-
-
 
   useEffect(() => {
     handleDateFilterChange();
-  }, [quickFiltring])
-
+  }, [quickFiltring]);
 
   function dataFiltter() {
     let filtered = filteredData?.filter((data) => {
       let matchesBookingDate = true;
 
-
-
       if (fromDate !== "" && toDate !== "") {
-
         let saleBookingDate = new Date(data[selectedFilter]);
         let from = new Date(fromDate);
         let to = new Date(toDate);
@@ -138,14 +143,11 @@ const SalesAccountOverview = () => {
       return matchesBookingDate;
     });
     setCombinedFilter(filtered);
-
   }
-
 
   const handleCloseModal = () => {
     setModalIsOpen(false);
   };
-
 
   const {
     data: allAccount,
@@ -153,13 +155,11 @@ const SalesAccountOverview = () => {
     isLoading: allAccountLoading,
   } = useGetAllAccountQuery(loginUserId);
 
-
   function handelRemoveFiltter() {
     setCombinedFilter([...filteredData]);
     setSelectedFilter("");
     setQuickFiltring("");
   }
-
 
   const {
     data: allBrandCatType,
@@ -174,16 +174,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-      allAccountError.error ||
-      "An error occurred"
+        allAccountError.error ||
+        "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-      allBrandCatTypeError.error ||
-      "An error occurred"
+        allBrandCatTypeError.error ||
+        "An error occurred"
     );
   }
 
@@ -226,7 +226,6 @@ const SalesAccountOverview = () => {
       key: "account_percentage",
       name: "Account Percentage",
       width: 100,
-
     },
     {
       key: "created_by_name",
@@ -279,12 +278,17 @@ const SalesAccountOverview = () => {
     {
       key: "accountPocCounts",
       name: "Total POC",
-      renderRowCell: (row) => <div
-        style={{ color: "blue", cursor: "pointer" }}
-        onClick={() => {
-          setModalIsOpen(true)
-          setModalData(row?.accountPocData)
-        }}>{row?.accountPocCounts}</div>,
+      renderRowCell: (row) => (
+        <div
+          style={{ color: "blue", cursor: "pointer" }}
+          onClick={() => {
+            setModalIsOpen(true);
+            setModalData(row?.accountPocData);
+          }}
+        >
+          {row?.accountPocCounts}
+        </div>
+      ),
       width: 100,
     },
     {
@@ -475,28 +479,30 @@ const SalesAccountOverview = () => {
       name: "Alternative Contact No",
       renderRowCell: (row) => row?.alternative_contact_no || "N/A",
       width: 100,
-
     },
   ];
   const modalMap = {
-    "SalesAccountPOC": <View
-      columns={pocColumns}
-      data={modalData}
-      isLoading={isLoading}
-      title={"Account POC Details"}
-      pagination={[100, 200]}
-      tableName={"SalesAccountPOC"}
-    />,
-    "IncentiveShare": <ShareIncentive closeModal={handleCloseModal} accountInfo={selectedData} />
-  }
-
-
+    SalesAccountPOC: (
+      <View
+        columns={pocColumns}
+        data={modalData}
+        isLoading={isLoading}
+        title={"Account POC Details"}
+        pagination={[100, 200]}
+        tableName={"SalesAccountPOC"}
+      />
+    ),
+    IncentiveShare: (
+      <ShareIncentive
+        closeModal={handleCloseModal}
+        accountInfo={selectedData}
+      />
+    ),
+  };
 
   return (
-
     <div>
       <Modal
-
         isOpen={ModalIsOpen}
         onRequestClose={handleCloseModal}
         style={{
@@ -511,13 +517,10 @@ const SalesAccountOverview = () => {
             transform: "translate(-50%, -50%)",
             background: "#fff",
             zIndex: "100000",
-
-
           },
         }}
       >
         {modalMap[modalHandler]}
-
       </Modal>
 
       <div className="action_heading">
@@ -525,13 +528,17 @@ const SalesAccountOverview = () => {
           <FormContainer mainTitle={"Account Overview"} link={true} />
         </div>
         <div className="action_btns">
-          {loginUserRole === 1 && selectedData.length === 1 && <button className="btn cmnbtn btn-primary btn_sm" onClick={() => {
-            setModalIsOpen(true)
-            setModalHandler("IncentiveShare")
-          }
-          }>
-            Incentive Share
-          </button>}
+          {loginUserRole === 1 && selectedData.length === 1 && (
+            <button
+              className="btn cmnbtn btn-primary btn_sm"
+              onClick={() => {
+                setModalIsOpen(true);
+                setModalHandler("IncentiveShare");
+              }}
+            >
+              Incentive Share
+            </button>
+          )}
 
           <Link to="/admin/view-Outstanding-details">
             <button className="btn cmnbtn btn-primary btn_sm">
@@ -578,27 +585,24 @@ const SalesAccountOverview = () => {
             selectedId={quickFiltring}
             setSelectedId={setQuickFiltring}
           />
-          {
-            quickFiltring === "custom" && (
-              <>
-
-                <FieldContainer
-                  type="date"
-                  label="From Date"
-                  fieldGrid={4}
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
-                <FieldContainer
-                  type="date"
-                  label="To Date"
-                  fieldGrid={4}
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
-              </>
-            )
-          }
+          {quickFiltring === "custom" && (
+            <>
+              <FieldContainer
+                type="date"
+                label="From Date"
+                fieldGrid={4}
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+              <FieldContainer
+                type="date"
+                label="To Date"
+                fieldGrid={4}
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </>
+          )}
           <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
             <button
               className="cmnbtn btn-primary"
@@ -668,7 +672,9 @@ const SalesAccountOverview = () => {
                   );
                 }}
               >
-                <h6 className="colorMedium">Idle Accounts (Without Payment) </h6>
+                <h6 className="colorMedium">
+                  Idle Accounts (Without Payment){" "}
+                </h6>
                 <h6 className="mt8 fs_16">
                   {
                     allAccount?.filter((account) => account?.paidAmount == 0)
@@ -680,7 +686,6 @@ const SalesAccountOverview = () => {
           </div>
         </div>
       </div>
-
       <View
         columns={ViewSalesAccountColumns}
         data={combinedData}

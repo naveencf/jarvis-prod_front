@@ -227,47 +227,11 @@ export default function PaymentDone() {
     }
   };
 
-  const handleRowSelectionModelChange = async (rowIds) => {
-    setRowSelectionModel(rowIds);
-  };
-
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
     setFilterData(data);
   };
 
-  // csv download----
-  const handleDownloadInvoices = async () => {
-    const zip = new JSZip();
-
-    rowSelectionModel?.forEach((rowId) => {
-      const rowData = filterData?.find((row) => row.request_id === rowId);
-      if (rowData) {
-        const formattedRowData = {
-          ...rowData,
-          request_date:
-            moment(rowData?.request_date)?.format("DD-MM-YYYY HH:MM A") || "",
-          payment_date: rowData?.payment_date
-            ? moment(rowData?.payment_date)?.format("DD-MM-YYYY HH:MM A")
-            : "",
-        };
-
-        let csvContent = "";
-
-        const headers = Object?.keys(formattedRowData);
-        csvContent += headers.join(",") + "\n";
-
-        const values = Object?.values(formattedRowData);
-        const rowContent = values.map((value) => `"${value || ""}"`).join(",");
-        csvContent += `${rowContent}\n`;
-
-        zip.file(`invoice_${rowId}.csv`, csvContent);
-      }
-    });
-
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-    saveAs(zipBlob, "invoices.zip");
-  };
   const filterDataBasedOnSelection = (apiData) => {
     const now = moment();
     switch (dateFilter) {
@@ -325,17 +289,6 @@ export default function PaymentDone() {
             "[]"
           )
         );
-      // case "nextMonth":
-      //   const startOfNextMonth = now.clone().add(1, "months").startOf("month");
-      //   const endOfNextMonth = now.clone().add(1, "months").endOf("month");
-      //   return apiData.filter((item) =>
-      //     moment(item.request_date).isBetween(
-      //       startOfNextMonth,
-      //       endOfNextMonth,
-      //       "day",
-      //       "[]"
-      //     )
-      //   );
       case "currentQuarter":
         const quarterStart = moment().startOf("quarter");
         const quarterEnd = moment().endOf("quarter");
@@ -355,6 +308,7 @@ export default function PaymentDone() {
         return apiData;
     }
   };
+
   return (
     <div>
       <FormContainer
@@ -400,139 +354,115 @@ export default function PaymentDone() {
         setUniqueVendorData={setUniqueVendorData}
       />
 
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Payment Done</h5>
-          <div className="flexCenter colGap12">
-            {rowSelectionModel?.length > 0 && (
-              <Button
-                className="btn cmnbtn btn_sm btn-primary"
-                variant="contained"
-                color="primary"
-                size="small"
-                onClick={handleDownloadInvoices}
+      <div>
+        <View
+          columns={paymentDoneColumns({
+            filterData,
+            setOpenImageDialog,
+            setViewImgSrc,
+            phpRemainderData,
+            nodeData,
+            getStatusText,
+            handleOpenPaymentHistory,
+            handleOpenBankDetail,
+          })}
+          data={filterData}
+          isLoading={isLoading}
+          showTotal={true}
+          title={"Payment Done"}
+          rowSelectable={true}
+          pagination={[100, 200]}
+          tableName={"finance-payment-done"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary ms-2"
+                onClick={(e) => handleClearSameRecordFilter(e)}
               >
-                Download PDF Zip
-              </Button>
-            )}
-            <Button
-              className="btn cmnbtn btn_sm btn-secondary ms-2"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </Button>
-          </div>
-        </div>
-        <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-          <div>
-            <View
-              columns={paymentDoneColumns({
-                filterData,
-                setOpenImageDialog,
-                setViewImgSrc,
-                phpRemainderData,
-                nodeData,
-                getStatusText,
-                handleOpenPaymentHistory,
-                handleOpenBankDetail,
-              })}
-              data={filterData}
-              isLoading={isLoading}
-              title={" Payment Done"}
-              rowSelectable={true}
-              pagination={[100, 200]}
-              tableName={"finance-payment-done"}
-              selectedData={setSelectedData}
-              addHtml={
-                <>
-                  <button
-                    className="btn cmnbtn btn_sm btn-secondary ms-2"
-                    onClick={(e) => handleClearSameRecordFilter(e)}
-                  >
-                    Clear
-                  </button>
-                </>
-              }
-            />
-          </div>
-
-          {openImageDialog && (
-            <ImageView
-              viewImgSrc={viewImgSrc}
-              setViewImgDialog={setOpenImageDialog}
-            />
-          )}
-          {/* Bank Detail dialog */}
-          <Dialog
-            open={bankDetail}
-            onClose={handleCloseBankDetail}
-            fullWidth={"md"}
-            maxWidth={"md"}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <DialogTitle>Bank Details</DialogTitle>
-            <IconButton
-              aria-label="close"
-              onClick={handleCloseBankDetail}
-              sx={{
-                position: "absolute",
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
-            >
-              <CloseIcon />
-            </IconButton>
-
-            <TextField
-              id="outlined-multiline-static"
-              multiline
-              value={
-                bankDetailRowData[0]?.payment_details +
-                "\n" +
-                "Mob:" +
-                bankDetailRowData[0]?.mob1 +
-                "\n" +
-                (bankDetailRowData[0]?.email
-                  ? "Email:" + bankDetailRowData[0]?.email
-                  : "")
-              }
-              rows={4}
-              defaultValue="Default Value"
-              variant="outlined"
-            />
-            <Button
-              onClick={() => {
-                navigator.clipboard.writeText(
-                  bankDetailRowData[0]?.payment_details
-                );
-                toastAlert("Copied to clipboard");
-              }}
-            >
-              Copy
-            </Button>
-          </Dialog>
-          {remainderDialog && (
-            <ShowDataModal
-              handleClose={setRemainderDialog}
-              rows={reminderData}
-              columns={PaymentDoneRemainderDialogColumns({
-                reminderData,
-                handleAcknowledgeClick,
-              })}
-              aknowledgementDialog={aknowledgementDialog}
-              setAknowledgementDialog={setAknowledgementDialog}
-              userName={userName}
-              callApi={callApi}
-              setRemainderDialo={setRemainderDialog}
-            />
-          )}
-        </div>
+                Clear
+              </button>
+            </>
+          }
+        />
       </div>
+
+      {openImageDialog && (
+        <ImageView
+          viewImgSrc={viewImgSrc}
+          setViewImgDialog={setOpenImageDialog}
+        />
+      )}
+      {/* Bank Detail dialog */}
+      <Dialog
+        open={bankDetail}
+        onClose={handleCloseBankDetail}
+        fullWidth={"md"}
+        maxWidth={"md"}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <DialogTitle>Bank Details</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleCloseBankDetail}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+
+        <TextField
+          id="outlined-multiline-static"
+          multiline
+          value={
+            bankDetailRowData[0]?.payment_details +
+            "\n" +
+            "Mob:" +
+            bankDetailRowData[0]?.mob1 +
+            "\n" +
+            (bankDetailRowData[0]?.email
+              ? "Email:" + bankDetailRowData[0]?.email
+              : "")
+          }
+          rows={4}
+          defaultValue="Default Value"
+          variant="outlined"
+        />
+        <Button
+          onClick={() => {
+            navigator.clipboard.writeText(
+              bankDetailRowData[0]?.payment_details
+            );
+            toastAlert("Copied to clipboard");
+          }}
+        >
+          Copy
+        </Button>
+      </Dialog>
+
+      {remainderDialog && (
+        <ShowDataModal
+          handleClose={setRemainderDialog}
+          rows={reminderData}
+          columns={PaymentDoneRemainderDialogColumns({
+            reminderData,
+            handleAcknowledgeClick,
+          })}
+          aknowledgementDialog={aknowledgementDialog}
+          setAknowledgementDialog={setAknowledgementDialog}
+          userName={userName}
+          callApi={callApi}
+          setRemainderDialo={setRemainderDialog}
+        />
+      )}
     </div>
   );
 }

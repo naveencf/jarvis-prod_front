@@ -20,13 +20,24 @@ import getDecodedToken from "../../../../utils/DecodedToken";
 import InvoiceDownload from "./InvoiceDownload";
 import ExecutionData from "./ExecutionData";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../../Store/API/Sales/ExecutionCampaignApi";
-import { format, startOfWeek, startOfMonth, startOfQuarter, startOfYear, subDays, subWeeks, subMonths, subYears, subQuarters, set } from 'date-fns';
+import {
+  format,
+  startOfWeek,
+  startOfMonth,
+  startOfQuarter,
+  startOfYear,
+  subDays,
+  subWeeks,
+  subMonths,
+  subYears,
+  subQuarters,
+  set,
+} from "date-fns";
 import { Accordion } from "@mui/material";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import CustomTable from "../../../CustomTable/CustomTable";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -61,7 +72,11 @@ const ViewSaleBooking = () => {
   const [deleteSaleBooking, { isLoading }] = useDeleteSaleBookingMutation();
   const [executionModal, setExecutionModal] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
-  const [filteredData, setFilteredData] = useState(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
+  const [filteredData, setFilteredData] = useState(
+    loginUserRole === 1
+      ? allSaleBooking?.filter((item) => !item?.is_dummy_sale_booking)
+      : allSaleBooking
+  );
   const [campaignList, setCampaignList] = useState([]);
   const [filterByCampaignName, setFilterByCampaignName] = useState("");
   const [filterByAccountName, setFilterByAccountName] = useState("");
@@ -74,7 +89,6 @@ const ViewSaleBooking = () => {
   const [toDate, setToDate] = useState("");
   const [filterByIncentive, setFilterByIncentive] = useState("");
   const [quickFiltring, setQuickFiltring] = useState("");
-
 
   const handleDelete = async (rowId) => {
     try {
@@ -96,66 +110,65 @@ const ViewSaleBooking = () => {
     { value: "previous_year", label: "Previous Year" },
     { value: "previous_quarter", label: "Previous Quarter" },
 
-    { value: "custom", label: "Custom" }
+    { value: "custom", label: "Custom" },
   ];
   const handleDateFilterChange = () => {
-
     const today = new Date();
     let from, to;
 
     switch (quickFiltring) {
-      case 'today':
+      case "today":
         from = to = today;
         break;
-      case 'this_week':
+      case "this_week":
         from = startOfWeek(today);
         to = today;
         break;
-      case 'this_month':
+      case "this_month":
         from = startOfMonth(today);
         to = today;
         break;
-      case 'this_quarter':
+      case "this_quarter":
         from = startOfQuarter(today);
         to = today;
         break;
-      case 'this_year':
+      case "this_year":
         from = startOfYear(today);
         to = today;
         break;
-      case 'yesterday':
+      case "yesterday":
         from = to = subDays(today, 1);
         break;
-      case 'previous_week':
+      case "previous_week":
         from = startOfWeek(subWeeks(today, 1));
         to = subDays(startOfWeek(today), 1);
         break;
-      case 'previous_month':
+      case "previous_month":
         from = startOfMonth(subMonths(today, 1));
         to = subDays(startOfMonth(today), 1);
         break;
-      case 'previous_quarter':
+      case "previous_quarter":
         from = startOfQuarter(subQuarters(today, 1));
         to = subDays(startOfQuarter(today), 1);
         break;
-      case 'previous_year':
+      case "previous_year":
         from = startOfYear(subYears(today, 1));
         to = subDays(startOfYear(today), 1);
         break;
-      case 'custom':
+      case "custom":
       default:
         from = "";
         to = "";
         break;
     }
 
-    setFromDate(from ? format(from, 'yyyy-MM-dd') : "");
-    setToDate(to ? format(to, 'yyyy-MM-dd') : "");
+    setFromDate(from ? format(from, "yyyy-MM-dd") : "");
+    setToDate(to ? format(to, "yyyy-MM-dd") : "");
   };
 
   useEffect(() => {
     handleDateFilterChange();
-  }, [quickFiltring])
+  }, [quickFiltring]);
   const openModal = (row, name) => {
     setSelectedRowData(row);
     setExecutionModal(true);
@@ -176,7 +189,7 @@ const ViewSaleBooking = () => {
   const incentiveFilterOption = [
     { value: "un-earned", label: "Un-Earned" },
     { value: "earned", label: "Earned" },
-  ]
+  ];
 
   const renderModalComponent = (modalComp) => {
     switch (modalComp) {
@@ -212,7 +225,11 @@ const ViewSaleBooking = () => {
   };
 
   function handelRemoveFiltter() {
-    setFilteredData(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
+    setFilteredData(
+      loginUserRole === 1
+        ? allSaleBooking?.filter((item) => !item?.is_dummy_sale_booking)
+        : allSaleBooking
+    );
     setFilterByCampaignName("");
     setFilterByAccountName("");
     setFilterBySalesExecutiveName("");
@@ -222,16 +239,18 @@ const ViewSaleBooking = () => {
   useEffect(() => {
     if (filterDate?.booking_status) {
       setStats(filterDate.booking_status);
-      handelRemoveFiltter()
+      handelRemoveFiltter();
+    } else if (filterDate != null) {
+      setFromDate(filterDate.start.split("T")[0]);
+      setToDate(filterDate?.end?.split("T")[0]);
+      dataFiltter();
+    } else {
+      setFilteredData(
+        loginUserRole === 1
+          ? allSaleBooking?.filter((item) => !item?.is_dummy_sale_booking)
+          : allSaleBooking
+      );
     }
-    else
-      if (filterDate != null) {
-        setFromDate(filterDate.start.split("T")[0]);
-        setToDate(filterDate?.end?.split("T")[0]);
-        dataFiltter();
-      } else {
-        setFilteredData(loginUserRole === 1 ? allSaleBooking?.filter(item => !item?.is_dummy_sale_booking) : allSaleBooking);
-      }
   }, [filterDate, allSaleBooking, allAccountLoading]);
 
   function dataFiltter() {
@@ -279,10 +298,20 @@ const ViewSaleBooking = () => {
     setCampaignList(allExeCampaignList);
   }, [allExeCampaignListLoading]);
 
-
-
   function pivotDataFunction() {
-    const ranges = [{ range: "0-100K" }, { range: "100-200K" }, { range: "200-300K" }, { range: "300-400K" }, { range: "400-500K" }, { range: "500-600K" }, { range: "600-700K" }, { range: "700-800K" }, { range: "800-900K" }, { range: "900-1000K" }, { range: "10L+" }];
+    const ranges = [
+      { range: "0-100K" },
+      { range: "100-200K" },
+      { range: "200-300K" },
+      { range: "300-400K" },
+      { range: "400-500K" },
+      { range: "500-600K" },
+      { range: "600-700K" },
+      { range: "700-800K" },
+      { range: "800-900K" },
+      { range: "900-1000K" },
+      { range: "10L+" },
+    ];
     const newPivot = ranges?.map((data) => {
       let range = data?.range;
       let rangeData = allSaleBooking?.filter((item) => {
@@ -325,13 +354,12 @@ const ViewSaleBooking = () => {
         ...data,
         count: rangeData?.length,
         total: rangeData?.reduce((acc, item) => acc + item.base_amount, 0),
-      }
-    })
+      };
+    });
     setPivotData(newPivot);
   }
   useEffect(() => {
-    if (allSaleBookingLoading === false)
-      pivotDataFunction();
+    if (allSaleBookingLoading === false) pivotDataFunction();
   }, [allSaleBookingLoading]);
 
   const pivotColumn = [
@@ -358,7 +386,7 @@ const ViewSaleBooking = () => {
       width: 100,
       getTotal: true,
     },
-  ]
+  ];
 
   const columns = [
     {
@@ -414,7 +442,6 @@ const ViewSaleBooking = () => {
       showCol: true,
       width: 100,
       getTotal: true,
-
     },
     {
       key: "record_service_counts",
@@ -443,7 +470,6 @@ const ViewSaleBooking = () => {
       showCol: true,
       width: 100,
       getTotal: true,
-
     },
     {
       key: "invoice_download",
@@ -452,7 +478,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-            "uploaded" == row?.invoice_request_status ? (
+          "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -485,11 +511,9 @@ const ViewSaleBooking = () => {
       key: "approved_amount",
       compare: true,
       name: "Approved Amount",
-      renderRowCell: (row) =>
-        row.approved_amount,
+      renderRowCell: (row) => row.approved_amount,
       width: 100,
       getTotal: true,
-
     },
     {
       key: "Payment Requested",
@@ -509,8 +533,7 @@ const ViewSaleBooking = () => {
     {
       key: "requested_amount",
       name: "Requested Amount",
-      renderRowCell: (row) =>
-        row?.requested_amount,
+      renderRowCell: (row) => row?.requested_amount,
       colorRow: (row) => {
         if (row?.incentive_earning_status === "earned") {
           return "#c4fac4";
@@ -521,13 +544,11 @@ const ViewSaleBooking = () => {
       width: 100,
       getTotal: true,
       compare: true,
-
     },
     {
       key: "Outstanding_Amount",
       name: "Outstanding Amount",
-      renderRowCell: (row) =>
-        row.campaign_amount - row.approved_amount,
+      renderRowCell: (row) => row.campaign_amount - row.approved_amount,
       width: 100,
       getTotal: true,
       compare: true,
@@ -555,7 +576,6 @@ const ViewSaleBooking = () => {
       showCol: true,
       width: 100,
       getTotal: true,
-
     },
 
     {
@@ -593,7 +613,7 @@ const ViewSaleBooking = () => {
     {
       key: "multiSharing",
       name: "Incentive Multisharing",
-      renderRowCell: (row) => row?.is_incentive_sharing ? "Yes" : "No",
+      renderRowCell: (row) => (row?.is_incentive_sharing ? "Yes" : "No"),
       showCol: true,
       width: 100,
       compare: true,
@@ -706,8 +726,7 @@ const ViewSaleBooking = () => {
       width: 100,
       renderRowCell: (row) => (
         <>
-          {
-            !row?.is_dummy_sale_booking &&
+          {!row?.is_dummy_sale_booking && (
             <div className="flex-row">
               {/* {row.incentive_earning_status === "un-earned" &&  */}
               <Link
@@ -747,8 +766,7 @@ const ViewSaleBooking = () => {
                 </button>
               )}
             </div>
-          }
-
+          )}
         </>
       ),
       showCol: true,
@@ -891,27 +909,24 @@ const ViewSaleBooking = () => {
             selectedId={quickFiltring}
             setSelectedId={setQuickFiltring}
           />
-          {
-            quickFiltring === "custom" && (
-              <>
-
-                <FieldContainer
-                  type="date"
-                  label="From Date"
-                  fieldGrid={4}
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
-                <FieldContainer
-                  type="date"
-                  label="To Date"
-                  fieldGrid={4}
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                />
-              </>
-            )
-          }
+          {quickFiltring === "custom" && (
+            <>
+              <FieldContainer
+                type="date"
+                label="From Date"
+                fieldGrid={4}
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
+              <FieldContainer
+                type="date"
+                label="To Date"
+                fieldGrid={4}
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+            </>
+          )}
           <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
             <button
               className="cmnbtn btn-primary"
@@ -931,14 +946,14 @@ const ViewSaleBooking = () => {
         </div>
       </div>
       <div className="cardAccordion">
-        <Accordion >
-          <AccordionSummary className="flexCenter"
+        <Accordion>
+          <AccordionSummary
+            className="flexCenter"
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1-content"
-            id="panel1-header">
-
+            id="panel1-header"
+          >
             <h5 className="card-title">Pivot</h5>
-
           </AccordionSummary>
           <AccordionDetails>
             <CustomTable
@@ -962,7 +977,7 @@ const ViewSaleBooking = () => {
         pagination={[100, 200]}
         tableName={"SaleBookingView"}
         showTotal={true}
-      // rowSelectable={true}
+        // rowSelectable={true}
       />
     </div>
   );
