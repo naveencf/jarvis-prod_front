@@ -81,7 +81,7 @@ const PageOverviewNew = () => {
   const [contextData, setContextData] = useState(false);
   const [pageUpdateAuth, setPageUpdateAuth] = useState(false);
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
-  const [selectedRow, setSelectedRow] = useState(null);
+  const [selectedRow, setSelectedRow] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
   const [waData, setWaData] = useState(null);
@@ -96,6 +96,9 @@ const PageOverviewNew = () => {
   const [pagequery, setPagequery] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editID, setEditID] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [activenessFilter, setActivenessFilter] = useState(null);
+  const [filterFollowers, setFilterFollowers] = useState(null);
 
   const {
     data: pageList,
@@ -120,7 +123,6 @@ const PageOverviewNew = () => {
 
   // Filter data when the button is clicked
   const handleFilter = () => {
-    console.log(filterData, 'filterData');
     const filteredData = filterData?.filter((row) => {
       let price = 0;
       // Get the selected price based on the selectedPriceType
@@ -235,7 +237,9 @@ const PageOverviewNew = () => {
 
   const handlePriceClick = (row) => {
     return function () {
-      setSelectedRow(row._id);
+      // console.log(row?.page_price_list
+      //   ,'nnnn');
+      setSelectedRow(row?.page_price_list);
       setShowPriceModal(true);
     };
   };
@@ -900,43 +904,6 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         return formatString(row.page_category_name);
       },
-
-      // compare: true,
-      // renderRowCell: (row) => {
-      //   // let name = cat?.find((item) => item?.page_category_id == row.row?.temp_page_cat_id)?.page_category;
-      //   let name = cat?.find(
-      //     (item) => item?._id == row?.page_category_id
-      //   )?.page_category;
-      //   return name;
-      // },
-      // editable: true,
-      // customEditElement: (
-      //   row,
-      //   index,
-      //   setEditFlag,
-      //   editflag,
-      //   handelchange,
-      //   column
-      // ) => {
-      //   return (
-      //     <select
-      //       className="form-select"
-      //       value={row.page_category_id}
-      //       onChange={(e) => {
-      //         handelchange(e, index, column);
-      //         handleCategoryChange(e, setEditFlag, row);
-      //       }}
-      //       autoFocus
-      //     >
-      //       {cat.map((status, idx) => (
-      //         <option key={idx} value={status._id}>
-      //           {" "}
-      //           {status.page_category}{" "}
-      //         </option>
-      //       ))}
-      //     </select>
-      //   );
-      // },
     },
     {
       key: 'page_sub_category_name',
@@ -956,25 +923,7 @@ const PageOverviewNew = () => {
         return formatNumber(row.followers_count);
       },
     },
-    // {
-    //   key: "vendor_name",
-    //   name: "Vendor",
-    //   renderRowCell: (row) => { return formatString(row.vendor_name) },
-    //   //   renderRowCell: (row) => {
-    //   //     let vendor = vendorData?.find((item) => item?._id == row?.vendor_id);
-    //   //     let name = vendor ? vendor.vendor_name : "Unknown Vendor";
-    //   //     return (
-    //   //       <a
-    //   //         className="link-primary pointer"
-    //   //         onClick={() => handleVendorClick(vendor?._id)}
-    //   //       >
-    //   //         {formatString(name)}
-    //   //       </a>
-    //   //     );
-    //   //   },
-    //   width: 200,
-    //   compare: true,
-    // },
+
     {
       key: 'vendor_name',
       name: 'Vendor Name',
@@ -991,17 +940,6 @@ const PageOverviewNew = () => {
         );
       },
     },
-    // {
-    //   key: "platform_active_on",
-    //   name: "Active Platform",
-    //   width: 200,
-    //   renderRowCell: (row) => {
-    //     let data = platformData?.filter((item) => {
-    //       return row.platform_active_on?.includes(item._id);
-    //     });
-    //     return data?.map((item) => item.platform_name).join(", ");
-    //   },
-    // },
 
     {
       key: 'page_closed_by',
@@ -1263,6 +1201,11 @@ const PageOverviewNew = () => {
 
   return (
     <>
+      <PriceModal
+        setShowPriceModal={setShowPriceModal}
+        selectedRow={selectedRow}
+        showPriceModal={showPriceModal}
+      />
       {!editMode ? (
         <>
           {waData && (
@@ -1272,13 +1215,11 @@ const PageOverviewNew = () => {
             open={openFollowerModal}
             onClose={handleCloseFollowerModal}
             rowData={rowDataFollower}
-          // allPriceTypeList={allPriceTypeList}
           />
           <PriceLogs
             open={openPriceLogModal}
             onClose={handleClosePriceModal}
             rowData={rowDataPriceLog}
-          // allPriceTypeList={allPriceTypeList}
           />
           <div className="tabs">
             {vendorDetails && (
@@ -1341,109 +1282,14 @@ const PageOverviewNew = () => {
                   columns={dataGridcolumns}
                   pagequery={pagequery}
                   setPagequery={setPagequery}
+                  categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
+                  activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter}
+                  filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers}
                 />
               </>
             )}
             {activeTab === "Tab1" && (
               <div className="">
-                <div className="card">
-                  <div className="card-header flexCenterBetween">
-                    <h5 className="card-title flexCenterBetween">
-                      <Typography>Profile Health</Typography>
-                      <Typography>: {filterData?.length}</Typography>
-                    </h5>
-                    <div className="flexCenter colGap8">
-                      <Link
-                        to={`/admin/pms-page-master`}
-                        className="btn cmnbtn btn_sm btn-outline-primary"
-                      >
-                        Add Profile <AddIcon />
-                      </Link>
-                      <Link
-                        to={`/admin/pms-vendor-overview`}
-                        className="btn cmnbtn btn_sm btn-outline-primary"
-                      >
-                        Vendor <KeyboardArrowRightIcon />
-                      </Link>
-                    </div>
-                  </div>
-                  <div className="card-body pb4">
-                    <FilterWisePageOverview
-                      platformData={platformData}
-                      vendorTypes={vendorTypes}
-                      setFilterData={setFilterData}
-                      setTabFilterData={setTabFilterData}
-                      calculateAndSetTotals={calculateAndSetTotals}
-                      subCat={subCat}
-                      cat={cat}
-                      profileData={profileData}
-                      newFilterData={newFilterData}
-                      vendorData={vendorData}
-                    />
-                  </div>
-                  <div className="card-footer">
-                    <div className="flexCenterBetween">
-                      <div>
-                        <h5>
-                          Followers -{" "}
-                          <span className="colorMedium">
-                            {formatNumber(tableFollowers)}
-                          </span>
-                        </h5>
-                      </div>
-                      <div>
-                        <h5>
-                          Posts -{" "}
-                          <span className="colorMedium">
-                            {formatNumber(tablePosts)}
-                          </span>
-                        </h5>
-                      </div>
-                      <div>
-                        <h5>
-                          Stories -{" "}
-                          <span className="colorMedium">
-                            {formatNumber(tableStories)}
-                          </span>
-                        </h5>
-                      </div>
-                      <div>
-                        <h5>
-                          Boths -{" "}
-                          <span className="colorMedium">
-                            {formatNumber(tableBoths)}
-                          </span>
-                        </h5>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-
-                  <select
-                    value={selectedPriceType}
-                    onChange={handlePriceTypeChange}
-                  >
-                    <option value="" disabled>
-                      Select Price Type
-                    </option>
-                    <option value="Post Price">Post Price</option>
-                    <option value="Story Price">Story Price</option>
-                    <option value="Both Price">Both Price</option>
-                  </select>
-
-                  {selectedPriceType && (
-                    <input
-                      type="number"
-                      placeholder="Enter price"
-                      value={inputPrice}
-                      onChange={handleInputChange}
-                    />
-                  )}
-
-                  <button onClick={handleFilter}>Filter</button>
-                </div>
                 <div className="card">
                   <div className="card-body p0">
                     <div className="data_tbl thm_table table-responsive">
@@ -1486,52 +1332,25 @@ const PageOverviewNew = () => {
                       ) : (
                         <View
                           columns={[...dataGridcolumns, ...dataSecondGridColumns]}
-                          data={newFilterData}
+                          data={pageList}
                           isLoading={false}
-                          title={"Page Overview"}
+                          title={"Page Health"}
                           rowSelectable={true}
                           pagination={[100, 200, 1000]}
-                          tableName={"Page Overview"}
+                          tableName={"Page Health"}
                         />
                       )}
                     </div>
                   </div>
                 </div>
 
-                <PriceModal
-                  setShowPriceModal={setShowPriceModal}
-                  setSelectedRow={setSelectedRow}
-                  setLocalPriceData={setLocalPriceData}
-                  showPriceModal={showPriceModal}
-                  localPriceData={localPriceData}
-                  priceData={priceData}
-                  allPriceTypeList={allPriceTypeList}
-                />
+
                 <TagCategoryListModal />
                 <VendorNotAssignedModal />
                 <PageDetail />
               </div>
             )}
-            {/* {activeTab === "Tab2" && (
-          <StatisticsWisePageOverview
-            tabFilterData={tabFilterData}
-            setTabFilterData={setTabFilterData}
-            setActiveTab={setActiveTab}
-            setFilterData={setFilterData}
-            allVendorWhats={allVendorWhats}
-            newFilterData={newFilterData}
-          />
-        )} */}
             {activeTab === 'Tab3' && (
-              // <CategoryWisePageOverview
-              //   categoryData={categoryData}
-              //   setFilterData={setFilterData}
-              //   pageList={pageList}
-              //   setActiveTab={setActiveTab}
-              //   vendorTypes={vendorTypes}
-              //   vendorData={vendorData}
-
-              // />
               <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
             )}
             {activeTab === 'Tab4' && <PageClosedByDetails />}

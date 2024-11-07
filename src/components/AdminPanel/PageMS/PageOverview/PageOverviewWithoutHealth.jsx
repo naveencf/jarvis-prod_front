@@ -19,7 +19,8 @@ import PageOverviewHeader from "./PageOverviewHeader";
 import { useEffect } from "react";
 
 
-function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
+function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter,
+  activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers }) {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
@@ -51,7 +52,7 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
     for (let i = 0; i < pageList.length; i++) {
       const row = pageList[i];
       // console.log(row?.page_category_name);
-      if(!row?.page_category_name ){
+      if (!row?.page_category_name) {
 
         if (tempplatform_id != row?.platform_id) {
           tempplatform_id = row?.platform_id;
@@ -67,7 +68,7 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
               // console.log(res?.data?.data, "pricelist");
             });
         }
-  
+
         await axios
           .get(baseUrl + `v1/pagePriceMultipleByPageId/${row?._id}`, {
             headers: {
@@ -84,7 +85,7 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
               multiplepricelist = [];
             }
           });
-  
+
         const temmcategoryName = categoryData
           ?.find((role) => role._id === row?.page_category_id)
           ?.page_category?.toLowerCase();
@@ -101,20 +102,20 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
           )?.page_sub_category,
           //   tags_page_category: tag?.map((e) => e?.value),
           tags_page_category_name: [temmcategoryName], //send name of category
-  
-            vendor_id: row?.vendor_id,
+
+          vendor_id: row?.vendor_id,
           vendor_name: vendorData
             ?.find((vendor) => vendor._id === row?.vendor_id)
             ?.vendor_name?.toLowerCase(),
-  
+
           //   page_profile_type_id: profileId,
           page_profile_type_name: profileData?.data
             ?.find((role) => role?._id === row?.page_profile_type_id)
             ?.profile_type?.toLowerCase(),
-  
+
           //   page_language_id: languageId.map((item) => item?.value),
           page_language_name: ["Hindi"],
-  
+
           page_price_list: multiplepricelist.map((item) => {
             return {
               [pricelist?.find(
@@ -143,7 +144,7 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
               console.log(error.response.data.message);
             });
         }
-      }else{
+      } else {
         console.log("updated")
       }
     }
@@ -164,7 +165,8 @@ function PageOverviewWithoutHealth({ columns ,pagequery, setPagequery}) {
 
   return (
     <div className="card">
-      <PageOverviewHeader onFilterChange={handleFilterChange} pagequery={pagequery} />
+      <PageOverviewHeader onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
+        activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
       <div className="card-body p0">
         <div className="data_tbl thm_table table-responsive">
           {isLoading ? (

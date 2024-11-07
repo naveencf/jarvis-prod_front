@@ -19,7 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExportInventory from "../../../../components/AdminPanel/PageMS/PageOverview/ExportInventory";
 
-function PageOverviewHeader({ onFilterChange, pagequery }) {
+function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCategoryFilter,
+  activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -33,14 +34,14 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   const profileDataOptions = profileData?.data || [];
 
   // Filter states
-  const [categoryFilter, setCategoryFilter] = useState("");
+  // const [categoryFilter, setCategoryFilter] = useState("");
   const [subCategoryFilter, setSubCategoryFilter] = useState(null);
   const [profileTypeFilter, setProfileTypeFilter] = useState(null);
   const [platformFilter, setPlatformFilter] = useState(null);
   const [ownershipFilter, setOwnershipFilter] = useState(null);
-  const [activenessFilter, setActivenessFilter] = useState(null);
+  // const [activenessFilter, setActivenessFilter] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterFollowers, setFilterFollowers] = useState(null);
+  // const [filterFollowers, setFilterFollowers] = useState(null);
 
   const {
     data: pageList,
@@ -73,7 +74,10 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   const handleSelectionChange = (event, newValue) => {
     if (newValue) {
       setFilterFollowers(newValue.value)
+    } else {
+      setFilterFollowers(null)
     }
+
   };
 
   useEffect(() => {
@@ -89,8 +93,8 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
         : "",
       platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
       ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
-      filterFollowers  ? `minFollower=${filterFollowers[0]}&maxFollower=${filterFollowers[1]}`
-      : "",  
+      filterFollowers ? `minFollower=${filterFollowers[0]}&maxFollower=${filterFollowers[1]}`
+        : "",
       activenessFilter
         ? `page_activeness=${activenessOptions.find(
           (option) => option.value === activenessFilter.toLowerCase()
@@ -103,7 +107,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
       .filter(Boolean)
       .join("&");
     console.log(newQuery)
-  
+
     // setPagequery(newQuery);
     onFilterChange(newQuery);
   }, [
@@ -164,7 +168,7 @@ function PageOverviewHeader({ onFilterChange, pagequery }) {
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
-      console.log(optionWithCount.split(" (")[0], "optionWithCount")
+      // console.log(optionWithCount.split(" (")[0], "optionWithCount")
       return optionWithCount.split(" (")[0];
     }
     return null;
