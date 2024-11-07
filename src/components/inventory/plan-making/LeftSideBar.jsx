@@ -49,11 +49,19 @@ const getPriceDetail = (priceDetails, key) => {
 async function downloadImageToBase64(url) {
   const response = await axios.get(url, { responseType: 'arraybuffer' });
   const binary = new Uint8Array(response.data);
-  const binaryString = binary.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+  const binaryString = binary.reduce(
+    (acc, byte) => acc + String.fromCharCode(byte),
+    ''
+  );
   return `data:image/jpeg;base64,${btoa(binaryString)}`; // Adjust for correct image type if necessary
 }
 
-const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage) => {
+const downloadExcelTemp = async (
+  selectedRow,
+  category,
+  postCount,
+  storyPerPage
+) => {
   const workbook = new ExcelJS.Workbook();
 
   // Overview Data
@@ -77,9 +85,8 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
 
   overviewSheet.addImage(imageId, {
     tl: { col: 0, row: 0 },
-    ext: { width: 150, height: 75 }
+    ext: { width: 150, height: 75 },
   });
-
 
   // Merge cells for "Proposal" text and center it
   overviewSheet.mergeCells('A1:F4');
@@ -87,10 +94,6 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
   proposalCell.value = 'Proposal';
   proposalCell.alignment = { horizontal: 'center', vertical: 'middle' };
   proposalCell.font = { bold: true, size: 24 };
-
-  // Add empty rows for spacing
-  // overviewSheet.addRow([]);
-  // overviewSheet.addRow([]);
 
   // Add header row with styling
   overviewSheet.getRow(5).values = ['Sno.', 'Description', 'Platform', 'Count', 'Deliverables', 'Cost'];
@@ -134,7 +137,9 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
       const categories = {};
       platformData.forEach((page) => {
         const categoryId = page.page_category_id;
-        const categoryName = category?.find((cat) => cat._id === categoryId)?.page_category || 'Unknown';
+        const categoryName =
+          category?.find((cat) => cat._id === categoryId)?.page_category ||
+          'Unknown';
 
         categories[categoryName] = categories[categoryName] || [];
         const categoryData = categories[categoryName] || [];
@@ -142,12 +147,9 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
         const postCountValue = postCount[page._id] || 0;
         const storyCountValue = storyPerPage[page._id] || 0;
 
-        // console.log("Page:", page.page_name); // To confirm `followers_count` and `page_name` data exists
-        // console.log("Post Count:", postCountValue, "Story Count:", storyCountValue);
-
         categories[categoryName].push({
-          "S_No": categories[categoryName].length + 1,
-          'Username': page.page_name || 'N/A',
+          S_No: categories[categoryName].length + 1,
+          Username: page.page_name || 'N/A',
           'Profile Link': page.page_link || 'N/A',
           Followers: page.followers_count || 0,
           'Post Count': postCountValue,
@@ -155,22 +157,22 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
         });
 
         totalPostsAndStories += postCountValue + storyCountValue;
+
         totalCost += postCountValue * getPriceDetail(page.page_price_list, 'instagram_post') +
           storyCountValue * getPriceDetail(page.page_price_list, 'instagram_story');
-        console.log(categories[categoryName], "categories")
 
       });
-
+      let serialNumber = 1;
       for (const [categoryName, categoryData] of Object.entries(categories)) {
-        const sheet = workbook.addWorksheet(categoryName);
-
+        const sheet = workbook.addWorksheet(formatString(categoryName));
+        // console.log(categoryName, "categoryName")
         sheet.columns = [
           { header: 'S_No', width: 5 },
           { header: 'Username', width: 30 },
           { header: 'Profile Link', width: 50 },
           { header: 'Followers', width: 15 },
           { header: 'Post Count', width: 15 },
-          { header: 'Story Count', width: 15 }
+          { header: 'Story Count', width: 15 },
         ];
 
         categoryData.forEach((row) => sheet.addRow(row));
@@ -194,50 +196,54 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
             acc + postCountValue * postPrice + storyCountValue * storyPrice
           );
         }, 0);
-        // overviewSheet.addRow([1, 'Description', 'Platform', '', '']);  // Empty values for 'Count' and 'Cost' in the first row
-
         overviewSheet.addRow([
-          `${overviewSheet?.length + 1}`, // Serial number based on the length of the sheet
+          serialNumber, // Serial number based on the length of the sheet
           `Post and Stories on ${categoryName} Pages`, // Description
           'Instagram', // Platform
           `${categoryData.reduce(
-            (acc, item) => acc + item['Post Count'] + (item['Story Count'] || 0),
+            (acc, item) =>
+              acc + item['Post Count'] + (item['Story Count'] || 0),
             0
           )}`, // Total post and story count for category
           "",
           `₹${categoryTotalCost.toFixed(2)}`, // Total cost for category
         ]);
 
+        serialNumber++;
 
         // Style header row
         sheet.getRow(1).eachCell((cell) => {
-          cell.font = { bold: true, color: { argb: 'FFFF0000' } };
+          cell.font = { bold: true, color: { argb: 'FF000000' } };
           cell.alignment = { horizontal: 'center' };
-          cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'BFEE90' } };
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'BFEE90' },
+          };
           cell.border = {
             top: { style: 'thin' },
             bottom: { style: 'thin' },
             left: { style: 'thin' },
-            right: { style: 'thin' }
+            right: { style: 'thin' },
           };
         });
 
         // Add hyperlinks
         categoryData.forEach((item, index) => {
-          // console.log(item, "item");
-
           // Assign 'Profile Link' with hyperlink
           const profileCell = sheet.getCell(`C${index + 2}`);
-          profileCell.value = { text: item['Profile Link'], hyperlink: item['Profile Link'] };
+          profileCell.value = {
+            text: item['Profile Link'],
+            hyperlink: item['Profile Link'],
+          };
 
           // Assign other values to respective columns
-          sheet.getCell(`A${index + 2}`).value = item['S_No'];       // S_No in column A
-          sheet.getCell(`B${index + 2}`).value = item['Username'];       // Username in column B
-          sheet.getCell(`D${index + 2}`).value = item['Followers'];        // Followers in column D
-          sheet.getCell(`E${index + 2}`).value = item['Post Count'];       // Post Count in column E
-          sheet.getCell(`F${index + 2}`).value = item['Story Count'];      // Story Count in column F
+          sheet.getCell(`A${index + 2}`).value = item['S_No']; // S_No in column A
+          sheet.getCell(`B${index + 2}`).value = item['Username']; // Username in column B
+          sheet.getCell(`D${index + 2}`).value = item['Followers']; // Followers in column D
+          sheet.getCell(`E${index + 2}`).value = item['Post Count']; // Post Count in column E
+          sheet.getCell(`F${index + 2}`).value = item['Story Count']; // Story Count in column F
         });
-
       }
     }
   }
@@ -286,7 +292,9 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
 
 
   workbook.xlsx.writeBuffer().then((buffer) => {
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    });
     const url = URL.createObjectURL(blob);
 
     const a = document.createElement('a');
@@ -297,10 +305,12 @@ const downloadExcelTemp = async (selectedRow, category, postCount, storyPerPage)
   });
 };
 
-
-
-
-const downloadExcel = async (selectedRow, category, postCount, storyPerPage) => {
+const downloadExcel = async (
+  selectedRow,
+  category,
+  postCount,
+  storyPerPage
+) => {
   const workbook = XLSX.utils.book_new(); // Create a new workbook
   const overviewData = []; // Array to hold overview data for the Excel sheet
   let totalPostsAndStories = 0;
@@ -333,7 +343,7 @@ const downloadExcel = async (selectedRow, category, postCount, storyPerPage) => 
 
         acc[categoryName].push({
           S_No: acc[categoryName]?.length + 1,
-          'Username': page.page_name,
+          Username: page.page_name,
           'Profile Link': page.page_link,
           Followers: page.followers_count,
           'Post Count': postCountValue,
@@ -369,7 +379,7 @@ const downloadExcel = async (selectedRow, category, postCount, storyPerPage) => 
         const sheetData = categoryData.map((item) => {
           const rowData = {
             S_No: item.S_No,
-            'Username': item['Username'],
+            Username: item['Username'],
             'Profile Link': item['Profile Link'],
             Followers: item.Followers,
             'Post Count': item['Post Count'],
@@ -678,9 +688,17 @@ const LeftSideBar = ({
         (acc, page) => {
           const postCountForPage = Number(postCount[page._id] || 0);
           const storyCountForPage = Number(storyPerPage[page._id] || 0);
+          const postPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_post'
+          );
+          const storyPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_story'
+          );
           const totalCost =
-            postCountForPage * (page.m_post_price || 0) +
-            storyCountForPage * (page.m_story_price || 0);
+            postCountForPage * (postPrice || 0) +
+            storyCountForPage * (storyPrice || 0);
 
           if (page.ownership_type === 'Own') {
             acc.own.count += 1;
@@ -707,6 +725,8 @@ const LeftSideBar = ({
     [selectedRow, postCount, storyPerPage]
   );
 
+  const ownpages = selectedRow.filter((item) => item.ownership_type === 'Own');
+
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
@@ -723,6 +743,10 @@ const LeftSideBar = ({
             <span>
               {planDetails && formatString(planDetails[0]?.account_name)}
             </span>
+          </h6>
+          <h6>
+            Selling Price
+            <span>{planDetails && planDetails[0]?.selling_price}</span>
           </h6>
         </div>
         <div className="planSmall">
@@ -751,6 +775,10 @@ const LeftSideBar = ({
           <h6>
             Total Pages
             <span>{totalPagesSelected}</span>
+          </h6>
+          <h6>
+            Own Pages
+            <span> {ownpages?.length}</span>
           </h6>
           <h6>
             Own Remaining Pages

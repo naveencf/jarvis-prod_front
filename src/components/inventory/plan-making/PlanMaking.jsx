@@ -1174,39 +1174,39 @@ const PlanMaking = () => {
       <div className="card">
         <div className="card-header flexCenterBetween">
           <div className="flexCenter colGap12">
-            <div className="">
-              <button
-                className="btn cmnbtn btn-primary btn_sm"
-                onClick={handleToggleLeftNavbar}
-              >
-                {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
-              </button>
-              <button onClick={handleOpenDialog}>
-                <CiWarning />
-              </button>
-            </div>
-          </div>
-          <Box
-            sx={{
-              position: 'relative',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CircularProgress
-              variant="determinate"
-              value={displayPercentage}
-              sx={{ position: 'absolute' }}
-            />
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ position: 'absolute', color: 'primary.main' }}
+            <button
+              className="btn cmnbtn btn-primary btn_sm"
+              onClick={handleToggleLeftNavbar}
             >
-              {`${displayPercentage}%`}
-            </Typography>
-          </Box>
+              {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
+            </button>
+            <button className="icon" onClick={handleOpenDialog}>
+              <CiWarning />
+            </button>
+            {pageList ? (
+              <div className="flexCenter icon">
+                <CircularProgress
+                  variant="determinate"
+                  value={displayPercentage}
+                  sx={{ position: 'absolute' }}
+                />
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    color: 'primary.main',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  {`${displayPercentage}%`}
+                </Typography>
+              </div>
+            ) : (
+              ''
+            )}
+          </div>
+
           <div className="flexCenter colGap12">
             <div className="flexCenter colGap8">
               <div className="input-group primaryInputGroup">

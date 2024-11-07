@@ -24,6 +24,7 @@ import PlanXStatusDialog from './StatusDialog';
 import PlanXHeader from './PlanXHeader';
 import PageDialog from './PageDialog';
 import { formatUTCDate } from '../../../utils/formatUTCDate';
+import { CiStickyNote } from 'react-icons/ci';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -390,15 +391,15 @@ function PlanHome() {
       width: 70,
       showCol: true,
     },
-    {
-      key: 'platform_count',
-      name: 'No of Platform',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.platformCount}</div>
-      ),
-      width: 150,
-      showCol: true,
-    },
+    // {
+    //   key: 'platform_count',
+    //   name: 'No of Platform',
+    //   renderRowCell: (row) => (
+    //     <div style={{ cursor: 'pointer' }}>{row.platformCount}</div>
+    //   ),
+    //   width: 150,
+    //   showCol: true,
+    // },
     {
       key: 'unfetced_pages',
       name: 'Unfetched Pages',
@@ -420,6 +421,29 @@ function PlanHome() {
       renderRowCell: (row) => (
         <div style={{ cursor: 'pointer' }}>{row.planName}</div>
       ),
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'profit_percentage',
+      name: 'Profit Percentage',
+      renderRowCell: (row) => {
+        const costPrice = parseFloat(row.costPrice);
+        const sellingPrice = parseFloat(row.sellingPrice);
+
+        // Calculate profit percentage, handling division by zero
+        const profitPercentage =
+          costPrice > 0 ? ((sellingPrice - costPrice) / costPrice) * 100 : 0;
+
+        return (
+          <div
+            style={{ cursor: 'pointer' }}
+            title={`${sellingPrice - costPrice}`}
+          >
+            {profitPercentage.toFixed(2)}%
+          </div>
+        );
+      },
       width: 150,
       showCol: true,
     },
@@ -649,7 +673,7 @@ function PlanHome() {
             />
             <TextField
               margin="dense"
-              label="Budget *"
+              label="Selling Price *"
               name="sellingPrice"
               fullWidth
               value={planDetails.sellingPrice}
@@ -718,10 +742,14 @@ function PlanHome() {
           fetchPlans={fetchPlans}
         />
       )}
+
       <div className="card">
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Plan X Overview </h5>
           <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
+          <button className="icon">
+            <CiStickyNote />
+          </button>
           <div className="flexCenter colGap8">
             <Link onClick={handlePlanMaking}>
               <button className="btn cmnbtn btn-primary btn_sm">
