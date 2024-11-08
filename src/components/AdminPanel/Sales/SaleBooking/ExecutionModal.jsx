@@ -106,50 +106,50 @@ const ExecutionModal = ({
         </div>
 
         <div className="form-group">
-          <label htmlFor="engagement">Engagement:</label>
+          <label htmlFor="engagement">Committed Engagement:</label>
           <input
             type="number"
             value={engagement}
             placeholder="Engagement"
             onChange={(e) => setEngagement(e.target.value)}
             className="form-control"
-            // required
+          // required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="reach">Reach(K):</label>
+          <label htmlFor="reach">Committed Reach(K):</label>
           <input
             type="number"
             placeholder="Reach"
             value={reach}
             onChange={(e) => setReach(e.target.value)}
             className="form-control"
-            // required
+          // required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="impression">Impression(K):</label>
+          <label htmlFor="impression">Committed Impression(K):</label>
           <input
             type="number"
             placeholder="Impression"
             value={impression}
             onChange={(e) => setImpression(e.target.value)}
             className="form-control"
-            // required
+          // required
           />
         </div>
 
         <div className="form-group">
-          <label htmlFor="storyView">Story View(K):</label>
+          <label htmlFor="storyView"> Committed Story View(K):</label>
           <input
             type="number"
             placeholder="Story Views"
             value={storyView}
             onChange={(e) => setStoryView(e.target.value)}
             className="form-control"
-            // required
+          // required
           />
         </div>
 

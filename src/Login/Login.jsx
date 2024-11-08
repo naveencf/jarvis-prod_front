@@ -88,7 +88,7 @@ const Login = () => {
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      type={showPassword ? "text" : "password"} 
+                      type={showPassword ? "text" : "password"}
                     />
                     <span
                       className="password-toggle-icon"
@@ -96,9 +96,9 @@ const Login = () => {
                       style={{ cursor: "pointer", marginLeft: "-30px" }}
                     >
                       {showPassword ? (
-                        <i className="fas fa-eye"></i> 
+                        <i className="fas fa-eye"></i>
                       ) : (
-                        
+
                         <i className="fas fa-eye-slash"></i>
                       )}
                     </span>

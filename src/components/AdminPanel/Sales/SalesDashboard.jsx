@@ -449,7 +449,7 @@ const SalesDashboard = () => {
           )
       )}
 
-      {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />}
+      {/* {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />} */}
 
       {loginUserRole == 1 && (
         <>

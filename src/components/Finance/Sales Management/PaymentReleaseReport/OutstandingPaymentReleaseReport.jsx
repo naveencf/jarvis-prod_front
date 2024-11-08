@@ -169,9 +169,9 @@ const OutstandingPaymentReleaseReport = () => {
     },
   ];
 
-  const handleClear = () => {
-    setFilter("");
-  };
+  // const handleClear = () => {
+  //   setFilter("");
+  // };
   return (
     <div>
       <FormContainer link={true} mainTitle={"Payment Release Report"} />
@@ -223,12 +223,6 @@ const OutstandingPaymentReleaseReport = () => {
                 onClick={() => handlePaymentReleaseReport()}
               >
                 Search
-              </button>
-              <button
-                className="btn cmnbtn btn-primary"
-                onClick={() => handleClear()}
-              >
-                Clear
               </button>
             </div>
           </div>

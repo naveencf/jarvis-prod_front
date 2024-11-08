@@ -32,7 +32,8 @@ import LeftSideBar from './LeftSideBar';
 import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
 import { Sliders, X } from '@phosphor-icons/react';
-import { CiWarning } from 'react-icons/ci';
+import { CiStickyNote, CiWarning } from 'react-icons/ci';
+import ActiveDescriptionModal from './ActiveDescriptionModal';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -93,6 +94,9 @@ const PlanMaking = () => {
   const [notFoundPages, setNotFoundPages] = useState([]);
   const [toggleLeftNavbar, setToggleLeftNavbar] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
+  const [descriptions, setDescriptions] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [checkedDescriptions, setCheckedDescriptions] = useState([]);
   // const [pageDetail, setPageDetails] = useState([]);
 
   const { id } = useParams();
@@ -545,7 +549,28 @@ const PlanMaking = () => {
   };
 
   const ownPages = filterData?.filter((item) => item?.ownership_type === 'Own');
+  const handleOpenModal = () => setIsModalOpen(true);
 
+  // Close the modal
+  const handleCloseModal = () => setIsModalOpen(false);
+
+  const handleCheckedDescriptionsChange = (newCheckedDescriptions) => {
+    setCheckedDescriptions(newCheckedDescriptions);
+  };
+
+  const fetchDescriptions = async () => {
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`);
+      if (response.ok) {
+        const data = await response.json();
+        setDescriptions(data?.data);
+      } else {
+        console.error('Failed to fetch descriptions');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
   const updateStatistics = (rows) => {
     let followers = 0;
     let cost = 0;
@@ -972,6 +997,7 @@ const PlanMaking = () => {
     }
 
     getData();
+    fetchDescriptions();
   }, []);
 
   useEffect(() => {
@@ -1135,6 +1161,12 @@ const PlanMaking = () => {
         onClose={handleCloseDialog}
         notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages}
       />
+      <ActiveDescriptionModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        descriptions={descriptions.filter((desc) => desc.status === 'Active')}
+        onCheckedDescriptionsChange={handleCheckedDescriptionsChange}
+      />
       {alertData && (
         <CustomAlert
           title={alertData.title}
@@ -1183,6 +1215,10 @@ const PlanMaking = () => {
             <button className="icon" onClick={handleOpenDialog}>
               <CiWarning />
             </button>
+            <button className="icon" onClick={handleOpenModal}>
+              <CiStickyNote />
+            </button>
+
             {pageList ? (
               <div className="flexCenter icon">
                 <CircularProgress
@@ -1205,6 +1241,26 @@ const PlanMaking = () => {
             ) : (
               ''
             )}
+            {/* <div className="row">
+              <div className="col-6">
+                <input
+                  type="number"
+                  className="filter-input form-control"
+                  placeholder="Post Count"
+                  value={postCountDefault || ''}
+                  onChange={handlePostCountChange}
+                />
+              </div>
+              <div className="col-6">
+                <input
+                  type="number"
+                  className="filter-input form-control"
+                  placeholder="Story Count"
+                  value={storyCountDefault || ''}
+                  onChange={handleStoryCountChange}
+                />
+              </div>
+            </div> */}
           </div>
 
           <div className="flexCenter colGap12">
@@ -1334,56 +1390,6 @@ const PlanMaking = () => {
             )}
           </div>
         </div>
-
-        {/* <Accordion className="card" expanded={expanded}>
-          <AccordionSummary
-            className="card-header"
-            expandIcon={
-              <IconButton onClick={handleToggle}>
-                <ExpandMoreIcon />
-              </IconButton>
-            }
-            aria-controls="panel1-content"
-            id="panel2-header"
-          >
-           
-
-            <h5 className="card-title">Category Filters</h5>
-          </AccordionSummary>
-          <AccordionDetails className="card-body">
-            {activeTabPlatfrom === '666818824366007df1df1319' && (
-              <Filters
-                priceFilterType={priceFilterType}
-                deSelectAllRows={deSelectAllRows}
-                selectedFollowers={selectedFollowers}
-                setSelectedFollowers={setSelectedFollowers}
-                setPriceFilterType={setPriceFilterType}
-                minPrice={minPrice}
-                setMinPrice={setMinPrice}
-                maxPrice={maxPrice}
-                setMaxPrice={setMaxPrice}
-                minFollowers={minFollowers}
-                setMinFollowers={setMinFollowers}
-                maxFollowers={maxFollowers}
-                setMaxFollowers={setMaxFollowers}
-                followerFilterType={followerFilterType}
-                selectedCategory={selectedCategory}
-                handleCategoryChange={handleCategoryChange}
-                cat={cat}
-                removeCategory={removeCategory}
-                handleRemoveFilter={handleRemoveFilter}
-                handleCombinedFilter={handleCombinedFilter}
-                handleFollowersFilter={handleFollowersFilter}
-                selectAllRows={selectAllRows}
-                handleStoryCountChange={handleStoryCountChange}
-                handlePostCountChange={handlePostCountChange}
-                storyCountDefault={storyCountDefault}
-                postCountDefault={postCountDefault}
-                setSelectedCategory={setSelectedCategory}
-              />
-            )}
-          </AccordionDetails>
-        </Accordion> */}
       </div>
     </>
   );

@@ -88,149 +88,6 @@ export default function SalesDashboard() {
   useEffect(() => {
     callApi();
   }, []);
-
-  // const handleFilterChange = (e) => {
-  //   setFilterValue(e);
-  //   const filterValue = e;
-
-  //   let startFilterDate;
-  //   let endFilterDate = new Date(); // Use a new date object for the end date
-
-  //   switch (filterValue) {
-  //     case "Today":
-  //       startFilterDate = new Date();
-  //       startFilterDate.setHours(0, 0, 0, 0); // Set to the start of the day
-  //       endFilterDate.setHours(23, 59, 59, 999); // Set to the end of the day
-  //       break;
-  //     case "Current Month":
-  //       startFilterDate = new Date(
-  //         endFilterDate.getFullYear(),
-  //         endFilterDate.getMonth(),
-  //         1
-  //       );
-  //       endFilterDate = new Date();
-  //       break;
-  //     case "Last Month":
-  //       startFilterDate = new Date(
-  //         endFilterDate.getFullYear(),
-  //         endFilterDate.getMonth() - 1,
-  //         1
-  //       );
-  //       endFilterDate = new Date(
-  //         endFilterDate.getFullYear(),
-  //         endFilterDate.getMonth(),
-  //         0
-  //       );
-  //       break;
-  //     case "Last 3 Months":
-  //       startFilterDate = new Date(
-  //         endFilterDate.getFullYear(),
-  //         endFilterDate.getMonth() - 2,
-  //         1
-  //       );
-  //       endFilterDate = new Date();
-  //       break;
-  //     case "Last 6 Months":
-  //       startFilterDate = new Date(
-  //         endFilterDate.getFullYear(),
-  //         endFilterDate.getMonth() - 5,
-  //         1
-  //       );
-  //       endFilterDate = new Date();
-  //       break;
-  //     case "Last 1 Year":
-  //       startFilterDate = new Date(
-  //         endFilterDate.getFullYear() - 1,
-  //         endFilterDate.getMonth(),
-  //         1
-  //       );
-  //       endFilterDate = new Date();
-  //       break;
-  //     case "search":
-  //       startFilterDate = new Date(startDate);
-  //       endFilterDate = new Date(endDate);
-  //       break;
-  //     default:
-  //     case "Custom Date":
-  //       return;
-  //   }
-
-  //   const filteredData = filterPendingForApprovalData.filter((item) => {
-  //     const itemDate = new Date(item.creation_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-  //   setPendingForApprovalData(filteredData);
-
-  //   const filteredData1 = filterRefundReqData.filter((item) => {
-  //     const itemDate = new Date(item.creation_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-  //   setRefundReqData(filteredData1);
-
-  //   const filteredData2 = filterCstPaymentData.filter((item) => {
-  //     const itemDate = new Date(item.sale_booking_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setCstPaymentData(filteredData2);
-
-  //   const filteredData3 = filterInvoicePending.filter((item) => {
-  //     const itemDate = new Date(item.creation_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setInvoicePending(filteredData3);
-
-  //   const filteredData4 = filterSalesBookingAboutToCloseData.filter((item) => {
-  //     const itemDate = new Date(item.booking_created_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setSalesBookingAboutToCloseData(filteredData4);
-
-  //   const filteredData5 = filterSalesBookingOpenData.filter((item) => {
-  //     const itemDate = new Date(item.booking_created_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setSalesBookingOpenData(filteredData5);
-
-  //   const filteredData6 = filterSalesBookingCloseData.filter((item) => {
-  //     const itemDate = new Date(item.booking_created_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setSalesBookingCloseData(filteredData6);
-
-  //   const filteredData7 = filterVendorCardData.filter((item) => {
-  //     const itemDate = new Date(item.request_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-
-  //   setVendorCardData(filteredData7);
-  //   const filterData8 = filterPayoutData.filter((item) => {
-  //     const itemDate = new Date(item.date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-  //   setPayoutData(filterData8);
-
-  //   const filterData9 = incentiveFilterData.filter((item) => {
-  //     const itemDate = new Date(item.request_creation_date);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-  //   setIncentiveData(filterData9);
-
-  //   const filterData10 = filterPaymentModeData.filter((item) => {
-  //     const itemDate = new Date(item.created_at);
-  //     return itemDate >= startFilterDate && itemDate <= endFilterDate;
-  //   });
-  //   setPaymentModeData(filterData10);
-  // };
-
-  // const incentiveCount = incentiveData?.filter(
-  //   (data) => data?.action === "Complete Release Button"
-  // );
-
   return (
     <div>
       <div className="card">
@@ -320,42 +177,6 @@ export default function SalesDashboard() {
       {graph === 0 && (
         <div className="card">
           <div className="card-body pb0">
-            {/* <div className="card-body cardGrdnt orangeGrdnt">
-              <Link to="/admin/finance-incentivepayment">
-                <div className="row align-items-center">
-                  <div className="col-md-6 financeCardBox border-right ">
-                    <div className="financeCardBoxIn p0">
-                      <div className="financeCardBoxTitle">
-                        <div className="financeCardBoxImg">
-                          <img src={gifone} alt="" />
-                        </div>
-                        <h2>Pending Incentive Release </h2>
-                      </div>
-                      <div className="scroll-con pl40">
-                        <h3>{data?.pendingIncentiveReqCounts}</h3>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-md-6 financeCardBox">
-                    <div className="financeCardBoxIn p0">
-                      <div className="financeCardBoxDetails">
-                        <ul className="pl32">
-                          <li>
-                            Balance
-                            <span>
-                              <span>&#8377; </span>
-                              <FormattedNumberWithTooltip
-                                value={data?.pendingIncentiveReqAmount}
-                              />
-                            </span>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </div> */}
             <div className="row">
               <div className="col-md-6">
                 <Link to="/admin/finance-incentivepayment">
@@ -378,8 +199,13 @@ export default function SalesDashboard() {
                         <div className="financeCardBoxDetails">
                           <ul>
                             <li>
-                              Balance
-                              <span>{data?.saleBookingtdsCloseCounts}</span>
+                              Pending Incentive Request Amount
+                              <span>
+                                <span>&#8377; </span>
+                                <FormattedNumberWithTooltip
+                                  value={data?.pendingIncentiveReqAmount}
+                                />
+                              </span>
                             </li>
                           </ul>
                         </div>
@@ -397,9 +223,11 @@ export default function SalesDashboard() {
                           <div className="financeCardBoxImg">
                             <img src={gifthree} alt="" />
                           </div>
-                          <h2>Payment Release Report</h2>
+                          <h2>Payment Receive Report</h2>
                         </div>
-                        <div className="scroll-con  pl40"></div>
+                        <div className="scroll-con  pl40">
+                          <h3>{data?.approvalPaymentUpdateCounts}</h3>
+                        </div>
                       </div>
                     </div>
                     <div className="financeCardBox">
@@ -407,19 +235,11 @@ export default function SalesDashboard() {
                         <div className="financeCardBoxDetails">
                           <ul>
                             <li>
-                              Total Payment Release Report
+                              Total Payment Receive Report
                               <span>
                                 <span>&#8377; </span>
                                 <FormattedNumberWithTooltip
-                                  // value={cstPaymentData
-                                  //   .map(
-                                  //     (item) =>
-                                  //       item.campaign_amount -
-                                  //       item.total_paid_amount
-                                  //   )
-                                  //   .reduce((prev, next) => prev + next, 0)
-                                  //   .toLocaleString("en-IN")}
-                                  value={0}
+                                  value={data?.totalPaymentUpdateApprovalAmount}
                                 />
                               </span>
                             </li>
@@ -441,27 +261,20 @@ export default function SalesDashboard() {
                           <div className="financeCardBoxImg">
                             <img src={giftwo} alt="" />
                           </div>
-                          <h2>TDS Verification Open</h2>
+                          <h2>TDS Verification Closed</h2>
                         </div>
                         <div className="scroll-con  pl40">
-                          {/* <div className="scroller"> */}
-                          {/* <h3>0</h3> */}
-                          <h3>{data?.saleBookingtdsOpenCounts}</h3>
+                          <h3>{data?.saleBookingtdsCloseCounts}</h3>
                         </div>
-                        {/* </div> */}
                       </div>
                     </div>
                     <div className="financeCardBox">
                       <div className="financeCardBoxIn">
                         <div className="financeCardBoxDetails">
                           <ul>
-                            {/* <li>
-                              TDS Verification About to Close
-                              <span>{salesBookingAboutToCloseData.length}</span>
-                            </li> */}
                             <li>
-                              TDS Verification Closed
-                              <span>{data?.saleBookingtdsCloseCounts}</span>
+                              TDS Verification Verified
+                              <span>{data?.saleBookingtdsVerifiedCounts}</span>
                             </li>
                           </ul>
                         </div>
@@ -482,10 +295,7 @@ export default function SalesDashboard() {
                           <h2>Outstanding</h2>
                         </div>
                         <div className="scroll-con  pl40">
-                          {/* <div className="scroller"> */}
-                          {/* <h1 className="color-white">0</h1> */}
                           <h3>{data?.saleBookingOutstandingCounts}</h3>
-                          {/* </div> */}
                         </div>
                       </div>
                     </div>
@@ -494,26 +304,14 @@ export default function SalesDashboard() {
                         <div className="financeCardBoxDetails">
                           <ul>
                             <li>
-                              Total Refund Request Amount Pending
+                              Total Outstanding Balance Amount
                               <span>
                                 <span>&#8377; </span>
                                 <FormattedNumberWithTooltip
-                                  // value={cstPaymentData
-                                  //   .map(
-                                  //     (item) =>
-                                  //       item.campaign_amount -
-                                  //       item.total_paid_amount
-                                  //   )
-                                  //   .reduce((prev, next) => prev + next, 0)
-                                  //   .toLocaleString("en-IN")}
-                                  value={0}
+                                  value={data?.saleBookingOutstandingAmount}
                                 />
                               </span>
                             </li>
-                            {/* <li>
-                              &nbsp;
-                              <span>&nbsp;</span>
-                            </li> */}
                           </ul>
                         </div>
                       </div>
@@ -545,27 +343,11 @@ export default function SalesDashboard() {
                     <h2>Total Refund Request Amount Pending</h2>
                     <h3>
                       <span>&#8377;</span>
-                      <FormattedNumberWithTooltip
-                        // value={
-                        //   refundReqData
-                        //     .map((item) => item.refund_amount)
-                        //     .reduce((prev, next) => prev + next, 0)
-                        //   (0).toLocaleString("en-IN")
-                        // }
-                        value={0}
-                      />
+                      <FormattedNumberWithTooltip value={0} />
                     </h3>
                   </div>
                 </Link>
               </div>
-              {/* <div className="col">
-                <Link to="/admin/finance-pruchasemanagement-paymentdone">
-                  <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
-                    <h2>Pending for Vendor Payment</h2>
-                    <h3>{vendorCardData.length}</h3>
-                  </div>
-                </Link>
-              </div> */}
               <div className="col">
                 <Link to="/admin/accounts-finance-dashboard">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
@@ -592,10 +374,7 @@ export default function SalesDashboard() {
                 <Link to="/admin/finance-paymentmode">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Payment Mode</h2>
-                    <h3>
-                      {/* <span>&#8377; </span> */}
-                      {0}
-                    </h3>
+                    <h3>{0}</h3>
                   </div>
                 </Link>
               </div>
