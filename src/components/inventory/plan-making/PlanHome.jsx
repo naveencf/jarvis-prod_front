@@ -25,6 +25,7 @@ import PlanXHeader from './PlanXHeader';
 import PageDialog from './PageDialog';
 import { formatUTCDate } from '../../../utils/formatUTCDate';
 import { CiStickyNote } from 'react-icons/ci';
+import PlanXNoteModal from './PlanXNoteModal';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -39,8 +40,9 @@ function PlanHome() {
   const [statusDialog, setStatusDialog] = useState(false);
   const [statusDialogPlan, setStatusDialogPlan] = useState(null);
   const [filteredPlans, setFilteredPlans] = useState([]);
-  const [filter, setFilter] = useState('all');
   const [selectedPages, setSelectedPages] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [descriptions, setDescriptions] = useState([]);
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -76,6 +78,145 @@ function PlanHome() {
   const globalFilteredUsers = usersDataContext?.filter((user) =>
     user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase())
   );
+  const fetchDescriptions = async () => {
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`);
+      if (response.ok) {
+        const data = await response.json();
+        setDescriptions(data?.data);
+      } else {
+        console.error('Failed to fetch descriptions');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    fetchDescriptions();
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+  const handleAddDescription = async (newDescription) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: 'ABCD',
+          description: newDescription,
+          status: 'InActive',
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        const description = result.data;
+        setDescriptions((prev) => [...prev, description]);
+      } else {
+        console.error('Failed to add description');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEditDescription = async (index) => {
+    const currentDescription = descriptions[index];
+    const newDescription = prompt(
+      'Enter new description:',
+      currentDescription.description
+    );
+
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: currentDescription._id,
+          title: 'ABCD',
+          description: newDescription,
+          status: 'Active',
+        }),
+      });
+
+      if (response.ok) {
+        // Update the description in the state
+        setDescriptions((prev) =>
+          prev.map((desc, i) =>
+            i === index ? { ...desc, description: newDescription } : desc
+          )
+        );
+      } else {
+        console.error('Failed to update description');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  const handlePlanxNoteStatusChange = async (index, status) => {
+    const currentDescription = descriptions[index];
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: currentDescription._id,
+          status: status,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('PUT result:', result);
+
+        // Update the status in the state
+        setDescriptions((prev) =>
+          prev.map((desc, i) =>
+            i === index ? { ...desc, status: status } : desc
+          )
+        );
+      } else {
+        console.error('Failed to update description');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const handleDeleteDescription = async (index) => {
+    const descriptionToDelete = descriptions[index];
+
+    try {
+      const response = await fetch(
+        `${baseUrl}v1/planxnote/${descriptionToDelete._id}`,
+        {
+          method: 'DELETE',
+        }
+      );
+
+      if (response.ok) {
+        console.log('Successfully deleted:', descriptionToDelete);
+
+        setDescriptions((prev) => prev.filter((_, i) => i !== index));
+      } else {
+        console.error('Failed to delete description');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   const fetchAccounts = async () => {
     try {
@@ -742,12 +883,20 @@ function PlanHome() {
           fetchPlans={fetchPlans}
         />
       )}
-
+      <PlanXNoteModal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        descriptions={descriptions}
+        onEdit={handleEditDescription}
+        onDelete={handleDeleteDescription}
+        onAdd={handleAddDescription}
+        statusChange={handlePlanxNoteStatusChange}
+      />
       <div className="card">
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Plan X Overview </h5>
           <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
-          <button className="icon">
+          <button className="icon" onClick={handleOpenModal}>
             <CiStickyNote />
           </button>
           <div className="flexCenter colGap8">

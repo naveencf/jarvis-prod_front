@@ -17,8 +17,7 @@ import {
 } from "../../../Store/API/Sales/PaymentUpdateApi";
 import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDetailsApi";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
-import { ca } from "date-fns/locale";
-import { set } from "date-fns";
+
 import Loader from "../../../Finance/Loader/Loader";
 
 const CreatePaymentUpdate = () => {
@@ -80,6 +79,7 @@ const CreatePaymentUpdate = () => {
   const [paymentType, setPaymentType] = useState("");
   const [paymentRefrenceNumber, setPaymentRefrenceNumber] = useState("");
   const [remarks, setRemarks] = useState("");
+  const [payAmt, setPayAmt] = useState(0);
   const [accountData, setAccountData] = useState([]);
   const [isValidates, setIsValidated] = useState({
     salebookID: false,
@@ -251,7 +251,8 @@ const CreatePaymentUpdate = () => {
       saleBookingData?.find(
         (item) => item.sale_booking_id === selectedSaleBooking?.salebookID
       )?.campaign_amount - userdata?.requested_amount;
-    if (campaignAmount > paymentAmount) {
+    setPayAmt(campaignAmount - userdata?.approved_amount);
+    if (campaignAmount - userdata?.approved_amount < paymentAmount) {
       toastError(
         `Payment amount should be less than or equal to ${campaignAmount - userdata?.approved_amount
         } amount`
@@ -264,9 +265,7 @@ const CreatePaymentUpdate = () => {
       {isLoading && <Loader />}
       <FormContainer mainTitle="Payment Update" link={true} />
       <div className="card">
-        <div className="card-header">
-          <h4 className="card-title">Creation</h4>
-        </div>
+
         <div className="card-body row">
           <div className="form-group col-4">
             <label className="form-label">Sale Booking</label>
@@ -367,6 +366,12 @@ const CreatePaymentUpdate = () => {
                 }
               }}
             />
+            {<span className="successText ml-4 pb-5">
+              {((paymentAmount / payAmt) * 100) ?
+
+                ((paymentAmount / payAmt) * 100).toFixed(2)
+                : 0}%
+            </span>}
             {isValidates.paymentAmount && (
               <div className="form-error">Please enter a payment amount</div>
             )}

@@ -24,6 +24,7 @@ import {
   subQuarters,
 } from "date-fns";
 import ShareIncentive from "./ShareIncentive";
+import PieGraph from "./PieGraph";
 
 const SalesAccountOverview = () => {
   let loginUserId;
@@ -174,16 +175,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-        allAccountError.error ||
-        "An error occurred"
+      allAccountError.error ||
+      "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-        allBrandCatTypeError.error ||
-        "An error occurred"
+      allBrandCatTypeError.error ||
+      "An error occurred"
     );
   }
 
@@ -378,9 +379,9 @@ const SalesAccountOverview = () => {
       showCol: true,
     },
     {
-      key: "createdAt",
+      key: "createdDate",
       name: "Created Date",
-      renderRowCell: (row) => DateISOtoNormal(row.createdAt),
+      renderRowCell: (row) => DateISOtoNormal(row?.createdAt),
       width: 100,
       sortable: true,
       showCol: true,
@@ -413,13 +414,12 @@ const SalesAccountOverview = () => {
       name: "Brand Category Name",
       renderRowCell: (row) => {
         const brandType = allBrandCatType?.find(
-          (brandCatType) => brandCatType._id === row.category_id
+          (brandCatType) => brandCatType._id === row?.category_id
         );
         return brandType ? brandType.brand_category_name : "NA";
       },
       width: 100,
       compare: true,
-
       showCol: true,
     },
     {
@@ -565,127 +565,143 @@ const SalesAccountOverview = () => {
           </Link>
         </div>
       </div>
-      <div className="card mt24">
-        <div className="card-body row">
-          <CustomSelect
-            label="Seclect Column"
-            fieldGrid={4}
-            dataArray={dateFilterArray}
-            optionId="value"
-            optionLabel="label"
-            selectedId={selectedFilter}
-            setSelectedId={setSelectedFilter}
-          />
-          <CustomSelect
-            label="date"
-            fieldGrid={4}
-            dataArray={dateFilterOptions}
-            optionId="value"
-            optionLabel="label"
-            selectedId={quickFiltring}
-            setSelectedId={setQuickFiltring}
-          />
-          {quickFiltring === "custom" && (
-            <>
-              <FieldContainer
-                type="date"
-                label="From Date"
+
+      <div className="graph-card-holder">
+
+        <div className="card-holder w-100 p-0">
+
+
+          <div className="card ">
+            <div className="card-body row">
+              <CustomSelect
+                label="Seclect Column"
                 fieldGrid={4}
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
+                dataArray={dateFilterArray}
+                optionId="value"
+                optionLabel="label"
+                selectedId={selectedFilter}
+                setSelectedId={setSelectedFilter}
               />
-              <FieldContainer
-                type="date"
-                label="To Date"
+              <CustomSelect
+                label="date"
                 fieldGrid={4}
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
+                dataArray={dateFilterOptions}
+                optionId="value"
+                optionLabel="label"
+                selectedId={quickFiltring}
+                setSelectedId={setQuickFiltring}
               />
-            </>
-          )}
-          <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
-            <button
-              className="cmnbtn btn-primary"
-              onClick={() => dataFiltter()}
-            >
-              Search
-            </button>
-            {allAccount?.length !== combinedData?.length && (
-              <button
-                className="iconBtn btn btn-outline-danger"
-                onClick={() => handelRemoveFiltter()}
-              >
-                <i className="bi bi-x-circle"></i>
-              </button>
-            )}
+              {quickFiltring === "custom" && (
+                <>
+                  <FieldContainer
+                    type="date"
+                    label="From Date"
+                    fieldGrid={4}
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                  <FieldContainer
+                    type="date"
+                    label="To Date"
+                    fieldGrid={4}
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                  />
+                </>
+              )}
+              <div className="col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 flexCenter colGap12 pt8 mb-3">
+                <button
+                  className="cmnbtn btn-primary"
+                  onClick={() => dataFiltter()}
+                >
+                  Search
+                </button>
+                {allAccount?.length !== combinedData?.length && (
+                  <button
+                    className="iconBtn btn btn-outline-danger"
+                    onClick={() => handelRemoveFiltter()}
+                  >
+                    <i className="bi bi-x-circle"></i>
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
+
+          <div className="card ">
+            <div className="card-body">
+              <div className="row">
+                <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                  <div
+                    className="card p16 hov-pointer"
+                    onClick={() => {
+                      filterEngine(allAccount, "remove", "0");
+                    }}
+                  >
+                    <h6 className="colorMedium ">Total Accounts</h6>
+                    <h6 className="mt8 fs_16">{allAccount?.length}</h6>
+                  </div>
+                </div>
+                <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                  <div
+                    className="card p16 hov-pointer"
+                    onClick={() => {
+                      filterEngine(
+                        allAccount?.filter(
+                          (account) => account?.totalSaleBookingCounts == 0
+                        ),
+                        "",
+                        "1"
+                      );
+                    }}
+                  >
+                    <h6 className="colorMedium">
+                      Idle Accounts (Without Sale Booking)
+                    </h6>
+                    <h6 className="mt8 fs_16">
+                      {
+                        allAccount?.filter(
+                          (account) => account?.totalSaleBookingCounts == 0
+                        )?.length
+                      }
+                    </h6>
+                  </div>
+                </div>
+                <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
+                  <div
+                    className="card p16 hov-pointer"
+                    onClick={() => {
+                      filterEngine(
+                        allAccount?.filter((account) => account?.paidAmount == 0),
+                        "",
+                        "2"
+                      );
+                    }}
+                  >
+                    <h6 className="colorMedium">
+                      Idle Accounts (Without Payment){" "}
+                    </h6>
+                    <h6 className="mt8 fs_16">
+                      {
+                        allAccount?.filter((account) => account?.paidAmount == 0)
+                          .length
+                      }
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
         </div>
+        {
+          loginUserRole === 1 && allAccount && allAccount?.length > 0 &&
+          <PieGraph allAccount={allAccount} setCombinedFilter={setCombinedFilter} />
+        }
+
       </div>
 
-      <div className="card mt24">
-        <div className="card-body">
-          <div className="row">
-            <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-              <div
-                className="card p16 hov-pointer"
-                onClick={() => {
-                  filterEngine(allAccount, "remove", "0");
-                }}
-              >
-                <h6 className="colorMedium ">Total Accounts</h6>
-                <h6 className="mt8 fs_16">{allAccount?.length}</h6>
-              </div>
-            </div>
-            <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-              <div
-                className="card p16 hov-pointer"
-                onClick={() => {
-                  filterEngine(
-                    allAccount?.filter(
-                      (account) => account?.totalSaleBookingCounts == 0
-                    ),
-                    "",
-                    "1"
-                  );
-                }}
-              >
-                <h6 className="colorMedium">
-                  Idle Accounts (Without Sale Booking)
-                </h6>
-                <h6 className="mt8 fs_16">
-                  {
-                    allAccount?.filter(
-                      (account) => account?.totalSaleBookingCounts == 0
-                    )?.length
-                  }
-                </h6>
-              </div>
-            </div>
-            <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-12 col-12">
-              <div
-                className="card p16 hov-pointer"
-                onClick={() => {
-                  filterEngine(
-                    allAccount?.filter((account) => account?.paidAmount == 0),
-                    "",
-                    "2"
-                  );
-                }}
-              >
-                <h6 className="colorMedium">
-                  Idle Accounts (Without Payment){" "}
-                </h6>
-                <h6 className="mt8 fs_16">
-                  {
-                    allAccount?.filter((account) => account?.paidAmount == 0)
-                      .length
-                  }
-                </h6>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       <View
         columns={ViewSalesAccountColumns}
         data={combinedData}

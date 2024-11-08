@@ -87,11 +87,14 @@ const TableToolkit = ({
 
 
   useEffect(() => {
-    const selectedRowData = selectedRowsIndex?.map((index) => sortedData[index]);
+    const selectedRowData = selectedRowsIndex?.map((index) => originalData[index]);
+
     if (JSON.stringify(selectedRowData) !== JSON.stringify(selectedRowsData)) {
       setSelectedRowsData(selectedRowData);
     }
   }, [selectedRowsIndex]);
+
+
 
 
   const handleCloseModal = () => {
@@ -211,10 +214,13 @@ const TableToolkit = ({
 
 
     const ax = !rowSelectable ? data : selectedRowsData;
+
+
+
     const elxdata = ax?.map((item) => {
-      const cols = columnsheader.filter((column) => column.compare === true);
+      const cols = columnsheader.filter((column) => column?.compare === true);
       const additionalProps = cols.reduce((acc, column) => {
-        acc[column.key] = column.renderRowCell(item);
+        acc[column?.key] = column.renderRowCell(item);
 
         return acc;
       }, {});
@@ -224,6 +230,7 @@ const TableToolkit = ({
         ...additionalProps,
       };
     });
+
 
 
     if (elxdata?.length === 0) return alert("No data to export");

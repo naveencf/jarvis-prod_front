@@ -106,11 +106,11 @@ const PageOverviewNew = () => {
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
-  //   const { data: pageStates, isLoading: isPagestatLoading } =
-  //     useGetPageStateQuery();
+  const { data: pageStates, isLoading: isPagestatLoading } =
+    useGetPageStateQuery();
   //   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
   //   const { data: profileData } = useGetAllProfileListQuery();
-
+  console.log(pageStates, "pageStates")
   // Handle price type change
   const handlePriceTypeChange = (e) => {
     setSelectedPriceType(e.target.value);
@@ -146,6 +146,7 @@ const PageOverviewNew = () => {
 
     setNewFilterData(filteredData);
   };
+
   // console.log(allVendorWhats,platformData,"test")
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
@@ -157,25 +158,31 @@ const PageOverviewNew = () => {
     setVendorDetails(res?.data?.data);
   };
 
+  useEffect(() => {
+    if (activeTab == 'Tab1') {
+      pageHealthToggleCheck()
+    }
+  }, [activeTab])
   function pageHealthToggleCheck() {
-    if (showPageHealthColumn) {
-      const data = filterData?.map((item) => {
-        const matchingState = pageStates?.find(
-          (state) => state?.page_master_id === item?._id
-        );
-        return {
-          ...item,
-          pageId: matchingState?._id,
-          ...matchingState,
-          _id: item?._id,
-        };
-      });
+    // if (showPageHealthColumn) {
+    const data = pageList?.map((item) => {
+      const matchingState = pageStates?.find(
+        (state) => state?.page_master_id === item?._id
+      );
+      if (matchingState) {
 
-      setNewFilterData(data);
-    }
-    if (showPageHealthColumn == false) {
-      setFilterData(pageList);
-    }
+        console.log(matchingState, "matchingState", item)
+      }
+      return {
+        ...item,
+        pageId: matchingState?._id,
+        ...matchingState,
+        _id: item?._id,
+      };
+
+    });
+
+    setNewFilterData(data);
   }
 
   const getData = () => {
@@ -323,6 +330,25 @@ const PageOverviewNew = () => {
   };
   // console.log(vendorData,"vendorData")
   const dataSecondGridColumns = [
+    {
+      key: 'page_name',
+      name: 'User Name',
+      width: 200,
+
+      renderRowCell: (row) => {
+        let name = row.page_name;
+        return (
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href={row.page_link}
+            className="link-primary"
+          >
+            {formatString(name)}
+          </a>
+        );
+      },
+    },
     {
       key: 'Add',
       name: 'Add',
@@ -935,7 +961,7 @@ const PageOverviewNew = () => {
             onClick={() => handleClickVendorName(row)}
             className="link-primary cursor-pointer text-truncate"
           >
-            {formatString(row.vendor_name)}
+            {formatString(row?.vendor_name || "Not Available")}
           </div>
         );
       },
@@ -1268,7 +1294,7 @@ const PageOverviewNew = () => {
             </button>
 
             <button
-              className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
+              className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
               onClick={() => setActiveTab("Tab1")}
             >
               Page Health
@@ -1331,8 +1357,8 @@ const PageOverviewNew = () => {
                         </Box>
                       ) : (
                         <View
-                          columns={[...dataGridcolumns, ...dataSecondGridColumns]}
-                          data={pageList}
+                          columns={[...dataSecondGridColumns]}
+                          data={newFilterData}
                           isLoading={false}
                           title={"Page Health"}
                           rowSelectable={true}

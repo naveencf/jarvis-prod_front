@@ -95,7 +95,7 @@ const WFHDOverview = () => {
     setCurrentState(row.permanent_state)
     setCurrentcity(row.permanent_city)
     setCurrentpin(row.permanent_pin_code)
-    setEmail(row.PersonalEmail)
+    setEmail(row.user_email_id)
     setUserNames(row.user_name)
     setLoginID(row.user_login_id)
 
@@ -103,7 +103,8 @@ const WFHDOverview = () => {
   const handleCloseModalInHouse = () => {
     setModalOpenInHouse(false);
   };
-  const handleOnbaordingInHouse = async(row) =>{
+
+  const handleOnbaordingInHouse = async() =>{
     const password = email?.split('@')[0];
     await axios.put(baseUrl + "update_user", {
       user_id:userOnboardingID,
@@ -118,10 +119,10 @@ const WFHDOverview = () => {
       job_type:"WFO",
       user_login_password:password
     });
-   await axios
+    axios
     .post(baseUrl + "add_send_user_mail", {
-      email:'lalit@creativefuel.io',
-      // email: row.PersonalEmail,
+      // email:'lalit@creativefuel.io',
+      email:email,
       subject: "Welcome To Creativefuel",
       text: "",
       // attachment: selectedImage,
@@ -136,6 +137,8 @@ const WFHDOverview = () => {
     setIsApplicable("")
     handleCloseModalInHouse()
   }
+  console.log(email , 'email is here')
+  
   
 // ----------------------------------------------------------------
   //Scrap Asset section Start

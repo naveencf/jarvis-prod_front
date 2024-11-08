@@ -974,12 +974,12 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                         <EsicTable UserDetails={UserDetails} />
                     )}
                     {allUserData.emergency_contact_person_name2 == "in_hand" &&
-                        allUserData.salary < 20000 && (
+                        allUserData.salary < 19199 && (
                             <Inhandless UserDetails={UserDetails} />
                         )}
                     {/* <LetterTabPdf1WithPF UserDetails={UserDetails} /> */}
                     {allUserData.emergency_contact_person_name2 == "in_hand" &&
-                        allUserData.salary > 20000 && (
+                        allUserData.salary > 19200 && (
                             <Inhandmore UserDetails={UserDetails} />
                         )}
 

@@ -664,27 +664,29 @@ const AdminPreOnboarding = () => {
   };
 
   const handleDateChange = (e) => {
-    const selectedDate = e;
-    const validateAge = dayjs().diff(e, "year");
-    const age = calculateAge(selectedDate);
+    const selectedDate = e.target.value;
+    const validateAge = dayjs().diff(dayjs(selectedDate), "year"); // Use selectedDate for age calculation
+    const age = calculateAge(selectedDate); // Assuming calculateAge is correct
     setDobValidate(validateAge);
-
+  
     if (selectedDate === "") {
       setIsRequired((prev) => ({ ...prev, dateOfBirth: true }));
+      setDobError("Please select a DOB."); // Set error if date is empty
     } else {
       setIsRequired((prev) => ({ ...prev, dateOfBirth: false }));
+      
+      // Only set dobError if age is invalid; clear it otherwise
+      if (validateAge < 15 || validateAge > 100) {
+        setDobError("Age can't be less than 15 or greater than 100 years.");
+        setDateOfBirth(""); // Clear DOB if invalid
+      } else {
+        setDobError(""); // Clear error if age is valid
+        setDateOfBirth(selectedDate);
+        setAge(age);
+      }
     }
-
-    if (validateAge < 15 || validateAge > 100) {
-      // window.alert("Your age must be greater than 15 years.");
-      setDobError("Age can't less than 15 or greater than 100 years.");
-      setDateOfBirth("");
-    } else {
-      setDobError("");
-    }
-    setDateOfBirth(selectedDate);
-    setAge(age);
   };
+  
 
   const handleFullNameChange = (event) => {
     let userName = event.target.value;
@@ -1304,10 +1306,10 @@ const AdminPreOnboarding = () => {
           )}
         </div>
         <div className="col-md-3">
-          <label className="form-label">
+          {/* <label className="form-label">
             Joining Date <sup className="form-error">*</sup>
-          </label>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          </label> */}
+          {/*<LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               value={joiningDate}
               onChange={(e) => {
@@ -1321,6 +1323,23 @@ const AdminPreOnboarding = () => {
               renderInput={(params) => <TextField {...params} />}
             />
           </LocalizationProvider>
+          */}
+          <FieldContainer
+          type="date"
+          astric
+          label="Joining Date"
+          required={false}
+          fieldGrid={3}
+          value={joiningDate}
+          onChange={(e) => {
+            setJoiningDate(e.target.value);
+            if (e.target.value === "") {
+              setIsRequired((prev) => ({ ...prev, joiningDate: true }));
+            } else {
+              setIsRequired((prev) => ({ ...prev, joiningDate: false }));
+            }
+          }}
+          />
           {isRequired.joiningDate && (
             <p className="form-error">Please select a Joining Date</p>
           )}
@@ -1335,17 +1354,27 @@ const AdminPreOnboarding = () => {
           onChange={(e) => setJoiningDate(e.target.value)}
         /> */}
         <div className="col-md-3">
-          <label className="form-label">
+          {/* <label className="form-label">
             DOB <sup className="form-error">*</sup>
-          </label>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
+          </label> */}
+          {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
               value={dateOfBirth}
               onChange={handleDateChange}
               shouldDisableDate={disableFutureDates}
               renderInput={(params) => <TextField {...params} />}
             />
-          </LocalizationProvider>
+          </LocalizationProvider> */}
+          <FieldContainer
+          type="date"
+          astric
+          label="DOB"
+          required={false}
+          fieldGrid={3}
+          value={dateOfBirth}
+          // disabled={disableFutureDates}
+          onChange={handleDateChange}
+          />
           {isRequired.dateOfBirth && (
             <p className="form-error">Please select a DOB</p>
           )}
