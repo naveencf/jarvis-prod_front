@@ -12,7 +12,7 @@ import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard";
 import CategoryOverview from "./PageMS/Category/CategoryOverview";
 
 import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
-import OutstandingPaymentReleaseReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReleaseReport";
+import OutstandingPaymentReceiveReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReceiveReport";
 
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
@@ -1286,7 +1286,7 @@ const Admin = () => {
                     />
                     <Route
                       path="/finance-payment-release-report"
-                      element={<OutstandingPaymentReleaseReport />}
+                      element={<OutstandingPaymentReceiveReport />}
                     />
                     <Route
                       path="/finance-paymentmode"

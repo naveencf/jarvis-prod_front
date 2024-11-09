@@ -600,6 +600,11 @@ export default function FinanceWFHDashboard() {
       // },
     },
     {
+      headerName: "Invoice No",
+      field: "invoiceNo",
+      width: 150,
+    },
+    {
       headerName: "Department",
       field: "department",
       width: 150,

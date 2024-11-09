@@ -1,4 +1,3 @@
-import jwtDecode from "jwt-decode";
 import React, { useState, useEffect } from "react";
 import View from "../../../AdminPanel/Sales/Account/View/View";
 import FormContainer from "../../../AdminPanel/FormContainer";
@@ -21,7 +20,7 @@ import {
 import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 
-const OutstandingPaymentReleaseReport = () => {
+const OutstandingPaymentReceiveReport = () => {
   const [filter, setFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -66,6 +65,11 @@ const OutstandingPaymentReleaseReport = () => {
       });
   };
 
+  useEffect(() => {
+    handlePaymentReleaseReport();
+  }, []);
+
+  console.log(tableData, "tableData--->>>");
   const handleDateFilterChange = (data) => {
     const today = new Date();
     let from, to;
@@ -243,4 +247,4 @@ const OutstandingPaymentReleaseReport = () => {
   );
 };
 
-export default OutstandingPaymentReleaseReport;
+export default OutstandingPaymentReceiveReport;

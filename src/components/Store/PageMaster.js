@@ -7,6 +7,7 @@ const initialState = {
   showInfoModal: false,
   rowData: {},
   statsUpdate: false,
+  showRightSlidder: false
 };
 
 const pageMasterSlice = createSlice({
@@ -15,6 +16,9 @@ const pageMasterSlice = createSlice({
   reducers: {
     setOpenShowAddModal(state) {
       state.showAddModal = true;
+    },
+    setShowRightSlidder(state,action) {
+      state.showRightSlidder = action.payload;
     },
     setCloseShowAddModal(state) {
       state.showAddModal = false;
@@ -43,6 +47,7 @@ export const {
   setOpenShowPageInfoModal,
   setCloseShowPageInfoModal,
   setRowData,
-  setStatsUpdate
+  setStatsUpdate,
+  setShowRightSlidder
 } = pageMasterSlice.actions;
 export default pageMasterSlice.reducer;
