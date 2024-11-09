@@ -6541,6 +6541,10 @@ body.sidebar-toggled .topbarBrand {
     min-width: 300px !important;
   }
 
+  .form-control.hundred {
+    min-width: 100px !important;
+  }
+
   /* .css-vnubik-MuiFormLabel-root-MuiInputLabel-root,
   .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
     font-size: 0.8rem !important;

@@ -13,8 +13,9 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescriptionsChange }) => {
-  const [checkedDescriptions, setCheckedDescriptions] = useState([]);
+const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescriptionsChange, checkedDescriptions, setCheckedDescriptions }) => {
+  // const [checkedDescriptions, setCheckedDescriptions] = useState([]);
+  // console.log(descriptions, 'descriptions')
 
   const handleToggle = (description) => {
     setCheckedDescriptions((prev) => {
@@ -26,16 +27,26 @@ const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescri
     });
   };
 
-  useEffect(() => {
-    if (!isOpen) {
-      setCheckedDescriptions([]); // Reset the checked descriptions when the modal is closed
-    }
-  }, [isOpen]);
+  // useEffect(() => {
+  //   if (!isOpen) {
+  //     setCheckedDescriptions([]); // Reset the checked descriptions when the modal is closed
+  //   }
+  // }, [isOpen]);
 
+  const handleAllActiveDescription = () => {
+    const tempDescription = descriptions?.map(res => res.description)
+    // console.log(tempDescription, 'tempDescription')
+    setCheckedDescriptions(tempDescription);
+  }
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        Active Descriptions
+        <Checkbox
+          edge="start"
+          checked={checkedDescriptions.length > 0 ? true : false}
+          onChange={() => handleAllActiveDescription()}
+        />
+        Notes
         <IconButton
           aria-label="close"
           onClick={onClose}

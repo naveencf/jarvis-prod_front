@@ -56,14 +56,14 @@ async function downloadImageToBase64(url) {
   return `data:image/jpeg;base64,${btoa(binaryString)}`; // Adjust for correct image type if necessary
 }
 
-const downloadExcelTemp = async (
+const downloadExcel = async (
   selectedRow,
   category,
   postCount,
-  storyPerPage
+  storyPerPage, planDetails, checkedDescriptions
 ) => {
   const workbook = new ExcelJS.Workbook();
-
+  // selling_price
   // Overview Data
   let totalPostsAndStories = 0;
   let totalCost = 0;
@@ -73,7 +73,7 @@ const downloadExcelTemp = async (
 
   const overviewSheet = workbook.addWorksheet('Overview');
 
-
+  console.log(checkedDescriptions, 'checkedDescriptions')
 
 
   const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
@@ -223,7 +223,7 @@ const downloadExcelTemp = async (
             0
           )}`, // Total post and story count for category
           "",
-          `₹${categoryTotalCost.toFixed(2)}`, // Total cost for category
+          ``, // Total cost for category. ₹${categoryTotalCost.toFixed(2)}
         ]);
         // Apply border to each cell in the new row (excluding the first empty cell)
         newRow.eachCell((cell, colNumber) => {
@@ -296,71 +296,70 @@ const downloadExcelTemp = async (
     }
   }
 
-  // Add the data row for 'Total Cost', 'GST', and 'Total with GST'
-  let totalCostRow = overviewSheet.addRow([
-    '', // S_No remains empty
-    'Total Cost',
+  const agencyFees = Number((planDetails[0]?.selling_price * 0.10).toFixed(2));
+  let agencyRow = overviewSheet.addRow([
+    '',
+    'Agency Fees (10%)',
     '',
     '',
     '', '',
-    `₹${totalCost.toFixed(2)}`
+    `₹${agencyFees}`
   ]);
-  totalCostRow.eachCell((cell, colNumber) => {
+  agencyRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) { // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
+      cell.font = { bold: true };
     }
   });
+
+  const gstPrice = Number(((agencyFees + planDetails[0]?.selling_price) * 0.18).toFixed(2))
+  // console.log(typeof (gstPrice), 'gstPrice', typeof (agencyFees), typeof (planDetails[0]?.selling_price), agencyFees + planDetails[0]?.selling_price)
   let gstRow = overviewSheet.addRow([
     '',
     'GST (18%)',
     '',
     '',
     '', '',
-    `₹${(totalCost * 0.18).toFixed(2)}`
+    `₹${gstPrice}`
   ]);
   gstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) { // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
+      cell.font = { bold: true };
     }
   });
+
+  const totalCostWithGst = ((planDetails[0]?.selling_price) + agencyFees + gstPrice)
   let totalWithGstRow = overviewSheet.addRow([
     '',
     'Total with GST',
     '',
     '',
     '', '',
-    `₹${(totalCost * 1.18).toFixed(2)}`
+    `₹${totalCostWithGst}`
   ]);
-  // overviewSheet.addRow([])
 
-  // let notes = overviewSheet.addRow([
-  //   '',
-  //   'Total with GST',
-  //   '',
-  //   '',
-  //   '', '',
-  //   `₹${(totalCost * 1.18).toFixed(2)}`
-  // ]);
 
   totalWithGstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) { // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
+      cell.font = { bold: true };
     }
   });
   // Merge cells B to E for each of the total rows
-  overviewSheet.mergeCells(`B${totalCostRow.number}:F${totalCostRow.number}`);
+  overviewSheet.mergeCells(`B${agencyRow.number}:F${agencyRow.number}`);
   overviewSheet.mergeCells(`B${gstRow.number}:F${gstRow.number}`);
   overviewSheet.mergeCells(`B${totalWithGstRow.number}:F${totalWithGstRow.number}`);
 
   // Center-align and add styling to the merged cells
-  [gstRow, totalCostRow].forEach((row) => {
-    row.getCell(2).alignment = { horizontal: 'center', vertical: 'middle' };
+  [gstRow, agencyRow].forEach((row) => {
+    row.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };
     row.getCell(2).font = { bold: true };
     // row.getCell(6).border = contentBorder; // Apply border only to 'Cost' column in these rows
   });
-  // Center-align and add styling to the merged cells
+  // right-align and add styling to the merged cells
   [totalWithGstRow].forEach((row) => {
-    row.getCell(2).alignment = { horizontal: 'left', vertical: 'middle' };
+    row.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };
     row.getCell(2).font = { bold: true };
     row.getCell(2).fill = {
       type: 'pattern',
@@ -386,24 +385,23 @@ const downloadExcelTemp = async (
       }
     });
   }
-  // Define the border style
-  const borderStyle = {
-    top: { style: 'thin' },
-    left: { style: 'thin' },
-    bottom: { style: 'thin' },
-    right: { style: 'thin' }
-  };
 
   // Define the notes you want to add
-  const notes = [
-    "This is the first note below the content rows.",
-    "This is the second note below the content rows.",
-    "Additional note here.",
-    "Final note for reference."
-  ];
+  const notes = checkedDescriptions;
+  // [
+  //   "This is the first note below the content rows.",
+  //   "This is the second note below the content rows.",
+  //   "Additional note here.",
+  //   "Final note for reference."
+  // ];
 
   const firstNoteRow = endRow + 2; // The row where notes start
   const lastNoteRow = firstNoteRow + notes.length - 1; // The last row of the notes
+
+  overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
+  const sellingPrice = overviewSheet.getCell('G8');
+  sellingPrice.value = planDetails[0]?.selling_price;
+
 
   // Merge the B column cells for all note rows and set "Note" as the text
   overviewSheet.mergeCells(`B${firstNoteRow}:B${lastNoteRow}`);
@@ -411,7 +409,7 @@ const downloadExcelTemp = async (
   noteLabelCell.value = "Note";
   noteLabelCell.alignment = { horizontal: 'center', vertical: 'middle' };
   noteLabelCell.font = { bold: true };
-  noteLabelCell.border = borderStyle; // Apply border to the merged "Note" cell
+  noteLabelCell.border = contentBorder; // Apply border to the merged "Note" cell
 
   // Now, set each note in merged cells from C to G in its respective row and apply borders
   notes.forEach((note, index) => {
@@ -426,19 +424,19 @@ const downloadExcelTemp = async (
     contentCell.value = `* ${note}`;
     contentCell.alignment = { horizontal: 'left', vertical: 'middle' };
     contentCell.font = { italic: true, bold: true };
-    contentCell.border = borderStyle; // Apply border to the merged note cell
+    contentCell.border = contentBorder; // Apply border to the merged note cell
 
     // Apply border to all cells in the row (B to G)
     row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
       if (colNumber >= 2 && colNumber <= 7) { // Apply borders from columns B to G
-        cell.border = borderStyle;
+        cell.border = contentBorder;
       }
     });
 
     row.commit(); // Finalize changes to the row
   });
 
-  console.log(endRow, "endRow"); // This logs the original endRow value
+  // // console.log(endRow, "endRow"); // This logs the original endRow value
 
 
 
@@ -493,310 +491,9 @@ const downloadExcelTemp = async (
   });
 };
 
-const downloadExcel = async (
-  selectedRow,
-  category,
-  postCount,
-  storyPerPage
-) => {
-  const workbook = XLSX.utils.book_new(); // Create a new workbook
-  const overviewData = []; // Array to hold overview data for the Excel sheet
-  let totalPostsAndStories = 0;
-  let totalCost = 0;
 
-  const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat'];
 
-  platforms.forEach((platform) => {
-    const platformData = selectedRow?.filter(
-      (page) => getPlatformName(page.platform_id) === platform // Filter data for the current platform
-    );
 
-    if (!platformData?.length) return; // Skip if there is no data for the platform
-
-    // Variable to store total posts and stories count per platform
-    let platformTotalPostsAndStories = 0;
-
-    // Handling Instagram platform separately to categorize by page category
-    if (platform === 'Instagram') {
-      const categories = platformData.reduce((acc, page) => {
-        const categoryId = page.page_category_id; // Get the category ID of the page
-        const categoryName =
-          category?.find((cat) => cat._id === categoryId)?.page_category ||
-          'Unknown'; // Get the category name or default to 'Unknown'
-        acc[categoryName] = acc[categoryName] || []; // Initialize array if not present
-
-        // Ensure post and story counts are treated as numbers
-        const postCountValue = Number(postCount[page._id]) || 0; // Convert to number
-        const storyCountValue = Number(storyPerPage[page._id]) || 0; // Convert to number
-
-        acc[categoryName].push({
-          S_No: acc[categoryName]?.length + 1,
-          Username: page.page_name,
-          'Profile Link': page.page_link,
-          Followers: page.followers_count,
-          'Post Count': postCountValue,
-          'Story Count': storyCountValue,
-        });
-        const postPrice = getPriceDetail(
-          page.page_price_list,
-          'instagram_post'
-        );
-        const storyPrice = getPriceDetail(
-          page.page_price_list,
-          'instagram_story'
-        );
-
-        // Add to platform and overall totals for posts and stories
-        platformTotalPostsAndStories += postCountValue + storyCountValue;
-        totalPostsAndStories += postCountValue + storyCountValue;
-
-        // Calculate total cost
-        totalCost += postCountValue * postPrice + storyCountValue * storyPrice;
-
-        return acc; // Return the accumulator for the next iteration
-      }, {});
-
-      // Append each category sheet to the workbook
-      Object.entries(categories).forEach(([categoryName, categoryData]) => {
-        // Check if all story counts in this category are 0
-        const allStoryCountsZero = categoryData.every(
-          (item) => item['Story Count'] === 0
-        );
-
-        // Construct the data to write to the sheet, excluding "Story Count" if all are zero
-        const sheetData = categoryData.map((item) => {
-          const rowData = {
-            S_No: item.S_No,
-            Username: item['Username'],
-            'Profile Link': item['Profile Link'],
-            Followers: item.Followers,
-            'Post Count': item['Post Count'],
-          };
-
-          if (!allStoryCountsZero) {
-            rowData['Story Count'] = item['Story Count'];
-          }
-
-          return rowData;
-        });
-
-        const categorySheet = XLSX.utils.json_to_sheet(sheetData); // Convert category data to a sheet
-        addHyperlinksAndAdjustWidths(categorySheet, sheetData); // Add hyperlinks and adjust column widths
-        applyCellStyles(categorySheet, sheetData); // Apply cell styles
-        XLSX.utils.book_append_sheet(workbook, categorySheet, categoryName); // Append to workbook
-
-        // Calculate category total cost
-        const categoryTotalCost = categoryData.reduce((acc, item) => {
-          const page = platformData.find(
-            (p) => p.page_name === item['Username']
-          );
-          const postPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_post'
-          );
-          const storyPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_story'
-          );
-          const postCountValue = Number(postCount[page._id]) || 0;
-          const storyCountValue = Number(storyPerPage[page._id]) || 0;
-          return (
-            acc + postCountValue * postPrice + storyCountValue * storyPrice
-          );
-        }, 0);
-        overviewData.push({
-          S_No: overviewData?.length + 1,
-          Description: `Post and Stories on ${categoryName} Pages`,
-          Platform: 'Instagram',
-          Count: `${categoryData.reduce(
-            (acc, item) =>
-              acc + item['Post Count'] + (item['Story Count'] || 0),
-            0
-          )}`, // Total post and story count for category
-          Cost: `₹${categoryTotalCost.toFixed(2)}`, // Calculate cost for category
-        });
-      });
-    } else {
-      // Handle other platforms
-      const platformSheetData = platformData.map((page, index) => {
-        const postCountValue = Number(postCount[page._id]) || 0; // Ensure it's a number
-        const storyCountValue = Number(storyPerPage[page._id]) || 0; // Ensure it's a number
-
-        // Construct row data based on whether all story counts are zero
-        const rowData = {
-          S_No: index + 1,
-          'Page Name': page.page_name,
-          Followers: page.followers_count,
-          'Post Count': postCountValue,
-        };
-
-        // Add "Story Count" if story counts are not all zero
-        // if (!allStoryCountsZero) {
-        //   rowData['Story Count'] = storyCountValue;
-        // }
-
-        // Add to platform total posts and stories count
-        platformTotalPostsAndStories += postCountValue + storyCountValue;
-
-        return rowData;
-      });
-
-      const platformSheet = XLSX.utils.json_to_sheet(platformSheetData); // Convert platform data to a sheet
-      addHyperlinksAndAdjustWidths(platformSheet, platformSheetData); // Add hyperlinks and adjust column widths
-      applyCellStyles(platformSheet, platformSheetData); // Apply cell styles
-      XLSX.utils.book_append_sheet(workbook, platformSheet, platform); // Append to workbook
-
-      // Calculate cost for the platform
-      const platformCost = platformData.reduce((acc, page) => {
-        const postCountValue = Number(postCount[page._id]) || 0;
-        const storyCountValue = Number(storyPerPage[page._id]) || 0;
-        return (
-          acc +
-          postCountValue * page.m_post_price +
-          storyCountValue * page.m_story_price
-        );
-      }, 0);
-
-      overviewData.push({
-        S_No: overviewData?.length + 1,
-        Description: `Post and Stories on ${platform} Pages`,
-        Platform: platform,
-        Count: platformTotalPostsAndStories, // Total post and story count for platform
-        Cost: `₹${platformCost.toFixed(2)}`, // Add cost for the platform
-      });
-    }
-  });
-
-  // Calculate GST
-  const gst = totalCost * 0.18; // 18% GST
-  const totalWithGst = totalCost + gst; // Total after GST
-
-  // Add GST and total to the overview data
-  overviewData.push(
-    {
-      S_No: '',
-      Description: 'Total Cost',
-      Platform: '',
-      Count: '',
-      Cost: `₹${totalCost.toFixed(2)}`,
-    },
-    {
-      S_No: '',
-      Description: 'GST (18%)',
-      Platform: '',
-      Count: '',
-      Cost: `₹${gst.toFixed(2)}`,
-    },
-    {
-      S_No: '',
-      Description: 'Total Cost After GST',
-      Platform: '',
-      Count: '',
-      Cost: `₹${totalWithGst.toFixed(2)}`,
-    },
-    {
-      S_No: '',
-      Description: 'Total Count of Posts and Stories',
-      Platform: '',
-      Count: totalPostsAndStories,
-      Cost: '',
-    } // Updated total count of posts and stories
-  );
-
-  const overviewSheet = XLSX.utils.json_to_sheet(overviewData); // Convert overview data to a sheet
-  addHyperlinksAndAdjustWidths(overviewSheet, overviewData); // Add hyperlinks and adjust column widths
-  applyCellStyles(overviewSheet, overviewData); // Apply cell styles
-  XLSX.utils.book_append_sheet(workbook, overviewSheet, 'Overview'); // Create overview sheet
-
-  // Move the overview sheet to the first position
-  workbook.SheetNames = [
-    'Overview',
-    ...workbook.SheetNames.filter((name) => name !== 'Overview'),
-  ];
-
-  // Write the workbook to a file
-  XLSX.writeFile(workbook, 'Plan_Statistics.xlsx');
-};
-
-// Helper function to apply cell styles
-// const applyCellStyles = (sheet, data) => {
-const applyCellStyles = (sheet) => {
-  const range = XLSX.utils.decode_range(sheet['!ref']);
-  const headerRow = range.s.r;
-
-  // Style the header row
-  for (let C = range.s.c; C <= range.e.c; ++C) {
-    const address = XLSX.utils.encode_cell({ c: C, r: headerRow });
-    if (!sheet[address]) continue;
-    sheet[address].s = {
-      font: { bold: true, color: { rgb: 'FF0000' } },
-      alignment: { horizontal: 'center', vertical: 'center' },
-      fill: { fgColor: { rgb: 'BFEE90' } },
-      border: {
-        top: { style: 'thin' },
-        bottom: { style: 'thin' },
-        left: { style: 'thin' },
-        right: { style: 'thin' },
-      },
-    };
-  }
-
-  // Style all filled cells with borders
-  for (let R = range.s.r; R <= range.e.r; ++R) {
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      const address = XLSX.utils.encode_cell({ r: R, c: C });
-      if (!sheet[address]) continue;
-      if (!sheet[address].s) {
-        sheet[address].s = {};
-      }
-      sheet[address].s.border = {
-        top: { style: 'thin' },
-        bottom: { style: 'thin' },
-        left: { style: 'thin' },
-        right: { style: 'thin' },
-      };
-      sheet[address].s.font = {
-        bold: true,
-      };
-      if (C === 0 || C === 3) {
-        // Center align the SNo column and Followers column
-        sheet[address].s.alignment = {
-          horizontal: 'center',
-          vertical: 'center',
-        };
-      }
-    }
-  }
-};
-
-// Function to add hyperlinks and adjust column widths
-// const addHyperlinksAndAdjustWidths = (worksheet, ßdata) => {
-const addHyperlinksAndAdjustWidths = (worksheet) => {
-  const range = XLSX.utils.decode_range(worksheet['!ref']);
-
-  // Apply column widths
-  const columnWidths = [
-    { wch: 5 }, // SNo column width
-    { wch: 30 }, // Username or Page Name
-    { wch: 50 }, // Profile Link
-    { wch: 15 }, // Followers
-    { wch: 15 }, // Post Count
-    { wch: 15 }, // Story Count
-  ];
-  worksheet['!cols'] = columnWidths;
-
-  // Add hyperlinks to 'Profile Link' column (assuming it's at index 2)
-  for (let R = range.s.r + 1; R <= range.e.r; ++R) {
-    const address = XLSX.utils.encode_cell({ r: R, c: 2 }); // Column 'C' (index 2)
-    const profileLink = worksheet[address]?.v;
-    if (profileLink) {
-      worksheet[address].l = {
-        Target: profileLink,
-        Tooltip: 'Click to open profile',
-      };
-    }
-  }
-};
 const LeftSideBar = ({
   totalFollowers,
   totalCost,
@@ -820,7 +517,7 @@ const LeftSideBar = ({
   // pageList,
   HandleSavePlan,
   ownPages,
-  planDetails,
+  planDetails, checkedDescriptions
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
@@ -834,7 +531,7 @@ const LeftSideBar = ({
     );
     setOpenModal(true); // Open the modal
   };
-
+  // console.log(planDetails, "planDetails")
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
@@ -1043,8 +740,7 @@ const LeftSideBar = ({
         <button
           className="btn icon"
           onClick={() =>
-            // downloadExcel(selectedRow, category, postCount, storyPerPage)
-            downloadExcelTemp(selectedRow, category, postCount, storyPerPage)
+            downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)
           }
         >
           {' '}

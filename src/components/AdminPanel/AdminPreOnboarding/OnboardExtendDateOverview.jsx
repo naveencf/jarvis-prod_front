@@ -238,12 +238,12 @@ const OnboardExtendDateOverview = () => {
     <div >
       <FormContainer
         mainTitle="Extend Date Overview"
-        link="/admin/designation-master"
+        link="/admin"
         buttonAccess={
           contextData &&
           contextData[10] &&
           contextData[10].insert_value === 1 &&
-          true
+          false
         }
       />
 

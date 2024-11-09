@@ -11,6 +11,8 @@ import {
 } from '@phosphor-icons/react';
 import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
+import { useDispatch, useSelector } from 'react-redux';
+import { setShowRightSlidder } from '../../Store/PageMaster';
 
 const RightDrawer = ({
   priceFilterType,
@@ -50,6 +52,7 @@ const RightDrawer = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
+  const dispatch = useDispatch();
   // // Prepare categories for CustomSelect
   // const categoryOptions = cat?.map((category) => ({
   //   value: category._id,
@@ -109,9 +112,13 @@ const RightDrawer = ({
   const removeFollowerSelection = (follower) => {
     setSelectedFollowers(selectedFollowers.filter((f) => f !== follower));
   };
+  const showRightSlidder = useSelector(
+    (state) => state.pageMaster.showRightSlidder
+  );
 
   const toggleDrawer = (openState) => () => {
     setOpen(openState);
+    dispatch(setShowRightSlidder(!showRightSlidder));
   };
 
   const drawerList = (

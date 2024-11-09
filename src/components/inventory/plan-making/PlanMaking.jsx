@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import { Button, IconButton, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setShowPageHealthColumn } from '../../Store/PageOverview';
 import {
   useGetAllVendorQuery,
@@ -97,6 +97,7 @@ const PlanMaking = () => {
   const [descriptions, setDescriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkedDescriptions, setCheckedDescriptions] = useState([]);
+
   // const [pageDetail, setPageDetails] = useState([]);
 
   const { id } = useParams();
@@ -119,6 +120,10 @@ const PlanMaking = () => {
   const handleToggleLeftNavbar = () => {
     setToggleLeftNavbar(!toggleLeftNavbar);
   };
+  const showRightSlidder = useSelector(
+    (state) => state.pageMaster.showRightSlidder
+  );
+
   const navigate = useNavigate();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
@@ -254,19 +259,27 @@ const PlanMaking = () => {
       [row._id]: isChecked,
     }));
 
-    // 3. Handle postPerPage value change and cost calculation
-    const postPerPage = isChecked ? 1 : 0;
+    // 3. Handle postPerPage value change
+    const postPerPage = isChecked ? postCountDefault || 1 : 0; // Set to postCountDefault if checked, or default to 1 if not provided
+    const storyPerPage = isChecked ? storyCountDefault || 0 : 0; // Set to storyCountDefault if checked, or default to 0 if not provided
 
-    // 4. Safely handle async post value updates and calculations
+    // 4. Update the storyPerPage values based on the checkbox selection
+    const updatedStoryValues = {
+      ...storyPerPageValues,
+      [row._id]: storyPerPage, // Set story count for this row
+    };
+    setStoryPerPageValues(updatedStoryValues);
+
+    // 5. Update postPerPage values and calculate costs
     handlePostPerValue(row, postPerPage, (updatedPostValues) => {
-      // Get safe values with fallback to prevent NaN
-      const postCount = updatedPostValues[row._id] ?? 0;
-      const storyCount = storyPerPageValues[row._id] ?? 0;
-      const postCost = costPerPostValues[row._id] ?? 0;
-      const storyCost = costPerStoryValues[row._id] ?? 0;
-      const bothCost = costPerBothValues[row._id] ?? 0;
+      // Ensure we get valid values with fallback
+      const postCount = updatedPostValues[row._id] ?? 1; // Default to 1 if not provided
+      const storyCount = updatedStoryValues[row._id] ?? 0; // Default to 0 if not provided
+      const postCost = costPerPostValues[row._id] ?? 0; // Default to 0 if not available
+      const storyCost = costPerStoryValues[row._id] ?? 0; // Default to 0 if not available
+      const bothCost = costPerBothValues[row._id] ?? 0; // Default to 0 if not available
 
-      // Perform total cost calculation with valid data
+      // Perform total cost calculation
       calculateTotalCost(
         row._id,
         postCount,
@@ -283,18 +296,19 @@ const PlanMaking = () => {
           page_name,
           post_price: getPriceDetail(page_price_list, 'instagram_post'),
           story_price: getPriceDetail(page_price_list, 'instagram_story'),
-          post_count: Number(updatedPostValues[_id]) || 0,
-          story_count: Number(storyPerPageValues[_id]) || 0,
+          post_count: Number(updatedPostValues[_id]) || 1, // Default to 1 post
+          story_count: Number(updatedStoryValues[_id]) || 0, // Default to 0 story
         })
       );
       setPlanData(planxData);
+
       // Debounce plan details to avoid rapid state updates
       if (!isAutomaticCheck) {
         debouncedSendPlanDetails(planxData);
       }
     });
 
-    // 5. Update page category count safely
+    // 6. Update page category count safely
     const categoryId = row.page_category_id;
     setPageCategoryCount((prevCount) => {
       const newCount = { ...prevCount };
@@ -305,9 +319,10 @@ const PlanMaking = () => {
       return newCount;
     });
 
-    // 6. Trigger any other required state updates or statistics
+    // 7. Trigger any other required state updates or statistics
     updateStatistics(updatedSelectedRows);
   };
+
   const handleStoryPerPageChange = (row) => (event) => {
     const updatedStoryValues = {
       ...storyPerPageValues,
@@ -619,6 +634,7 @@ const PlanMaking = () => {
       [id]: totalCost,
     }));
   };
+
   const { dataGridColumns } = DataGridColumns({
     vendorData,
     filterData,
@@ -1116,6 +1132,11 @@ const PlanMaking = () => {
     updateStatistics(selectedRows);
   }, [storyPerPageValues, postPerPageValues]);
 
+  useEffect(() => {
+    setStoryCountDefault(0);
+    setPostCountDefault(0);
+  }, [showRightSlidder]);
+
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
 
   const allNotFoundUnfetched = notFoundPages.every((page) =>
@@ -1166,6 +1187,7 @@ const PlanMaking = () => {
         onClose={handleCloseModal}
         descriptions={descriptions.filter((desc) => desc.status === 'Active')}
         onCheckedDescriptionsChange={handleCheckedDescriptionsChange}
+        checkedDescriptions={checkedDescriptions} setCheckedDescriptions={setCheckedDescriptions}
       />
       {alertData && (
         <CustomAlert
@@ -1200,6 +1222,7 @@ const PlanMaking = () => {
           handleOwnPage={handleOwnPage}
           category={cat}
           ownPages={ownPages}
+          checkedDescriptions={checkedDescriptions}
         />
       )}
 
@@ -1241,28 +1264,27 @@ const PlanMaking = () => {
             ) : (
               ''
             )}
-            {/* <div className="row">
-              <div className="col-6">
-                <input
-                  type="number"
-                  className="filter-input form-control"
-                  placeholder="Post Count"
-                  value={postCountDefault || ''}
-                  onChange={handlePostCountChange}
-                />
-              </div>
-              <div className="col-6">
-                <input
-                  type="number"
-                  className="filter-input form-control"
-                  placeholder="Story Count"
-                  value={storyCountDefault || ''}
-                  onChange={handleStoryCountChange}
-                />
-              </div>
-            </div> */}
           </div>
-
+          <div className="row" style={{ padding: '0.5rem' }}>
+            <div className="col">
+              <input
+                type="number"
+                className="filter-input form-control hundred"
+                placeholder="Post Count"
+                value={postCountDefault || ''}
+                onChange={handlePostCountChange}
+              />
+            </div>
+            <div className="col">
+              <input
+                type="number"
+                className="filter-input form-control hundred"
+                placeholder="Story Count"
+                value={storyCountDefault || ''}
+                onChange={handleStoryCountChange}
+              />
+            </div>
+          </div>
           <div className="flexCenter colGap12">
             <div className="flexCenter colGap8">
               <div className="input-group primaryInputGroup">
@@ -1327,6 +1349,7 @@ const PlanMaking = () => {
             </div>
           </div>
         </div>
+
         <div className="card-body p0">
           <div className="thmTable">
             <Box sx={{ height: 700, width: '100%' }}>
@@ -1337,8 +1360,8 @@ const PlanMaking = () => {
                   showOwnPage
                     ? ownPages
                     : toggleShowBtn
-                    ? selectedRows
-                    : sortedRows(filterData, selectedRows)
+                      ? selectedRows
+                      : sortedRows(filterData, selectedRows)
                 }
                 Pagination={[100, 200]}
                 // selectedData={}
