@@ -13,40 +13,20 @@ import { addRow } from '../../Store/Executon-Slice';
 import View from '../Sales/Account/View/View';
 
 import DateFormattingComponent from '../../DateFormator/DateFormared';
-import {
-  openTagCategoriesModal,
-  setTagCategories,
-} from '../../Store/PageOverview';
 import TagCategoryListModal from './TagCategoryListModal';
-import {
-  useGetAllVendorQuery,
-  useGetPmsPlatformQuery,
-  useGetVendorWhatsappLinkTypeQuery,
-} from '../../Store/reduxBaseURL';
 import VendorNotAssignedModal from './VendorNotAssignedModal';
 import {
-  useGetAllCitiesQuery,
-  useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
-  useGetMultiplePagePriceQuery,
   useGetPageStateQuery,
-  useGetpagePriceTypeQuery,
-  useGetAllPageSubCategoryQuery,
-  useGetAllProfileListQuery,
 } from '../../Store/PageBaseURL';
-import AddIcon from '@mui/icons-material/Add';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { setStatsUpdate } from '../../Store/PageMaster';
 import PageDetail from './PageOverview/PageDetail';
 import formatString from '../Operation/CampaignMaster/WordCapital';
 import { AppContext, useGlobalContext } from '../../../Context/Context';
 import PageClosedByDetails from './Page/PageClosedByDetails';
 import VendorDetails from './Vendor/VendorDetails';
-import CategoryWisePageOverview from './PageOverview/CategoryWisePageOverview';
-import StatisticsWisePageOverview from './PageOverview/StatisticsWisePageOverview';
-import { constant } from '../../../utils/constants';
+
 import { formatNumber } from '../../../utils/formatNumber';
-import FilterWisePageOverview from './PageOverview/FilterWisePageOverview';
 import PriceModal from './PageOverview/PriceModal';
 import FollowerLogsModal from './FollowerLogsModal';
 import PriceLogs from './PriceLogs';
@@ -67,32 +47,21 @@ const PageOverviewNew = () => {
 
   const { usersDataContext } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
-  const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState('Tab0');
-  const [tabFilterData, setTabFilterData] = useState([]);
-  const [tableFollowers, setTableFollowers] = useState(0);
-  const [tablePosts, setTablePosts] = useState(0);
-  const [tableStories, setTableStories] = useState(0);
-  const [tableBoths, setTableBoths] = useState(0);
-  const [filterData, setFilterData] = useState([]);
   const [user, setUser] = useState();
   const [progress, setProgress] = useState(10);
   const [showPriceModal, setShowPriceModal] = useState(false);
-  const [contextData, setContextData] = useState(false);
-  const [pageUpdateAuth, setPageUpdateAuth] = useState(false);
-  const [pageStatsAuth, setPageStatsAuth] = useState(false);
+
   const [selectedRow, setSelectedRow] = useState([]);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
   const [waData, setWaData] = useState(null);
-  const [individualData, setIndividualData] = useState([]);
-  const [individualDataDup, setIndividualDataDup] = useState([]);
+
   const [allVendorWhats, setAllVendorWhats] = useState([]);
   const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
   const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState('');
-  const [localPriceData, setLocalPriceData] = useState(null);
   const [pagequery, setPagequery] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editID, setEditID] = useState(null);
@@ -108,20 +77,7 @@ const PageOverviewNew = () => {
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
-  //   const { data: allPriceTypeList } = useGetpagePriceTypeQuery();
-  //   const { data: profileData } = useGetAllProfileListQuery();
-  console.log(pageStates, "pageStates")
-  // Handle price type change
-  const handlePriceTypeChange = (e) => {
-    setSelectedPriceType(e.target.value);
-  };
 
-  // Handle price input change
-  const handleInputChange = (e) => {
-    setInputPrice(e.target.value);
-  };
-
-  // Filter data when the button is clicked
   const handleFilter = () => {
     const filteredData = filterData?.filter((row) => {
       let price = 0;
@@ -185,26 +141,6 @@ const PageOverviewNew = () => {
     setNewFilterData(data);
   }
 
-  const getData = () => {
-    setUser(usersDataContext);
-    axios
-      .get(baseUrl + 'v1/vendor_group_link', {
-        headers: {
-          Authorization: `Bearer ${storedToken}`,
-          'Content-Type': 'application/json',
-        },
-      })
-      .then((res) => {
-        setAllVendorWhats(res?.data?.data);
-      });
-  };
-
-  const handleTagCategory = (params) => {
-    return function () {
-      dispatch(setTagCategories(params));
-      dispatch(openTagCategoriesModal());
-    };
-  };
 
   const handleSetState = () => {
     dispatch(addRow(false));
@@ -220,27 +156,6 @@ const PageOverviewNew = () => {
     });
   };
 
-  const calculateAndSetTotals = (result) => {
-    let totalFollowers = 0;
-    let totalPosts = 0;
-    let totalStories = 0;
-    let totalBoths = 0;
-    if (!result) {
-      return;
-    }
-    for (let i = 0; i < result?.length; i++) {
-      if (result[i]?.followers_count) {
-        totalFollowers += result[i]?.followers_count;
-      }
-      totalPosts += result[i].post;
-      totalStories += result[i].story;
-      totalBoths += result[i].both_;
-    }
-    setTableFollowers(totalFollowers);
-    setTablePosts(totalPosts);
-    setTableStories(totalStories);
-    setTableBoths(totalBoths);
-  };
 
   const handlePriceClick = (row) => {
     return function () {
@@ -852,8 +767,6 @@ const PageOverviewNew = () => {
         );
         const storyPrice = postDetail?.instagram_story || 0;
         const followerCount = row?.followers_count || 0;
-
-        // Calculate the average price only if followerCount is greater than zero
         const averageStoryPrice = followerCount
           ? Math.floor(storyPrice / (followerCount / 1000000))
           : '0';
@@ -875,30 +788,6 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         return formatString(row.preference_level);
       },
-      // // editable: true,
-      // customEditElement: (
-      //   row,
-      //   index,
-      //   setEditFlag,
-      //   editflag,
-      //   handelchange,
-      //   column
-      // ) => {
-      //   return (
-      //     <select
-      //       className="form-select"
-      //       value={row.preference_level}
-      //       onChange={(e) => {
-      //         handelchange(e, index, column);
-      //         handleLevelChange(e, setEditFlag, row);
-      //       }}
-      //     >
-      //       <option value="Level 1 (High)">Level 1 (High)</option>
-      //       <option value="Level 2 (Medium)">Level 2 (Medium)</option>
-      //       <option value="Level 3 (Low)">Level 3 (Low)</option>
-      //     </select>
-      //   );
-      // },
     },
 
     {
@@ -938,8 +827,6 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         return formatString(row.page_sub_category_name);
       },
-
-      // compare: true,
     },
     {
       key: 'followers_count',
@@ -1083,13 +970,6 @@ const PageOverviewNew = () => {
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
-          {/* {pageUpdateAuth && (
-            <Link
-              className="mt-2"
-              to={`/admin/pms-page-edit/${row._id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            > */}
           <button
             title="Edit"
             className="btn btn-outline-primary btn-sm user-button"
@@ -1097,8 +977,6 @@ const PageOverviewNew = () => {
           >
             <FaEdit />{' '}
           </button>
-          {/* </Link>
-          )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
               <DeleteButton
@@ -1120,110 +998,7 @@ const PageOverviewNew = () => {
     },
   ];
 
-  const handleLevelChange = async (event, setEditFlag, row) => {
-    const newValue = event.target.value;
-    try {
-      await axios.put(
-        `${baseUrl}v1/pageMaster/${row._id}`,
-        {
-          preference_level: newValue,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toastAlert('Data Updated');
-    } catch (error) {
-      console.error('Error updating status:', error);
-    } finally {
-      setEditFlag(false);
-    }
-  };
 
-  const handleStatusChange = async (event, setEditFlag, row) => {
-    const newValue = event.target.value;
-    try {
-      await axios.put(
-        `${baseUrl}v1/pageMaster/${row._id}`,
-        {
-          page_mast_status: newValue,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toastAlert('Data Updated');
-    } catch (error) {
-      console.error('Error updating status:', error);
-    } finally {
-      setEditFlag(false);
-    }
-  };
-
-  const handleCategoryChange = async (event, setEditFlag, row) => {
-    const newValue = event.target.value;
-
-    try {
-      await axios.put(
-        `${baseUrl}v1/pageMaster/${row._id}`,
-        {
-          page_category_id: newValue,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toastAlert('Data Updated');
-    } catch (error) {
-      console.error('Error updating status:', error);
-    } finally {
-      setEditFlag(false);
-      refetchPageCate();
-      refetchPageList();
-    }
-  };
-
-  const handleProfileChange = async (event, setEditFlag, row) => {
-    const newValue = Number(row.profile_visit);
-    try {
-      await axios.put(
-        `${baseUrl}v1/page_states/${row.pageId}`,
-        {
-          // ...params.row,
-          profile_visit: newValue,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      toastAlert('Data Updated');
-    } catch (error) {
-      console.error('Error updating status:', error);
-    } finally {
-      setEditFlag(false);
-    }
-  };
-  // Fetch data from API
-  const fetchWhatsAppLinks = async () => {
-    try {
-      const response = await axios.get('/api/whatsAppLinks');
-      setAllVendorWhats(response?.data);
-    } catch (error) {
-      console.error('Error fetching WhatsApp links', error);
-    }
-  };
 
   return (
     <>
@@ -1270,12 +1045,6 @@ const PageOverviewNew = () => {
             >
               Statistics
             </button>
-            {/* <button
-          className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab2")}
-        >
-          OLD-Statistics
-        </button> */}
             <button
               className={
                 activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'

@@ -16,10 +16,12 @@ const ContentForm = () => {
     metaDescription: '',
     altDescription: '',
     bannerImage: null,
+    posted_by: '',
     blogImages: [],
   });
   const [loading, setLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
+  const [imageInsertLocation, setImageInsertLocation] = useState(null);
   const bannerImageRef = useRef();
   // const blogImagesRef = useRef();
   const quillRef = useRef(null);
@@ -64,37 +66,56 @@ const ContentForm = () => {
   //     blogImages: updatedImages,
   //   }));
   // };
- 
+
   const appendClassToSpecificTags = (htmlString) => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlString, 'text/html');
 
-    doc.body.querySelectorAll('h1').forEach((element) => {
-      element.classList.add('heading-main');
+    // Add classes to specific tags
+    doc.body
+      .querySelectorAll('h1')
+      .forEach((element) => element.classList.add('heading-main'));
+    doc.body
+      .querySelectorAll('blockquote')
+      .forEach((element) => element.classList.add('single-blog-content'));
+    doc.body
+      .querySelectorAll('h2')
+      .forEach((element) => element.classList.add('heading-secondary'));
+    doc.body
+      .querySelectorAll('h3')
+      .forEach((element) => element.classList.add('heading-tertiary'));
+    doc.body
+      .querySelectorAll('p')
+      .forEach((element) => element.classList.add('paragraph-content'));
+    doc.body
+      .querySelectorAll('ul')
+      .forEach((element) => element.classList.add('unordered-list'));
+    doc.body
+      .querySelectorAll('li')
+      .forEach((element) => element.classList.add('list-item'));
+
+    // Group images inside a specific <div class="row"> structure
+    const paragraphs = doc.querySelectorAll('p.paragraph-content');
+
+    paragraphs.forEach((paragraph) => {
+      const images = Array.from(paragraph.querySelectorAll('img'));
+
+      if (images.length > 0) {
+        const rowDiv = document.createElement('div');
+        rowDiv.classList.add('row');
+
+        images.forEach((img) => {
+          const colDiv = document.createElement('div');
+          colDiv.classList.add('col-4');
+          colDiv.appendChild(img.cloneNode(true)); // Clone the image inside col-4
+          rowDiv.appendChild(colDiv); // Append col-4 to row
+          img.remove(); // Remove original image from paragraph
+        });
+
+        paragraph.appendChild(rowDiv); // Append the row to the paragraph
+      }
     });
-    doc.body.querySelectorAll('blockquote').forEach((element) => {
-      element.classList.add('single-blog-content');
-    });
-    doc.body.querySelectorAll('h2').forEach((element) => {
-      element.classList.add('heading-secondary');
-    });
-    doc.body.querySelectorAll('h3').forEach((element) => {
-      element.classList.add('heading-tertiary');
-    });
-    doc.body.querySelectorAll('p').forEach((element) => {
-      element.classList.add('paragraph-content');
-    });
-    doc.body.querySelectorAll('ul').forEach((element) => {
-      element.setAttribute('className', 'unordered-list');
-      element.style.listStyleType = 'disc';
-    });
-    doc.body.querySelectorAll('img').forEach((element) => {
-      element.setAttribute('className', 'blog-image');
-    });
-    doc.body.querySelectorAll('li').forEach((element) => {
-      element.setAttribute('className', 'list-item');
-      element.style.marginBottom = '5px';
-    });
+
     return doc.body.innerHTML;
   };
 
@@ -176,6 +197,7 @@ const ContentForm = () => {
       formData.append('body', finalHtml);
 
       formData.append('bannerAltDesc', formState.bannerAltDesc);
+      formData.append('posted_by', formState.posted_by);
       formData.append('metaTitle', formState.metaTitle);
       formData.append('metaDescription', formState.metaDescription);
       formData.append('altDescription', formState.altDescription);
@@ -340,6 +362,14 @@ const ContentForm = () => {
           className="content-form__input-text"
           placeholder="Alt Description"
           value={formState.altDescription}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          name="posted_by"
+          className="content-form__input-text"
+          placeholder="posted by"
+          value={formState.posted_by}
           onChange={handleInputChange}
         />
       </div>

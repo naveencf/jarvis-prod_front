@@ -6,7 +6,7 @@ import FormContainer from '../FormContainer';
 import { baseUrl } from '../../../utils/config';
 import jwtDecode from 'jwt-decode';
 import { Navigate, useNavigate } from 'react-router';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Select from 'react-select';
 import {
   Autocomplete,
@@ -54,6 +54,7 @@ import formatString from '../Operation/CampaignMaster/WordCapital';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PreviewModal from './Vendor/PreviewModal';
 import { useContext } from 'react';
+import { FormatName } from '../../../utils/FormatName';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
@@ -307,9 +308,9 @@ const VendorMaster = () => {
         'Content-Type': 'application/json',
       },
     })
-    .then((res)=>{
-      setBusiTypeData(res.data.data)
-    })
+      .then((res) => {
+        setBusiTypeData(res.data.data)
+      })
 
     if (_id) {
       axios
@@ -447,7 +448,7 @@ const VendorMaster = () => {
             ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName)
           );
         } else if (busiType === "670112e2579d1873b7ede528") {
-          filteredDocs = combinedDocs.filter(doc => 
+          filteredDocs = combinedDocs.filter(doc =>
             ["Driving License", "Aadhar Card", "Pan Card"].includes(doc.docName)
           );
         }
@@ -493,7 +494,7 @@ const VendorMaster = () => {
           docNumber: '',
           document_image_upload: '',
         },
-        
+
       ];
     } else if (busiType === '670112d0579d1873b7ede526') {
       newDocs = [
@@ -742,7 +743,7 @@ const VendorMaster = () => {
       vendorLinks: whatsappLink,
       closed_by: userId,
       dob: dob,
-      busi_type:busiType
+      busi_type: busiType
     };
     setPreviewData(formData);
     setOpenPreviewModal(true);
@@ -803,7 +804,7 @@ const VendorMaster = () => {
       vendorLinks: whatsappLink,
       closed_by: userId,
       dob: dob,
-      busi_type:busiType
+      busi_type: busiType
     };
 
     if (!_id) {
@@ -900,7 +901,7 @@ const VendorMaster = () => {
                   },
                 }
               )
-              .then((res) => {})
+              .then((res) => { })
               .catch((err) => {
                 toastError(err.message);
               });
@@ -916,21 +917,21 @@ const VendorMaster = () => {
     }
   };
 
-  const handleFinalSubmit = async() => {
+  const handleFinalSubmit = async () => {
 
 
     if (!_id) {
       setIsFormSubmitting(true);
       addVendor(previewData)
         .then((res) => {
-          console.log(res,"res")
+          console.log(res, "res")
           setIsFormSubmitting(false);
-          if(res?.status == 200){
+          if (res?.status == 200) {
             setIsFormSubmitted(true);
             setOpenPreviewModal(false);
             toastAlert('Data Submitted Successfully');
             const resID = res.data.data._id;
-  
+
             // Add company data and documents (same as original logic)
             addCompanyData({
               vendor_id: resID,
@@ -948,14 +949,14 @@ const VendorMaster = () => {
               .catch((err) => {
                 toastError(err.message);
               });
-  
+
             for (let i = 0; i < docDetails?.length; i++) {
               const formData = new FormData();
               formData.append('vendor_id', resID);
               formData.append('document_name', docDetails[i].docName);
               formData.append('document_no', docDetails[i].docNumber);
               formData.append('document_image_upload', docDetails[i].docImage);
-  
+
               addVendorDocument(formData)
                 .then((res) => {
                   // Handle successful document submission
@@ -964,9 +965,9 @@ const VendorMaster = () => {
                   toastError(err.message);
                 });
             }
-          }else if (res?.error?.status == 409){
+          } else if (res?.error?.status == 409) {
             toastError('Vendor is already registered with this mobile number');
-          }else{
+          } else {
             toastError('There is some error while adding this vendor');
           }
         })
@@ -1006,12 +1007,12 @@ const VendorMaster = () => {
             bank_name: forPhp?.bank_name || bankRows[0].bank_name,
             vendor_name: vendorName
           }
-          axios.post(baseUrl + `node_data_to_php_update_vendor`,payload)
-          .then(()=>{})
-          .catch((err)=>{
-            console.log(err)
-          })
-          
+          axios.post(baseUrl + `node_data_to_php_update_vendor`, payload)
+            .then(() => { })
+            .catch((err) => {
+              console.log(err)
+            })
+
           toastAlert('Data Updated Successfully');
           setIsFormSubmitted(true);
           setIsFormSubmitting(false);
@@ -1027,16 +1028,25 @@ const VendorMaster = () => {
     const { checked } = e.target;
     setSameAsPrevious(checked);
     if (checked) {
-      setCompAddress(homeAddress);
+      // setCompAddress(homeAddress);
+      setHomeAddress(compAddress);
+
       // if (countryCode === "91") {
-      setCompCity(homeCity);
-      setCompState(homeState);
-      setCompPin(homePincode);
+      // setCompCity(homeCity);
+      // setCompState(homeState);
+      // setCompPin(homePincode);
+      setHomeCity(compCity)
+      setHomeState(compState)
+      setHomePincode(compPin)
     } else {
-      setCompAddress('');
-      setCompCity('');
-      setCompPin('');
-      setCompState('');
+      // setCompAddress('');
+      // setCompCity('');
+      // setCompPin('');
+      // setCompState('');
+      setHomeAddress('');
+      setHomeCity('');
+      setHomeState('');
+      setHomePincode('');
     }
   };
 
@@ -1104,8 +1114,8 @@ const VendorMaster = () => {
     navigate(-1);
   };
 
-  const setVendorNameFun = (e) =>{
-    setVendorName(e); 
+  const setVendorNameFun = (e) => {
+    setVendorName(e);
     // const checkVendorExist = allVendorData?.data?.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
     // console.log(checkVendorExist)
     // if(checkVendorExist == undefined){
@@ -1160,9 +1170,9 @@ const VendorMaster = () => {
                 <Select
                   options={
                     busiTypeData.map((option) => ({
-                    value: option._id,
-                    label: option.busi_type_name,
-                  }))}
+                      value: option._id,
+                      label: option.busi_type_name,
+                    }))}
                   astric={true}
                   required={true}
                   // required={true}
@@ -1222,29 +1232,29 @@ const VendorMaster = () => {
                 <div className="col-md-3">
                   <label className="form-label">Document Name</label>
                   {docDetails.length == 5 ? (
-                      <input
-                        type="text"
-                        value={link.docName}
-                        onChange={(e) => handleDocNameChange(index, e.target.value)}
-                        className="form-control"
-                        required
-                      />
-                      ) : (
-                      <Select
-                        className=""
-                        options={copyOptions?.map((option) => ({
-                          value: option,
-                          label: option,
-                        }))}
-                        value={{
-                          value: link.docName,
-                          label: link.docName,
-                        }}
-                        onChange={(selectedOption) => {
-                          handleDocNameChange(index, selectedOption.value);
-                        }}
-                        required
-                      />
+                    <input
+                      type="text"
+                      value={link.docName}
+                      onChange={(e) => handleDocNameChange(index, e.target.value)}
+                      className="form-control"
+                      required
+                    />
+                  ) : (
+                    <Select
+                      className=""
+                      options={copyOptions?.map((option) => ({
+                        value: option,
+                        label: option,
+                      }))}
+                      value={{
+                        value: link.docName,
+                        label: link.docName,
+                      }}
+                      onChange={(selectedOption) => {
+                        handleDocNameChange(index, selectedOption.value);
+                      }}
+                      required
+                    />
                   )}
                 </div>
                 <FieldContainer
@@ -1291,7 +1301,7 @@ const VendorMaster = () => {
                 </div>
               </div>
             </div>
-            
+
             {busiType === "670112e2579d1873b7ede528" ? '' : (
               <>
                 <div className="card-header">Company Details</div>
@@ -1310,32 +1320,44 @@ const VendorMaster = () => {
                     onChange={(e) => setCompAddress(e.target.value)}
                   />
 
-                  <FieldContainer
+                  {/* <FieldContainer
                     label="Company City"
                     value={compCity}
                     required={false}
                     onChange={(e) => setCompCity(e.target.value)}
-                  />
-
-                  <FieldContainer
-                    label="Company Pincode"
-                    value={compPin}
-                    required={false}
-                    maxLength={6}
-                    onChange={handleCompPincode}
-                    // onChange={(e) => {
-                    //   if (isNaN(e.target.value)) return;
-                    //   setCompPin(e.target.value);
-                    // }}
-                  />
-
-                  <div className="form-group col-6 mt-3">
+                  /> */}
+                    <div className="form-group col-6 mt-3">
                     <label htmlFor="">Company State</label>
                     <IndianStatesMui
                       selectedState={compState}
                       onChange={(option) => setCompState(option ? option : null)}
                     />
                   </div>
+                  <div className="form-group col-6">
+                    <label className="form-label">Company City</label>
+                    <IndianCitiesMui
+                      selectedState={compState}
+                      selectedCity={compCity}
+                      value={compCity}
+                      onChange={(option) => {
+                        setCompCity(option ? option : null);
+                        // console.log(option);
+                      }}
+                    />
+                  </div>
+                  <FieldContainer
+                    label="Company Pincode"
+                    value={compPin}
+                    required={false}
+                    maxLength={6}
+                    onChange={handleCompPincode}
+                  // onChange={(e) => {
+                  //   if (isNaN(e.target.value)) return;
+                  //   setCompPin(e.target.value);
+                  // }}
+                  />
+
+                
                 </div>
               </>
             )}
@@ -1362,10 +1384,10 @@ const VendorMaster = () => {
               )}
               {existError && (
                 <>
-                <small style={{ color: messageColor }}>
-                  {existError}
-                </small>
-                {messageColor == 'red' ? <Link to='/admin/pms-page-master' style={{color:'blue'}}> Add Page</Link> : ''}
+                  <small style={{ color: messageColor }}>
+                    {existError}
+                  </small>
+                  {messageColor == 'red' ? <Link to='/admin/pms-page-master' style={{ color: 'blue' }}> Add Page</Link> : ''}
                 </>
               )}
             </div>
@@ -1520,7 +1542,7 @@ const VendorMaster = () => {
               <Select
                 options={platformData?.data?.map((option) => ({
                   value: option._id,
-                  label: option.platform_name,
+                  label: FormatName(option.platform_name),
                 }))}
                 required={true}
                 value={{
@@ -1715,14 +1737,14 @@ const VendorMaster = () => {
 
                 {(bankRows[i].payment_method == '66681c3c4366007df1df1481' ||
                   bankRows[i].payment_method == '666856624366007df1dfacc8') && (
-                  <FieldContainer
-                    label={'Registered Mobile Number'}
-                    value={bankRows[i].registered_number}
-                    required={false}
-                    type="number"
-                    onChange={(e) => handleRegisteredMobileChange(e, i)}
-                  />
-                )}
+                    <FieldContainer
+                      label={'Registered Mobile Number'}
+                      value={bankRows[i].registered_number}
+                      required={false}
+                      type="number"
+                      onChange={(e) => handleRegisteredMobileChange(e, i)}
+                    />
+                  )}
                 {i > 0 && (
                   <IconButton
                     onClick={handleRemoveBankInfoRow(i)}
@@ -1818,7 +1840,7 @@ const VendorMaster = () => {
               />
             </div>
 
-            <div className="col-md-6 threshold_style" style={{display:'flex'}}>
+            <div className="col-md-6 threshold_style" style={{ display: 'flex' }}>
               <FieldContainer
                 label="Threshold Limit"
                 value={limit}
@@ -1873,12 +1895,12 @@ const VendorMaster = () => {
 
             <div className="col-md-6">
               <label className="form-label"> DOB </label>
-              <input 
-                type="date" 
-                className="form-control" 
-                max={new Date().toISOString().split('T')[0]} 
+              <input
+                type="date"
+                className="form-control"
+                max={new Date().toISOString().split('T')[0]}
                 required="false"
-                onChange={(e)=>setDob(e.target.value)}
+                onChange={(e) => setDob(e.target.value)}
               />
             </div>
 
@@ -2002,7 +2024,7 @@ const VendorMaster = () => {
                     color="primary"
                   />
                 }
-                label="Same as Home Address"
+                label="Same as Company Address"
               />
             </div>
 
@@ -2121,8 +2143,8 @@ const VendorMaster = () => {
                   {isFormSubmitting2
                     ? 'Submitting...'
                     : _id
-                    ? 'Update'
-                    : 'Add New Profile'}
+                      ? 'Update'
+                      : 'Add New Profile'}
                 </Button>
               </Stack>
             )}
