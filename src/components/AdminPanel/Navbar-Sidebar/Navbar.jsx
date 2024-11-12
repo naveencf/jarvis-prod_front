@@ -13,6 +13,7 @@ import Bronze from "../../../assets/img/icon/badge/bronze.png";
 import Basic from "../../../assets/img/icon/badge/iron.png";
 import { List } from "@phosphor-icons/react";
 import { formatNumber } from "../../../utils/formatNumber";
+import InternetSpeedChecker from "../User/UserDashboard/InternetSpeedChecker";
 
 const badgeImageMap = {
   Diamond: Diamond,
@@ -129,6 +130,7 @@ const Navbar = () => {
 
   return (
     <>
+    
       {/* Topbar Start */}
       <nav className="navbar navbar-expand topbar ">
         {/* <button className="btn sidebar_tglbtn" id="sidebarToggle">
@@ -154,6 +156,7 @@ const Navbar = () => {
               </div>
             </label>
           </li>
+
           {/* {deptId == 36 && ( */}
           {loginUserId !== 1 && deptId == 36 && (
             <li className="nav-item" id="salesBadge">
@@ -177,6 +180,8 @@ const Navbar = () => {
             </li>
           )}
           {/* )} */}
+        <InternetSpeedChecker/>
+
           <li className="nav-item">
             <div className="theme-switch">
               <input type="checkbox" id="theme-toggle" />

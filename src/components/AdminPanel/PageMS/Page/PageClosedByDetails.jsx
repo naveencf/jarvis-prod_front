@@ -100,12 +100,12 @@ const PageClosedByDetails = ({ pagequery }) => {
     }
   };
   const { start, end } = getDateRange();
-    
-  const {data:getcount} = useGetPageCountQuery({
+
+  const { data: getcount } = useGetPageCountQuery({
     start_date: start.toISOString().split("T")[0],
     end_date: end.toISOString().split("T")[0],
   });
-  console.log(getcount , 'count tdata')
+ 
   useEffect(() => {
     if (getcount) {
       setRows(getcount.data);
@@ -147,7 +147,7 @@ const PageClosedByDetails = ({ pagequery }) => {
 
   return (
     <div>
-  
+
 
       <Autocomplete
         options={filterOptions}
@@ -180,14 +180,21 @@ const PageClosedByDetails = ({ pagequery }) => {
 
       <Box sx={{ height: 700, width: "100%" }}>
         <div>
-          <h3 style={{ marginBottom: "10px" }}>
-            Page Details Added By Individuals
-          </h3>
+          <div className="d-flex justify-content-between align-items-center p-3">
+            <h3 className="mb-0">
+              Page Details Added By Individuals
+            </h3>
+            <div className="border border-secondary rounded">
+              <b>Count  : </b> {individualData.length}
+            
+            </div>
+          </div>
           {individualData?.length === 0 ? (
             <p>No data available</p>
           ) : (
             individualData?.map((dataItem, index) => (
               <div key={dataItem._id} style={{ marginBottom: "10px" }}>
+
                 <button
                   style={{
                     padding: "10px",
@@ -200,7 +207,8 @@ const PageClosedByDetails = ({ pagequery }) => {
                   }}
                   onClick={() => handleIndex(index)}
                 >
-                  Created by User: {dataItem.user_name}
+                  Created by User: {dataItem.user_name} -  {dataItem.count}
+
                   <span style={{ float: "right" }}>
                     {activeIndex === index ? "-" : "+"}
                   </span>
@@ -215,7 +223,9 @@ const PageClosedByDetails = ({ pagequery }) => {
                   <Grid container spacing={2} sx={{ padding: "10px" }}>
                     {dataItem.allpages_name.map((pageItem) => (
                       <Grid key={pageItem._id} item xs={12} md={6} lg={4}>
-                        <Link to={`https://www.instagram.com/${pageItem.name}`  } target='_blank'>
+
+
+                        <Link to={`https://www.instagram.com/${pageItem.name}`} target='_blank'>
                           <List
                             sx={{ width: "100%", bgcolor: "background.paper" }}
                           >

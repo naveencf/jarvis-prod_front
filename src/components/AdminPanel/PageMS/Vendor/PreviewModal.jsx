@@ -1,6 +1,10 @@
 import React from 'react';
-import { Modal, Box, Typography, Divider, Button } from '@mui/material';
-
+import { Modal, Box, Typography, Divider, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Grid } from '@mui/material';
+import {
+  useGetPmsPayCycleQuery,
+  useGetPmsPlatformQuery,
+  useGetAllVendorTypeQuery
+} from "../../../Store/reduxBaseURL";
 const PreviewModal = ({
   open,
   onClose,
@@ -11,7 +15,15 @@ const PreviewModal = ({
   docDetails,
   handleFinalSubmit,
 }) => {
-  // console.log(previewData);
+  const { data: platform } = useGetPmsPlatformQuery();
+  const platformData = platform?.data;
+  console.log(platform , 'platform data')
+  const { data: cycle } = useGetPmsPayCycleQuery();
+  const cycleData = cycle?.data; 
+  const { data: vendor } = useGetAllVendorTypeQuery();
+const typeData = vendor?.data; 
+  console.log(platformData?.find((item) => item?._id == previewData.vendor_platform)
+  ?.platform_name)
   return (
     <Modal
       open={open}
@@ -33,127 +45,124 @@ const PreviewModal = ({
           overflowY: 'auto',
         }}
       >
-        <Typography id="modal-preview-description" sx={{ mt: 2 }}>
-          Vendor Name: {previewData.vendor_name || 'N/A'}
+        <Typography id="modal-preview-title" variant="h6" component="h2">
+          Vendor Information Preview
         </Typography>
-        <Typography>
-          Country Code: {previewData.country_code || 'N/A'}
-        </Typography>
-        <Typography>Mobile: {previewData.mobile || 'N/A'}</Typography>
-        <Typography>
-          Alternate Mobile: {previewData.alternate_mobile || 'N/A'}
-        </Typography>
-        <Typography>Email: {previewData.email || 'N/A'}</Typography>
-        <Typography>Vendor Type: {previewData.vendor_type || 'N/A'}</Typography>
-        <Typography>
-          Vendor Platform: {previewData.vendor_platform || 'N/A'}
-        </Typography>
-        <Typography>Pay Cycle: {previewData.pay_cycle || 'N/A'}</Typography>
-        <Typography>
-          Company Name: {previewData.company_name || 'N/A'}
-        </Typography>
-        <Typography>
-          Company Address: {previewData.company_address || 'N/A'}
-        </Typography>
-        <Typography>
-          Company City: {previewData.company_city || 'N/A'}
-        </Typography>
-        <Typography>
-          Company Pincode: {previewData.company_pincode || 'N/A'}
-        </Typography>
-        <Typography>
-          Company State: {previewData.company_state || 'N/A'}
-        </Typography>
-        <Typography>
-          Threshold Limit: {previewData.threshold_limit || 'N/A'}
-        </Typography>
-        <Typography>
-          Home Address: {previewData.home_address || 'N/A'}
-        </Typography>
-        <Typography>Home City: {previewData.home_city || 'N/A'}</Typography>
-        <Typography>Home State: {previewData.home_state || 'N/A'}</Typography>
-        <Typography>
-          Home Pincode: {previewData.home_pincode || 'N/A'}
-        </Typography>
-        <Typography>
-          Vendor Category: {previewData.vendor_category || 'N/A'}
-        </Typography>
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Bank Details:
-        </Typography>
+        <Divider sx={{ my: 2 }} />
 
-        {bankRows?.length > 0 ? (
-          bankRows.map((row, i) => (
-            <Box key={i} sx={{ mb: 2 }}>
-              <Typography>
+        {/* Vendor Details Table */}
+        <TableContainer component={Paper} sx={{ mb: 3 }}>
+          <Table aria-label="vendor-details-table">
+            <TableHead>
+              <TableRow>
+                <TableCell colSpan={2}>
+                  <Typography variant="subtitle1" fontWeight="bold">Vendor Details</Typography>
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {Object.entries({
+                'Vendor Name': previewData.vendor_name,
+                'Country Code': previewData.country_code,
+                'Mobile': previewData.mobile,
+                'Alternate Mobile': previewData.alternate_mobile,
+                'Email': previewData.email,
+                'Vendor Type': typeData?.find((item) => item?._id == previewData?.vendor_type)
+                ?.type_name,
+                'Vendor Platform':platformData?.find((item) => item?._id == previewData.vendor_platform)
+                ?.platform_name,
+                'Pay Cycle': cycleData?.find((item) => item?._id == previewData?.pay_cycle)
+                ?.cycle_name,
+                'Company Name': previewData.company_name,
+                'Company Address': previewData.company_address,
+                'Company City': previewData.company_city,
+                'Company Pincode': previewData.company_pincode,
+                'Company State': previewData.company_state,
+                'Threshold Limit': previewData.threshold_limit,
+                'Home Address': previewData.home_address,
+                'Home City': previewData.home_city,
+                'Home State': previewData.home_state,
+                'Home Pincode': previewData.home_pincode,
+                'Vendor Category': previewData.vendor_category,
+              }).map(([key, value]) => (
+                <TableRow key={key}>
+                  <TableCell>{key}</TableCell>
+                  <TableCell>{value || 'N/A'}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Bank Details Section */}
+        <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
+        Bank Details:
+      </Typography>
+      
+      {bankRows?.length > 0 ? (
+        bankRows.map((row, i) => (
+          <Card key={i} sx={{ mb: 3, p: 2, boxShadow: 3 }}>
+            <CardContent>
+              <Typography variant="subtitle1" sx={{ mb: 1 }}>
                 <strong>Payment Method:</strong>{' '}
-                {payData?.find((option) => option._id === row.payment_method)
-                  ?.payMethod_name || 'N/A'}
+                {payData?.find((option) => option._id === row.payment_method)?.payMethod_name || 'N/A'}
               </Typography>
 
-              {row.payment_method === '666856874366007df1dfacde' && (
-                <>
-                  <Typography>
-                    <strong>Bank Name:</strong> {row?.bank_name || 'N/A'}
-                  </Typography>
-                  <Typography>
-                    <strong>Account Type:</strong> {row.account_type || 'N/A'}
-                  </Typography>
-                  <Typography>
-                    <strong>Account Number:</strong>{' '}
-                    {row.account_number || 'N/A'}
-                  </Typography>
-                  <Typography>
-                    <strong>IFSC Code:</strong> {row?.ifcs || 'N/A'}
-                  </Typography>
-                </>
-              )}
+              {/* Payment method-specific details */}
+              <Grid container spacing={2}>
+                {row.payment_method === '666856874366007df1dfacde' && (
+                  <>
+                    <Grid item xs={6}>
+                      <Typography><strong>Bank Name:</strong> {row?.bank_name || 'N/A'}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography><strong>Account Type:</strong> {row.account_type || 'N/A'}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography><strong>Account Number:</strong> {row.account_number || 'N/A'}</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography><strong>IFSC Code:</strong> {row?.ifcs || 'N/A'}</Typography>
+                    </Grid>
+                  </>
+                )}
 
-              {row.payment_method === '666856754366007df1dfacd2' && (
-                <Typography>
-                  <strong>UPI ID:</strong> {row.upi_id || 'N/A'}
-                </Typography>
-              )}
+                {row.payment_method === '666856754366007df1dfacd2' && (
+                  <Grid item xs={12}>
+                    <Typography><strong>UPI ID:</strong> {row.upi_id || 'N/A'}</Typography>
+                  </Grid>
+                )}
 
-              {(row.payment_method === '66681c3c4366007df1df1481' ||
-                row.payment_method === '666856624366007df1dfacc8') && (
-                <Typography>
-                  <strong>Registered Mobile Number:</strong>{' '}
-                  {row.registered_number || 'N/A'}
-                </Typography>
-              )}
+                {(row.payment_method === '66681c3c4366007df1df1481' ||
+                  row.payment_method === '666856624366007df1dfacc8') && (
+                  <Grid item xs={12}>
+                    <Typography><strong>Registered Mobile Number:</strong> {row.registered_number || 'N/A'}</Typography>
+                  </Grid>
+                )}
+              </Grid>
+            </CardContent>
+          </Card>
+        ))
+      ) : (
+        <Typography>No bank details provided.</Typography>
+      )}
 
-              <Divider sx={{ mt: 2 }} />
-            </Box>
-          ))
-        ) : (
-          <Typography>No bank details provided.</Typography>
-        )}
-
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Document Details:
-        </Typography>
+        {/* Document Details Section */}
+        <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Document Details:</Typography>
         {docDetails?.map((doc, index) => (
-          <div className="row" key={index}>
-            <div className="col-md-4">
-              <Typography>
-                <strong>Document Name:</strong> {doc?.docName}
-              </Typography>
-            </div>
-            <div className="col-md-4">
-              <Typography>
-                <strong>Document Number:</strong> {doc?.docNumber}
-              </Typography>
-            </div>
-          </div>
+          <TableContainer component={Paper} sx={{ my: 1 }} key={index}>
+            <Table aria-label="document-details-table">
+              <TableBody>
+                <TableRow>
+                  <TableCell><strong>Document Name:</strong> {doc?.docName || 'N/A'}</TableCell>
+                  <TableCell><strong>Document Number:</strong> {doc?.docNumber || 'N/A'}</TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </TableContainer>
         ))}
 
-        {/* <Typography>
-          Vendor Links (WhatsApp, etc.): {previewData.vendorLinks || 'N/A'}
-        </Typography> */}
-        {/* <Typography>Created By: {previewData.created_by || 'N/A'}</Typography>
-        <Typography>Closed By: {previewData.closed_by || 'N/A'}</Typography> */}
-
+        {/* Action Buttons */}
         <Box sx={{ mt: 3, display: 'flex', justifyContent: 'space-between' }}>
           <Button onClick={onClose} color="error">
             Cancel

@@ -284,7 +284,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col-md-6">
-                <Link to="/admin/finance-payment-release-report">
+                <Link to="/admin/finance-balancepayment">
                   <div className="cardGrdnt greenGrdnt">
                     <div className="financeCardBox border-bottom">
                       <div className="financeCardBoxIn">

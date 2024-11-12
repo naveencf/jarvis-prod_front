@@ -652,7 +652,7 @@ const UserUpdate = () => {
       setEmail(user_email_id);
       setLoginId(user_login_id);
       setContact(user_contact_no);
-      setPassword(user_login_password);
+      // setPassword(user_login_password);
       setIncomingPassword(user_login_password);
       setRoles(role_id);
       setDepartment(dept_id);
@@ -787,9 +787,11 @@ const UserUpdate = () => {
       return toastError("Fill the Alternate Contact");
     } else if (!loginId || loginId == "") {
       return toastError("Fill the Login ID");
-    } else if (!password || password == "") {
-      return toastError("Fill the Password");
-    } else if (!gender || gender == "") {
+    } 
+    // else if (!password || password == "") {
+    //   return toastError("Fill the Password");
+    // } 
+    else if (!gender || gender == "") {
       return toastError("Fill the Gender");
     } else if (!nationality || nationality == "") {
       return toastError("Fill the Nationality");

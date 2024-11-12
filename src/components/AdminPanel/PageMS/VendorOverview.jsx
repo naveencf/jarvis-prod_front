@@ -384,7 +384,7 @@ const handleCloseVendorMPriceModal = () => {
       name: "Platform",
       renderRowCell: (row) => {
         return platformData?.find((item) => item?._id == row?.vendor_platform)
-          ?.platform_name;
+          ?.platform_name
       },
       width: 200,
       editable: true,

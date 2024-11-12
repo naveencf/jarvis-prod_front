@@ -67,17 +67,50 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
     { label: '0.5M To 0.7M', value: [500000, 700000] },
     { label: '0.7M To 1M', value: [700000, 1000000] },
     { label: '1M to 2M', value: [1000000, 2000000] },
-    { label: '2M to 5M', value: [2000000, 4000000] },
+    { label: '2M to 5M', value: [2000000, 5000000] },
     { label: ' 5M', value: [5000000, 40000000] }
   ];
+  useEffect(() => {
+    const storedFilters = JSON.parse(sessionStorage.getItem("filters"));
+    if (storedFilters) {
+      setCategoryFilter(storedFilters.categoryFilter);
+      setSubCategoryFilter(storedFilters.subCategoryFilter);
+      setProfileTypeFilter(storedFilters.profileTypeFilter);
+      setPlatformFilter(storedFilters.platformFilter);
+      setOwnershipFilter(storedFilters.ownershipFilter);
+      setActivenessFilter(storedFilters.activenessFilter);
+      setFilterFollowers(storedFilters.filterFollowers);
+    }
+  }, []);
+
+  // Save filters to sessionStorage whenever they change
+  useEffect(() => {
+    const filters = {
+      categoryFilter,
+      subCategoryFilter,
+      profileTypeFilter,
+      platformFilter,
+      ownershipFilter,
+      activenessFilter,
+      filterFollowers,
+    };
+    sessionStorage.setItem("filters", JSON.stringify(filters));
+  }, [
+    categoryFilter,
+    subCategoryFilter,
+    profileTypeFilter,
+    platformFilter,
+    ownershipFilter,
+    activenessFilter,
+    filterFollowers,
+  ]);
 
   const handleSelectionChange = (event, newValue) => {
     if (newValue) {
-      setFilterFollowers(newValue.value)
+      setFilterFollowers(newValue)
     } else {
       setFilterFollowers(null)
     }
-
   };
 
   useEffect(() => {
@@ -93,7 +126,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
         : "",
       platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
       ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
-      filterFollowers ? `minFollower=${filterFollowers[0]}&maxFollower=${filterFollowers[1]}`
+      filterFollowers ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`
         : "",
       activenessFilter
         ? `page_activeness=${activenessOptions.find(
@@ -320,13 +353,13 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
             </div>
             <div className="col-md-3 mb16">
               <Autocomplete
+                value={filterFollowers}
+                onChange={handleSelectionChange}
                 options={FollowerRanges}
                 getOptionLabel={(option) => option.label}
-                onChange={handleSelectionChange}
                 renderInput={(params) => <TextField {...params} label="Followers" />}
               />
             </div>
-
             {decodedToken?.role_id == 1 && (
               <ExportInventory pageList={pageList} />
             )}

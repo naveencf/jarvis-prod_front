@@ -257,6 +257,10 @@ const PageMaster = () => {
   const handlePrimaryChange = (selectedOption) => {
     setPrimary(selectedOption);
   };
+  
+  console.log(vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_id, 'ok ok')
+  console.log(vendorData)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -344,6 +348,7 @@ const PageMaster = () => {
     ) {
       return toastError('Please Fill All Required Fields');
     }
+
     const payload = {
       page_name: pageName,
       page_link: link,
@@ -368,6 +373,9 @@ const PageMaster = () => {
       content_creation: content,
       ownership_type: ownerType?.value,
       vendor_id: vendorId,
+
+      temp_vendor_id:vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_id,
+
       vendor_name: vendorData
         ?.find((vendor) => vendor._id === vendorId)
         ?.vendor_name?.toLowerCase(),
@@ -389,6 +397,7 @@ const PageMaster = () => {
       page_price_list: rowCount.map((item) => {
         return { [item.page_price_type_name]: item.price };
       }),
+      
     };
 
     // return;
@@ -614,7 +623,6 @@ const PageMaster = () => {
       );
 
       if (response.status === 200) {
-        console.log(response?.data?.data[0]?.isCreatorExists);
         if (response?.data?.data[0]?.isCreatorExists == true) {
           const followerData =
             response?.data?.data[0]?.creatorDetails?.followers;
@@ -1181,7 +1189,6 @@ const PageMaster = () => {
                 <label className="form-label">
                   Ownership Type<sup style={{ color: 'red' }}>*</sup>
                 </label>
-
                 <Select
                   className="w-100"
                   options={[
@@ -1233,7 +1240,9 @@ const PageMaster = () => {
                 </label>
                 <Select
                   // components={{ MenuList }}
-                  options={usersDataContext.map((option) => ({
+                  options={usersDataContext
+                    // .filter((item)=>item?.department_name == "Finance")
+                    .map((option) => ({
                     value: option.user_id,
                     label: option.user_name,
                   }))}

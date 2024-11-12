@@ -1081,7 +1081,7 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "To Pay",
-      cell: (row) => row.toPay + " ₹",
+      cell: (row) => row.toPay?.toFixed() + " ₹",
     },
     {
       name: "Status",
