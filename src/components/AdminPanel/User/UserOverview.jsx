@@ -218,21 +218,22 @@ const UserOverview = () => {
       const response = await axios.get(baseUrl + "get_all_users");
       const data = response.data.data;
 
-      setDatas(data);
+      
       setTransferToUser(data);
 
       if (id == "Active") {
         setFilterData(data.filter((d) => d.user_status == "Active"));
       }
       if (id == "WFO") {
-        setFilterData(data.filter((d) => d.job_type == "WFO"));
+        setFilterData(data.filter((d) => d.job_type == "WFO" && d.user_status == "Active"));
       }
       if (id == "WFH") {
-        setFilterData(data.filter((d) => d.job_type == "WFH"));
+        setFilterData(data.filter((d) => d.job_type == "WFH" && d.user_status == "Active"));
       }
       if (id == "WFHD") {
-        setFilterData(data.filter((d) => d.job_type == "WFHD"));
+        setFilterData(data.filter((d) => d.job_type == "WFHD" && d.user_status == "Active"));
       }
+      setDatas(data);
     } catch (error) {
       throw new Error(error);
     } finally {
@@ -704,36 +705,6 @@ const UserOverview = () => {
     }
   };
 
-  // const options = [
-  //   { value: "All", label: "All" },
-  //   ...designationData.map((option) => ({
-  //     value: option.desi_id,
-  //     label: option.desi_name,
-  //   })),
-  // ];
-
-  // const selectedOption =
-  //   options.find((option) => option.value === designationFilter) || null;
-
-  // const selectedOption = designationFilter ? designationFilter ==="All"
-  // ?     { value: "All", label: "All" }:
-  // {
-  //  value: designationFilter,
-  //  label: designationData.find((desi)=>desi.desi_id ===designationFilter)?.desi_name || "",
-  // }
-  // const options = [
-  //   { value: "All", label: "All" },
-  //   ...designationData.map((option) => ({
-  //     value: option.desi_id,
-  //     label: option.desi_name,
-  //   })),
-  // ];
-
-  // Finding the selected option
-  // const selectedOption = designationFilter
-  //   ? options.find((option) => option.value === designationFilter)
-  //   : null;
-
   const apiKey = "AIzaSyCRv0hz37kV5Oa-2Pz-D3JEReg1snhU4S0";
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${map1?.latitude?.$numberDecimal},${map1?.longitude?.$numberDecimal}`;
 
@@ -793,28 +764,6 @@ const UserOverview = () => {
               </button>
             </Link>
           )}
-          {/* {contextData &&
-            contextData[10] &&
-            contextData[10].view_value === 1 && (
-              <Link to="/admin/designation-overview">
-                <button
-                  type="button"
-                  className="btn btn-outline-primary btn-sm"
-                >
-                  Designation
-                </button>
-              </Link>
-            )} */}
-
-          {/* {contextData &&
-            contextData[18] &&
-            contextData[18].insert_value === 1 && (
-              <Link to="/admin/pre-onboarding">
-                <button type="button" className="btn btn-warning btn-sm">
-                  Add Pre Onboarding
-                </button>
-              </Link>
-            )} */}
           {contextData &&
             contextData[0] &&
             contextData[0].insert_value === 1 && (
@@ -966,7 +915,7 @@ const UserOverview = () => {
                   options={jobTypeOptions}
                 />
               </div>
-              {/* <div className="form-group col-3">
+              <div className="form-group col-3">
                   <FieldContainer
                     fieldGrid={12}
                     label="Search"
@@ -974,27 +923,14 @@ const UserOverview = () => {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
-                </div> */}
+                </div>
             </div>
           </div>
         </div>
         <div className="">
           <div
-            className=" "
-            // style={{ height: "64vh", width: "100%" }}
           >
-            {/* <DataGrid
-                rows={filterdata.map((data, index) => ({ ...data, id: index }))}
-                columns={columns}
-                pageSize={10}
-                rowsPerPageOptions={[10]}
-                disableColumnMenu
-                disableSelectionOnClick
-                getRowId={(row) => row.id}
-                slots={{
-                  toolbar: GridToolbar,
-                }}
-              /> */}
+            
             <View
               columns={Columns}
               data={filterdata}

@@ -25,7 +25,7 @@ export default function VendorMPriceModal({ open, onClose, rowData }) {
     e.preventDefault();
     try {
       const response = await axios.put(
-        baseUrl + "v1/update_m_price_with_vendor_id",
+        baseUrl + "v1/update_m_price_data_with_vendor_id",
         {
           vendor_id: rowData._id,
           m_post_price: mWisePostPrice,

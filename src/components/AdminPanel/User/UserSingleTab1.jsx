@@ -212,6 +212,59 @@ const UserSingleTab1 = ({ user, roomId }) => {
             </div>
           </div>
           <hr />
+
+          <h3>Address</h3>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Permanent Address</h3>
+              <h4>{user.permanent_address ? user.permanent_address : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Permanent State</h3>
+              <h4>{user.permanent_state ? user.permanent_state : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Permanent City</h3>
+              <h4>{user.permanent_city ? user.permanent_city : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Permanent Pincode</h3>
+              <h4>{user.permanent_pin_code ? user.permanent_pin_code : "NA"}</h4>
+            </div>
+          </div>
+
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Current Address</h3>
+              <h4>{user.current_address ? user.current_address : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Current State</h3>
+              <h4>{user.current_state ? user.current_state : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Current City</h3>
+              <h4>{user.current_city ? user.current_city : "NA"}</h4>
+            </div>
+          </div>
+          <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
+            <div className="profileInfo_box">
+              <h3>Current Pincode</h3>
+              <h4>{user.current_pin_code ? user.current_pin_code : "NA"}</h4>
+            </div>
+          </div>
+          <hr />
+
           <h3>Identity Details</h3>
           <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
             <div className="profileInfo_box">

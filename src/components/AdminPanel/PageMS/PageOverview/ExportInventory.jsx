@@ -60,7 +60,9 @@ function ExportInventory({ pageList }) {
         "Post": postPrice,
         "Story": storyPrice,
         "Both": bothPrice,
-        "Million_Post": millionPostPrice,
+        "Million_Post": row.m_post_price,
+        "Million_Story": row?.m_story_price,
+        "Million_Both": row?.m_both_price,
       };
     });
 

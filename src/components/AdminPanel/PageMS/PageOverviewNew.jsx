@@ -73,7 +73,7 @@ const PageOverviewNew = () => {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery })
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
@@ -903,6 +903,31 @@ const PageOverviewNew = () => {
         return BothData ? BothData : 0;
       },
       compare: true,
+    },
+    {
+      key: 'm_story_price',
+      name: ' M Story',
+      width: 200,
+      
+    },
+    {
+      key: 'm_post_price',
+      name: ' M Post',
+      width: 200,
+      
+    },
+    {
+      key: 'm_both_price',
+      name: ' M Both',
+      width: 200,
+      
+    },
+
+    {
+      key: 'ownership_type',
+      name: 'Ownership',
+      width: 200,
+      
     },
     {
       key: 'page_price_multiple',
