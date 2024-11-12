@@ -17,13 +17,11 @@ const PreviewModal = ({
 }) => {
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
-  console.log(platform , 'platform data')
   const { data: cycle } = useGetPmsPayCycleQuery();
   const cycleData = cycle?.data; 
   const { data: vendor } = useGetAllVendorTypeQuery();
 const typeData = vendor?.data; 
-  console.log(platformData?.find((item) => item?._id == previewData.vendor_platform)
-  ?.platform_name)
+
   return (
     <Modal
       open={open}

@@ -99,6 +99,11 @@ const NewJoineeAndExitUsersWFO = () => {
       headerName: "User Name",
       width: 250,
     },
+    // {
+    //   field: "job_type",
+    //   headerName: "Job Type",
+    //   width: 250,
+    // },
     {
       field: "dept_name",
       headerName: "Department Name",

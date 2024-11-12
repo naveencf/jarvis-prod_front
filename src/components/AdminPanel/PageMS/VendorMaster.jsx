@@ -959,14 +959,15 @@ const VendorMaster = () => {
 
               addVendorDocument(formData)
                 .then((res) => {
-                  // Handle successful document submission
+                 console.log(res);
                 })
                 .catch((err) => {
                   toastError(err.message);
                 });
             }
           } else if (res?.error?.status == 409) {
-            toastError('Vendor is already registered with this mobile number');
+            console.log(res?.error?.data?.message);
+            toastError(res?.error?.data?.message);
           } else {
             toastError('There is some error while adding this vendor');
           }

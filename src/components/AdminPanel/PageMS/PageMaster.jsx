@@ -145,19 +145,19 @@ const PageMaster = () => {
   const vendorData = vendor || [];
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
-  const { refetch: refetchPageList, data: pageList } = useGetAllPageListQuery({
-    decodedToken,
-    userID,
-    pagequery,
-  });
 
+    const {
+      data: pageList,
+      refetch: refetchPageList,
+      isLoading: isPageListLoading,
+    } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+    
   const { data: platformPriceData, isLoading: isPriceLoading } =
     useGetPlatformPriceQuery();
 
   const [existError, setExistError] = useState('');
   const [messageColor, setMessageColor] = useState('');
   const { usersDataContext } = useContext(AppContext);
-
   const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
@@ -257,9 +257,6 @@ const PageMaster = () => {
   const handlePrimaryChange = (selectedOption) => {
     setPrimary(selectedOption);
   };
-  
-  console.log(vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_id, 'ok ok')
-  console.log(vendorData)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -374,7 +371,7 @@ const PageMaster = () => {
       ownership_type: ownerType?.value,
       vendor_id: vendorId,
 
-      temp_vendor_id:vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_id,
+      temp_vendor_id: vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_id,
 
       vendor_name: vendorData
         ?.find((vendor) => vendor._id === vendorId)
@@ -397,7 +394,7 @@ const PageMaster = () => {
       page_price_list: rowCount.map((item) => {
         return { [item.page_price_type_name]: item.price };
       }),
-      
+
     };
 
     // return;
@@ -414,7 +411,7 @@ const PageMaster = () => {
         })
         .then(() => {
           refetchPageList();
-          toastAlert(' Data Updated Successfully');
+          toastAlert(' Data Updated  saim create 1 put Successfully');
           setIsFormSubmitted(true);
         })
         .catch((error) => {
@@ -428,10 +425,16 @@ const PageMaster = () => {
             'Content-Type': 'application/json',
           },
         })
-        .then(() => {
+        .then((res) => {
+          const pltname = formatString(res?.data?.data?.savingObj?.platform_name)
+          const instagramList = pageList?.map((item) => item?.platform_name).filter((op) => op === res?.data?.data?.savingObj?.platform_name);
+          const instagramCount = instagramList.length;
+          console.log(instagramCount, 'instagramCount');
           refetchPageList();
           setIsFormSubmitted(true);
-          toastAlert(' Data Submitted Successfully');
+          toastAlert(`${pltname} - (${instagramCount}) , Data Submitted Successfully`
+
+          );
         })
         .catch((error) => {
           const errorMessage = error.response.data.message;
@@ -494,9 +497,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-          value: initialVendor._id,
-          label: formatString(initialVendor.vendor_name),
-        }
+        value: initialVendor._id,
+        label: formatString(initialVendor.vendor_name),
+      }
       : null;
   };
 
@@ -1243,9 +1246,9 @@ const PageMaster = () => {
                   options={usersDataContext
                     // .filter((item)=>item?.department_name == "Finance")
                     .map((option) => ({
-                    value: option.user_id,
-                    label: option.user_name,
-                  }))}
+                      value: option.user_id,
+                      label: option.user_name,
+                    }))}
                   required={true}
                   value={{
                     value: singleVendor?.closed_by || closeBy,
