@@ -1,10 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import FormContainer from "../../../AdminPanel/FormContainer";
 import { useGlobalContext } from "../../../../Context/Context";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import ImageView from "../../ImageView";
-import { baseUrl } from "../../../../utils/config";
 import PendingApprovalStatusDialog from "./Components/PendingApprovalStatusDialog";
 import {
   pendingApprovalColumn,
@@ -15,11 +12,38 @@ import PendingApprovalFilters from "./Components/PendingApprovalFilters";
 import CommonDialogBox from "../../CommonDialog/CommonDialogBox";
 import { CommonFilterFunction } from "../../CommonDialog/CommonFilterFunction";
 import View from "../../../AdminPanel/Sales/Account/View/View";
+import {
+  useGetAllPaymentUpdatesPaymentStatusWiseQuery,
+  useUpdatePaymentUpdateStatusMutation,
+} from "../../../Store/API/Sales/PaymentUpdateApi";
+import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 
 const PendingApprovalUpdate = () => {
+  const {
+    refetch: refetchPaymentUpdate,
+    data: allPaymentUpdate,
+    error: allPaymentUpdateError,
+    isLoading: allPaymentUpdateLoading,
+  } = useGetAllPaymentUpdatesPaymentStatusWiseQuery("pending");
+
+  const {
+    refetch: refetchPaymentMode,
+    data: allPaymentMode = [],
+    error: allPaymentModeError,
+    isLoading: allPaymentModeLoading,
+  } = useGetAllPaymentModesQuery();
+
+  const [
+    updatepaymentUpdateStatus,
+    {
+      isLoading: updatePaymentUpdatestatusLoading,
+      isError: updatePaymentUpdateStatusError,
+      isSuccess: updatePaymentUpdateStatusSuccess,
+    },
+  ] = useUpdatePaymentUpdateStatusMutation();
+
   const { toastAlert } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
   const [filterData, setFilterData] = useState([]);
@@ -29,7 +53,6 @@ const PendingApprovalUpdate = () => {
   const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
-  const [sameCustomerDialog, setSameCustomerDialog] = useState(false);
   const [uniqueSalesExecutiveCount, setUniqueSalesExecutiveCount] =
     useState("");
   const [uniqueSalesExecutiveData, setUniqueSalesExecutiveData] = useState("");
@@ -38,15 +61,11 @@ const PendingApprovalUpdate = () => {
   const [invoiceCount, setInvoiceCount] = useState(0);
   const [nonInvoiceCount, setNonInvoiceCount] = useState(0);
   const [nonGstCount, setNonGstCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
   const [dateFilter, setDateFilter] = useState("");
   const [statusDialog, setStatusDialog] = useState(false);
   const [reasonField, setReasonField] = useState(false);
-  const [paymentModeArray, setPaymentModeArray] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedData, setSelectedData] = useState([]);
-
-  const token = sessionStorage.getItem("token");
 
   const handleCopyDetail = (detail) => {
     navigator.clipboard
@@ -70,101 +89,46 @@ const PendingApprovalUpdate = () => {
         payment_approval_status: selectedStatus,
         action_reason: reasonField,
         payment_amount: row?.payment_amount,
+        id: row?._id,
       };
+      await updatepaymentUpdateStatus(payload).unwrap();
 
-      try {
-        const res = await axios.put(
-          `${baseUrl}sales/finance_approval_payment_update/${row?._id}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (res.status === 200) {
-          toastAlert("Status Approved Successfully");
-        }
-      } catch (error) {
-        toastAlert("Status Approval Failed");
-      } finally {
-        getData();
-        setStatus("");
-        setIsFormSubmitted(true);
-      }
+      toastAlert("Status Status Approved Successfully");
+      refetchPaymentUpdate();
+      setStatus("");
     } else {
       setStatus(null);
     }
   };
+  const processData = () => {
+    const sortedData =
+      allPaymentUpdate
+        ?.slice()
+        ?.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) || [];
 
-  const handlePaymentModeData = async () => {
-    try {
-      const { data } = await axios.get(`${baseUrl}sales/payment_mode`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-      setPaymentModeArray(data?.data);
-    } catch (error) {
-      console.error("Error while getting payment mode data", error);
-    }
-  };
+    const nonGstCount = sortedData?.filter(
+      (item) => item?.gst_status === "false"
+    )?.length;
+    setNonGstCount(nonGstCount);
 
-  const getData = async () => {
-    setIsLoading(true);
-    try {
-      const { data } = await axios.get(
-        `${baseUrl}sales/payment_update?status=pending`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+    const withInvoiceImage = sortedData?.filter(
+      (item) => item?.payment_screenshot?.length > 0
+    );
+    const withoutInvoiceImage = sortedData?.filter(
+      (item) => !item?.payment_screenshot?.length
+    );
 
-      const sortedData =
-        data?.data?.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        ) || [];
+    setInvoiceCount(withInvoiceImage?.length);
+    setNonInvoiceCount(withoutInvoiceImage?.length);
 
-      setData(sortedData);
-      setFilterData(sortedData);
-      calculateUniqueData(sortedData);
-
-      // Non-GST count
-      const nonGstCount = sortedData.filter(
-        (item) => item.gst_status === "false"
-      ).length;
-      setNonGstCount(nonGstCount);
-
-      // Invoice image counts
-      const withInvoiceImage = sortedData.filter(
-        (item) => item.payment_screenshot?.length > 0
-      );
-      const withoutInvoiceImage = sortedData.filter(
-        (item) => !item.payment_screenshot?.length
-      );
-
-      setInvoiceCount(withInvoiceImage.length);
-      setNonInvoiceCount(withoutInvoiceImage.length);
-
-      // Apply date filter
-      const dateFilteredData = CommonFilterFunction(sortedData, dateFilter);
-      setFilterData(dateFilteredData);
-      setIsLoading(false);
-    } catch (error) {
-      console.error("Error fetching payment update data", error);
-    } finally {
-      setIsLoading(false);
-    }
+    const dateFilteredData = CommonFilterFunction(sortedData, dateFilter);
+    setFilterData(dateFilteredData);
+    calculateUniqueData(dateFilteredData);
   };
 
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName) => {
-      return data.reduce((acc, curr) => {
+      return data?.reduce((acc, curr) => {
         const key = curr[keyName];
         if (!acc[key]) {
           acc[key] = {
@@ -187,73 +151,64 @@ const PendingApprovalUpdate = () => {
     };
 
     // Aggregate data by account name
-    const uniqueCustomerData = Object.values(
+    const uniqueCustomerData = Object?.values(
       aggregateData(sortedData, "account_name")
     );
     setUniqueCustomerData(uniqueCustomerData);
-    setUniqueCustomerCount(uniqueCustomerData.length);
+    setUniqueCustomerCount(uniqueCustomerData?.length);
 
     // Aggregate data by sales executive name
-    const uniqueSalesExData = Object.values(
+    const uniqueSalesExData = Object?.values(
       aggregateData(sortedData, "created_by_name")
     );
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniqueSalesExecutiveCount(uniqueSalesExData.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
 
   useEffect(() => {
-    getData();
-    handlePaymentModeData();
-  }, [dateFilter]);
+    processData();
+    refetchPaymentMode();
+  }, [allPaymentUpdate, dateFilter]);
 
-  // Optimized search filter with RegExp for case-insensitive matching
   useEffect(() => {
     if (!search) {
-      setFilterData(datas);
+      setFilterData(allPaymentUpdate);
       return;
     }
-    const result = datas?.filter((d) =>
+    const result = allPaymentUpdate?.filter((d) =>
       new RegExp(search, "i").test(d?.sales_executive_name)
     );
     setFilterData(result);
-  }, [search, datas]);
+  }, [search, allPaymentUpdate]);
 
-  // Open unique customer dialog
   const handleOpenUniqueAccountClick = () => setUniqueCustomerDialog(true);
 
-  // Open unique sales executive dialog
   const handleOpenUniqueSalesExecutive = () =>
     setUniqueSalesExecutiveDialog(true);
 
-  // Open filtered accounts by account name
   const handleOpenSameAccounts = (accName) => {
-    const sameNameCustomers = datas?.filter(
+    const sameNameCustomers = allPaymentUpdate?.filter(
       (item) => item?.account_name === accName
     );
     setFilterData(sameNameCustomers);
-    setSameCustomerDialog(true);
     setUniqueCustomerDialog(false);
   };
 
-  // Open filtered sales executives by name
   const handleOpenSameSalesExecutive = (salesEName) => {
-    const sameNameSalesExecutive = datas?.filter(
+    const sameNameSalesExecutive = allPaymentUpdate?.filter(
       (item) => item?.created_by_name === salesEName
     );
     setFilterData(sameNameSalesExecutive);
     setUniqueSalesExecutiveDialog(false);
-    setSameCustomerDialog(true);
   };
 
-  // Clear filtered records
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
-    setFilterData(datas);
+    setFilterData(allPaymentUpdate);
   };
 
-  // Function to calculate total requested amount and counts
   const calculateTotalsAndCounts = (data = []) => {
-    return data.reduce(
+    return data?.reduce(
       (totals, item) => {
         const paymentAmount = parseFloat(item.payment_amount) || 0;
         totals.requestedAmountTotal += paymentAmount;
@@ -302,32 +257,31 @@ const PendingApprovalUpdate = () => {
         setReasonField={setReasonField}
         reasonField={reasonField}
         rowData={selectedRow}
-        getData={getData}
+        getData={refetchPaymentUpdate}
         status={status}
         setStatus={setStatus}
       />
       <PendingApprovalFilters
-        datas={datas}
+        datas={allPaymentUpdate}
         setFilterData={setFilterData}
         setUniqueCustomerCount={setUniqueCustomerCount}
         setUniqueCustomerData={setUniqueCustomerData}
-        paymentModeArray={paymentModeArray}
+        paymentModeArray={allPaymentMode}
         setDateFilter={setDateFilter}
         dateFilter={dateFilter}
       />
-      {/* {!loading ? ( */}
       <div>
         <View
           columns={pendingApprovalColumn({
             filterData,
             handleCopyDetail,
-            paymentModeArray,
+            allPaymentMode,
             handleStatusChange,
             setViewImgSrc,
             setViewImgDialog,
           })}
           data={filterData}
-          isLoading={isLoading}
+          isLoading={allPaymentUpdateLoading}
           title={"Pending Approval"}
           rowSelectable={true}
           showTotal={true}
@@ -345,26 +299,6 @@ const PendingApprovalUpdate = () => {
             </>
           }
         />
-        {/* <DataGrid
-            rows={filterData}
-            columns={pendingApprovalColumn({
-              filterData,
-              handleCopyDetail,
-              paymentModeArray,
-              handleStatusChange,
-              setViewImgSrc,
-              setViewImgDialog,
-            })}
-            disableSelectionOnClick
-            slots={{ toolbar: GridToolbar }}
-            slotProps={{
-              toolbar: {
-                showQuickFilter: true,
-              },
-            }}
-            getRowId={(row) => filterData?.indexOf(row)}
-          /> */}
-
         {viewImgDialog && (
           <ImageView
             viewImgSrc={viewImgSrc}

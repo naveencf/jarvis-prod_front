@@ -26,10 +26,10 @@ import View from "../../../../AdminPanel/Sales/Account/View/View";
 const SaleBookingVerify = ({
   onHandleOpenUniqueSalesExecutiveChange,
   onHandleOpenUniqueCustomerClickChange,
-  setButtonaccess,
-  setUniquecustomerCount,
-  setBaseamountTotal,
-  setUniquesalesexecutiveCount,
+  setButtonAccess,
+  setUniqueCustomerCount,
+  setBaseAmountTotal,
+  setUniqueSalesExecutiveCount,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -47,13 +47,10 @@ const SaleBookingVerify = ({
   const [toDate, setToDate] = useState("");
   const [campaignAmountFilter, setCampaignAmountFilter] = useState("");
   const [campaignAmountField, setcampaignAmountField] = useState("");
-  const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
   const [sameCustomerDialog, setSameCustomerDialog] = useState(false);
   const [sameCustomerData, setSameCustomerData] = useState([]);
-  const [uniqueSalesExecutiveCount, setUniqueSalesExecutiveCount] =
-    useState("");
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
     useState("");
   const [uniqueSalesExecutiveData, setUniqueSalesExecutiveData] = useState("");
@@ -158,22 +155,20 @@ const SaleBookingVerify = ({
       }, {});
     };
 
-    // Aggregate data by account name:-
     const aggregatedAccountData = aggregateData(sortedData, "account_name");
     const uniqueAccData = Object.values(aggregatedAccountData);
     setUniqueCustomerData(uniqueAccData);
-    setUniquecustomerCount(uniqueAccData?.length);
+    setUniqueCustomerCount(uniqueAccData?.length);
 
-    // Aggregate data by sales executive name :-
     const aggregatedSalesExData = aggregateData(sortedData, "created_by_name");
     const uniqueSalesExData = Object.values(aggregatedSalesExData);
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniquesalesexecutiveCount(uniqueSalesExData?.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
 
   useEffect(() => {
     getData();
-    setButtonaccess(
+    setButtonAccess(
       contextData &&
         contextData[2] &&
         contextData[2].insert_value === 1 &&
@@ -186,7 +181,7 @@ const SaleBookingVerify = ({
       return d.account_name?.toLowerCase().includes(search.toLowerCase());
     });
     setFilterData(result);
-  }, [search, datas]); // Including datas in dependencies
+  }, [search, datas]);
 
   // Filters Logic :-
   const handleAllFilters = () => {
@@ -291,7 +286,7 @@ const SaleBookingVerify = ({
     (total, item) => total + parseFloat(item.base_amount),
     0
   );
-  setBaseamountTotal(baseAmountTotal);
+  setBaseAmountTotal(baseAmountTotal);
 
   return (
     <>

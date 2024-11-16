@@ -12,6 +12,10 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../../utils/config";
 import { useGlobalContext } from "../../../../../../Context/Context";
+import {
+  useUpdateOutstandingBalancePaymentMutation,
+  useUpdateOutstandingSaleBookingCloseMutation,
+} from "../../../../../Store/API/Finance/OutstandingApi";
 
 function TDSDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -33,58 +37,66 @@ function TDSDialog(props) {
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken?.id;
 
+  const [
+    updateOutstandingBalancePayment,
+    {
+      isLoading: updateOutstandingBalancePaymentLoading,
+      isError: updateOutstandingBalancePaymentError,
+      isSuccess: updateOutstandingBalancePaymentSuccess,
+    },
+  ] = useUpdateOutstandingBalancePaymentMutation();
+
+  const [
+    updateOutstandingSaleBookingClose,
+    {
+      isLoading: updateOutstandingSaleBookingCloseLoading,
+      isError: updateOutstandingSaleBookingCloseError,
+      isSuccess: updateOutstandingSaleBookingCloseSuccess,
+    },
+  ] = useUpdateOutstandingSaleBookingCloseMutation();
+
   const handleCloseTDSFields = () => {
     setCloseDialog(false);
   };
 
   const handleSaveTDS = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    formData.append("sale_booking_id", +singleRow?.sale_booking_id);
-    formData.append("account_id", +singleRow?.account_id);
-    formData.append("payment_ref_no", paymentRefNo);
-    formData.append("payment_detail_id", paymentDetails?.id);
-    formData.append("payment_screenshot", paymentRefImg);
-    formData.append("payment_amount", paidAmount);
-    // formData.append("payment_date",paymentDate);
-    // formData.append("incentive_adjustment_amount", adjustmentAmount);
-    formData.append("created_by", loginUserId);
 
-    await axios
-      .put(baseUrl + `sales/sale_balance_update`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        const tdsClosePayload = {
-          tds_amount: balAmount - paidAmount,
-          tds_percentage: tdsPercentage,
-        };
+    if (!singleRow?.sale_booking_id || !paidAmount) {
+      toastAlert("Please fill in all required fields", "warning");
+      return;
+    }
 
-        axios
-          .put(
-            baseUrl +
-              `sales/booking_closed_with_tds_amount/${tdsFieldSaleBookingId}`,
-            tdsClosePayload,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res.status === 200) {
-              handleCloseTDSFields();
-              toastAlert(`Sale Booking Shifted To TDS Open Successfully`);
-              getData();
-              // handleCloseImageModal();
-            }
-          })
-          .catch((error) => console.log(error, "Error While closing tds"));
-      });
-    getData();
+    try {
+      const formData = new FormData();
+      formData.append("sale_booking_id", singleRow.sale_booking_id);
+      formData.append("account_id", singleRow.account_id || "");
+      formData.append("payment_ref_no", paymentRefNo || "");
+      formData.append("payment_detail_id", paymentDetails?.id || "");
+      formData.append("payment_screenshot", paymentRefImg || "");
+      formData.append("payment_amount", paidAmount);
+      formData.append("created_by", loginUserId);
+
+      await updateOutstandingBalancePayment(formData).unwrap();
+
+      const tdsClosePayload = {
+        id: tdsFieldSaleBookingId,
+        tds_amount: balAmount - paidAmount,
+        tds_percentage: tdsPercentage,
+      };
+      const tdsResponse = await updateOutstandingSaleBookingClose(
+        tdsClosePayload
+      ).unwrap();
+
+      if (tdsResponse) {
+        handleCloseTDSFields();
+        toastAlert("Sale Booking Shifted To TDS Open Successfully", "success");
+        getData();
+      }
+    } catch (error) {
+      console.error("Error during TDS save:", error);
+      toastAlert("Failed to save TDS. Please try again.", "error");
+    }
   };
 
   return (

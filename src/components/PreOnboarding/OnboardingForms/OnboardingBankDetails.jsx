@@ -53,7 +53,7 @@ const OnboardingBankDetails = () => {
     formData.append("old_pf_number", oldPFNumber);
     formData.append("uan_number", UANNumber);
     formData.append("old_esic_number", oldESICNumber);
-    formData.append("upi_Id", upiNumber);
+    formData.append("upi_id", upiNumber);
 
 
     if (!bankName || bankName == "") {

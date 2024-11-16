@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaRegFilePdf } from "react-icons/fa";
-import { FaFileExcel } from "react-icons/fa"; // Import Excel icon
+import { FaFileExcel } from "react-icons/fa";
 import jwtDecode from "jwt-decode";
 import FormContainer from "../../../AdminPanel/FormContainer";
 import { useGlobalContext } from "../../../../Context/Context";
@@ -31,6 +31,11 @@ import DialogforBalancePaymentUpdate from "../Outstanding/Sales/Dialog/Dialogfor
 import { outstandingColumns } from "../../CommonColumn/Columns";
 import View from "../../../AdminPanel/Sales/Account/View/View";
 import CreditNoteDialog from "./Sales/Dialog/CreditNoteDialog";
+import { Diversity1Rounded } from "@mui/icons-material";
+import { useGetAllInvoiceRequestQuery } from "../../../Store/API/Finance/InvoiceRequestApi";
+import { useGetAllOutstandingListQuery } from "../../../Store/API/Finance/OutstandingApi";
+import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
+import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDetailsApi";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -43,6 +48,28 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 
 const BalancePaymentList = () => {
   const { toastAlert, toastError } = useGlobalContext();
+
+  const {
+    refetch: refetchOutstandingList,
+    data: allOutstandingList,
+    error: allOutstandingListError,
+    isLoading: allOutstandingListLoading,
+  } = useGetAllOutstandingListQuery();
+
+  const {
+    refetch: refetchPaymentMode,
+    data: allPaymentMode,
+    error: allPayentModeError,
+    isLoading: allPaymentModeLoading,
+  } = useGetAllPaymentModesQuery();
+
+  const {
+    refetch: refetchPaymentDetails,
+    data: allPaymentDetails,
+    error: allPaymentDetailsError,
+    isLoading: allPaymentDetailsLoading,
+  } = useGetPaymentDetailListQuery();
+
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [datas, setData] = useState([]);
   const [contextData, setDatas] = useState([]);
@@ -54,7 +81,6 @@ const BalancePaymentList = () => {
   const [paymentType, setPaymentType] = useState({ label: "", value: "" });
   const [paymentDetails, setPaymentDetails] = useState("");
   const [singleRow, setSingleRow] = useState({});
-  const [dropdownData, setDropDownData] = useState([]);
   const [paidAmount, setPaidAmount] = useState([]);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [viewImgDialog, setViewImgDialog] = useState(false);
@@ -98,7 +124,6 @@ const BalancePaymentList = () => {
   const [nonGstStatus, setNonGstStatus] = useState("");
   const [discardDialog, setDiscardDialog] = useState(false);
   const [totalCount, setTotalCount] = useState(0);
-  const [paymentModeDropDownData, setPaymentModeDropDownData] = useState("");
   const [filteredPaymentModes, setFilteredPaymentModes] = useState("");
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [editActionDialog, setEditActionDialog] = useState(false);
@@ -117,18 +142,16 @@ const BalancePaymentList = () => {
   ];
 
   const token = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(token);
-  const loginUserId = decodedToken?.id;
 
   useEffect(() => {
-    getData();
     pendingApprovalApi();
   }, [dateFilter]);
 
   useEffect(() => {
-    getDropdownData();
-    getPaymentModeDropdown();
-  }, []);
+    if (allOutstandingList && !allOutstandingListLoading) {
+      getData();
+    }
+  }, [allOutstandingList, allOutstandingListLoading]);
 
   useEffect(() => {
     totalPA();
@@ -168,73 +191,49 @@ const BalancePaymentList = () => {
   };
 
   const getData = () => {
-    setIsLoading(true);
-    axios
-      .get(baseUrl + "sales/sales_booking_outstanding_for_finanace", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        console.log(res?.data?.data, "--->>>>>");
-        // Create a new array with transformed data
-        const transformedData = res?.data?.data?.reduce((acc, object) => {
-          if (object?.salesInvoiceRequestData?.length > 0) {
-            const invoices = object?.salesInvoiceRequestData?.map(
-              (invoice) => ({
-                ...invoice,
-                account_id: object.account_id,
-                sale_booking_date: object.sale_booking_date,
-                campaign_amount: object.campaign_amount,
-                base_amount: object.base_amount,
-                balance_payment_ondate: object.balance_payment_ondate,
-                gst_status: object.gst_status,
-                created_by: object.created_by,
-                createdAt: object.createdAt,
-                updatedAt: object.updatedAt,
-                sale_booking_id: object.sale_booking_id,
-                url: object.url,
-                account_name: object.account_name,
-                created_by_name: object.created_by_name,
-                paid_amount: object.paid_amount,
-                invoice_id: object._id,
-              })
-            );
-            acc?.push(...invoices);
-          } else {
-            const tempObject = {
-              ...object,
-            };
-            acc?.push(tempObject);
-          }
-          return acc;
-        }, []);
-        console.log(transformedData, "transformes--->>");
-        const reversedData = transformedData?.reverse();
-        console.log(reversedData, "reversedData--->>");
-
-        setIsLoading(false);
-        setData(reversedData);
-        setFilterData(reversedData);
-
-        setUniqueCustomerCount(111);
-
-        setUniqueCustomerData(transformedData);
-
-        setUniqueSalesExecutiveCount(111);
-
-        setUniqueSalesExecutiveData(111);
-
-        setUniqueNonInvoiceCustomerCount(111);
-
-        setUniqueNonInvoiceCustomerData(111);
-
-        setUniqueNonInvoiceSalesExecutiveCount(111);
-
-        setUniqueNonInvoiceSalesExecutiveData(111);
-      });
+    if (!allOutstandingList) return;
+    const transformedData = allOutstandingList?.reduce((acc, object) => {
+      if (object?.salesInvoiceRequestData?.length > 0) {
+        const invoices = object?.salesInvoiceRequestData?.map((invoice) => ({
+          ...invoice,
+          account_id: object.account_id,
+          sale_booking_date: object.sale_booking_date,
+          campaign_amount: object.campaign_amount,
+          base_amount: object.base_amount,
+          balance_payment_ondate: object.balance_payment_ondate,
+          gst_status: object.gst_status,
+          created_by: object.created_by,
+          createdAt: object.createdAt,
+          updatedAt: object.updatedAt,
+          sale_booking_id: object.sale_booking_id,
+          url: object.url,
+          account_name: object.account_name,
+          created_by_name: object.created_by_name,
+          paid_amount: object.paid_amount,
+          invoice_id: object._id,
+        }));
+        acc?.push(...invoices);
+      } else {
+        const tempObject = {
+          ...object,
+        };
+        acc?.push(tempObject);
+      }
+      return acc;
+    }, []);
+    const reversedData = transformedData?.reverse();
+    setData(reversedData);
+    setFilterData(reversedData);
+    setUniqueCustomerCount(111);
+    setUniqueCustomerData(transformedData);
+    setUniqueSalesExecutiveCount(111);
+    setUniqueSalesExecutiveData(111);
+    setUniqueNonInvoiceCustomerCount(111);
+    setUniqueNonInvoiceCustomerData(111);
+    setUniqueNonInvoiceSalesExecutiveCount(111);
+    setUniqueNonInvoiceSalesExecutiveData(111);
   };
-  function pendingApprovalApi() {
+  const pendingApprovalApi = () => {
     axios
       .get(
         baseUrl + `sales/payment_update_status_list_data/?status=${"pending"}`,
@@ -248,31 +247,6 @@ const BalancePaymentList = () => {
         const pedingAppData = res?.data?.data;
         setTotalCount(pedingAppData?.length);
       });
-  }
-
-  const getDropdownData = async () => {
-    const response = await axios.get(baseUrl + `sales/payment_details`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    const responseData = response?.data?.data;
-    setDropDownData(responseData);
-  };
-
-  const getPaymentModeDropdown = async () => {
-    await axios
-      .get(baseUrl + `sales/payment_mode`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        setPaymentModeDropDownData(res?.data?.data);
-      })
-      .catch((err) => console.log(err, "Error while getting payment mode"));
   };
 
   const handleImageClick = (e, row) => {
@@ -284,7 +258,7 @@ const BalancePaymentList = () => {
     setTDSFieldSaleBookingId(row.sale_booking_id);
     setNonGstStatus(row.gst_status);
     setSingleRow(row);
-    getData();
+    refetchOutstandingList();
     setImageModalOpen(true);
   };
 
@@ -357,35 +331,6 @@ const BalancePaymentList = () => {
     return +campaignAmountData - (+paidAmountData + paidAmount);
   };
 
-  // csv download----
-  const handleDownloadInvoices = async () => {
-    const zip = new JSZip();
-    // Generate CSVs and add them to the zip
-    rowSelectionModel?.forEach((rowId) => {
-      const rowData = filterData?.find((row) => row._id === rowId); // Adjusted to find the correct row data
-      if (rowData) {
-        // Prepare CSV content
-        let csvContent = ""; // Initialize CSV content
-        // Generate headers row
-        const headers = Object.keys(rowData);
-        csvContent += headers.join(",") + "\n";
-        // Generate CSV content for the row
-        const values = Object.values(rowData);
-        const rowContent = values?.map((value) => `"${value}"`).join(",");
-        csvContent += `${rowContent}\n`;
-
-        // Add CSV to the zip
-        zip.file(`invoice_${rowId}.csv`, csvContent);
-      }
-    });
-
-    // Generate the zip file
-    const zipBlob = await zip.generateAsync({ type: "blob" });
-
-    // Save the zip file
-    saveAs(zipBlob, "invoices.zip");
-  };
-
   const handleOpenEditAction = (rowData) => {
     setOutstandingRowData(rowData);
     setEditActionDialog(true);
@@ -393,14 +338,14 @@ const BalancePaymentList = () => {
 
   useEffect(() => {
     if (paymentDetails) {
-      const filteredModes = paymentModeDropDownData?.filter(
+      const filteredModes = allPaymentMode?.filter(
         (mode) => mode?._id === paymentDetails?.payment_mode_id
       );
       setFilteredPaymentModes(filteredModes);
     } else {
-      setFilteredPaymentModes(paymentModeDropDownData);
+      setFilteredPaymentModes(allPaymentMode);
     }
-  }, [paymentDetails, paymentModeDropDownData]);
+  }, [paymentDetails, allPaymentMode]);
 
   const handleOpenCreditNote = (e, row) => {
     setCreditNotesDialog(true);
@@ -459,7 +404,7 @@ const BalancePaymentList = () => {
               setPaymentRefImg={setPaymentRefImg}
               paymentDate={paymentDate}
               tdsFieldSaleBookingId={tdsFieldSaleBookingId}
-              getData={getData}
+              getData={refetchOutstandingList}
             />
           )}
 
@@ -469,7 +414,7 @@ const BalancePaymentList = () => {
               editActionDialog={editActionDialog}
               setEditActionDialog={setEditActionDialog}
               outstandingRowData={outstandingRowData}
-              getData={getData}
+              getData={refetchOutstandingList}
               setViewImgDialog={setViewImgDialog}
               viewImgSrc={viewImgSrc}
               setViewImgSrc={setViewImgSrc}
@@ -504,10 +449,6 @@ const BalancePaymentList = () => {
           )}
 
           <BalancePaymentListCardHeader filterData={filterData} />
-          {/* <BalancePaymentListFilter
-            customerList={customerList}
-            salesExecutiveList={salesExecutiveList}
-          /> */}
 
           <CreditNoteDialog
             setCreditNotesDialog={setCreditNotesDialog}
@@ -515,7 +456,7 @@ const BalancePaymentList = () => {
             rowDataForCreditNote={rowDataForCreditNote}
             setViewImgDialog={setViewImgDialog}
             setViewImgSrc={setViewImgSrc}
-            getData={getData}
+            getData={refetchOutstandingList}
           />
         </>
       )}
@@ -525,126 +466,64 @@ const BalancePaymentList = () => {
         activeTabindex={activeAccordionIndex}
         onTabClick={handleAccordionButtonClick}
       />
-      <div className="card">
-        <div className="pack w-75">
-          {rowSelectionModel?.length > 0 && (
-            <Button
-              className="btn btn-primary cmnbtn btn_sm"
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={handleDownloadInvoices}
-            >
-              Download PDF Zip
-            </Button>
-          )}
-        </div>
-        <div className="card-body thm_table fx-head">
-          {/* {(activeAccordionIndex === 3 ||
-            activeAccordionIndex === 0 ||
-            activeAccordionIndex === 1) && (
-            <DataGrid
-              rows={
-                activeAccordionIndex === 3
-                  ? filterData?.filter(
-                      (invc) => invc.invoice_type_id !== "proforma"
-                    )
-                  : activeAccordionIndex === 0
-                  ? filterData?.filter(
-                      (invc) =>
-                        invc.invoice_type_id === "tax-invoice" &&
-                        invc.invoice_creation_status !== "pending" &&
-                        invc.gst_status === true &&
-                        invc.paid_amount <= invc.campaign_amount * 0.9
-                    )
-                  : activeAccordionIndex === 1
-                  ? filterData?.filter(
-                      (invc) =>
-                        invc.invoice_type_id !== "tax-invoice" ||
-                        invc.invoice_creation_status === "pending"
-                    )
-                  : []
-              }
-              columns={outstandingColumns({
-                filterData,
-                calculateAging,
-                setViewImgSrc,
-                setViewImgDialog,
-                handleImageClick,
-                handleDiscardOpenDialog,
-                handleOpenEditAction,
-                activeAccordionIndex,
-              })}
-              pageSize={5}
-              rowsPerPageOptions={[5]}
-              disableSelectionOnClick
-              slots={{ toolbar: GridToolbar }}
-              slotProps={{
-                toolbar: {
-                  showQuickFilter: true,
-                },
-              }}
-              getRowId={(row) => row?._id}
-            />
-          )} */}
-          {(activeAccordionIndex === 3 ||
-            activeAccordionIndex === 0 ||
-            activeAccordionIndex === 1) && (
-            <View
-              columns={outstandingColumns({
-                filterData,
-                calculateAging,
-                setViewImgSrc,
-                setViewImgDialog,
-                handleImageClick,
-                handleDiscardOpenDialog,
-                handleOpenEditAction,
-                activeAccordionIndex,
-                handleOpenCreditNote,
-              })}
-              data={
-                activeAccordionIndex === 3
-                  ? filterData?.filter(
-                      (invc) => invc.invoice_type_id !== "proforma"
-                    )
-                  : activeAccordionIndex === 0
-                  ? filterData?.filter(
-                      (invc) =>
-                        invc.invoice_type_id === "tax-invoice" &&
-                        invc.invoice_creation_status !== "pending" &&
-                        invc.gst_status === true &&
-                        invc.paid_amount <= invc.campaign_amount * 0.9
-                    )
-                  : activeAccordionIndex === 1
-                  ? filterData?.filter(
-                      (invc) =>
-                        invc.invoice_type_id !== "tax-invoice" ||
-                        invc.invoice_creation_status === "pending"
-                    )
-                  : []
-              }
-              isLoading={isLoading}
-              title={"Outstanding"}
-              rowSelectable={true}
-              showTotal={true}
-              pagination={[100, 200]}
-              tableName={"sales_booking_outstanding_for_finanace"}
-              selectedData={setSelectedData}
-              addHtml={
-                <>
-                  <button
-                    className="btn cmnbtn btn_sm btn-secondary"
-                    onClick={(e) => handleClearSameRecordFilter(e)}
-                  >
-                    Clear
-                  </button>
-                </>
-              }
-            />
-          )}
+      <div>
+        {(activeAccordionIndex === 3 ||
+          activeAccordionIndex === 0 ||
+          activeAccordionIndex === 1) && (
+          <View
+            columns={outstandingColumns({
+              filterData,
+              calculateAging,
+              setViewImgSrc,
+              setViewImgDialog,
+              handleImageClick,
+              handleDiscardOpenDialog,
+              handleOpenEditAction,
+              activeAccordionIndex,
+              handleOpenCreditNote,
+            })}
+            data={
+              activeAccordionIndex === 3
+                ? filterData?.filter(
+                    (invc) => invc.invoice_type_id !== "proforma"
+                  )
+                : activeAccordionIndex === 0
+                ? filterData?.filter(
+                    (invc) =>
+                      invc.invoice_type_id === "tax-invoice" &&
+                      invc.invoice_creation_status !== "pending" &&
+                      invc.gst_status === true &&
+                      invc.paid_amount <= invc.campaign_amount * 0.9
+                  )
+                : activeAccordionIndex === 1
+                ? filterData?.filter(
+                    (invc) =>
+                      invc.invoice_type_id !== "tax-invoice" ||
+                      invc.invoice_creation_status === "pending"
+                  )
+                : []
+            }
+            isLoading={isLoading}
+            title={"Outstanding"}
+            rowSelectable={true}
+            showTotal={true}
+            pagination={[100, 200]}
+            tableName={"sales_booking_outstanding_for_finanace"}
+            selectedData={setSelectedData}
+            addHtml={
+              <>
+                <button
+                  className="btn cmnbtn btn_sm btn-secondary"
+                  onClick={(e) => handleClearSameRecordFilter(e)}
+                >
+                  Clear
+                </button>
+              </>
+            }
+          />
+        )}
 
-          {activeAccordionIndex === 2 && <ApprovedList />}
-        </div>
+        {activeAccordionIndex === 2 && <ApprovedList />}
       </div>
 
       {/* Dialog box for balance payment update*/}
@@ -653,7 +532,7 @@ const BalancePaymentList = () => {
           setPaymentDetails={setPaymentDetails}
           paidPercentage={paidPercentage}
           paymentDetails={paymentDetails}
-          dropdownData={dropdownData}
+          dropdownData={allPaymentDetails}
           paymentDate={paymentDate}
           setPaymentDate={setPaymentDate}
           balAmount={balAmount}
@@ -667,7 +546,7 @@ const BalancePaymentList = () => {
           setImageModalOpen={setImageModalOpen}
           setPaidPercentage={setPaidPercentage}
           singleRow={singleRow}
-          getData={getData}
+          getData={refetchOutstandingList}
           setCloseDialog={setCloseDialog}
           paymentRefImg={paymentRefImg}
           setPaymentRefImg={setPaymentRefImg}

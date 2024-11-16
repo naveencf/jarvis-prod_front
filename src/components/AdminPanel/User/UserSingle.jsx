@@ -14,6 +14,10 @@ import UserSingleTab5 from "./UserSingle5";
 import UserSingleTab6 from "./UserSingle6";
 import UserSingleWFHDSalaryTab from "./UserSingleWFHDSalaryTab";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
+import { BlobProvider, PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import Modal from "react-modal";
+import OfferLetter from "../../PreOnboarding/OfferLetter";
+import NDA from "../../PreOnboarding/NDA";
 
 const UserSingle = () => {
   const whatsappApi = WhatsappAPI();
@@ -30,6 +34,13 @@ const UserSingle = () => {
   const [hobbiesData, setHobbiesData] = useState([]);
 
   const [familyData, seFamilyData] = useState([]);
+
+  const [previewOffer, setpreview] = useState(false);
+  const [pdfBlob, setPdfBlob] = useState(null);
+  const handelClose = () => {
+    setpreview(!previewOffer);
+  };
+  
 
   const KRAAPI = (userId) => {
     axios.get(`${baseUrl}` + `get_single_kra/${userId}`).then((res) => {
@@ -51,6 +62,7 @@ const UserSingle = () => {
     axios.get(baseUrl + "get_all_hobbies").then((res) => {
       setHobbiesData(res.data.data);
     });
+    
   }, []);
 
   let fetchedData;
@@ -92,6 +104,9 @@ const UserSingle = () => {
     <>
       <div className="box">
         <div id="content">
+          <button className="btn btn-danger" onClick={() => {
+                          setpreview(true);
+                        }}>NDA Download</button>
           <FormContainer
             submitButton={false}
             mainTitle="User"
@@ -104,7 +119,7 @@ const UserSingle = () => {
               <UserSingleTab1 user={user} roomId={roomId} />
             )}
             {activeAccordionIndex === 1 && (
-              <UserSingleTab2 user={user} hobbiesData={hobbiesData} />
+              <UserSingleTab2 user={user} id={id} />
             )}
             {activeAccordionIndex == 2 && <DocumentTabUserSingle user={user} id={id} />}
             {activeAccordionIndex == 3 && (
@@ -117,6 +132,41 @@ const UserSingle = () => {
             && activeAccordionIndex == 3 && <UserSingleWFHDSalaryTab id={id} />}
           </FormContainer>
         </div>
+
+        <Modal
+                isOpen={previewOffer}
+                onRequestClose={() => setpreview(false)}
+                contentLabel="offerletter Modal"
+                style={{
+                  content: {
+                    maxWidth: "750px",
+                    width: "80%",
+                    margin: "auto",
+                    inset: "15px",
+                  },
+                }}
+              >
+                <div className="pack sb">
+                  <div></div>
+                  <button
+                    className="btn cmnbtn btn_sm btn-danger previewClose mt-1"
+                    onClick={handelClose}
+                  >
+                    <i className="bi bi-x-lg"></i>
+                  </button>
+                </div>
+                <embed src={`${pdfBlob}#toolbar=0`} width={"100%"} height={"100%"} />
+                <BlobProvider document={<NDA allUserData={user} />}>
+                  {({ blob, url, loading, error }) => {
+                    useEffect(() => {
+                      if (url && !loading && !error) {
+                        setPdfBlob(url); // Set the state only after the URL is available
+                      }
+                    }, [url, loading, error]);
+                  }}
+                </BlobProvider>
+
+              </Modal>
       </div>
     </>
   );

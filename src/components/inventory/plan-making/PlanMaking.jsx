@@ -3,7 +3,7 @@ import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import { Button, IconButton, Typography } from '@mui/material';
+import { Button, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,8 +19,9 @@ import {
 } from '../../Store/PageBaseURL';
 import Swal from 'sweetalert2';
 import DataGridColumns from './DataGridColumns';
-import Filters from './Filters';
+// import Filters from './Filters';
 import {
+  useFetchPlanDescription,
   useFetchPlanDetails,
   usePageDetail,
   useSendPlanDetails,
@@ -29,10 +30,11 @@ import CustomTable from '../../CustomTable/CustomTable';
 import PageDialog from './PageDialog';
 import CustomAlert from '../../../utils/CustomAlert';
 import LeftSideBar from './LeftSideBar';
-import PlanPricing from './PlanPricing';
+// import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
-import { Sliders, X } from '@phosphor-icons/react';
+import { X } from '@phosphor-icons/react';
 import { CiStickyNote, CiWarning } from 'react-icons/ci';
+import { BiSelectMultiple, BiSolidSelectMultiple } from 'react-icons/bi';
 import ActiveDescriptionModal from './ActiveDescriptionModal';
 
 const PlanMaking = () => {
@@ -57,7 +59,6 @@ const PlanMaking = () => {
   const pagequery = '';
   const { data: pageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery({ decodedToken, userID, pagequery });
-
   const { data: vendorTypeData } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
 
@@ -79,7 +80,6 @@ const PlanMaking = () => {
   const [postCountDefault, setPostCountDefault] = useState(0);
   const [selectedFollowers, setSelectedFollowers] = useState([]);
   const [planData, setPlanData] = useState([]);
-  const [expanded, setExpanded] = useState(false);
   const [totalFollowers, setTotalFollowers] = useState(0);
   // const [planSuccess, setPlanSuccess] = useState();
   const [totalCost, setTotalCost] = useState(0);
@@ -94,9 +94,9 @@ const PlanMaking = () => {
   const [notFoundPages, setNotFoundPages] = useState([]);
   const [toggleLeftNavbar, setToggleLeftNavbar] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
-  const [descriptions, setDescriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkedDescriptions, setCheckedDescriptions] = useState([]);
+  const [showCheckedRows, setShowCheckedRows] = useState(false);
 
   // const [pageDetail, setPageDetails] = useState([]);
 
@@ -105,6 +105,7 @@ const PlanMaking = () => {
   const { pageDetail } = usePageDetail(id);
   const { sendPlanDetails } = useSendPlanDetails(id);
   const { planDetails } = useFetchPlanDetails(id);
+  const { descriptions } = useFetchPlanDescription();
 
   const debounce = (func, delay) => {
     let timeoutId;
@@ -133,15 +134,34 @@ const PlanMaking = () => {
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor;
 
-  const getData = () => {
-    // axios.get(baseUrl + 'get_all_users').then((res) => {
-    axios.get(baseUrl + 'get_all_users').then(() => {
-      setProgress(70);
-    });
-  };
+  // const getData = () => {
+  //   // axios.get(baseUrl + 'get_all_users').then((res) => {
+  //   axios.get(baseUrl + 'get_all_users').then(() => {
+  //     setProgress(70);
+  //   });
+  // };
   const getPriceDetail = (priceDetails, key) => {
     const detail = priceDetails?.find((item) => item[key] !== undefined);
     return detail ? detail[key] : 0;
+  };
+  // Function to calculate price
+  const calculatePrice = (rate_type, pageData, type) => {
+    if (rate_type === 'Variable') {
+      // Calculate for post price (followers_count / 10,000) * m_post_price
+      if (type === 'post') {
+        const postPrice =
+          (pageData.followers_count / 1000000) * pageData.m_post_price;
+        return postPrice;
+      } else if (type === 'story') {
+        const storyPrice =
+          (pageData.followers_count / 1000000) * pageData.m_story_price;
+        return storyPrice;
+      } else {
+        const bothPrice =
+          (pageData.followers_count / 1000000) * pageData.m_both_price;
+        return bothPrice;
+      }
+    }
   };
 
   const handlePriceFilter = (data) => {
@@ -228,10 +248,6 @@ const PlanMaking = () => {
   // const { data: priceData, isLoading: isPriceLoading } =
   //   useGetMultiplePagePriceQuery();
 
-  const handleToggle = () => {
-    setExpanded((prev) => !prev);
-  };
-
   const handlePostPerValue = (row, postPerPage, callback) => {
     setPostPerPageValues((prevValues) => {
       const newValues = {
@@ -278,7 +294,6 @@ const PlanMaking = () => {
       const postCost = costPerPostValues[row._id] ?? 0; // Default to 0 if not available
       const storyCost = costPerStoryValues[row._id] ?? 0; // Default to 0 if not available
       const bothCost = costPerBothValues[row._id] ?? 0; // Default to 0 if not available
-
       // Perform total cost calculation
       calculateTotalCost(
         row._id,
@@ -290,16 +305,38 @@ const PlanMaking = () => {
       );
 
       // Update plan data with the latest selections
-      const planxData = updatedSelectedRows.map(
-        ({ _id, page_price_list, page_name }) => ({
+      const planxData = updatedSelectedRows.map((row) => {
+        const {
+          _id,
+          page_price_list,
+          page_name,
+          rate_type,
+          m_story_price,
+          m_post_price,
+          followers_count,
+        } = row;
+
+        const isFixedRate = rate_type === 'fixed';
+
+        const getPrice = (type) =>
+          isFixedRate
+            ? getPriceDetail(page_price_list, `instagram_${type}`)
+            : calculatePrice(
+              rate_type,
+              { m_story_price, m_post_price, followers_count },
+              type
+            );
+
+        return {
           _id,
           page_name,
-          post_price: getPriceDetail(page_price_list, 'instagram_post'),
-          story_price: getPriceDetail(page_price_list, 'instagram_story'),
-          post_count: Number(updatedPostValues[_id]) || 1, // Default to 1 post
-          story_count: Number(updatedStoryValues[_id]) || 0, // Default to 0 story
-        })
-      );
+          post_price: getPrice('post'),
+          story_price: getPrice('story'),
+          post_count: Number(updatedPostValues[_id]) || 0,
+          story_count: Number(updatedStoryValues[_id]) || 0,
+        };
+      });
+      // console.log('planX', planxData);
       setPlanData(planxData);
 
       // Debounce plan details to avoid rapid state updates
@@ -386,7 +423,7 @@ const PlanMaking = () => {
       0
     );
   };
-
+  console.log('platform', platformData);
   const totalPostCount = getTotalPostCount();
   const totalStoryCount = getTotalStoryCount();
 
@@ -399,7 +436,6 @@ const PlanMaking = () => {
         },
         body: JSON.stringify(payload),
       });
-
       return response;
     } catch (error) {
       console.error('Error making API request:', error);
@@ -417,7 +453,6 @@ const PlanMaking = () => {
       no_of_pages: selectedRows?.length,
       cost_price: totalCost,
     };
-
     try {
       // Perform both the API call and sendPlanDetails in parallel
       const [fetchResponse] = await Promise.all([
@@ -469,7 +504,7 @@ const PlanMaking = () => {
 
     // Start filtering from the original `pageList`
     let filtered = pageList.filter((item) => {
-      const isInCategory = updatedCategories.includes(item.page_category_id);
+      const isInCategory = updatedCategories?.includes(item.page_category_id);
       const hasFollowers = item.followers_count > 0;
       return isInCategory && hasFollowers;
     });
@@ -507,7 +542,9 @@ const PlanMaking = () => {
     // Update the filtered data in state
     setFilterData(filtered);
   };
-
+  const toggleCheckedRows = () => {
+    setShowCheckedRows(!showCheckedRows);
+  };
   const removeCategory = (categoryId) => {
     // Remove the category from the selected categories
     const updatedCategories = selectedCategory.filter(
@@ -518,8 +555,7 @@ const PlanMaking = () => {
     // Filter data based on the updated categories
     let filtered = pageList.filter((item) => {
       const isInCategory =
-        !updatedCategories.length ||
-        updatedCategories.includes(item.page_category_id);
+        !updatedCategories.length || updatedCategories?.(item.page_category_id);
       const hasFollowers = item.followers_count > 0;
       return isInCategory && hasFollowers;
     });
@@ -573,19 +609,6 @@ const PlanMaking = () => {
     setCheckedDescriptions(newCheckedDescriptions);
   };
 
-  const fetchDescriptions = async () => {
-    try {
-      const response = await fetch(`${baseUrl}v1/planxnote`);
-      if (response.ok) {
-        const data = await response.json();
-        setDescriptions(data?.data);
-      } else {
-        console.error('Failed to fetch descriptions');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
   const updateStatistics = (rows) => {
     let followers = 0;
     let cost = 0;
@@ -662,10 +685,8 @@ const PlanMaking = () => {
 
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
-    const platform = pageList?.filter((item) => item.platform_id === id);
-    setFilterData(platform);
   };
-
+  console.log('active', activeTabPlatfrom);
   const handleAutomaticSelection = (incomingData) => {
     // setIsAutomaticCheck(true);
     const updatedSelectedRows = [...selectedRows];
@@ -708,9 +729,15 @@ const PlanMaking = () => {
           matchingPage.page_price_list,
           'instagram_story'
         );
+        const rateType = matchingPage.rate_type === 'Fixed';
 
-        const costPerPost = postPrice;
-        const costPerStory = storyPrice;
+        const costPerPost = rateType
+          ? postPrice
+          : calculatePrice(matchingPage.rate_type, matchingPage, 'post');
+        const costPerStory = rateType
+          ? storyPrice
+          : calculatePrice(matchingPage.rate_type, matchingPage, 'story');
+        // const costPerStory = storyPrice;
         const costPerBoth = costPerPost + costPerStory;
 
         calculateTotalCost(
@@ -724,16 +751,38 @@ const PlanMaking = () => {
 
         // Mark this page's cost as 'true' in updatedShowTotalCost
         updatedShowTotalCost[matchingPage._id] = true;
-        const planxData = updatedSelectedRows.map(
-          ({ _id, page_price_list, page_name }) => ({
+        const planxData = updatedSelectedRows.map((row) => {
+          const {
+            _id,
+            page_price_list,
+            page_name,
+            rate_type,
+            m_story_price,
+            m_post_price,
+            followers_count,
+          } = row;
+
+          const isFixedRate = rate_type === 'fixed';
+
+          const getPrice = (type) =>
+            isFixedRate
+              ? getPriceDetail(page_price_list, `instagram_${type}`)
+              : calculatePrice(
+                rate_type,
+                { m_story_price, m_post_price, followers_count },
+                type
+              );
+
+          return {
             _id,
             page_name,
-            post_price: getPriceDetail(page_price_list, 'instagram_post'),
-            story_price: getPriceDetail(page_price_list, 'instagram_story'),
+            post_price: getPrice('post'),
+            story_price: getPrice('story'),
             post_count: Number(updatedPostValues[_id]) || 0,
             story_count: Number(updatedStoryValues[_id]) || 0,
-          })
-        );
+          };
+        });
+
         setPlanData(planxData);
       }
     });
@@ -758,9 +807,10 @@ const PlanMaking = () => {
     // If there are search terms
     if (searchTerms?.length > 0) {
       // Filter data based on search terms
+
       const filtered = pageList?.filter((item) =>
-        searchTerms.some((term) =>
-          normalize(item?.page_name || '').includes(normalize(term))
+        searchTerms.some(
+          (term) => normalize(item?.page_name || '') === normalize(term)
         )
       );
 
@@ -901,18 +951,22 @@ const PlanMaking = () => {
   };
   // Function to sort rows: checked rows come first
   const sortedRows = (rows, selectedRows) => {
+    if (showCheckedRows) {
+      return selectedRows;
+    }
     // Create a shallow copy of the rows to avoid modifying the original array
     if (rows) {
-      const rowsCopy = [...rows];
-      return rowsCopy?.sort((a, b) => {
-        const aChecked = selectedRows.some(
-          (selectedRow) => selectedRow._id === a._id
-        );
-        const bChecked = selectedRows.some(
-          (selectedRow) => selectedRow._id === b._id
-        );
-        return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
-      });
+      // const rowsCopy = [...rows];
+      // return rowsCopy?.sort((a, b) => {
+      //   const aChecked = selectedRows.some(
+      //     (selectedRow) => selectedRow._id === a._id
+      //   );
+      //   const bChecked = selectedRows.some(
+      //     (selectedRow) => selectedRow._id === b._id
+      //   );
+      //   return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
+      // });
+      return rows;
     }
   };
 
@@ -941,9 +995,21 @@ const PlanMaking = () => {
       // Calculate costs (if applicable)
       const postPrice = getPriceDetail(row.page_price_list, 'instagram_post');
       const storyPrice = getPriceDetail(row.page_price_list, 'instagram_story');
+      const bothPrice = getPriceDetail(row.page_price_list, 'instagram_both');
+      const rateType = row.rate_type === 'Fixed';
 
-      const costPerPost = postPrice || 0;
-      const costPerStory = storyPrice || 0;
+      const finalPostCost = rateType
+        ? postPrice
+        : calculatePrice(row.rate_type, row, 'post');
+      const finalStoryCost = rateType
+        ? storyPrice
+        : calculatePrice(row.rate_type, row, 'story');
+      const costOfBoth = rateType
+        ? bothPrice
+        : calculatePrice(row.rate_type, row, 'both');
+
+      const costPerPost = finalPostCost || 0;
+      const costPerStory = finalStoryCost || 0;
 
       // function exists to calculate total cost
       calculateTotalCost(
@@ -952,7 +1018,7 @@ const PlanMaking = () => {
         updatedStoryValues[row._id],
         costPerPost,
         costPerStory,
-        costPerPost + costPerStory
+        costOfBoth
       );
 
       // Mark this row's cost visibility as 'true'
@@ -963,17 +1029,37 @@ const PlanMaking = () => {
     });
 
     // Prepare the plan data to send
-    const planxData = updatedSelectedRows.map(
-      ({ _id, page_price_list, page_name }) => ({
+    const planxData = updatedSelectedRows.map((row) => {
+      const {
+        _id,
+        page_price_list,
+        page_name,
+        rate_type,
+        m_story_price,
+        m_post_price,
+        followers_count,
+      } = row;
+
+      const isFixedRate = rate_type === 'fixed';
+
+      const getPrice = (type) =>
+        isFixedRate
+          ? getPriceDetail(page_price_list, `instagram_${type}`)
+          : calculatePrice(
+            rate_type,
+            { m_story_price, m_post_price, followers_count },
+            type
+          );
+
+      return {
         _id,
         page_name,
-        post_price: getPriceDetail(page_price_list, 'instagram_post'),
-        story_price: getPriceDetail(page_price_list, 'instagram_story'),
+        post_price: getPrice('post'),
+        story_price: getPrice('story'),
         post_count: Number(updatedPostValues[_id]) || 0,
-        story_count: Number(storyPerPageValues[_id]) || 0,
-      })
-    );
-
+        story_count: Number(updatedStoryValues[_id]) || 0,
+      };
+    });
     // Send plan details and update the state
     sendPlanDetails(planxData);
     setPostPerPageValues(updatedPostValues);
@@ -1012,8 +1098,7 @@ const PlanMaking = () => {
         });
     }
 
-    getData();
-    fetchDescriptions();
+    // getData();
   }, []);
 
   useEffect(() => {
@@ -1040,7 +1125,7 @@ const PlanMaking = () => {
       // 1. Apply the category filter (if any)
       if (selectedCategory?.length > 0) {
         filtered = filtered.filter((item) =>
-          selectedCategory.includes(item.page_category_id)
+          selectedCategory?.includes(item.page_category_id)
         );
       }
 
@@ -1101,11 +1186,23 @@ const PlanMaking = () => {
           page.page_price_list,
           'instagram_both'
         );
+        const rateType = page.rate_type === 'Fixed';
+
+        const costPerPost = rateType
+          ? postPrice
+          : calculatePrice(page.rate_type, page, 'post');
+        const costPerStory = rateType
+          ? storyPrice
+          : calculatePrice(page.rate_type, page, 'story');
+        const costOfBoth = rateType
+          ? bothPrice
+          : calculatePrice(page.rate_type, page, 'both');
+
         initialPostValues[page._id] = 0;
         initialStoryValues[page._id] = 0;
-        initialCostPerPostValues[page._id] = postPrice || 0;
-        initialCostPerStoryValues[page._id] = storyPrice || 0;
-        initialCostPerBothValues[page._id] = bothPrice || 0;
+        initialCostPerPostValues[page._id] = costPerPost || 0;
+        initialCostPerStoryValues[page._id] = costPerStory || 0;
+        initialCostPerBothValues[page._id] = costOfBoth || 0;
       });
       setPostPerPageValues(initialPostValues);
       setStoryPerPageValues(initialStoryValues);
@@ -1137,29 +1234,31 @@ const PlanMaking = () => {
     setPostCountDefault(0);
   }, [showRightSlidder]);
 
+  // console.log("planDetail", planDetails);
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
+  const allNotFoundUnfetched = unfetechedPages
+    ? notFoundPages.every((page) => unfetechedPages.includes(page))
+    : false;
 
-  const allNotFoundUnfetched = notFoundPages.every((page) =>
-    unfetechedPages.includes(page)
-  );
-
-  if (!allNotFoundUnfetched) {
-    notFoundPages.forEach((page) => {
-      if (!unfetechedPages.includes(page)) {
-        unfetechedPages.push(page);
-      }
-    });
+  if (unfetechedPages) {
+    if (!allNotFoundUnfetched) {
+      notFoundPages.forEach((page) => {
+        if (!unfetechedPages.includes(page)) {
+          unfetechedPages.push(page);
+        }
+      });
+    }
   }
 
   useEffect(() => {
-    if (notFoundPages.length && allNotFoundUnfetched) {
+    if (notFoundPages.length && allNotFoundUnfetched && unfetechedPages) {
       const payload = {
         id: id,
         not_available_pages: unfetechedPages,
       };
       sendPlanxLogs('v1/planxlogs', payload);
     }
-  }, [notFoundPages, allNotFoundUnfetched]);
+  }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
   const sellingPrice = planDetails && planDetails[0]?.selling_price;
   function calculatePercentage(totalCost, budget) {
@@ -1167,7 +1266,39 @@ const PlanMaking = () => {
     return (totalCost / budget) * 100;
   }
 
+  useEffect(() => {
+    const platform = pageList?.filter(
+      (item) => item.platform_id === activeTabPlatfrom
+    );
+    setFilterData(platform);
+  }, [activeTabPlatfrom]);
   const percentage = calculatePercentage(totalCost, sellingPrice);
+
+  useEffect(() => {
+    const currentRouteBase = '/admin/pms-plan-making';
+    const payload = {
+      id: id,
+      plan_status: 'open',
+      plan_saved: true,
+      post_count: totalPostCount,
+      story_count: totalStoryCount,
+      no_of_pages: selectedRows?.length,
+      cost_price: totalCost,
+    };
+
+    const handleRouteChange = async () => {
+      if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
+        console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+        sendPlanxLogs('v1/planxlogs', payload);
+      }
+    };
+
+    return () => {
+      // Cleanup on unmount
+
+      handleRouteChange();
+    };
+  }, [location, id, totalPostCount, totalStoryCount, selectedRows, totalCost]);
 
   // console.log('total cost', ((sellingPrice - totalCost) / sellingPrice) * 100);
   const displayPercentage = Math.floor(percentage);
@@ -1185,9 +1316,10 @@ const PlanMaking = () => {
       <ActiveDescriptionModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        descriptions={descriptions.filter((desc) => desc.status === 'Active')}
+        descriptions={descriptions?.filter((desc) => desc.status === 'Active')}
         onCheckedDescriptionsChange={handleCheckedDescriptionsChange}
-        checkedDescriptions={checkedDescriptions} setCheckedDescriptions={setCheckedDescriptions}
+        checkedDescriptions={checkedDescriptions}
+        setCheckedDescriptions={setCheckedDescriptions}
       />
       {alertData && (
         <CustomAlert
@@ -1235,11 +1367,30 @@ const PlanMaking = () => {
             >
               {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
             </button>
-            <button className="icon" onClick={handleOpenDialog}>
+            <button
+              className="icon"
+              onClick={handleOpenDialog}
+              title="Unfetched Pages"
+            >
               <CiWarning />
             </button>
-            <button className="icon" onClick={handleOpenModal}>
+            <button
+              className="icon"
+              onClick={handleOpenModal}
+              title="Plan Notes"
+            >
               <CiStickyNote />
+            </button>
+            <button
+              className="icon"
+              title="Selected Rows"
+              onClick={toggleCheckedRows}
+            >
+              {!showCheckedRows ? (
+                <BiSelectMultiple />
+              ) : (
+                <BiSolidSelectMultiple />
+              )}
             </button>
 
             {pageList ? (
@@ -1372,7 +1523,7 @@ const PlanMaking = () => {
         </div>
       </div>
 
-      <div className="scrollWrapper">
+      {/* <div className="scrollWrapper">
         <div className="table-responsive topStickty">
           <div className="data_tbl thm_table">
             {isPageListLoading ? (
@@ -1413,7 +1564,7 @@ const PlanMaking = () => {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

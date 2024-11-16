@@ -86,9 +86,33 @@ export const useFetchPlanDetails = (id) => {
 
   useEffect(() => {
     if (id) {
-      fetchPlanDetails(); // Fetch when id changes
+      fetchPlanDetails();
     }
   }, [id]);
 
   return { planDetails };
+};
+
+export const useFetchPlanDescription = () => {
+  const [descriptions, setDescriptions] = useState(["Sssss"]);
+
+  const fetchDescriptions = async () => {
+    try {
+      const response = await fetch(`${baseUrl}v1/planxnote`);
+      if (response.ok) {
+        const data = await response.json();
+        setDescriptions(data?.data); 
+      } else {
+        console.error('Failed to fetch descriptions');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDescriptions();
+  }, []);
+
+  return { descriptions };
 };

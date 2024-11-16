@@ -530,7 +530,7 @@ export const uniqueSaleBookingSalesExecutiveColumn = ({
   },
 ];
 
-export const saleBookingVerifyColumn = ({ filterData }) => [
+export const saleBookingVerifyColumn = () => [
   {
     key: "s_no",
     name: "S.No",
@@ -606,42 +606,15 @@ export const saleBookingVerifyColumn = ({ filterData }) => [
     renderRowCell: (row) => row?.paid_amount,
     width: 150,
   },
-  // {
-  //   field: "total_refund_amount",
-  //   headerName: "Refund Amount",
-  //   renderCell: (params) => params.row.total_refund_amount,
-  //   width: 150,
-  // },
-  // {
-  //   field: "balance_refund_amount",
-  //   headerName: "Refund Balance Amount",
-
-  //   renderCell: (params) => {
-  //     return params.row.balance_refund_amount;
-  //   },
-  //   width: 200,
-  // },
   {
     key: "Balance Amount",
     name: "Balance Amount",
     getTotal: true,
-    renderRowCell: (params) => {
+    renderRowCell: (row) => {
       return row?.campaign_amount - row?.paid_amount;
     },
     width: 150,
   },
-  // {
-  //   field: "net_balance_amount_to_pay",
-  //   headerName: "Net Bal Cust to pay Amt",
-  //   renderCell: (params) => params.row.net_balance_amount_to_pay,
-  //   width: 200,
-  // },
-  // {
-  //   field: "net_balance_amount_to_pay_percentage",
-  //   headerName: "Net Bal Cust to pay Amt (%)",
-  //   renderCell: (params) => params.row.net_balance_amount_to_pay_percentage,
-  //   width: 200,
-  // },
   {
     key: "createdAt",
     name: "Booking Created Date",
@@ -1103,7 +1076,7 @@ export const pendingApprovalColumn = ({
           ]}
           getOptionLabel={(option) => option?.label}
           onChange={(event, newValue) => {
-            // console.log(newValue, "newValue--- newValueData---");
+            console.log(newValue, "newValue-->>");
             handleStatusChange(row, newValue?.value);
             row.statusDropdown = newValue;
           }}
@@ -1313,11 +1286,11 @@ export const pendingInvoiceColumn = ({
   handleOpenEditFieldAction,
 }) => [
   {
-    width: 60,
-    name: "S.No",
     key: "s_no",
+    name: "S.NO",
+    width: 70,
     compare: true,
-    renderRowCell: (index) => index + 1,
+    renderRowCell: (row, index) => index + 1,
   },
   {
     width: 150,

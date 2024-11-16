@@ -11,11 +11,10 @@ import CloseIcon from "@mui/icons-material/Close";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
 import jwtDecode from "jwt-decode";
-import { baseUrl } from "../../../../../utils/config";
 import PendingInvoiceDiscard from "./PendingInvoiceDiscard";
+import { useUpdatePendingInvoiceReqMutation } from "../../../../Store/API/Finance/InvoiceRequestApi";
 
 const EditInvoiceActionDialog = (props) => {
   const {
@@ -25,8 +24,17 @@ const EditInvoiceActionDialog = (props) => {
     setOpenImageDialog,
     setViewImgSrc,
     getData,
-    handleGetProforma,
+    refetchProformaInvoiceList,
   } = props;
+
+  const [
+    updatePendingInvoiceReq,
+    {
+      isLoading: updateInvoiceRequestLoading,
+      isError: updateInvoiceRequestError,
+      isSuccess: updateInvoiceRequestSuccess,
+    },
+  ] = useUpdatePendingInvoiceReqMutation();
 
   const { toastAlert, toastError } = useGlobalContext();
   const [invcDate, setInvcDate] = useState(dayjs());
@@ -129,27 +137,17 @@ const EditInvoiceActionDialog = (props) => {
           ? dayjs(invcDate).format("YYYY/MM/DD")
           : dayjs().format("YYYY/MM/DD")
       );
+      console.log(formData, "formData------->>>");
+      // try {
+      await updatePendingInvoiceReq({
+        id: InvcCreatedRowData?._id,
+        data: formData,
+      }).unwrap();
 
-      try {
-        const res = await axios.put(
-          baseUrl + `sales/invoice_request/${InvcCreatedRowData?._id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.status === 200) {
-          toastAlert("Data Submitted Successfully");
-          handleCloseEditFieldAction();
-          getData();
-          handleGetProforma();
-        }
-      } catch (err) {
-        console.log("Submit invoice error: ", err);
-      }
+      toastAlert("Data Submitted Successfully");
+      handleCloseEditFieldAction();
+      getData();
+      refetchProformaInvoiceList();
     }
   };
 

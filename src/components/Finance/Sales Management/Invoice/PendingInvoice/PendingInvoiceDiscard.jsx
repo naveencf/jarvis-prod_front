@@ -8,9 +8,8 @@ import {
 import React, { useState } from "react";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import axios from "axios";
-import { baseUrl } from "../../../../../utils/config";
 import { useGlobalContext } from "../../../../../Context/Context";
+import { useDeletePendingInvoiceMutation } from "../../../../Store/API/Finance/InvoiceRequestApi";
 
 const PendingInvoiceDiscard = (props) => {
   const {
@@ -21,10 +20,17 @@ const PendingInvoiceDiscard = (props) => {
     InvcCreatedRowData,
   } = props;
 
+  const [
+    deletePendingInvoiceReq,
+    {
+      isLoading: deleteInvoiceRequestLoading,
+      isError: deleteInvoiceRequestError,
+      isSuccess: deleteInvoiceRequestSuccess,
+    },
+  ] = useDeletePendingInvoiceMutation();
+
   const { toastAlert } = useGlobalContext();
   const [reason, setReason] = useState("");
-  const token = sessionStorage.getItem("token");
-  console.log(InvcCreatedRowData, "getData--->>>");
 
   const handleCloseDiscardDialog = () => {
     setDiscardDialog(false);
@@ -36,30 +42,27 @@ const PendingInvoiceDiscard = (props) => {
     formData.append("invoice_action_reason", reason);
 
     const confirmation = confirm("Are you sure you want to reject this data?");
-    if (confirmation) {
-      axios
-        .put(
-          baseUrl + `sales/invoice_request_rejected/${InvcCreatedRowData?._id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          toastAlert("Data Rejected Successfully");
-          handleCloseDiscardDialog();
-          handleCloseEditFieldAction();
-          getData();
-          setInoiceNum("");
-          setPartyName("");
-        });
-    } else {
+    if (!confirmation) return;
+
+    try {
+      await deletePendingInvoiceReq({
+        id: InvcCreatedRowData?._id,
+        data: formData,
+      }).unwrap();
+
+      toastAlert("Data Rejected Successfully");
+      handleCloseDiscardDialog();
+      handleCloseEditFieldAction();
       getData();
+      setInvoiceNum("");
+      setPartyName("");
+      setIsFormSubmitted(true);
+    } catch (error) {
+      console.error("Error rejecting data:", error);
+      toastAlert("Failed to reject data, please try again.");
+      handleCloseDiscardDialog();
+      handleCloseEditFieldAction();
     }
-    setIsFormSubmitted(true);
   };
 
   return (

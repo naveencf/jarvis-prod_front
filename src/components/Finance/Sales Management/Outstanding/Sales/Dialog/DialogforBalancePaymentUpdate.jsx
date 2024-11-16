@@ -19,6 +19,7 @@ import axios from "axios";
 import { baseUrl } from "../../../../../../utils/config";
 import { useGlobalContext } from "../../../../../../Context/Context";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useUpdateOutstandingBalancePaymentMutation } from "../../../../../Store/API/Finance/OutstandingApi";
 
 function DialogforBalancePaymentUpdate(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -49,10 +50,18 @@ function DialogforBalancePaymentUpdate(props) {
     paymentRefImg,
     setPaymentRefImg,
   } = props;
-  const [showField, setShowField] = useState(false);
 
+  const [
+    updateOutstandingBalancePayment,
+    {
+      isLoading: updateOutstandingBalancePaymentLoading,
+      isError: updateOutstandingBalancePaymentError,
+      isSuccess: updateOutstandingBalancePaymentSuccess,
+    },
+  ] = useUpdateOutstandingBalancePaymentMutation();
+
+  const [showField, setShowField] = useState(false);
   const [paymentType, setPaymentType] = useState({ label: "", value: "" });
-  const [loading, setLoading] = useState(false);
 
   const handleCloseImageModal = () => {
     setImageModalOpen(false);
@@ -67,45 +76,31 @@ function DialogforBalancePaymentUpdate(props) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
-    const formData = new FormData();
-    formData.append("sale_booking_id", +singleRow?.sale_booking_id);
-    formData.append("account_id", +singleRow?.account_id);
-    formData.append("payment_ref_no", paymentRefNo);
-    formData.append("payment_detail_id", paymentDetails?.id);
-    formData.append("payment_screenshot", paymentRefImg);
-    formData.append("payment_amount", paidAmount);
-    formData.append("payment_date", paymentDate);
-    formData.append("created_by", loginUserId);
-    // moment(paymentDate).format("YYYY/MM/DD")
-    await axios
-      .put(baseUrl + `sales/sale_balance_update`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        if (res.status === 200) {
-          setLoading(false);
-          getData();
-          setBalAmount("");
-          setPaymentRefNo("");
-          setPaymentRefImg("");
-          setPaymentType({ label: "", value: "" });
-          setPaymentDetails("");
-          setPaidAmount([]);
-        }
-      })
-      .catch((error) =>
-        console.log(error, "Error While Updating Balance Payment")
-      );
-    setImageModalOpen(false);
+    try {
+      const formData = new FormData();
+      formData.append("sale_booking_id", singleRow?.sale_booking_id || "");
+      formData.append("account_id", singleRow?.account_id || "");
+      formData.append("payment_ref_no", paymentRefNo || "");
+      formData.append("payment_detail_id", paymentDetails?.id || "");
+      formData.append("payment_screenshot", paymentRefImg || "");
+      formData.append("payment_amount", paidAmount || "");
+      formData.append("payment_date", paymentDate || "");
+      formData.append("created_by", loginUserId || "");
 
-    toastAlert("Data updated");
-    // setIsFormSubmitted(true);
-    setImageModalOpen(false);
+      await updateOutstandingBalancePayment(formData).unwrap();
+      getData();
+      setBalAmount("");
+      setPaymentRefNo("");
+      setPaymentRefImg("");
+      setPaymentType({ label: "", value: "" });
+      setPaymentDetails("");
+      setPaidAmount("");
+      setImageModalOpen(false);
+      toastAlert("Data updated successfully");
+    } catch (error) {
+      toastAlert("Failed to update data. Please try again.", "error");
+    }
   };
 
   const handlePaymentDetails = (e, id) => {
@@ -127,6 +122,7 @@ function DialogforBalancePaymentUpdate(props) {
   const handleCloseTDSFields = () => {
     setCloseDialog(false);
   };
+
   return (
     <Dialog
       onClose={handleCloseImageModal}
@@ -173,7 +169,6 @@ function DialogforBalancePaymentUpdate(props) {
                   name="balance Amount"
                   value={balAmount}
                   readOnly
-                  // onChange={(e) => setBalAmount(e.target.value)}
                   required
                 />
               </div>
@@ -186,7 +181,6 @@ function DialogforBalancePaymentUpdate(props) {
                   name="paid Amount"
                   value={paidAmountData}
                   readOnly
-                  // onChange={(e) => setBalAmount(e.target.value)}
                   required
                 />
               </div>
@@ -195,7 +189,6 @@ function DialogforBalancePaymentUpdate(props) {
               </label>
               <TextField
                 variant="outlined"
-                // label="Paid Amount *"
                 className="form-control "
                 placeholder="Paid Amount"
                 value={paidAmount}
@@ -236,7 +229,6 @@ function DialogforBalancePaymentUpdate(props) {
                         name="remaining amount"
                         value={balAmount - paidAmount}
                         readOnly
-                        // onChange={(e) => e.target.value}
                         required
                       />
                     </div>
@@ -251,7 +243,6 @@ function DialogforBalancePaymentUpdate(props) {
                         name="paid %"
                         value={paidPercentage}
                         readOnly
-                        // onChange={(e) => setBalAmount(e.target.value)}
                         required
                       />
                     </div>
@@ -274,7 +265,6 @@ function DialogforBalancePaymentUpdate(props) {
               <Autocomplete
                 className="my-2 mt-3"
                 id="combo-box-demo"
-                // value={row.statusDropdown}
                 options={
                   dropdownData &&
                   dropdownData?.map((item) => ({
@@ -283,15 +273,9 @@ function DialogforBalancePaymentUpdate(props) {
                     payment_mode_id: item.payment_mode_id,
                   }))
                 }
-                // style={{ width: 180, zIndex: 1, position: "relative" }}
                 onChange={(e, id) => handlePaymentDetails(e, id)}
-                // getOptionLabel={(option) => option.label}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    // label="Payment Details *"
-                    variant="outlined"
-                  />
+                  <TextField {...params} variant="outlined" />
                 )}
               />
 
@@ -310,13 +294,11 @@ function DialogforBalancePaymentUpdate(props) {
                 className="my-2 mt-3"
                 id="combo-box-demo"
                 value={paymentType}
-                // disabled
                 readOnly
                 options={[
                   { label: "Full", value: "full" },
                   { label: "Partial", value: "partial" },
                 ]}
-                // style={{ width: 328, zIndex: 1, position: "relative" }}
                 onChange={(e, value) => {
                   setPaymentType(value);
                 }}
@@ -341,7 +323,11 @@ function DialogforBalancePaymentUpdate(props) {
           autoFocus
           onClick={(e) => handleSubmit(e)}
         >
-          {loading ? <CircularProgress size={24} /> : "Save"}
+          {updateOutstandingBalancePaymentLoading ? (
+            <CircularProgress size={24} />
+          ) : (
+            "Save"
+          )}
         </Button>
         {paidPercentage === 90 || paidPercentage >= 90 ? (
           <Button variant="contained" autoFocus onClick={handleOpenTDSFields}>

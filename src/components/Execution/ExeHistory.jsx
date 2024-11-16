@@ -12,6 +12,7 @@ import { render } from "react-dom";
 
 export default function ExeHistory({ pageRow }) {
   const { id } = useParams();
+ 
   // console.log(id, "id");
   const [buttonAccess, setButtonAccess] = useState(false);
   const [data, setData] = useState([]);
@@ -475,6 +476,7 @@ export default function ExeHistory({ pageRow }) {
         buttonAccess={buttonAccess}
       />
       <div className="card body-padding fx-head nt-head">
+      {console.log(data[0]?._id ,"nnnnnnnnnnnnnnnnnn")}
         {data[0]?._id ? (
           <DataGrid
             rows={data}
@@ -485,7 +487,19 @@ export default function ExeHistory({ pageRow }) {
             getRowId={(row) => row._id}
           />
         ) : (
+          <>
+          
           <h3 className="text-center">No Data Found</h3>
+          <Link to={{ pathname: `/admin/pageStats/${id}` }}>
+              <button
+                type="button"
+                className="btn cmnbtn btn_sm btn-outline-primary"
+               
+              >
+                Add Stats
+              </button>
+            </Link>
+          </>
         )}
       </div>
 
@@ -498,5 +512,5 @@ export default function ExeHistory({ pageRow }) {
         apiCall={apiCall}
       />
     </div>
-  );
+  )
 }

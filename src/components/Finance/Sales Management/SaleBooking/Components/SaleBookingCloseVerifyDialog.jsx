@@ -1,19 +1,47 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { useUpdateSaleBookingSingleTdsVerifyMutation } from "../../../../Store/API/Finance/SaleBookingTDSApi";
 
 const SaleBookingCloseVerifyDialog = (props) => {
-  const {
-    verifyDialog,
-    handleVerifySubmit,
-    setBalAmount,
-    balAmount,
-    setRemark,
-    remark,
-    handleCloseVerifyDialog,
-  } = props;
+  const { setVerifyDialog, verifyDialog, row, refetchSaleBookingCloseList } =
+    props;
 
+  const [
+    updateSaleBookingSingleTdsVerify,
+    {
+      isLoading: updateSaleBookingSingleTdsVerifyLoading,
+      isError: updateSaleBookingSingleTdsVerifyError,
+      isSuccess: updateSaleBookingSingleTdsVerifySuccess,
+    },
+  ] = useUpdateSaleBookingSingleTdsVerifyMutation();
+  console.log(updateSaleBookingSingleTdsVerifySuccess, "successs-----?????");
+
+  const [balAmount, setBalAmount] = useState("");
+  const [remark, setRemark] = useState("");
+
+  const handleCloseVerifyDialog = () => {
+    setVerifyDialog(false);
+    setBalAmount("");
+    setRemark("");
+  };
+
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault();
+
+    const payload = {
+      tds_verified_amount: balAmount,
+      tds_verified_remark: remark,
+      id: row?.sale_booking_id,
+    };
+    await updateSaleBookingSingleTdsVerify(payload).unwrap();
+
+    handleCloseVerifyDialog();
+    toastAlert("TDS Verification Successfully Completed");
+    refetchSaleBookingCloseList();
+    setIsFormSubmitted(true);
+  };
   return (
     <div>
       <Dialog
@@ -30,7 +58,7 @@ const SaleBookingCloseVerifyDialog = (props) => {
         <DialogTitle> Verify Sale Booking </DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={handleCloseVerifyDialog}
+          onClick={() => handleCloseVerifyDialog()}
           sx={{
             position: "absolute",
             right: 8,
@@ -58,12 +86,6 @@ const SaleBookingCloseVerifyDialog = (props) => {
                     name="images"
                     value={balAmount}
                     onChange={(e) => {
-                      // if (e.target.value > row.net_balance_amount_to_pay) {
-                      //   toastError(
-                      //     "Amount is greater than balance amount to pay"
-                      //   );
-                      //   return;
-                      // }
                       setBalAmount(e.target.value);
                     }}
                     required

@@ -45,7 +45,7 @@ const CustomTable = ({
   const [selectedRowsData, setSelectedRowsData] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
   const [editablesRows, setEditablesRows] = useState(
-    columns.map((column) =>
+    columns?.map((column) =>
       column.editable === undefined ? false : column.editable
     )
   );

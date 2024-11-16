@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const EsicTable = ({ UserDetails }) => {
-   console.log("esic section")
+   
     let salary = UserDetails?.salary;
 
     let basicSalary = salary * 0.6;
@@ -94,7 +94,7 @@ const EsicTable = ({ UserDetails }) => {
     let EmployeePF = parseFloat(
         (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
     );
-    let EmployeESIC = parseFloat(((salary * 0.75) / 100).toFixed(0));
+    let EmployeESIC = parseFloat(((salary * 0.75) / 100).toFixed(0));                                                   
 
     let EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
 

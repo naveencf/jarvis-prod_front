@@ -163,7 +163,7 @@ const DataGridColumns = ({
         );
         const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
         const followerCount = row?.followers_count || 0;
-        
+
         // Calculate the average price only if followerCount is greater than zero
         const averagePostPrice = followerCount
           ? Math.floor(postPrice / (followerCount / 1000000))
@@ -224,7 +224,9 @@ const DataGridColumns = ({
       renderRowCell: (row) => (
         <div style={{ border: '1px solid red', padding: '10px' }}>
           {'₹'}
-          {showTotalCost[row?._id] ? totalCostValues[row?._id] || 0 : '-'}
+          {showTotalCost[row?._id]
+            ? Math.floor(totalCostValues[row?._id]) || 0
+            : '-'}
         </div>
       ),
       width: 50,
@@ -251,7 +253,7 @@ const DataGridColumns = ({
       name: 'Vendor Type',
       renderRowCell: (row) => {
         const name = vendorData?.find(
-          (item) => item?._id === row?.vendor_id
+          (item) => item?._id == row?.vendor_id
         )?.vendor_type;
         const finalName = typeData?.find(
           (item) => item?._id === name

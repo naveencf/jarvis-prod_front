@@ -329,7 +329,7 @@ const VendorMaster = () => {
           setMobile(data?.mobile);
           setAltMobile(data?.alternate_mobile);
           setEmail(data?.email);
-          setGst(data?.gst_no);
+          setGst(data?.gst_no); 
           setCompName(data?.company_name);
           setCompAddress(data?.company_address);
           setCompCity(data?.company_city);
@@ -918,22 +918,32 @@ const VendorMaster = () => {
   };
 
   const handleFinalSubmit = async () => {
-
-
+    const handleError = (error) => {
+      toastError(error?.message || 'Something went wrong!');
+      setIsFormSubmitting(false);
+    };
+  
+    const handleSuccess = (message) => {
+      toastAlert(message);
+      setIsFormSubmitting(false);
+    };
+  
     if (!_id) {
       setIsFormSubmitting(true);
-      addVendor(previewData)
-        .then((res) => {
-          console.log(res, "res")
-          setIsFormSubmitting(false);
-          if (res?.status == 200) {
-            setIsFormSubmitted(true);
-            setOpenPreviewModal(false);
-            toastAlert('Data Submitted Successfully');
-            const resID = res.data.data._id;
-
-            // Add company data and documents (same as original logic)
-            addCompanyData({
+  
+      try {
+        const res = await addVendor(previewData);
+        setIsFormSubmitting(false);
+  
+        if (res?.status === 200) {
+          setIsFormSubmitted(true);
+          setOpenPreviewModal(false);
+          toastAlert('Data Submitted Successfully');
+          const resID = res.data.data._id;
+  
+          // Add company data
+          try {
+            await addCompanyData({
               vendor_id: resID,
               company_name: compName,
               address: compAddress,
@@ -942,89 +952,68 @@ const VendorMaster = () => {
               state: compState,
               threshold_limit: limit,
               created_by: userID,
-            })
-              .then((res) => {
-                // Handle successful company data submission
-              })
-              .catch((err) => {
-                toastError(err.message);
-              });
-
-            for (let i = 0; i < docDetails?.length; i++) {
-              const formData = new FormData();
-              formData.append('vendor_id', resID);
-              formData.append('document_name', docDetails[i].docName);
-              formData.append('document_no', docDetails[i].docNumber);
-              formData.append('document_image_upload', docDetails[i].docImage);
-
-              addVendorDocument(formData)
-                .then((res) => {
-                 console.log(res);
-                })
-                .catch((err) => {
-                  toastError(err.message);
-                });
-            }
-          } else if (res?.error?.status == 409) {
-            console.log(res?.error?.data?.message);
-            toastError(res?.error?.data?.message);
-          } else {
-            toastError('There is some error while adding this vendor');
+            });
+          } catch (err) {
+            toastError(err.message);
           }
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting(false);
-        });
+  
+          // Add vendor documents in parallel
+          const docPromises = docDetails?.map((doc) => {
+            const formData = new FormData();
+            formData.append('vendor_id', resID);
+            formData.append('document_name', doc.docName);
+            formData.append('document_no', doc.docNumber);
+            formData.append('document_image_upload', doc.docImage);
+  
+            return addVendorDocument(formData).catch((err) => {
+              toastError(err.message);
+            });
+          });
+  
+          // Wait for all document upload promises to complete
+          await Promise.all(docPromises);
+  
+          handleSuccess("Vendor and documents added successfully!");
+        } else if (res?.error?.status === 409) {
+          toastError(res?.error?.data?.message);
+        } else {
+          handleSuccess("Vendor data added successfully!");
+          navigate('/admin/pms-vendor-overview')
+        }
+      } catch (err) {
+        handleError(err);
+      }
     } else {
-      // Handle vendor update logic (same as original logic)
       setIsFormSubmitting(true);
       previewData._id = _id;
-      updateVendor(previewData)
-        .unwrap()
-        .then(() => {
-          // const formData = new FormData();
-          // formData.append('vendor_id', vendorData.vendor_id);
-          // formData.append('mobile', vendorData.mobile);
-          // formData.append('alternate_mobile', vendorData.alternate_mobile);
-          // formData.append('account_type', forPhp?.account_type);
-          // formData.append('account_no', forPhp?.account_number);
-          // formData.append('ifcs', forPhp?.ifcs);
-          // formData.append('bank_name', forPhp?.bank_name);
-          // formData.append('vendor_name', vendorData.vendor_name);
-
-          // axios.put(
-          //   'https://purchase.creativefuel.io/webservices/RestController.php?view=updatevendor',
-          //   formData,
-          //   { headers: { 'Content-Type': 'multipart/form-data' } }
-          // );
-          const payload = {
-            vendor_id: vendorData.vendor_id,
-            mobile: mobile,
-            alternate_mobile: altMobile,
-            account_type: forPhp?.account_type || bankRows[0].account_type,
-            account_no: forPhp?.account_number || bankRows[0].account_number,
-            ifcs: forPhp?.ifcs || bankRows[0].ifcs,
-            bank_name: forPhp?.bank_name || bankRows[0].bank_name,
-            vendor_name: vendorName
-          }
-          axios.post(baseUrl + `node_data_to_php_update_vendor`, payload)
-            .then(() => { })
-            .catch((err) => {
-              console.log(err)
-            })
-
-          toastAlert('Data Updated Successfully');
-          setIsFormSubmitted(true);
-          setIsFormSubmitting(false);
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting(false);
-        });
+  
+      try {
+        await updateVendor(previewData);
+  
+        const payload = {
+          vendor_id: vendorData.vendor_id,
+          mobile: mobile,
+          alternate_mobile: altMobile,
+          account_type: forPhp?.account_type || bankRows[0].account_type,
+          account_no: forPhp?.account_number || bankRows[0].account_number,
+          ifcs: forPhp?.ifcs || bankRows[0].ifcs,
+          bank_name: forPhp?.bank_name || bankRows[0].bank_name,
+          vendor_name: vendorName,
+        };
+  
+        try {
+          await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
+        } catch (err) {
+          console.log('Error updating vendor data in PHP:', err);
+        }
+  
+        handleSuccess("Data Updated Successfully");
+      } catch (err) {
+        handleError(err);
+      }
     }
   };
-
+  
   const handleCheckboxChange = (e) => {
     const { checked } = e.target;
     setSameAsPrevious(checked);
@@ -1170,9 +1159,9 @@ const VendorMaster = () => {
                 <label className="form-label">Business Type <sup style={{ color: 'red' }}>*</sup></label>
                 <Select
                   options={
-                    busiTypeData.map((option) => ({
-                      value: option._id,
-                      label: option.busi_type_name,
+                    busiTypeData?.map((option) => ({
+                      value: option?._id,
+                      label: option?.busi_type_name,
                     }))}
                   astric={true}
                   required={true}

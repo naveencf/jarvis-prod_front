@@ -1,18 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
-import { baseUrl } from "../../../../../utils/config";
 import ImageView from "../../../ImageView";
-import {
-  Autocomplete,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-} from "@mui/material";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import moment from "moment";
 import {
   saleBookingCloseColumns,
@@ -22,101 +10,86 @@ import {
 import View from "../../../../AdminPanel/Sales/Account/View/View";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import SaleBookingCloseVerifyDialog from "./SaleBookingCloseVerifyDialog";
+import { useGetAllSaleBookingCloseListQuery } from "../../../../Store/API/Finance/SaleBookingTDSApi";
+import SaleBookingCloseFilters from "./SaleBookingCloseFilters";
 
 const SaleBookingClose = ({
   onHandleOpenUniqueSalesExecutiveChange,
   onHandleOpenUniqueCustomerClickChange,
-  setButtonaccess,
-  setUniquecustomerCount,
-  setUniquesalesexecutiveCount,
+  setButtonAccess,
+  setUniqueCustomerCount,
+  setUniqueSalesExecutiveCount,
 }) => {
+  const {
+    refetch: refetchSaleBookingCloseList,
+    data: allSaleBookingCloseList,
+    error: allSaleBookingCloseListError,
+    isLoading: allSaleBookingCloseListLoading,
+  } = useGetAllSaleBookingCloseListQuery("close");
+
   const { toastAlert } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
-  const [contextData, setDatas] = useState([]);
   const [filterData, setFilterData] = useState([]);
-  const [customerName, setCustomerName] = useState("");
-  const [salesExecutive, setSalesExecutive] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
-  const [campaignAmountFilter, setCampaignAmountFilter] = useState("");
-  const [campaignAmountField, setcampaignAmountField] = useState("");
-  const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
-  const [uniqueSalesExecutiveCount, setUniqueSalesExecutiveCount] =
-    useState("");
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
     useState("");
   const [uniqueSalesExecutiveData, setUniqueSalesExecutiveData] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [verifyDialog, setVerifyDialog] = useState(false);
-  const [balAmount, setBalAmount] = useState("");
-  const [remark, setRemark] = useState("");
   const [row, setRow] = useState({});
   const [selectedData, setSelectedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [viewImgDialog, setViewImgDialog] = useState(false);
 
   const token = sessionStorage.getItem("token");
 
-  const getData = async () => {
-    setIsLoading(true);
-    await axios
-      .get(baseUrl + "sales/sale_booking_tds_status_wise_data?status=close", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        const transformedData = res?.data?.data?.reduce((acc, object) => {
-          if (object?.salesInvoiceRequestData?.length > 0) {
-            const invoices = object?.salesInvoiceRequestData?.map(
-              (invoice) => ({
-                ...invoice,
-                account_id: object.account_id,
-                sale_booking_date: object.sale_booking_date,
-                campaign_amount: object.campaign_amount,
-                base_amount: object.base_amount,
-                gst_amount: object.gst_amount,
-                tds_status: object.tds_status,
-                tds_percentage: object.tds_percentage,
-                tds_amount: object.tds_amount,
-                tds_verified_amount: object.tds_verified_amount,
-                created_by: object.created_by,
-                createdAt: object.createdAt,
-                updatedAt: object.updatedAt,
-                sale_booking_id: object.sale_booking_id,
-                account_name: object.account_name,
-                created_by_name: object.created_by_name,
-                paid_amount: object.paid_amount,
-                booking_created_date: object.booking_created_date,
-                invoice_file_url: object.invoice_file_url,
-              })
-            );
-            acc?.push(...invoices);
-          } else {
-            acc?.push({
-              ...object,
-            });
-          }
-          return acc;
-        }, []);
-        const reversedData = transformedData?.reverse();
-        console.log(transformedData, "Transformed Data --->>");
-        setIsLoading(false);
-        setData(reversedData);
-        setFilterData(reversedData);
-        calculateUniqueData(reversedData);
+  useEffect(() => {
+    if (allSaleBookingCloseList && !allSaleBookingCloseListLoading) {
+      getData();
+    }
+  }, [allSaleBookingCloseList, allSaleBookingCloseListLoading]);
 
-        const dateFilterData = filterDataBasedOnSelection(reversedData);
-        setFilterData(dateFilterData);
-      })
-      .catch((error) =>
-        console.log(error, "Error while getting sale booking data")
-      );
+  const getData = async () => {
+    if (!allSaleBookingCloseList) return;
+    const transformedData = allSaleBookingCloseList?.reduce((acc, object) => {
+      if (object?.salesInvoiceRequestData?.length > 0) {
+        const invoices = object?.salesInvoiceRequestData?.map((invoice) => ({
+          ...invoice,
+          account_id: object.account_id,
+          sale_booking_date: object.sale_booking_date,
+          campaign_amount: object.campaign_amount,
+          base_amount: object.base_amount,
+          gst_amount: object.gst_amount,
+          tds_status: object.tds_status,
+          tds_percentage: object.tds_percentage,
+          tds_amount: object.tds_amount,
+          tds_verified_amount: object.tds_verified_amount,
+          created_by: object.created_by,
+          createdAt: object.createdAt,
+          updatedAt: object.updatedAt,
+          sale_booking_id: object.sale_booking_id,
+          account_name: object.account_name,
+          created_by_name: object.created_by_name,
+          paid_amount: object.paid_amount,
+          booking_created_date: object.booking_created_date,
+          invoice_file_url: object.invoice_file_url,
+        }));
+        acc?.push(...invoices);
+      } else {
+        acc.push({ ...object });
+      }
+      return acc;
+    }, []);
+    const reversedData = transformedData?.reverse();
+    setData(reversedData);
+    setFilterData(reversedData);
+    calculateUniqueData(reversedData);
+
+    const dateFilterData = filterDataBasedOnSelection(reversedData);
+    setFilterData(dateFilterData);
   };
 
   const calculateUniqueData = (sortedData) => {
@@ -152,24 +125,14 @@ const SaleBookingClose = ({
     const aggregatedAccountData = aggregateData(sortedData, "account_name");
     const uniqueAccData = Object.values(aggregatedAccountData);
     setUniqueCustomerData(uniqueAccData);
-    setUniquecustomerCount(uniqueAccData?.length);
+    setUniqueCustomerCount(uniqueAccData?.length);
 
     // Aggregate data by sales executive name :-
     const aggregatedSalesExData = aggregateData(sortedData, "created_by_name");
     const uniqueSalesExData = Object.values(aggregatedSalesExData);
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniquesalesexecutiveCount(uniqueSalesExData?.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
-
-  useEffect(() => {
-    getData();
-    setButtonaccess(
-      contextData &&
-        contextData[2] &&
-        contextData[2].insert_value === 1 &&
-        false
-    );
-  }, [dateFilter]);
 
   const close = (e) => {
     e.preventDefault();
@@ -181,9 +144,6 @@ const SaleBookingClose = ({
     e.preventDefault();
     setFilterData(datas);
   };
-  useEffect(() => {
-    getData();
-  }, []);
 
   useEffect(() => {
     const result = datas?.filter((d) => {
@@ -192,100 +152,6 @@ const SaleBookingClose = ({
     setFilterData(result);
   }, [search]);
 
-  // Filters Logic :-
-  const handleAllFilters = () => {
-    const filterData = datas?.filter((item) => {
-      const date = new Date(item.sale_booking_date);
-      const fromDate1 = new Date(fromDate);
-      const toDate1 = new Date(toDate);
-      toDate1.setDate(toDate1.getDate() + 1);
-      // Date Range Filter:-
-      const dateFilterPassed =
-        !fromDate || !toDate || (date >= fromDate1 && date <= toDate1);
-      // Customer Name Filter:-
-      const customerNameFilterPassed =
-        !customerName ||
-        item.account_name.toLowerCase().includes(customerName.toLowerCase());
-
-      // Requested By Filter
-      const salesExecutiveFilterPassed =
-        !salesExecutive ||
-        item.created_by_name
-          ?.toLowerCase()
-          ?.includes(salesExecutive?.toLowerCase());
-      // Campaign Amount filter
-      const campaignAmountFilterPassed = () => {
-        const campaignAmount = parseFloat(campaignAmountField);
-        switch (campaignAmountFilter) {
-          case "greaterThan":
-            return +item.campaign_amount > campaignAmount;
-          case "lessThan":
-            return +item.campaign_amount < campaignAmount;
-          case "equalTo":
-            return +item.campaign_amount === campaignAmount;
-          default:
-            return true;
-        }
-      };
-      const allFiltersPassed =
-        dateFilterPassed &&
-        customerNameFilterPassed &&
-        salesExecutiveFilterPassed &&
-        campaignAmountFilterPassed();
-
-      return allFiltersPassed;
-    });
-    setFilterData(filterData);
-
-    const uniqueCustomers = new Set(
-      filterData.map((item) => item.account_name)
-    );
-    setUniqueCustomerCount(uniqueCustomers?.size);
-    setUniquecustomerCount(uniqueCustomers?.size);
-    const uniqueCustomerData = Array.from(uniqueCustomers)?.map(
-      (customerName) => {
-        return filterData?.find((item) => item.account_name === customerName);
-      }
-    );
-    setUniqueCustomerData(uniqueCustomerData);
-    // For Unique Sales Executive
-    const uniqueSalesEx = new Set(
-      filterData?.map((item) => item.created_by_name)
-    );
-    setUniqueSalesExecutiveCount(uniqueSalesEx.size);
-    setUniquesalesexecutiveCount(uniqueSalesEx.size);
-    const uniqueSEData = Array.from(uniqueSalesEx)?.map((salesEName) => {
-      return filterData?.find((item) => item.created_by_name === salesEName);
-    });
-    setUniqueSalesExecutiveData(uniqueSEData);
-  };
-
-  const handleClearAllFilter = () => {
-    setFilterData(datas);
-    setFromDate("");
-    setToDate("");
-    setCustomerName("");
-    setcampaignAmountField("");
-    setCampaignAmountFilter("");
-    setSalesExecutive("");
-    const uniqueCustomers = new Set(datas.map((item) => item.account_name));
-    setUniqueCustomerCount(uniqueCustomers?.size);
-    setUniquecustomerCount(uniqueCustomers?.size);
-    const uniqueCustomerData = Array.from(uniqueCustomers)?.map(
-      (customerName) => {
-        return datas?.find((item) => item.account_name === customerName);
-      }
-    );
-    setUniqueCustomerData(uniqueCustomerData);
-    // For Unique Sales Executive
-    const uniqueSalesEx = new Set(datas?.map((item) => item.created_by_name));
-    setUniqueSalesExecutiveCount(uniqueSalesEx.size);
-    setUniquesalesexecutiveCount(uniqueSalesEx.size);
-    const uniqueSEData = Array.from(uniqueSalesEx)?.map((salesEName) => {
-      return datas?.find((item) => item.created_by_name === salesEName);
-    });
-    setUniqueSalesExecutiveData(uniqueSEData);
-  };
   // For Customers
   const handleOpenUniqueCustomerClick = () => {
     setUniqueCustomerDialog(true);
@@ -326,46 +192,18 @@ const SaleBookingClose = ({
     onHandleOpenUniqueCustomerClickChange(() => handleOpenUniqueCustomerClick);
   }, []);
 
-  // For Verify :-
   const handleOpenVerifyDialog = (e, row) => {
     e.preventDefault();
     setVerifyDialog(true);
     setRow(row);
   };
 
-  const handleCloseVerifyDialog = () => {
-    setVerifyDialog(false);
-    setBalAmount("");
-    setRemark("");
-  };
+  // const handleCloseVerifyDialog = () => {
+  //   setVerifyDialog(false);
+  //   setBalAmount("");
+  //   setRemark("");
+  // };
 
-  const handleVerifySubmit = async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData();
-
-    formData.append("tds_verified_amount", balAmount);
-    formData.append("tds_verified_remark", remark);
-
-    await axios
-      .put(
-        baseUrl + `/sales/update_tds_verification/${row?.sale_booking_id}`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        if (res?.status === 200) {
-          toastAlert("TDS Verification Successfully Completed");
-          handleCloseVerifyDialog();
-          getData();
-        }
-      });
-    setIsFormSubmitted(true);
-  };
   // ========================================================
 
   const filterDataBasedOnSelection = (apiData) => {
@@ -451,11 +289,8 @@ const SaleBookingClose = ({
       <SaleBookingCloseVerifyDialog
         setVerifyDialog={setVerifyDialog}
         verifyDialog={verifyDialog}
-        handleVerifySubmit={handleVerifySubmit}
-        setBalAmount={setBalAmount}
-        balAmount={balAmount}
-        setRemark={setRemark}
-        remark={remark}
+        refetchSaleBookingCloseList={refetchSaleBookingCloseList}
+        row={row}
       />
       {/* Unique Sales Executive Dialog Box */}
       <CommonDialogBox
@@ -481,173 +316,15 @@ const SaleBookingClose = ({
         dialog={uniqueCustomerDialog}
         title="Unique Accounts"
       />
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Search by filter</h5>
-          <div className="flexCenter colGap12">
-            <div className="form-group flexCenter colGap8">
-              <label className="w-100 m0">Select Date Range:</label>
-              <select
-                className="form-control form_sm"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="today">Today</option>
-                <option value="last7Days">Last 7 Days</option>
-                <option value="last30Days">Last 30 Days</option>
-                <option value="thisWeek">This Week</option>
-                <option value="lastWeek">Last Week</option>
-                <option value="currentMonth">Current Month</option>
-                <option value="currentQuarter">This Quarter</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div className="card-body pb4">
-          <div className="row thm_form">
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>Account Name</label>
-                <Autocomplete
-                  value={customerName}
-                  onChange={(event, newValue) => setCustomerName(newValue)}
-                  options={Array?.from(
-                    new Set(datas?.map((option) => option.account_name || []))
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Account Name"
-                      type="text"
-                      variant="outlined"
-                      InputProps={{
-                        ...params.InputProps,
-                        className: "form-control",
-                      }}
-                      style={{
-                        borderRadius: "0.25rem",
-                        transition:
-                          "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
-                        "&:focus": {
-                          borderColor: "#80bdff",
-                          boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
-                        },
-                      }}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>Sales Executive Name</label>
-                <Autocomplete
-                  value={salesExecutive}
-                  onChange={(event, newValue) => setSalesExecutive(newValue)}
-                  options={Array?.from(
-                    new Set(
-                      datas?.map((option) => option.created_by_name || [])
-                    )
-                  )}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Sales Executive Name"
-                      type="text"
-                      variant="outlined"
-                      InputProps={{
-                        ...params.InputProps,
-                        className: "form-control", // Apply Bootstrap's form-control class
-                      }}
-                      style={{
-                        borderRadius: "0.25rem",
-                        transition:
-                          "border-color .15s ease-in-out,box-shadow .15s ease-in-out",
-                        "&:focus": {
-                          borderColor: "#80bdff",
-                          boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
-                        },
-                      }}
-                    />
-                  )}
-                />
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>From Date</label>
-                <input
-                  value={fromDate}
-                  type="date"
-                  className="form-control"
-                  onChange={(e) => setFromDate(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>To Date</label>
-                <input
-                  value={toDate}
-                  type="date"
-                  className="form-control"
-                  onChange={(e) => {
-                    setToDate(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>Campaign Amount Filter</label>
-                <select
-                  value={campaignAmountFilter}
-                  className="form-control"
-                  onChange={(e) => setCampaignAmountFilter(e.target.value)}
-                >
-                  <option value="">Select Amount</option>
-                  <option value="greaterThan">Greater Than</option>
-                  <option value="lessThan">Less Than</option>
-                  <option value="equalTo">Equal To</option>
-                </select>
-              </div>
-            </div>
-            <div className="col-md-4 col-sm-12">
-              <div className="form-group">
-                <label>Campaign Amount</label>
-                <input
-                  value={campaignAmountField}
-                  type="number"
-                  placeholder="Request Amount"
-                  className="form-control"
-                  onChange={(e) => {
-                    setcampaignAmountField(e.target.value);
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="card-footer">
-          <div className="flexCenter colGap16">
-            <Button
-              variant="contained"
-              onClick={handleAllFilters}
-              className="btn cmnbtn btn-primary"
-            >
-              <i className="fas fa-search"></i> Search
-            </Button>
-            <Button
-              variant="contained"
-              onClick={handleClearAllFilter}
-              className="btn cmnbtn btn-secondary"
-            >
-              Clear
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Sale Booking Close Filters */}
+      <SaleBookingCloseFilters
+        datas={datas}
+        setFilterData={setFilterData}
+        setUniqueCustomerCount={setUniqueCustomerCount}
+        setUniqueCustomerData={setUniqueCustomerData}
+        setUniqueSalesExecutiveData={setUniqueSalesExecutiveData}
+        setUniqueSalesExecutiveCount={setUniqueSalesExecutiveCount}
+      />
       <div>
         <View
           columns={saleBookingCloseColumns({
@@ -657,7 +334,7 @@ const SaleBookingClose = ({
             setViewImgDialog,
           })}
           data={filterData}
-          isLoading={isLoading}
+          isLoading={allSaleBookingCloseListLoading}
           title={"Sale Booking"}
           rowSelectable={true}
           showTotal={true}

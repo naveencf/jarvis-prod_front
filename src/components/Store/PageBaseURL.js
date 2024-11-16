@@ -120,7 +120,7 @@ export const PageBaseURL = createApi({
             method: "GET",
           };
           // }
-          return;
+          // return;
         } else {
           return {
             url: `v1/get_all_pages_for_users`, // Use POST request for non-admin

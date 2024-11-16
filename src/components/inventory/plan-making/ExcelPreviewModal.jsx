@@ -1,5 +1,3 @@
-// ExcelPreviewModal.js
-
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -15,13 +13,28 @@ import {
   Button,
   Tabs,
   Tab,
+  TextField,
 } from '@mui/material';
 
-const ExcelPreviewModal = ({ open, onClose, previewData, categories }) => {
+const ExcelPreviewModal = ({
+  open,
+  onClose,
+  previewData,
+  categories,
+  setAgencyFees,
+  agencyFees,
+  selectedRow,
+  category,
+  postCount,
+  storyPerPage,
+  planDetails,
+  checkedDescriptions,
+  downloadExcel,
+}) => {
   const [selectedTab, setSelectedTab] = useState(0);
 
   const [categoryData, setCategoryData] = useState({});
-  // console.log("cate", categories);
+
   // Prepare data categorized by category when the modal opens
   useEffect(() => {
     const categorizedData = {};
@@ -63,6 +76,14 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories }) => {
   // Calculate totals for all preview data
   const overallTotals = calculateTotals(previewData);
 
+  // Handle agency fee percentage change
+  const handleAgencyFeeChange = (event) => {
+    const value = event.target.value;
+    if (value >= 0 && value <= 100) {
+      setAgencyFees(value); // Update the agency fees percentage
+    }
+  };
+
   return (
     <Modal
       open={open}
@@ -97,10 +118,46 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories }) => {
           Excel Data Preview
         </Typography>
 
+        {/* Agency Fees Input */}
+        <div className="row" style={{ width: '25rem' }}>
+          <div className="col d-flex justify-content-center align-items-center">
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="body1">Agency Fee Percentage</Typography>
+              <TextField
+                type="number"
+                value={agencyFees || ''}
+                onChange={handleAgencyFeeChange}
+                label="Enter Agency Fee %"
+                inputProps={{
+                  min: 0,
+                  max: 100,
+                }}
+                sx={{ mt: 1, width: '11rem' }}
+              />
+            </Box>
+          </div>
+          <div className="col d-flex justify-content-center align-items-center">
+            <button
+              className="btn cmnbtn btn-primary btn_sm"
+              onClick={() =>
+                downloadExcel(
+                  selectedRow,
+                  category,
+                  postCount,
+                  storyPerPage,
+                  planDetails,
+                  checkedDescriptions
+                )
+              }
+            >
+              Download Excel
+            </button>
+          </div>
+        </div>
         {/* Tabs for Total and Category-wise view */}
         <Tabs value={selectedTab} onChange={handleTabChange} centered>
           <Tab label="Total" />
-       
+
           {Object.keys(categoryData).map((categoryName, index) => (
             <Tab key={index} label={categoryName} />
           ))}

@@ -291,7 +291,7 @@ const UserMaster = () => {
     "Other",
   ];
   const bankTypeData = ["Saving A/C", "Current A/C", "Salary A/C"];
-  const statusData = ["Active", "Exit", "PreOnboard" , ];
+  const statusData = ["Active", "Exit", "PreOnboard"];
   const genderData = ["Male", "Female", "Other"];
   const nationalityData = ["Indian", "USA", "Uk"];
   const bloodGroupData = [
@@ -516,7 +516,7 @@ const UserMaster = () => {
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     const errors = {};
 
@@ -1340,11 +1340,8 @@ const UserMaster = () => {
   function calculateAge(dob) {
     const birthDate = new Date(dob);
     const currentDate = new Date();
-    // Calculate the difference in milliseconds
     const difference = currentDate - birthDate;
-    // Convert milliseconds to days
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-    // Calculate years and remaining days
     const years = Math.floor(days / 365);
     const remainingDays = days % 365;
     return `${years} years ${remainingDays} days`;
@@ -1352,31 +1349,37 @@ const UserMaster = () => {
   function calculateAgeInDays(dob) {
     const birthDate = new Date(dob);
     const currentDate = new Date();
-    // Calculate the difference in milliseconds
     const difference = currentDate - birthDate;
-    // Convert milliseconds to days
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
     return days;
   }
 
   const handleDateChange = (e) => {
-    const selectedDate = e;
-    const validateAge = dayjs().diff(e, "year");
-    setDobValidate(validateAge);
-
+    const selectedDate = e.target.value;
+    const validateAge = dayjs().diff(selectedDate, "year");
     const age = calculateAge(selectedDate);
     const ageDays = calculateAgeInDays(selectedDate);
-
-    if (validateAge < 15 || validateAge > 100) {
-      setDobError("Age can't less than 15 or greater than 100 years.");
-      setDateOfBirth("");
+  
+    if (selectedDate === "") {
+      setMandatoryFieldsEmpty((prev) => ({ ...prev, dateOfBirth: true }));
+      setDobError("Please select a DOB."); 
     } else {
-      setDobError("");
+      setMandatoryFieldsEmpty((prev) => ({ ...prev, dateOfBirth: false }));
+
+    // Age validation
+    if (validateAge < 15 || validateAge > 100) {
+      setDobError("Age must be at least 15 years and no greater than 100 years.");
+      setAge(""); 
+      setAgeCalculate(""); 
+    } else {
+      setDobError(""); 
+      setAge(age);
+      setAgeCalculate(ageDays);
+    }
     }
     setDateOfBirth(selectedDate);
-    setAge(age);
-    setAgeCalculate(ageDays);
   };
+  
 
   function addMore() {
     setDocuments([...documents, { name: "", file: null }]);
@@ -1767,23 +1770,31 @@ const UserMaster = () => {
             )}
           </div>
           <div className="from-group col-3">
-            <label className="form-label">
-              DOB <sup className="form-error">*</sup>
-            </label>
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 value={dateOfBirth}
                 onChange={handleDateChange}
                 shouldDisableDate={disableFutureDates}
                 renderInput={(params) => <TextField {...params} />}
               />
-            </LocalizationProvider>
-            {mandatoryFieldsEmpty?.fullName && (
+            </LocalizationProvider> */}
+            <FieldContainer
+          type="date"
+          astric
+          label="DOB"
+          required={false}
+          fieldGrid={3}
+          value={dateOfBirth}
+          // disabled={disableFutureDates}
+          onChange={handleDateChange}
+          />
+
+            {mandatoryFieldsEmpty?.dateOfBirth && (
               <p className="form-error">Please Enter DOB</p>
             )}
             {<p className="form-error">{dobError}</p>}
           </div>
+
           {dateOfBirth !== "" && (
             <FieldContainer fieldGrid={3} label="Age" value={age} />
           )}
@@ -2152,7 +2163,6 @@ const UserMaster = () => {
               onChange={handleEmailChange}
               onBlur={() => {
                 if (email === "") {
-                  // setMandatoryFieldsEmpty({...mandatoryFieldsEmpty,personalEmail:true});
                   return setMandatoryFieldsEmpty((prevState) => ({
                     ...prevState,
                     email: true,
@@ -2178,7 +2188,6 @@ const UserMaster = () => {
               value={contact}
               required={true}
               onChange={handleContactChange}
-              // onBlur={handleContentBlur}
             />
             {(isContactTouched || contact.length >= 10) && !isValidcontact && (
               <p className="form-error">Please Enter a valid Contact Number</p>
@@ -2327,36 +2336,29 @@ const UserMaster = () => {
               Joining Date <sup className="form-error">*</sup>
             </label>
             {/* <div className="pack" style={{ position: "relative" }}>
-          <input
-            type="date"
-            className="form-control"
-            value={joiningDate}
-            onChange={(e) => setJoiningDate(e.target.value)}
-          />
-          <div className="custom-btn-2">
-            <i
-              className="bi bi-calendar-week"
-              style={{
-                pointereEvents: "none",
-                position: "absolute",
-                bottom: "7px",
-                right: "5px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                fontSize: "16px",
-                color: "var(--medium)",
-                height: "34px",
-                width: "42px",
-                borderRadius: "0  12px 12px 0",
-                borderLeft: "1px solid var(--border)",
-                backgroundColor: "var(--white)",
-              }}
-            ></i>
-          </div>
+          
         </div> */}
+            <input
+              type="date"
+              className="form-control"
+              value={joiningDate}
+              onChange={(e) => {
+                setJoiningDate(e.target.value);
 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
+                if (!e) {
+                  setMandatoryFieldsEmpty((prevState) => ({
+                    ...prevState,
+                    joiningDate: true,
+                  }));
+                } else {
+                  setMandatoryFieldsEmpty({
+                    ...mandatoryFieldsEmpty,
+                    joiningDate: false,
+                  });
+                }
+              }}
+            />
+            {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 value={joiningDate}
                 // onChange={(e) => setJoiningDate(e)}
@@ -2378,7 +2380,7 @@ const UserMaster = () => {
                 }}
                 renderInput={(params) => <TextField {...params} />}
               />
-            </LocalizationProvider>
+            </LocalizationProvider> */}
             {mandatoryFieldsEmpty.joiningDate && (
               <p className="form-error">Please Enter Joining Date</p>
             )}
@@ -2391,17 +2393,8 @@ const UserMaster = () => {
               fieldGrid={3}
               required={false}
               value={monthlyGrossSalary}
-              // onChange={(e) => {
-              //   const value = e.target.value;
-              //   if (/^\d{0,7}$/.test(value)) {
-              //     setMonthlyGrossSalary(value);
-              //   }
-              // }}
               onChange={handleMonthlySalaryChange}
             />
-            {/* {isRequired.salary && (
-                  <p className="form-error">Please Enter Monthly Salary</p>
-                )} */}
           </div>
           <div className="col-3">
             <FieldContainer
@@ -2411,17 +2404,7 @@ const UserMaster = () => {
               required={false}
               value={ctc}
               onChange={handleYearlySalaryChange}
-              // onChange={(e) => {
-              //   const value = e.target.value;
-              //   // Limit input to 6 digits
-              //   if (/^\d{0,7}$/.test(value)) {
-              //     setCTC(value);
-              //   }
-              // }}
             />
-            {/* {isRequired.salary && (
-                  <p className="form-error">Please Enter CTC</p>
-                )} */}
           </div>
 
           {department == constant.CONST_SALES_DEPT_ID && (
@@ -2436,13 +2419,6 @@ const UserMaster = () => {
           )}
 
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
-            {/* <button
-          type="button"
-          className="btn btn-primary mr-2"
-          onClick={handleSubmit}
-        >
-          Submit & Next
-        </button> */}
             <button
               type="submit"
               className="btn cmnbtn btn-primary"
@@ -2600,31 +2576,7 @@ const UserMaster = () => {
               }}
               required={false}
             />
-            {/* {mandatoryFieldsEmpty.currentAddress && (
-              <p className="form-error">Please Enter Address</p>
-            )} */}
-            {/* <div className="form-group col-4">
-          <label className="form-label">
-            Current City <sup className="form-error">*</sup>
-          </label>
-          <Select
-            options={cityData.map((city) => ({
-              value: city.city_name,
-              label: city.city_name,
-            }))}
-            onChange={setcurrentCity}
-            required={true}
-            value={currentCity}
-            placeholder="Select a city..."
-            isClearable
-          />
-        </div>
 
-        <div className="form-group col-4">
-          <IndianStates
-            onChange={(option) => setcurrentState(option ? option.value : null)}
-          />
-        </div> */}
             <div className="form-group col-4 mt-3">
               <label htmlFor=""> State</label>
               <IndianStatesMui
@@ -2654,7 +2606,6 @@ const UserMaster = () => {
                 onChange={(e) => {
                   const value = e.target.value;
 
-                  // Ensure that the input value consists of maximum 6 digits
                   if (/^\d{0,6}$/.test(value)) {
                     setcurrentPincode(value);
 
@@ -2674,9 +2625,6 @@ const UserMaster = () => {
                 }}
                 required={false}
               />
-              {/* {mandatoryFieldsEmpty.currentPincode && (
-                <p className="form-error">Please Enter Pincode</p>
-              )} */}
             </div>
             {/*  Permanent Address here------------ */}
             <div className="">
@@ -2702,30 +2650,6 @@ const UserMaster = () => {
               onChange={(e) => setAddress(e.target.value)}
               required={false}
             />
-
-            {/* {mandatoryFieldsEmpty.address && (
-        <p  className="form-error">Please Enter Address</p>
-      )} */}
-            {/* <div className="form-group col-4">
-        <label className="form-label">Permanent City</label>
-        <Select
-          options={cityData.map((city) => ({
-            value: city.city_name,
-            label: city.city_name,
-          }))}
-          onChange={setCity}
-          required={true}
-          value={city}
-          placeholder="Select a city..."
-          isClearable
-        />
-      </div>
-      <div className="form-group col-4">
-        <IndianStates
-          onChange={(option) => setState(option ? option.value : null)}
-          newValue={state}
-        />
-      </div> */}
 
             <div className="form-group col-3 mt-3">
               <label htmlFor="">Permanent State</label>
@@ -2760,9 +2684,6 @@ const UserMaster = () => {
               />
             </div>
 
-            {/* {mandatoryFieldsEmpty.pincode && (
-        <p  className="form-error">Please Enter Pincode</p>
-      )} */}
             <div className="form-group col-3 mt-3">
               <label className="form-label">Blood Group</label>
               <Select
@@ -2778,29 +2699,8 @@ const UserMaster = () => {
                 onChange={(e) => {
                   setBloodGroup(e.value);
                 }}
-                // onBlur={() => {
-                //   if (
-                //     bloodGroup === "" ||
-                //     bloodGroup === null ||
-                //     bloodGroup.length === 0
-                //   ) {
-                //     setMandatoryFieldsEmpty((prevState) => ({
-                //       ...prevState,
-                //       bloodGroup: true,
-                //     }));
-                //   } else {
-                //     setMandatoryFieldsEmpty({
-                //       ...mandatoryFieldsEmpty,
-                //       bloodGroup: false,
-                //     });
-                //   }
-                // }}
                 required={false}
               />
-
-              {/* {mandatoryFieldsEmpty.bloodGroup && (
-          <p className="form-error">Please Enter Blood Group</p>
-        )} */}
             </div>
             <div className="form-group col-3">
               <label className="form-label">Hobbies</label>
@@ -2823,27 +2723,7 @@ const UserMaster = () => {
                 classNamePrefix="select"
                 value={tempLanguage}
                 onChange={handleLanguageSelect}
-                // onBlur={() => {
-                //   if (
-                //     tempLanguage === "" ||
-                //     tempLanguage === null ||
-                //     tempLanguage.length === 0
-                //   ) {
-                //     return setMandatoryFieldsEmpty((prevState) => ({
-                //       ...prevState,
-                //       language: true,
-                //     }));
-                //   } else {
-                //     setMandatoryFieldsEmpty({
-                //       ...mandatoryFieldsEmpty,
-                //       language: false,
-                //     });
-                //   }
-                // }}
               />
-              {/* {mandatoryFieldsEmpty.language && (
-          <p className="form-error">Please Enter Languages</p>
-        )} */}
             </div>
 
             <div className="form-group col-3">
@@ -3042,12 +2922,12 @@ const UserMaster = () => {
           {mandatoryFieldsEmpty.IFSC && (
             <p className="form-error">Please Enter IFSC</p>
           )}
-          {/* <FieldContainer
+          <FieldContainer
             label="Beneficiary"
             value={beneficiary}
             onChange={(e) => setBeneficiary(e.target.value)}
           />
-          <FieldContainer
+          {/* <FieldContainer
             label="Upload Proof"
             type="file"
             multiple
@@ -3416,7 +3296,7 @@ const UserMaster = () => {
           </div>
         </div>
 
-        <div
+        {/* <div
           style={{
             marginTop: 20,
             width: "100%",
@@ -3424,35 +3304,8 @@ const UserMaster = () => {
             borderRadius: "10px",
           }}
         >
-          {/* <div
-            className="progress-bar"
-            style={{
-              width: `${progress}%`,
-              backgroundColor: "blue",
-              height: "20px",
-              color: "white",
-              borderRadius: "10px",
-            }}
-          >
-            {progress.toFixed(0)}%
-          </div> */}
-        </div>
+        </div> */}
       </div>
-      {/* <FormContainer
-        mainTitle="User"
-        title="User Registration"
-        submitButton={false}
-        accordionButtons={accordionButtons}
-        activeAccordionIndex={activeAccordionIndex}
-        onAccordionButtonClick={handleAccordionButtonClick}
-        loading={loading}
-      >
-        {activeAccordionIndex === 0 && genralFields}
-        {isGeneralSubmitted && activeAccordionIndex === 1 && othersFields}
-        {isGeneralSubmitted &&
-          activeAccordionIndex === 2 &&
-          educationFamilyFieald}
-      </FormContainer> */}
     </div>
   );
 };
