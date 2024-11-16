@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { useUpdateSaleBookingSingleTdsVerifyMutation } from "../../../../Store/API/Finance/SaleBookingTDSApi";
+import { useUpdateSaleBookingSingleTdsVerifyMutation } from "../../../../Store/API/Finance/SaleBookingTdsApi";
 
 const SaleBookingCloseVerifyDialog = (props) => {
   const { setVerifyDialog, verifyDialog, row, refetchSaleBookingCloseList } =
