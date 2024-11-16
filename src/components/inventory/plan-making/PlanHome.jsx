@@ -238,7 +238,7 @@ function PlanHome() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!v.planName) newErrors.planName = 'Plan Name is required';
+    if (!planName) newErrors.planName = 'Plan Name is required';
     if (!planDetails.sellingPrice)
       newErrors.sellingPrice = 'Budget is required';
     if (!planDetails.accountId)
@@ -455,9 +455,8 @@ function PlanHome() {
       if (result.success) {
         Swal.fire({
           icon: 'success',
-          title: `Plan saved successfully! ${
-            isEdit ? '' : `Total plan created ${result.data.totalRecords}`
-          }`,
+          title: `Plan saved successfully! ${isEdit ? '' : `Total plan created ${result.data.totalRecords}`
+            }`,
 
           preConfirm: () => {
             const planId = result.data._id;
