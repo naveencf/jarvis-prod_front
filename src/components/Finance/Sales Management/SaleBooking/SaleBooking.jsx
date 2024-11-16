@@ -8,13 +8,13 @@ const SaleBooking = () => {
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
 
   const accordionButtons = ["Sale booking close", "Sale Booking Verify"];
-  const [buttonaccess, setButtonaccess] = useState(false);
-  const [uniquecustomerCount, setUniquecustomerCount] = useState(0);
-  const [baseamountTotal, setBaseamountTotal] = useState(0);
-  const [opencount, setOpencount] = useState(0);
-  const [closecount, setclosecount] = useState(0);
-  const [abouttoclosecount, setAbouttoclosecount] = useState(0);
-  const [uniquesalesexecutiveCount, setUniquesalesexecutiveCount] = useState(0);
+  const [buttonAccess, setButtonAccess] = useState(false);
+  const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
+  const [baseAmountTotal, setBaseAmountTotal] = useState(0);
+  const [openCount, setOpenCount] = useState(0);
+  const [closeCount, setCloseCount] = useState(0);
+  const [aboutToCloseCount, setAboutToCloseCount] = useState(0);
+  const [uniqueSalesExecutiveCount, setUniqueSalesExecutiveCount] = useState(0);
   const [handleOpenUniqueCustomerClick, setHandleOpenUniqueCustomerClick] =
     useState(() => () => {});
   const [handleOpenUniqueSalesExecutive, setHandleOpenUniqueSalesExecutive] =
@@ -31,15 +31,15 @@ const SaleBooking = () => {
         submitButton={false}
         link={true}
         mainTitle={"Sale Booking"}
-        buttonAccess={buttonaccess}
-        uniqueCustomerCount={uniquecustomerCount}
-        baseAmountTotal={baseamountTotal}
-        openCount={opencount}
-        closeCount={closecount}
-        aboutToCloseCount={abouttoclosecount}
+        buttonAccess={buttonAccess}
+        uniqueCustomerCount={uniqueCustomerCount}
+        baseAmountTotal={baseAmountTotal}
+        openCount={openCount}
+        closeCount={closeCount}
+        aboutToCloseCount={aboutToCloseCount}
         handleOpenUniqueCustomerClick={handleOpenUniqueCustomerClick}
         handleOpenUniqueSalesExecutive={handleOpenUniqueSalesExecutive}
-        uniqueSalesExecutiveCount={uniquesalesexecutiveCount}
+        uniqueSalesExecutiveCount={uniqueSalesExecutiveCount}
         saleBookingClosePaymentAdditionalTitles={true}
       />
 
@@ -57,13 +57,13 @@ const SaleBooking = () => {
           onHandleOpenUniqueCustomerClickChange={
             setHandleOpenUniqueCustomerClick
           }
-          setAbouttoclosecount={setAbouttoclosecount}
-          setButtonaccess={setButtonaccess}
-          setclosecount={setclosecount}
-          setOpencount={setOpencount}
-          setUniquecustomerCount={setUniquecustomerCount}
-          setBaseamountTotal={setBaseamountTotal}
-          setUniquesalesexecutiveCount={setUniquesalesexecutiveCount}
+          setAboutToCloseCount={setAboutToCloseCount}
+          setButtonAccess={setButtonAccess}
+          setCloseCount={setCloseCount}
+          setOpenCount={setOpenCount}
+          setUniqueCustomerCount={setUniqueCustomerCount}
+          setBaseAmountTotal={setBaseAmountTotal}
+          setUniqueSalesExecutiveCount={setUniqueSalesExecutiveCount}
         />
       )}
       {activeAccordionIndex === 1 && (
@@ -74,13 +74,13 @@ const SaleBooking = () => {
           onHandleOpenUniqueCustomerClickChange={
             setHandleOpenUniqueCustomerClick
           }
-          setAbouttoclosecount={setAbouttoclosecount}
-          setButtonaccess={setButtonaccess}
-          setclosecount={setclosecount}
-          setOpencount={setOpencount}
-          setUniquecustomerCount={setUniquecustomerCount}
-          setBaseamountTotal={setBaseamountTotal}
-          setUniquesalesexecutiveCount={setUniquesalesexecutiveCount}
+          setAboutToCloseCount={setAboutToCloseCount}
+          setButtonAccess={setButtonAccess}
+          setCloseCount={setCloseCount}
+          setOpenCount={setOpenCount}
+          setUniqueCustomerCount={setUniqueCustomerCount}
+          setBaseAmountTotal={setBaseAmountTotal}
+          setUniqueSalesExecutiveCount={setUniqueSalesExecutiveCount}
         />
       )}
     </div>

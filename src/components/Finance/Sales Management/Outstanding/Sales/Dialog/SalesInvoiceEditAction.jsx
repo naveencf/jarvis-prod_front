@@ -11,11 +11,11 @@ import React, { useEffect, useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import axios from "axios";
 import jwtDecode from "jwt-decode";
-import { baseUrl } from "../../../../../../utils/config";
 import ImageView from "../../../../ImageView";
 import pdf from "../../../../pdf-file.png";
+import { useUpdatePendingInvoiceReqMutation } from "../../../../../Store/API/Finance/InvoiceRequestApi";
+import { useGlobalContext } from "../../../../../../Context/Context";
 
 function SalesInvoiceEditAction(props) {
   const {
@@ -28,6 +28,17 @@ function SalesInvoiceEditAction(props) {
     setViewImgSrc,
     viewImgDialog,
   } = props;
+
+  const [
+    updatePendingInvoiceReq,
+    {
+      isLoading: updateInvoiceRequestLoading,
+      isError: updateInvoiceRequestError,
+      isSuccess: updateInvoiceRequestSuccess,
+    },
+  ] = useUpdatePendingInvoiceReqMutation();
+
+  const { toastAlert, toastError } = useGlobalContext();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken?.id;
@@ -47,23 +58,17 @@ function SalesInvoiceEditAction(props) {
   };
 
   const handleEditAction = async (row) => {
-    if (imageInvoice == "") {
-      setIsRequired((perv) => ({ ...perv, imageInvoice: true }));
-    }
-    if (!imageInvoice || imageInvoice == "") {
-      toastError("Please Add Invoice Image");
-      return;
-    }
-    // if (!invcNumber || isNaN(invcNumber)) {
-    //   setIsRequired((prev) => ({ ...prev, invcNumber: true }));
-    //   toastError("Please Enter a Valid Invoice Number");
-    //   return;
-    // }
-    // As payload get changed we need to update data in the same way
+    try {
+      if (!imageInvoice) {
+        setIsRequired((prev) => ({ ...prev, imageInvoice: true }));
+        toastError("Please Add Invoice Image");
+        return;
+      }
 
-    const confirmation = confirm("Are you sure you want to submit this data?");
-
-    if (confirmation) {
+      const confirmation = confirm(
+        "Are you sure you want to submit this data?"
+      );
+      if (!confirmation) return;
       const formData = new FormData();
       formData.append("update_by", loginUserId);
       formData.append("invoice_type_id", outstandingRowData?.invoice_type_id);
@@ -77,27 +82,18 @@ function SalesInvoiceEditAction(props) {
           ? dayjs(invcDate).format("YYYY/MM/DD")
           : dayjs().format("YYYY/MM/DD")
       );
-
-      await axios
-        .put(
-          baseUrl + `sales/invoice_request/${outstandingRowData._id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          toastAlert("Data Submitted Successfully");
-        })
-        .catch((err) => {
-          console.log(err, "submit invoice error-------");
-        });
+      await updatePendingInvoiceReq({
+        id: outstandingRowData?._id,
+        data: formData,
+      }).unwrap();
+      toastAlert("Data Submitted Successfully");
+      getData();
+      handleCloseEditAction();
+    } catch (error) {
+      console.error("Error while submitting invoice data:", error);
+      toastError("Failed to submit data. Please try again.");
+      handleCloseEditAction();
     }
-    getData();
-    handleCloseEditAction();
   };
 
   useEffect(() => {
@@ -175,13 +171,7 @@ function SalesInvoiceEditAction(props) {
             value={invcNumber}
             onChange={(e) => {
               const value = e.target.value;
-              // if (/^\d*$/.test(value)) {
-              // Allow only numeric input
               setInvcNumber(value);
-              //   setIsRequired((prev) => ({ ...prev, invcNumber: false }));
-              // } else {
-              //   setIsRequired((prev) => ({ ...prev, invcNumber: true }));
-              // }
             }}
             error={isRequired.invcNumber}
             helperText={isRequired.invcNumber ? "Please add a number" : ""}

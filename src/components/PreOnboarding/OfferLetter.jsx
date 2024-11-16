@@ -236,14 +236,14 @@ const styles = StyleSheet.create({
     marginTop: 30,
   },
 });
-const OfferLetter = ({ allUserData, image64 }) => {
+const OfferLetter = ({ allUserData, image64 ,EMPPF }) => {
   const UserDetails = allUserData;
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
-
   }
+
   const signatureImg =
     "data:image/png;base64,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";
   return (
@@ -256,10 +256,9 @@ const OfferLetter = ({ allUserData, image64 }) => {
             <Text style={styles.logoBold}>Creative</Text> <Text style={styles.logoText} >
               fuel</Text>
           </View>
-
         </View>
         <Text style={styles.section}>
-          Date {formatDate(new Date())}
+          Date:{formatDate(new Date())}
         </Text>
 
         <View style={styles.section}>
@@ -302,7 +301,7 @@ const OfferLetter = ({ allUserData, image64 }) => {
             <Text style={styles.points} >1) Compensation:</Text>
             <Text>
               Your remuneration will have a fixed component of INR{" "}
-              {(allUserData?.ctc < 100000) ? allUserData?.ctc : formatNumber(allUserData?.ctc)}PA{" "}
+              {(allUserData?.ctc < 100000) ? allUserData?.ctc +EMPPF : formatNumber(allUserData?.ctc + EMPPF)}PA{" "}
               (CTC), paid monthly, and a detailed breakdown of your
               remuneration can be found in [Annexure-A].
             </Text>

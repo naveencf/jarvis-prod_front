@@ -1,7 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
-import { baseUrl } from "../../../../../utils/config";
 import ImageView from "../../../ImageView";
 import {
   pendingInvoiceColumn,
@@ -14,6 +12,10 @@ import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import PendingInvoiceFilters from "./PendingInvoiceFilters";
 import PendingInvoiceDiscard from "./PendingInvoiceDiscard";
 import View from "../../../../AdminPanel/Sales/Account/View/View";
+import {
+  useGetAllInvoiceRequestQuery,
+  useGetAllProformaListQuery,
+} from "../../../../Store/API/Finance/InvoiceRequestApi";
 
 const PendingInvoice = ({
   setUniqueCustomerCount,
@@ -24,6 +26,20 @@ const PendingInvoice = ({
   onHandleOpenUniqueSalesExecutiveChange,
   onHandleOpenUniqueCustomerClickChange,
 }) => {
+  const {
+    refetch: refetchPendingInvoice,
+    data: allPendingInvoiceRequest,
+    error: allPendingInvoiceRequestError,
+    isLoading: allPendingInvoiceRequestLoading,
+  } = useGetAllInvoiceRequestQuery("pending");
+
+  const {
+    refetch: refetchProformaInvoiceList,
+    data: allProformaInvoiceList,
+    error: allProformaInvoiceListError,
+    isLoading: allProformaInvoiceListLoading,
+  } = useGetAllProformaListQuery({ status: "uploaded", type: "proforma" });
+
   const { usersDataContext } = useGlobalContext();
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -31,7 +47,6 @@ const PendingInvoice = ({
   const [filterData, setFilterData] = useState([]);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
   const [uniqueCustomerData, setUniqueCustomerData] = useState([]);
-  const [sameCustomerDialog, setSameCustomerDialog] = useState(false);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
@@ -44,54 +59,49 @@ const PendingInvoice = ({
   const [InvcCreatedRowData, setInvcCreatedRowData] = useState("");
   const [preview, setPreview] = useState("");
   const [selectedData, setSelectedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
 
-  const getData = useCallback(async () => {
-    setIsLoading(true);
+  useEffect(() => {
+    if (allPendingInvoiceRequest && usersDataContext?.length > 0) {
+      getData();
+    }
+  }, [allPendingInvoiceRequest, usersDataContext]);
 
-    try {
-      const { data } = await axios.get(
-        `${baseUrl}sales/invoice_request?status=pending`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+  useEffect(() => {
+    if (allProformaInvoiceList && usersDataContext?.length > 0) {
+      handleGetProforma();
+    }
+  }, [allProformaInvoiceList, usersDataContext]);
+
+  const getData = () => {
+    if (!allPendingInvoiceRequest) return;
+
+    const mergedData = allPendingInvoiceRequest?.map((item) => {
+      const userData = usersDataContext?.find(
+        (user) => user?.user_id === item?.created_by
       );
 
-      if (data?.data) {
-        const mergedData = data?.data?.map((item) => {
-          const userData = usersDataContext?.find(
-            (user) => user?.user_id === item?.created_by
-          );
-          return {
-            ...item,
-            user_name: userData?.user_name || null,
-            account_name: item?.saleData?.account_name || null,
-          };
-        });
+      return {
+        ...item,
+        user_name: userData?.user_name || null,
+        account_name: item?.saleData?.account_name || null,
+      };
+    });
 
-        const sortedData = mergedData.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+    const sortedData = mergedData?.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
 
-        setIsLoading(false);
-        setData(sortedData);
-        setFilterData(sortedData);
-        calculateUniqueData(sortedData);
-        calculateTotals(sortedData);
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  }, [token, usersDataContext]);
+    setData(sortedData);
+    setFilterData(sortedData);
+    calculateUniqueData(sortedData);
+    calculateTotals(sortedData);
+  };
 
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName, isAccountName) =>
-      data.reduce((acc, curr) => {
+      data?.reduce((acc, curr) => {
         const key = isAccountName
           ? curr?.saleData?.account_name
           : curr?.[keyName];
@@ -120,53 +130,38 @@ const PendingInvoice = ({
         return acc;
       }, {});
 
-    const uniqueAccData = Object.values(
+    const uniqueAccData = Object?.values(
       aggregateData(sortedData, "account_name", true)
     );
     setUniqueCustomerData(uniqueAccData);
-    setUniqueCustomerCount(uniqueAccData.length);
+    setUniqueCustomerCount(uniqueAccData?.length);
 
-    const uniqueSalesExData = Object.values(
+    const uniqueSalesExData = Object?.values(
       aggregateData(sortedData, "user_name", false)
     );
     setUniqueSalesExecutiveData(uniqueSalesExData);
-    setUniqueSalesExecutiveCount(uniqueSalesExData.length);
+    setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
 
-  const handleGetProforma = async () => {
-    try {
-      const { data } = await axios.get(
-        `${baseUrl}sales/invoice_request/?status=uploaded&invoice_type_id=proforma`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+  const handleGetProforma = () => {
+    if (!allProformaInvoiceList) return;
+
+    const mergedData = allProformaInvoiceList?.map((item) => {
+      const userData = usersDataContext?.find(
+        (user) => user?.user_id === item?.created_by
       );
 
-      if (data?.data) {
-        // Merging user data with proforma data
-        const mergedData = data?.data?.map((item) => {
-          const userData = usersDataContext?.find(
-            (user) => user.user_id === item.created_by
-          );
-          return {
-            ...item,
-            user_name: userData?.user_name || null,
-          };
-        });
+      return {
+        ...item,
+        user_name: userData?.user_name || null,
+        account_name: item?.saleData?.account_name || null,
+      };
+    });
 
-        // Sorting data by creation date
-        const sortedData = mergedData.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-
-        setProformaData(sortedData);
-      }
-    } catch (error) {
-      console.error("Error fetching proforma data:", error);
-    }
+    const sortedData = mergedData?.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    setProformaData(sortedData);
   };
 
   const handleClearSameRecordFilter = (e) => {
@@ -175,18 +170,12 @@ const PendingInvoice = ({
   };
 
   useEffect(() => {
-    if (usersDataContext && usersDataContext?.length > 0) {
-      getData();
-    }
-    handleGetProforma();
-  }, [usersDataContext]);
-
-  useEffect(() => {
-    const result = datas?.filter((d) => {
-      return d?.saleData?.account_name
-        ?.toLowerCase()
-        .match(search.toLowerCase());
-    });
+    const result =
+      datas?.filter((d) => {
+        return d?.saleData?.account_name
+          ?.toLowerCase()
+          .match(search.toLowerCase());
+      }) || [];
     setFilterData(result);
   }, [search]);
 
@@ -225,8 +214,6 @@ const PendingInvoice = ({
   };
   // ============================================
   const handleOpenSameCustomer = (custName) => {
-    setSameCustomerDialog(true);
-
     const sameNameAccounts = datas?.filter(
       (item) => item?.account_name === custName
     );
@@ -288,10 +275,11 @@ const PendingInvoice = ({
         setEditActionDialog={setEditActionDialog}
         setPreview={setPreview}
         setViewImgSrc={setViewImgSrc}
-        getData={getData}
+        getData={refetchPendingInvoice}
         setInvcCreatedRowData={setInvcCreatedRowData}
         InvcCreatedRowData={InvcCreatedRowData}
         setOpenImageDialog={setOpenImageDialog}
+        refetchProformaInvoiceList={refetchProformaInvoiceList}
       />
       {/* Dialog For Discard */}
       <PendingInvoiceDiscard discardDialog={discardDialog} />
@@ -353,7 +341,7 @@ const PendingInvoice = ({
             handleDiscardOpenDialog,
           })}
           data={filterData}
-          isLoading={isLoading}
+          isLoading={allPendingInvoiceRequestLoading}
           title={"Pending Invoice"}
           rowSelectable={true}
           setTotal={true}

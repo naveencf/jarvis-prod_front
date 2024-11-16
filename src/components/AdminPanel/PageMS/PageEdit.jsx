@@ -35,9 +35,11 @@ import {
 } from "../../Store/PageMaster";
 import PageAddMasterModal from "./PageAddMasterModal";
 import PageInfoModal from "./PageInfoModal";
+import { FormatName } from "../../../utils/FormatName";
+
 
 setOpenShowAddModal;
-const Page = ({ pageMast_id }) => {
+const Page = ({ pageMast_id ,handleEditClose}) => {
   const { refetch: refetchPageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery();
   const navigate = useNavigate();
@@ -315,8 +317,9 @@ const Page = ({ pageMast_id }) => {
       });
   }, [platformData]);
 
+  console.log(singlePage, "singlePage ----------");
   useEffect(() => {
-    console.log(singlePage, "singlePage");
+
     if (singlePage && singlePage.length > 0) {
       axios
         .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
@@ -331,7 +334,7 @@ const Page = ({ pageMast_id }) => {
         });
     }
     getLanguage()
-  }, [singlePage]);
+  }, []);
 
   const getLanguage = async () => {
     try {
@@ -467,7 +470,7 @@ const Page = ({ pageMast_id }) => {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
-          temp_vendor_id: singleVendor.vendor_id,
+          temp_vendor_id: singlePage.vendor_id,
           story: storyPrice?.price,
           post: postPrice?.price,
           both_: bothPrice?.price,
@@ -479,6 +482,7 @@ const Page = ({ pageMast_id }) => {
           temp_page_cat_id: cat_name,
           //temp_page_cat_id: singlePage.temp_page_cat_id
         };
+        console.log(payload,' saim 1234',flag);
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
           .then(() => { })
@@ -489,66 +493,17 @@ const Page = ({ pageMast_id }) => {
         if (flag) {
           toastAlert("Submitted");
           refetchPageList();
-          navigate("/admin/pms-page-overview");
+          // navigate("/admin/pms-page-overview");
+          handleEditClose()
+          console.log(
+            "reach"
+          )
         }
         if (!flag) {
           toastAlert("Submitted");
         }
       });
 
-    for (let i = 0; i < rowCount.length; i++) {
-      let matchingObject = priceDataNew?.find(
-        (obj) => obj.page_price_type_id === rowCount[i].page_price_type_id
-      );
-
-      if (matchingObject) {
-        if (matchingObject.price !== rowCount[i].price) {
-          axios
-            .put(
-              baseUrl + `v1/pagePriceMultiple/${matchingObject._id}`,
-              {
-                price: rowCount[i].price,
-              },
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              }
-            )
-            .then((response) => {
-              console.log(
-                `Updated object ${i} with _id ${matchingObject._id}:`,
-                response.data
-              );
-            })
-            .catch((error) => {
-              console.error(
-                `Error updating object ${i} with _id ${matchingObject._id}:`,
-                error
-              );
-            });
-        }
-      } else {
-        rowCount[i].created_by = 229;
-        rowCount[i].page_master_id = pageMast_id;
-        rowCount[i].price = Number(rowCount[i].price);
-
-        axios
-          .post(baseUrl + `v1/pagePriceMultiple`, rowCount[i], {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          })
-          .then((response) => {
-            console.log(`Added new object ${i}:`, response.data);
-          })
-          .catch((error) => {
-            console.error(`Error adding new object ${i}:`, error);
-          });
-      }
-    }
   };
 
   const handleVariableTypeChange = (selectedOption) => {
@@ -635,7 +590,7 @@ const Page = ({ pageMast_id }) => {
       </div>
 
       <FieldContainer
-        label="Page Name *"
+        label="Profile Name *"
         value={pageName}
         required={true}
         onChange={(e) => {
@@ -654,18 +609,18 @@ const Page = ({ pageMast_id }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Platform ID <sup style={{ color: "red" }}>*</sup>
+          Platform  <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={platformData.map((option) => ({
             value: option._id,
-            label: option.platform_name,
+            label: FormatName(option.platform_name),
           }))}
           value={{
             value: platformId,
             label:
-              platformData.find((role) => role._id === platformId)
-                ?.platform_name || "",
+            FormatName( platformData.find((role) => role._id === platformId)
+                ?.platform_name || ""),
           }}
           onChange={(e) => {
             setPlatformId(e.value);
@@ -684,13 +639,13 @@ const Page = ({ pageMast_id }) => {
               className="w-100"
               options={categoryData.map((option) => ({
                 value: option._id,
-                label: option.page_category,
+                label: FormatName(option.page_category),
               }))}
               value={{
                 value: categoryId,
                 label:
-                  categoryData.find((role) => role._id === categoryId)
-                    ?.page_category || "",
+                FormatName(categoryData.find((role) => role._id === categoryId)
+                    ?.page_category || ""),
               }}
               onChange={(e) => {
                 setCategoryId(e.value);
@@ -725,13 +680,13 @@ const Page = ({ pageMast_id }) => {
             className="w-100"
             options={subCategoryData?.map((option) => ({
               value: option._id,
-              label: option.page_sub_category,
+              label: FormatName(option.page_sub_category),
             }))}
             value={{
               value: subCategoryId,
               label:
-                subCategoryData.find((role) => role._id === subCategoryId)
-                  ?.page_sub_category || "",
+              FormatName(subCategoryData.find((role) => role._id === subCategoryId)
+                  ?.page_sub_category || ""),
             }}
             onChange={(e) => {
               setSubCategoryId(e.value);
@@ -1189,7 +1144,7 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
         onAccordionButtonClick={handleAccordionButtonClick}
         submitButton={true}
       >
-        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} />}
+        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />}
         {/* {activeAccordionIndex === 1 && <PageHealth />} */}
         {activeAccordionIndex === 1 &&
           navigate(`/admin/exe-history/${pageMast_id}`)}

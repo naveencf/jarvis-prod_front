@@ -36,7 +36,7 @@ const PlanXNoteModal = ({
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        Description List
+        Notes List
         <IconButton
           aria-label="close"
           onClick={onClose}

@@ -75,6 +75,7 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose }) => {
     setFile(null);
   };
 
+  console.log(getRowData , 'hello testing')
   const handleSubmit = async () => {
   
     const formdata = new FormData();

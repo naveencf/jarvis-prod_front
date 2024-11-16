@@ -13,6 +13,7 @@ import { ErrorBar } from "recharts";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../../utils/config";
 import axios from "axios";
+import { useUpdateCreditNoteMutation } from "../../../../../Store/API/Finance/CreditNoteApi";
 
 const CreditNoteDialog = (props) => {
   const {
@@ -23,6 +24,16 @@ const CreditNoteDialog = (props) => {
     setViewImgSrc,
     getData,
   } = props;
+
+  const [
+    updateCreditNoteForOutstanding,
+    {
+      isLoading: updateCreditNoteLoading,
+      isError: updateCreditNoteError,
+      isSuccess: updateCreditNoteSuccess,
+    },
+  ] = useUpdateCreditNoteMutation();
+
   const { toastAlert, toastError } = useGlobalContext();
   const [creditNoteReason, setCreditNoteReason] = useState("");
   const [creditNoteFile, setCreditNoteFile] = useState("");
@@ -56,40 +67,31 @@ const CreditNoteDialog = (props) => {
     }
   };
 
-  console.log(rowDataForCreditNote, "row credit note===>>>");
-
   const handleCreditNoteUpdate = async (e) => {
     e?.preventDefault();
 
     const confirmation = confirm(
       `Are you sure you want to mark this sale booking of ${rowDataForCreditNote?.campaign_amount} as a credit note?`
     );
+    if (!confirmation) return;
 
-    if (confirmation) {
-      const formData = new FormData();
-      formData.append("invoice_action_reason", creditNoteReason);
-      formData.append("updated_by", loginUserId);
-      formData.append("credit_note_file", creditNoteFile);
+    const formData = new FormData();
+    formData.append("invoice_action_reason", creditNoteReason);
+    formData.append("updated_by", loginUserId);
+    formData.append("credit_note_file", creditNoteFile);
 
-      try {
-        const res = await axios.put(
-          baseUrl + `sales/credit_note_by_finance/${rowDataForCreditNote?._id}`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.status === 200) {
-          toastAlert("Credit Note Data Updated Successfully");
-          handleCloseCreditNote();
-          getData();
-        }
-      } catch (err) {
-        console.log("Error While Updating Credit Note: ", ErrorBar);
-      }
+    try {
+      await updateCreditNoteForOutstanding({
+        id: rowDataForCreditNote?._id,
+        data: formData,
+      }).unwrap();
+
+      toastAlert("Credit Note Data Updated Successfully");
+      handleCloseCreditNote();
+      getData();
+    } catch (err) {
+      console.log("Error While Updating Credit Note: ", ErrorBar);
+      handleCloseCreditNote();
     }
   };
 

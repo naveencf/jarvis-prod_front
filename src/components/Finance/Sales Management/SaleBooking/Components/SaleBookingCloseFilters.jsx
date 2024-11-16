@@ -1,6 +1,15 @@
-import React from "react";
+import { Autocomplete, Button, TextField } from "@mui/material";
+import React, { useState } from "react";
 
-const SaleBookingCloseFilters = () => {
+const SaleBookingCloseFilters = (props) => {
+  const {
+    datas,
+    setFilterData,
+    setUniqueCustomerCount,
+    setUniqueCustomerData,
+    setUniqueSalesExecutiveData,
+    setUniqueSalesExecutiveCount,
+  } = props;
   const [dateFilter, setDateFilter] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [salesExecutive, setSalesExecutive] = useState("");
@@ -57,7 +66,6 @@ const SaleBookingCloseFilters = () => {
       filterData.map((item) => item.account_name)
     );
     setUniqueCustomerCount(uniqueCustomers?.size);
-    setUniquecustomerCount(uniqueCustomers?.size);
     const uniqueCustomerData = Array.from(uniqueCustomers)?.map(
       (customerName) => {
         return filterData?.find((item) => item.account_name === customerName);
@@ -69,7 +77,6 @@ const SaleBookingCloseFilters = () => {
       filterData?.map((item) => item.created_by_name)
     );
     setUniqueSalesExecutiveCount(uniqueSalesEx.size);
-    setUniquesalesexecutiveCount(uniqueSalesEx.size);
     const uniqueSEData = Array.from(uniqueSalesEx)?.map((salesEName) => {
       return filterData?.find((item) => item.created_by_name === salesEName);
     });
@@ -86,7 +93,6 @@ const SaleBookingCloseFilters = () => {
     setSalesExecutive("");
     const uniqueCustomers = new Set(datas.map((item) => item.account_name));
     setUniqueCustomerCount(uniqueCustomers?.size);
-    setUniquecustomerCount(uniqueCustomers?.size);
     const uniqueCustomerData = Array.from(uniqueCustomers)?.map(
       (customerName) => {
         return datas?.find((item) => item.account_name === customerName);
@@ -96,7 +102,6 @@ const SaleBookingCloseFilters = () => {
     // For Unique Sales Executive
     const uniqueSalesEx = new Set(datas?.map((item) => item.created_by_name));
     setUniqueSalesExecutiveCount(uniqueSalesEx?.size);
-    setUniquesalesexecutiveCount(uniqueSalesEx?.size);
     const uniqueSEData = Array.from(uniqueSalesEx)?.map((salesEName) => {
       return datas?.find((item) => item.created_by_name === salesEName);
     });

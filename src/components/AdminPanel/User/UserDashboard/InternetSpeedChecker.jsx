@@ -21,7 +21,7 @@ const InternetSpeedChecker = () => {
       setSpeed(speedMbps.toFixed(2));
     } catch (error) {
       console.error("Error checking internet speed:", error);
-      setSpeed("Error");
+      setSpeed("0");
     } finally {
       setIsTesting(false);
     }

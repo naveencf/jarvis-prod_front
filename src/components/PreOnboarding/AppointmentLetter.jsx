@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
         marginTop: 30,
     },
 });
-const AppointmentLetter = ({ allUserData, image64 }) => {
+const AppointmentLetter = ({ allUserData, image64 ,EMPPF}) => {
     const UserDetails = allUserData;
     const formatDate = (isoDate) => {
         const date = new Date(isoDate);
@@ -298,9 +298,9 @@ const AppointmentLetter = ({ allUserData, image64 }) => {
                     <View style={styles.section}>
                         <Text style={styles.points}>2. COMPENSATION:</Text>
 
-                        <Text>Your latest compensation and Cost to Company (CTC) including all the benefits will be INR. {UserDetails.ctc}/- per annum, the break-up of the CTC is provided in Annexure B and/or shall remain the same as provided in the Offer Letter of Appointment. Your future increments or promotion or any other salary increase shall be based on merit considering your periodic and consistent overall performance, business conditions and other parameters fixed from time to time at the discretion of the management and shall not be consideredmerely as a matter of right.</Text>
+                        <Text>Your latest compensation and Cost to Company (CTC) including all the benefits will be INR. {UserDetails.ctc+EMPPF}/- per annum, the break-up of the CTC is provided in Annexure B and/or shall remain the same as provided in the Offer Letter of Appointment. Your future increments or promotion or any other salary increase shall be based on merit considering your periodic and consistent overall performance, business conditions and other parameters fixed from time to time at the discretion of the management and shall not be consideredmerely as a matter of right.</Text>
 
-                        Your latest compensation and Cost to Company (CTC) including all the benefits will be INR. {UserDetails.ctc}/- per
+                        Your latest compensation and Cost to Company (CTC) including all the benefits will be INR. {UserDetails.ctc+EMPPF}/- per
                         annum, the break-up of the CTC is provided in Annexure B and/or shall remain the same as provided in the
                         Offer Letter of Appointment. Your future increments or promotion or any other salary increase shall be
                         based on merit considering your periodic and consistent overall performance, business conditions and

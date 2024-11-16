@@ -1420,6 +1420,24 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     <h2 className="letter_tab_name">Offer Letter</h2>
                   </div>
+                  {/* <div
+                    className={`sidebar_itembox ${
+                      activeTab === 6 ? "sidebar_item_active" : ""
+                    }`}
+                    id="sidebarLetterBox"
+                    onClick={() => setActiveTab(6)}
+                  >
+                    <div className="progress-circle progressing pp-26">
+                      <div className="progress-circle-border">
+                        <div className="left-half-circle" />
+                        <div className="right-half-circle" />
+                      </div>
+                      <div className="progress-circle-content">
+                        <i className="bi bi-file-earmark-text" />
+                      </div>
+                    </div>
+                    <h2 className="letter_tab_name">NDA</h2>
+                  </div> */}
                   {/* )} */}
                   <div
                     // className={`sidebar_itembox  ${

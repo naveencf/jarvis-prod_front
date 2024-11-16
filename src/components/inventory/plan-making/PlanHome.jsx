@@ -17,15 +17,14 @@ import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
 import AddIcon from '@mui/icons-material/Add';
 // import FormContainer from '../../AdminPanel/FormContainer';
-import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
 import jwtDecode from 'jwt-decode';
 import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
 import PlanXStatusDialog from './StatusDialog';
 import PlanXHeader from './PlanXHeader';
 import PageDialog from './PageDialog';
-import { formatUTCDate } from '../../../utils/formatUTCDate';
 import { CiStickyNote } from 'react-icons/ci';
 import PlanXNoteModal from './PlanXNoteModal';
+import DataGridOverviewColumns from './DataGridOverviewColumns';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -239,7 +238,7 @@ function PlanHome() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
+    if (!v.planName) newErrors.planName = 'Plan Name is required';
     if (!planDetails.sellingPrice)
       newErrors.sellingPrice = 'Budget is required';
     if (!planDetails.accountId)
@@ -456,7 +455,10 @@ function PlanHome() {
       if (result.success) {
         Swal.fire({
           icon: 'success',
-          title: 'Plan saved successfully!',
+          title: `Plan saved successfully! ${
+            isEdit ? '' : `Total plan created ${result.data.totalRecords}`
+          }`,
+
           preConfirm: () => {
             const planId = result.data._id;
             isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
@@ -522,229 +524,20 @@ function PlanHome() {
     setStatusDialogPlan(row);
     setSelectedPlanId(row.id); // Store the plan ID
   };
-  const columns = [
-    {
-      key: 'serial_no',
-      name: 'S.No',
-      renderRowCell: (row, index) => (
-        <div style={{ textAlign: 'center' }}>{index + 1}</div>
-      ),
-      width: 70,
-      showCol: true,
-    },
-    // {
-    //   key: 'platform_count',
-    //   name: 'No of Platform',
-    //   renderRowCell: (row) => (
-    //     <div style={{ cursor: 'pointer' }}>{row.platformCount}</div>
-    //   ),
-    //   width: 150,
-    //   showCol: true,
-    // },
-    {
-      key: 'unfetced_pages',
-      name: 'Unfetched Pages',
-      renderRowCell: (row) => (
-        <div
-          style={{ cursor: 'pointer' }}
-          onClick={() => handleOpenDialog(row.not_available_pages)}
-        >
-          {row.not_available_pages?.length}
-        </div>
-      ),
-      width: 150,
-      showCol: true,
-    },
 
-    {
-      key: 'plan_name',
-      name: 'Plan Name',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.planName}</div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'profit_percentage',
-      name: 'Profit Percentage',
-      renderRowCell: (row) => {
-        const costPrice = parseFloat(row.costPrice);
-        const sellingPrice = parseFloat(row.sellingPrice);
-
-        // Calculate profit percentage, handling division by zero
-        const profitPercentage =
-          costPrice > 0 ? ((sellingPrice - costPrice) / costPrice) * 100 : 0;
-
-        return (
-          <div
-            style={{ cursor: 'pointer' }}
-            title={`${sellingPrice - costPrice}`}
-          >
-            {profitPercentage.toFixed(2)}%
-          </div>
-        );
-      },
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'brief',
-      name: 'Brief',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.brief}</div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'account_name',
-      name: 'Account Name',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.account_name}</div>
-      ),
-      // renderRowCell: (row) => (<div>{row?.account_name}</div>),
-      width: 200,
-    },
-    {
-      key: 'sales_executive_name',
-      name: 'Sales Executive Name',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.sales_executive_name}</div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'created_by_name',
-      name: 'Created By',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row?.created_by_name}</div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'plan_status',
-      name: 'Plan Status',
-      renderRowCell: (row) => (
-        <div
-          className={`badge ${
-            row?.plan_status === 'close' ? 'badge-success' : 'badge-danger'
-          }`}
-          style={{ cursor: 'pointer' }}
-          onClick={() => handleStatusChange(row)}
-        >
-          {row?.plan_status}
-        </div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-    {
-      key: 'cost_price',
-      name: 'Cost Price',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.costPrice}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'selling_price',
-      name: 'Selling Price',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.sellingPrice}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'pages',
-      name: 'No of Pages',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.pages}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'createdAt',
-      name: 'Created Date',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{formatUTCDate(row.createdAt)}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'post_count',
-      name: 'Post Count',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.postCount}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'story_count',
-      name: 'Story Count',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.storyCount}</div>
-      ),
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: 'description',
-      name: 'Description',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.description}</div>
-      ),
-      width: 250,
-      showCol: true,
-    },
-    {
-      key: 'actions',
-      name: 'Actions',
-      renderRowCell: (row) => (
-        <div className="flexCenter colGap8">
-          <button
-            title="Duplicate"
-            onClick={() => handleDuplicateClick(row)}
-            className="btn icon"
-          >
-            <CopySimple />
-          </button>
-          <button
-            title="View"
-            className="btn icon"
-            onClick={() => handleRowClick(row)}
-          >
-            <Eye />
-          </button>
-          <button
-            title="Edit"
-            className="btn icon"
-            onClick={() => handleEditClick(row)}
-          >
-            <PencilSimple />
-          </button>
-        </div>
-      ),
-      width: 150,
-      showCol: true,
-    },
-  ];
+  const { columns } = DataGridOverviewColumns({
+    handleOpenDialog,
+    handleStatusChange,
+    handleDuplicateClick,
+    handleRowClick,
+    handleEditClick,
+  });
   const finalPlanList = filteredPlans.length
     ? filteredPlans
     : planRows?.reverse();
 
   return (
     <div>
-      {/* <Button variant="contained" onClick={handlePlanMaking}>
-        Plan Making Button
-      </Button> */}
       <PageDialog
         open={openPageDialog}
         onClose={handleClosePageDialog}
@@ -767,7 +560,7 @@ function PlanHome() {
             <TextField
               className="mb16"
               margin="dense"
-              label="Plan Name *"
+              label="Plan Name* (sheet name will be same)"
               name="planName"
               fullWidth
               value={planDetails.planName}
@@ -791,6 +584,7 @@ function PlanHome() {
                   ...prevDetails,
                   accountId: value ? value._id : '',
                   accountName: value ? value.account_name : '',
+                  accountTypeName: value ? value.account_type_name : '',
                   brandId: value ? value.brand_id : '',
                 }));
               }}
@@ -803,6 +597,18 @@ function PlanHome() {
                 />
               )}
             />
+
+            {planDetails.accountTypeName && (
+              <div
+                style={{
+                  marginLeft: '0.4rem',
+                  color: '#555',
+                  fontSize: '0.775rem',
+                }}
+              >
+                Account Type: {planDetails.accountTypeName}
+              </div>
+            )}
 
             <TextField
               margin="dense"
@@ -817,6 +623,7 @@ function PlanHome() {
               label="Selling Price *"
               name="sellingPrice"
               fullWidth
+              type="number"
               value={planDetails.sellingPrice}
               onChange={handleInputChange}
               error={!!errors.sellingPrice}
@@ -896,7 +703,7 @@ function PlanHome() {
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Plan X Overview </h5>
           <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
-          <button className="icon" onClick={handleOpenModal}>
+          <button className="icon" onClick={handleOpenModal} title="plan-notes">
             <CiStickyNote />
           </button>
           <div className="flexCenter colGap8">

@@ -63,7 +63,7 @@ const colourOptions = [
 const initialFamilyDetailsGroup = {
   relation: "",
   name: "",
-  // DOB: "",
+  DOB: "",
   contact: "",
   occupation: "",
   // annual_income: "",
@@ -72,7 +72,7 @@ const initialFamilyDetailsGroup = {
 const familyDisplayFields = [
   "relation",
   "name",
-  // "DOB",
+  "DOB",
   "contact",
   "occupation",
   // "annual_income",
@@ -81,7 +81,7 @@ const familyDisplayFields = [
 const familyFieldLabels = {
   relation: "Relationship",
   name: "Full Name",
-  // DOB: "Date of Birth",
+  DOB: "Date of Birth",
   contact: "Contact Number",
   occupation: "Occupation",
   // annual_income: "Annual Income",
@@ -259,43 +259,11 @@ const UserUpdate = () => {
   const [incomingUserStatus, setIncomingUserStatus] = useState("");
 
   const [otherDocuments, setOtherDocuments] = useState();
-  const [higestQualification, setHigestQualification] = useState("");
   const [defaultSeatData, setDefaultSeatData] = useState([]);
 
-  const higestQualificationData = [
-    "10th",
-    "12th",
-    "Diploma",
-    "Graduation",
-    "Post Graduation",
-    "Other",
-  ];
   const bankTypeData = ["Saving A/C", "Current A/C", "Salary A/C"];
   const genderData = ["Male", "Female", "Other"];
   const nationalityData = ["India", "USA", "Uk"];
-
-  const familyRelations = [
-    "Brother",
-    "Sister",
-    "Mother",
-    "Father",
-    "Son",
-    "Daughter",
-    "Aunt",
-    "Uncle",
-    "Cousin",
-    "Grandmother",
-    "Grandfather",
-    "Nephew",
-    "Niece",
-    "Stepmother",
-    "Stepfather",
-    "Stepson",
-    "Stepdaughter",
-    "Half-brother",
-    "Half-sister",
-    // Add more relations as needed
-  ];
 
   const bloodGroupData = [
     "A+ (A Positive)",
@@ -554,19 +522,6 @@ const UserUpdate = () => {
 
   const handleMonthlySalaryChange = (e) => {
     const monthlySalary = e.target.value;
-
-    // if (monthlySalary === "") {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: true,
-    //   }));
-    // } else {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: false,
-    //   }));
-    // }
-
     setMonthlyGrossSalary(monthlySalary);
     setLastUpdated("monthly");
   };
@@ -575,18 +530,6 @@ const UserUpdate = () => {
     const yearlySalaryValue = e.target.value;
     setCTC(yearlySalaryValue);
     setLastUpdated("yearly");
-
-    // if (yearlySalaryValue === "") {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: true,
-    //   }));
-    // } else {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: false,
-    //   }));
-    // }
   };
 
   useEffect(() => {
@@ -857,31 +800,6 @@ const UserUpdate = () => {
     );
     formData.append("joining_date", joiningDate);
     // formData.append("room_id", roomId);
-
-    //offcial info payload End
-
-    // formData.append("UID", uid);
-    // formData.append("releaving_date", releavingDate);
-    // formData.append("salary", Number(salary));
-
-    // formData.append("SpokenLanguages", speakingLanguage);
-
-    // formData.append(
-    //   "Hobbies",
-    //   hobbies?.map((option) => option?.value)
-    // );
-    // formData.append("BloodGroup", bloodGroup);
-    // formData.append("permanent_address", address);
-    // formData.append("permanent_city", city);
-    // formData.append("permanent_state", state);
-    // formData.append("permanent_pin_code", Number(pincode));
-
-    // formData.append("bank_name", bankName);
-    // formData.append("ifsc_code", IFSC);
-    // formData.append("account_no", bankAccountNumber);
-
-    // formData.append("highest_qualification_name", higestQualification);
-    // formData.append("cast_type", cast);
     formData.append("att_status", "document_upload");
 
     const formDataa = new FormData();
@@ -2361,20 +2279,20 @@ console.log(Number(creditLimit),"formData",creditLimit)
             <div className=" card-body row">
               {Object.keys(detail)?.map((key) => {
                 switch (key) {
-                  // case "DOB":
-                  //   return (
-                  //     <FieldContainer
-                  //       key={key}
-                  //       fieldGrid={2}
-                  //       type="date"
-                  //       name={key}
-                  //       label="Date of Birth"
-                  //       value={
-                  //         detail[key] ? detail[key].split("T")[0] : detail[key]
-                  //       }
-                  //       onChange={(e) => handleFamilyDetailsChange(index, e)}
-                  //     />
-                  //   );
+                  case "DOB":
+                    return (
+                      <FieldContainer
+                        key={key}
+                        fieldGrid={2}
+                        type="date"
+                        name={key}
+                        label="Date of Birth"
+                        value={
+                          detail[key] ? detail[key].split("T")[0] : detail[key]
+                        }
+                        onChange={(e) => handleFamilyDetailsChange(index, e)}
+                      />
+                    );
 
                   case "relation":
                     return (
@@ -2517,21 +2435,6 @@ console.log(Number(creditLimit),"formData",creditLimit)
       </div>
       {/* Family Info Inputs------------------------End------------ */}
 
-      {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <button
-          className="btn btn-primary"
-          onClick={() => setActiveAccordionIndex((prev) => prev - 1)}
-        >
-          <ArrowBackIosIcon />
-        </button>
-        <button
-          className="btn btn-primary"
-          onClick={() => setActiveAccordionIndex((prev) => prev + 1)}
-        >
-          <ArrowForwardIosIcon />
-        </button>
-      </div> */}
-
       {/* Education Info Inputs------------------------Start------------ */}
       <div className="card">
         <div className="card-header">Education Details</div>
@@ -2582,14 +2485,6 @@ console.log(Number(creditLimit),"formData",creditLimit)
               )}
             </div>
           </div>
-          {/* <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <button
-          className="btn btn-primary"
-          onClick={() => setActiveAccordionIndex((prev) => prev - 1)}
-        >
-          <ArrowBackIosIcon />
-        </button>
-      </div> */}
         </div>
       </div>
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
@@ -2762,20 +2657,6 @@ console.log(Number(creditLimit),"formData",creditLimit)
           </div>
         </div>
       </div>
-      {/* <FormContainer
-        mainTitle="User Update"
-        title="User Registration"
-        handleSubmit={handleSubmit}
-        accordionButtons={accordionButtons}
-        activeAccordionIndex={activeAccordionIndex}
-        onAccordionButtonClick={handleAccordionButtonClick}
-        loading={loading}
-      >
-        {activeAccordionIndex === 0 && genralFields}
-        {activeAccordionIndex === 1 && otherFields}
-        {activeAccordionIndex === 2 && educationFamilyFieald}
-        {activeAccordionIndex === 3 && documentFieldsNew}
-      </FormContainer> */}
     </div>
   );
 };

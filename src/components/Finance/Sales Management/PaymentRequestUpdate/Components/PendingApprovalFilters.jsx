@@ -45,7 +45,7 @@ const PendingApprovalFilters = (props) => {
           .includes(requestedBy?.toLowerCase());
       //  Payment Mode
       const pmData =
-        paymentModeArray.find((mode) => mode._id === item.payment_mode)
+        paymentModeArray?.find((mode) => mode._id === item.payment_mode)
           ?.payment_mode_name || "";
 
       const paymentModeFilterPassed =

@@ -830,10 +830,18 @@ const PageOverviewNew = () => {
     },
     {
       key: 'followers_count',
-      name: 'Followers',
+      name: 'M Followers',
       width: 200,
       renderRowCell: (row) => {
         return formatNumber(row.followers_count);
+      },
+    },
+    {
+      key: 'followers_count',
+      name: 'Followers',
+      width: 200,
+      renderRowCell: (row) => {
+        return row.followers_count;
       },
     },
 
@@ -879,18 +887,28 @@ const PageOverviewNew = () => {
       name: 'Post Price',
       width: 200,
       renderRowCell: (row) => {
-        let PostData = row?.page_price_list[0]?.instagram_post;
-        return PostData ? PostData : 0;
+        const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
+        const postPrice = postData ? postData.instagram_post : 0;
+        return (
+          <>
+            {postPrice > 0 ? `₹${postPrice}` : 'NA'}
+          </>
+        );
       },
       compare: true,
     },
     {
-      key: 'Story price',
+      key: 'Story Price',
       name: 'Story Price',
       width: 200,
       renderRowCell: (row) => {
-        let StoryData = row?.page_price_list[1]?.instagram_story;
-        return StoryData ? StoryData : 0;
+        const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
+        const storyPrice = storyData ? storyData.instagram_story : 0;
+        return (
+          <>
+            {storyPrice > 0 ? `₹${storyPrice}` : 'NA'}
+          </>
+        );
       },
       compare: true,
     },
@@ -899,8 +917,13 @@ const PageOverviewNew = () => {
       name: 'Both Price',
       width: 200,
       renderRowCell: (row) => {
-        let BothData = row?.page_price_list[2]?.instagram_both;
-        return BothData ? BothData : 0;
+        const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
+        const bothPrice = bothData ? bothData.instagram_both : 0;
+        return (
+          <>
+            {bothPrice > 0 ? `₹${bothPrice}` : 'NA'}
+          </>
+        );
       },
       compare: true,
     },
@@ -908,26 +931,26 @@ const PageOverviewNew = () => {
       key: 'm_story_price',
       name: ' M Story',
       width: 200,
-      
+
     },
     {
       key: 'm_post_price',
       name: ' M Post',
       width: 200,
-      
+
     },
     {
       key: 'm_both_price',
       name: ' M Both',
       width: 200,
-      
+
     },
 
     {
       key: 'ownership_type',
       name: 'Ownership',
       width: 200,
-      
+
     },
     {
       key: 'page_price_multiple',

@@ -12,19 +12,29 @@ import axios from "axios";
 import { baseUrl } from "../../../../../utils/config";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { Navigate } from "react-router-dom";
+import { useUpdatePaymentUpdateStatusMutation } from "../../../../Store/API/Sales/PaymentUpdateApi";
 
 const PendingApprovalStatusDialog = ({
   statusDialog,
   handleCloseStatusDialog,
   reasonField,
   setReasonField,
-  getData,
+  refetchPaymentUpdate,
   rowData,
   status,
   setStatus,
 }) => {
   const { toastAlert } = useGlobalContext();
   const token = sessionStorage.getItem("token");
+
+  const [
+    updatepaymentUpdateStatus,
+    {
+      isLoading: updatePaymentUpdatestatusLoading,
+      isError: updatePaymentUpdateStatusError,
+      isSuccess: updatePaymentUpdateStatusSuccess,
+    },
+  ] = useUpdatePaymentUpdateStatusMutation();
 
   const handleStatusSubmit = async (e) => {
     e.preventDefault();
@@ -38,34 +48,41 @@ const PendingApprovalStatusDialog = ({
         payment_approval_status: status,
         action_reason: reasonField,
         payment_amount: rowData?.payment_amount,
+        id: rowData?._id,
       };
 
-      await axios
-        .put(
-          baseUrl + `sales/finance_approval_payment_update/${rowData?._id}`,
-          payload,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.status === 200) {
-            toastAlert("Status Reject Successfully");
-            handleCloseStatusDialog();
-          }
-        })
-        .catch((err) => {
-          toastAlert(err, "Status Failed");
-          handleCloseStatusDialog();
-        })
-        .finally(() => {
-          console.log("HELLO----");
-          getData();
-          Navigate(-1);
-          setStatus("");
-        });
+      await updatepaymentUpdateStatus(payload).unwrap();
+      toastAlert("Status Reject Successfully");
+      refetchPaymentUpdate();
+      handleCloseStatusDialog();
+      Navigate(-1);
+      setStatus("");
+
+      // await axios
+      //   .put(
+      //     baseUrl + `sales/finance_approval_payment_update/${rowData?._id}`,
+      //     payload,
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     }
+      //   )
+      //   .then((res) => {
+      //     if (res.status === 200) {
+      //       toastAlert("Status Reject Successfully");
+      //       handleCloseStatusDialog();
+      //     }
+      //   })
+      //   .catch((err) => {
+      //     toastAlert(err, "Status Failed");
+      //     handleCloseStatusDialog();
+      //   })
+      //   .finally(() => {
+      //     refetchPaymentUpdate();
+      //     Navigate(-1);
+      //     setStatus("");
+      //   });
     }
   };
   return (

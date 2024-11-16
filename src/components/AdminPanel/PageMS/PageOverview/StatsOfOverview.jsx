@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { baseUrl } from "../../../../utils/config";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import Brightness6Icon from "@mui/icons-material/Brightness6";
-import ToggleOffIcon from "@mui/icons-material/ToggleOff";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import formatString from "../../Operation/CampaignMaster/WordCapital";
-import StatsOfOverviewModal from "./StatsOfOverviewModal";
-import { useGetAllCountsQuery, useGetAllPageListQuery } from "../../../Store/PageBaseURL";
-import jwtDecode from "jwt-decode";
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { baseUrl } from '../../../../utils/config';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import Brightness6Icon from '@mui/icons-material/Brightness6';
+import ToggleOffIcon from '@mui/icons-material/ToggleOff';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import formatString from '../../Operation/CampaignMaster/WordCapital';
+import StatsOfOverviewModal from './StatsOfOverviewModal';
+import {
+  useGetAllCountsQuery,
+  useGetAllPageListQuery,
+} from '../../../Store/PageBaseURL';
+import jwtDecode from 'jwt-decode';
 
 const StatsOfOverview = ({ dataGridcolumns }) => {
   const [followerCount, setFollowerCount] = useState([]);
@@ -17,32 +20,32 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
   const [closeBy, setCloseBy] = useState([]);
 
   const [activeSection, setActiveSection] = useState(null);
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const [pagequery, setPagequery] = useState("");
+  const [pagequery, setPagequery] = useState('');
   const [loading, setLoading] = useState(true);
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
-  const { data:followerCounts  } = useGetAllCountsQuery();
+  const { data: followerCounts } = useGetAllCountsQuery();
 
   const handleClick = (key, val) => {
     // console.log(key, "follower_range", val);
-    if (key == "follower_range") {
+    if (key == 'follower_range') {
       const followerRanges = {
         lt_1: `minFollower=0&maxFollower=100000`,
-        "1_to_10": `minFollower=100000&maxFollower=1000000`,
-        "10_to_20": `minFollower=1000000&maxFollower=2000000`,
-        "20_to_30": `minFollower=2000000&maxFollower=3000000`,
+        '1_to_10': `minFollower=100000&maxFollower=1000000`,
+        '10_to_20': `minFollower=1000000&maxFollower=2000000`,
+        '20_to_30': `minFollower=2000000&maxFollower=3000000`,
         gt_30: `minFollower=3000000&maxFollower=300000000`,
       };
-      
+
       // Get the appropriate query string or an empty string if key not found
-      const tempQuery = followerRanges[val] || "";
-      
+      const tempQuery = followerRanges[val] || '';
+
       // console.log("first", tempQuery);
       setPagequery(tempQuery);
     } else {
@@ -58,9 +61,10 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
     }
   }, [pageList]);
 
-   const getStaticsWisePageOverviewData = async () => {
+  const getStaticsWisePageOverviewData = async () => {
     try {
-      const followercount = Object.entries(followerCounts.followercount).map(([range, count]) => ({
+
+      const followercount = Object?.entries(followerCounts?.followercount).map(([range, count]) => ({
         range,
         count,
       }));
@@ -68,19 +72,22 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
         lavel,
         value,
       }));
-      const status = Object.entries(followerCounts.status).map(([lavel, value]) => ({
-        lavel,
-        value,
-      }));
+ 
+      const status = Object?.entries(followerCounts.status).map(
+        ([lavel, value]) => ({
+          lavel,
+          value,
+        })
+      );
 
       setFollowerCount(followercount);
       setPreferenceLevel(preferenceLevel);
       setStatus(status);
       setCloseBy(followerCounts.pageClosedBYCounts);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error('Error fetching data:', error);
     }
-  }
+  };
 
   useEffect(() => {
     getStaticsWisePageOverviewData();
@@ -102,7 +109,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
               >
                 <div
                   className="card pointer"
-                  onClick={() => handleClick("preference_level", item.lavel)}
+                  onClick={() => handleClick('preference_level', item.lavel)}
                 >
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
@@ -124,7 +131,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
         </div>
       </div>
 
-      {activeSection === "preference_level" && !loading && (
+      {activeSection === 'preference_level' && !loading && (
         <StatsOfOverviewModal
           pageList={pageList}
           dataGridcolumns={dataGridcolumns}
@@ -145,7 +152,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
               >
                 <div
                   className="card pointer"
-                  onClick={() => handleClick("follower_range", item.range)}
+                  onClick={() => handleClick('follower_range', item.range)}
                 >
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
@@ -155,17 +162,17 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
                     </div>
                     <div>
                       <h6 className="colorMedium">
-                        {item.range == "lt_1"
-                          ? "Less than 10 Lac"
-                          : item.range == "1_to_10"
-                          ? "1-0 Lac"
-                          : item.range == "10_to_20"
-                          ? "10-20 Lac"
-                          : item.range == "20_to_30"
-                          ? "20-30 Lac"
-                          : item.range == "gt_30"
-                          ? "Greater than 30 Lac"
-                          : ""}
+                        {item.range == 'lt_1'
+                          ? 'Less than 10 Lac'
+                          : item.range == '1_to_10'
+                          ? '1-0 Lac'
+                          : item.range == '10_to_20'
+                          ? '10-20 Lac'
+                          : item.range == '20_to_30'
+                          ? '20-30 Lac'
+                          : item.range == 'gt_30'
+                          ? 'Greater than 30 Lac'
+                          : ''}
                       </h6>
                       <h6 className="mt4 fs_16">{item.count}</h6>
                     </div>
@@ -176,7 +183,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
           </div>
         </div>
       </div>
-      {activeSection === "follower_range" && !loading && (
+      {activeSection === 'follower_range' && !loading && (
         <StatsOfOverviewModal
           pageList={pageList}
           dataGridcolumns={dataGridcolumns}
@@ -197,7 +204,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
               >
                 <div
                   className="card pointer"
-                  onClick={() => handleClick("page_activeness", item.lavel)}
+                  onClick={() => handleClick('page_activeness', item.lavel)}
                 >
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
@@ -219,7 +226,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
         </div>
       </div>
 
-      {activeSection === "page_activeness" && !loading && (
+      {activeSection === 'page_activeness' && !loading && (
         <StatsOfOverviewModal
           pageList={pageList}
           dataGridcolumns={dataGridcolumns}
@@ -241,7 +248,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
                 <div
                   className="card pointer"
                   onClick={() =>
-                    handleClick("page_closed_by", item.page_closed_by)
+                    handleClick('page_closed_by', item.page_closed_by)
                   }
                 >
                   <div className="card-body pb20 flexCenter colGap14">
@@ -263,7 +270,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
         </div>
       </div>
 
-      {activeSection === "page_closed_by" && !loading && (
+      {activeSection === 'page_closed_by' && !loading && (
         <StatsOfOverviewModal
           pageList={pageList}
           dataGridcolumns={dataGridcolumns}

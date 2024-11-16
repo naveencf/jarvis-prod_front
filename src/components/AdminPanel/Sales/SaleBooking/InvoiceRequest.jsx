@@ -124,7 +124,7 @@ const InvoiceRequest = ({
 
     setInvoiceAmount(
       saleBookingData?.campaign_amount -
-      saleBookingData?.invoice_requested_amount
+        saleBookingData?.invoice_requested_amount
     );
   }, [saleBookingData]);
 
@@ -225,10 +225,10 @@ const InvoiceRequest = ({
           />
           {Number(saleBookingData?.campaign_amount) ===
             Number(saleBookingData?.invoice_requested_amount) && (
-              <div style={{ color: "red" }}>
-                * Total Invoice Requested Amount Equals to Campaign Amount
-              </div>
-            )}
+            <div style={{ color: "red" }}>
+              * Total Invoice Requested Amount Equals to Campaign Amount
+            </div>
+          )}
         </>
       )}
 
@@ -238,7 +238,7 @@ const InvoiceRequest = ({
         disabled={
           isSubmitting || // Disable if submitting
           saleBookingData?.campaign_amount ===
-          saleBookingData?.invoice_requested_amount
+            saleBookingData?.invoice_requested_amount
         }
       >
         {isSubmitting ? "Submitting..." : "Submit"}

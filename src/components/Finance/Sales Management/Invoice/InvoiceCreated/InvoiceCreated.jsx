@@ -2,23 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useNavigate, Link } from "react-router-dom";
 import { baseUrl } from "../../../../../utils/config";
-import pdf from "../../../pdf-file.png";
-import {
-  TextField,
-  Button,
-  Autocomplete,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-} from "@mui/material";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
 import ImageView from "../../../ImageView";
 import {
   invoiceCreatedColumns,
@@ -29,6 +14,7 @@ import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import InvoiceCreatedFilters from "./Components/InvoiceCreatedFilters";
 import EditInvoiceActionDialog from "../PendingInvoice/EditInvoiceActionDialog";
 import View from "../../../../AdminPanel/Sales/Account/View/View";
+import { useGetAllProformaListQuery } from "../../../../Store/API/Finance/InvoiceRequestApi";
 
 const InvoiceCreated = ({
   setUniqueCustomerCount,
@@ -39,7 +25,13 @@ const InvoiceCreated = ({
   onHandleOpenUniqueSalesExecutiveChange,
   onHandleOpenUniqueCustomerClickChange,
 }) => {
-  const navigate = useNavigate();
+  const {
+    refetch: refetchPendingInvoiceCreated,
+    data: allPendingInvoiceCreatedList,
+    error: allPendingInvoiceCreatedError,
+    isLoading: allPendingInvoiceCreatedLoading,
+  } = useGetAllProformaListQuery({ status: "uploaded", type: "tax-invoice" });
+
   const { toastAlert, toastError, usersDataContext } = useGlobalContext();
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -58,60 +50,42 @@ const InvoiceCreated = ({
   const [uniqueSalesExecutiveDialog, setUniqueSalesExecutiveDialog] =
     useState("");
   const [editActionDialog, setEditActionDialog] = useState("");
-  const [invcDate, setInvcDate] = useState("");
-  const [invcNumber, setInvcNumber] = useState("");
-  const [partyInvoiceName, setPartyInvoiceName] = useState("");
-  const [imageInvoice, setImageInvoice] = useState([]);
   const [InvcCreatedRowData, setInvcCreatedRowData] = useState("");
   const [preview, setPreview] = useState("");
   const [isPDF, setIsPDF] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
-  const loginUserId = decodedToken.id;
 
-  const [isRequired, setIsRequired] = useState({
-    imageInvoice: false,
-    invcNumber: false,
-  });
+  useEffect(() => {
+    if (!allPendingInvoiceCreatedLoading && allPendingInvoiceCreatedList) {
+      getDataInvoiceCreated();
+    }
+  }, [allPendingInvoiceCreatedList, allPendingInvoiceCreatedLoading]);
 
   const getDataInvoiceCreated = () => {
-    setIsLoading(true);
+    if (!allPendingInvoiceCreatedList) return;
 
-    axios
-      .get(
-        baseUrl +
-          `sales/invoice_request/?status=${"uploaded"}&invoice_type_id=${"tax-invoice"}`,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        const mergedData = res?.data?.data.map((item) => {
-          // Find the user data based on created_by field
-          const userData = usersDataContext?.find(
-            (user) => user?.user_id === item?.created_by
-          );
-          // Merge user data into the current item
-          return {
-            ...item,
-            user_name: userData?.user_name || null,
-          };
-        });
+    const mergedData = allPendingInvoiceCreatedList.map((item) => {
+      const userData = usersDataContext?.find(
+        (user) => user?.user_id === item?.created_by
+      );
 
-        const sortData = mergedData?.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setIsLoading(false);
-        setDataInvoice(sortData);
-        setFilterDataInvoice(sortData);
-        calculateUniqueData([...sortData]);
-      });
+      return {
+        ...item,
+        user_name: userData?.user_name || null,
+        account_name: item?.saleData?.account_name || null,
+      };
+    });
+
+    const sortedData = mergedData.sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+
+    setDataInvoice(sortedData);
+    setFilterDataInvoice(sortedData);
+    calculateUniqueData([...sortedData]);
   };
 
   const calculateUniqueData = (sortedData) => {
@@ -119,7 +93,6 @@ const InvoiceCreated = ({
       return data?.reduce((acc, curr) => {
         const key = keyExtractor(curr);
 
-        // Ensure we skip any undefined or null keys
         if (!key) return acc;
 
         if (!acc[key]) {
@@ -158,10 +131,6 @@ const InvoiceCreated = ({
     setUniqueSalesExecutiveInvoiceData(uniqueSalesExData);
     setUniqueSalesExecutiveCount(uniqueSalesExData?.length);
   };
-
-  useEffect(() => {
-    getDataInvoiceCreated();
-  }, [usersDataContext]);
 
   useEffect(() => {
     const result = datas.filter((d) => {
@@ -257,7 +226,7 @@ const InvoiceCreated = ({
         setEditActionDialog={setEditActionDialog}
         setPreview={setPreview}
         setViewImgSrc={setViewImgSrc}
-        getData={getDataInvoiceCreated}
+        getData={refetchPendingInvoiceCreated}
         setInvcCreatedRowData={setInvcCreatedRowData}
         InvcCreatedRowData={InvcCreatedRowData}
         setOpenImageDialog={setOpenImageDialog}
@@ -294,55 +263,40 @@ const InvoiceCreated = ({
         setFilterDataInvoice={setFilterDataInvoice}
       />
 
-      <div className="card">
-        <div className="card-header flexCenterBetween">
-          <h5 className="card-title">Invoice Created</h5>
-          <div className="flexCenter colGap12">
-            <button
-              className="btn cmnbtn btn_sm btn-secondary"
-              onClick={(e) => handleClearSameRecordFilter(e)}
-            >
-              Clear
-            </button>
-          </div>
-        </div>
-        <div className="card-body card-body thm_table fx-head data_tbl table-responsive">
-          <div>
-            <View
-              columns={invoiceCreatedColumns({
-                filterDataInvoice,
-                setOpenImageDialog,
-                setViewImgSrc,
-                handleOpenEditFieldAction,
-              })}
-              data={filterDataInvoice}
-              isLoading={isLoading}
-              title={"Invoice Created"}
-              rowSelectable={true}
-              setTotal={true}
-              pagination={[100, 200]}
-              tableName={"finance-invoice-created"}
-              selectedData={setSelectedData}
-              addHtml={
-                <>
-                  <button
-                    className="btn cmnbtn btn_sm btn-secondary"
-                    onClick={(e) => handleClearSameRecordFilter(e)}
-                  >
-                    Clear
-                  </button>
-                </>
-              }
-            />
-          </div>
-          {openImageDialog && (
-            <ImageView
-              viewImgSrc={viewImgSrc}
-              setViewImgDialog={setOpenImageDialog}
-            />
-          )}
-        </div>
+      <div>
+        <View
+          columns={invoiceCreatedColumns({
+            filterDataInvoice,
+            setOpenImageDialog,
+            setViewImgSrc,
+            handleOpenEditFieldAction,
+          })}
+          data={filterDataInvoice}
+          isLoading={allPendingInvoiceCreatedLoading}
+          title={"Invoice Created"}
+          rowSelectable={true}
+          setTotal={true}
+          pagination={[100, 200]}
+          tableName={"finance-invoice-created"}
+          selectedData={setSelectedData}
+          addHtml={
+            <>
+              <button
+                className="btn cmnbtn btn_sm btn-secondary"
+                onClick={(e) => handleClearSameRecordFilter(e)}
+              >
+                Clear
+              </button>
+            </>
+          }
+        />
       </div>
+      {openImageDialog && (
+        <ImageView
+          viewImgSrc={viewImgSrc}
+          setViewImgDialog={setOpenImageDialog}
+        />
+      )}
     </div>
   );
 };

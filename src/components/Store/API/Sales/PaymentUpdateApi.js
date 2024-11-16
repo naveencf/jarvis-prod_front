@@ -5,7 +5,6 @@ const PaymentUpdateApi = createApi({
   reducerPath: "paymentUpdateApi",
   baseQuery: authBaseQuery,
   endpoints: (builder) => ({
-    // Get a list of all payment updates
     getAllPaymentUpdates: builder.query({
       query: (id) => `sales/payment_update${id ? `?userId=${id}` : ""}`,
       transformResponse: (response) => response.data,
@@ -14,6 +13,12 @@ const PaymentUpdateApi = createApi({
     getAllPaymentUpdatesPaymentDetailWise: builder.query({
       query: (id) =>
         `sales/payment_update${id ? `?payment_detail_id=${id}` : ""}`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
+
+    getAllPaymentUpdatesPaymentStatusWise: builder.query({
+      query: (status) => `sales/payment_update${`?status=${status}`}`,
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),
@@ -81,6 +86,14 @@ const PaymentUpdateApi = createApi({
       },
     }),
 
+    updatePaymentUpdateStatus: builder.mutation({
+      query: ({ id, ...updatedPaymentUpdateStatus }) => ({
+        url: `sales/finance_approval_payment_update/${id}`,
+        method: "PUT",
+        body: updatedPaymentUpdateStatus,
+      }),
+    }),
+
     // Delete a payment update
     deletePaymentUpdate: builder.mutation({
       query: (id) => ({
@@ -105,23 +118,30 @@ const PaymentUpdateApi = createApi({
       },
     }),
 
-    // Get all pending sales booking payment updates
     getAllPendingSalesBookingPayments: builder.query({
       query: () => "sales/getAll_pending_sales_booking_payment_list",
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 60 * 60 * 24,
     }),
 
-    // Get all rejected sales booking payment updates
     getAllRejectedSalesBookingPayments: builder.query({
       query: () => "sales/getAll_rejected_sales_booking_payment_list",
       transformResponse: (response) => response.data,
+      keepUnusedDataFor: 60 * 60 * 24,
+    }),
+
+    getAllTransactionList: builder.query({
+      query: ({ id, status }) =>
+        `sales/payment_update?status=${status}&sale_booking_id=${id}`,
+      transformResponse: (response) => response?.data,
       keepUnusedDataFor: 60 * 60 * 24,
     }),
   }),
 });
 
 export const {
+  useUpdatePaymentUpdateStatusMutation,
+  useGetAllPaymentUpdatesPaymentStatusWiseQuery,
   useGetAllPaymentUpdatesQuery,
   useGetAllPaymentUpdatesPaymentDetailWiseQuery,
   useGetSinglePaymentUpdateQuery,
@@ -130,6 +150,7 @@ export const {
   useDeletePaymentUpdateMutation,
   useGetAllPendingSalesBookingPaymentsQuery,
   useGetAllRejectedSalesBookingPaymentsQuery,
+  useGetAllTransactionListQuery,
 } = PaymentUpdateApi;
 
 export default PaymentUpdateApi;

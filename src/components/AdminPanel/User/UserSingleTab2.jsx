@@ -1,7 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import DateFormattingComponent from "../../DateFormator/DateFormared";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import WorkExperience from "./WorkExperienceSingleUser";
 
-const UserSingleTab2 = ({ user, hobbiesData }) => {
+const UserSingleTab2 = ({ user, id }) => {
+  const [workExperience, setWorkExperience] = useState([]);
+  useEffect(()=>{
+    axios.get(baseUrl + `get_single_user_experience/${id}`).then((res) => {
+      setWorkExperience(res.data.data);
+      console.log(res.data.data , 'data is experience')
+    });
+  },[id])
   return (
     <>
       <div className="profileInfo_area">
@@ -169,6 +179,10 @@ const UserSingleTab2 = ({ user, hobbiesData }) => {
         </div>
         </div>
       </div>
+      <hr />
+      <h3>Work Experience</h3>
+      <WorkExperience workExperience={workExperience}/>
+
     </>
   );
 };
