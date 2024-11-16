@@ -25,6 +25,8 @@ const PieGraph = ({ allAccount, setCombinedFilter }) => {
 
     return (
         <div className="card w-50">
+            <h5 className="card-header">Account Types</h5>
+
             <PieChart width={400} height={200}>
                 <Pie
                     data={data}

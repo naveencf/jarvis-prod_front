@@ -39,7 +39,7 @@ import { FormatName } from "../../../utils/FormatName";
 
 
 setOpenShowAddModal;
-const Page = ({ pageMast_id ,handleEditClose}) => {
+const Page = ({ pageMast_id, handleEditClose }) => {
   const { refetch: refetchPageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery();
   const navigate = useNavigate();
@@ -294,6 +294,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         setPageType(data[0].page_name_type);
         setContent(data[0].content_creation);
         setOwnerType(data[0].ownership_type);
+        console.log(data[0].ownership_type, 'kjhgfdsdfghjk');
         setVendorId(data[0].vendor_id);
         setFollowCount(data[0].followers_count);
         setBio(data[0].bio);
@@ -482,7 +483,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
           temp_page_cat_id: cat_name,
           //temp_page_cat_id: singlePage.temp_page_cat_id
         };
-        console.log(payload,' saim 1234',flag);
+        console.log(payload, ' saim 1234', flag);
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
           .then(() => { })
@@ -563,6 +564,10 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
     }
   };
 
+  const handleOwnerTypeChange = (selectedOption) => {
+    setOwnerType(selectedOption.value);
+  };
+
   return (
     <>
       <PageAddMasterModal />
@@ -619,7 +624,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
           value={{
             value: platformId,
             label:
-            FormatName( platformData.find((role) => role._id === platformId)
+              FormatName(platformData.find((role) => role._id === platformId)
                 ?.platform_name || ""),
           }}
           onChange={(e) => {
@@ -644,7 +649,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
               value={{
                 value: categoryId,
                 label:
-                FormatName(categoryData.find((role) => role._id === categoryId)
+                  FormatName(categoryData.find((role) => role._id === categoryId)
                     ?.page_category || ""),
               }}
               onChange={(e) => {
@@ -685,7 +690,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
             value={{
               value: subCategoryId,
               label:
-              FormatName(subCategoryData.find((role) => role._id === subCategoryId)
+                FormatName(subCategoryData.find((role) => role._id === subCategoryId)
                   ?.page_sub_category || ""),
             }}
             onChange={(e) => {
@@ -814,7 +819,7 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
         <label className="form-label">
           Ownership Type <sup style={{ color: "red" }}>*</sup>
         </label>
-        <Select
+        {/* <Select
           className="w-100"
           options={ownerShipData?.map((option) => ({
             value: option.company_type_name,
@@ -831,6 +836,21 @@ const Page = ({ pageMast_id ,handleEditClose}) => {
           onChange={(e) => {
             setOwnerType(e.value);
           }}
+        /> */}
+        <Select
+          className="w-100"
+          options={[
+            { value: "Own", label: "Own" },
+            { value: "Vendor", label: "Vendor" },
+            { value: "Partnership", label: "Partnership" },
+          ]}
+          required
+          value={{
+            value: ownerType,
+            label: ownerType ? ownerType : "",
+          }}
+          onChange={handleOwnerTypeChange}
+          placeholder="Select Ownership Type"
         />
       </div>
 

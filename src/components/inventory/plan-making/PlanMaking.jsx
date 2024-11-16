@@ -322,10 +322,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-              rate_type,
-              { m_story_price, m_post_price, followers_count },
-              type
-            );
+                rate_type,
+                { m_story_price, m_post_price, followers_count },
+                type
+              );
 
         return {
           _id,
@@ -768,10 +768,10 @@ const PlanMaking = () => {
             isFixedRate
               ? getPriceDetail(page_price_list, `instagram_${type}`)
               : calculatePrice(
-                rate_type,
-                { m_story_price, m_post_price, followers_count },
-                type
-              );
+                  rate_type,
+                  { m_story_price, m_post_price, followers_count },
+                  type
+                );
 
           return {
             _id,
@@ -1046,10 +1046,10 @@ const PlanMaking = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-            rate_type,
-            { m_story_price, m_post_price, followers_count },
-            type
-          );
+              rate_type,
+              { m_story_price, m_post_price, followers_count },
+              type
+            );
 
       return {
         _id,
@@ -1511,8 +1511,8 @@ const PlanMaking = () => {
                   showOwnPage
                     ? ownPages
                     : toggleShowBtn
-                      ? selectedRows
-                      : sortedRows(filterData, selectedRows)
+                    ? selectedRows
+                    : sortedRows(filterData, selectedRows)
                 }
                 Pagination={[100, 200]}
                 // selectedData={}

@@ -41,6 +41,8 @@ import SalesSubmitDialog from "./SalesSubmitDialog";
 import ShareIncentive from "../Account/ShareIncentive";
 import FetchSheet from "./FetchSheet";
 import { useGetIncentiveSharingDetailsQuery } from "../../../Store/API/Sales/IncentiveSharingApi";
+import CreateBrand from "../Account/CreateBrand";
+import { useGetAllBrandCategoryTypeQuery } from "../../../Store/API/Sales/BrandCategoryTypeApi";
 
 const todayDate = new Date().toISOString().split("T")[0];
 
@@ -97,6 +99,12 @@ const CreateSaleBooking = () => {
   } = useGetAllAccountQuery(loginUserIdForApi);
 
   const {
+    data: allBrandCatType,
+    error: allBrandCatTypeError,
+    isLoading: allBrandCatTypeLoading,
+  } = useGetAllBrandCategoryTypeQuery();
+
+  const {
     data: salesdata,
     error: salesError,
     isLoading: salesLoading,
@@ -115,6 +123,7 @@ const CreateSaleBooking = () => {
   const [bookingDate, setBookingDate] = useState(
     new Date().toISOString().split("T")[0]
   );
+  const [selectedCategory, setSelectedCategory] = useState("")
   const [validateService, setValidateService] = useState([]);
   const [baseAmount, setBaseAmount] = useState(0);
   const [gstAmount, setGstAmount] = useState(0);
@@ -809,8 +818,22 @@ const CreateSaleBooking = () => {
             closeModal={closeModal}
           />
         );
+      case "addBrand":
+        return <CreateBrand
+          allBrandCatType={allBrandCatType}
+          loginUserId={loginUserId}
+          closeModal={closeModal}
+          accountName={allAccounts?.find(item => item?.account_id === selectedAccount)?.account_name}
+          setSelectedBrand={setSelectedBrand}
+
+
+          setSelectedCategoryParent={setSelectedCategory}
+          id={0}
+          selectedBrand={selectedBrand}
+        />
     }
   };
+
 
   return (
     <>
@@ -916,10 +939,10 @@ const CreateSaleBooking = () => {
                 <div className="form-error">Please select an account</div>
               )}
             </div>
-            <div className="col-4 flex-row gap-2">
-              <div className="col-12">
+            <div className="col-4  gap-2">
+              <div className="col-12 flex-row">
                 <CustomSelect
-                  fieldGrid={12}
+                  fieldGrid={10}
                   label="Brand"
                   dataArray={allBrands}
                   optionId="_id"
@@ -936,11 +959,18 @@ const CreateSaleBooking = () => {
                     )?.account_type_name !== "Agency"
                   }
                 />
-
-                {isValidate.selectedBrand && (
-                  <div className="form-error">Please select a brand</div>
-                )}
+                <button
+                  type="button"
+                  className="btn iconBtn btn-outline-primary mt25"
+                  disabled={!selectedAccount}
+                  onClick={() => openModal("addBrand")}
+                >
+                  +
+                </button>
               </div>
+              {isValidate.selectedBrand && (
+                <div className="form-error ml-4">Please select a brand</div>
+              )}
 
               {/* <div className="col-1 mt-4 flex-row gap-1">
                 <div className="mt-2">

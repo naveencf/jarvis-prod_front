@@ -27,7 +27,7 @@ import { Line, Circle } from "rc-progress";
 import { constant } from "../../../utils/constants";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
-import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
+import {PDFDownloadLink } from "@react-pdf/renderer";
 
 const castOption = ["General", "OBC", "SC", "ST"];
 const colourOptions = [

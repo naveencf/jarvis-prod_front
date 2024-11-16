@@ -25,31 +25,24 @@ const IncentiveUpdate = () => {
   const [remarks, setRemarks] = useState("");
   const [isValid, setIsValid] = useState({});
   const IncentiveTypeData = ["fixed", "variable"];
+
   const [updateIncentive, {
     isLoading: incentiveLoading,
     error: incentiveError,
   }] = useUpdateIncentivePlanMutation();
+
   const {
     data: allSalesServiceData,
     isLoading: salesServiceLoading,
     isError: salesServiceError
   } = useGetAllSaleServiceQuery();
+
   const {
     data: incentiveData,
     isError: incentiveGetError,
     isLoading: incentiveGetLoading
   } = useGetIncentivePlanDetailsQuery(id, { skip: !id });
-  const getData = async () => {
-    try {
-      const response = await axios.get(
-        baseUrl + "sales/getlist_sale_service_master"
-      );
-      const data = response.data.data;
-      setSalesServiceData(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+
   useEffect(() => {
     if (incentiveData) {
       setRemarks(incentiveData.remarks);

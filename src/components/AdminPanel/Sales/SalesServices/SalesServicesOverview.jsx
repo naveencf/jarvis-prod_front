@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { all } from "axios";
 import React, { useEffect, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
@@ -12,11 +12,16 @@ import {
 import View from "../Account/View/View";
 import { useGlobalContext } from "../../../../Context/Context";
 import Loader from "../../../Finance/Loader/Loader";
+import { useGetIncentivePlanListQuery, useUpdateIncentivePlanMutation } from "../../../Store/API/Sales/IncentivePlanApi";
+import getDecodedToken from "../../../../utils/DecodedToken";
+import { set } from "date-fns";
+import { id } from "date-fns/locale";
 
 const SalesServicesOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const [activeTab, setActiveTab] = useState(0);
   const [tableData, setTableData] = useState();
+  const loginUserRole = getDecodedToken().role_id;
   const [post, setPost] = useState("post");
   const {
     refetch: refetchService,
@@ -24,6 +29,19 @@ const SalesServicesOverview = () => {
     error: allSalesServiceError,
     isLoading: allSalesServiceLoading,
   } = useGetAllSaleServiceQuery();
+  const {
+    refetch: refetchIncentive,
+    data: allIncentiveData,
+    isError: incentiveError,
+    isLoading: incentiveLoading,
+  } = useGetIncentivePlanListQuery();
+  console.log(allIncentiveData);
+  console.log(allSalesService);
+
+  const [updateIncentive, {
+    isLoading: incentiveupdateLoading,
+    error: incentiveupdateError,
+  }] = useUpdateIncentivePlanMutation();
 
   const [
     updateSalesService,
@@ -50,6 +68,20 @@ const SalesServicesOverview = () => {
     );
     setTableData(filteredService);
   }, [activeTab, allSalesService]);
+
+  const handleUpdatePercent = async (setEditFlag, row) => {
+    const payload = {
+      id: allIncentiveData?.find((item) => item.sales_service_master_id === row._id)?._id,
+      sales_service_master_id: row._id,
+      value: Number(row.service_percentage),
+      updated_by: getDecodedToken().id,
+      incentive_type: allIncentiveData?.find((item) => item.sales_service_master_id === row._id)?.incentive_type,
+    }
+    await updateIncentive(payload).unwrap();
+    setEditFlag(false);
+    refetchIncentive();
+    refetchService();
+  }
 
   const columns = [
     {
@@ -87,6 +119,36 @@ const SalesServicesOverview = () => {
         }
       },
       // width: 550,
+    },
+    {
+      key: "service_percentage",
+      name: "Service Percentage",
+      compare: true,
+      renderRowCell: (row) => {
+        return allIncentiveData?.find((item) => item.sales_service_master_id === row._id)?.value
+      },
+      width: 150,
+      editable: loginUserRole === 1,
+      customEditElement: (row, index, setEditFlag,
+        editflag,
+        handelchange,
+        column) => {
+        return (
+          <div className="flex-row gap-2">
+            <input
+              className="form-control"
+              type="number"
+              value={row[column.key] || ""}
+              onChange={(e) => handelchange(e, index, column)}
+            />
+            <button className="icon-1" onClick={() => handleUpdatePercent(setEditFlag, row)}
+              disabled={incentiveupdateLoading}
+            >
+              <i className="bi bi-save"></i>
+            </button>
+          </div>
+        );
+      },
     },
     {
       width: 150,
@@ -159,7 +221,7 @@ const SalesServicesOverview = () => {
       <View
         columns={columns}
         data={tableData}
-        isLoading={allSalesServiceLoading}
+        isLoading={allSalesServiceLoading || incentiveLoading}
         title="Services Overview"
         pagination
         tableName={"SalesServicesOverview"}
