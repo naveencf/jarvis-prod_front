@@ -452,6 +452,7 @@ const SalesAccountOverview = () => {
       showCol: true,
     },
   ];
+
   const pocColumns = [
     {
       key: "Serial_no",

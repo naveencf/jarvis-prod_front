@@ -238,7 +238,7 @@ function PlanHome() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!planName) newErrors.planName = 'Plan Name is required';
+    if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
     if (!planDetails.sellingPrice)
       newErrors.sellingPrice = 'Budget is required';
     if (!planDetails.accountId)
@@ -321,6 +321,7 @@ function PlanHome() {
     }
     setFilteredPlans(filtered);
   };
+
   // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
@@ -410,6 +411,7 @@ function PlanHome() {
   };
 
   const handleFormSubmit = async () => {
+    console.log('abcd');
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);

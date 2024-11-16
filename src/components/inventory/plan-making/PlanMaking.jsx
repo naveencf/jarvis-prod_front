@@ -97,6 +97,8 @@ const PlanMaking = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [checkedDescriptions, setCheckedDescriptions] = useState([]);
   const [showCheckedRows, setShowCheckedRows] = useState(false);
+  const [selectedData, setSelectedData] = useState([]);
+  console.log(selectedData);
 
   // const [pageDetail, setPageDetails] = useState([]);
 
@@ -258,6 +260,15 @@ const PlanMaking = () => {
       return newValues;
     });
   };
+
+  // useEffect(() => {
+  //   if (selectedData) {
+  //     console.log("ins");
+  //     selectedData.forEach((item) => {
+  //       handleCheckboxChange(item)({ target: { checked: true } });
+  //     });
+  //   }
+  // }, [selectedData]);
 
   const handleCheckboxChange = (row) => (event) => {
     const isChecked = event.target.checked;
@@ -808,10 +819,12 @@ const PlanMaking = () => {
     if (searchTerms?.length > 0) {
       // Filter data based on search terms
 
-      const filtered = pageList?.filter((item) =>
-        searchTerms.some(
-          (term) => normalize(item?.page_name || '') === normalize(term)
-        )
+      const filtered = pageList?.filter(
+        (item) =>
+          item.followers_count > 0 &&
+          searchTerms.some(
+            (term) => normalize(item?.page_name || '') === normalize(term)
+          )
       );
 
       // Store filtered data
@@ -1294,8 +1307,6 @@ const PlanMaking = () => {
     };
 
     return () => {
-      // Cleanup on unmount
-
       handleRouteChange();
     };
   }, [location, id, totalPostCount, totalStoryCount, selectedRows, totalCost]);
@@ -1505,6 +1516,8 @@ const PlanMaking = () => {
           <div className="thmTable">
             <Box sx={{ height: 700, width: '100%' }}>
               <CustomTable
+                // selectedData={setSelectedData}
+                // rowSelectable={true}
                 isLoading={isPageListLoading}
                 columns={dataGridColumns}
                 data={

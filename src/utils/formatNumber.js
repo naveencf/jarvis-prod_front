@@ -15,3 +15,14 @@ export const formatNumber = (value) => {
     return value.toString();
   }
 };
+export const formatNumberLacksAndCrore = (num) => {
+  if (num < 1)
+    return (num * 100000).toLocaleString('en-IN'); // For 0.1 -> 1 Thousand
+  else if (num >= 1 && num < 10)
+    return (num * 100000).toLocaleString('en-IN'); // For 1 -> 1 Lakh
+  else if (num >= 10 && num < 100)
+    return (num * 100000).toLocaleString('en-IN'); // For 10 -> 10 Lakh
+  else if (num >= 100 && num < 1000)
+    return (num * 100000).toLocaleString('en-IN'); // For 100 -> 1 Crore
+  else return num.toLocaleString('en-IN'); // Default for numbers >= 1000
+};
