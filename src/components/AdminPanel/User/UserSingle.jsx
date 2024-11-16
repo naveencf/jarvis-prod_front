@@ -14,7 +14,7 @@ import UserSingleTab5 from "./UserSingle5";
 import UserSingleTab6 from "./UserSingle6";
 import UserSingleWFHDSalaryTab from "./UserSingleWFHDSalaryTab";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
-import { BlobProvider, PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import Modal from "react-modal";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import NDA from "../../PreOnboarding/NDA";
@@ -40,7 +40,6 @@ const UserSingle = () => {
   const handelClose = () => {
     setpreview(!previewOffer);
   };
-  
 
   const KRAAPI = (userId) => {
     axios.get(`${baseUrl}` + `get_single_kra/${userId}`).then((res) => {
@@ -62,7 +61,6 @@ const UserSingle = () => {
     axios.get(baseUrl + "get_all_hobbies").then((res) => {
       setHobbiesData(res.data.data);
     });
-    
   }, []);
 
   let fetchedData;
@@ -94,8 +92,8 @@ const UserSingle = () => {
     "Professional",
     // "KRA",
     "Documents",
-    user.job_type ==="WFO"? "Family":"",
-    user.job_type === "WFO" ? "Education":"",
+    user.job_type === "WFO" ? "Family" : "",
+    user.job_type === "WFO" ? "Education" : "",
     // "Salary",
     user.job_type === "WFHD" ? "Salary" : null,
   ].filter(Boolean);
@@ -104,9 +102,26 @@ const UserSingle = () => {
     <>
       <div className="box">
         <div id="content">
-          <button className="btn btn-danger" onClick={() => {
-                          setpreview(true);
-                        }}>NDA Download</button>
+          <button
+            className="btn btn-danger"
+            onClick={() => {
+              setpreview(true);
+            }}
+          >
+            NDA Download
+          </button>
+
+          <PDFDownloadLink
+            document={<NDA allUserData={user} />}
+            fileName="NDA.pdf"
+          >
+            <button className="btn-primary btn cmnbtn btn_sm">
+              NDA Download
+              <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
+            </button>
+          </PDFDownloadLink>
+
+          
           <FormContainer
             submitButton={false}
             mainTitle="User"
@@ -121,52 +136,54 @@ const UserSingle = () => {
             {activeAccordionIndex === 1 && (
               <UserSingleTab2 user={user} id={id} />
             )}
-            {activeAccordionIndex == 2 && <DocumentTabUserSingle user={user} id={id} />}
+            {activeAccordionIndex == 2 && (
+              <DocumentTabUserSingle user={user} id={id} />
+            )}
             {activeAccordionIndex == 3 && (
               <UserSingleTab5 familyData={familyData} />
             )}
             {activeAccordionIndex == 4 && (
               <UserSingleTab6 educationData={educationData} />
             )}
-            {user.job_type === "WFHD"
-            && activeAccordionIndex == 3 && <UserSingleWFHDSalaryTab id={id} />}
+            {user.job_type === "WFHD" && activeAccordionIndex == 3 && (
+              <UserSingleWFHDSalaryTab id={id} />
+            )}
           </FormContainer>
         </div>
 
         <Modal
-                isOpen={previewOffer}
-                onRequestClose={() => setpreview(false)}
-                contentLabel="offerletter Modal"
-                style={{
-                  content: {
-                    maxWidth: "750px",
-                    width: "80%",
-                    margin: "auto",
-                    inset: "15px",
-                  },
-                }}
-              >
-                <div className="pack sb">
-                  <div></div>
-                  <button
-                    className="btn cmnbtn btn_sm btn-danger previewClose mt-1"
-                    onClick={handelClose}
-                  >
-                    <i className="bi bi-x-lg"></i>
-                  </button>
-                </div>
-                <embed src={`${pdfBlob}#toolbar=0`} width={"100%"} height={"100%"} />
-                <BlobProvider document={<NDA allUserData={user} />}>
-                  {({ blob, url, loading, error }) => {
-                    useEffect(() => {
-                      if (url && !loading && !error) {
-                        setPdfBlob(url); // Set the state only after the URL is available
-                      }
-                    }, [url, loading, error]);
-                  }}
-                </BlobProvider>
-
-              </Modal>
+          isOpen={previewOffer}
+          onRequestClose={() => setpreview(false)}
+          contentLabel="offerletter Modal"
+          style={{
+            content: {
+              maxWidth: "750px",
+              width: "80%",
+              margin: "auto",
+              inset: "15px",
+            },
+          }}
+        >
+          <div className="pack sb">
+            <div></div>
+            <button
+              className="btn cmnbtn btn_sm btn-danger previewClose mt-1"
+              onClick={handelClose}
+            >
+              <i className="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <embed src={`${pdfBlob}#toolbar=0`} width={"100%"} height={"100%"} />
+          <BlobProvider document={<NDA allUserData={user} />}>
+            {({ blob, url, loading, error }) => {
+              useEffect(() => {
+                if (url && !loading && !error) {
+                  setPdfBlob(url); // Set the state only after the URL is available
+                }
+              }, [url, loading, error]);
+            }}
+          </BlobProvider>
+        </Modal>
       </div>
     </>
   );

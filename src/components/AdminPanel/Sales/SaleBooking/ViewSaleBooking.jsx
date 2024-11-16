@@ -570,6 +570,14 @@ const ViewSaleBooking = () => {
       getTotal: true,
     },
     {
+      key: "incentive_percent",
+      name: "Incentive Percent",
+      renderRowCell: (row) => (row.incentive_amount / row?.base_amount) * 100,
+      showCol: true,
+      width: 100,
+
+    },
+    {
       key: "earned_incentive_amount",
       name: "Earned Incentive",
       renderRowCell: (row) => row.earned_incentive_amount,

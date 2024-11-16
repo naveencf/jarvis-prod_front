@@ -620,6 +620,7 @@ const SalesAccountOverview = () => {
                   <button
                     className="iconBtn btn btn-outline-danger"
                     onClick={() => handelRemoveFiltter()}
+                    title="Remove Filter"
                   >
                     <i className="bi bi-x-circle"></i>
                   </button>
@@ -697,7 +698,7 @@ const SalesAccountOverview = () => {
         </div>
         {
           loginUserRole === 1 && allAccount && allAccount?.length > 0 &&
-          <PieGraph allAccount={allAccount} setCombinedFilter={setCombinedFilter} />
+          <PieGraph allAccount={combinedData} setCombinedFilter={setCombinedFilter} />
         }
 
       </div>

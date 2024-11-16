@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { useGlobalContext } from "../../../../Context/Context";
-import { useAddBrandMutation } from "../../../Store/API/Sales/BrandApi";
+import { useAddBrandMutation, useEditBrandMutation, useGetSingleBrandQuery } from "../../../Store/API/Sales/BrandApi";
 import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import Loader from "../../../Finance/Loader/Loader";
 
@@ -13,12 +13,25 @@ const CreateBrand = ({
   setSelectedAccountType,
   // openModal,
   setSelectedCategoryParent,
+  id,
+  selectedBrand,
 }) => {
+
   const { toastAlert, toastError } = useGlobalContext();
   const [selectedCategory, setSelectedCategory] = useState();
   const [brandName, setBrandName] = useState("");
   const [useAccountName, setUseAccountName] = useState(false);
   const [addBrand, { isLoading, isSuccess, isError }] = useAddBrandMutation();
+  const [editBrand, { isEditLoading, isEditSuccess, isEditError }] = useEditBrandMutation();
+  const { data: brandData } = useGetSingleBrandQuery(selectedBrand, { skip: !selectedBrand });
+
+  useEffect(() => {
+    if (brandData && id) {
+      setBrandName(brandData.brand_name);
+      setSelectedCategory(brandData.brand_category_id);
+    }
+  }, [brandData]);
+
 
   const handleCheckboxChange = (e) => {
     setUseAccountName(e.target.checked);
@@ -29,6 +42,8 @@ const CreateBrand = ({
     }
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -38,12 +53,16 @@ const CreateBrand = ({
     formData.append("created_by", loginUserId);
 
     try {
-      const response = await addBrand(formData).unwrap();
+      let response
+      if (id == 0)
+        response = await addBrand(formData).unwrap();
+      else
+        response = await editBrand({ id: selectedBrand, ...formData }).unwrap();
       setSelectedCategoryParent(selectedCategory);
       setBrandName("");
       setUseAccountName(false);
       setSelectedBrand(response?.data?._id);
-      setSelectedAccountType("667a67ea103891b6efac238f");
+      // setSelectedAccountType("");
       closeModal();
       toastAlert("Brand added successfully");
     } catch (err) {

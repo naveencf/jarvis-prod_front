@@ -127,8 +127,8 @@ const LeftSideBar = ({
 
     const overviewSheet = workbook.addWorksheet('Overview');
 
-    const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
-    // const logoUrl = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlCfYO-rbOr_Xm2cpuVvNvMWIHh70VDt-qyTxytq4sJoyvQXtuhUQnpGmC6oJRtE7EIHA&usqp=CAU';
+    // const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
+    const logoUrl = 'https://i.ibb.co/QYz6H78/Untitled-design.png';
     const response = await fetch(logoUrl);
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
@@ -286,7 +286,7 @@ const LeftSideBar = ({
           const newRow = overviewSheet.addRow([
             '',
             serialNumber, // Serial number based on the length of the sheet
-            `Post and Stories on ${categoryName} Pages`, // Description
+            `Post ${hasStoryCount ? "and Stories" : ""} on ${formatString(categoryName)} Pages`, // Description
             'Instagram', // Platform
             `${categoryData.reduce(
               (acc, item) =>
@@ -341,10 +341,17 @@ const LeftSideBar = ({
 
 
             const profileLinkCell = sheet.getCell(`C${index + 2}`);
-            profileLinkCell.value = item['Profile Link']; // Profile Link in column C
+            // profileLinkCell.font = { bold: true };
+            // profileLinkCell.value = item['Profile Link']; // Profile Link in column C
+            profileLinkCell.value = {
+              text: item['Profile Link'], // Display text in the cell
+              hyperlink: item['Profile Link'], // Hyperlink
+            };
             profileLinkCell.border = contentBorder; // Apply border to the Profile Link cell
-            profileLinkCell.font = { bold: true };
-            profileLinkCell.font = { color: { argb: 'FF0563C1' }, underline: true };
+            profileLinkCell.font = { color: { argb: 'FF0563C1' }, underline: true, bold: true, };
+
+            // // Set the hyperlink
+            // profileLinkCell.hyperlink = item['Profile Link'];
 
             const followersCell = sheet.getCell(`D${index + 2}`);
             followersCell.value = item['Followers']; // Followers in column D
@@ -453,7 +460,7 @@ const LeftSideBar = ({
       row.getCell(2).fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'D3D3D3' }, // Light grey background color
+        fgColor: { argb: 'e6e6e6' }, // Light grey background color
       };
       row.getCell(7).fill = {
         type: 'pattern',
@@ -490,7 +497,7 @@ const LeftSideBar = ({
     overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
     overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
     const sellingPrice = overviewSheet.getCell('G8');
-    sellingPrice.value = planDetails[0]?.selling_price;
+    sellingPrice.value = `₹${planDetails[0]?.selling_price}`;
 
     // Merge the B column cells for all note rows and set "Note" as the text
     if (checkedDescriptions.length > 0) {

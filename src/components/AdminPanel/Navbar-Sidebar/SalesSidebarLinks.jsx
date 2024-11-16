@@ -9,15 +9,16 @@ const SalesSidebarLinks = () => {
   let loginUserId;
   const loginUserRole = token.role_id;
   const deptId = token.dept_id;
+
   if (loginUserRole !== 1) {
     loginUserId = token.id;
   }
+
   return (
     <li className="nav-item">
       <Link
-        className={`nav-link nav-btn ${
-          loginUserId !== 1 && deptId == 36 ? "" : "collapsed"
-        }`}
+        className={`nav-link nav-btn ${loginUserRole !== 1 && deptId == 36 ? "" : "collapsed"
+          }`}
         data-toggle={`${deptId !== 36 && "collapse"}`}
         data-target="#collapseTwom99"
         aria-expanded="true"
@@ -30,9 +31,8 @@ const SalesSidebarLinks = () => {
       </Link>
       <div
         id="collapseTwom99"
-        className={`${
-          loginUserId !== 1 && deptId == 36 ? "collapse show" : "collapse"
-        }`}
+        className={`${loginUserRole !== 1 && deptId == 36 ? "collapse show" : "collapse"
+          }`}
         aria-labelledby="headingTwo"
         data-parent="#accordionSidebar"
       >
@@ -57,9 +57,9 @@ const SalesSidebarLinks = () => {
               loginUserRole === 1
                 ? "/admin/sales-incentive-dashboard"
                 : {
-                    pathname: "/admin/sales-user-incentve",
-                    state: { id: loginUserId, name: "monthwise" },
-                  }
+                  pathname: "/admin/sales-user-incentve",
+                  state: { id: loginUserId, name: "monthwise" },
+                }
             }
           >
             <i className="bi bi-dot" />

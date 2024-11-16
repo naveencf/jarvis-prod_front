@@ -51,6 +51,7 @@ import ShareIncentive from "./ShareIncentive";
 import CreateBrand from "./CreateBrand";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import AccountSubmitDialog from "./AccountSubmitDialog";
+import { Pencil } from "@phosphor-icons/react";
 
 const socialOptions = [
   { value: "instagram", label: "Instagram" },
@@ -120,7 +121,7 @@ const CreateSalesAccount = () => {
     useGetSingleAccountQuery(id, {
       skip: id == 0,
     });
-
+  const [d_id, setD_id] = useState(id);
   const [accountName, setAccountName] = useState("");
   const [selectedAccountType, setSelectedAccountType] = useState(null);
   const [selectedCompanyType, setSelectedCompanyType] = useState(null);
@@ -340,6 +341,18 @@ const CreateSalesAccount = () => {
       link: item.link,
     }));
   };
+
+  useEffect(() => {
+    console.log("allBrandCatType", allBrandCatType);
+
+
+    const br_Cat_id = allBrandCatType?.find((data) => data._id === allBrands?.find(item => item?._id === selectedBrand)?.brand_category_id)?._id
+    console.log("br_Cat_id", br_Cat_id, selectedBrand);
+
+    setSelectedCategory(br_Cat_id)
+
+  }, [selectedBrand])
+
   useEffect(() => {
     if (id && singleAccountData) {
       const {
@@ -795,9 +808,15 @@ const CreateSalesAccount = () => {
     }
   };
 
-  const openModal = (contentType) => {
+  const openModal = (contentType, operation) => {
     if (contentType === "addBrand") {
       setIsBrandModal(true);
+      if (operation === "edit") {
+        setD_id(id);
+      } else {
+        setD_id(0);
+      }
+
     }
     setModalContentType(contentType);
   };
@@ -834,6 +853,8 @@ const CreateSalesAccount = () => {
             setSelectedAccountType={setSelectedAccountType}
             openModal={openModal}
             setSelectedCategoryParent={setSelectedCategory}
+            id={d_id}
+            selectedBrand={selectedBrand}
           />
         );
       case "companyType":
@@ -1214,10 +1235,17 @@ const CreateSalesAccount = () => {
                   <button
                     type="button"
                     className="btn iconBtn btn-outline-primary"
-                    onClick={() => openModal("addBrand")}
+                    onClick={() => openModal("addBrand", "add")}
                   >
                     +
                   </button>
+                  {id != 0 && <button
+                    type="button"
+                    className="btn iconBtn btn-outline-primary"
+                    onClick={() => openModal("addBrand", "edit")}
+                  >
+                    <i className="bi bi-pencil" />
+                  </button>}
                 </div>
               </div>
 

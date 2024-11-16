@@ -6,7 +6,6 @@ import FormContainer from "../../FormContainer";
 
 import { useGetIncentivePlanListQuery } from "../../../Store/API/Sales/IncentivePlanApi";
 import View from "../Account/View/View";
-import { useGetAllSaleServiceQuery } from "../../../Store/API/Sales/SalesServiceApi";
 import getDecodedToken from "../../../../utils/DecodedToken";
 
 const IncentiveOverview = () => {
@@ -20,31 +19,14 @@ const IncentiveOverview = () => {
   if (loginUserRole !== 1) {
     loginUserId = token.id;
   }
+
   const {
     data: allIncentiveData,
     isError: incentiveError,
     isLoading: incentiveLoading,
   } = useGetIncentivePlanListQuery();
-  const {
-    data: allsalesdata,
-    isError: salesError,
-    isLoading: salesLoading,
-  } = useGetAllSaleServiceQuery();
 
-  async function apicall() {
-    try {
-      const response = await axios.get(`${baseUrl}sales/invoice_request`, {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }
-  useEffect(() => {
-    apicall();
-  }, []);
+
 
   useEffect(() => {
     if (allIncentiveData) {
@@ -124,7 +106,7 @@ const IncentiveOverview = () => {
           }) - ${"There will be no incentive for competitive plan"}`}
         data={incentiveData}
         columns={columns}
-        isLoading={incentiveLoading || salesLoading}
+        isLoading={incentiveLoading}
         pagination={[20]}
         rowSelectable
         tableName={"IncentivePlanOverview"}
