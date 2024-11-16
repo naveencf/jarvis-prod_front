@@ -127,8 +127,10 @@ const LeftSideBar = ({
 
     const overviewSheet = workbook.addWorksheet('Overview');
 
-    // const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
-    const logoUrl = 'https://i.ibb.co/QYz6H78/Untitled-design.png';
+    const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
+    // const logoUrl = 'https://i.ibb.co/bg5J6Gq/Cf-logo.jpg';
+    // <a href="https://ibb.co/1fG604h"><img src="https://i.ibb.co/bg5J6Gq/Cf-logo.jpg" alt="Cf-logo" border="0"></a>
+    // const logoUrl = 'https://i.ibb.co/QYz6H78/Untitled-design.png';
     const response = await fetch(logoUrl);
     const arrayBuffer = await response.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
@@ -137,13 +139,23 @@ const LeftSideBar = ({
       buffer: uint8Array,
       extension: 'png',
     });
+    // Define margin values (measured in Excel points)
+    const leftMargin = 30; // Margin in points for left
+    const topMargin = 10; // Margin in points for top
+    const bottomMargin = 10; // Margin in points for top
 
-    // / Adjust the image placement to consider empty rows and column
+    // Adjusted image placement with margins
     overviewSheet.addImage(imageId, {
-      tl: { col: 1, row: 2 }, // Shifted by 1 column and 2 rows
-      ext: { width: 100, height: 70 },
+      tl: {
+        col: 1 + leftMargin / 72, // Convert points to Excel columns (approximately)
+        row: 2 + topMargin / 20,  // Convert points to Excel rows (approximately)
+      },
+      ext: {
+        width: 100, // Image width in points
+        height: 75, // Image height in points
+        // height: 70 - bottomMargin,
+      },
     });
-
     // Merge cells and center-align "Proposal" text
     const topRow = overviewSheet.mergeCells('B3:G6'); // Shifted merge by 1 column for "Proposal" text
     const proposalCell = overviewSheet.getCell('E3');
@@ -376,7 +388,62 @@ const LeftSideBar = ({
           });
         }
       }
+      // else {
+      //   // Generic handling for other platforms
+      //   const sheet = workbook.addWorksheet(formatString(platform));
+
+      //   const rows = platformData.map((page, index) => ({
+      //     S_No: index + 1,
+      //     Username: page.page_name || 'N/A',
+      //     'Profile Link': page.page_link || 'N/A',
+      //     Followers: page.followers_count || 0,
+      //   }));
+
+      //   // Define columns for non-Instagram platforms
+      //   sheet.columns = [
+      //     { header: 'S_No', width: 5 },
+      //     { header: 'Username', width: 30 },
+      //     { header: 'Profile Link', width: 50 },
+      //     { header: 'Followers', width: 15 },
+      //   ];
+
+      //   // Add rows to the sheet
+      //   rows.forEach((row) => sheet.addRow(row));
+
+      //   // Apply styling to the header row
+      //   sheet.getRow(1).eachCell((cell) => {
+      //     cell.font = { bold: true, color: { argb: 'FF000000' } };
+      //     cell.alignment = { horizontal: 'center' };
+      //     cell.fill = {
+      //       type: 'pattern',
+      //       pattern: 'solid',
+      //       fgColor: { argb: 'BFEE90' },
+      //     };
+      //     cell.border = {
+      //       top: { style: 'thin' },
+      //       bottom: { style: 'thin' },
+      //       left: { style: 'thin' },
+      //       right: { style: 'thin' },
+      //     };
+      //   });
+
+      //   // Add border and formatting for rows
+      //   sheet.eachRow((row, rowIndex) => {
+      //     row.eachCell((cell, colNumber) => {
+      //       cell.border = {
+      //         top: { style: 'thin' },
+      //         left: { style: 'thin' },
+      //         bottom: { style: 'thin' },
+      //         right: { style: 'thin' },
+      //       };
+      //       if (rowIndex > 1) {
+      //         cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      //       }
+      //     });
+      //   });
+      // }
     }
+    // }
 
     const agencyFee = Number(
       ((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2)
@@ -496,8 +563,8 @@ const LeftSideBar = ({
 
     overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
     overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
-    const sellingPrice = overviewSheet.getCell('G8');
-    sellingPrice.value = `₹${planDetails[0]?.selling_price}`;
+    const sellingPriceforsheet = overviewSheet.getCell('G8');
+    sellingPriceforsheet.value = `₹${planDetails[0]?.selling_price}`;
 
     // Merge the B column cells for all note rows and set "Note" as the text
     if (checkedDescriptions.length > 0) {
@@ -539,7 +606,7 @@ const LeftSideBar = ({
 
     // Adjust column widths considering empty column
     overviewSheet.getRow(1).height = 15; // Sets the height of the first row to 50
-
+    overviewSheet.getRow(3).height = 20;
     overviewSheet.getColumn(1).width = 15; // Empty column for spacing
     overviewSheet.getColumn(2).width = 8; // Sno.
     overviewSheet.getColumn(3).width = 50; // Description

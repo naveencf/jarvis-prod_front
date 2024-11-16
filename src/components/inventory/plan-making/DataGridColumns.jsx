@@ -85,10 +85,11 @@ const DataGridColumns = ({
         const name = vendorData?.find(
           (item) => item?._id === row?.vendor_id
         )?.vendor_name;
-        return <div>{formatString(name)}</div>;
+        return formatString(name);
       },
       width: 200,
       showCol: true,
+      compare: true,
     },
     {
       key: 'page_link',
@@ -167,16 +168,13 @@ const DataGridColumns = ({
         // Calculate the average price only if followerCount is greater than zero
         const averagePostPrice = followerCount
           ? Math.floor(postPrice / (followerCount / 1000000))
-          : '0';
+          : 0;
 
-        return (
-          <div style={{ width: '70%' }}>
-            {followerCount ? `₹${averagePostPrice}` : 'Price not available'}
-          </div>
-        );
+        return averagePostPrice;
       },
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'average_story_price',
@@ -192,16 +190,13 @@ const DataGridColumns = ({
         // Calculate the average price only if followerCount is greater than zero
         const averageStoryPrice = followerCount
           ? Math.floor(storyPrice / (followerCount / 1000000))
-          : '0';
+          : 0;
 
-        return (
-          <div style={{ width: '70%' }}>
-            {followerCount ? `₹${averageStoryPrice}` : 'Price not available'}
-          </div>
-        );
+        return followerCount ? averageStoryPrice : 0;
       },
       width: 150,
       showCol: true,
+      compare:true,
     },
 
     {

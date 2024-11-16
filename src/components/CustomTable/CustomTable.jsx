@@ -83,15 +83,15 @@ const CustomTable = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-        columnsheader
-          .map((column) => column.key)
-          .some((key) =>
-            item[key]
-              ?.toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-      )
+      columnsheader
+        .map((column) => column.key)
+        .some((key) =>
+          item[key]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+    )
     : unSortedData;
 
   // const tabledata = pagination
@@ -247,9 +247,9 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery]);
@@ -374,15 +374,15 @@ const CustomTable = ({
         };
       })
     );
-  }, [dataLoading, columns, apiColumns]);
+  }, [dataLoading,columns, apiColumns]);
 
   useEffect(() => {
     setSortedData(
       pagination
         ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
         : unSortedData
     );
   }, [unSortedData]);
