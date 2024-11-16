@@ -10,9 +10,8 @@ import {
 import View from "../../../../AdminPanel/Sales/Account/View/View";
 import CommonDialogBox from "../../../CommonDialog/CommonDialogBox";
 import SaleBookingCloseVerifyDialog from "./SaleBookingCloseVerifyDialog";
-// import { useGetAllSaleBookingCloseListQuery } from "../../../../Store/API/Finance/SaleBookingTDSApi";
 import SaleBookingCloseFilters from "./SaleBookingCloseFilters";
-import { useGetAllSaleBookingCloseListQuery } from "../../../../Store/API/Finance/SaleBookingTDSApi";
+import { useGetAllSaleBookingCloseListQuery } from "../../../../Store/API/Finance/SaleBookingTdsApi";
 
 const SaleBookingClose = ({
   onHandleOpenUniqueSalesExecutiveChange,
