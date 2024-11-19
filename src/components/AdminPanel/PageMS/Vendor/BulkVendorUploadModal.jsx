@@ -6,19 +6,27 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-
 import Select from "react-select";
 import { useGetAllVendorQuery } from "../../../Store/reduxBaseURL";
 import UploadBulkVendorPages from "./BulkVendor/UploadBulkVendorPages";
+import { useGetAllPageCategoryQuery } from "../../../Store/PageBaseURL";
+import jwtDecode from "jwt-decode";
+import { FormatName } from "../../../../utils/FormatName";
 
 export default function BulkVendorUploadModal({ open, onClose, rowData }) {
+  const storedToken = sessionStorage.getItem('token');
+  const decodedToken = jwtDecode(storedToken);
+  const token = sessionStorage.getItem('token');
   const [vendorName, setVendorName] = useState([]);
+  const [categoryName, setCategoryName] = useState('');
+  console.log(categoryName,"<--------");
   const {
     data: vendorData,
-    // isLoading: loading,
-    // refetch: refetchVendor,
+   
   } = useGetAllVendorQuery();
-  console.log(vendorData, "vendor");
+  const { data: category } = useGetAllPageCategoryQuery({decodedToken,token});
+  const categoryData = category?.data || [];
+  console.log(categoryData,'uuuuu');
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md" PaperProps={{
@@ -52,33 +60,27 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
             required
           />
         </div>
-        {/* <div className="form-group col-12">
+        <div className="form-group col-12">
           <label className="form-label">
             Category Name <sup className="form-error">*</sup>
           </label>
           <Select
             className=""
-            options={vendorData.map((option) => ({
+            options={categoryData.map((option) => ({
               value: option._id,
-              label: `${option.vendor_name}`,
+              label: `${FormatName(option.page_category)}`,
             }))}
-            value={{
-              value: vendorName,
-              label:
-                vendorData.find(
-                  (d) => d._id === vendorName
-                )?.vendor_name || "",
-            }}
+        
             onChange={(e) => {
-              setVendorName(e.value);
+              setCategoryName(e);
             }}
             required
           />
-        </div> */}
+        </div>
       </DialogContent>}
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <UploadBulkVendorPages getRowData={vendorName} onClose={onClose} from={"pages"} />
+        <UploadBulkVendorPages getRowData={vendorName} category={categoryName?.value} onClose={onClose} from={"pages"} />
       </DialogActions>
     </Dialog>
   );

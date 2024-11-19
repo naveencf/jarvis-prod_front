@@ -118,10 +118,18 @@ const DataGridColumns = ({
       width: 150,
       showCol: true,
     },
+
     {
       key: 'ownership_type',
       name: 'Ownership',
       renderRowCell: (row) => <div>{row.ownership_type}</div>,
+      width: 100,
+      showCol: true,
+    },
+    {
+      key: 'sub_category',
+      name: 'Sub-Category',
+      renderRowCell: (row) => formatString(row.page_sub_category_name),
       width: 100,
       showCol: true,
     },

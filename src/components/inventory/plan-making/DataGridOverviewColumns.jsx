@@ -98,6 +98,17 @@ const DataGridOverviewColumns = ({
       showCol: true,
     },
     {
+      key: 'total_profit',
+      name: 'Total Profit',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>
+          {Math.floor(row.sellingPrice - row.costPrice)}
+        </div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+    {
       key: 'brief_attachment',
       name: 'Brief Attachment',
       renderRowCell: (row) => (
@@ -112,6 +123,13 @@ const DataGridOverviewColumns = ({
           </a>
         </div>
       ),
+      width: 150,
+      showCol: true,
+    },
+    {
+      key: 'own_page_cost',
+      name: 'Own Pages Cost',
+      renderRowCell: (row) => row.own_pages_cost_price,
       width: 150,
       showCol: true,
     },

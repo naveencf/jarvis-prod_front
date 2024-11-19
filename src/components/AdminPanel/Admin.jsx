@@ -14,6 +14,7 @@ import CategoryOverview from "./PageMS/Category/CategoryOverview";
 import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
 import OutstandingPaymentReceiveReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReceiveReport";
 import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
+import ErrorPage from "../../ErrorPage";
 
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
@@ -2343,6 +2344,8 @@ const Admin = () => {
                         <Route path="/statics" element={<PostStats />} />
                       )}
                   </Route>
+
+                  <Route path="**" element={<ErrorPage />} />
                 </Routes>
               </div>
             </div>

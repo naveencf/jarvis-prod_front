@@ -17,7 +17,7 @@ import { baseUrl } from "../../../../../utils/config";
 import axios from "axios";
 const storedToken = sessionStorage.getItem("token");
 
-const UploadBulkVendorPages = ({ getRowData,from, onClose }) => {
+const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
   console.log(getRowData , 'getrow data')
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
@@ -31,7 +31,6 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose }) => {
       return;
     }
   };
-  // console.log(getRowData,"getRowData")
   const handleUpload = (event) => {
     if (!getRowData) {
       toastError("Please select vendor first");
@@ -75,19 +74,14 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose }) => {
     setFile(null);
   };
 
-  console.log(getRowData , 'hello testing')
+  console.log(getRowData ,category, 'hello testing')
   const handleSubmit = async () => {
   
     const formdata = new FormData();
-    // if(from == "vendor"){
-      
-      // formdata.append("vendor_id", getRowData);
-    // }else{
-
       formdata.append("vendor_id", getRowData);
-    // }
-    formdata.append("bulk_vendor_excel", file);
-    // formdata.append('category_id', '');
+      formdata.append("category_id", category);
+      formdata.append("bulk_vendor_excel", file);
+  
 
     try {
       const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {

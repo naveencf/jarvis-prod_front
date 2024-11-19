@@ -322,6 +322,7 @@ function PlanHome() {
           not_available_pages: plan.not_available_pages,
           brand_id: plan.brand_id,
           planx_log_file: plan.planx_log_file,
+          own_pages_cost_price: plan.own_pages_cost_price,
         }));
         setPlanRows(formattedRows);
         // setFilteredPlans(formattedRows);

@@ -6,7 +6,6 @@ import Modal from "react-modal";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
 
-
 const TableToolkit = ({
   tableref,
   rowSelectable,
@@ -75,27 +74,23 @@ const TableToolkit = ({
     setApplyFlag(!applyFlag);
   };
 
-
   useEffect(() => {
     setFilterList(apiFilters);
   }, [apiFilters]);
-
 
   useEffect(() => {
     setCheckedState(new Array(filterList?.length).fill(false));
   }, [filterList]);
 
-
   useEffect(() => {
-    const selectedRowData = selectedRowsIndex?.map((index) => originalData[index]);
+    const selectedRowData = selectedRowsIndex?.map(
+      (index) => unSortedData[index]
+    );
 
     if (JSON.stringify(selectedRowData) !== JSON.stringify(selectedRowsData)) {
       setSelectedRowsData(selectedRowData);
     }
   }, [selectedRowsIndex]);
-
-
-
 
   const handleCloseModal = () => {
     setModalOpen(true);
@@ -121,8 +116,6 @@ const TableToolkit = ({
 
     // div.style.pointerEvents = "none";
     // container.appendChild(div);
-
-
   };
 
   const onDragOver = (e) => {
@@ -136,7 +129,6 @@ const TableToolkit = ({
     newColumns.splice(draggedIndex, 1);
     newColumns.splice(target, 0, draggedColumn);
 
-
     // await axios
     //   .put(`${baseUrl}` + "edit_dynamic_table_data", {
     //     user_id: loginUserId,
@@ -144,14 +136,13 @@ const TableToolkit = ({
     //     column_order_Obj: arrayOfColumnsName,
     //   })
     //   .then(() => {
-    //     
+    //
     //   })
     //   .catch((error) => {
     //     console.error("Error editing dynamic table data:", error);
     //   });
     setColumns(newColumns);
   };
-
 
   async function handleSave() {
     const arrayOfColumnsName = columnsheader.map((column, index) => ({
@@ -163,20 +154,19 @@ const TableToolkit = ({
         user_id: loginUserId,
         table_name: tableName,
         column_order_Obj: arrayOfColumnsName,
-      }).then(() => {
+      })
+      .then(() => {
         setDragFlag(false);
       })
       .catch((error) => {
         console.error("Error editing dynamic table data:", error);
       });
-
   }
-
 
   const cloudInvader = async (tag, index) => {
     let Payload;
     if (tag !== "delete") {
-      Payload = [...apiFilters || []];
+      Payload = [...(apiFilters || [])];
 
       if (filterName === "") {
         setErrorval(true);
@@ -209,13 +199,8 @@ const TableToolkit = ({
     }
   };
 
-
   const handleExport = () => {
-
-
     const ax = !rowSelectable ? data : selectedRowsData;
-
-
 
     const elxdata = ax?.map((item) => {
       const cols = columnsheader.filter((column) => column?.compare === true);
@@ -231,8 +216,6 @@ const TableToolkit = ({
       };
     });
 
-
-
     if (elxdata?.length === 0) return alert("No data to export");
     const formattedData = elxdata?.map((row, index) => {
       let formattedRow = {
@@ -240,13 +223,10 @@ const TableToolkit = ({
       };
       let obj = {};
       columnsheader.forEach((header, index) => {
-
         if (visibleColumns[index]) {
           obj[header.name] = row[header.key];
         }
       });
-
-
 
       return {
         ...formattedRow,
@@ -279,7 +259,6 @@ const TableToolkit = ({
 
     XLSX.writeFile(workbook, fileName);
   };
-
 
   return (
     <div className="table-toolkit">
@@ -357,33 +336,50 @@ const TableToolkit = ({
           tableref={tableref}
           btnHtml={<button className="dropdown-btn">Column</button>}
         >
-
           <div className="w-100 sb">
             <div></div>
             <div className="flex-row gap-2">
-              {dragFlag && <button className="btn cmnbtn btn_sm btn-success" onClick={() => { handleSave() }}>save</button>}
-              <button className={`btn cmnbtn btn_sm ${dragFlag ? "btn-danger" : "btn-primary"}`} onClick={() => setDragFlag(!dragFlag)}>{dragFlag ? "Cancel" : "Edit"}</button>
+              {dragFlag && (
+                <button
+                  className="btn cmnbtn btn_sm btn-success"
+                  onClick={() => {
+                    handleSave();
+                  }}
+                >
+                  save
+                </button>
+              )}
+              <button
+                className={`btn cmnbtn btn_sm ${
+                  dragFlag ? "btn-danger" : "btn-primary"
+                }`}
+                onClick={() => setDragFlag(!dragFlag)}
+              >
+                {dragFlag ? "Cancel" : "Edit"}
+              </button>
             </div>
           </div>
           <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}>
-            {dragFlag && (<>
-              <span>
-                <p>:</p>
-                <p>:</p>
-                <p>:</p>
-                <p>:</p>
-              </span>
-              <input
-                className="form-check-input"
-                type="checkbox"
-                id="flexSwitchCheckDefault"
-                checked={visibleColumns?.some((column) => column)}
-                onChange={(e) => {
-                  setVisibleColumns(visibleColumns?.map(() => e.target.checked));
-
-                }}
-              />
-            </>
+            {dragFlag && (
+              <>
+                <span>
+                  <p>:</p>
+                  <p>:</p>
+                  <p>:</p>
+                  <p>:</p>
+                </span>
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="flexSwitchCheckDefault"
+                  checked={visibleColumns?.some((column) => column)}
+                  onChange={(e) => {
+                    setVisibleColumns(
+                      visibleColumns?.map(() => e.target.checked)
+                    );
+                  }}
+                />
+              </>
             )}
             <label
               className="form-check-label"
@@ -394,7 +390,8 @@ const TableToolkit = ({
           </div>
           <div className="container_drag" ref={containerRef}>
             {columnsheader?.map((column, index) => (
-              <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
+              <div
+                className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
                 key={index}
                 draggable={dragFlag}
                 onDragStart={(e) => onDragStart(e, index)}
@@ -443,10 +440,7 @@ const TableToolkit = ({
           <ul>
             {filterList?.map((filter, index) => (
               <li className="flex-row sb w-100" key={index}>
-                <div
-                  className="form-check dt-toggle ml20"
-                  key={index}
-                >
+                <div className="form-check dt-toggle ml20" key={index}>
                   <input
                     className="form-check-input"
                     id={`flexSwitchCheckDefault${index}`}

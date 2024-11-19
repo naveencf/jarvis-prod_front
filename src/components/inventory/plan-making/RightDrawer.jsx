@@ -34,6 +34,8 @@ const RightDrawer = ({
   selectedCategory,
   handleCategoryChange,
   cat,
+  tagCategory,
+  setTagCategory,
   removeCategory,
   handleRemoveFilter,
   handleCombinedFilter,
@@ -77,6 +79,14 @@ const RightDrawer = ({
     }
   };
 
+  const handleTagCategoryChange = (selectedIds) => {
+    const selectedNames = selectedIds.map((id) => {
+      const category = cat.find((c) => c._id === id);
+      return category ? category.page_category : id;
+    });
+    setTagCategory(selectedNames);
+  };
+
   // Function to calculate count for each category
   const getCategoryCount = (categoryName) => {
     return pageList?.filter(
@@ -91,6 +101,12 @@ const RightDrawer = ({
     return {
       value: category._id,
       label: `${formatString(category.page_category)} (${count})`,
+    };
+  });
+  const tagCategoryOptions = cat?.map((category) => {
+    return {
+      value: category._id,
+      label: `${formatString(category.page_category)} `,
     };
   });
 
@@ -238,7 +254,7 @@ const RightDrawer = ({
 
             {/* Filter by Category */}
             <div className="form-group col-12 mb8">
-              <label htmlFor="categoryFilter">Filter by Category:</label>
+              {/* <label htmlFor="categoryFilter">Filter by Category:</labellabel> */}
               <CustomSelect
                 fieldGrid="12"
                 label="Filter by Category"
@@ -247,6 +263,19 @@ const RightDrawer = ({
                 optionLabel="label"
                 selectedId={selectedCategory}
                 setSelectedId={setSelectedCategory}
+                multiple={true}
+              />
+              <CustomSelect
+                fieldGrid="12"
+                label="Filter by Tag Category"
+                dataArray={tagCategoryOptions}
+                optionId="value"
+                optionLabel="label"
+                selectedId={tagCategory?.map((name) => {
+                  const category = cat?.find((c) => c.page_category === name);
+                  return category ? category._id : name;
+                })}
+                setSelectedId={handleTagCategoryChange}
                 multiple={true}
               />
             </div>
