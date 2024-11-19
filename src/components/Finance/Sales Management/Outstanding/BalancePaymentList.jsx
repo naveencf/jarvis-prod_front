@@ -33,9 +33,9 @@ import View from "../../../AdminPanel/Sales/Account/View/View";
 import CreditNoteDialog from "./Sales/Dialog/CreditNoteDialog";
 import { Diversity1Rounded } from "@mui/icons-material";
 import { useGetAllInvoiceRequestQuery } from "../../../Store/API/Finance/InvoiceRequestApi";
-import { useGetAllOutstandingListQuery } from "../../../Store/API/Finance/OutstandingApi";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDetailsApi";
+import { useGetAllOutstandingListNewQuery } from "../../../Store/API/Finance/OutstandingNew";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -49,12 +49,13 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 const BalancePaymentList = () => {
   const { toastAlert, toastError } = useGlobalContext();
 
-  const {
-    refetch: refetchOutstandingList,
-    data: allOutstandingList,
-    error: allOutstandingListError,
-    isLoading: allOutstandingListLoading,
-  } = useGetAllOutstandingListQuery();
+  // const {
+  //   refetch: refetchOutstandingList,
+  //   data: allOutstandingList,
+  //   error: allOutstandingListError,
+  //   isLoading: allOutstandingListLoading,
+  // } = useGetAllOutstandingListQuery();
+  const { refetch: refetchOutstandingList, data: allOutstandingList, isLoading: allOutstandingListLoading, } = useGetAllOutstandingListNewQuery()
 
   const {
     refetch: refetchPaymentMode,
@@ -470,58 +471,58 @@ const BalancePaymentList = () => {
         {(activeAccordionIndex === 3 ||
           activeAccordionIndex === 0 ||
           activeAccordionIndex === 1) && (
-          <View
-            columns={outstandingColumns({
-              filterData,
-              calculateAging,
-              setViewImgSrc,
-              setViewImgDialog,
-              handleImageClick,
-              handleDiscardOpenDialog,
-              handleOpenEditAction,
-              activeAccordionIndex,
-              handleOpenCreditNote,
-            })}
-            data={
-              activeAccordionIndex === 3
-                ? filterData?.filter(
+            <View
+              columns={outstandingColumns({
+                filterData,
+                calculateAging,
+                setViewImgSrc,
+                setViewImgDialog,
+                handleImageClick,
+                handleDiscardOpenDialog,
+                handleOpenEditAction,
+                activeAccordionIndex,
+                handleOpenCreditNote,
+              })}
+              data={
+                activeAccordionIndex === 3
+                  ? filterData?.filter(
                     (invc) => invc.invoice_type_id !== "proforma"
                   )
-                : activeAccordionIndex === 0
-                ? filterData?.filter(
-                    (invc) =>
-                      invc.invoice_type_id === "tax-invoice" &&
-                      invc.invoice_creation_status !== "pending" &&
-                      invc.gst_status === true &&
-                      invc.paid_amount <= invc.campaign_amount * 0.9
-                  )
-                : activeAccordionIndex === 1
-                ? filterData?.filter(
-                    (invc) =>
-                      invc.invoice_type_id !== "tax-invoice" ||
-                      invc.invoice_creation_status === "pending"
-                  )
-                : []
-            }
-            isLoading={isLoading}
-            title={"Outstanding"}
-            rowSelectable={true}
-            showTotal={true}
-            pagination={[100, 200]}
-            tableName={"sales_booking_outstanding_for_finanace"}
-            selectedData={setSelectedData}
-            addHtml={
-              <>
-                <button
-                  className="btn cmnbtn btn_sm btn-secondary"
-                  onClick={(e) => handleClearSameRecordFilter(e)}
-                >
-                  Clear
-                </button>
-              </>
-            }
-          />
-        )}
+                  : activeAccordionIndex === 0
+                    ? filterData?.filter(
+                      (invc) =>
+                        invc.invoice_type_id === "tax-invoice" &&
+                        invc.invoice_creation_status !== "pending" &&
+                        invc.gst_status === true &&
+                        invc.paid_amount <= invc.campaign_amount * 0.9
+                    )
+                    : activeAccordionIndex === 1
+                      ? filterData?.filter(
+                        (invc) =>
+                          invc.invoice_type_id !== "tax-invoice" ||
+                          invc.invoice_creation_status === "pending"
+                      )
+                      : []
+              }
+              isLoading={isLoading}
+              title={"Outstanding"}
+              rowSelectable={true}
+              showTotal={true}
+              pagination={[100, 200]}
+              tableName={"sales_booking_outstanding_for_finanace"}
+              selectedData={setSelectedData}
+              addHtml={
+                <>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
+                    Clear
+                  </button>
+                </>
+              }
+            />
+          )}
 
         {activeAccordionIndex === 2 && <ApprovedList />}
       </div>

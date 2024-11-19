@@ -98,6 +98,24 @@ const DataGridOverviewColumns = ({
       showCol: true,
     },
     {
+      key: 'brief_attachment',
+      name: 'Brief Attachment',
+      renderRowCell: (row) => (
+        <div style={{ cursor: 'pointer' }}>
+          <a
+            href={row.planx_log_file}
+            target="_blank"
+            rel="noreferrer"
+            style={{ color: 'blue' }}
+          >
+            {row.planx_log_file ? 'Link' : ''}
+          </a>
+        </div>
+      ),
+      width: 150,
+      showCol: true,
+    },
+    {
       key: 'plan_status',
       name: 'Plan Status',
       renderRowCell: (row) => (

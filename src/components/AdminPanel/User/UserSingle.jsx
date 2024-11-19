@@ -18,7 +18,6 @@ import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import Modal from "react-modal";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import NDA from "../../PreOnboarding/NDA";
-
 const UserSingle = () => {
   const whatsappApi = WhatsappAPI();
   const [KRIData, setKRIData] = useState([]);
@@ -26,27 +25,21 @@ const UserSingle = () => {
   const { id } = useParams();
   const [defaultSeatData, setDefaultSeatData] = useState([]);
   const [roomId, setRoomId] = useState();
-
   const [educationData, setEducationData] = useState([]);
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
-
   const [user, setUser] = useState([]);
   const [hobbiesData, setHobbiesData] = useState([]);
-
   const [familyData, seFamilyData] = useState([]);
-
   const [previewOffer, setpreview] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
   const handelClose = () => {
     setpreview(!previewOffer);
   };
-
   const KRAAPI = (userId) => {
     axios.get(`${baseUrl}` + `get_single_kra/${userId}`).then((res) => {
       setKRIData(res.data);
     });
   };
-
   useEffect(() => {
     axios.get(baseUrl + "get_all_sittings").then((res) => {
       setDefaultSeatData(res.data.data);
@@ -62,7 +55,6 @@ const UserSingle = () => {
       setHobbiesData(res.data.data);
     });
   }, []);
-
   let fetchedData;
   const getData = () => {
     axios.get(`${baseUrl}` + `get_single_user/${id}`).then((res) => {
@@ -71,22 +63,18 @@ const UserSingle = () => {
       setUser(fetchedData);
     });
   };
-
   useEffect(() => {
     getData();
   }, [id]);
-
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
-
   useEffect(() => {
     const selectedOption = defaultSeatData?.find(
       (option) => option?.sitting_id === Number(user?.sitting_id)
     );
     setRoomId(selectedOption);
   }, [defaultSeatData, user?.sitting_id]);
-
   const accordionButtons = [
     "General",
     "Professional",
@@ -97,7 +85,6 @@ const UserSingle = () => {
     // "Salary",
     user.job_type === "WFHD" ? "Salary" : null,
   ].filter(Boolean);
-
   return (
     <>
       <div className="box">
@@ -110,7 +97,6 @@ const UserSingle = () => {
           >
             NDA Download
           </button>
-
           <PDFDownloadLink
             document={<NDA allUserData={user} />}
             fileName="NDA.pdf"
@@ -120,8 +106,6 @@ const UserSingle = () => {
               <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
             </button>
           </PDFDownloadLink>
-
-          
           <FormContainer
             submitButton={false}
             mainTitle="User"
@@ -150,7 +134,6 @@ const UserSingle = () => {
             )}
           </FormContainer>
         </div>
-
         <Modal
           isOpen={previewOffer}
           onRequestClose={() => setpreview(false)}
@@ -188,5 +171,4 @@ const UserSingle = () => {
     </>
   );
 };
-
 export default UserSingle;

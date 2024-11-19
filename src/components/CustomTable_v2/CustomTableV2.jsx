@@ -9,9 +9,9 @@ import axios from "axios";
 import TotalRow from "./TableComponent/TotalRow";
 // note: sync the table pagination and  sorted rows
 
-const CustomTable = ({
+const CustomTableV2 = ({
   columns,
-  data = [],
+  data,
   fixedHeader = true,
   Pagination = false,
   dataLoading = false,
@@ -66,7 +66,7 @@ const CustomTable = ({
   // Initialize selectedId for each column
   const [selectedId, setSelectedId] = useState(columnsheader.map(() => []));
   const [applyFlag, setApplyFlag] = useState(false);
-  const [triggerSort, setTriggerSort] = useState(false);
+  const [oldSortKey, setOldSortKey] = useState("");
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -74,25 +74,26 @@ const CustomTable = ({
   let pagination = Pagination?.length > 0 ? Pagination : [100, 50, 10];
 
   useEffect(() => {
-    if (pagination.findIndex((item) => item === data.length) === -1)
-      pagination.push(data.length);
+    if (pagination?.findIndex((item) => item === data?.length) === -1)
+      pagination?.push(data?.length);
   }, [data]);
 
   useEffect(() => {
+    // //console.log("selected data");
     selectedData(selectedRowsData);
   }, [selectedRowsData]);
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-      columnsheader
-        .map((column) => column.key)
-        .some((key) =>
-          item[key]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-    )
+        columnsheader
+          .map((column) => column.key)
+          .some((key) =>
+            item[key]
+              ?.toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
+      )
     : unSortedData;
 
   // const tabledata = pagination
@@ -187,6 +188,7 @@ const CustomTable = ({
   };
 
   useEffect(() => {
+    //console.log("filtering of data");
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
@@ -239,6 +241,8 @@ const CustomTable = ({
   };
 
   useEffect(() => {
+    //console.log("invade flag");
+
     if (invadeFlag) {
       cloudInvader();
     }
@@ -248,12 +252,12 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
         : unSortedData
     );
-  }, [itemsPerPage, currentPage, searchQuery]);
+  }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
 
   const memoize = (fn) => {
     const cache = new Map();
@@ -287,8 +291,9 @@ const CustomTable = ({
     }
   };
 
-
   useEffect(() => {
+    //console.log("table creation");
+
     // const isTableCreated = localStorage.getItem(
     //   `isTableCreated_${tableName + loginUserId}`
     // );
@@ -324,6 +329,7 @@ const CustomTable = ({
   }
 
   useEffect(() => {
+    //console.log("use to fetch columns");
     const fetchCreatedTable = async () => {
       try {
         const response = await axios.get(
@@ -341,6 +347,8 @@ const CustomTable = ({
   }, [loginUserId, tableName]);
 
   useEffect(() => {
+    //console.log("initializing columns to update ui");
+
     const getIndex = (colName) =>
       apiColumns?.findIndex((item) => item?.name === colName);
     const sortedColumns = [...columns];
@@ -360,65 +368,78 @@ const CustomTable = ({
         column.editable === undefined ? false : column.editable
       )
     );
-    setUnSortedData(data);
-    setOriginalData(data);
-    setOriginalData((prev) =>
-      prev.map((item) => {
-        const cols = columnsheader.filter((column) => column.compare === true);
-        const additionalProps = cols.reduce((acc, column) => {
-          acc[column.key] = column.renderRowCell(item);
-          return acc;
-        }, {});
-        return {
-          ...item,
-          ...additionalProps,
-        };
-      })
-    );
+
     // setTriggerSort(prev => !prev);
-  }, [dataLoading, columns, apiColumns]);
-
+  }, [columns, apiColumns]);
   useEffect(() => {
-    setSortedData(
-      pagination
-        ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
-        : unSortedData
-    );
-  }, [unSortedData]);
+    //console.log("initializing data to update ui");
 
+    if (data) {
+      setUnSortedData(data);
+      setUnSortedData((prev) =>
+        prev.map((item) => {
+          const cols = columnsheader.filter(
+            (column) => column.compare === true
+          );
+          const additionalProps = cols.reduce((acc, column) => {
+            acc[column.key] = column.renderRowCell(item);
+            return acc;
+          }, {});
+          return {
+            ...item,
+            ...additionalProps,
+          };
+        })
+      );
+      setOriginalData(data);
+      setOriginalData((prev) =>
+        prev.map((item) => {
+          const cols = columnsheader.filter(
+            (column) => column.compare === true
+          );
+          const additionalProps = cols.reduce((acc, column) => {
+            acc[column.key] = column.renderRowCell(item);
+            return acc;
+          }, {});
+          return {
+            ...item,
+            ...additionalProps,
+          };
+        })
+      );
+    }
+  }, [data]);
 
   const renderSort_v2 = useMemo(() => {
+    //console.log("sortKey", sortKey, oldSortKey);
+
     if (!sortKey) return originalData;
+    let sorted = [...unSortedData];
+    if (sortKey != oldSortKey) {
+      const datatType = originalData[0][sortKey]
+        ? typeof originalData[0][sortKey]
+        : "number";
+      if (datatType === "number") {
+        sorted = [...originalData].sort((a, b) => {
+          const val1 = a[sortKey] || -Infinity;
+          const val2 = b[sortKey] || -Infinity;
+          return val1 - val2;
+        });
+      } else {
+        sorted = [...originalData].sort((a, b) => {
+          const val1 = a[sortKey] || "";
+          const val2 = b[sortKey] || "";
 
-    const datatType = originalData[0][sortKey] ? typeof originalData[0][sortKey] : "string";
-    const sorted = [...originalData].sort((a, b) => {
-      const val1 = a[sortKey];
-      const val2 = b[sortKey];
-
-      if (val1 === null || val1 === undefined) return -1;
-      if (val2 === null || val2 === undefined) return 1;
-
-      if (datatType === "string") {
-        return val1.trim().localeCompare(val2.trim());
-      } else if (datatType === "number") {
-        return val1 - val2;
+          return val1.localeCompare(val2);
+        });
       }
+    } else sorted.reverse();
 
-      return 0; // Default case
-    });
+    setSortedData(sorted);
+    setUnSortedData(sorted);
 
-    // Reverse if sorting direction is descending
-    if (sortDirection !== "asc") {
-      sorted.reverse();
-    }
-
-    return sorted;
-
+    // return sorted;
   }, [sortKey, sortDirection, originalData]);
-
 
   // const renderSort = useMemo(() => {
   //   if (!sortKey) return originalData;
@@ -470,19 +491,15 @@ const CustomTable = ({
   // }, [sortKey, sortDirection, unSortedData, originalData, columnsheader]);
 
   // Use effect to set the sorted data state
-  useEffect(() => {
-    const data_v2 = renderSort_v2;
-    setSortedData(data_v2);
-    setUnSortedData(data_v2);
-  }, [renderSort_v2]);
-
+  // useEffect(() => {
+  //   const data_v2 = renderSort_v2;
+  //   setSortedData(data_v2);
+  //   setUnSortedData(data_v2);
+  // }, [renderSort_v2]);
 
   // useEffect(() => {
 
-
   // }, [sortKey, sortDirection, triggerSort]);
-
-
 
   return (
     <div className="table-pagination-container">
@@ -519,7 +536,6 @@ const CustomTable = ({
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
         sortedData={sortedData}
-
       />
       {showTotal && (
         <TotalRow
@@ -534,6 +550,9 @@ const CustomTable = ({
       )}
       <div className="table-container" ref={tableref}>
         <RenderedTable
+          sortKey={sortKey}
+          oldSortKey={oldSortKey}
+          setOldSortKey={setOldSortKey}
           headref={headref}
           setUnSortedData={setUnSortedData}
           applyFlag={applyFlag}
@@ -592,4 +611,4 @@ const CustomTable = ({
   );
 };
 
-export default CustomTable;
+export default CustomTableV2;

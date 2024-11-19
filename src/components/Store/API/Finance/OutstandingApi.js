@@ -7,7 +7,7 @@ const OutstandingApi = createApi({
   endpoints: (builder) => ({
     getAllOutstandingList: builder.query({
       query: () => `sales/sales_booking_outstanding_for_finanace`,
-      transformResponse: (response) => response?.data,
+      transformResponse: (response) => response,
       keepUnusedDataFor: 0,
     }),
     updateOutstandingBalancePayment: builder.mutation({
@@ -28,9 +28,9 @@ const OutstandingApi = createApi({
 });
 
 export const {
-  useGetAllOutstandingListQuery,
-  useUpdateOutstandingBalancePaymentMutation,
-  useUpdateOutstandingSaleBookingCloseMutation,
+  // useGetAllOutstandingListQuery,
+  // useUpdateOutstandingBalancePaymentMutation,
+  // useUpdateOutstandingSaleBookingCloseMutation,
 } = OutstandingApi;
 
 export default OutstandingApi;
