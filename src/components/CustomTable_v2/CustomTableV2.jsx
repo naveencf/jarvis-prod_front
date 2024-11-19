@@ -31,7 +31,7 @@ const CustomTableV2 = ({
   const [itemsPerPage, setItemsPerPage] = useState(
     Pagination && Pagination.length > 0 ? Pagination[0] : 10
   );
-  const [originalData, setOriginalData] = useState(data);
+  const [originalData, setOriginalData] = useState(data || []);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -413,26 +413,26 @@ const CustomTableV2 = ({
   const renderSort_v2 = useMemo(() => {
     //console.log("sortKey", sortKey, oldSortKey);
 
-    if (!sortKey) return originalData;
+    if (!sortKey) return unSortedData;
     let sorted = [...unSortedData];
     if (sortKey != oldSortKey) {
-      const datatType = originalData[0][sortKey]
-        ? typeof originalData[0][sortKey]
-        : "number";
+      const datatType = unSortedData[0][sortKey]
+        ? typeof unSortedData[0][sortKey]
+        : null;
       if (datatType === "number") {
-        sorted = [...originalData].sort((a, b) => {
+        sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || -Infinity;
           const val2 = b[sortKey] || -Infinity;
           return val1 - val2;
         });
-      } else {
-        sorted = [...originalData].sort((a, b) => {
+      } else if (datatType === "string") {
+        sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || "";
           const val2 = b[sortKey] || "";
 
           return val1.localeCompare(val2);
         });
-      }
+      } else return sorted;
     } else sorted.reverse();
 
     setSortedData(sorted);

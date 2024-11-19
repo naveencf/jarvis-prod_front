@@ -43,6 +43,7 @@ import OrderHistory from "./components/Pantry/UserPanel/OrderHistory";
 import PendingOrderSingleUser from "./components/Pantry/UserPanel/PendingOrderSingleUser";
 import Loader from "./components/Finance/Loader/Loader";
 import Learning from "./components/SuperTracker/CommunityManagement/Learning/Learning";
+import ErrorPage from "./ErrorPage";
 // import AssetCategoryMaster from "./components/Sim/AssetCategory/AssetCategoryMaster";
 // import AssetCategoryOverview from "./components/Sim/AssetCategory/AssetCategoryOverview";
 // import AssetCategoryUpdate from "./components/Sim/AssetCategory/AssetCategoryUpdate";
@@ -203,7 +204,6 @@ const CaseStudyView = lazy(() =>
   import("./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyView")
 );
 
-
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -220,8 +220,6 @@ function App() {
       window.removeEventListener("offline", handleOnlineStatusChange);
     };
   }, []);
-
-
 
   return (
     <>
@@ -368,11 +366,9 @@ function App() {
           {/* Execution history */}
           {/* sales Account Info Page route */}
           <Route path="/sales-account-info/:id" element={<AccountInfo />} />
-          <Route
-            path="/instaapi/community/learning"
-            element={<Learning />}
-          />
+          <Route path="/instaapi/community/learning" element={<Learning />} />
 
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
       </BrowserRouter>
     </>
