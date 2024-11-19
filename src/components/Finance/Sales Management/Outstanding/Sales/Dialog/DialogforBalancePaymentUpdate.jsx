@@ -19,7 +19,8 @@ import axios from "axios";
 import { baseUrl } from "../../../../../../utils/config";
 import { useGlobalContext } from "../../../../../../Context/Context";
 import CircularProgress from "@mui/material/CircularProgress";
-import { useUpdateOutstandingBalancePaymentMutation } from "../../../../../Store/API/Finance/OutstandingApi";
+import { useUpdateOutstandingBalancePaymentMutation } from "../../../../../Store/API/Finance/OutstandingNew";
+// import { useUpdateOutstandingBalancePaymentMutation } from "../../../../../Store/API/Finance/OutstandingApi";
 
 function DialogforBalancePaymentUpdate(props) {
   const { toastAlert, toastError } = useGlobalContext();

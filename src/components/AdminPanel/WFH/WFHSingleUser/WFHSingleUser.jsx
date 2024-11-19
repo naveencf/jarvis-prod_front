@@ -29,6 +29,7 @@ import PreviewInvoice from "./PreviewInvoice";
 import { baseUrl } from "../../../../utils/config";
 import WFHTemplateOverview from "./WFHTemplateOverview";
 import { Link } from "react-router-dom";
+import UserSingleWFHDSalaryTab from "../../User/UserSingleWFHDSalaryTab";
 
 const images = useInvoiceTemplateImages();
 
@@ -618,7 +619,7 @@ const WFHSingleUser = () => {
       <FormContainer mainTitle="Payout" link="/admin" />
       <div className="card">
         <div className="data_tbl table-responsive">
-          {filterData?.length > 0 && (
+          {/* {filterData?.length > 0 && (
             <DataTable
               title="Payout Overview"
               columns={columns}
@@ -630,9 +631,6 @@ const WFHSingleUser = () => {
               subHeader
               subHeaderComponent={
                 <>
-                  {/* <button className="btn btn-primary mr-3" onClick={openModal}>
-                    Digital Signature
-                  </button> */}
                   <Modal
                     isOpen={isModalOpen}
                     onRequestClose={closeModal}
@@ -658,15 +656,6 @@ const WFHSingleUser = () => {
                     />
                   </Modal>
 
-                  {/* <Button
-                    sx={{ marginRight: "10px" }}
-                    size="medium"
-                    onClick={handleExport}
-                    variant="outlined"
-                    color="secondary"
-                  >
-                    Export Excel
-                  </Button> */}
 
                   <div className="d-flex">
                     <PDFDownloadLink
@@ -680,12 +669,6 @@ const WFHSingleUser = () => {
                         // border: "1px solid #4a4a4a",
                       }}
                     >
-                      {/* <button
-                        className="btn btn-outline-primary me-3"
-                        type="button"
-                      >
-                        PDF Download
-                      </button> */}
                     </PDFDownloadLink>
 
                     <button
@@ -708,7 +691,8 @@ const WFHSingleUser = () => {
                 </>
               }
             />
-          )}
+          )} */}
+          <UserSingleWFHDSalaryTab id={userID} />
         </div>
       </div>
       {/* Modal */}

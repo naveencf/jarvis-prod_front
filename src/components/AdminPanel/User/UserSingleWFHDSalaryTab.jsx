@@ -58,7 +58,6 @@ const UserSingleWFHDSalaryTab = ({ id }) => {
       footer: {
         cell: (row) =>
           row.reduce((total, rows) => {
-            // Assuming row.bonus is a numeric value
             return total + Number(rows.total_salary);
           }, 0),
       },
@@ -69,7 +68,6 @@ const UserSingleWFHDSalaryTab = ({ id }) => {
       footer: {
         cell: (row) => {
           const totalBonus = row.reduce((total, rows) => {
-            // Assuming row.bonus is a numeric value
             return total + Number(rows.bonus);
           }, 0);
           return <div>{totalBonus + " ₹"}</div>;
@@ -79,7 +77,7 @@ const UserSingleWFHDSalaryTab = ({ id }) => {
 
     {
       name: "Net Payout",
-      cell: (row) => row.net_salary + " ₹",
+      cell: (row) => row.net_salary?.toFixed() + " ₹",
     },
     {
       name: "TDS",
@@ -88,7 +86,7 @@ const UserSingleWFHDSalaryTab = ({ id }) => {
     },
     {
       name: "To Pay",
-      cell: (row) => row.toPay + " ₹",
+      cell: (row) => row.toPay?.toFixed() + " ₹",
     },
     // {
     //   name: "Status",

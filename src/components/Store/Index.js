@@ -41,6 +41,7 @@ import CatAssignment from "./API/Inventory/CatAssignment";
 import InvoiceRequestApi from "./API/Finance/InvoiceRequestApi";
 import OutstandingApi from "./API/Finance/OutstandingApi";
 import SaleBookingTdsApi from "./API/Finance/SaleBookingTdsApi";
+import OutstandingNewApi from "./API/Finance/OutstandingNew";
 
 const store = configureStore({
   reducer: {
@@ -82,9 +83,11 @@ const store = configureStore({
     [IncentiveSharingApi.reducerPath]: IncentiveSharingApi.reducer,
     [TagCategoryApi.reducerPath]: TagCategoryApi.reducer,
     [CatAssignment.reducerPath]: CatAssignment.reducer,
-    [InvoiceRequestApi.reducerPath]: InvoiceRequestApi.reducer,
     [OutstandingApi.reducerPath]: OutstandingApi.reducer,
+    [InvoiceRequestApi.reducerPath]: InvoiceRequestApi.reducer,
     [SaleBookingTdsApi.reducerPath]: SaleBookingTdsApi.reducer,
+    [OutstandingNewApi.reducerPath]: OutstandingNewApi.reducer,
+
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -122,9 +125,11 @@ const store = configureStore({
       .concat(TagCategoryApi.middleware)
       .concat(TagCategoryApi.middleware)
       .concat(CatAssignment.middleware)
-      .concat(InvoiceRequestApi.middleware)
       .concat(OutstandingApi.middleware)
-      .concat(SaleBookingTdsApi.middleware),
+      .concat(InvoiceRequestApi.middleware)
+      .concat(SaleBookingTdsApi.middleware)
+      .concat(OutstandingNewApi.middleware),
+
 });
 setupListeners(store.dispatch);
 

@@ -6,12 +6,13 @@ import {
   DialogActions,
   TextField,
   Autocomplete,
+  MenuItem,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import { AppContext } from '../../../Context/Context';
+import { AppContext, useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
@@ -25,6 +26,7 @@ import PageDialog from './PageDialog';
 import { CiStickyNote } from 'react-icons/ci';
 import PlanXNoteModal from './PlanXNoteModal';
 import DataGridOverviewColumns from './DataGridOverviewColumns';
+import numberToWords from '../../../utils/convertNumberToIndianString';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -42,6 +44,8 @@ function PlanHome() {
   const [selectedPages, setSelectedPages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [descriptions, setDescriptions] = useState([]);
+  const [file, setFile] = useState(null);
+  const { toastError } = useGlobalContext();
 
   const [planDetails, setPlanDetails] = useState({
     planName: '',
@@ -66,6 +70,49 @@ function PlanHome() {
   const { id } = jwtDecode(storedToken);
   const decodedToken = jwtDecode(storedToken);
   const [pagequery, setPagequery] = useState('');
+  const [suggestions, setSuggestions] = useState([]);
+  const [inputValue, setInputValue] = useState(1);
+
+  const generateSuggestions = (value) => {
+    const baseValue = parseFloat(value) || 0;
+    if (baseValue === 0) return [];
+
+    const units = [
+      { multiplier: 1000, label: 'k' },
+      { multiplier: 100000, label: 'lakh' },
+      { multiplier: 10000000, label: 'crore' },
+    ];
+
+    return units.map((unit) => {
+      const multipliedValue = baseValue * unit.multiplier;
+      const labelValue =
+        multipliedValue >= unit.multiplier
+          ? multipliedValue / unit.multiplier // Format properly like `1k` instead of `1000k`
+          : baseValue;
+
+      return {
+        value: multipliedValue,
+        label: `${labelValue} ${unit.label}`, // Display the formatted label
+      };
+    });
+  };
+
+  const handleInputChangeWithSuggestions = (e) => {
+    const value = e.target.value;
+    setInputValue(value); // Update the displayed input value
+    if (value <= 100) {
+      setSuggestions(generateSuggestions(value));
+    }
+  };
+
+  const handleSuggestionClick = (suggestion) => {
+    setInputValue(suggestion.value);
+    console.log('suggestion', suggestion);
+    handleInputChange({
+      target: { name: 'sellingPrice', value: suggestion.value },
+    }); // Update the parent state
+    setSuggestions([]); // Clear suggestions after selection
+  };
   const { data: pageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery({ decodedToken, id, pagequery });
 
@@ -239,8 +286,7 @@ function PlanHome() {
   const validateForm = () => {
     const newErrors = {};
     if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
-    if (!planDetails.sellingPrice)
-      newErrors.sellingPrice = 'Budget is required';
+    if (!inputValue) newErrors.inputValue = 'Budget is required';
     if (!planDetails.accountId)
       newErrors.accountName = 'Account Name is required';
     if (!planDetails.salesExecutiveId)
@@ -274,6 +320,8 @@ function PlanHome() {
           account_name: plan.account_name,
           createdAt: plan.createdAt,
           not_available_pages: plan.not_available_pages,
+          brand_id: plan.brand_id,
+          planx_log_file: plan.planx_log_file,
         }));
         setPlanRows(formattedRows);
         // setFilteredPlans(formattedRows);
@@ -346,6 +394,7 @@ function PlanHome() {
       accountId: row.account_id,
       brandId: row.brandId,
       brief: row.brief,
+      brand_id: row.brand_id,
       planStatus: row.plan_status,
       planSaved: false,
       createdBy: row.created_by, // Assuming it's already available in the row
@@ -366,6 +415,7 @@ function PlanHome() {
   const handlePlanMaking = () => {
     setOpenDialog(true);
   };
+  console.log('brandId', planDetails);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -410,35 +460,57 @@ function PlanHome() {
     setOpenDialog(false);
   };
 
+  const handleFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile && selectedFile.size > 1048576) {
+      // 1MB = 1048576 bytes
+      toastError('File size exceeds 1MB. Please select a smaller file.');
+      return;
+    }
+
+    setFile(selectedFile);
+  };
+
+  const handleFileRemove = () => {
+    setFile(null);
+  };
+
   const handleFormSubmit = async () => {
-    console.log('abcd');
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
 
-    const planData = {
-      plan_name: planDetails.planName,
-      cost_price: parseFloat(planDetails.costPrice),
-      selling_price: parseFloat(planDetails.sellingPrice),
-      no_of_pages: parseInt(planDetails.noOfPages, 10),
-      post_count: parseInt(planDetails.postCount, 10),
-      story_count: parseInt(planDetails.storyCount, 10),
-      description: planDetails.description,
-      sales_executive_id: parseInt(id),
-      account_id: planDetails.accountId,
-      brand_id: planDetails.brandId,
-      brief: planDetails.brief,
-      plan_status: planDetails.planStatus,
-      plan_saved: planDetails.planSaved,
-      created_by: planDetails.createdBy,
-    };
+    // Create a FormData object
+    const formData = new FormData();
+
+    // Append plan data to formData
+    formData.append('plan_name', planDetails.planName);
+    // formData.append('cost_price', parseFloat(planDetails.costPrice));
+    formData.append('selling_price', parseFloat(inputValue));
+    // formData.append('no_of_pages', parseInt(planDetails.noOfPages, 10));
+    // formData.append('post_count', parseInt(planDetails.postCount, 10));
+    // formData.append('story_count', parseInt(planDetails.storyCount, 10));
+    formData.append('description', planDetails.description);
+    formData.append('sales_executive_id', parseInt(id));
+    formData.append('account_id', planDetails.accountId);
+    formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
+    formData.append('brief', planDetails.brief);
+    formData.append('plan_status', planDetails.planStatus);
+    formData.append('plan_saved', planDetails.planSaved);
+    if (planDetails.createdBy) {
+      formData.append('created_by', planDetails.createdBy);
+    }
+
     if (isEdit) {
-      planData.id = selectedPlanId;
+      formData.append('id', selectedPlanId);
     }
     if (duplicatePlanId) {
-      planData.duplicate_planx_id = duplicatePlanId;
+      formData.append('duplicate_planx_id', duplicatePlanId);
+    }
+    if (file) {
+      formData.append('planxlogfile', file);
     }
 
     try {
@@ -446,10 +518,9 @@ function PlanHome() {
       const response = await fetch(`${baseUrl}v1/planxlogs`, {
         method,
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${storedToken}`,
         },
-        body: JSON.stringify(planData),
+        body: formData,
       });
 
       const result = await response.json();
@@ -459,7 +530,6 @@ function PlanHome() {
           icon: 'success',
           title: `Plan saved successfully! ${isEdit ? '' : `Total plan created ${result.data.totalRecords}`
             }`,
-
           preConfirm: () => {
             const planId = result.data._id;
             isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
@@ -491,7 +561,7 @@ function PlanHome() {
 
   const isSubmitDisabled =
     !planDetails.planName ||
-    !planDetails.sellingPrice ||
+    !inputValue ||
     !planDetails.accountId ||
     !planDetails.salesExecutiveId;
 
@@ -537,6 +607,11 @@ function PlanHome() {
     ? filteredPlans
     : planRows?.reverse();
 
+  useEffect(() => {
+    if (inputValue <= 100) {
+      setSuggestions(generateSuggestions(inputValue));
+    }
+  }, [inputValue]);
   return (
     <div>
       <PageDialog
@@ -625,11 +700,41 @@ function PlanHome() {
               name="sellingPrice"
               fullWidth
               type="number"
-              value={planDetails.sellingPrice}
-              onChange={handleInputChange}
+              value={inputValue}
+              onChange={handleInputChangeWithSuggestions}
               error={!!errors.sellingPrice}
               helperText={errors.sellingPrice}
             />
+            {inputValue > 100 && (
+              <div
+                style={{
+                  marginLeft: '0.4rem',
+                  color: '#555',
+                  fontSize: '0.775rem',
+                }}
+              >
+                {numberToWords(inputValue)}
+              </div>
+            )}
+            {suggestions.length > 0 && inputValue <= 100 && (
+              <div>
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    style={{
+                      border: 'none',
+                      padding: '0.25rem',
+                      borderRadius: '5px',
+                      margin: '0.2rem',
+                    }}
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                  >
+                    {suggestion.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
@@ -665,6 +770,23 @@ function PlanHome() {
               value={planDetails.brief}
               onChange={handleInputChange}
             />
+
+            {/* File Upload and Remove Section */}
+            <div className="file-upload-section">
+              <input
+                type="file"
+                // accept=".jpg,.png,.pdf,.doc,.docx" // Customize based on allowed file types
+                onChange={handleFileChange}
+              />
+              {file && (
+                <div className="file-preview">
+                  <span>{file.name}</span>
+                  <Button onClick={handleFileRemove} color="secondary">
+                    Remove File
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
         <DialogActions>

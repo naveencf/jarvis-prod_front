@@ -13,6 +13,7 @@ import CategoryOverview from "./PageMS/Category/CategoryOverview";
 
 import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
 import OutstandingPaymentReceiveReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReceiveReport";
+import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
@@ -1905,8 +1906,12 @@ const Admin = () => {
 
                     <Route
                       path="/pms-bulk-vendor-overview"
-                      element={<BulkVendor />}
+                      element={<AllVendorWiseList />}
                     />
+                     {/* <Route
+                       path="/pms-bulk-vendor-overview"
+                       element={<BulkVendor />}
+                    /> */}
                     <Route
                       path="/pms-inventory-dashboard"
                       element={<InventoryDashboard />}

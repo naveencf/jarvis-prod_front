@@ -13,7 +13,14 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescriptionsChange, checkedDescriptions, setCheckedDescriptions }) => {
+const ActiveDescriptionModal = ({
+  isOpen,
+  onClose,
+  descriptions,
+  onCheckedDescriptionsChange,
+  checkedDescriptions,
+  setCheckedDescriptions,
+}) => {
   // const [checkedDescriptions, setCheckedDescriptions] = useState([]);
   // console.log(descriptions, 'descriptions')
 
@@ -34,10 +41,13 @@ const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescri
   // }, [isOpen]);
 
   const handleAllActiveDescription = () => {
-    const tempDescription = descriptions?.map(res => res.description)
+    const tempDescription = descriptions?.map((res) => res.description);
     // console.log(tempDescription, 'tempDescription')
     setCheckedDescriptions(tempDescription);
-  }
+  };
+  useEffect(() => {
+    handleAllActiveDescription();
+  }, [isOpen]);
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
@@ -64,7 +74,9 @@ const ActiveDescriptionModal = ({ isOpen, onClose, descriptions, onCheckedDescri
               <ListItem key={index}>
                 <Checkbox
                   edge="start"
-                  checked={checkedDescriptions.includes(description.description)}
+                  checked={checkedDescriptions.includes(
+                    description.description
+                  )}
                   onChange={() => handleToggle(description.description)}
                 />
                 <ListItemText primary={description.description} />

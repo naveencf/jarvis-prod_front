@@ -9,8 +9,9 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import logo from "../../../public/logo.png";
+import DateFormattingComponent from "../DateFormator/DateFormared";
 
-const NDA = () => {
+const NDA = ({allUserData}) => {
   const styles = StyleSheet.create({
     logoBold: {
       fontSize: 12,
@@ -220,6 +221,13 @@ const NDA = () => {
     },
   });
 
+
+  const formatDate = (isoDate) => {
+    const date = new Date(isoDate);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
+
   return (
     <>
       <Document>
@@ -239,8 +247,8 @@ const NDA = () => {
           <View style={styles.section}>
             <View style={styles.section}>
               <Text>
-                This Non-Disclosure Agreement (“Agreement”) is effective from 
-                20-12-2022 ,(“Effective Date”), at Creativefuel Pvt. Ltd, Indore.
+                This Non-Disclosure Agreement (“Agreement”) is effective from {" "}
+                {formatDate(allUserData?.joining_date)} ,(“Effective Date”), at Creativefuel Pvt. Ltd, Indore.
               </Text>
             </View>
 
@@ -263,7 +271,7 @@ const NDA = () => {
             </View>
             <View style={styles.section}>
               <Text>
-                Mr./Ms./Mrs. LALIT GOUR S/o/D/o/W/o OM GOUR currently residing
+                Mr./Ms./Mrs. {allUserData.user_name} S/o/D/o/W/o OM GOUR currently residing
                 at (hereinafter called the “Receiving Party”) which expression
                 shall unless excluded by or repugnant to the context mean and
                 include its heirs, administrators, successors in interest,

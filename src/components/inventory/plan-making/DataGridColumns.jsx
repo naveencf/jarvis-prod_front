@@ -28,14 +28,14 @@ const DataGridColumns = ({
     {
       key: 'serial_no',
       name: 'S No',
-      renderRowCell: (row) => <div>{filterData?.indexOf(row) + 1}</div>,
+      renderRowCell: (row) => filterData?.indexOf(row) + 1,
       width: 30,
       showCol: true,
     },
     {
       key: 'page_name',
       name: 'Page Name',
-      renderRowCell: (row) => <div>{formatString(row?.page_name)}</div>,
+      renderRowCell: (row) => formatString(row?.page_name),
       width: 200,
       showCol: true,
     },
@@ -58,7 +58,7 @@ const DataGridColumns = ({
     {
       key: 'logo',
       name: 'Logo',
-      width: 50,
+      width: 70,
       renderRowCell: (row) => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
@@ -87,7 +87,7 @@ const DataGridColumns = ({
         )?.vendor_name;
         return formatString(name);
       },
-      width: 200,
+      width: 250,
       showCol: true,
       compare: true,
     },
@@ -104,7 +104,7 @@ const DataGridColumns = ({
           {row.page_link}
         </a>
       ),
-      width: 30,
+      width: 200,
       showCol: false,
     },
     {
@@ -115,7 +115,7 @@ const DataGridColumns = ({
           {formatNumber(row.followers_count)}
         </div>
       ),
-      width: 100,
+      width: 150,
       showCol: true,
     },
     {
@@ -196,7 +196,7 @@ const DataGridColumns = ({
       },
       width: 150,
       showCol: true,
-      compare:true,
+      compare: true,
     },
 
     {

@@ -52,6 +52,29 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
             required
           />
         </div>
+        {/* <div className="form-group col-12">
+          <label className="form-label">
+            Category Name <sup className="form-error">*</sup>
+          </label>
+          <Select
+            className=""
+            options={vendorData.map((option) => ({
+              value: option._id,
+              label: `${option.vendor_name}`,
+            }))}
+            value={{
+              value: vendorName,
+              label:
+                vendorData.find(
+                  (d) => d._id === vendorName
+                )?.vendor_name || "",
+            }}
+            onChange={(e) => {
+              setVendorName(e.value);
+            }}
+            required
+          />
+        </div> */}
       </DialogContent>}
       <DialogActions>
         <Button onClick={onClose}>Close</Button>

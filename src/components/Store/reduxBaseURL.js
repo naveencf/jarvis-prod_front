@@ -32,6 +32,14 @@ export const reduxBaseURL = createApi({
       query: () => `v1/vendor_type`,
       providesTags: ["addVendor"],
     }),
+
+
+    getAllVendorWiseList: builder.query({
+      query: () => "v1/get_page_count_with_unique_vendor_name",
+      transformResponse: (response) => response,
+      keepUnusedDataFor: 0,
+    }),
+
     updateVendorType: builder.mutation({
       query: (data) => ({
         // url: `updateVendor/${data._id}`,
@@ -304,4 +312,5 @@ export const {
   useGetVendorDocumentByVendorDetailQuery,
   useAddVendorDocumentMutation,
   useAddCompanyDataMutation,
+  useGetAllVendorWiseListQuery,
 } = reduxBaseURL;

@@ -573,22 +573,22 @@ const UserOverview = () => {
       sortable: true,
     },
 
-    // {
-    //   key: "Summary",
-    //   name: "Summary",
-    //   renderRowCell: (row) =>
-    //     <button
-    //   className="btn cmnbtn btn_sm btn-outline-secondary"
-    //   variant="contained"
-    //   color="warning"
-    //   onClick={() => handleUpdateSummary(row.user_id)}
-    // >
-    //   Summary
-    // </button>
-    //       ,
-    //   width: 100,
-    //   sortable: true,
-    // },
+    {
+      key: "Summary",
+      name: "Summary",
+      renderRowCell: (row) =>
+        <button
+      className="btn cmnbtn btn_sm btn-outline-secondary"
+      variant="contained"
+      color="warning"
+      onClick={() => handleUpdateSummary(row.user_id)}
+    >
+      Summary
+    </button>
+          ,
+      width: 100,
+      sortable: true,
+    },
     {
       key: "Action_edits",
       name: "Actions",

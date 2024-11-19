@@ -13,9 +13,10 @@ import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../../utils/config";
 import { useGlobalContext } from "../../../../../../Context/Context";
 import {
-  useUpdateOutstandingBalancePaymentMutation,
-  useUpdateOutstandingSaleBookingCloseMutation,
+  // useUpdateOutstandingBalancePaymentMutation,
+  // useUpdateOutstandingSaleBookingCloseMutation,
 } from "../../../../../Store/API/Finance/OutstandingApi";
+import { useUpdateOutstandingBalancePaymentMutation, useUpdateOutstandingSaleBookingCloseMutation } from "../../../../../Store/API/Finance/OutstandingNew";
 
 function TDSDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
