@@ -482,7 +482,7 @@ function PlanHome() {
       setErrors(validationErrors);
       return;
     }
-
+    console.log(planDetails);
     // Create a FormData object
     const formData = new FormData();
 
@@ -496,7 +496,9 @@ function PlanHome() {
     formData.append('description', planDetails.description);
     formData.append('sales_executive_id', parseInt(id));
     formData.append('account_id', planDetails.accountId);
-    formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
+    if (planDetails.brandId || planDetails.brand_id) {
+      formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
+    }
     formData.append('brief', planDetails.brief);
     formData.append('plan_status', planDetails.planStatus);
     formData.append('plan_saved', planDetails.planSaved);
@@ -529,8 +531,9 @@ function PlanHome() {
       if (result.success) {
         Swal.fire({
           icon: 'success',
-          title: `Plan saved successfully! ${isEdit ? '' : `Total plan created ${result.data.totalRecords}`
-            }`,
+          title: `Plan saved successfully! ${
+            isEdit ? '' : `Total plan created ${result.data.totalRecords}`
+          }`,
           preConfirm: () => {
             const planId = result.data._id;
             isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
