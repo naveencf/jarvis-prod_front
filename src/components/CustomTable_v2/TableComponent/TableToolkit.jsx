@@ -39,6 +39,7 @@ const TableToolkit = ({
   setColumns,
   originalData1,
   sortedData,
+  fetchCreatedTable,
 }) => {
   const containerRef = useRef(null);
   const [ModalOpen, setModalOpen] = useState(false);
@@ -157,6 +158,7 @@ const TableToolkit = ({
       })
       .then(() => {
         setDragFlag(false);
+        fetchCreatedTable();
       })
       .catch((error) => {
         console.error("Error editing dynamic table data:", error);
@@ -194,6 +196,7 @@ const TableToolkit = ({
       setFilterList(Payload);
       setApiFilters(Payload);
       setFilterName("");
+      fetchCreatedTable();
     } catch (error) {
       console.error(error);
     }

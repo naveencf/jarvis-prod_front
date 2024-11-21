@@ -18,7 +18,6 @@ import axios from "axios";
 const storedToken = sessionStorage.getItem("token");
 
 const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
-  console.log(getRowData , 'getrow data')
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [fileName, setFileName] = useState("");
@@ -74,7 +73,6 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
     setFile(null);
   };
 
-  console.log(getRowData ,category, 'hello testing')
   const handleSubmit = async () => {
   
     const formdata = new FormData();

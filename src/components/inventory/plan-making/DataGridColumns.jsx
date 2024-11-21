@@ -16,6 +16,7 @@ const DataGridColumns = ({
   cat,
   platformData,
   pageStatsAuth,
+  handleRowClick,
   decodedToken,
 }) => {
   const formatNumber = (num) => {
@@ -143,6 +144,7 @@ const DataGridColumns = ({
             (selectedRow) => selectedRow?._id === row?._id
           )}
           onChange={handleCheckboxChange(row)}
+          onClick={() => handleRowClick(row)}
         />
       ),
       width: 50,

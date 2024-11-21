@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -103,9 +103,11 @@ const PlanMaking = () => {
   const [showCheckedRows, setShowCheckedRows] = useState(false);
   const [ownPagesCost, setOwnPagesCost] = useState(0);
   const [tagCategory, setTagCategory] = useState([]);
+  const [lastSelectedRow, setLastSelectedRow] = useState(null);
+  const [shiftPressed, setShiftPressed] = useState(false);
+  const [focusedRowIndex, setFocusedRowIndex] = useState(null);
 
   // const [pageDetail, setPageDetails] = useState([]);
-
   const { id } = useParams();
 
   const { pageDetail } = usePageDetail(id);
@@ -276,7 +278,6 @@ const PlanMaking = () => {
 
   const handleCheckboxChange = (row) => (event) => {
     const isChecked = event.target.checked;
-
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked
       ? [...selectedRows, row]
@@ -678,12 +679,19 @@ const PlanMaking = () => {
     }));
   };
 
+  const handleRowClick = (row, index) => {
+    // setLastSelectedRow(row); // Store the last selected row
+    // setFocusedRowIndex(index); // Store the index of the currently focused row
+    // handleCheckboxChange(row)({ target: { checked: true } });
+  };
+
   const { dataGridColumns } = DataGridColumns({
     vendorData,
     filterData,
     selectedRows,
     handleCheckboxChange,
     postPerPageValues,
+    handleRowClick,
     handlePostPerPageChange,
     storyPerPageValues,
     handleStoryPerPageChange,
@@ -1319,17 +1327,42 @@ const PlanMaking = () => {
       handleRouteChange();
     };
   }, [location, id, totalPostCount, totalStoryCount, selectedRows, totalCost]);
-  console.log('filter', filterData);
 
   useEffect(() => {
     const pageData = pageList?.filter((item) => item.followers_count > 0);
-    if (!tagCategory.length && !selectedFollowers.length ) {
-      // No filters applied, skip filtering
-      setFilterData(pageData);
-      return;
-    }
+
     // Start filtering from the original `pageList`
     let filtered = pageData;
+
+    // Helper function to parse follower range
+    const parseRange = (range) => {
+      if (range === 'lessThan10K') {
+        return { min: 0, max: 10000 };
+      }
+      const [min, max] = range
+        .split('to')
+        .map((val) => parseInt(val.replace('K', '')) * 1000);
+      return { min, max };
+    };
+
+    // Filter by followers range
+    if (selectedFollowers.length) {
+      let followerFiltered = [];
+      selectedFollowers.forEach((range) => {
+        const { min, max } = parseRange(range);
+        const rangeFilteredData = filtered.filter((page) => {
+          const followers = page?.followers_count;
+          return followers >= min && followers <= max;
+        });
+        followerFiltered = [...followerFiltered, ...rangeFilteredData];
+      });
+      filtered = followerFiltered;
+    }
+
+    // Apply the price filter
+    if (minPrice || maxPrice) {
+      filtered = handlePriceFilter(filtered);
+    }
 
     // Filter by tag categories
     if (tagCategory.length) {
@@ -1351,44 +1384,69 @@ const PlanMaking = () => {
       }
     }
 
-    // Filter by followers range
-    const parseRange = (range) => {
-      if (range === 'lessThan10K') {
-        return { min: 0, max: 10000 };
-      }
-      const [min, max] = range
-        .split('to')
-        .map((val) => parseInt(val.replace('K', '')) * 1000);
-      return { min, max };
-    };
-
-    if (selectedFollowers.length) {
-      let followerFiltered = [];
-      selectedFollowers.forEach((range) => {
-        const { min, max } = parseRange(range);
-        const rangeFilteredData = filtered.filter((page) => {
-          const followers = page?.followers_count;
-          return followers >= min && followers <= max;
-        });
-        followerFiltered = [...followerFiltered, ...rangeFilteredData];
-      });
-      filtered = followerFiltered;
-    }
-
-    // Apply the price filter
-
-    filtered = handlePriceFilter(filtered);
-
     // Update the filtered data in state
     setFilterData(filtered);
-  }, [tagCategory, selectedFollowers, pageList]);
+  }, [tagCategory, selectedFollowers]);
+  // console.log('selectedRows  outside handleKeypress', selectedRows);
 
-  // console.log('total cost', ((sellingPrice - totalCost) / sellingPrice) * 100);
+  const handleKeyPress = (event) => {
+    const n = selectedRows?.length;
+    if (event.shiftKey && event.code === 'ArrowDown') {
+      for (let i = 0; i < filterData.length - 1; i++) {
+        if (selectedRows[n - 1]?.page_name === filterData[i]?.page_name) {
+          if (filterData[i + 1]) {
+            handleCheckboxChange(filterData[i + 1])({
+              target: { checked: true },
+            });
+            break;
+          }
+        }
+      }
+    } else if (event.shiftKey && event.code === 'ArrowUp') {
+      for (let i = 0; i < filterData.length - 1; i++) {
+        if (selectedRows[n - 1]?.page_name === filterData[i]?.page_name) {
+          if (filterData[i - 1]) {
+            handleCheckboxChange(filterData[i - 1])({
+              target: { checked: true },
+            });
+            break;
+          }
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    const handleWheel = (event) => {
+      const { deltaX, deltaY, target } = event;
+      if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+      const scrollableElement = target.closest('.scrollable-container');
+      if (scrollableElement) {
+        const { scrollLeft, clientWidth, scrollWidth } = scrollableElement;
+        if (
+          (deltaX < 0 && scrollLeft > 0) ||
+          (deltaX > 0 && scrollLeft + clientWidth < scrollWidth)
+        ) {
+          return;
+        }
+        if (deltaX < 0 && scrollLeft === 0) {
+          event.preventDefault();
+        }
+      } else if (deltaX < 0) {
+        event.preventDefault();
+      }
+    };
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    return () => document.removeEventListener('wheel', handleWheel);
+  }, []);
   const displayPercentage = Math.floor(percentage);
 
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
 
+  const activeDescriptions = useMemo(() => {
+    return descriptions?.filter((desc) => desc.status === 'Active');
+  }, [descriptions]);
   return (
     <>
       <PageDialog
@@ -1399,7 +1457,7 @@ const PlanMaking = () => {
       <ActiveDescriptionModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        descriptions={descriptions?.filter((desc) => desc.status === 'Active')}
+        descriptions={activeDescriptions}
         onCheckedDescriptionsChange={handleCheckedDescriptionsChange}
         checkedDescriptions={checkedDescriptions}
         setCheckedDescriptions={setCheckedDescriptions}
@@ -1461,7 +1519,7 @@ const PlanMaking = () => {
             <button
               className="icon"
               onClick={handleOpenModal}
-              title="Plan Notes"
+              title="Internal-Notes"
             >
               <CiStickyNote />
             </button>
@@ -1589,7 +1647,10 @@ const PlanMaking = () => {
 
         <div className="card-body p0">
           <div className="thmTable">
-            <Box sx={{ height: 700, width: '100%' }}>
+            <Box
+              sx={{ height: 700, width: '100%' }}
+              onKeyDown={(e) => handleKeyPress(e)}
+            >
               {filterData && filterData.length > 0 && (
                 <CustomTableV2
                   // selectedData={setSelectedData}
@@ -1612,49 +1673,6 @@ const PlanMaking = () => {
           </div>
         </div>
       </div>
-
-      {/* <div className="scrollWrapper">
-        <div className="table-responsive topStickty">
-          <div className="data_tbl thm_table">
-            {isPageListLoading ? (
-              <Box
-                sx={{
-                  textAlign: 'center',
-                  position: 'relative',
-                  margin: 'auto',
-                  width: '100%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                }}
-              >
-                <CircularProgress variant="determinate" value={progress} />
-                <Box
-                  sx={{
-                    top: 0,
-                    left: 0,
-                    bottom: 0,
-                    right: 0,
-                    position: 'absolute',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Typography
-                    variant="caption"
-                    component="div"
-                    color="text-primary"
-                  >
-                    {`${Math.round(progress)}%`}
-                  </Typography>
-                </Box>
-              </Box>
-            ) : (
-              <></>
-            )}
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };

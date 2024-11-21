@@ -19,14 +19,10 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
   const token = sessionStorage.getItem('token');
   const [vendorName, setVendorName] = useState([]);
   const [categoryName, setCategoryName] = useState('');
-  console.log(categoryName,"<--------");
-  const {
-    data: vendorData,
-   
-  } = useGetAllVendorQuery();
+
+  const { data: vendorData} = useGetAllVendorQuery();
   const { data: category } = useGetAllPageCategoryQuery({decodedToken,token});
   const categoryData = category?.data || [];
-  console.log(categoryData,'uuuuu');
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md" PaperProps={{

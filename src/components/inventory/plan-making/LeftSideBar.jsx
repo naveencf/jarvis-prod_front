@@ -75,6 +75,8 @@ const LeftSideBar = ({
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [agencyFees, setAgencyFees] = useState(0);
+  const [deliverableText, setDeliverableText] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
   const [sellingPrice, setSellingPrice] = useState(
     planDetails?.[0]?.selling_price
   );
@@ -104,7 +106,9 @@ const LeftSideBar = ({
   //   };
   //   return platformMap[platformId] || 'Unknown';
   // };
+
   const handleDownload = async () => {
+    setIsDownloading(true);
     try {
       await downloadExcel(
         selectedRow,
@@ -113,11 +117,14 @@ const LeftSideBar = ({
         storyPerPage,
         planDetails,
         checkedDescriptions,
-        agencyFees
+        agencyFees,
+        deliverableText
       );
       console.log('Excel downloaded successfully!');
     } catch (error) {
       console.error('Error downloading Excel:', error);
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -403,6 +410,9 @@ const LeftSideBar = ({
           storyPerPage={storyPerPage}
           planDetails={planDetails}
           checkedDescriptions={checkedDescriptions}
+          setDeliverableText={setDeliverableText}
+          deliverableText={deliverableText}
+          isDownloading={isDownloading}
           downloadExcel={handleDownload}
         />
         <div className="planSmall planLarge">

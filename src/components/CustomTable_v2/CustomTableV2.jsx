@@ -85,15 +85,15 @@ const CustomTableV2 = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-        columnsheader
-          .map((column) => column.key)
-          .some((key) =>
-            item[key]
-              ?.toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-      )
+      columnsheader
+        .map((column) => column.key)
+        .some((key) =>
+          item[key]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+    )
     : unSortedData;
 
   // const tabledata = pagination
@@ -252,9 +252,9 @@ const CustomTableV2 = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
@@ -313,7 +313,7 @@ const CustomTableV2 = ({
   async function cloudInvader() {
     const arrayofvisiblecolumns = columnsheader?.map((column, index) => ({
       name: column.name,
-      visibility: true,
+      visibility: visibleColumns[index],
     }));
     try {
       await axios.put(`${baseUrl}edit_dynamic_table_data`, {
@@ -325,32 +325,33 @@ const CustomTableV2 = ({
       console.error(e);
     } finally {
       setInvadeFlag(false);
+      fetchCreatedTable();
     }
   }
 
+  const fetchCreatedTable = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}get_dynamic_table_data?userId=${loginUserId}&tableName=${tableName}`
+      );
+      const responseData = response.data.data[0]?.column_order_Obj || [];
+      const savedFiltersData = response.data.data[0]?.filter_array;
+      setApiColumns(responseData);
+      setApiFilters(savedFiltersData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
     //console.log("use to fetch columns");
-    const fetchCreatedTable = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}get_dynamic_table_data?userId=${loginUserId}&tableName=${tableName}`
-        );
-        const responseData = response.data.data[0]?.column_order_Obj || [];
-        const savedFiltersData = response.data.data[0]?.filter_array;
-        setApiColumns(responseData);
-        setApiFilters(savedFiltersData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
     fetchCreatedTable();
   }, [loginUserId, tableName]);
 
   useEffect(() => {
     //console.log("initializing columns to update ui");
-
     const getIndex = (colName) =>
-      apiColumns?.findIndex((item) => item?.name === colName);
+      apiColumns?.findIndex((item) => item?.name?.trim() === colName?.trim());
+
     const sortedColumns = [...columns];
     sortedColumns.sort((a, b) => getIndex(a.name) - getIndex(b.name));
 
@@ -360,7 +361,11 @@ const CustomTableV2 = ({
     setVisibleColumns(
       apiColumns?.length === 0
         ? columns?.map(() => true)
-        : apiColumns?.map((column) => column.visibility)
+        : sortedColumns?.map((column, index) =>
+          apiColumns[index]?.visibility === undefined
+            ? true
+            : apiColumns[index]?.visibility
+        )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -411,21 +416,27 @@ const CustomTableV2 = ({
   }, [data]);
 
   const renderSort_v2 = useMemo(() => {
-    //console.log("sortKey", sortKey, oldSortKey);
+    // console.log("sortKey", sortKey, oldSortKey);
 
     if (!sortKey) return unSortedData;
     let sorted = [...unSortedData];
     if (sortKey != oldSortKey) {
-      const datatType = unSortedData[0][sortKey]
-        ? typeof unSortedData[0][sortKey]
-        : null;
+      const datatType =
+        unSortedData[0][sortKey] != undefined &&
+          unSortedData[0][sortKey] != null
+          ? typeof unSortedData[0][sortKey]
+          : null;
+      // console.log("datatType", datatType, unSortedData[0]);
       if (datatType === "number") {
+        // console.log("number");
+
         sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || -Infinity;
           const val2 = b[sortKey] || -Infinity;
           return val1 - val2;
         });
       } else if (datatType === "string") {
+        // console.log("string");
         sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || "";
           const val2 = b[sortKey] || "";
@@ -536,6 +547,7 @@ const CustomTableV2 = ({
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
         sortedData={sortedData}
+        fetchCreatedTable={fetchCreatedTable}
       />
       {showTotal && (
         <TotalRow
@@ -593,6 +605,7 @@ const CustomTableV2 = ({
           baseUrl={baseUrl}
           tableName={tableName}
           loginUserId={loginUserId}
+          fetchCreatedTable={fetchCreatedTable}
         />
       </div>
 

@@ -15,6 +15,7 @@ import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview";
 import OutstandingPaymentReceiveReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReceiveReport";
 import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 import ErrorPage from "../../ErrorPage";
+import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
 
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
@@ -1909,7 +1910,7 @@ const Admin = () => {
                       path="/pms-bulk-vendor-overview"
                       element={<AllVendorWiseList />}
                     />
-                     {/* <Route
+                    {/* <Route
                        path="/pms-bulk-vendor-overview"
                        element={<BulkVendor />}
                     /> */}
@@ -2206,6 +2207,10 @@ const Admin = () => {
                     <Route
                       path="/view-target-competition"
                       element={<ViewTargetCompetition />}
+                    />
+                    <Route
+                      path="/monthwise-sales-booking"
+                      element={<MonthWiseSalesView />}
                     />
 
                     {/* Sales Pratyush end */}

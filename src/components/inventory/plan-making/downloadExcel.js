@@ -18,7 +18,6 @@ export const getPriceDetail = (priceDetails, key) => {
   return detail ? detail[key] : 0;
 };
 
-
 export const downloadExcel = async (
   selectedRow,
   category,
@@ -26,7 +25,8 @@ export const downloadExcel = async (
   storyPerPage,
   planDetails,
   checkedDescriptions,
-  agencyFees
+  agencyFees,
+  deliverableText
 ) => {
   const workbook = new ExcelJS.Workbook();
   // selling_price
@@ -145,9 +145,9 @@ export const downloadExcel = async (
 
         totalCost +=
           postCountValue *
-          getPriceDetail(page.page_price_list, 'instagram_post') +
+            getPriceDetail(page.page_price_list, 'instagram_post') +
           storyCountValue *
-          getPriceDetail(page.page_price_list, 'instagram_story');
+            getPriceDetail(page.page_price_list, 'instagram_story');
       });
       let serialNumber = 1;
       for (const [categoryName, categoryData] of Object.entries(categories)) {
@@ -215,7 +215,7 @@ export const downloadExcel = async (
               Number(item['Story Count'] || 0),
             0
           ), // Total post and story count for category
-          '',
+          deliverableText,
           ``, // Total cost for category. ₹${categoryTotalCost.toFixed(2)}
         ]);
 
@@ -316,241 +316,6 @@ export const downloadExcel = async (
         });
       }
     }
-    // else {
-    //   const categories = {};
-    //   // console.log(platformData, "platformData")
-    //   platformData.forEach((page) => {
-    //     const categoryId = page.page_category_id;
-    //     const categoryName =
-    //       category?.find((cat) => cat._id === categoryId)?.page_category ||
-    //       'Unknown';
-
-    //     categories[categoryName] = categories[categoryName] || [];
-    //     // Check if the post and story counts are coming through
-    //     const postCountValue = postCount[page._id] || 0;
-    //     const storyCountValue = storyPerPage[page._id] || 0;
-
-    //     categories[categoryName].push({
-    //       S_No: categories[categoryName].length + 1,
-    //       Username: page.page_name || 'N/A',
-    //       'Profile Link': page.page_link || 'N/A',
-    //       Followers: page.followers_count || 0,
-    //       'Post Count': postCountValue,
-    //       'Story Count': storyCountValue,
-    //     });
-
-    //     totalPostsAndStories += postCountValue + storyCountValue;
-
-    //     totalCost +=
-    //       postCountValue *
-    //       getPriceDetail(page.page_price_list, 'instagram_post') +
-    //       storyCountValue *
-    //       getPriceDetail(page.page_price_list, 'instagram_story');
-    //   });
-    //   let serialNumber = 1;
-    //   for (const [categoryName, categoryData] of Object.entries(categories)) {
-    //     const sheet = workbook.addWorksheet(formatString(categoryName));
-
-    //     // Determine if the category has any Story Count > 0
-    //     const hasStoryCount = categoryData.some(
-    //       (item) => item['Story Count'] > 0
-    //     );
-
-    //     sheet.columns = [
-    //       // { header: '', width: 5 },
-    //       { header: 'S_No', width: 5 },
-    //       { header: 'Username', width: 30 },
-    //       { header: 'Profile Link', width: 50 },
-    //       { header: 'Followers', width: 15 },
-    //       { header: 'Post Count', width: 15 },
-    //       hasStoryCount && { header: 'Story Count', width: 15 },
-    //     ];
-
-    //     categoryData.forEach((row) => sheet.addRow(row));
-    //     // Apply border to all rows in category sheet
-    //     sheet.eachRow((row, rowIndex) => {
-    //       row.eachCell((cell, colNumber) => {
-
-    //         cell.border = {
-    //           top: { style: 'thin' },
-    //           left: { style: 'thin' },
-    //           bottom: { style: 'thin' },
-    //           right: { style: 'thin' },
-    //         };
-    //       });
-    //     });
-
-    //     // Calculate category total cost
-    //     const categoryTotalCost = categoryData.reduce((acc, item) => {
-    //       const page = platformData.find(
-    //         (p) => p.page_name === item['Username']
-    //       );
-    //       const postPrice = getPriceDetail(
-    //         page.page_price_list,
-    //         'instagram_post'
-    //       );
-    //       const storyPrice = getPriceDetail(
-    //         page.page_price_list,
-    //         'instagram_story'
-    //       );
-    //       const postCountValue = Number(postCount[page._id]) || 0;
-    //       const storyCountValue = Number(storyPerPage[page._id]) || 0;
-    //       return (
-    //         acc + postCountValue * postPrice + storyCountValue * storyPrice
-    //       );
-    //     }, 0);
-
-    //     const newRow = overviewSheet.addRow([
-    //       '',
-    //       serialNumber, // Serial number based on the length of the sheet
-    //       `Post ${hasStoryCount ? "and Stories" : ""} on ${formatString(categoryName)} Pages`, // Description
-    //       'Instagram', // Platform
-    //       categoryData.reduce(
-    //         (acc, item) =>
-    //           (acc + Number(item['Post Count']) + Number(item['Story Count'] || 0)),
-    //         0
-    //       ), // Total post and story count for category
-    //       '',
-    //       ``, // Total cost for category. ₹${categoryTotalCost.toFixed(2)}
-    //     ]);
-
-    //     // Apply styles to each cell
-    //     newRow.eachCell((cell, colNumber) => {
-    //       if (colNumber > 1) {
-    //         // Apply common styles
-    //         cell.border = contentBorder;
-    //         cell.font = { name: 'Comic Sans MS', bold: true };
-
-    //         // Conditional alignment for the description column (3rd column)
-    //         if (colNumber === 3) {
-    //           cell.alignment = { horizontal: 'left', vertical: 'middle' }; // Left-align the description
-    //         } else {
-    //           cell.alignment = { horizontal: 'center', vertical: 'middle' }; // Center-align the rest
-    //         }
-    //       }
-    //     });
-    //     serialNumber++;
-
-    //     // Style header row
-    //     sheet.getRow(1).eachCell((cell) => {
-    //       cell.font = { bold: true, color: { argb: 'FF000000' } };
-    //       cell.alignment = { horizontal: 'center' };
-    //       cell.fill = {
-    //         type: 'pattern',
-    //         pattern: 'solid',
-    //         fgColor: { argb: 'BFEE90' },
-    //       };
-    //       cell.border = {
-    //         top: { style: 'thin' },
-    //         bottom: { style: 'thin' },
-    //         left: { style: 'thin' },
-    //         right: { style: 'thin' },
-    //       };
-    //     });
-
-    //     // Add hyperlinks and assign values to each cell in categorySheet
-    //     categoryData.forEach((item, index) => {
-
-    //       // Assign other values to respective columns and apply borders
-    //       const sNoCell = sheet.getCell(`A${index + 2}`);
-    //       sNoCell.value = item['S_No']; // S_No in column A
-    //       sNoCell.border = contentBorder; // Apply border to the S_No cell
-    //       sNoCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-    //       sNoCell.font = { bold: true };
-
-    //       const usernameCell = sheet.getCell(`B${index + 2}`);
-    //       usernameCell.value = formatString(item['Username']); // Username in column B
-    //       usernameCell.border = contentBorder; // Apply border to the Username cell
-    //       usernameCell.font = { bold: true };
-
-    //       const profileLinkCell = sheet.getCell(`C${index + 2}`);
-    //       // profileLinkCell.font = { bold: true };
-    //       // profileLinkCell.value = item['Profile Link']; // Profile Link in column C
-    //       profileLinkCell.value = {
-    //         text: item['Profile Link'], // Display text in the cell
-    //         hyperlink: item['Profile Link'], // Hyperlink
-    //       };
-    //       profileLinkCell.border = contentBorder; // Apply border to the Profile Link cell
-    //       profileLinkCell.font = { color: { argb: 'FF0563C1' }, underline: true, bold: true, };
-
-    //       // // Set the hyperlink
-    //       // profileLinkCell.hyperlink = item['Profile Link'];
-
-    //       const followersCell = sheet.getCell(`D${index + 2}`);
-    //       followersCell.value = item['Followers']; // Followers in column D
-    //       followersCell.border = contentBorder; // Apply border to the Followers cell
-    //       followersCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-    //       followersCell.font = { bold: true };
-
-    //       const postCountCell = sheet.getCell(`E${index + 2}`);
-    //       postCountCell.value = item['Post Count']; // Post Count in column E
-    //       postCountCell.border = contentBorder; // Apply border to the Post Count cell
-    //       postCountCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-    //       postCountCell.font = { bold: true };
-
-    //       // Only add Story Count if there's at least one story count > 0 in the category
-    //       if (hasStoryCount) {
-    //         const storyCountCell = sheet.getCell(`F${index + 2}`);
-    //         storyCountCell.value = item['Story Count']; // Story Count in column F
-    //         storyCountCell.border = contentBorder; // Apply border to the Story Count cell
-    //         storyCountCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-    //         storyCountCell.font = { bold: true };
-    //       }
-    //     });
-    //   }
-    //   // Generic handling for other platforms
-    //   const sheet = workbook.addWorksheet(formatString(platform));
-
-    //   const rows = platformData.map((page, index) => ({
-    //     S_No: index + 1,
-    //     Username: page.page_name || 'N/A',
-    //     'Profile Link': page.page_link || 'N/A',
-    //     Followers: page.followers_count || 0,
-    //   }));
-
-    //   // Define columns for non-Instagram platforms
-    //   sheet.columns = [
-    //     { header: 'S_No', width: 5 },
-    //     { header: 'Username', width: 30 },
-    //     { header: 'Profile Link', width: 50 },
-    //     { header: 'Followers', width: 15 },
-    //   ];
-
-    //   // Add rows to the sheet
-    //   rows.forEach((row) => sheet.addRow(row));
-
-    //   // Apply styling to the header row
-    //   sheet.getRow(1).eachCell((cell) => {
-    //     cell.font = { bold: true, color: { argb: 'FF000000' } };
-    //     cell.alignment = { horizontal: 'center' };
-    //     cell.fill = {
-    //       type: 'pattern',
-    //       pattern: 'solid',
-    //       fgColor: { argb: 'BFEE90' },
-    //     };
-    //     cell.border = {
-    //       top: { style: 'thin' },
-    //       bottom: { style: 'thin' },
-    //       left: { style: 'thin' },
-    //       right: { style: 'thin' },
-    //     };
-    //   });
-
-    //   // Add border and formatting for rows
-    //   sheet.eachRow((row, rowIndex) => {
-    //     row.eachCell((cell, colNumber) => {
-    //       cell.border = {
-    //         top: { style: 'thin' },
-    //         left: { style: 'thin' },
-    //         bottom: { style: 'thin' },
-    //         right: { style: 'thin' },
-    //       };
-    //       if (rowIndex > 1) {
-    //         cell.alignment = { horizontal: 'center', vertical: 'middle' };
-    //       }
-    //     });
-    //   });
-    // }
   }
   // }
 
@@ -659,12 +424,6 @@ export const downloadExcel = async (
 
   // Define the notes you want to add
   const notes = checkedDescriptions;
-  // [
-  //   "This is the first note below the content rows.",
-  //   "This is the second note below the content rows.",
-  //   "Additional note here.",
-  //   "Final note for reference."
-  // ];
 
   const firstNoteRow = endRow + 2; // The row where notes start
   const lastNoteRow = firstNoteRow + notes.length - 1; // The last row of the notes
@@ -764,8 +523,9 @@ export const downloadExcel = async (
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)
-      }.xlsx`;
+    a.download = `${
+      planDetails && formatString(planDetails[0]?.plan_name)
+    }.xlsx`;
     a.click();
     URL.revokeObjectURL(url); // Clean up the URL
   });

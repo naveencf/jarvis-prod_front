@@ -21,9 +21,6 @@ const ActiveDescriptionModal = ({
   checkedDescriptions,
   setCheckedDescriptions,
 }) => {
-  // const [checkedDescriptions, setCheckedDescriptions] = useState([]);
-  // console.log(descriptions, 'descriptions')
-
   const handleToggle = (description) => {
     setCheckedDescriptions((prev) => {
       const newChecked = prev.includes(description)
@@ -34,26 +31,19 @@ const ActiveDescriptionModal = ({
     });
   };
 
-  // useEffect(() => {
-  //   if (!isOpen) {
-  //     setCheckedDescriptions([]); // Reset the checked descriptions when the modal is closed
-  //   }
-  // }, [isOpen]);
-
-  const handleAllActiveDescription = () => {
-    const tempDescription = descriptions?.map((res) => res.description);
-    // console.log(tempDescription, 'tempDescription')
-    setCheckedDescriptions(tempDescription);
-  };
   useEffect(() => {
-    handleAllActiveDescription();
-  }, [isOpen]);
+    if (isOpen || descriptions) {
+      const tempDescription = descriptions?.map((res) => res.description);
+      setCheckedDescriptions(tempDescription);
+    }
+  }, [isOpen, descriptions]);
+
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>
         <Checkbox
           edge="start"
-          checked={checkedDescriptions.length > 0 ? true : false}
+          checked={checkedDescriptions.length > 0}
           onChange={() => handleAllActiveDescription()}
         />
         Notes

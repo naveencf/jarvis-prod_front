@@ -45,6 +45,8 @@ const SalesAccountOverview = () => {
   const [toDate, setToDate] = useState("");
   const [combinedData, setCombinedFilter] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
+  console.log("selectedData", selectedData);
+
   let [modalHandler, setModalHandler] = useState("SalesAccountPOC");
 
   const dateFilterArray = [
@@ -175,16 +177,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-      allAccountError.error ||
-      "An error occurred"
+        allAccountError.error ||
+        "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-      allBrandCatTypeError.error ||
-      "An error occurred"
+        allBrandCatTypeError.error ||
+        "An error occurred"
     );
   }
 
@@ -568,10 +570,7 @@ const SalesAccountOverview = () => {
       </div>
 
       <div className="graph-card-holder">
-
         <div className="card-holder w-100 p-0">
-
-
           <div className="card ">
             <div className="card-body row">
               <CustomSelect
@@ -584,7 +583,7 @@ const SalesAccountOverview = () => {
                 setSelectedId={setSelectedFilter}
               />
               <CustomSelect
-                label="date"
+                label="Date"
                 fieldGrid={4}
                 dataArray={dateFilterOptions}
                 optionId="value"
@@ -674,7 +673,9 @@ const SalesAccountOverview = () => {
                     className="card p16 hov-pointer"
                     onClick={() => {
                       filterEngine(
-                        allAccount?.filter((account) => account?.paidAmount == 0),
+                        allAccount?.filter(
+                          (account) => account?.paidAmount == 0
+                        ),
                         "",
                         "2"
                       );
@@ -685,8 +686,9 @@ const SalesAccountOverview = () => {
                     </h6>
                     <h6 className="mt8 fs_16">
                       {
-                        allAccount?.filter((account) => account?.paidAmount == 0)
-                          .length
+                        allAccount?.filter(
+                          (account) => account?.paidAmount == 0
+                        ).length
                       }
                     </h6>
                   </div>
@@ -694,14 +696,13 @@ const SalesAccountOverview = () => {
               </div>
             </div>
           </div>
-
-
         </div>
-        {
-          loginUserRole === 1 && allAccount && allAccount?.length > 0 &&
-          <PieGraph allAccount={combinedData} setCombinedFilter={setCombinedFilter} />
-        }
-
+        {loginUserRole === 1 && allAccount && allAccount?.length > 0 && (
+          <PieGraph
+            allAccount={combinedData}
+            setCombinedFilter={setCombinedFilter}
+          />
+        )}
       </div>
 
       <View
@@ -713,6 +714,24 @@ const SalesAccountOverview = () => {
         pagination={[100, 200]}
         tableName={"SalesAccountOverview"}
         selectedData={setSelectedData}
+        addHtml={
+          selectedData.length === 1 && (
+            <div className="flex-row">
+              <button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() =>
+                  navigate("/admin/create-sales-booking", {
+                    state: {
+                      account_data: row,
+                    },
+                  })
+                }
+              >
+                Create Sale Booking
+              </button>
+            </div>
+          )
+        }
       />
     </div>
   );

@@ -5,10 +5,22 @@ const SaleBookingApi = createApi({
   reducerPath: "saleBookingApi",
   baseQuery: authBaseQuery,
   endpoints: (builder) => ({
+    getmonthwiseSaleBooking: builder.query({
+      query: ({ startDate, endDate }) =>
+        `sales/month_year_wise_sales_booking_details${
+          startDate && endDate
+            ? `?startDate=${startDate}&&endDate=${endDate}`
+            : ""
+        }`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
     getAllSaleBooking: builder.query({
-      query: ({ loginUserId, stats }) =>
+      query: ({ loginUserId, stats, selectedCategory }) =>
         `sales/sales_booking${
-          loginUserId
+          selectedCategory != null
+            ? `?salesCategoryId=${selectedCategory}`
+            : loginUserId
             ? `?userId=${loginUserId}`
             : stats
             ? `?booking_status=${stats}`
@@ -152,6 +164,8 @@ export const {
   useEditSaleBookingMutation,
   useDeleteSaleBookingMutation,
   useGetAllNewDeletedSaleQuery,
+  useGetmonthwiseSaleBookingQuery,
+  useLazyGetmonthwiseSaleBookingQuery,
 } = SaleBookingApi;
 
 export default SaleBookingApi;

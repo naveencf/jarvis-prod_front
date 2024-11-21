@@ -188,6 +188,10 @@ const UserUpdate = () => {
   const [isApplicable, setIsApplicable] = useState("");
   const [creditLimit, setCreditLimit] = useState(0);
 
+
+ const [joiningDateHistory  , setJoiningDateHistory] = useState("")
+ const [dateOfBirthHistory  , setDateOfBirthHistory] = useState("")
+
   const IsApplicableData = [
     // { label: "PF", value: "pf" },
     { label: "PF & ESIC", value: "pf_and_esic" },
@@ -373,6 +377,7 @@ const UserUpdate = () => {
     IFSC,
     banktype,
   ]);
+
 
   useEffect(() => {
     if (department) {
@@ -704,6 +709,11 @@ const UserUpdate = () => {
 
     return correctedUserName.replace(/\s+/g, " ").trim();
   }
+
+const handleJoiningDate = (e) =>{
+     setJoiningDate(e.target.value)
+     setJoiningDateHistory(e.target.value)
+}
 
   const handleSubmit = async (e) => {
     // setLoading(true);
@@ -1401,6 +1411,17 @@ console.log(Number(creditLimit),"formData",creditLimit)
     setUserName(correctedNameParts.join(" "));
   };
 
+
+  //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
+  let salary = monthlyGrossSalary;
+  let basicSalary = salary * 0.6;
+  let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(
+      0
+  );
+  let EmployeePF = parseFloat(
+    (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
+);
+const EMPPF= userData.emergency_contact_person_name2 == "pf_and_esic" && EmployeePF*12 
   
   const genralFields = (
     <>
@@ -1410,7 +1431,7 @@ console.log(Number(creditLimit),"formData",creditLimit)
             <PDFDownloadLink
 
               document={
-                <OfferLetter allUserData={userData} image64={image64} />
+                <OfferLetter allUserData={userData} image64={image64} EMPPF={EMPPF} />
               }
               fileName="OfferLetter.pdf"
             >
@@ -1424,7 +1445,7 @@ console.log(Number(creditLimit),"formData",creditLimit)
             </PDFDownloadLink>
             <PDFDownloadLink
               document={
-                <AppointmentLetter allUserData={userData} image64={image64} />
+                <AppointmentLetter allUserData={userData} image64={image64} EMPPF={EMPPF}/>
               }
               fileName="AppointmentLetter.pdf"
             >
@@ -1875,7 +1896,7 @@ console.log(Number(creditLimit),"formData",creditLimit)
               type="date"
               className="form-control"
               value={joiningDate}
-              onChange={(e) => setJoiningDate(e.target.value)}
+              onChange={handleJoiningDate}
             />
           </div>
 

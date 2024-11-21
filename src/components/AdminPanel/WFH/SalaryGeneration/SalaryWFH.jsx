@@ -1073,7 +1073,7 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "Net Salary",
-      cell: (row) => row.net_salary + " ₹",
+      cell: (row) => row.net_salary?.toFixed(0) + " ₹",
     },
     {
       name: "TDS",
@@ -1580,7 +1580,7 @@ async function handleBulkSendToFinance() {
                     </li>
                     <li className="bold">
                       <span>Total Payout :</span>
-                      {thisMonthTotalSalary.toFixed(2)}
+                      {thisMonthTotalSalary.toFixed(0)}
                     </li>
                     {/* <li>
                       <span>Total Bonus</span>

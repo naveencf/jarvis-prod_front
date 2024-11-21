@@ -11,7 +11,8 @@ import FieldContainer from '../../../FieldContainer';
 import FormContainer from '../../../FormContainer';
 import Select, { components } from "react-select";
 import jwtDecode from 'jwt-decode';
-import { useGetAllPageListQuery } from '../../../../Store/PageBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageListQuery } from '../../../../Store/PageBaseURL';
+import formatString from '../../../Operation/CampaignMaster/WordCapital';
 
 const AllVendorWiseList = () => {
   const [isSingleVendorView, setIsSingleVendorView] = useState(false);
@@ -37,14 +38,17 @@ const AllVendorWiseList = () => {
   const [carousel, setCarousel] = useState('');
   const [m_story, setM_story] = useState('');
   const [m_post, setM_post] = useState('');
-  const [m_both, setM_both] = useState('');
+  const [m_both, setM_both] = useState('');``
+
+  const [rowID , setRowID] = useState("")
 
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID });
-
+  const { data: category } = useGetAllPageCategoryQuery({ decodedToken });
+  const categoryData = category?.data || [];
 
   const handleUpdate = async (row) => {
     setModalOpenUpdate(true);
@@ -80,27 +84,29 @@ const AllVendorWiseList = () => {
         reel: reel,
         carousel: carousel
       });
+      console.log(res.status === 200)
       if (res.status === 200) {
-        // await handleClickCatData(id);
+        await handleClickCatData(rowID);
         console.log("Update Successfully");
       } else {
         console.log("Failed to update. Please try again.");
       }
-      setModalOpenUpdate(false);
       alert(" Update SuccessFully")
+      setModalOpenUpdate(false);
     } catch (error) {
       console.log(error);
     }
   };
-
+  console.log(vendorData);
   const handleClickCatData = async (row) => {
-
+    setRowID(row)
     setIsSingleVendorView(true)
     const res = await axios.get(`${baseUrl}v1/get_bulk_vendor_data_by_vendor_id/${row?._id}`)
     setVendorWiseData(res?.data?.data)
     setVendorName(row?.vendor_name)
-  }
 
+  }
+console.log(rowID , 'clg row id')
   const handleOpenModal = (rowData) => {
     setOpenModal(true);
   };
@@ -114,7 +120,7 @@ const AllVendorWiseList = () => {
 
   };
 
-
+console.log(categoryData.map((d)=>d._id),'ggggggggg')
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -149,6 +155,16 @@ const AllVendorWiseList = () => {
         </div>
       ),
     },
+    {
+      key: "Category",
+      name: "Category",
+      width: 200,
+      renderRowCell: (row) => {
+        const category = categoryData?.find((d) => d._id === row?.category_id)?.page_category;
+        return category ? formatString(category) : "NA";
+      }
+    },
+    
     {
       key: "avg_post_price",
       name: "Avg Post",
@@ -247,6 +263,14 @@ const AllVendorWiseList = () => {
       ),
     },
     {
+      key: "Both",
+      name: " Both",
+      width: 150,
+      renderRowCell: (row) => (
+        <> {Math.round(row?.both)}   </>
+      ),
+    },
+    {
       key: "m_post",
       name: "M Post",
       width: 150,
@@ -276,6 +300,14 @@ const AllVendorWiseList = () => {
       width: 150,
       renderRowCell: (row) => (
         <> {Math.round(row?.reel)}   </>
+      ),
+    },
+    {
+      key: "Carousel",
+      name: "Carousel",
+      width: 150,
+      renderRowCell: (row) => (
+        <> {Math.round(row?.carousel)}   </>
       ),
     },
     {

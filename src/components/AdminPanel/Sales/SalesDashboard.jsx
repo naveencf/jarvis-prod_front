@@ -29,6 +29,7 @@ const SalesDashboard = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const loginUserId = getDecodedToken().id;
   const loginUserRole = getDecodedToken().role_id;
+  const userName = getDecodedToken().name;
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [releaseModal, setReleaseModal] = useState(false);
@@ -276,7 +277,11 @@ const SalesDashboard = () => {
 
       <div className="action_heading">
         <div className="action_title">
-          <FormContainer mainTitle={"Dashboard"} link={true} />
+          <FormContainer
+            mainTitle={`Hey ${userName},
+How are you doing today?`}
+            link={true}
+          />
         </div>
         <div className="action_btns">
           {loginUserRole == 1 && (
