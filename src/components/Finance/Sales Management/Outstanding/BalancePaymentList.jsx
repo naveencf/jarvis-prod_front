@@ -136,10 +136,12 @@ const BalancePaymentList = () => {
   const [rowDataForCreditNote, setRowDataForCreditNote] = useState({});
 
   const accordionButtons = [
-    "Oustanding Invoice",
+    "Oustanding",
     "Non Invoice Created",
     "Approved",
     "All Tax Invoice",
+    "Non-Gst Bookings",
+    "Credit-Note Invoice",
   ];
 
   const token = sessionStorage.getItem("token");
@@ -353,6 +355,33 @@ const BalancePaymentList = () => {
     setRowDataForCreditNote(row);
   };
 
+  // Helper function for filtering
+  const getFilteredData = (index, data) => {
+    if (!data) return [];
+
+    const conditions = {
+      0: (invc) =>
+        invc.invoice_type_id === "tax-invoice" &&
+        invc.invoice_creation_status !== "pending" &&
+        invc.gst_status === true &&
+        invc.paid_amount <= invc.campaign_amount * 0.9,
+      1: (invc) =>
+        invc.invoice_type_id !== "tax-invoice" ||
+        invc.invoice_creation_status === "pending",
+      3: (invc) => invc.invoice_type_id !== "proforma",
+      4: (invc) =>
+        invc.gst_status === false &&
+        invc.invoice_creation_status !== "pending" &&
+        invc.paid_amount <= invc.campaign_amount * 0.9,
+      5: (invc) => invc.invoice_type_id === "credit_note",
+    };
+
+    const filterCondition = conditions[index];
+    return filterCondition ? data.filter(filterCondition) : [];
+  };
+
+  const filteredData = getFilteredData(activeAccordionIndex, filterData);
+  console.log(filteredData, "hghjdghjg")
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -468,9 +497,9 @@ const BalancePaymentList = () => {
         onTabClick={handleAccordionButtonClick}
       />
       <div>
-        {(activeAccordionIndex === 3 ||
+        {(activeAccordionIndex === 3 || activeAccordionIndex === 4 || activeAccordionIndex === 5 ||
           activeAccordionIndex === 0 ||
-          activeAccordionIndex === 1) && (
+          activeAccordionIndex === 1) && filteredData.length > 0 && (
             <View
               columns={outstandingColumns({
                 filterData,
@@ -483,27 +512,40 @@ const BalancePaymentList = () => {
                 activeAccordionIndex,
                 handleOpenCreditNote,
               })}
-              data={
-                activeAccordionIndex === 3
-                  ? filterData?.filter(
-                    (invc) => invc.invoice_type_id !== "proforma"
-                  )
-                  : activeAccordionIndex === 0
-                    ? filterData?.filter(
-                      (invc) =>
-                        invc.invoice_type_id === "tax-invoice" &&
-                        invc.invoice_creation_status !== "pending" &&
-                        invc.gst_status === true &&
-                        invc.paid_amount <= invc.campaign_amount * 0.9
-                    )
-                    : activeAccordionIndex === 1
-                      ? filterData?.filter(
-                        (invc) =>
-                          invc.invoice_type_id !== "tax-invoice" ||
-                          invc.invoice_creation_status === "pending"
-                      )
-                      : []
-              }
+              data={filteredData}
+              // data={
+              //   activeAccordionIndex === 3
+              //     ? filterData?.filter(
+              //       (invc) => invc.invoice_type_id !== "proforma"
+              //     )
+              //     : activeAccordionIndex === 0
+              //       ? filterData?.filter(
+              //         (invc) =>
+              //           invc.invoice_type_id === "tax-invoice" &&
+              //           invc.invoice_creation_status !== "pending" &&
+              //           invc.gst_status === true &&
+              //           invc.paid_amount <= invc.campaign_amount * 0.9
+              //       )
+              //       : activeAccordionIndex === 1
+              //         ? filterData?.filter(
+              //           (invc) =>
+              //             invc.invoice_type_id !== "tax-invoice" ||
+              //             invc.invoice_creation_status === "pending"
+              //         )
+              //         : activeAccordionIndex === 4
+              //           ? filterData?.filter(
+              //             (invc) =>
+              //               invc.gst_status === false &&
+              //               invc.invoice_creation_status !== "pending" &&
+              //               invc.paid_amount <= invc.campaign_amount * 0.9
+              //           )
+              //           : activeAccordionIndex === 5
+              //             ? filterData?.filter(
+              //               (invc) =>
+              //                 invc.invoice_type_id == "credit_note"
+              //             )
+              //             : []
+              // }
               isLoading={isLoading}
               title={"Outstanding"}
               rowSelectable={true}

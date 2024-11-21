@@ -830,7 +830,11 @@ function PlanHome() {
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Plan X Overview </h5>
           <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
-          <button className="icon" onClick={handleOpenModal} title="plan-notes">
+          <button
+            className="icon"
+            onClick={handleOpenModal}
+            title="Internal-Notes"
+          >
             <CiStickyNote />
           </button>
           <div className="flexCenter colGap8">

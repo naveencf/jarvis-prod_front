@@ -222,7 +222,7 @@ const EMPPF= allUserData.emergency_contact_person_name2 == "pf_and_esic" && Empl
                   <PDFDownloadLink
 
                     className="btn onboardBtn btn_primary d-flex align-items-center gap-2"
-                    document={<OfferLetter allUserData={allUserData} image64={image64} EMPPF={EMPPF} />} fileName="OfferLetter.pdf">
+                    document={<OfferLetter allUserData={allUserData} image64={image64} EMPPF={EMPPF}/>} fileName="OfferLetter.pdf">
 
 
                     <i className="bi bi-cloud-arrow-down"></i>

@@ -651,9 +651,9 @@ const PageOverviewNew = () => {
   ];
 
   const handleClickVendorName = (params) => {
-    // setVendorDetails(params.row);
     setVendorDetails(params);
   };
+  
   const dataGridcolumns = [
     {
       key: 'S.NO',
@@ -1075,6 +1075,7 @@ const PageOverviewNew = () => {
               <VendorDetails
                 vendorDetails={vendorDetails}
                 setVendorDetails={setVendorDetails}
+                tab1 ={"tab1"}
               />
             )}
             <button

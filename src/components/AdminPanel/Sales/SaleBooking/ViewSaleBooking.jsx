@@ -39,6 +39,10 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import CustomTable from "../../../CustomTable/CustomTable";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import DeleteButton from "../../DeleteButton";
+import {
+  useGetSalesCategoryDetailsQuery,
+  useGetSalesCategoryListQuery,
+} from "../../../Store/API/Sales/salesCategoryApi";
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -51,6 +55,13 @@ const ViewSaleBooking = () => {
   const [stats, setStats] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
   const { userContextData } = useAPIGlobalContext();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const {
+    data: categoryDetails,
+    error: categoryDetailsError,
+    isLoading: categoryDetailsLoading,
+  } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
 
   const navigate = useNavigate();
   const {
@@ -63,7 +74,7 @@ const ViewSaleBooking = () => {
     refetch: refetchSaleBooking,
     error: allSalebBookingError,
     isLoading: allSaleBookingLoading,
-  } = useGetAllSaleBookingQuery({ loginUserId, stats });
+  } = useGetAllSaleBookingQuery({ loginUserId, stats, selectedCategory });
   const {
     data: allAccount,
     error: allAccountError,
@@ -844,6 +855,12 @@ const ViewSaleBooking = () => {
               </button>
             </Link>
           )}
+          <Link to={"/admin/monthwise-sales-booking"}>
+            <button className="btn cmnbtn btn-primary btn_sm">
+              Monthwise Sales
+            </button>
+          </Link>
+
           <Link to={"/admin/record-servcies"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Record Services
@@ -983,7 +1000,21 @@ const ViewSaleBooking = () => {
         pagination={[100, 200]}
         tableName={"SaleBookingView"}
         showTotal={true}
-        // rowSelectable={true}
+        addHtml={
+          loginUserRole === 1 && (
+            <CustomSelect
+              fieldGrid={12}
+              dataArray={[
+                { sales_category_id: null, sales_category_name: "None" },
+                ...(categoryDetails || []),
+              ]}
+              optionId="sales_category_id"
+              optionLabel="sales_category_name"
+              selectedId={selectedCategory}
+              setSelectedId={setSelectedCategory}
+            />
+          )
+        }
       />
     </div>
   );

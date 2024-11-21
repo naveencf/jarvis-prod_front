@@ -8,7 +8,6 @@ import {
   subMonths,
   subWeeks,
   endOfDay,
-  isWithinInterval,
 } from "date-fns";
 import { Box, Grid, Stack, TextField } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -24,10 +23,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
-import { baseUrl } from "../../../../utils/config";
-import axios from "axios";
 import { useGetPageCountQuery } from "../../../Store/PageBaseURL";
-
+import formatString from "../../Operation/CampaignMaster/WordCapital";
 
 const filterOptions = [
   { label: "Today", value: "today" },
@@ -44,15 +41,10 @@ const filterOptions = [
 const PageClosedByDetails = ({ pagequery }) => {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
-  const userID = decodedToken.id;
-
-
-
+  
   // Set default start_date and end_date to the start and end of the current month
   const defaultStartDate = startOfMonth(new Date());
   const defaultEndDate = endOfDay(new Date());
-
-
 
   // const pageData = pageClosedbyList?.data;
   const [filterOption, setFilterOption] = useState("thisMonth");
@@ -126,25 +118,6 @@ const PageClosedByDetails = ({ pagequery }) => {
   const handleFilterChange = (event, newValue) => {
     setFilterOption(newValue.value);
   };
-
-
-  // const getCountData = async ()=>{
-  //   const { start, end } = getDateRange();
-  //   try{
-  //     const payload = {
-  //       start_date: start.toISOString().split("T")[0],
-  //       end_date: end.toISOString().split("T")[0],
-  //     };
-  //     const res = await getPageCount(payload).unwrap();
-  //     setRows(res.data);
-  //       setIndividualData(res.data);
-  //   }catch{
-  //   }
-  // }
-  // useEffect(() => {
-  //     getCountData()
-  // }, [filterOption, customStartDate, customEndDate]);
-
   return (
     <div>
 
@@ -223,8 +196,6 @@ const PageClosedByDetails = ({ pagequery }) => {
                   <Grid container spacing={2} sx={{ padding: "10px" }}>
                     {dataItem.allpages_name.map((pageItem) => (
                       <Grid key={pageItem._id} item xs={12} md={6} lg={4}>
-
-
                         <Link to={`https://www.instagram.com/${pageItem.name}`} target='_blank'>
                           <List
                             sx={{ width: "100%", bgcolor: "background.paper" }}
@@ -236,7 +207,7 @@ const PageClosedByDetails = ({ pagequery }) => {
                                 </Avatar>
                               </ListItemAvatar>
                               <ListItemText
-                                primary={pageItem.name}
+                                primary={`${formatString(pageItem?.name) } - ${formatString(pageItem?.page_category_name)}`} 
                                 secondary={DateISOtoNormal(pageItem.createdAt)}
                               />
                             </ListItem>

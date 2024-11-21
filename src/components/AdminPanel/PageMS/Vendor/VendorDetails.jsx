@@ -12,7 +12,8 @@ import { baseUrl } from "../../../../utils/config";
 import { useGetVendorCompanyDetailQuery } from '../../../Store/PageBaseURL';
 import { Link } from "react-router-dom";
 
-export default function VendorDetails({vendorDetails,setVendorDetails}) {
+export default function VendorDetails({vendorDetails,setVendorDetails , tab1}) {
+  
   const [open, setOpen] = React.useState(true);
   const [scroll, setScroll] = React.useState('paper');
   const [bankRows, setBankRows] = useState([]);
@@ -21,7 +22,7 @@ export default function VendorDetails({vendorDetails,setVendorDetails}) {
     setOpen(true);
     // setScroll(scrollType);
   };
-
+console.log(vendorDetails,"vendorDetails");
   const sendingId = {
     _id: vendorDetails._id
   }
@@ -61,7 +62,7 @@ export default function VendorDetails({vendorDetails,setVendorDetails}) {
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-          <VendorDetailAccordion vendorDetails={vendorDetails} bankRows={bankRows}/>
+          <VendorDetailAccordion vendorDetails={vendorDetails} bankRows={bankRows} tab1={tab1}/>
                          
           </DialogContentText>
         </DialogContent>

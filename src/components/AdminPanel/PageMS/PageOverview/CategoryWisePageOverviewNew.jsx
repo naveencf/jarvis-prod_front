@@ -88,7 +88,7 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                                 className=" btn cmnbtn  btn"
                                 style={{minWidth:"120px",color:"blue"}}
                             >
-                                {row._id}
+                                {row._id ? row._id :" NA"}
                             </button>
                         }
                     </div>

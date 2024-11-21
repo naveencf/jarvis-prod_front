@@ -30,9 +30,11 @@ const ExcelPreviewModal = ({
   planDetails,
   checkedDescriptions,
   downloadExcel,
+  isDownloading,
+  deliverableText,
+  setDeliverableText,
 }) => {
   const [selectedTab, setSelectedTab] = useState(0);
-
   const [categoryData, setCategoryData] = useState({});
 
   // Prepare data categorized by category when the modal opens
@@ -80,8 +82,12 @@ const ExcelPreviewModal = ({
   const handleAgencyFeeChange = (event) => {
     const value = event.target.value;
     if (value >= 0 && value <= 100) {
-      setAgencyFees(value); // Update the agency fees percentage
+      setAgencyFees(value);
     }
+  };
+  const handleDeliverableTextChange = (event) => {
+    const value = event.target.value;
+    setDeliverableText(value);
   };
 
   return (
@@ -119,26 +125,32 @@ const ExcelPreviewModal = ({
         </Typography>
 
         {/* Agency Fees Input */}
-        <div className="row" style={{ width: '25rem' }}>
+        <div className="row">
           <div className="col d-flex justify-content-center align-items-center">
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body1">Agency Fee Percentage</Typography>
-              <TextField
-                type="number"
-                value={agencyFees || ''}
-                onChange={handleAgencyFeeChange}
-                label="Enter Agency Fee %"
-                inputProps={{
-                  min: 0,
-                  max: 100,
-                }}
-                sx={{ mt: 1, width: '11rem' }}
-              />
-            </Box>
+            <Typography variant="body1">Agency Fee Percentage</Typography>
+            <TextField
+              type="number"
+              value={agencyFees || ''}
+              onChange={handleAgencyFeeChange}
+              label="Enter Agency Fee %"
+              inputProps={{
+                min: 0,
+                max: 100,
+              }}
+              sx={{ mt: 1, width: '11rem' }}
+            />
+            <Typography variant="body1">Deliverable Text</Typography>
+            <TextField
+              value={deliverableText || ''}
+              onChange={handleDeliverableTextChange}
+              label="Write Deliverable text"
+              sx={{ mt: 1, width: '11rem' }}
+            />
           </div>
           <div className="col d-flex justify-content-center align-items-center">
             <button
               className="btn cmnbtn btn-primary btn_sm"
+              disabled={isDownloading}
               onClick={() =>
                 downloadExcel(
                   selectedRow,
@@ -150,7 +162,7 @@ const ExcelPreviewModal = ({
                 )
               }
             >
-              Download Excel
+              {isDownloading ? 'Downloading...' : 'Download Excel'}
             </button>
           </div>
         </div>

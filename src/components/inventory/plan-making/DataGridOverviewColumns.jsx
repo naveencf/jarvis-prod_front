@@ -153,9 +153,7 @@ const DataGridOverviewColumns = ({
     {
       key: 'cost_price',
       name: 'Cost Price',
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>{row.costPrice}</div>
-      ),
+      renderRowCell: (row) => Math.floor(row.costPrice),
       width: 120,
       showCol: true,
     },

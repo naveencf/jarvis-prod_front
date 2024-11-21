@@ -47,6 +47,7 @@ const RenderedTable = ({
   oldSortKey,
   setOldSortKey,
   sortKey,
+  fetchCreatedTable,
 }) => {
   const [preventSelect, setPreventSelect] = useState(false);
   const [editflag, setEditFlag] = useState(false);
@@ -271,6 +272,7 @@ const RenderedTable = ({
       })
       .then(() => {
         setColumns(newColumns);
+        fetchCreatedTable();
       })
       .catch((error) => {
         console.error("Error editing dynamic table data:", error);

@@ -15,7 +15,8 @@ import {
     useGetOwnershipTypeQuery,   
   } from "../../../Store/PageBaseURL";
 
-function VendorPages({ vendorDetails }) {
+function VendorPages({ vendorDetails , tab1 }) {
+  console.log(tab1 , 'lalithellow')
   const { data: platData } = useGetPmsPlatformQuery();
   const { data: pageCate } = useGetAllPageCategoryQuery();
   const {data:ownership}=useGetOwnershipTypeQuery();
@@ -27,30 +28,25 @@ function VendorPages({ vendorDetails }) {
 
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor?.data;
-
   useEffect(() => {
     axios
-      .get(baseUrl + `v1/vendor_wise_page_master_data/${vendorDetails?._id}`,{
+    .get(
+      baseUrl + 
+      `v1/vendor_wise_page_master_data/${tab1 === 'tab1' ? vendorDetails?.vendor_id : vendorDetails?._id}`, 
+      {
         headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json", // Adjust content type as needed
-          },
-      })
-      .then((res) => {
-        // const data = res.data.data;
-        // setBankRows(data);
-        setVendorPages(res.data.data);
-      });
-    // axios
-    //   .get(baseUrl + `v1/pagePriceMultipleByPageId/${vendorDetails?._id}`)
-    //   .then((res) => {
-    //     // const data = res.data.data;
-    //     // setBankRows(data);
-    //     // setVendorPages(res.data.data);
-    //   });
-
-
-
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json", // Adjust content type as needed
+        },
+      }
+    )
+    .then((res) => {
+      setVendorPages(res.data.data);
+    })
+    .catch((error) => {
+      console.error("Error fetching vendor pages:", error);
+    });
+  
       axios.get(baseUrl + "get_all_users").then((res) => {
         setUser(res.data.data);
 
@@ -142,9 +138,9 @@ function VendorPages({ vendorDetails }) {
 
         valueGetter: (params) => {
           let data = platformData?.filter((item) => {
-            return params.row.platform_active_on.includes(item._id);
+            return params?.row?.platform_active_on?.includes(item?._id);
           });
-          return data?.map((item) => item.platform_name).join(", ");
+          return data?.map((item) => item?.platform_name).join(", ");
         },
     },
     {

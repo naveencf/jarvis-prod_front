@@ -42,6 +42,7 @@ import InvoiceRequestApi from "./API/Finance/InvoiceRequestApi";
 import OutstandingApi from "./API/Finance/OutstandingApi";
 import SaleBookingTdsApi from "./API/Finance/SaleBookingTdsApi";
 import OutstandingNewApi from "./API/Finance/OutstandingNew";
+import SalesCategoryApi from "./API/Sales/salesCategoryApi";
 
 const store = configureStore({
   reducer: {
@@ -87,7 +88,7 @@ const store = configureStore({
     [InvoiceRequestApi.reducerPath]: InvoiceRequestApi.reducer,
     [SaleBookingTdsApi.reducerPath]: SaleBookingTdsApi.reducer,
     [OutstandingNewApi.reducerPath]: OutstandingNewApi.reducer,
-
+    [SalesCategoryApi.reducerPath]: SalesCategoryApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -128,8 +129,8 @@ const store = configureStore({
       .concat(OutstandingApi.middleware)
       .concat(InvoiceRequestApi.middleware)
       .concat(SaleBookingTdsApi.middleware)
-      .concat(OutstandingNewApi.middleware),
-
+      .concat(OutstandingNewApi.middleware)
+      .concat(SalesCategoryApi.middleware),
 });
 setupListeners(store.dispatch);
 

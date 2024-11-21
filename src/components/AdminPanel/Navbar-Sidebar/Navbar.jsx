@@ -14,6 +14,7 @@ import Basic from "../../../assets/img/icon/badge/iron.png";
 import { List } from "@phosphor-icons/react";
 import { formatNumber } from "../../../utils/formatNumber";
 import InternetSpeedChecker from "../User/UserDashboard/InternetSpeedChecker";
+import rupee from "../../../assets/img/icon/badge/rupee.png";
 
 const badgeImageMap = {
   Diamond: Diamond,
@@ -130,7 +131,6 @@ const Navbar = () => {
 
   return (
     <>
-    
       {/* Topbar Start */}
       <nav className="navbar navbar-expand topbar ">
         {/* <button className="btn sidebar_tglbtn" id="sidebarToggle">
@@ -158,17 +158,18 @@ const Navbar = () => {
           </li>
 
           {/* {deptId == 36 && ( */}
-          {loginUserId !== 1 && deptId == 36 && (
+          {
+            //  loginUserId !== 1 && deptId == 36 &&
             <li className="nav-item" id="salesBadge">
               <div
                 className="navBadge"
-                title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
               >
                 <div className="navBadgeImg">
-                  <img src={badgeImageMap[badge]} alt="badge" />
+                  <img src={rupee} alt="badge" />
                 </div>
                 <div className="navBadgeTxt">
-                  <h5>{badge}</h5>
+                  {/* <h5>{badge}</h5> */}
                   <Link to="/admin/view-Outstanding-details">
                     <h4>
                       Outstanding: ₹{" "}
@@ -178,9 +179,9 @@ const Navbar = () => {
                 </div>
               </div>
             </li>
-          )}
+          }
           {/* )} */}
-        <InternetSpeedChecker/>
+          <InternetSpeedChecker />
 
           <li className="nav-item">
             <div className="theme-switch">

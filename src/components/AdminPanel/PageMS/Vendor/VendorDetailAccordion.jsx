@@ -53,7 +53,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
-export default function VendorDetailAccordion({ vendorDetails, bankRows }) {
+export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 }) {
   console.log('vendordetail', vendorDetails, 'bankRows', bankRows);
   const [expanded, setExpanded] = useState('panel1');
   const [open, setOpen] = useState(false);
@@ -579,7 +579,7 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows }) {
           <Typography>Pages</Typography>
         </AccordionSummary>
         {/* <AccordionDetails> */}
-        <VendorPages vendorDetails={vendorDetails} />
+        <VendorPages vendorDetails={vendorDetails} tab1={tab1} />
         {/* </AccordionDetails> */}
       </Accordion>
     </div>

@@ -3,21 +3,25 @@ import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 import getDecodedToken from "../../../../utils/DecodedToken";
 
-const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, setp_TotalTrue, setp_Total }) => {
+const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, setp_TotalTrue, setp_Total, setMaxIncentiveForNow, payingAmount, payingAmountSet, userBookingsData, setUserBookingsData }) => {
 
   const selectedUserId = selectedRow?.sales_executive_id;
   const token = sessionStorage.getItem("token");
   const loginUserId = getDecodedToken()?.id;
   const [data, setData] = useState([]);
+  const [adjustmentAmount, setAdjustmentAmount] = useState(0);
   const [selectedTrue, setSelectedTrue] = useState([]);
   const [selectedFalse, setSelectedFalse] = useState([]);
   const [totalTrue, setTotalTrue] = useState(0);
   const [totalFalse, setTotalFalse] = useState(0);
   const [total, setTotal] = useState(0);
 
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
+
         const response = await axios.get(
           `${baseUrl}sales/incentive_relesed_button_data/${selectedRow?.sales_executive_id}`,
           {
@@ -26,10 +30,12 @@ const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, s
             },
           }
         );
-        const res = response.data.data;
-        setData(res);
+        const res = response?.data?.data;
+        setUserBookingsData(res)
+        setData(res?.incentiveCalculationDashboard);
+        setAdjustmentAmount(res?.userData?.adjustment_incentive_amount)
       } catch (error) {
-        console.error("Error fetching button data:", error);
+        // console.error("Error fetching button data:", error);
       }
     };
 
@@ -43,6 +49,12 @@ const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, s
     .filter((c) => c.gstStatus)
     .sort((a, b) => new Date(a.saleBookingDate) - new Date(b.saleBookingDate));
   const falseCampaigns = data.filter((c) => !c.gstStatus);
+
+  // console.log(trueCampaigns?.length, "trueCampaigns")
+  useEffect(() => {
+    calculateMaxAmount()
+  }, [trueCampaigns])
+
 
   const getOptimalFalseCampaigns = (trueTotal) => {
     let bestCombination = [];
@@ -63,11 +75,23 @@ const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, s
       }
     };
 
+
     findCombination([], 0, 0);
     return { bestCombination, bestSum };
   };
 
+  const calculateMaxAmount = () => {
+    const newTotalTrue = trueCampaigns.reduce(
+      (sum, c) => sum + c.earnedIncentiveAmount,
+      0
+    );
+    const { bestSum } = getOptimalFalseCampaigns(newTotalTrue);
+    setMaxIncentiveForNow(newTotalTrue + bestSum - adjustmentAmount);
+  };
+
+
   const addCampaign = () => {
+
     if (trueCampaigns.length > selectedTrue.length) {
       const nextTrue = trueCampaigns[selectedTrue.length];
       const newSelectedTrue = [...selectedTrue, nextTrue];
@@ -108,6 +132,7 @@ const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, s
     setp_Total(total)
 
   }, [total])
+
   const releaseIncentive = async () => {
     const saleBookingIds = [
       ...selectedTrue.map((c) => c.sale_booking_id),
@@ -131,22 +156,23 @@ const IncentiveRelease = ({ selectedRow, setIncentiveRelease, setp_TotalFalse, s
       );
       return response;
     } catch (error) {
-      console.error("Error releasing campaigns:", error);
+      // console.error("Error releasing campaigns:", error);
       return error;
     }
   };
 
   return (
     <div>
-      <div className="d-flex mt-2 mb-2">
+      {/* <div className="d-flex mt-2 mb-2">
         <button type="button" className="btn btn_sm cmnbtn btn-primary ml-2 mr-2" onClick={addCampaign}>
           +
         </button>
-        {/* <p className="mt-2">Total Release Amount: {total}</p>{" "} */}
+
         <button type="button" className="btn btn_sm cmnbtn btn-primary" onClick={removeCampaign}>
           -
         </button>
-      </div>
+      </div> */}
+
       {/* <div>
         <h3>Selected GST Campaign Amounts</h3>
         <ul>
