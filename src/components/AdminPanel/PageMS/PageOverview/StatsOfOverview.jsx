@@ -91,7 +91,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
 
   useEffect(() => {
     getStaticsWisePageOverviewData();
-  }, []);
+  }, [followerCounts]);
 
   return (
     <div className="vendor-container">

@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { baseUrl } from '../../../../utils/config';
 import View from '../../Sales/Account/View/View';
-import {Box,Modal} from '@mui/material';
+import { Box, Modal } from '@mui/material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import formatString from '../../../../utils/formatString';
-import { useGetAllPageListQuery , useGetAllCategoryWiseInventoryQuery } from '../../../Store/PageBaseURL';
+import { useGetAllPageListQuery, useGetAllCategoryWiseInventoryQuery } from '../../../Store/PageBaseURL';
 import jwtDecode from 'jwt-decode';
 import Loader from '../../../Finance/Loader/Loader';
 
@@ -34,9 +34,8 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
         refetch: refetchPageList,
         isLoading: isPageListLoading,
     } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
-    const {data:categoryWiseData} = useGetAllCategoryWiseInventoryQuery()
-    console.log(categoryWiseData , 'hell inventory')
-
+    const { data: categoryWiseData } = useGetAllCategoryWiseInventoryQuery()
+ 
     // const [categoryWiseData, setCategoryWiseData] = useState([]);
     const [open, setOpen] = useState(false);
     const [recordsLoading, setRecordsLoading] = useState(true);
@@ -55,7 +54,7 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
         setOpen(false)
     };
     const handleClickCatData = (key, val) => {
-        
+
         setPagequery(`${key}=${val}`);
         setActiveSectionCat(key);
         setRecordsLoading(true)
@@ -84,11 +83,11 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                         {
                             <button
                                 title="View Subcategories"
-                                onClick={() => handleClickCatData("page_category_name",row._id)}
+                                onClick={() => handleClickCatData("page_category_name", row._id)}
                                 className=" btn cmnbtn  btn"
-                                style={{minWidth:"120px",color:"blue"}}
+                                style={{ minWidth: "120px", color: "blue" }}
                             >
-                                {row._id ? row._id :" NA"}
+                                {row._id ? row._id : " NA"}
                             </button>
                         }
                     </div>
@@ -105,7 +104,12 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
             key: "Page Count",
             name: "Page Count",
             width: 200,
-            renderRowCell: (row) => <div>{row.totalPageCount}</div>,
+            renderRowCell: (row) => <button
+                title="View Pages"
+                onClick={() => handleClickCatData("page_category_name", row._id)}
+                className="btn btn-outline-primary btn-sm user-button"
+
+            >{row.totalPageCount}</button>,
         },
         {
             key: "Vendor Count",

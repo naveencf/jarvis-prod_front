@@ -34,6 +34,7 @@ function PlanHome() {
   const [openDialog, setOpenDialog] = useState(false);
   const [openPageDialog, setPageDialog] = useState(false);
   const [planRows, setPlanRows] = useState([]);
+  const [submitLoader, setSubmitLoader] = useState(false);
   const [duplicatePlanId, setDuplicatePlanId] = useState(null);
   const [errors, setErrors] = useState({});
   const [isEdit, setIsEdit] = useState(false);
@@ -482,7 +483,7 @@ function PlanHome() {
       setErrors(validationErrors);
       return;
     }
-    console.log(planDetails);
+    setSubmitLoader(true);
     // Create a FormData object
     const formData = new FormData();
 
@@ -529,18 +530,22 @@ function PlanHome() {
       const result = await response.json();
 
       if (result.success) {
-        Swal.fire({
-          icon: 'success',
-          title: `Plan saved successfully! ${
-            isEdit ? '' : `Total plan created ${result.data.totalRecords}`
-          }`,
-          preConfirm: () => {
-            const planId = result.data._id;
-            isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
-          },
-        });
+        // Swal.fire({
+        //   icon: 'success',
+        //   title: `Plan saved successfully! ${
+        //     isEdit ? '' : `Total plan created ${result.data.totalRecords}`
+        //   }`,
+        //   preConfirm: () => {
+        //     const planId = result.data._id;
+        //     isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
+        //   },
+        // });
+        setSubmitLoader(false);
+        const planId = result.data._id;
         if (isEdit) {
           fetchPlans();
+        } else {
+          navigate(`/admin/pms-plan-making/${planId}`);
         }
       } else {
         Swal.fire({
@@ -564,6 +569,7 @@ function PlanHome() {
   };
 
   const isSubmitDisabled =
+    submitLoader ||
     !planDetails.planName ||
     !inputValue ||
     !planDetails.accountId ||
@@ -843,9 +849,9 @@ function PlanHome() {
                 Create Plan <AddIcon />
               </button>
             </Link>
-            <button className="btn cmnbtn btn-primary btn_sm">
+            {/* <button className="btn cmnbtn btn-primary btn_sm">
               Plan Pricing
-            </button>
+            </button> */}
           </div>
         </div>
         <div className="card-body p0 noCardHeader">

@@ -92,11 +92,16 @@ const PageClosedByDetails = ({ pagequery }) => {
     }
   };
   const { start, end } = getDateRange();
+  
 
-  const { data: getcount } = useGetPageCountQuery({
-    start_date: start.toISOString().split("T")[0],
-    end_date: end.toISOString().split("T")[0],
-  });
+  const { data: getcount } = useGetPageCountQuery(
+    filterOption === "today"
+      ? {}
+      : {
+          start_date: start.toISOString().split("T")[0],
+          end_date: end.toISOString().split("T")[0],
+        }
+  );
  
   useEffect(() => {
     if (getcount) {
