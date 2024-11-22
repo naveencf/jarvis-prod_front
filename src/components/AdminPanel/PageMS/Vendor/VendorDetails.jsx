@@ -68,7 +68,7 @@ console.log(vendorDetails,"vendorDetails");
         </DialogContent>
         <DialogActions>
           <Link to={`/admin/pms-page-master?${queryParams}`}><Button>Add Page</Button></Link>
-          <Link to={`/admin/pms-vendor-master/${vendorDetails._id}`}><Button onClick={handleClose}>Edit</Button></Link>
+          <Link to={`/admin/pms-vendor-master/${tab1 === 'tab1' ? vendorDetails?.vendor_id : vendorDetails?._id}`}><Button onClick={handleClose}>Edit</Button></Link>
           <Button onClick={handleClose}>Cancel</Button>
           {/* <Button onClick={handleClose}>Subscribe</Button> */}
         </DialogActions>

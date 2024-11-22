@@ -1,6 +1,7 @@
 import formatString from '../../../utils/formatString';
 import * as XLSX from 'xlsx-js-style';
 import ExcelJS from 'exceljs';
+import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 
 export const getPlatformName = (platformId) => {
   const platformMap = {
@@ -136,7 +137,7 @@ export const downloadExcel = async (
           S_No: categories[categoryName].length + 1,
           Username: page.page_name || 'N/A',
           'Profile Link': page.page_link || 'N/A',
-          Followers: page.followers_count || 0,
+          Followers: formatIndianNumber(page.followers_count) || 0,
           'Post Count': postCountValue,
           'Story Count': storyCountValue,
         });
@@ -206,7 +207,7 @@ export const downloadExcel = async (
           serialNumber, // Serial number based on the length of the sheet
           `Post ${hasStoryCount ? 'and Stories' : ''} on ${formatString(
             categoryName
-          )} Pages`, // Description
+          )} Profiles`, // Description
           'Instagram', // Platform
           categoryData.reduce(
             (acc, item) =>

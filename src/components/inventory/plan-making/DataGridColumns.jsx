@@ -111,11 +111,10 @@ const DataGridColumns = ({
     {
       key: 'followers_count',
       name: 'Followers',
-      renderRowCell: (row) => (
-        <div title={row.followers_count}>
-          {formatNumber(row.followers_count)}
-        </div>
-      ),
+      renderRowCell: (row) =>
+        // <div title={row.followers_count}>
+        formatNumber(Number(row.followers_count)),
+      // </div>
       width: 150,
       showCol: true,
     },
@@ -123,7 +122,14 @@ const DataGridColumns = ({
     {
       key: 'ownership_type',
       name: 'Ownership',
-      renderRowCell: (row) => <div>{row.ownership_type}</div>,
+      renderRowCell: (row) => row.ownership_type,
+      width: 100,
+      showCol: true,
+    },
+    {
+      key: 'name_type',
+      name: 'Name Type',
+      renderRowCell: (row) => row.page_name_type,
       width: 100,
       showCol: true,
     },
@@ -315,13 +321,15 @@ const DataGridColumns = ({
           (item) => item.instagram_post !== undefined
         );
         const postPrice = postDetail?.instagram_post;
+        const price = Number(postPrice) || 0;
         // console.log('most', mPostPrice);
         // const postPrice = row?.post;
         // return <div>{postPrice ?? mPostPrice}</div>;
-        return <div>{postPrice ?? 'Price is not available'}</div>;
+        return price;
       },
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'm_story_price',
@@ -332,12 +340,14 @@ const DataGridColumns = ({
           (item) => item.instagram_story !== undefined
         );
         const storyPrice = postDetail?.instagram_story;
+        const price = Number(storyPrice) || 0;
         // const storyPrice = row?.story;
         // return <div>{storyPrice ?? mStoryPrice}</div>;
-        return <div>{storyPrice ?? 'Price is not available'}</div>;
+        return price;
       },
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'm_both_price',
@@ -348,12 +358,14 @@ const DataGridColumns = ({
           (item) => item.instagram_both !== undefined
         );
         const bothPrice = postDetail?.instagram_both;
+        const price = Number(bothPrice) || 0;
         // const bothPrice = row?.both_;
         // return <div>{bothPrice ?? mBothPrice}</div>;
-        return <div>{bothPrice ?? 'Price is not available'}</div>;
+        return price;
       },
       width: 150,
       showCol: true,
+      compare: true,
     },
   ];
 

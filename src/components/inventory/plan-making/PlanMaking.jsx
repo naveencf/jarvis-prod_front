@@ -3,7 +3,7 @@ import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import { Button, Typography } from '@mui/material';
+import { Button, Stack, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
@@ -39,6 +39,11 @@ import { CiStickyNote, CiWarning } from 'react-icons/ci';
 import { BiSelectMultiple, BiSolidSelectMultiple } from 'react-icons/bi';
 import ActiveDescriptionModal from './ActiveDescriptionModal';
 import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
+import { MdCheckBoxOutlineBlank } from 'react-icons/md';
+import { FaRegStopCircle, FaStopCircle } from 'react-icons/fa';
+import Loader from '../../Finance/Loader/Loader';
+import { ImNext } from "react-icons/im";
+import { ImPrevious } from "react-icons/im";
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -103,11 +108,15 @@ const PlanMaking = () => {
   const [showCheckedRows, setShowCheckedRows] = useState(false);
   const [ownPagesCost, setOwnPagesCost] = useState(0);
   const [tagCategory, setTagCategory] = useState([]);
+  const [disableBack, setDisableBack] = useState(false);
+  // const [pageDetail, setPageDetails] = useState([]);
   const [lastSelectedRow, setLastSelectedRow] = useState(null);
   const [shiftPressed, setShiftPressed] = useState(false);
   const [focusedRowIndex, setFocusedRowIndex] = useState(null);
-
-  // const [pageDetail, setPageDetails] = useState([]);
+  const [layering, setLayering] = useState(0);
+  const [sarcasmNetwork, setSarcasmNetwork] = useState([]);
+  const [advancePageList, setAdvancePageList] = useState([]);
+  const [topUsedPageList, setTopUsedPageList] = useState([]);
   const { id } = useParams();
 
   const { pageDetail } = usePageDetail(id);
@@ -204,6 +213,7 @@ const PlanMaking = () => {
   };
 
   const handleCombinedFilter = () => {
+
     let newFilteredData = filterData?.filter((page) => {
       let price = 0;
 
@@ -228,12 +238,14 @@ const PlanMaking = () => {
         (minFollowers === null || followers >= minFollowers) &&
         (maxFollowers === null || followers <= maxFollowers);
 
+
       // Apply both price and follower filters
       return (
         (!priceFilterType || (price >= minPrice && price <= maxPrice)) &&
         isFollowerInRange
       );
     });
+
     setAlertData({
       title: 'Success!',
       text: 'Filter applied successfully.',
@@ -338,10 +350,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-                rate_type,
-                { m_story_price, m_post_price, followers_count },
-                type
-              );
+              rate_type,
+              { m_story_price, m_post_price, followers_count },
+              type
+            );
 
         return {
           _id,
@@ -795,10 +807,10 @@ const PlanMaking = () => {
             isFixedRate
               ? getPriceDetail(page_price_list, `instagram_${type}`)
               : calculatePrice(
-                  rate_type,
-                  { m_story_price, m_post_price, followers_count },
-                  type
-                );
+                rate_type,
+                { m_story_price, m_post_price, followers_count },
+                type
+              );
 
           return {
             _id,
@@ -813,7 +825,6 @@ const PlanMaking = () => {
         setPlanData(planxData);
       }
     });
-
     // Update all states after processing
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
@@ -968,6 +979,13 @@ const PlanMaking = () => {
       setFilterData(filteredData);
     }
   };
+  const handleUnselectPages = () => {
+    const pageData = pageList.filter((item) => {
+      const isSelected = selectedRows.some((row) => row._id === item._id);
+      return item.followers_count > 0 && !isSelected;
+    });
+    setFilterData(pageData);
+  };
 
   const clearRecentlySelected = () => {
     setSelectedRows([]);
@@ -997,6 +1015,9 @@ const PlanMaking = () => {
       // });
       return rows;
     }
+  };
+  const handleDisableBack = () => {
+    setDisableBack(!disableBack);
   };
 
   const selectAllRows = () => {
@@ -1075,10 +1096,10 @@ const PlanMaking = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-              rate_type,
-              { m_story_price, m_post_price, followers_count },
-              type
-            );
+            rate_type,
+            { m_story_price, m_post_price, followers_count },
+            type
+          );
 
       return {
         _id,
@@ -1193,10 +1214,31 @@ const PlanMaking = () => {
 
   useEffect(() => {
     if (pageList) {
+
       const pageData = pageList
         ?.filter((item) => item.followers_count > 0)
         .sort((a, b) => b.followers_count - a.followers_count);
+
+
+      const sarcasamNetworkPages = [];
+      const advancedPostPages = [];
+      const mostUsedPages = [];
+      // Adding pages for layer
+      pageList?.map((page) => {
+
+        if (page?.page_layer == 1) {
+          console.log(page?.page_layer)
+          sarcasamNetworkPages.push(page)
+        } else if (page?.page_layer == 3) {
+          advancedPostPages.push(page);
+        } else if (page?.page_layer == 4) {
+          mostUsedPages.push(page);
+        }
+      })
       setFilterData(pageData);
+      setSarcasmNetwork(sarcasamNetworkPages);
+      setAdvancePageList(advancedPostPages);
+      setTopUsedPageList(mostUsedPages);
       const initialPostValues = {};
       const initialStoryValues = {};
       const initialCostPerPostValues = {};
@@ -1245,6 +1287,9 @@ const PlanMaking = () => {
     // Call your function to handle automatic selection
     if (filterData?.length > 0 && pageDetail?.length > 0) {
       handleAutomaticSelection(pageDetail);
+      setLayering(5);
+    } else if (filterData?.length > 0 && pageDetail?.length == 0) {
+      setLayering(1);
     }
   }, [filterData, pageDetail]);
 
@@ -1297,7 +1342,8 @@ const PlanMaking = () => {
 
   useEffect(() => {
     const platform = pageList?.filter(
-      (item) => item.platform_id === activeTabPlatfrom
+      (item) =>
+        item.followers_count > 0 && item.platform_id === activeTabPlatfrom
     );
     setFilterData(platform);
   }, [activeTabPlatfrom]);
@@ -1417,38 +1463,49 @@ const PlanMaking = () => {
   };
 
   useEffect(() => {
-    const handleWheel = (event) => {
-      const { deltaX, deltaY, target } = event;
-      if (Math.abs(deltaY) > Math.abs(deltaX)) return;
-      const scrollableElement = target.closest('.scrollable-container');
-      if (scrollableElement) {
-        const { scrollLeft, clientWidth, scrollWidth } = scrollableElement;
-        if (
-          (deltaX < 0 && scrollLeft > 0) ||
-          (deltaX > 0 && scrollLeft + clientWidth < scrollWidth)
-        ) {
-          return;
-        }
-        if (deltaX < 0 && scrollLeft === 0) {
+    if (disableBack) {
+      const handleWheel = (event) => {
+        const { deltaX, deltaY, target } = event;
+        if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+        const scrollableElement = target.closest('.scrollable-container');
+        if (scrollableElement) {
+          const { scrollLeft, clientWidth, scrollWidth } = scrollableElement;
+          if (
+            (deltaX < 0 && scrollLeft > 0) ||
+            (deltaX > 0 && scrollLeft + clientWidth < scrollWidth)
+          ) {
+            return;
+          }
+          if (deltaX < 0 && scrollLeft === 0) {
+            event.preventDefault();
+          }
+        } else if (deltaX < 0) {
           event.preventDefault();
         }
-      } else if (deltaX < 0) {
-        event.preventDefault();
-      }
-    };
-    document.addEventListener('wheel', handleWheel, { passive: false });
-    return () => document.removeEventListener('wheel', handleWheel);
-  }, []);
+      };
+      document.addEventListener('wheel', handleWheel, { passive: false });
+      return () => document.removeEventListener('wheel', handleWheel);
+    }
+  }, [disableBack]);
   const displayPercentage = Math.floor(percentage);
 
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
 
+  const tableData = layering == 1 ? sarcasmNetwork : layering == 2 ? ownPages : layering == 3 ? advancePageList : layering == 4 ? topUsedPageList :
+    showOwnPage
+      ? ownPages
+      : toggleShowBtn
+        ? selectedRows
+        : sortedRows(filterData, selectedRows);
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
   }, [descriptions]);
+
+  const ButtonTitle = ["", "Sarcasm Network", "Own-Pages", "Advanced-Pages", "Recently Used Top Pages", "All Inventory", ""]
   return (
     <>
+
       <PageDialog
         open={openDialog}
         onClose={handleCloseDialog}
@@ -1503,11 +1560,18 @@ const PlanMaking = () => {
       <div className="card">
         <div className="card-header flexCenterBetween">
           <div className="flexCenter colGap12">
-            <button
+            {/* <button
               className="btn cmnbtn btn-primary btn_sm"
               onClick={handleToggleLeftNavbar}
             >
               {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
+            </button> */}
+            <button
+              className="icon"
+              onClick={handleUnselectPages}
+              title="Unselected Pages"
+            >
+              <MdCheckBoxOutlineBlank />
             </button>
             <button
               className="icon"
@@ -1644,6 +1708,36 @@ const PlanMaking = () => {
             </div>
           </div>
         </div>
+        <div className="card-header flexCenterBetween">
+          <div className="flexCenter colGap12">
+            <button
+              className="icon"
+              onClick={handleDisableBack}
+              title="Disable Back"
+            >
+              {!disableBack ? <FaRegStopCircle /> : <FaStopCircle />}
+            </button>
+            <button
+              className="icon"
+              onClick={() => setLayering(layering - 1)}
+              title={ButtonTitle[(layering - 1) % 5]}
+            >
+              {layering > 1 && <ImPrevious />}
+            </button>
+            <button
+              className="icon"
+              onClick={() => setLayering(layering + 1)}
+              title={ButtonTitle[(layering + 1) % 6]}
+            >
+              {layering < 5 && <ImNext />}
+            </button>
+            <label>{ButtonTitle[layering]}</label>
+
+
+
+
+          </div>
+        </div>
 
         <div className="card-body p0">
           <div className="thmTable">
@@ -1651,23 +1745,19 @@ const PlanMaking = () => {
               sx={{ height: 700, width: '100%' }}
               onKeyDown={(e) => handleKeyPress(e)}
             >
-              {filterData && filterData.length > 0 && (
+              {filterData && filterData.length > 0 ? (
                 <CustomTableV2
                   // selectedData={setSelectedData}
                   // rowSelectable={true}
-                  // dataLoading={isPageListLoading || VendorLoading || typeLoading}
+                  dataLoading={isPageListLoading}
                   columns={dataGridColumns}
-                  data={
-                    showOwnPage
-                      ? ownPages
-                      : toggleShowBtn
-                      ? selectedRows
-                      : sortedRows(filterData, selectedRows)
-                  }
+                  data={tableData}
                   Pagination={[100, 200]}
                   // selectedData={}
                   tableName={'PlanMakingDetails'}
                 />
+              ) : (
+                <Loader />
               )}
             </Box>
           </div>

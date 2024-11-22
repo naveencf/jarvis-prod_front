@@ -67,16 +67,29 @@ const CustomTableV2 = ({
   const [selectedId, setSelectedId] = useState(columnsheader.map(() => []));
   const [applyFlag, setApplyFlag] = useState(false);
   const [oldSortKey, setOldSortKey] = useState("");
+  const [pagination, setPagination] = useState(
+    Pagination?.length > 0 ? Pagination : [100, 50, 10]
+  );
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
-  let pagination = Pagination?.length > 0 ? Pagination : [100, 50, 10];
+  useEffect(() => {
+    setPagination(Pagination?.length > 0 ? Pagination : [100, 50, 10]);
+  }, [Pagination]);
 
   useEffect(() => {
-    if (pagination?.findIndex((item) => item === data?.length) === -1)
-      pagination?.push(data?.length);
-  }, [data]);
+    setPagination((prev) => {
+      if (
+        prev?.findIndex((item) => item === data?.length) === -1 &&
+        data?.length > 0
+      ) {
+        {
+          return [...prev, data?.length];
+        }
+      }
+    });
+  }, [data, columns]);
 
   useEffect(() => {
     // //console.log("selected data");
@@ -85,15 +98,15 @@ const CustomTableV2 = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-      columnsheader
-        .map((column) => column.key)
-        .some((key) =>
-          item[key]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-    )
+        columnsheader
+          .map((column) => column.key)
+          .some((key) =>
+            item[key]
+              ?.toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
+      )
     : unSortedData;
 
   // const tabledata = pagination
@@ -252,9 +265,9 @@ const CustomTableV2 = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
@@ -362,10 +375,10 @@ const CustomTableV2 = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-          apiColumns[index]?.visibility === undefined
-            ? true
-            : apiColumns[index]?.visibility
-        )
+            apiColumns[index]?.visibility === undefined
+              ? true
+              : apiColumns[index]?.visibility
+          )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -423,7 +436,7 @@ const CustomTableV2 = ({
     if (sortKey != oldSortKey) {
       const datatType =
         unSortedData[0][sortKey] != undefined &&
-          unSortedData[0][sortKey] != null
+        unSortedData[0][sortKey] != null
           ? typeof unSortedData[0][sortKey]
           : null;
       // console.log("datatType", datatType, unSortedData[0]);

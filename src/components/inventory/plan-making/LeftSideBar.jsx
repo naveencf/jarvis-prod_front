@@ -30,6 +30,7 @@ import formatString from '../../../utils/formatString';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { downloadExcel, getPlatformName } from './downloadExcel';
+import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -251,6 +252,7 @@ const LeftSideBar = ({
     }
   };
 
+ 
   const handleSave = () => {
     const payload = {
       id: planDetails && planDetails[0]._id,
@@ -300,7 +302,11 @@ const LeftSideBar = ({
                   type="number"
                 />
               ) : (
-                <span>{sellingPrice || planDetails?.[0]?.selling_price}</span>
+                <span>
+                  {formatIndianNumber(
+                    sellingPrice || planDetails?.[0]?.selling_price
+                  )}
+                </span>
               )}
             </h6>
             <h6>
@@ -333,7 +339,9 @@ const LeftSideBar = ({
             Total Profit
             <span>
               {planDetails &&
-                Math.floor(planDetails?.[0]?.selling_price - totalCost)}
+                formatIndianNumber(
+                  Math.floor(planDetails?.[0]?.selling_price - totalCost)
+                )}
             </span>
           </h6>
           <h6>
@@ -342,7 +350,7 @@ const LeftSideBar = ({
           </h6>
           <h6>
             Total Cost
-            <span>{Math.floor(totalCost)}</span>
+            <span>{formatIndianNumber(Math.floor(totalCost))}</span>
           </h6>
           <h6>
             Total Posts

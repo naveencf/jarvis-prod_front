@@ -4,6 +4,47 @@ import { useLazyGetSalesReportQuery } from "../../../Store/API/Sales/SalesReport
 import View from "../Account/View/View";
 import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../FieldContainer";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Pie,
+  Cell,
+  PieChart,
+} from "recharts";
+
+const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "red", "pink"];
+const data = [
+  { month: "Jan", salesBooking: 120, salesAmount: 5000 },
+  { month: "Feb", salesBooking: 150, salesAmount: 7000 },
+  { month: "Mar", salesBooking: 180, salesAmount: 9000 },
+  { month: "Apr", salesBooking: 200, salesAmount: 11000 },
+  { month: "May", salesBooking: 170, salesAmount: 8000 },
+];
+
+const getPath = (x, y, width, height) => {
+  return `M${x},${y + height}C${x + width / 3},${y + height} ${x + width / 2},${
+    y + height / 3
+  }
+  ${x + width / 2}, ${y}
+  C${x + width / 2},${y + height / 3} ${x + (2 * width) / 3},${y + height} ${
+    x + width
+  }, ${y + height}
+  Z`;
+};
+
+const TriangleBar = (props) => {
+  const { fill, x, y, width, height } = props;
+
+  return <path d={getPath(x, y, width, height)} stroke="none" fill={fill} />;
+};
 
 const SalesReport = () => {
   const [filter, setFilter] = useState("");
@@ -22,6 +63,7 @@ const SalesReport = () => {
   const handelSearch = () => {
     triggerGetSalesReport({ filter, fromDate, toDate });
   };
+  console.log(salesReportData);
 
   const options = [
     {
@@ -122,10 +164,8 @@ const SalesReport = () => {
     },
   ];
 
-  console.log(fromDate, toDate);
-
   return (
-    <div>
+    <>
       <FormContainer link={true} mainTitle={"Sales Report"} />
       <div className="card">
         <div className="card-body row p-3">
@@ -163,6 +203,57 @@ const SalesReport = () => {
           </div>
         </div>
       </div>
+
+      <div className="card">
+        <div className="card-body">
+          <div style={{ width: "100%", height: 400, overflowX: "scroll" }}>
+            <ResponsiveContainer
+              width={salesReportData?.length * 100}
+              height={400}
+              overflowX="scroll"
+            >
+              <BarChart data={salesReportData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="userName" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="totalBaseAmount" fill="#8884d8" />
+                <Bar dataKey="totalCampaignAmount" fill="#82ca9d" />
+                <Bar dataKey="totalGstAmount" fill="#ffc658" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-body">
+          <div style={{ width: "100%", height: 400 }}>
+            <ResponsiveContainer width="100%" height={400}>
+              <BarChart data={salesReportData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="userName" />
+                <YAxis />
+                <Tooltip />
+                <Bar
+                  dataKey="totalSaleBookingCounts"
+                  fill="#8884d8"
+                  isAnimationActive={true}
+                  animationDuration={1000}
+                  animationBegin={0}
+                >
+                  {salesReportData?.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={colors[index % colors.length]}
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
       <View
         columns={columns}
         data={salesReportData}
@@ -172,7 +263,7 @@ const SalesReport = () => {
         tableName={"Sales Report OverView"}
         showTotal={true}
       />
-    </div>
+    </>
   );
 };
 
