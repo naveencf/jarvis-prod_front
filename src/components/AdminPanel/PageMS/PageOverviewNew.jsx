@@ -653,7 +653,7 @@ const PageOverviewNew = () => {
   const handleClickVendorName = (params) => {
     setVendorDetails(params);
   };
-  
+
   const dataGridcolumns = [
     {
       key: 'S.NO',
@@ -741,21 +741,19 @@ const PageOverviewNew = () => {
           (item) => item.instagram_post !== undefined
         );
         const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
-        const followerCount = row?.followers_count || 0;
+        let followerCount = Math.max(0, row?.followers_count || 0);
 
         // Calculate the average price only if followerCount is greater than zero
         const averagePostPrice = followerCount
           ? Math.floor(postPrice / (followerCount / 1000000))
-          : '0';
+          : 0;
 
-        return (
-          <div style={{ width: '70%' }}>
-            {followerCount ? `₹${averagePostPrice}` : 'Price not available'}
-          </div>
-        );
+        return Number(averagePostPrice);
+
       },
       width: 150,
       showCol: true,
+      compare: true
     },
     {
       key: 'average_story_price',
@@ -766,19 +764,17 @@ const PageOverviewNew = () => {
           (item) => item.instagram_story !== undefined
         );
         const storyPrice = postDetail?.instagram_story || 0;
-        const followerCount = row?.followers_count || 0;
+        let followerCount = Math.max(0, row?.followers_count || 0);
         const averageStoryPrice = followerCount
           ? Math.floor(storyPrice / (followerCount / 1000000))
-          : '0';
+          : 0;
 
-        return (
-          <div style={{ width: '70%' }}>
-            {followerCount ? `₹${averageStoryPrice}` : 'Price not available'}
-          </div>
-        );
+        return Number(averageStoryPrice)
+
       },
       width: 150,
       showCol: true,
+      compare: true
     },
 
     {
@@ -833,7 +829,8 @@ const PageOverviewNew = () => {
       name: 'M Followers',
       width: 200,
       renderRowCell: (row) => {
-        return formatNumber(row.followers_count);
+        let followerCount = Math.max(0, row?.followers_count || 0);
+        return formatNumber(followerCount);
       },
     },
     {
@@ -890,9 +887,9 @@ const PageOverviewNew = () => {
         const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
         const postPrice = postData ? postData.instagram_post : 0;
         return (
-          <>
-            {postPrice > 0 ? `₹${postPrice}` : 'NA'}
-          </>
+
+          postPrice > 0 ? Number(postPrice) : 0
+
         );
       },
       compare: true,
@@ -905,9 +902,9 @@ const PageOverviewNew = () => {
         const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
         const storyPrice = storyData ? storyData.instagram_story : 0;
         return (
-          <>
-            {storyPrice > 0 ? `₹${storyPrice}` : 'NA'}
-          </>
+
+          storyPrice > 0 ? Number(storyPrice) : 0
+
         );
       },
       compare: true,
@@ -919,39 +916,51 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
         const bothPrice = bothData ? bothData.instagram_both : 0;
-        return (
-          <>
-            {bothPrice > 0 ? `₹${bothPrice}` : 'NA'}
-          </>
-        );
+        return bothPrice
       },
       compare: true,
     },
     {
       key: 'm_story_price',
-      name: ' M Story',
+      name: 'M Story',
       width: 200,
-
+      renderRowCell: (row) => {
+        const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
+        const storyPrice = storyData ? storyData.instagram_m_story : 0;
+        return storyPrice;
+      },
+      compare: true,
     },
     {
       key: 'm_post_price',
-      name: ' M Post',
+      name: 'M Post',
       width: 200,
-
+      renderRowCell: (row) => {
+        const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
+        const postPrice = postData ? postData.instagram_m_post : 0;
+        return postPrice;
+      },
+      compare: true,
     },
     {
       key: 'm_both_price',
-      name: ' M Both',
+      name: 'M Both',
       width: 200,
+      renderRowCell: (row) => {
+        const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
+        const bothPrice = bothData ? bothData.instagram_m_both : 0;
+        return bothPrice;
+      },
+      compare: true,
+    }
+    ,
 
-    },
+    // {
+    //   key: 'ownership_type',
+    //   name: 'Ownership',
+    //   width: 200,
 
-    {
-      key: 'ownership_type',
-      name: 'Ownership',
-      width: 200,
-
-    },
+    // },
     {
       key: 'page_price_multiple',
       name: 'Price',
@@ -1075,7 +1084,7 @@ const PageOverviewNew = () => {
               <VendorDetails
                 vendorDetails={vendorDetails}
                 setVendorDetails={setVendorDetails}
-                tab1 ={"tab1"}
+                tab1={"tab1"}
               />
             )}
             <button

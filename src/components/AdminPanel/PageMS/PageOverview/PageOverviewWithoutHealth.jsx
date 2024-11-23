@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import View from "../../Sales/Account/View/View";
-import CustomTable from "../../../CustomTable/CustomTable";
+// import CustomTable from "../../../CustomTable/CustomTable";
 import jwtDecode from "jwt-decode";
 import {
   useGetAllPageCategoryQuery,
@@ -17,6 +17,7 @@ import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 import PageOverviewHeader from "./PageOverviewHeader";
 import { useEffect } from "react";
+import CustomTableV2 from "../../../CustomTable_v2/CustomTableV2";
 
 
 function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter,
@@ -172,7 +173,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
           {isLoading ? (
             <SkeletonLoader />
           ) : (
-            <CustomTable
+            <CustomTableV2
               columns={columns}
               data={pageList}
               isLoading={false}
