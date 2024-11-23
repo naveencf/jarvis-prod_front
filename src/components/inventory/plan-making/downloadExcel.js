@@ -146,9 +146,9 @@ export const downloadExcel = async (
 
         totalCost +=
           postCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_post') +
+          getPriceDetail(page.page_price_list, 'instagram_post') +
           storyCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_story');
+          getPriceDetail(page.page_price_list, 'instagram_story');
       });
       let serialNumber = 1;
       for (const [categoryName, categoryData] of Object.entries(categories)) {
@@ -330,7 +330,7 @@ export const downloadExcel = async (
     '',
     '',
     '',
-    `₹${agencyFee}`,
+    `₹${formatIndianNumber(agencyFee)}`,
   ]);
   agencyRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
@@ -353,7 +353,7 @@ export const downloadExcel = async (
     '',
     '',
     '',
-    `₹${gstPrice}`,
+    `₹${formatIndianNumber(gstPrice)}`,
   ]);
   gstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
@@ -371,7 +371,7 @@ export const downloadExcel = async (
     '',
     '',
     '',
-    `₹${totalCostWithGst}`,
+    `₹${formatIndianNumber(totalCostWithGst)}`,
   ]);
 
   totalWithGstRow.eachCell((cell, colNumber) => {
@@ -432,7 +432,7 @@ export const downloadExcel = async (
   overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
   overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
   const sellingPriceforsheet = overviewSheet.getCell('G8');
-  sellingPriceforsheet.value = `₹${planDetails[0]?.selling_price}`;
+  sellingPriceforsheet.value = `₹${formatIndianNumber(planDetails[0]?.selling_price)}`;
 
   // Merge the B column cells for all note rows and set "Note" as the text
   if (checkedDescriptions.length > 0) {
@@ -524,9 +524,8 @@ export const downloadExcel = async (
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${
-      planDetails && formatString(planDetails[0]?.plan_name)
-    }.xlsx`;
+    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)
+      }.xlsx`;
     a.click();
     URL.revokeObjectURL(url); // Clean up the URL
   });
