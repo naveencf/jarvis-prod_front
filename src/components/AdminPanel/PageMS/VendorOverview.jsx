@@ -33,47 +33,49 @@ import formatString from "../Operation/CampaignMaster/WordCapital";
 import UploadBulkVendorPages from "./Vendor/BulkVendor/UploadBulkVendorPages";
 import { constant } from "../../../utils/constants";
 import VendorMPriceModal from "./VendorMPriceModal";
+import { formatNumber } from "../../../utils/formatNumber";
+import CustomTableV2 from "../../CustomTable_v2/CustomTableV2";
 
 const VendorOverview = () => {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
- 
+
   const [vendorDetails, setVendorDetails] = useState(null);
-const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
-const [rowVendor , setRowVendor] = useState('')
-const [filterData, setFilterData] = useState([]);
-const [pageData, setPageData] = useState([]);
-const token = sessionStorage.getItem("token");
-const [activeTab, setActiveTab] = useState("Tab1");
-const [tabFilterData, setTabFilterData] = useState([]);
-const [categoryCounts, setCategoryCounts] = useState({});
-const [platformCounts, setPlatformCounts] = useState([]);
-const [stateDataS, setStateDataS] = useState([]);
-const [cityDataS, setCityDataS] = useState([]);
-const { data: pageList } = useGetAllPageListQuery();
-const [getRowData, setGetRowData] = useState([]);
+  const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
+  const [rowVendor, setRowVendor] = useState('')
+  const [filterData, setFilterData] = useState([]);
+  const [pageData, setPageData] = useState([]);
+  const token = sessionStorage.getItem("token");
+  const [activeTab, setActiveTab] = useState("Tab1");
+  const [tabFilterData, setTabFilterData] = useState([]);
+  const [categoryCounts, setCategoryCounts] = useState({});
+  const [platformCounts, setPlatformCounts] = useState([]);
+  const [stateDataS, setStateDataS] = useState([]);
+  const [cityDataS, setCityDataS] = useState([]);
+  const { data: pageList } = useGetAllPageListQuery();
+  const [getRowData, setGetRowData] = useState([]);
 
-const { data: vendor } = useGetAllVendorTypeQuery();
-const typeData = vendor?.data;
-const { data: platform } = useGetPmsPlatformQuery();
-const platformData = platform?.data;
+  const { data: vendor } = useGetAllVendorTypeQuery();
+  const typeData = vendor?.data;
+  const { data: platform } = useGetPmsPlatformQuery();
+  const platformData = platform?.data;
 
-const { data: cycle } = useGetPmsPayCycleQuery();
-const cycleData = cycle?.data;  
-const {
-  data: vendorData,
-  isLoading: loading,
-  refetch: refetchVendor,
-} = useGetAllVendorQuery(); 
+  const { data: cycle } = useGetPmsPayCycleQuery();
+  const cycleData = cycle?.data;
+  const {
+    data: vendorData,
+    isLoading: loading,
+    refetch: refetchVendor,
+  } = useGetAllVendorQuery();
 
-const handleUpdateVendorMPrice = (row) =>{
-  setOpenUpdateVendorMPrice(true);
-  setRowVendor(row)
-}
-const handleCloseVendorMPriceModal = () => {
-  setOpenUpdateVendorMPrice(false);
-};
+  const handleUpdateVendorMPrice = (row) => {
+    setOpenUpdateVendorMPrice(true);
+    setRowVendor(row)
+  }
+  const handleCloseVendorMPriceModal = () => {
+    setOpenUpdateVendorMPrice(false);
+  };
 
 
 
@@ -140,6 +142,7 @@ const handleCloseVendorMPriceModal = () => {
       );
 
       setPageData(result.data.data);
+      console.log(result.data.data);
     } catch (error) {
       console.error("Error fetching vendor pages:", error);
     }
@@ -193,32 +196,114 @@ const handleCloseVendorMPriceModal = () => {
 
   const columns = [
     {
+      key: "S.No",
       name: "S.No",
-      cell: (row, index) => <div>{index + 1}</div>,
-      width: "10%",
-      sortable: true,
+      renderRowCell: (row, index) => index + 1,
+      width: 50,
+
     },
     {
+      key: "page_name",
       name: "Page Name",
-      selector: (row) => (
+      renderRowCell: (row) => (
         <a href={row.page_link} target="blank">
-          {row.page_name}
+          {formatString(row.page_name)}
         </a>
       ),
-      width: "30%",
-      sortable: true,
+      width: 200,
+
     },
-    
+
     {
-      name: "followers",
-      selector: (row) => row.followers_count,
-      width: "20%",
+      key: "followers",
+      name: "Followers",
+      // renderRowCell: (row) => row.followers_count,
+      renderRowCell: (row) => {
+        let followerCount = Math.max(0, row?.followers_count || 0);
+        return formatNumber(followerCount);
+      },
+      width: 200,
+    },
+    // {
+    //   key: "Ownership Type",
+    //   name: "Ownership Type",
+    //   renderRowCell: (row) => row.ownership_type,
+    //   width: 200,
+    // },
+    {
+      key: 'Post Price',
+      name: 'Post Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
+        const postPrice = postData ? postData.instagram_post : 0;
+        return (
+
+          postPrice > 0 ? Number(postPrice) : 0
+
+        );
+      },
+      compare: true,
     },
     {
-      name: "Ownership Type",
-      selector: (row) => row.ownership_type,
-      width: "20%",
+      key: 'Story Price',
+      name: 'Story Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
+        const storyPrice = storyData ? storyData.instagram_story : 0;
+        return (
+
+          storyPrice > 0 ? Number(storyPrice) : 0
+
+        );
+      },
+      compare: true,
     },
+    {
+      key: 'Both Price',
+      name: 'Both Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
+        const bothPrice = bothData ? bothData.instagram_both : 0;
+        return bothPrice
+      },
+      compare: true,
+    },
+    {
+      key: 'm_story_price',
+      name: 'M Story',
+      width: 200,
+      renderRowCell: (row) => {
+        const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
+        const storyPrice = storyData ? storyData.instagram_m_story : 0;
+        return storyPrice;
+      },
+      compare: true,
+    },
+    {
+      key: 'm_post_price',
+      name: 'M Post',
+      width: 200,
+      renderRowCell: (row) => {
+        const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
+        const postPrice = postData ? postData.instagram_m_post : 0;
+        return postPrice;
+      },
+      compare: true,
+    },
+    {
+      key: 'm_both_price',
+      name: 'M Both',
+      width: 200,
+      renderRowCell: (row) => {
+        const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
+        const bothPrice = bothData ? bothData.instagram_m_both : 0;
+        return bothPrice;
+      },
+      compare: true,
+    }
   ];
 
   const dataGridcolumns = [
@@ -281,14 +366,14 @@ const handleCloseVendorMPriceModal = () => {
     },
     {
       key: "Price_Update",
-      name:"Price Update",
+      name: "Price Update",
       renderRowCell: (row) => {
         return (
           <div>
             {
               <button
                 title="Price Update"
-                onClick={()=> handleUpdateVendorMPrice(row)}
+                onClick={() => handleUpdateVendorMPrice(row)}
                 className="btn cmnbtn btn_sm btn-outline-primary"
               >
                 Price Update
@@ -465,7 +550,7 @@ const handleCloseVendorMPriceModal = () => {
         </>
       ),
     },
-   
+
   ];
 
   const deletePhpData = async (row) => {
@@ -556,29 +641,28 @@ const handleCloseVendorMPriceModal = () => {
 
   return (
     <>
-    <VendorMPriceModal
-    open={openUpdateVendorMPrice}
-    onClose={handleCloseVendorMPriceModal}
-    rowData={rowVendor}
-    />
+      <VendorMPriceModal
+        open={openUpdateVendorMPrice}
+        onClose={handleCloseVendorMPriceModal}
+        rowData={rowVendor}
+      />
       <div className="modal fade" id="myModal" role="dialog">
         <div className="modal-dialog" style={{ maxWidth: "40%" }}>
           <div className="modal-content">
             <div className="modal-header">
+              <h4 className="modal-title">Vendor Pages - {formatString(pageData[0]?.vendor_name)}</h4>
               <button type="button" className="close" data-dismiss="modal">
                 &times;
               </button>
-              <h4 className="modal-title"></h4>
             </div>
             <div className="modal-body">
-              <DataTable
-                // title="Role Overview"
+
+              <CustomTableV2
                 columns={columns}
                 data={pageData}
-                fixedHeader
-                pagination
-                fixedHeaderScrollHeight="62vh"
-                highlightOnHover
+                // isLoading={false}
+                // title={"Vendor-Pages"}
+                tableName={"Vendor-Pages : Price"}
               />
             </div>
             <div className="modal-footer">
@@ -693,7 +777,7 @@ const handleCloseVendorMPriceModal = () => {
                         ))}
                       </Grid>
                     </Box>
-                  ) : (                 
+                  ) : (
                     <View
                       columns={dataGridcolumns}
                       data={filterData}
@@ -857,7 +941,7 @@ const handleCloseVendorMPriceModal = () => {
                       <div
                         className="card"
                         key={state}
-                        // onClick={() => vendorWithCategories(state)}
+                      // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -889,7 +973,7 @@ const handleCloseVendorMPriceModal = () => {
                       <div
                         className="card"
                         key={city}
-                        // onClick={() => vendorWithCategories(city)}
+                      // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
