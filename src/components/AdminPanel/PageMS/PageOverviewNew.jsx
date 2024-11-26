@@ -69,6 +69,7 @@ const PageOverviewNew = () => {
   const [activenessFilter, setActivenessFilter] = useState(null);
   const [filterFollowers, setFilterFollowers] = useState(null);
 
+
   const {
     data: pageList,
     refetch: refetchPageList,
@@ -797,6 +798,11 @@ const PageOverviewNew = () => {
     {
       key: 'ownership_type',
       name: 'Ownership',
+      width: 200,
+    },
+    {
+      key: 'page_layer',
+      name: 'Page Layer',
       width: 200,
     },
     {

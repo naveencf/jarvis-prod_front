@@ -644,6 +644,10 @@ export default function FinanceWFHDashboard() {
       renderCell: (params) => {
         return <div>{params.row.net_salary?.toFixed(0)}</div>;
       },
+      valueFormatter: (params) => {
+        const value = params.value; 
+        return Math.round(value); 
+      },
     },
     {
       headerName: "TDS Deduction",
@@ -655,12 +659,19 @@ export default function FinanceWFHDashboard() {
     },
     {
       headerName: "To Pay",
-      field: "to_pay",
+      field: "toPay",
       width: 150,
       renderCell: (params) => {
-        return <div>{`${params.row.toPay?.toFixed(0)}  ₹`}</div>;
+        const value = params.value; 
+        const roundedValue = Math.round(value);
+        return <div>{roundedValue}</div>;
       },
-    },
+      valueFormatter: (params) => {
+        const value = params.value; 
+        return Math.round(value); 
+      },
+    }
+,    
     {
       headerName: "Status",
       field: "attendence_status_flow",

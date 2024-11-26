@@ -89,13 +89,15 @@ const UserSingle = () => {
     <>
       <div className="box">
         <div id="content">
+          <div style={{display:"flex" , justifyContent:'end'}}>
           <button
-            className="btn btn-danger"
+            className="btn-warning btn cmnbtn btn_sm mr-2"
             onClick={() => {
               setpreview(true);
             }}
           >
-            NDA Download
+            NDA Preview
+            <i className="fa fa-eye" aria-hidden="true"></i>
           </button>
           <PDFDownloadLink
             document={<NDA allUserData={user} />}
@@ -106,6 +108,7 @@ const UserSingle = () => {
               <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
             </button>
           </PDFDownloadLink>
+          </div>
           <FormContainer
             submitButton={false}
             mainTitle="User"

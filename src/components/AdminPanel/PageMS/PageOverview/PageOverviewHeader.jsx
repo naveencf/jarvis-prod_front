@@ -18,9 +18,19 @@ import { Link } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExportInventory from "../../../../components/AdminPanel/PageMS/PageOverview/ExportInventory";
+import SarcasmNetwork from "../SarcasmNetwork";
 
-function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCategoryFilter,
-  activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers }) {
+function PageOverviewHeader({
+  onFilterChange,
+  pagequery,
+  categoryFilter,
+  setCategoryFilter,
+  activenessFilter,
+  setActivenessFilter,
+  filterFollowers,
+  setFilterFollowers,
+  selectedData
+}) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -32,6 +42,8 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
   const subCategoryData = subCategory?.data || [];
   const { data: profileData } = useGetAllProfileListQuery();
   const profileDataOptions = profileData?.data || [];
+
+  
 
   // Filter states
   // const [categoryFilter, setCategoryFilter] = useState("");
@@ -62,13 +74,13 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
     { label: "Dead", value: "dead" },
   ];
   const FollowerRanges = [
-    { label: '0.1M To 0.3M', value: [100000, 300000] },
-    { label: '0.3M To 0.5M', value: [300000, 500000] },
-    { label: '0.5M To 0.7M', value: [500000, 700000] },
-    { label: '0.7M To 1M', value: [700000, 1000000] },
-    { label: '1M to 2M', value: [1000000, 2000000] },
-    { label: '2M to 5M', value: [2000000, 5000000] },
-    { label: ' 5M', value: [5000000, 40000000] }
+    { label: "0.1M To 0.3M", value: [100000, 300000] },
+    { label: "0.3M To 0.5M", value: [300000, 500000] },
+    { label: "0.5M To 0.7M", value: [500000, 700000] },
+    { label: "0.7M To 1M", value: [700000, 1000000] },
+    { label: "1M to 2M", value: [1000000, 2000000] },
+    { label: "2M to 5M", value: [2000000, 5000000] },
+    { label: " 5M", value: [5000000, 40000000] },
   ];
   useEffect(() => {
     const storedFilters = JSON.parse(sessionStorage.getItem("filters"));
@@ -107,9 +119,9 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
 
   const handleSelectionChange = (event, newValue) => {
     if (newValue) {
-      setFilterFollowers(newValue)
+      setFilterFollowers(newValue);
     } else {
-      setFilterFollowers(null)
+      setFilterFollowers(null);
     }
   };
 
@@ -126,20 +138,20 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
         : "",
       platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
       ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
-      filterFollowers ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`
+      filterFollowers
+        ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`
         : "",
       activenessFilter
-        ? `page_activeness=${activenessOptions.find(
-          (option) => option.value === activenessFilter.toLowerCase()
-        )?.value?.toLowerCase()
-        }`
+        ? `page_activeness=${activenessOptions
+            .find((option) => option.value === activenessFilter.toLowerCase())
+            ?.value?.toLowerCase()}`
         : "",
       searchTerm ? `search=${searchTerm.toLowerCase()}` : "",
       sortField ? `sort_by=${sortField}&order=${sortOrder}` : "",
     ]
       .filter(Boolean)
       .join("&");
-    console.log(newQuery)
+    console.log(newQuery);
 
     // setPagequery(newQuery);
     onFilterChange(newQuery);
@@ -153,7 +165,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
     searchTerm,
     sortField,
     sortOrder,
-    filterFollowers
+    filterFollowers,
   ]);
   // Utility function to count matching pages based on filter
   const getCount = (list, filterKey, value) => {
@@ -257,6 +269,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
               </Breadcrumbs>
             </h5>
             <div className="flexCenter colGap8">
+              <SarcasmNetwork selectedData={selectedData}/>
               <Link
                 to={`/admin/pms-page-master`}
                 className="btn cmnbtn btn_sm btn-outline-primary"
@@ -357,7 +370,9 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
                 onChange={handleSelectionChange}
                 options={FollowerRanges}
                 getOptionLabel={(option) => option.label}
-                renderInput={(params) => <TextField {...params} label="Followers" />}
+                renderInput={(params) => (
+                  <TextField {...params} label="Followers" />
+                )}
               />
             </div>
             {decodedToken?.role_id == 1 && (

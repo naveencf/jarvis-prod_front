@@ -77,6 +77,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [bio, setBio] = useState("");
   const [singlePage, setSinglePage] = useState({});
 
+  console.log(singlePage.
+    temp_vendor_id , 'lalit console')
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -471,7 +473,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
-          temp_vendor_id: singlePage.vendor_id,
+          temp_vendor_id: singlePage.temp_vendor_id,
           story: storyPrice?.price,
           post: postPrice?.price,
           both_: bothPrice?.price,

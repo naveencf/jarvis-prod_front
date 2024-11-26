@@ -1413,15 +1413,25 @@ console.log(Number(creditLimit),"formData",creditLimit)
 
 
   //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
+  console.log(monthlyGrossSalary , 'monthly gross salary')
   let salary = monthlyGrossSalary;
   let basicSalary = salary * 0.6;
-  let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(
+  let basicsal = (basicSalary <= 12300 ? salary * 0.8 : basicSalary).toFixed(
       0
   );
   let EmployeePF = parseFloat(
     (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
 );
-const EMPPF= userData.emergency_contact_person_name2 == "pf_and_esic" && EmployeePF*12 
+
+
+let EmployeerESIC = 0;
+
+if (salary <= 21000 && isApplicable == "pf_and_esic" ) {
+  EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
+}
+const EMPPF = isApplicable == "pf_and_esic" 
+  ? (EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0)) 
+  : 0;
   
   const genralFields = (
     <>
