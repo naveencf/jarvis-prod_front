@@ -247,7 +247,7 @@ const NDA = ({allUserData}) => {
           <View style={styles.section}>
             <View style={styles.section}>
               <Text>
-                This Non-Disclosure Agreement (“Agreement”) is effective from {" "}
+                This Non-Disclosure Agreement (“Agreement”)  is effective from {" "}
                 {formatDate(allUserData?.joining_date)} ,(“Effective Date”), at Creativefuel Pvt. Ltd, Indore.
               </Text>
             </View>

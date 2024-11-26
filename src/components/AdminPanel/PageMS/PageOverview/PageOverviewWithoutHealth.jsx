@@ -18,6 +18,7 @@ import { baseUrl } from "../../../../utils/config";
 import PageOverviewHeader from "./PageOverviewHeader";
 import { useEffect } from "react";
 import CustomTableV2 from "../../../CustomTable_v2/CustomTableV2";
+import SarcasmNetwork from "../SarcasmNetwork";
 
 
 function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter,
@@ -27,6 +28,10 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+const [selectedData , setSelectedData] = useState([])
+console.log(selectedData , 'slelected console')
+
   const {
     data: pageList,
     refetch: refetchPageList,
@@ -166,7 +171,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
 
   return (
     <div className="card">
-      <PageOverviewHeader onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
+      <PageOverviewHeader selectedData={selectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
         activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
       <div className="card-body p0">
         <div className="data_tbl thm_table table-responsive">
@@ -178,6 +183,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
               data={pageList}
               isLoading={false}
               // title={"Page Overview"}
+              selectedData={setSelectedData}
               Pagination={[100, 200, 1000]}
               rowSelectable={true}
               tableName={"PageOverview_without_health"}
@@ -190,6 +196,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
           >
             migration
           </button> */}
+          {/* <SarcasmNetwork selectedData={selectedData}/> */}
         </div>
       </div>
     </div>

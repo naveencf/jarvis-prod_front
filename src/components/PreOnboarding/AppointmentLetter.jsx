@@ -983,6 +983,7 @@ const AppointmentLetter = ({ allUserData, image64 ,EMPPF}) => {
                             <Inhandmore UserDetails={UserDetails} />
                         )}
 
+<Text style={styles.points}></Text>
                     <View style={[styles.section,{marginTop:3}]}>
                         <Text>This document will give you clarity on terms associated with compensation and benefits as per
                             organization policies in effect. Kindly go through and provide your acceptance for the same. </Text>
@@ -999,11 +1000,15 @@ const AppointmentLetter = ({ allUserData, image64 ,EMPPF}) => {
                         <Text style={styles.text} >Pallavi Tomar</Text>
                         <Text style={styles.text}>(HR Manager)</Text>
                     </View>
+                    <Text style={styles.points}></Text>
+                    <Text style={styles.points}></Text>
                     <Text>
                         ** I, {allUserData?.user_name} acknowledge that i have received, read
                         through and understand the contents of this letter and agree to
                         the contents here in.
                     </Text>
+                    <Text style={styles.points}></Text>
+                    <Text style={styles.points}></Text>
                 </View>
                 <View style={[styles.section, { paddingBottom: 0 }]}>
                     <Text style={[styles.text, { marginTop: 0 }]}>Signature:</Text>

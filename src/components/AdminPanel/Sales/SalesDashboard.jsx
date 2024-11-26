@@ -278,7 +278,7 @@ const SalesDashboard = () => {
       <div className="action_heading">
         <div className="action_title">
           <FormContainer
-            mainTitle={`Hey ${userName},
+            mainTitle={`Hey ${userName.split(" ")[0]},
 How are you doing today?`}
             link={true}
           />

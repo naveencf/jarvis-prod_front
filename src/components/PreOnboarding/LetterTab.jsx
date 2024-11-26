@@ -73,7 +73,15 @@ const LetterTab = ({ allUserData, gettingData }) => {
   let EmployeePF = parseFloat(
     (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
 );
-const EMPPF= allUserData.emergency_contact_person_name2 == "pf_and_esic" && EmployeePF*12 
+
+let EmployeerESIC = 0;
+
+if (salary <= 21000 && allUserData.emergency_contact_person_name2 === "pf_and_esic" ) {
+  EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
+}
+const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic" 
+  ? (EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0)) 
+  : 0;
 
   const handelClose = () => {
     setpreview(!previewOffer);

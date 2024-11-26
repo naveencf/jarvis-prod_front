@@ -1,3 +1,4 @@
+import { data } from "jquery";
 import React from "react";
 import Select from "react-select";
 
@@ -24,30 +25,50 @@ const CustomSelect = ({
 
   const isAllSelected = dataArray?.length === selectedId?.length;
 
-  const valueProp = multiple
-    ? selectedId?.map((id) => ({
-        value: id,
-        label: findOptionLabelById(id),
-      }))
-    : dataArray?.find((option) => option[optionId] === selectedId)
-    ? {
+  let valueProp;
+  if (multiple) {
+    const selection = selectedId?.map((id) => ({
+      value: id,
+      label: findOptionLabelById(id),
+    }));
+    valueProp = isAllSelected ? [selectAllOption, ...selection] : selection;
+  } else {
+    const selectedOption = dataArray?.find(
+      (option) => option[optionId] === selectedId
+    );
+    if (selectedOption) {
+      valueProp = {
         value: selectedId,
         label: findOptionLabelById(selectedId),
-      }
-    : null;
+      };
+    } else {
+      valueProp = null;
+    }
+  }
 
-  const handleChange = (selectedOptions) => {
+  const handleChange = (selectedOptions, action_meta) => {
+    console.log(action_meta);
+
     if (multiple) {
       if (
         selectedOptions?.some(
           (option) => option.value === selectAllOption.value
         )
       ) {
-        if (isAllSelected) {
-          setSelectedId([]);
+        if (action_meta.action === "remove-value") {
+          setSelectedId(
+            dataArray?.filter(
+              (option) => option[optionId] != action_meta.removedValue.value
+            )?.optionId
+          );
         } else {
           setSelectedId(dataArray?.map((option) => option[optionId]));
         }
+      } else if (
+        action_meta.action === "remove-value" &&
+        action_meta.removedValue.value === selectAllOption.value
+      ) {
+        setSelectedId([]);
       } else {
         setSelectedId(selectedOptions?.map((option) => option?.value));
       }
@@ -65,6 +86,8 @@ const CustomSelect = ({
     options?.unshift(selectAllOption);
   }
 
+  console.log(selectedId);
+
   return (
     <div className={`form-group col-${fieldGrid}`}>
       <label className="form-label">
@@ -73,11 +96,7 @@ const CustomSelect = ({
       <Select
         filterOption={filterOption}
         options={options}
-        value={
-          multiple && isAllSelected
-            ? [selectAllOption, ...valueProp]
-            : valueProp
-        }
+        value={valueProp}
         onChange={handleChange}
         required={required}
         isDisabled={disabled}
