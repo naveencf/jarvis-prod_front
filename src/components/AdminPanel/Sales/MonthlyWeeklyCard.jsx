@@ -48,10 +48,12 @@ const MonthlyWeeklyCard = ({
             </div>
             <div className="titleCardText">
               <h2 className={titleClass}>{title}</h2>
-              <h3>
-                {DateISOtoNormal(data?.startDate)} to{" "}
-                {DateISOtoNormal(data?.endDate)}
-              </h3>
+              {title !== "Total" && (
+                <h3>
+                  {DateISOtoNormal(data?.startDate)} to{" "}
+                  {DateISOtoNormal(data?.endDate)}
+                </h3>
+              )}
             </div>
           </div>
         </div>
@@ -67,21 +69,23 @@ const MonthlyWeeklyCard = ({
                 onClick={() => handleNavigate(data?.startDate, data?.endDate)}
               >
                 <span>Sales</span> {data?.totalSaleBookingCounts}
-                {renderGrowthBadge(
-                  data?.totalSaleBookingCounts,
-                  previousData?.totalSaleBookingCounts
-                )}
+                {title !== "Total" &&
+                  renderGrowthBadge(
+                    data?.totalSaleBookingCounts,
+                    previousData?.totalSaleBookingCounts || 0
+                  )}
               </li>
               <li
                 className="pointer"
                 onClick={() => handleNavigate(data?.startDate, data?.endDate)}
               >
                 <span>Booking Amount</span>{" "}
-                {formatIndianNumber(data?.totalCampaignAmount)}
-                {renderGrowthBadge(
-                  data?.totalCampaignAmount,
-                  previousData?.totalCampaignAmount
-                )}
+                {formatIndianNumber(Number(data?.totalCampaignAmount))}
+                {title !== "Total" &&
+                  renderGrowthBadge(
+                    data?.totalCampaignAmount,
+                    previousData?.totalCampaignAmount
+                  )}
               </li>
             </ul>
           </div>

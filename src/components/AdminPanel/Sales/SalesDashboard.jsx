@@ -23,6 +23,8 @@ import MonthlyWeeklyCard from "./MonthlyWeeklyCard";
 import TargetCard from "./TargetCard";
 import { useGetAllTargetCompetitionsQuery } from "../../Store/API/Sales/TargetCompetitionApi";
 import { useGetTotalSaleAmountDateWiseQuery } from "../../Store/API/Sales/SaleBookingApi";
+import { useGetSalesCategoryListQuery } from "../../Store/API/Sales/salesCategoryApi";
+import CustomSelect from "../../ReusableComponents/CustomSelect";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -40,6 +42,41 @@ const SalesDashboard = () => {
   const [endDate, setEndDate] = useState();
   const [salesBookingGridStat, setSalesBookingGridStat] = useState();
   const [salesBookingStat, setSalesBookingStat] = useState();
+  const [Cat_id, setCat_id] = useState(null);
+  const {
+    data: categoryDetails,
+    error: categoryDetailsError,
+    isLoading: categoryDetailsLoading,
+  } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
+
+  async function getweekly() {
+    setIsLoading(true);
+    try {
+      const response1 = await axios.get(
+        baseUrl +
+          `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
+            loginUserRole == 1 ? "true" : "false"
+          }${
+            loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
+          }`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      setWeekMonthCard(response1.data.data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    getweekly();
+  }, [Cat_id]);
 
   async function getData() {
     setIsLoading(true);
@@ -60,6 +97,8 @@ const SalesDashboard = () => {
         baseUrl +
           `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
             loginUserRole == 1 ? "true" : "false"
+          }${
+            loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
           }`,
         {
           headers: {
@@ -105,6 +144,7 @@ const SalesDashboard = () => {
       setIsLoading(false);
     }
   }
+
   const {
     data: allTargetCompetitionsData,
     refetch: refetchTargetCompetitions,
@@ -315,6 +355,26 @@ How are you doing today?`}
           </Link>
         </div>
       </div>
+      {loginUserRole === 1 && categoryDetails && (
+        <div className="card">
+          <div className="card-header">
+            <h5 className="card-title">Filter By Category</h5>
+          </div>
+          <div className="card-body row">
+            <CustomSelect
+              fieldGrid={4}
+              dataArray={[
+                ...categoryDetails,
+                { sales_category_id: null, sales_category_name: "All" },
+              ]?.reverse()}
+              optionId="sales_category_id"
+              optionLabel="sales_category_name"
+              selectedId={Cat_id}
+              setSelectedId={setCat_id}
+            />
+          </div>
+        </div>
+      )}
 
       <div className="row mt20">
         <MonthlyWeeklyCard
@@ -339,6 +399,32 @@ How are you doing today?`}
           data={weekMonthCard?.quarterlyData}
           previousData={weekMonthCard?.lastQuarterData}
           title="Quarterly"
+          cardclassName="bgTertiary"
+          titleclassName="colorTertiary"
+          colorclassName="bgTertiary"
+        />
+      </div>
+      <div className="row mt20">
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.halfYearlyData}
+          previousData={weekMonthCard?.lastHalfYearData}
+          title="Half Yearly"
+          cardclassName="bgTertiary"
+          titleclassName="colorTertiary"
+          colorclassName="bgTertiary"
+        />
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.yearlyData}
+          previousData={weekMonthCard?.lastYearData}
+          title="Yearly"
+          cardclassName="bgTertiary"
+          titleclassName="colorTertiary"
+          colorclassName="bgTertiary"
+        />
+        <MonthlyWeeklyCard
+          data={weekMonthCard?.totalData}
+          previousData={weekMonthCard?.Last}
+          title="Total"
           cardclassName="bgTertiary"
           titleclassName="colorTertiary"
           colorclassName="bgTertiary"

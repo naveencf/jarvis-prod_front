@@ -318,7 +318,8 @@ function DialogforBalancePaymentUpdate(props) {
             paidAmount === 0 ||
             paidAmount === "" ||
             paymentDetails === "" ||
-            paidPercentage >= 90
+            paidPercentage >= 90 ||
+            updateOutstandingBalancePaymentLoading
           }
           variant="contained"
           autoFocus

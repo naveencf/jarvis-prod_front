@@ -19,6 +19,8 @@ import {
   Cell,
   PieChart,
 } from "recharts";
+import { useGetSalesCategoryListQuery } from "../../../Store/API/Sales/salesCategoryApi";
+import getDecodedToken from "../../../../utils/DecodedToken";
 
 const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "red", "pink"];
 const data = [
@@ -47,9 +49,17 @@ const TriangleBar = (props) => {
 };
 
 const SalesReport = () => {
+  const loginUserId = getDecodedToken().id;
+  const loginUserRole = getDecodedToken().role_id;
   const [filter, setFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
+  const [Cat_id, setCat_id] = useState(null);
+  const {
+    data: categoryDetails,
+    error: categoryDetailsError,
+    isLoading: categoryDetailsLoading,
+  } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
 
   const [
     triggerGetSalesReport,
@@ -57,11 +67,11 @@ const SalesReport = () => {
   ] = useLazyGetSalesReportQuery();
 
   useEffect(() => {
-    triggerGetSalesReport({ filter, fromDate, toDate });
+    triggerGetSalesReport({ filter, fromDate, toDate, Cat_id });
   }, []);
 
   const handelSearch = () => {
-    triggerGetSalesReport({ filter, fromDate, toDate });
+    triggerGetSalesReport({ filter, fromDate, toDate, Cat_id });
   };
   console.log(salesReportData);
 
@@ -195,6 +205,20 @@ const SalesReport = () => {
                 onChange={(e) => setToDate(e.target.value)}
               />
             </>
+          )}
+          {categoryDetails && (
+            <CustomSelect
+              label={"Category"}
+              fieldGrid={4}
+              dataArray={[
+                ...categoryDetails,
+                { sales_category_id: null, sales_category_name: "None" },
+              ]?.reverse()}
+              optionId="sales_category_id"
+              optionLabel="sales_category_name"
+              selectedId={Cat_id}
+              setSelectedId={setCat_id}
+            />
           )}
           <div className="col-4 mt-4">
             <button className="btn cmnbtn btn-primary" onClick={handelSearch}>
