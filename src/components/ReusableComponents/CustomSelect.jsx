@@ -47,8 +47,6 @@ const CustomSelect = ({
   }
 
   const handleChange = (selectedOptions, action_meta) => {
-    console.log(action_meta);
-
     if (multiple) {
       if (
         selectedOptions?.some(
