@@ -108,7 +108,6 @@ function PlanHome() {
 
   const handleSuggestionClick = (suggestion) => {
     setInputValue(suggestion.value);
-    console.log('suggestion', suggestion);
     handleInputChange({
       target: { name: 'sellingPrice', value: suggestion.value },
     }); // Update the parent state
@@ -417,7 +416,7 @@ function PlanHome() {
   const handlePlanMaking = () => {
     setOpenDialog(true);
   };
-  console.log('brandId', planDetails);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

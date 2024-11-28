@@ -96,6 +96,7 @@ const LeftSideBar = ({
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
+  const planStatus = planDetails && planDetails[0]?.plan_status;
   // Function to get the platform name based on the platform ID
   // const getPlatformName = (platformId) => {
   //   const platformMap = {
@@ -139,11 +140,11 @@ const LeftSideBar = ({
       const platformName = getPlatformName(page.platform_id);
       const postCountForPage = postCount[page._id] || 0;
       const storyCountForPage = storyPerPage[page._id] || 0;
-
       return {
         'Page Name': page.page_name,
         Platform: platformName,
         Followers: page.followers_count,
+        planxId: page._id,
         'Post Count': postCountForPage,
         'Story Count': storyCountForPage,
         'Post Price': page.m_post_price,
@@ -252,7 +253,6 @@ const LeftSideBar = ({
     }
   };
 
- 
   const handleSave = () => {
     const payload = {
       id: planDetails && planDetails[0]._id,
@@ -444,13 +444,13 @@ const LeftSideBar = ({
         </div>
       </div>
       <div className="planLeftSideFooter">
-        <button className="btn icon">
+        {/* <button className="btn icon">
           <Tooltip title="Clear Recently Selected">
             <IconButton>
               <StackMinus />
             </IconButton>
           </Tooltip>
-        </button>
+        </button> */}
         <button className="btn icon" onClick={handlePreviewExcel}>
           {' '}
           <Tooltip title="Preview Excel">
@@ -479,7 +479,7 @@ const LeftSideBar = ({
             </IconButton>
           </Tooltip>
         </button> */}
-        <button className="btn icon" onClick={() => HandleSavePlan()}>
+        <button className="btn icon" onClick={() => HandleSavePlan(planStatus)}>
           <Tooltip title="Save Plan">
             <IconButton>
               <FloppyDiskBack />{' '}

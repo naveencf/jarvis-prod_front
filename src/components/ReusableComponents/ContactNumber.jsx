@@ -38,6 +38,45 @@ const ContactNumber = ({
     <>
       <TextField
         id="outlined-basic"
+        label={
+          <span>
+            {label}{" "}
+            {[
+              "Emergency Contact 1",
+              "Emergency Contact 2",
+              "Alternate Contact",
+            ].includes(label) && <span style={{ color: "red" }}>*</span>}
+          </span>
+        }
+        variant="outlined"
+        type="text"
+        inputProps={{ maxLength: 10, pattern: "[0-9]*" }}
+        InputProps={{
+          disabled: ![
+            "Emergency Contact 1",
+            "Emergency Contact 2",
+            "Alternate Contact",
+          ].includes(label),
+        }}
+        value={contact}
+        onChange={handleContactChange}
+        onBlur={handleContactBlur}
+      />
+
+      {/* {(isContactTouched || contact?.length >= 10) && !isValidcontact && (
+        <p className="validation_message error">*Please enter valid number</p>
+      )} */}
+    </>
+  );
+};
+
+export default ContactNumber;
+
+// old text fields ------------------------------------------------------------
+
+{
+  /* <TextField
+        id="outlined-basic"
         label={label}
         variant="outlined"
         type="text"
@@ -50,12 +89,5 @@ const ContactNumber = ({
         value={contact}
         onChange={handleContactChange}
         onBlur={handleContactBlur}
-      />
-      {/* {(isContactTouched || contact?.length >= 10) && !isValidcontact && (
-        <p className="validation_message error">*Please enter valid number</p>
-      )} */}
-    </>
-  );
-};
-
-export default ContactNumber;
+      /> */
+}

@@ -123,7 +123,9 @@ export const downloadExcel = async (
       const categories = {};
       // console.log(platformData, "platformData")
       platformData.forEach((page) => {
+        console.log('page', page);
         const categoryId = page.page_category_id;
+        const pageLink = `https://www.instagram.com/${page.page_name}`;
         const categoryName =
           category?.find((cat) => cat._id === categoryId)?.page_category ||
           'Unknown';
@@ -136,7 +138,7 @@ export const downloadExcel = async (
         categories[categoryName].push({
           S_No: categories[categoryName].length + 1,
           Username: page.page_name || 'N/A',
-          'Profile Link': page.page_link || 'N/A',
+          'Profile Link': pageLink || 'N/A',
           Followers: formatIndianNumber(page.followers_count) || 0,
           'Post Count': postCountValue,
           'Story Count': storyCountValue,
@@ -173,6 +175,7 @@ export const downloadExcel = async (
         // Apply border to all rows in category sheet
         sheet.eachRow((row, rowIndex) => {
           row.eachCell((cell, colNumber) => {
+            cell.font = { name: 'Comic Sans MS', bold: true, color: { argb: 'FF000000' } };
             cell.border = {
               top: { style: 'thin' },
               left: { style: 'thin' },
@@ -239,7 +242,8 @@ export const downloadExcel = async (
 
         // Style header row
         sheet.getRow(1).eachCell((cell) => {
-          cell.font = { bold: true, color: { argb: 'FF000000' } };
+          // cell.font = { bold: true, color: { argb: 'FF000000' } };
+          cell.font = { name: 'Comic Sans MS', bold: true, color: { argb: 'FF000000' } };
           cell.alignment = { horizontal: 'center' };
           cell.fill = {
             type: 'pattern',
@@ -479,10 +483,10 @@ export const downloadExcel = async (
   overviewSheet.getRow(5).height = 20;
   overviewSheet.getColumn(1).width = 15; // Empty column for spacing
   overviewSheet.getColumn(2).width = 15; // Sno.
-  overviewSheet.getColumn(3).width = 50; // Description
+  overviewSheet.getColumn(3).width = 40; // Description
   overviewSheet.getColumn(4).width = 30; // Platform
   overviewSheet.getColumn(5).width = 20; // Count
-  overviewSheet.getColumn(6).width = 50; // Deliverables
+  overviewSheet.getColumn(6).width = 30; // Deliverables
   overviewSheet.getColumn(7).width = 15; // Cost
 
   // Define the range for the content area

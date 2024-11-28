@@ -129,7 +129,7 @@ const DataGridOverviewColumns = ({
     {
       key: 'own_page_cost',
       name: 'Own Pages Cost',
-      renderRowCell: (row) => row.own_pages_cost_price,
+      renderRowCell: (row) => Math.floor(row.own_pages_cost_price),
       width: 150,
       showCol: true,
     },
@@ -139,7 +139,7 @@ const DataGridOverviewColumns = ({
       renderRowCell: (row) => (
         <div
           className={`badge ${
-            row.plan_status === 'close' ? 'badge-success' : 'badge-danger'
+            row.plan_status !== 'close' ? 'badge-success' : 'badge-danger'
           }`}
           style={{ cursor: 'pointer' }}
           onClick={() => handleStatusChange(row)}

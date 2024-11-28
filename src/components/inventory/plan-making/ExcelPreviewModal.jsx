@@ -14,7 +14,13 @@ import {
   Tabs,
   Tab,
   TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
+import { useSendPlanDetails } from './apiServices';
+import { useParams } from 'react-router-dom';
 
 const ExcelPreviewModal = ({
   open,
@@ -36,8 +42,11 @@ const ExcelPreviewModal = ({
 }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
-
-  // Prepare data categorized by category when the modal opens
+  const [mainCategory, setMainCategory] = useState('');
+  const [mergedCategories, setMergedCategories] = useState([]);
+  const [previewDataMerge, setPreviewDataMerge] = useState([]);
+  const { id } = useParams();
+  const { sendPlanDetails } = useSendPlanDetails(id);
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
@@ -53,12 +62,11 @@ const ExcelPreviewModal = ({
     setCategoryData(categorizedData);
   }, [previewData, categories]);
 
-  // Handler for changing tabs
   const handleTabChange = (event, newValue) => {
-    setSelectedTab(newValue);
+    const validTabValue = Math.min(newValue, Object.keys(categoryData).length); 
+    setSelectedTab(validTabValue);
   };
 
-  // Function to calculate totals for a category
   const calculateTotals = (data) => {
     let totalPostCost = 0;
     let totalStoryCost = 0;
@@ -75,19 +83,89 @@ const ExcelPreviewModal = ({
     return { totalPostCount, totalStoryCount, totalPostCost, totalStoryCost };
   };
 
-  // Calculate totals for all preview data
   const overallTotals = calculateTotals(previewData);
 
-  // Handle agency fee percentage change
   const handleAgencyFeeChange = (event) => {
     const value = event.target.value;
     if (value >= 0 && value <= 100) {
       setAgencyFees(value);
     }
   };
+
   const handleDeliverableTextChange = (event) => {
-    const value = event.target.value;
-    setDeliverableText(value);
+    setDeliverableText(event.target.value);
+  };
+
+  const handleMainCategoryChange = (event) => {
+    setMainCategory(event.target.value);
+  };
+
+  const handleMergedCategoriesChange = (event) => {
+    setMergedCategories(event.target.value);
+  };
+
+  const handleMergeCategories = () => {
+    if (!mainCategory || mergedCategories.length === 0) return;
+
+    // Create a map of category names to IDs for easier lookups
+    const categoryMap = categories.reduce((acc, cat) => {
+      acc[cat.page_category] = cat._id; // Map category name to its ID
+      return acc;
+    }, {});
+
+    // Find the ID for the selected main category
+    const mainCategoryId = categoryMap[mainCategory];
+
+    if (!mainCategoryId) {
+      console.error('Main category ID not found');
+      return;
+    }
+
+    // Clone the category data and update preview data
+    const updatedCategoryData = { ...categoryData };
+    const updatedPreviewData = [...previewData];
+
+    // Loop through the merged categories
+    mergedCategories.forEach((categoryName) => {
+      if (updatedCategoryData[categoryName]) {
+        updatedCategoryData[categoryName].forEach((item) => {
+          const index = updatedPreviewData.findIndex((data) => data === item);
+          if (index !== -1) {
+            // Update the category ID in the preview data to the main category's ID
+            updatedPreviewData[index].category = mainCategoryId;
+          }
+        });
+
+        // Merge the category data into the main category
+        updatedCategoryData[mainCategory] = [
+          ...(updatedCategoryData[mainCategory] || []),
+          ...updatedCategoryData[categoryName],
+        ];
+
+        // Delete the merged category
+        delete updatedCategoryData[categoryName];
+      }
+    });
+
+    // Transform updatedPreviewData to include dynamic fields
+    const finalPreviewData = updatedPreviewData.map((item) => {
+      const categoryName =
+        categories?.find((cat) => cat._id === item.category)?.page_category ||
+        'Unknown';
+      return {
+        page_name: item['Page Name'] || 'Unknown Page',
+        post_count: item['Post Count'] || 0,
+        story_count: item['Story Count'] || 0,
+        _id: item['planxId'] || 'Unknown ID',
+        category_name: categoryName,
+      };
+    });
+ 
+    // Update state with the modified data
+    setCategoryData(updatedCategoryData);
+    setPreviewDataMerge(finalPreviewData);
+    sendPlanDetails(finalPreviewData)
+    setMergedCategories([]);  
   };
 
   return (
@@ -124,7 +202,6 @@ const ExcelPreviewModal = ({
           Excel Data Preview
         </Typography>
 
-        {/* Agency Fees Input */}
         <div className="row">
           <div className="col d-flex justify-content-center align-items-center">
             <Typography variant="body1">Agency Fee Percentage</Typography>
@@ -166,10 +243,55 @@ const ExcelPreviewModal = ({
             </button>
           </div>
         </div>
-        {/* Tabs for Total and Category-wise view */}
+
+        <FormControl sx={{ mt: 2, width: '200px' }}>
+          <InputLabel>Main Category</InputLabel>
+          <Select
+            value={mainCategory}
+            onChange={handleMainCategoryChange}
+            label="Main Category"
+          >
+            {categories?.map((cat) => (
+              <MenuItem key={cat._id} value={cat.page_category}>
+                {cat.page_category}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <FormControl sx={{ mt: 2, width: '200px' }}>
+          <InputLabel>Merge Categories</InputLabel>
+          <Select
+            multiple
+            value={mergedCategories}
+            onChange={handleMergedCategoriesChange}
+            label="Merge Categories"
+          >
+            {Object.keys(categoryData).map((categoryName) => {
+              if (categoryName !== mainCategory) {
+                return (
+                  <MenuItem key={categoryName} value={categoryName}>
+                    {categoryName}
+                  </MenuItem>
+                );
+              }
+              return null;
+            })}
+          </Select>
+        </FormControl>
+
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+          onClick={handleMergeCategories}
+          disabled={!mainCategory || mergedCategories.length === 0}
+        >
+          Merge Categories
+        </Button>
+
         <Tabs value={selectedTab} onChange={handleTabChange} centered>
           <Tab label="Total" />
-
           {Object.keys(categoryData).map((categoryName, index) => (
             <Tab key={index} label={categoryName} />
           ))}
@@ -193,7 +315,6 @@ const ExcelPreviewModal = ({
               Total Story Cost: ₹{overallTotals.totalStoryCost.toFixed(2)}
             </Typography>
 
-            {/* Render Overall Data Table */}
             <TableContainer
               component={Paper}
               sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}
@@ -213,8 +334,8 @@ const ExcelPreviewModal = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {previewData?.map((item, index) => (
-                    <TableRow key={index}>
+                  {previewData?.map((item, idx) => (
+                    <TableRow key={idx}>
                       <TableCell>{item['Page Name']}</TableCell>
                       <TableCell>{item.Platform}</TableCell>
                       <TableCell>{item.Followers}</TableCell>
@@ -232,53 +353,54 @@ const ExcelPreviewModal = ({
           </Box>
         )}
 
-        {Object.keys(categoryData)?.map(
-          (categoryName, index) =>
-            selectedTab === index + 1 && (
-              <Box key={index}>
-                <Typography variant="h6" component="h4" sx={{ mt: 2 }}>
-                  {categoryName} Costs
+        {Object.keys(categoryData).map((categoryName, index) => (
+          <div key={index}>
+            {selectedTab === index + 1 && (
+              <TableContainer
+                component={Paper}
+                sx={{
+                  maxHeight: '300px',
+                  overflowY: 'auto',
+                  mt: 2,
+                }}
+              >
+                <Typography variant="h6" component="h4">
+                  {categoryName} Data
                 </Typography>
-
-                {/* Render category-specific data */}
-                <TableContainer
-                  component={Paper}
-                  sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}
-                >
-                  <Table>
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>Page Name</TableCell>
-                        <TableCell>Platform</TableCell>
-                        <TableCell>Followers</TableCell>
-                        <TableCell>Post Count</TableCell>
-                        <TableCell>Story Count</TableCell>
-                        <TableCell>Post Price</TableCell>
-                        <TableCell>Story Price</TableCell>
-                        <TableCell>Total Post Cost</TableCell>
-                        <TableCell>Total Story Cost</TableCell>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Page Name</TableCell>
+                      <TableCell>Platform</TableCell>
+                      <TableCell>Followers</TableCell>
+                      <TableCell>Post Count</TableCell>
+                      <TableCell>Story Count</TableCell>
+                      <TableCell>Post Price</TableCell>
+                      <TableCell>Story Price</TableCell>
+                      <TableCell>Total Post Cost</TableCell>
+                      <TableCell>Total Story Cost</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {categoryData[categoryName]?.map((item, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{item['Page Name']}</TableCell>
+                        <TableCell>{item.Platform}</TableCell>
+                        <TableCell>{item.Followers}</TableCell>
+                        <TableCell>{item['Post Count']}</TableCell>
+                        <TableCell>{item['Story Count']}</TableCell>
+                        <TableCell>{item['Post Price']}</TableCell>
+                        <TableCell>{item['Story Price']}</TableCell>
+                        <TableCell>{item['Total Post Cost']}</TableCell>
+                        <TableCell>{item['Total Story Cost']}</TableCell>
                       </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {categoryData[categoryName].map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{item['Page Name']}</TableCell>
-                          <TableCell>{item.Platform}</TableCell>
-                          <TableCell>{item.Followers}</TableCell>
-                          <TableCell>{item['Post Count']}</TableCell>
-                          <TableCell>{item['Story Count']}</TableCell>
-                          <TableCell>{item['Post Price']}</TableCell>
-                          <TableCell>{item['Story Price']}</TableCell>
-                          <TableCell>{item['Total Post Cost']}</TableCell>
-                          <TableCell>{item['Total Story Cost']}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
-              </Box>
-            )
-        )}
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            )}
+          </div>
+        ))}
       </Box>
     </Modal>
   );

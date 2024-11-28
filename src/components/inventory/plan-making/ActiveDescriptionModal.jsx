@@ -25,9 +25,9 @@ const ActiveDescriptionModal = ({
   const handleToggle = (description) => {
     setCheckedDescriptions((prev) => {
       const newChecked = prev.includes(description)
-        ? prev.filter((desc) => desc !== description)  
-        : [...prev, description]; 
-      onCheckedDescriptionsChange(newChecked);  
+        ? prev.filter((desc) => desc !== description)
+        : [...prev, description];
+      onCheckedDescriptionsChange(newChecked);
       return newChecked;
     });
   };
@@ -47,6 +47,23 @@ const ActiveDescriptionModal = ({
       );
     }
   }, [isOpen, descriptions, setCheckedDescriptions]);
+
+  // // Sync checkedDescriptions with the descriptions when the modal is opened
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     const activeDescriptions = descriptions
+  //       ?.filter((description) => description.status === 'Active')
+  //       .map((description) => description.description);
+  //     setCheckedDescriptions(activeDescriptions); // Set checked descriptions based on active ones
+  //   }
+  // }, [isOpen, descriptions, setCheckedDescriptions]); // Only trigger when modal opens or descriptions change
+
+  // const handleAllActiveDescription = () => {
+  //   const tempDescription = descriptions
+  //     ?.filter((res) => res.status === 'Active')
+  //     .map((res) => res.description);
+  //   setCheckedDescriptions(tempDescription); // Set all active descriptions
+  // };
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">

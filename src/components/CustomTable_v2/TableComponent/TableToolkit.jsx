@@ -145,24 +145,24 @@ const TableToolkit = ({
     setColumns(newColumns);
   };
 
-  async function handleSave() {
+  async function handleSave(setIsOpen) {
     const arrayOfColumnsName = columnsheader.map((column, index) => ({
       name: column.name,
       visibility: visibleColumns[index],
     }));
-    await axios
-      .put(`${baseUrl}` + "edit_dynamic_table_data", {
+    try {
+      await axios.put(`${baseUrl}` + "edit_dynamic_table_data", {
         user_id: loginUserId,
         table_name: tableName,
         column_order_Obj: arrayOfColumnsName,
-      })
-      .then(() => {
-        setDragFlag(false);
-        fetchCreatedTable();
-      })
-      .catch((error) => {
-        console.error("Error editing dynamic table data:", error);
       });
+      setDragFlag(false);
+      fetchCreatedTable();
+    } catch (error) {
+      console.error("Error editing dynamic table data:", error);
+    } finally {
+      setIsOpen((prev) => !prev);
+    }
   }
 
   const cloudInvader = async (tag, index) => {
@@ -339,94 +339,19 @@ const TableToolkit = ({
           tableref={tableref}
           btnHtml={<button className="dropdown-btn">Column</button>}
         >
-          <div className="w-100 sb">
-            <div></div>
-            <div className="flex-row gap-2">
-              {dragFlag && (
-                <button
-                  className="btn cmnbtn btn_sm btn-success"
-                  onClick={() => {
-                    handleSave();
-                  }}
-                >
-                  save
-                </button>
-              )}
-              <button
-                className={`btn cmnbtn btn_sm ${
-                  dragFlag ? "btn-danger" : "btn-primary"
-                }`}
-                onClick={() => setDragFlag(!dragFlag)}
-              >
-                {dragFlag ? "Cancel" : "Edit"}
-              </button>
-            </div>
-          </div>
-          <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}>
-            {dragFlag && (
-              <>
-                <span>
-                  <p>:</p>
-                  <p>:</p>
-                  <p>:</p>
-                  <p>:</p>
-                </span>
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  id="flexSwitchCheckDefault"
-                  checked={visibleColumns?.some((column) => column)}
-                  onChange={(e) => {
-                    setVisibleColumns(
-                      visibleColumns?.map(() => e.target.checked)
-                    );
-                  }}
-                />
-              </>
-            )}
-            <label
-              className="form-check-label"
-              htmlFor="flexSwitchCheckDefault"
-            >
-              Show/Hide All
-            </label>
-          </div>
-          <div className="container_drag" ref={containerRef}>
-            {columnsheader?.map((column, index) => (
-              <div
-                className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
-                key={index}
-                draggable={dragFlag}
-                onDragStart={(e) => onDragStart(e, index)}
-                onDragOver={onDragOver}
-                onDrop={(e) => onDrop(e, index)}
-              >
-                {dragFlag && (
-                  <>
-                    <span>
-                      <p>:</p>
-                      <p>:</p>
-                      <p>:</p>
-                      <p>:</p>
-                    </span>
-                    <input
-                      className="form-check-input"
-                      id={`flexSwitchCheckDefault${index}`}
-                      type="checkbox"
-                      checked={visibleColumns?.[index]}
-                      onChange={() => toggleColumnVisibility(index)}
-                    />
-                  </>
-                )}
-                <label
-                  className="form-check-label"
-                  htmlFor={"flexSwitchCheckDefault" + index}
-                >
-                  {column.name}
-                </label>
-              </div>
-            ))}
-          </div>
+          <DropdownElement
+            handleSave={handleSave}
+            dragFlag={dragFlag}
+            visibleColumns={visibleColumns}
+            setVisibleColumns={setVisibleColumns}
+            onDragStart={onDragStart}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            toggleColumnVisibility={toggleColumnVisibility}
+            columnsheader={columnsheader}
+            containerRef={containerRef}
+            setDragFlag={setDragFlag}
+          />
         </Dropdown>
         <button className="tool-btn" onClick={() => handleExport()}>
           Export
@@ -502,5 +427,106 @@ const TableToolkit = ({
     </div>
   );
 };
+
+function DropdownElement({
+  setIsOpen,
+  handleSave,
+  dragFlag,
+  visibleColumns,
+  setVisibleColumns,
+  onDragStart,
+  onDrop,
+  onDragOver,
+  toggleColumnVisibility,
+  columnsheader,
+  containerRef,
+  setDragFlag,
+}) {
+  return (
+    <>
+      <div className="w-100 sb">
+        <div></div>
+        <div className="flex-row gap-2">
+          {dragFlag && (
+            <button
+              className="btn cmnbtn btn_sm btn-success"
+              onClick={() => handleSave(setIsOpen)}
+            >
+              save
+            </button>
+          )}
+          <button
+            className={`btn cmnbtn btn_sm ${
+              dragFlag ? "btn-danger" : "btn-primary"
+            }`}
+            onClick={() => setDragFlag(!dragFlag)}
+          >
+            {dragFlag ? "Cancel" : "Edit"}
+          </button>
+        </div>
+      </div>
+      <div className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}>
+        {dragFlag && (
+          <>
+            <span>
+              <p>:</p>
+              <p>:</p>
+              <p>:</p>
+              <p>:</p>
+            </span>
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckDefault"
+              checked={visibleColumns?.some((column) => column)}
+              onChange={(e) => {
+                setVisibleColumns(visibleColumns?.map(() => e.target.checked));
+              }}
+            />
+          </>
+        )}
+        <label className="form-check-label" htmlFor="flexSwitchCheckDefault">
+          Show/Hide All
+        </label>
+      </div>
+      <div className="container_drag" ref={containerRef}>
+        {columnsheader?.map((column, index) => (
+          <div
+            className={`form-check dt-toggle ${dragFlag ? "editui" : ""}`}
+            key={index}
+            draggable={dragFlag}
+            onDragStart={(e) => onDragStart(e, index)}
+            onDragOver={onDragOver}
+            onDrop={(e) => onDrop(e, index)}
+          >
+            {dragFlag && (
+              <>
+                <span>
+                  <p>:</p>
+                  <p>:</p>
+                  <p>:</p>
+                  <p>:</p>
+                </span>
+                <input
+                  className="form-check-input"
+                  id={`flexSwitchCheckDefault${index}`}
+                  type="checkbox"
+                  checked={visibleColumns?.[index]}
+                  onChange={() => toggleColumnVisibility(index)}
+                />
+              </>
+            )}
+            <label
+              className="form-check-label"
+              htmlFor={"flexSwitchCheckDefault" + index}
+            >
+              {column.name}
+            </label>
+          </div>
+        ))}
+      </div>
+    </>
+  );
+}
 
 export default TableToolkit;

@@ -41,10 +41,12 @@ const WorkExperience = ({ userID }) => {
 
   // Handle field change
   const handleFieldChange = (index, fieldName, value) => {
-    const updatedSections = [...workExperienceData];
-    updatedSections[index][fieldName] = value;
+    const updatedSections = workExperienceData.map((section, i) => 
+      i === index ? { ...section, [fieldName]: value } : section
+    );
     setWorkExperienceData(updatedSections);
   };
+  
 
   // Handle submission
   const handleSubmit = async (e) => {
@@ -79,9 +81,13 @@ const WorkExperience = ({ userID }) => {
   };
 
   // Add a new section
+  // const handleAddSection = () => {
+  //   setWorkExperienceData([...workExperienceData, { ...initialSection }]);
+  // };
   const handleAddSection = () => {
-    setWorkExperienceData([...workExperienceData, { ...initialSection }]);
+    setWorkExperienceData((prevData) => [...prevData, { ...initialSection }]);
   };
+  
 
   // Remove a section
   const handleRemoveSection = async (index) => {

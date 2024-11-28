@@ -136,7 +136,7 @@ const IdentityDetails = () => {
       {/* Aadhar Card Number */}
       <div className="form-group">
         <TextField
-          label="Aadhar Card Number"
+          label={<span>Aadhar Number <span style={{color:"red"}}>*</span></span>}
           variant="outlined"
           fullWidth
           type="number"
@@ -159,7 +159,7 @@ const IdentityDetails = () => {
       {/* PAN Card Number */}
       <div className="form-group">
         <TextField
-          label="PAN Card Number"
+          label={<span>PAN Number <span style={{color:"red"}}>*</span></span>}
           variant="outlined"
           fullWidth
           inputProps={{ maxLength: 10 }} 

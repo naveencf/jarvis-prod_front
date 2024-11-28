@@ -261,9 +261,7 @@ export const PageBaseURL = createApi({
     // get page counts
     getPageCount: builder.query({
       query: ({ start_date, end_date } = {}) => {
-        // Base URL
         let url = "v1/get_page_count";
-    
         if (start_date || end_date) {
           url += `?${start_date ? `start_date=${start_date}` : ""}${
             start_date && end_date ? "&" : ""

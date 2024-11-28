@@ -249,21 +249,23 @@ const ViewSaleBooking = () => {
   }
 
   useEffect(() => {
+    setFilteredData(
+      loginUserRole === 1
+        ? allSaleBooking?.filter((item) => !item?.is_dummy_sale_booking)
+        : allSaleBooking
+    );
     if (filterDate?.booking_status) {
       setStats(filterDate.booking_status);
       handelRemoveFiltter();
-    } else if (filterDate != null) {
+    } else if (filterDate != null && allSaleBooking?.length) {
+      setQuickFiltring("custom");
       setFromDate(filterDate.start.split("T")[0]);
       setToDate(filterDate?.end?.split("T")[0]);
-      dataFiltter();
-    } else {
-      setFilteredData(
-        loginUserRole === 1
-          ? allSaleBooking?.filter((item) => !item?.is_dummy_sale_booking)
-          : allSaleBooking
-      );
     }
   }, [filterDate, allSaleBooking, allAccountLoading]);
+  useEffect(() => {
+    if (filterDate?.start && fromDate) dataFiltter();
+  }, [fromDate, toDate]);
 
   function dataFiltter() {
     let filteredData1 = filteredData?.filter((data) => {
