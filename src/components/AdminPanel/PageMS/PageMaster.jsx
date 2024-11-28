@@ -146,12 +146,12 @@ const PageMaster = () => {
   const { data: singlePageData, isLoading: singlePageLoading } =
     useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
 
-    const {
-      data: pageList,
-      refetch: refetchPageList,
-      isLoading: isPageListLoading,
-    } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
-    
+  const {
+    data: pageList,
+    refetch: refetchPageList,
+    isLoading: isPageListLoading,
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+
   const { data: platformPriceData, isLoading: isPriceLoading } =
     useGetPlatformPriceQuery();
 
@@ -824,6 +824,62 @@ const PageMaster = () => {
                 )}
               </div>
             </div> */}
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Profile Name"
+                fieldGrid={12}
+                astric={true}
+                value={pageName}
+                required={true}
+                onChange={(e) => {
+                  // setPageName(e.target.value);
+                  setPageNameFun(e.target.value);
+                  // getPageFollowers(e.target.value);
+                  if (e.target.value) {
+                    if (
+                      platformData.some(
+                        (e) =>
+                          e.platform_name.toLowerCase() === 'instagram' &&
+                          e._id === platformId
+                      )
+                    ) {
+                      setLink(
+                        () => `https://www.instagram.com/${e.target.value}`
+                      );
+                      if (link) {
+                        setValidateFields((prev) => ({ ...prev, link: false }));
+                      }
+                    }
+                    setValidateFields((prev) => ({ ...prev, pageName: false }));
+                  }
+                }}
+              />
+              {validateFields.pageName && (
+                <small style={{ color: 'red' }}>Please Fill Profile Name</small>
+              )}
+              {existError && (
+                <small style={{ color: messageColor }}>{existError}</small>
+              )}
+            </div>
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                fieldGrid={12}
+                label="Link"
+                astric={true}
+                value={link}
+                required={true}
+                onChange={(e) => {
+                  setLink(e.target.value);
+                  if (e.target.value) {
+                    setValidateFields((prev) => ({ ...prev, link: false }));
+                  }
+                }}
+              />
+              {validateFields.link && (
+                <small style={{ color: 'red' }}>Please Fill Link</small>
+              )}
+            </div>
+
 
             <div className="col-md-6 mb16">
               <div className="form-group m0">
@@ -1069,61 +1125,6 @@ const PageMaster = () => {
                   }}
                 ></Select>
               </div>
-            </div>
-            <div className="col-md-6 p0 mb16">
-              <FieldContainer
-                label="Profile Name"
-                fieldGrid={12}
-                astric={true}
-                value={pageName}
-                required={true}
-                onChange={(e) => {
-                  // setPageName(e.target.value);
-                  setPageNameFun(e.target.value);
-                  // getPageFollowers(e.target.value);
-                  if (e.target.value) {
-                    if (
-                      platformData.some(
-                        (e) =>
-                          e.platform_name.toLowerCase() === 'instagram' &&
-                          e._id === platformId
-                      )
-                    ) {
-                      setLink(
-                        () => `https://www.instagram.com/${e.target.value}`
-                      );
-                      if (link) {
-                        setValidateFields((prev) => ({ ...prev, link: false }));
-                      }
-                    }
-                    setValidateFields((prev) => ({ ...prev, pageName: false }));
-                  }
-                }}
-              />
-              {validateFields.pageName && (
-                <small style={{ color: 'red' }}>Please Fill Profile Name</small>
-              )}
-              {existError && (
-                <small style={{ color: messageColor }}>{existError}</small>
-              )}
-            </div>
-            <div className="col-md-6 p0 mb16">
-              <FieldContainer
-                fieldGrid={12}
-                label="Link"
-                astric={true}
-                value={link}
-                required={true}
-                onChange={(e) => {
-                  setLink(e.target.value);
-                  if (e.target.value) {
-                    setValidateFields((prev) => ({ ...prev, link: false }));
-                  }
-                }}
-              />
-              {validateFields.link && (
-                <small style={{ color: 'red' }}>Please Fill Link</small>
-              )}
             </div>
             <div className="col-md-6 p0 mb16">
               <FieldContainer

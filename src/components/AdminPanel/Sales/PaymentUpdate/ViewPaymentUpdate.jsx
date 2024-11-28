@@ -100,7 +100,7 @@ const ViewPaymentUpdate = () => {
     {
       key: "serial.no",
       name: "S.No",
-      renderRowCell: (row, index) => <div>{index + 1}</div>,
+      renderRowCell: (row, index) => index + 1,
       width: 50,
     },
     {
@@ -108,9 +108,10 @@ const ViewPaymentUpdate = () => {
       name: "Customer Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row.account_id)
-            ?._id
-            }`}
+          to={`/sales-account-info/${
+            allAccountData?.find((data) => data?.account_id === row?.account_id)
+              ?._id
+          }`}
         >
           {row.account_name}
         </Link>
@@ -120,7 +121,7 @@ const ViewPaymentUpdate = () => {
     {
       key: "payment_date",
       name: "Payment Date",
-      renderRowCell: (row) => row.payment_date?.split("-").reverse().join("-"),
+      renderRowCell: (row) => row?.payment_date?.split("-").reverse().join("-"),
       width: 100,
     },
     {
@@ -166,7 +167,7 @@ const ViewPaymentUpdate = () => {
     {
       key: "payment_detail_title",
       name: "Bank Name",
-      renderRowCell: (row) => row.payment_detail.title,
+      renderRowCell: (row) => row.payment_detail?.title,
       width: 100,
       compare: true,
     },

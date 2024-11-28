@@ -1,6 +1,7 @@
 const formatString = (s) => {
   // Remove leading underscores
   let formattedString = s?.replace(/^_+/, "");
+
   // Capitalize the first letter of each word and make the rest lowercase
   if (formattedString) {
     formattedString = formattedString

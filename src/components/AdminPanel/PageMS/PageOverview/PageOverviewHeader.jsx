@@ -4,6 +4,7 @@ import {
   TextField,
   Typography,
   Breadcrumbs,
+  Box, Modal
 } from "@mui/material";
 import jwtDecode from "jwt-decode";
 import {
@@ -19,6 +20,20 @@ import AddIcon from "@mui/icons-material/Add";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import ExportInventory from "../../../../components/AdminPanel/PageMS/PageOverview/ExportInventory";
 import SarcasmNetwork from "../SarcasmNetwork";
+import axios from "axios";
+import { baseUrl } from "../../../../utils/config";
+import View from "../../Sales/Account/View/View";
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 600,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 function PageOverviewHeader({
   onFilterChange,
@@ -51,9 +66,11 @@ function PageOverviewHeader({
   const [profileTypeFilter, setProfileTypeFilter] = useState(null);
   const [platformFilter, setPlatformFilter] = useState(null);
   const [ownershipFilter, setOwnershipFilter] = useState(null);
-  // const [activenessFilter, setActivenessFilter] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  // const [filterFollowers, setFilterFollowers] = useState(null);
+  const [disabledPagesData, setDisabledPagesData] = useState([]);
+  console.log(disabledPagesData,'disabledPagesData');
+  const [openDisabledPages, setOpenDisabledPages] = useState(false);
+  const handleCloseDisabled = () => setOpenDisabledPages(false);
 
   const {
     data: pageList,
@@ -94,6 +111,17 @@ function PageOverviewHeader({
       setFilterFollowers(storedFilters.filterFollowers);
     }
   }, []);
+
+  const handleDisabledPages = async () => {
+    try {
+      setOpenDisabledPages(true); 
+      const res = await axios.get(`${baseUrl}v1/get_disabled_pages`);
+      setDisabledPagesData(res?.data?.data) 
+    } catch (error) {
+      console.error('Error fetching disabled pages:', error);
+    }
+  };
+  
 
   // Save filters to sessionStorage whenever they change
   useEffect(() => {
@@ -151,9 +179,6 @@ function PageOverviewHeader({
     ]
       .filter(Boolean)
       .join("&");
-    console.log(newQuery);
-
-    // setPagequery(newQuery);
     onFilterChange(newQuery);
   }, [
     categoryFilter,
@@ -194,13 +219,11 @@ function PageOverviewHeader({
     const count = getCount(pageList, "page_activeness", res.value);
     return `${formatString(res.value)} (${count})`;
   });
-  // console.log(activenessOptionsWithCount,activenessOptionsWithCount);
 
   const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
     const count = getCount(pageList, "ownership_type", res); // Pass the string directly
     return `${formatString(res)} (${count})`; // Format the result with the count
   });
-  // console.log(profileDataOptions,platformData)
   const profileDataOptionsWithCount = profileDataOptions.map((res) => {
     const count = getCount(
       pageList,
@@ -213,11 +236,84 @@ function PageOverviewHeader({
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
-      // console.log(optionWithCount.split(" (")[0], "optionWithCount")
       return optionWithCount.split(" (")[0];
     }
     return null;
   };
+
+  const dataGridcolumns = [
+    {
+      key: 'S.NO',
+      name: 'S.no',
+      renderRowCell: (row, index) => index + 1,
+      width: 80,
+    },
+    {
+      key: 'page_name',
+      name: 'Page Name ',
+      width: 200,
+    },
+    {
+      key: 'page_category_name',
+      name: 'Category',
+      width: 200,
+    },
+    // {
+    //   key: 'followers_count',
+    //   name: 'Followers',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     return row.followers_count;
+    //   },
+    // },
+    //  {
+    //   key: 'Post Price',
+    //   name: 'Post Price',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
+    //     const postPrice = postData ? postData.instagram_post : 0;
+    //     return (
+    //       <>
+    //         {postPrice > 0 ? `₹${postPrice}` : 'NA'}
+    //       </>
+    //     );
+    //   },
+    //   compare: true,
+    // },
+    // {
+    //   key: 'Story Price',
+    //   name: 'Story Price',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
+    //     const storyPrice = storyData ? storyData.instagram_story : 0;
+    //     return (
+    //       <>
+    //         {storyPrice > 0 ? `₹${storyPrice}` : 'NA'}
+    //       </>
+    //     );
+    //   },
+    //   compare: true,
+    // },
+    // {
+    //   key: 'Both Price',
+    //   name: 'Both Price',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
+    //     const bothPrice = bothData ? bothData.instagram_both : 0;
+    //     return (
+    //       <>
+    //         {bothPrice > 0 ? `₹${bothPrice}` : 'NA'}
+    //       </>
+    //     );
+    //   },
+    //   compare: true,
+    // },
+
+  ];
+
 
   return (
     <div className="card">
@@ -270,6 +366,13 @@ function PageOverviewHeader({
             </h5>
             <div className="flexCenter colGap8">
               <SarcasmNetwork selectedData={selectedData}/>
+              <button
+                className="btn cmnbtn btn_sm btn-outline-danger"
+                onClick={handleDisabledPages}
+              >
+                Disabled pages
+              </button>
+
               <Link
                 to={`/admin/pms-page-master`}
                 className="btn cmnbtn btn_sm btn-outline-primary"
@@ -381,6 +484,25 @@ function PageOverviewHeader({
           </div>
         </div>
       </div>
+      <>
+        <Modal
+          open={openDisabledPages}
+          onClose={handleCloseDisabled}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <View
+              columns={dataGridcolumns}
+              data={disabledPagesData}
+              isLoading={false}
+              title={"Disabled Pages"}
+              pagination={[100, 200, 1000]}
+              tableName={"Disabled Pages"}
+            />
+          </Box>
+        </Modal>
+      </>
     </div>
   );
 }

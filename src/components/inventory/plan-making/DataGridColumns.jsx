@@ -12,12 +12,16 @@ const DataGridColumns = ({
   handleStoryPerPageChange,
   showTotalCost,
   totalCostValues,
+  shortcutTriggered,
+  setShortcutTriggered,
   typeData,
   cat,
   platformData,
   pageStatsAuth,
   handleRowClick,
   decodedToken,
+  tempIndex,
+  activeIndex,
 }) => {
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -29,7 +33,7 @@ const DataGridColumns = ({
     {
       key: 'serial_no',
       name: 'S No',
-      renderRowCell: (row) => filterData?.indexOf(row) + 1,
+      renderRowCell: (row, index) => index + 1,
       width: 30,
       showCol: true,
     },
@@ -134,27 +138,57 @@ const DataGridColumns = ({
       showCol: true,
     },
     {
-      key: 'sub_category',
+      key: 'page_sub_category_name',
       name: 'Sub-Category',
       renderRowCell: (row) => formatString(row.page_sub_category_name),
       width: 100,
       showCol: true,
     },
     {
+      key: 'engagment_rate',
+      name: 'Engagment Rate',
+      renderRowCell: (row) => row.engagment_rate,
+      width: 100,
+      showCol: true,
+    },
+    {
       key: 'selection',
       name: 'Selection',
-      renderRowCell: (row) => (
-        <input
-          type="checkbox"
-          checked={selectedRows?.some(
-            (selectedRow) => selectedRow?._id === row?._id
-          )}
-          onChange={handleCheckboxChange(row)}
-          onClick={() => handleRowClick(row)}
-        />
+      renderRowCell: (row, index) => (
+        <div
+          style={{
+            border: activeIndex === index ? '1px solid red' : '',
+            padding: '10px',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={selectedRows?.some(
+              (selectedRow) => selectedRow?._id === row?._id
+            )}
+            // onClick={handleCheckboxChange(row, "column")}
+            // onClick={(event) => handleCheckboxChange(row, 'column', event, index)}
+            onChange={(event) => {
+              // Skip if triggered by a shortcut
+              if (shortcutTriggered) return;
+              handleCheckboxChange(row, 'column', event, index);
+            }}
+            onClick={() => setShortcutTriggered(false)}
+            // onClick={() => handleRowClick(row)}
+          />
+        </div>
       ),
       width: 50,
       showCol: true,
+      // colorRow: (row, index) => {
+      //   if (activeIndex == index) {
+      //     // console.log(index);
+      //     return '#c4fac4';
+      //   }
+      //   // else {
+      //   //   return "#ffff008c";
+      //   // }
+      // },
     },
     {
       key: 'post_per_page',
@@ -178,7 +212,7 @@ const DataGridColumns = ({
         const postDetail = mPostPrice?.find(
           (item) => item.instagram_post !== undefined
         );
-        const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
+        const postPrice = postDetail?.instagram_post || 0;
         const followerCount = row?.followers_count || 0;
 
         // Calculate the average price only if followerCount is greater than zero
@@ -232,14 +266,16 @@ const DataGridColumns = ({
     {
       key: 'total_cost',
       name: 'Total Cost',
-      renderRowCell: (row) => (
-        <div style={{ border: '1px solid red', padding: '10px' }}>
-          {'₹'}
-          {showTotalCost[row?._id]
-            ? Math.floor(totalCostValues[row?._id]) || 0
-            : '-'}
-        </div>
-      ),
+      renderRowCell: (row) =>
+        showTotalCost[row?._id]
+          ? Math.floor(totalCostValues[row?._id]) || 0
+          : 0,
+      // <div style={{ border: '1px solid red', padding: '10px' }}>
+      // {'₹'}
+      // {showTotalCost[row?._id]
+      //   ? Math.floor(totalCostValues[row?._id]) || 0
+      //   : '-'}
+      // </div>
       width: 50,
       showCol: true,
     },

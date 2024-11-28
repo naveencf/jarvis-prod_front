@@ -393,227 +393,20 @@ const RenderedTable = ({
                                     </div>
                                   }
                                 >
-                                  <div className="dropdownIn">
-                                    <ul className="flex-col">
-                                      <li className="nav-item">
-                                        <a
-                                          className="nav-link collapsed"
-                                          data-toggle="collapse"
-                                          data-target="#filterbycondition"
-                                          aria-expanded="true"
-                                          aria-controls="collapseTwom8"
-                                        >
-                                          Filter by condition
-                                        </a>
-                                        <div
-                                          id="filterbycondition"
-                                          className="collapse show"
-                                          aria-labelledby="headingTwo"
-                                          data-parent="#accordionSidebar"
-                                        >
-                                          <CustomSelect
-                                            className="form-control form_sm"
-                                            fieldGrid={12}
-                                            dataArray={filterObject}
-                                            optionId="key"
-                                            optionLabel="name"
-                                            selectedId={
-                                              filterCondition[index]?.key
-                                            }
-                                            setSelectedId={(value) => {
-                                              setFilterCondition(
-                                                filterCondition.map((item, i) =>
-                                                  i === index
-                                                    ? {
-                                                        ...item,
-                                                        ...valuefiller(value),
-                                                      }
-                                                    : item
-                                                )
-                                              );
-                                            }}
-                                          />
-                                          {filterCondition[index]?.field && (
-                                            <FieldContainer
-                                              className="form-control form_sm"
-                                              fieldGrid={12}
-                                              type={
-                                                filterCondition[index].type ||
-                                                "text"
-                                              }
-                                              fieldLabel="Value"
-                                              placeholder={"Enter value"}
-                                              value={
-                                                filterCondition[index].value1
-                                              }
-                                              onChange={(e) => {
-                                                setFilterCondition(
-                                                  filterCondition.map(
-                                                    (item, i) =>
-                                                      i === index
-                                                        ? {
-                                                            ...item,
-                                                            value1:
-                                                              e.target.value,
-                                                          }
-                                                        : item
-                                                  )
-                                                );
-                                              }}
-                                            />
-                                          )}
-
-                                          {(filterCondition[index]?.key ===
-                                            "notBetween" ||
-                                            filterCondition[index]?.key ===
-                                              "between") && (
-                                            <FieldContainer
-                                              className="form-control form_sm"
-                                              fieldGrid={12}
-                                              fieldLabel="Value"
-                                              placeholder={"Enter value"}
-                                              type={
-                                                filterCondition[index]?.type !==
-                                                undefined
-                                                  ? filterCondition[index].type
-                                                  : "text"
-                                              }
-                                              value={
-                                                filterCondition[index].value2
-                                              }
-                                              onChange={(e) => {
-                                                setFilterCondition(
-                                                  filterCondition.map(
-                                                    (item, i) =>
-                                                      i === index
-                                                        ? {
-                                                            ...item,
-                                                            value2:
-                                                              e.target.value,
-                                                          }
-                                                        : item
-                                                  )
-                                                );
-                                              }}
-                                            />
-                                          )}
-                                        </div>
-                                      </li>
-
-                                      <li className="nav-item">
-                                        <div
-                                          className="nav-link collapsed"
-                                          data-toggle="collapse"
-                                          data-target="#filterbyvalues"
-                                          aria-expanded="true"
-                                          aria-controls="collapseTwom8"
-                                        >
-                                          Filter by values
-                                        </div>
-                                        <div
-                                          id="filterbyvalues"
-                                          className="collapse show"
-                                          aria-labelledby="headingTwo"
-                                          data-parent="#accordionSidebar"
-                                        >
-                                          <CustomSelect
-                                            dataArray={Object.values(
-                                              originalData?.reduce(
-                                                (acc, item) => {
-                                                  if (column?.compare) {
-                                                    const render =
-                                                      column?.renderRowCell;
-                                                    item = {
-                                                      ...item,
-                                                      [column.key]:
-                                                        render(item),
-                                                    };
-                                                  }
-                                                  acc[item[column?.key]] = item;
-                                                  return acc;
-                                                },
-                                                {}
-                                              )
-                                            )}
-                                            optionId={column?.key}
-                                            optionLabel={column?.key}
-                                            selectedId={selectedId[index]}
-                                            setSelectedId={(value) =>
-                                              setSelectedId(
-                                                selectedId.map((item, i) =>
-                                                  i === index ? value : item
-                                                )
-                                              )
-                                            }
-                                            multiple={true}
-                                            fieldGrid={12}
-                                          />
-                                          <div className="row groupCustomSelect">
-                                            {Object.values(
-                                              originalData.reduce(
-                                                (acc, item) => {
-                                                  if (column?.compare) {
-                                                    const render =
-                                                      column?.renderRowCell;
-                                                    item = {
-                                                      ...item,
-                                                      [column.key]:
-                                                        render(item),
-                                                    };
-                                                  }
-                                                  acc[item[column.key]] = item;
-                                                  return acc;
-                                                },
-                                                {}
-                                              )
-                                            ).map((row, indices) => (
-                                              <div
-                                                className="col form-check  dt-toggle"
-                                                key={indices}
-                                              >
-                                                <input
-                                                  className="form-check-input"
-                                                  type="checkbox"
-                                                  id={`flexSwitchCheckDefault-${indices}`}
-                                                  checked={selectedId[
-                                                    index
-                                                  ]?.includes(row[column.key])}
-                                                  onChange={() =>
-                                                    handleCheckboxChange(
-                                                      index,
-                                                      column.key,
-                                                      row[column.key]
-                                                    )
-                                                  }
-                                                />
-                                                <label
-                                                  className="form-check-label"
-                                                  htmlFor={`flexSwitchCheckDefault-${indices}`}
-                                                >
-                                                  {column?.compare
-                                                    ? row[column.key]
-                                                    : column?.renderRowCell
-                                                    ? column?.renderRowCell(
-                                                        row,
-                                                        indices
-                                                      )
-                                                    : row[column.key]}
-                                                </label>
-                                              </div>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      </li>
-                                    </ul>
-                                  </div>
-                                  <div className="dropdownFooter">
-                                    <button
-                                      className="cmnbtn btn btn-success btn_sm ml-auto"
-                                      onClick={() => setApplyFlag(!applyFlag)}
-                                    >
-                                      Apply
-                                    </button>
-                                  </div>
+                                  <DropdownElement
+                                    filterObject={filterObject}
+                                    filterCondition={filterCondition}
+                                    index={index}
+                                    originalData={originalData}
+                                    column={column}
+                                    selectedId={selectedId}
+                                    setApplyFlag={setApplyFlag}
+                                    applyFlag={applyFlag}
+                                    handleCheckboxChange={handleCheckboxChange}
+                                    setFilterCondition={setFilterCondition}
+                                    valuefiller={valuefiller}
+                                    setSelectedId={setSelectedId}
+                                  />
                                 </Dropdown>
                               )}
                             <div
@@ -651,7 +444,7 @@ const RenderedTable = ({
               sortedData?.map((row, index) => (
                 <tr
                   key={index}
-                  style={{ background: rowColour?.colorRow(row) }}
+                  style={{ background: rowColour?.colorRow(row, index) }}
                 >
                   {visibleColumns?.some((value) => value) && rowSelectable && (
                     <td
@@ -744,5 +537,210 @@ const RenderedTable = ({
     </>
   );
 };
+
+function DropdownElement({
+  filterObject,
+  filterCondition,
+  index,
+  originalData,
+  column,
+  selectedId,
+  setApplyFlag,
+  applyFlag,
+  handleCheckboxChange,
+  setFilterCondition,
+  valuefiller,
+  setSelectedId,
+  setIsOpen,
+}) {
+  return (
+    <>
+      <div className="dropdownIn">
+        <ul className="flex-col">
+          <li className="nav-item">
+            <a
+              className="nav-link collapsed"
+              data-toggle="collapse"
+              data-target="#filterbycondition"
+              aria-expanded="true"
+              aria-controls="collapseTwom8"
+            >
+              Filter by condition
+            </a>
+            <div
+              id="filterbycondition"
+              className="collapse show"
+              aria-labelledby="headingTwo"
+              data-parent="#accordionSidebar"
+            >
+              <CustomSelect
+                className="form-control form_sm"
+                fieldGrid={12}
+                dataArray={filterObject}
+                optionId="key"
+                optionLabel="name"
+                selectedId={filterCondition[index]?.key}
+                setSelectedId={(value) => {
+                  setFilterCondition(
+                    filterCondition.map((item, i) =>
+                      i === index
+                        ? {
+                            ...item,
+                            ...valuefiller(value),
+                          }
+                        : item
+                    )
+                  );
+                }}
+              />
+              {filterCondition[index]?.field && (
+                <FieldContainer
+                  className="form-control form_sm"
+                  fieldGrid={12}
+                  type={filterCondition[index].type || "text"}
+                  fieldLabel="Value"
+                  placeholder={"Enter value"}
+                  value={filterCondition[index].value1}
+                  onChange={(e) => {
+                    setFilterCondition(
+                      filterCondition.map((item, i) =>
+                        i === index
+                          ? {
+                              ...item,
+                              value1: e.target.value,
+                            }
+                          : item
+                      )
+                    );
+                  }}
+                />
+              )}
+
+              {(filterCondition[index]?.key === "notBetween" ||
+                filterCondition[index]?.key === "between") && (
+                <FieldContainer
+                  className="form-control form_sm"
+                  fieldGrid={12}
+                  fieldLabel="Value"
+                  placeholder={"Enter value"}
+                  type={
+                    filterCondition[index]?.type !== undefined
+                      ? filterCondition[index].type
+                      : "text"
+                  }
+                  value={filterCondition[index].value2}
+                  onChange={(e) => {
+                    setFilterCondition(
+                      filterCondition.map((item, i) =>
+                        i === index
+                          ? {
+                              ...item,
+                              value2: e.target.value,
+                            }
+                          : item
+                      )
+                    );
+                  }}
+                />
+              )}
+            </div>
+          </li>
+
+          <li className="nav-item">
+            <div
+              className="nav-link collapsed"
+              data-toggle="collapse"
+              data-target="#filterbyvalues"
+              aria-expanded="true"
+              aria-controls="collapseTwom8"
+            >
+              Filter by values
+            </div>
+            <div
+              id="filterbyvalues"
+              className="collapse show"
+              aria-labelledby="headingTwo"
+              data-parent="#accordionSidebar"
+            >
+              <CustomSelect
+                dataArray={Object.values(
+                  originalData?.reduce((acc, item) => {
+                    if (column?.compare) {
+                      const render = column?.renderRowCell;
+                      item = {
+                        ...item,
+                        [column.key]: render(item),
+                      };
+                    }
+                    acc[item[column?.key]] = item;
+                    return acc;
+                  }, {})
+                )}
+                optionId={column?.key}
+                optionLabel={column?.key}
+                selectedId={selectedId[index]}
+                setSelectedId={(value) =>
+                  setSelectedId(
+                    selectedId.map((item, i) => (i === index ? value : item))
+                  )
+                }
+                multiple={true}
+                fieldGrid={12}
+              />
+              <div className="row groupCustomSelect">
+                {Object.values(
+                  originalData.reduce((acc, item) => {
+                    if (column?.compare) {
+                      const render = column?.renderRowCell;
+                      item = {
+                        ...item,
+                        [column.key]: render(item),
+                      };
+                    }
+                    acc[item[column.key]] = item;
+                    return acc;
+                  }, {})
+                ).map((row, indices) => (
+                  <div className="col form-check  dt-toggle" key={indices}>
+                    <input
+                      className="form-check-input"
+                      type="checkbox"
+                      id={`flexSwitchCheckDefault-${indices}`}
+                      checked={selectedId[index]?.includes(row[column.key])}
+                      onChange={() =>
+                        handleCheckboxChange(index, column.key, row[column.key])
+                      }
+                    />
+                    <label
+                      className="form-check-label"
+                      htmlFor={`flexSwitchCheckDefault-${indices}`}
+                    >
+                      {column?.compare
+                        ? row[column.key]
+                        : column?.renderRowCell
+                        ? column?.renderRowCell(row, indices)
+                        : row[column.key]}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div className="dropdownFooter">
+        <button
+          className="cmnbtn btn btn-success btn_sm ml-auto"
+          onClick={() => {
+            setApplyFlag(!applyFlag);
+            setIsOpen((prev) => !prev);
+          }}
+        >
+          Apply
+        </button>
+      </div>
+    </>
+  );
+}
 
 export default RenderedTable;

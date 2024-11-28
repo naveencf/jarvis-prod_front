@@ -17,6 +17,9 @@ import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 import ErrorPage from "../../ErrorPage";
 import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
 
+const SalesProductOverview = lazy(() =>
+  import("./Sales/Product/SalesProductOverview")
+);
 const ViewSalesPoc = lazy(() =>
   import("../CustomTable/TableComponent/ViewSalesPoc")
 );
@@ -2212,6 +2215,7 @@ const Admin = () => {
                       path="/monthwise-sales-booking"
                       element={<MonthWiseSalesView />}
                     />
+                    <Route path="/product" element={<SalesProductOverview />} />
 
                     {/* Sales Pratyush end */}
                     <Route

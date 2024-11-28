@@ -13,7 +13,6 @@ const PriceModal = ({ setShowPriceModal, selectedRow, showPriceModal }) => {
   const handleClose = () => {
     setShowPriceModal(false);
   };
-
   return (
     <div>
       <Dialog

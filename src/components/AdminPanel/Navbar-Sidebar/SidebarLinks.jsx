@@ -1786,14 +1786,14 @@ const SidebarLinks = () => {
               ) : (
                 ""
               )}
-              {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
-                <NavLink
-                  className="collapse-item"
-                  to="/admin/pms-bulk-vendor-overview"
-                >
-                  <i className="bi bi-dot"></i>Bulk Vendor
-                </NavLink>
-              )}
+              {/* {decodedToken.role_id == constant.CONST_ADMIN_ROLE && ( */}
+              <NavLink
+                className="collapse-item"
+                to="/admin/pms-bulk-vendor-overview"
+              >
+                <i className="bi bi-dot"></i>Bulk Vendor
+              </NavLink>
+              {/* )} */}
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (

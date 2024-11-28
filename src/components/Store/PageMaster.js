@@ -1,24 +1,28 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { set } from "date-fns";
+import { createSlice } from '@reduxjs/toolkit';
+import { set } from 'date-fns';
 
 const initialState = {
   showAddModal: false,
-  modalType: "",
+  modalType: '',
   showInfoModal: false,
   rowData: {},
   statsUpdate: false,
-  showRightSlidder: false
+  showRightSlidder: false,
+  planStatus: '',
 };
 
 const pageMasterSlice = createSlice({
-  name: "pageMaster",
+  name: 'pageMaster',
   initialState,
   reducers: {
     setOpenShowAddModal(state) {
       state.showAddModal = true;
     },
-    setShowRightSlidder(state,action) {
+    setShowRightSlidder(state, action) {
       state.showRightSlidder = action.payload;
+    },
+    setPlanStatus(state, action) {
+      state.planStatus = action.payload;
     },
     setCloseShowAddModal(state) {
       state.showAddModal = false;
@@ -47,7 +51,8 @@ export const {
   setOpenShowPageInfoModal,
   setCloseShowPageInfoModal,
   setRowData,
+  setPlanStatus,
   setStatsUpdate,
-  setShowRightSlidder
+  setShowRightSlidder,
 } = pageMasterSlice.actions;
 export default pageMasterSlice.reducer;

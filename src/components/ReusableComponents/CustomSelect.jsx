@@ -84,8 +84,6 @@ const CustomSelect = ({
     options?.unshift(selectAllOption);
   }
 
-  console.log(selectedId);
-
   return (
     <div className={`form-group col-${fieldGrid}`}>
       <label className="form-label">

@@ -595,7 +595,7 @@ const PreOnboardingUserMaster = () => {
       }
       setBackendSpeakingLanguage(SpokenLanguages);
       setLoginId(user_login_id);
-      setPassword(user_login_password);
+      // setPassword(user_login_password);
 
       setJoiningDate(
         joining_date?.split("T")[0].split("-").reverse().join("-")
@@ -706,7 +706,14 @@ const PreOnboardingUserMaster = () => {
       return toastError("Father Name is Required");
     } else if (!motherName || motherName == "") {
       return toastError("Mother Name is Required");
-    } else if (!currentAddress || currentAddress == "") {
+    } else if (!alternateContact || alternateContact == "") {
+      return toastError("Alternate Number is Required");
+    } else if (!emergencyContact || emergencyContact == "") {
+      return toastError("Emergency Number 1 is Required");
+    } else if (!emergencyContact2 || emergencyContact2 == "") {
+      return toastError("Emergency Number 2 is Required");
+    }
+     else if (!currentAddress || currentAddress == "") {
       return toastError("Current address is Required");
     } else if (!currentState || currentState == "") {
       return toastError("Current State is Required");
@@ -723,7 +730,7 @@ const PreOnboardingUserMaster = () => {
     formData.append("user_name", validateAndCorrectUserName(username));
     formData.append("user_email_id", email);
     formData.append("user_login_id", loginId);
-    formData.append("user_login_password", password);
+    // formData.append("user_login_password", password);
     formData.append("user_contact_no", Number(contact));
     formData.append("personal_number", personalContact);
     formData.append("alternate_contact", alternateContact); 
@@ -2137,6 +2144,9 @@ const PreOnboardingUserMaster = () => {
                                 />
                               </div>
                             </div>
+                            
+                            <OnboardingBankDetails />
+                            <OtherDetails />
                             <div className="board_form board_form_flex">
                             <div className="form-group">
                               <TextField
@@ -2153,8 +2163,6 @@ const PreOnboardingUserMaster = () => {
                             </div>
                             </div>
                             {workExperiences == "Experience" &&(<WorkExperience userID={id} />)}
-                            <OnboardingBankDetails />
-                            <OtherDetails />
                             <div className="board_form board_form_flex">
                               <h2>Family Details</h2>
                               <FamilyFields

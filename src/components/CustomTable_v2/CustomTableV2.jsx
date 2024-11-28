@@ -21,6 +21,9 @@ const CustomTableV2 = ({
   selectedData = (selecteddata) => {
     return selecteddata;
   },
+  getFilteredData=(filterData)=>{
+    return filterData
+  },
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -304,6 +307,7 @@ const CustomTableV2 = ({
     }
   };
 
+
   useEffect(() => {
     //console.log("table creation");
 
@@ -375,10 +379,10 @@ const CustomTableV2 = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-            apiColumns[index]?.visibility === undefined
-              ? true
-              : apiColumns[index]?.visibility
-          )
+          apiColumns[index]?.visibility === undefined ||apiColumns[index]?.visibility === null
+            ? true
+            : apiColumns[index]?.visibility
+        )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -464,6 +468,11 @@ const CustomTableV2 = ({
 
     // return sorted;
   }, [sortKey, sortDirection, originalData]);
+  
+
+  useEffect(()=>{
+    getFilteredData(unSortedData)
+  },[unSortedData])
 
   // const renderSort = useMemo(() => {
   //   if (!sortKey) return originalData;

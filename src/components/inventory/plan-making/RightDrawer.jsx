@@ -13,6 +13,9 @@ import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowRightSlidder } from '../../Store/PageMaster';
+import { parseRange } from './helper';
+import { getPriceDetail } from './downloadExcel';
+import Swal from 'sweetalert2';
 
 const RightDrawer = ({
   priceFilterType,
@@ -20,8 +23,10 @@ const RightDrawer = ({
   handlePostCountChange,
   postCountDefault,
   storyCountDefault,
+  setFilterData,
   setPriceFilterType,
   minPrice,
+  getTableData,
   setMinPrice,
   maxPrice,
   setMaxPrice,
@@ -32,13 +37,9 @@ const RightDrawer = ({
   selectedFollowers,
   setSelectedFollowers,
   selectedCategory,
-  handleCategoryChange,
   cat,
   tagCategory,
   setTagCategory,
-  removeCategory,
-  handleRemoveFilter,
-  handleCombinedFilter,
   selectAllRows,
   deSelectAllRows,
   setSelectedCategory,
@@ -61,22 +62,106 @@ const RightDrawer = ({
   //   label: formatString(category.page_category),
   // }));
 
-  const handleFollowerSelection = (e) => {
-    const value = e.target.value;
+  const handleCombinedFilter = () => {
+    let filteredData = getTableData;
 
-    if (value === 'custom') {
-      setCustomFollowerRange(true);
-      setSelectedFollowers([]);
-      return;
+    if (selectedFollowers?.length) {
+      filteredData = applyFollowerRangeFilter(filteredData);
     }
 
-    if (selectedFollowers?.includes(value)) {
-      setCustomFollowerRange(false);
-      setSelectedFollowers(selectedFollowers.filter((f) => f !== value));
+    if (selectedCategory?.length) {
+      filteredData = applyCategoryFilter(filteredData);
+    }
+    if (minPrice != 0 || maxPrice != 0) {
+      filteredData = applyPriceFilter(filteredData);
+    }
+    if (tagCategory?.length) {
+      filteredData = applyTagCategoryFilter(filteredData);
+    }
+
+    Swal.fire({
+      title: 'Success!',
+      text: 'Filter applied successfully.',
+      icon: 'success',
+      timer: 1000,
+      showConfirmButton: false,
+    });
+
+    // Uncomment to update filtered data in state
+ 
+    setFilterData(filteredData);
+  };
+
+  const applyFollowerRangeFilter = (data) => {
+    if (!selectedFollowers?.length) return data;
+
+    return data.filter((page) =>
+      selectedFollowers.some((range) => {
+        const { min, max } = parseRange(range);
+        return page.followers_count >= min && page.followers_count <= max;
+      })
+    );
+  };
+
+  const applyCategoryFilter = (data) => {
+    if (!selectedCategory?.length) return data;
+
+    return data.filter((item) =>
+      selectedCategory.includes(item.page_category_id)
+    );
+  };
+
+  const applyPriceFilter = (data) => {
+    return data.filter((page) => {
+      let price = 0;
+
+      // Determine price based on filter type
+      if (priceFilterType === 'post') {
+        price = getPriceDetail(page.page_price_list, 'instagram_post') || 0;
+      } else if (priceFilterType === 'story') {
+        price = getPriceDetail(page.page_price_list, 'instagram_story') || 0;
+      } else if (priceFilterType === 'both') {
+        price = getPriceDetail(page.page_price_list, 'instagram_both') || 0;
+      }
+
+      // Check if price is within range
+      return price >= minPrice && price <= maxPrice;
+    });
+  };
+
+  const applyTagCategoryFilter = (data) => {
+    let filtered;
+
+    if (tagCategory.length > 2) {
+      filtered = data.filter((item) => {
+        const categoryArray = item.tags_page_category_name
+          ?.split(',')
+          .map((tag) => tag.trim());
+        return tagCategory.every((category) =>
+          categoryArray?.includes(category)
+        );
+      });
     } else {
-      setCustomFollowerRange(false);
-      setSelectedFollowers([...selectedFollowers, value]);
+      filtered = data.filter((item) => {
+        return tagCategory.some((category) =>
+          item.tags_page_category_name?.includes(category)
+        );
+      });
     }
+
+    return filtered;
+  };
+
+  const handleRemoveFilter = () => {
+    const pageData = pageList
+      ?.filter((item) => item.followers_count > 0)
+      .sort((a, b) => b.followers_count - a.followers_count);
+    setFilterData(pageData);
+    setSelectedFollowers([]);
+    setSelectedCategory([]);
+    setTagCategory([])
+    setMinPrice(0);
+    setMaxPrice(0);
   };
 
   const handleTagCategoryChange = (selectedIds) => {
@@ -89,7 +174,7 @@ const RightDrawer = ({
 
   // Function to calculate count for each category
   const getCategoryCount = (categoryName) => {
-    return pageList?.filter(
+    return getTableData?.filter(
       (item) =>
         item.followers_count > 0 && item.page_category_name === categoryName
     ).length;
@@ -143,20 +228,21 @@ const RightDrawer = ({
         <div className="filterWrapperBody">
           <div className="row">
             <div className="form-group col-12 mb16">
-              <div className="dropdown w-100">
-                <select
-                  value={activeTabPlatform}
-                  onChange={(e) => handlePlatform(e.target.value)}
-                  className="form-select form-control"
-                >
-                  {platformData?.map((item) => (
-                    <option key={item._id} value={item._id}>
-                      {formatString(item.platform_name)}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <CustomSelect
+                label="Select Platform"
+                fieldGrid="12"
+                dataArray={platformData?.map((item) => ({
+                  value: item._id,
+                  label: formatString(item.platform_name),
+                }))}
+                optionId="value"
+                optionLabel="label"
+                selectedId={activeTabPlatform}
+                setSelectedId={handlePlatform}
+                multiple={true} // Enable multiselect
+              />
             </div>
+
             {/* Follower Filter */}
             <div className="form-group col-12 mb8">
               <label>Follower Filter</label>

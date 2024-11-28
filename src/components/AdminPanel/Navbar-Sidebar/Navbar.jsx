@@ -32,6 +32,16 @@ const Navbar = () => {
   const [userBadgeData, setUserBadgeData] = useState();
   const [badgeData, setBadgeData] = useState([]);
   const [badge, setBadge] = useState("");
+  const [adjustment, setAdjustment] = useState(0);
+  const [isActive, setIsActive] = useState(0);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsActive((prevIsActive) => (prevIsActive === 0 ? 1 : 0));
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -58,11 +68,28 @@ const Navbar = () => {
     sessionStorage.clear("token");
     navigate("/login");
   };
+  const getAdjustment = async () => {
+    try {
+      const res = await axios.get(
+        baseUrl + `sales/user_adjustment_incentive_amount/${loginUserId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      setAdjustment(res?.data?.data?.adjustment_incentive_amount);
+    } catch (error) {}
+  };
+  console.log(adjustment);
 
   const getUserBadge = async () => {
     try {
       const responseOutstanding = await axios.get(
-        baseUrl + `sales/badges_sales_booking_data?userId=${loginUserId}`,
+        baseUrl +
+          `sales/badges_sales_booking_data${
+            RoleID != 1 ? `?userId=${loginUserId}` : ""
+          }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -95,6 +122,7 @@ const Navbar = () => {
 
   useEffect(() => {
     getUserBadge();
+    getAdjustment();
   }, []);
 
   useEffect(() => {
@@ -169,12 +197,42 @@ const Navbar = () => {
                   <img src={rupee} alt="badge" />
                 </div>
                 <div className="navBadgeTxt">
-                  {/* <h5>{badge}</h5> */}
+                  {/* /* <h5>{badge}</h5> */}
                   <Link to="/admin/view-Outstanding-details">
-                    <h4>
-                      Outstanding: ₹{" "}
-                      {formatNumber(userBadgeData?.totalOutstandingAmount) || 0}
-                    </h4>
+                    <div
+                      id="carouselExampleSlidesOnly"
+                      className="carousel slide"
+                      data-ride="carousel"
+                    >
+                      <div className="carousel-inner">
+                        <div
+                          className={`carousel-item ${
+                            isActive === 0 ? "active" : ""
+                          } `}
+                          data-interval="500"
+                        >
+                          <h4>
+                            Total Outstanding: ₹
+                            {formatNumber(
+                              userBadgeData?.totalOutstandingAmount
+                            ) || 0}
+                          </h4>
+                        </div>
+                        <div
+                          class={`carousel-item  ${
+                            isActive === 1 ? "active" : ""
+                          } `}
+                          data-interval="1000"
+                        >
+                          <h4>
+                            Un-Earned Outstanding: ₹
+                            {formatNumber(
+                              userBadgeData?.totalUnEarnedOutstandingAmount
+                            ) || 0}
+                          </h4>{" "}
+                        </div>
+                      </div>
+                    </div>
                   </Link>
                 </div>
               </div>

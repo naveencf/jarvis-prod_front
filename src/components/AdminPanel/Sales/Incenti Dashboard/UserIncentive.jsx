@@ -43,6 +43,8 @@ const UserIncentive = () => {
   const [releaseButtonConditiondata, setReleaseButtonConditionData] = useState(
     {}
   );
+  const [adjustment, setAdjustment] = useState(0);
+
   useEffect(() => {
     if (
       buttonView == 0 &&
@@ -69,6 +71,19 @@ const UserIncentive = () => {
       setDisabledState(false);
     }
   }, [buttonView, userIncentiveData]);
+  const getAdjustment = async () => {
+    try {
+      const res = await axios.get(
+        baseUrl + `sales/user_adjustment_incentive_amount/${loginUserId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      setAdjustment(res?.data?.data?.adjustment_incentive_amount);
+    } catch (error) {}
+  };
 
   async function getMonthWiseData() {
     setIsMonthWiseDataLoading(true);
@@ -240,7 +255,7 @@ const UserIncentive = () => {
               })
             }
           >
-            {row.unEarnedIncentiveAmount.toFixed(2)}
+            {row.unEarnedIncentiveAmount?.toFixed(2)}
           </div>
         ),
       },
@@ -258,7 +273,7 @@ const UserIncentive = () => {
             <div
               title={
                 disabledsate &&
-                  releaseButtonConditiondata?.finance_status === "pending"
+                releaseButtonConditiondata?.finance_status === "pending"
                   ? "Pending from finance side"
                   : ""
               }
@@ -275,7 +290,7 @@ const UserIncentive = () => {
         </div>
 
         <div className="row mt24">
-          {loginUserRole === 1 &&
+          {loginUserRole === 1 && (
             <>
               <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
                 <div className="card">
@@ -288,7 +303,7 @@ const UserIncentive = () => {
                     <div>
                       <h6 className="colorMedium">Total Incentive Amount</h6>
                       <h6 className="mt8 fs_16">
-                        {userIncentiveData?.totalIncentiveAmount.toFixed(2)}
+                        {userIncentiveData?.totalIncentiveAmount?.toFixed(2)}
                       </h6>
                     </div>
                   </div>
@@ -305,12 +320,16 @@ const UserIncentive = () => {
                     <div>
                       <h6 className="colorMedium">Total Earned Incentive</h6>
                       <h6 className="mt8 fs_16">
-                        {userIncentiveData?.totalEarnedIncentiveAmount.toFixed(2)}
+                        {userIncentiveData?.totalEarnedIncentiveAmount?.toFixed(
+                          2
+                        )}
                       </h6>
                     </div>
                   </div>
                 </div>
-              </div></>}
+              </div>
+            </>
+          )}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
@@ -322,31 +341,36 @@ const UserIncentive = () => {
                 <div>
                   <h6 className="colorMedium">Total Unearned Incentive</h6>
                   <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalUnEarnedIncentiveAmount.toFixed(2)}
-                  </h6>
-                </div>
-              </div>
-            </div>
-          </div>
-          {loginUserRole === 1 && <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            <div className="card">
-              <div className="card-body pb20 flexCenter colGap14">
-                <div className="iconBadge bgSuccessLight m-0">
-                  <span>
-                    <Scroll weight="duotone" />
-                  </span>
-                </div>
-                <div>
-                  <h6 className="colorMedium">Total Release Request</h6>
-                  <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalIncentiveRequestedAmount.toFixed(
+                    {userIncentiveData?.totalUnEarnedIncentiveAmount?.toFixed(
                       2
                     )}
                   </h6>
                 </div>
               </div>
             </div>
-          </div>}
+          </div>
+          {loginUserRole === 1 && (
+            <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div className="card">
+                <div className="card-body pb20 flexCenter colGap14">
+                  <div className="iconBadge bgSuccessLight m-0">
+                    <span>
+                      <Scroll weight="duotone" />
+                    </span>
+                  </div>
+                  <div>
+                    <h6 className="colorMedium">Total Release Request</h6>
+                    <h6 className="mt8 fs_16">
+                      {(
+                        userIncentiveData?.totalIncentiveRequestedAmount -
+                        adjustment
+                      )?.toFixed(2)}
+                    </h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
@@ -366,23 +390,27 @@ const UserIncentive = () => {
               </div>
             </div>
           </div>
-          {loginUserRole === 1 && <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            <div className="card">
-              <div className="card-body pb20 flexCenter colGap14">
-                <div className="iconBadge bgWarningLight m-0">
-                  <span>
-                    <CheckSquare weight="duotone" />
-                  </span>
-                </div>
-                <div>
-                  <h6 className="colorMedium">Total Release Completed</h6>
-                  <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalIncentiveReleasedAmount.toFixed(2)}
-                  </h6>
+          {loginUserRole === 1 && (
+            <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+              <div className="card">
+                <div className="card-body pb20 flexCenter colGap14">
+                  <div className="iconBadge bgWarningLight m-0">
+                    <span>
+                      <CheckSquare weight="duotone" />
+                    </span>
+                  </div>
+                  <div>
+                    <h6 className="colorMedium">Total Release Completed</h6>
+                    <h6 className="mt8 fs_16">
+                      {userIncentiveData?.totalIncentiveReleasedAmount.toFixed(
+                        2
+                      )}
+                    </h6>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>}
+          )}
         </div>
 
         <View
