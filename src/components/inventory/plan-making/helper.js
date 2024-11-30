@@ -12,6 +12,16 @@ export const getPriceDetail = (priceDetails, key) => {
   return detail ? detail[key] : 0;
 };
 
+export const ButtonTitle = [
+  'Other Inventory',
+  'Sarcasm Network',
+  'Own-Pages',
+  'Advanced-Pages',
+  'Recently Used Top Pages',
+  'All Inventory',
+  '',
+];
+
 export const calculatePrice = (rate_type, pageData, type) => {
   if (rate_type === 'Variable') {
     // Calculate for post price (followers_count / 10,000) * m_post_price

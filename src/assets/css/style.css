@@ -18875,6 +18875,13 @@ hr:not([size]) {
   font-weight: 400;
   color: var(--medium);
 }
+.titleCard .titleCardText select {
+  font-size: 14px;
+  line-height: 18px;
+  font-weight: 400;
+  color: var(--medium);
+  border: none;
+}
 
 /* .MuiPaper-elevation.MuiPaper-rounded .MuiFormLabel-root.MuiInputLabel-root {
   position: relative;

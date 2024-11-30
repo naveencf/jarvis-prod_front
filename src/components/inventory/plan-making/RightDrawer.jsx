@@ -13,7 +13,7 @@ import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowRightSlidder } from '../../Store/PageMaster';
-import { parseRange } from './helper';
+import { calculatePrice, parseRange } from './helper';
 import { getPriceDetail } from './downloadExcel';
 import Swal from 'sweetalert2';
 
@@ -21,10 +21,16 @@ const RightDrawer = ({
   priceFilterType,
   handleStoryCountChange,
   handlePostCountChange,
+  storyPerPageValues,
   postCountDefault,
   storyCountDefault,
   setFilterData,
   setPriceFilterType,
+  setPostPerPageValues,
+  setStoryPerPageValues,
+  setShowTotalCost,
+  setSelectedRows,
+  sendPlanDetails,
   minPrice,
   getTableData,
   setMinPrice,
@@ -35,13 +41,18 @@ const RightDrawer = ({
   maxFollowers,
   setMaxFollowers,
   selectedFollowers,
+  setPageCategoryCount,
   setSelectedFollowers,
   selectedCategory,
+  setTotalCostValues,
   cat,
+  postPerPageValues,
   tagCategory,
+  selectedRows,
   setTagCategory,
-  selectAllRows,
-  deSelectAllRows,
+  showTotalCost,
+  // selectAllRows,
+  // deSelectAllRows,
   setSelectedCategory,
   platformData,
   activeTabPlatform,
@@ -54,6 +65,26 @@ const RightDrawer = ({
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
+  };
+  const calculateTotalCost = (
+    id,
+    postPerPage,
+    storyPerPage,
+    costPerPost,
+    costPerStory,
+    costPerBoth
+  ) => {
+    let totalCost;
+    if (postPerPage === storyPerPage) {
+      totalCost = postPerPage * costPerBoth;
+    } else {
+      totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
+    }
+
+    setTotalCostValues((prevValues) => ({
+      ...prevValues,
+      [id]: totalCost,
+    }));
   };
   const dispatch = useDispatch();
   // // Prepare categories for CustomSelect
@@ -88,10 +119,120 @@ const RightDrawer = ({
     });
 
     // Uncomment to update filtered data in state
- 
+
     setFilterData(filteredData);
   };
 
+  const selectAllRows = () => {
+    const updatedSelectedRows = [...selectedRows];
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    const updatedShowTotalCost = { ...showTotalCost };
+
+    // Iterate over the table data and update counts and selections
+    getTableData.forEach((row) => {
+      const isAlreadySelected = updatedSelectedRows.some(
+        (selectedRow) => selectedRow._id === row._id
+      );
+
+      // If not already selected, add this row to selected rows
+      if (!isAlreadySelected) {
+        updatedSelectedRows.push(row);
+      }
+
+      // Use row values or default values if not present
+      updatedPostValues[row._id] = postCountDefault || 1;
+      updatedStoryValues[row._id] = storyCountDefault || 0;
+      // updatedStoryValues[row._id] = row.story_count || storyCountDefault || 0;
+
+      // Calculate costs (if applicable)
+      const postPrice = getPriceDetail(row.page_price_list, 'instagram_post');
+      const storyPrice = getPriceDetail(row.page_price_list, 'instagram_story');
+      const bothPrice = getPriceDetail(row.page_price_list, 'instagram_both');
+      const rateType = row.rate_type === 'Fixed';
+
+      const finalPostCost = rateType
+        ? postPrice
+        : calculatePrice(row.rate_type, row, 'post');
+      const finalStoryCost = rateType
+        ? storyPrice
+        : calculatePrice(row.rate_type, row, 'story');
+      const costOfBoth = rateType
+        ? bothPrice
+        : calculatePrice(row.rate_type, row, 'both');
+
+      const costPerPost = finalPostCost || 0;
+      const costPerStory = finalStoryCost || 0;
+
+      // function exists to calculate total cost
+      calculateTotalCost(
+        row._id,
+        updatedPostValues[row._id],
+        updatedStoryValues[row._id],
+        costPerPost,
+        costPerStory,
+        costOfBoth
+      );
+
+      // Mark this row's cost visibility as 'true'
+      updatedShowTotalCost[row._id] = true;
+
+      // Optional: Auto-check this row if needed (commented out in your logic)
+      // handleCheckboxChange(row)({ target: { checked: true } });
+    });
+
+    // Prepare the plan data to send
+    const planxData = updatedSelectedRows.map((row) => {
+      const {
+        _id,
+        page_price_list,
+        page_name,
+        rate_type,
+        m_story_price,
+        m_post_price,
+        followers_count,
+      } = row;
+
+      const isFixedRate = rate_type === 'fixed';
+
+      const getPrice = (type) =>
+        isFixedRate
+          ? getPriceDetail(page_price_list, `instagram_${type}`)
+          : calculatePrice(
+              rate_type,
+              { m_story_price, m_post_price, followers_count },
+              type
+            );
+
+      return {
+        _id,
+        page_name,
+        post_price: getPrice('post'),
+        story_price: getPrice('story'),
+        post_count: Number(updatedPostValues[_id]) || 0,
+        story_count: Number(updatedStoryValues[_id]) || 0,
+      };
+    });
+    // Send plan details and update the state
+    sendPlanDetails(planxData);
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setSelectedRows(updatedSelectedRows);
+    setShowTotalCost(updatedShowTotalCost);
+
+    // Optional: Reset any automatic check flag if needed
+    // setIsAutomaticCheck(false);
+  };
+
+  const deSelectAllRows = () => {
+    setSelectedRows([]);
+    setPostPerPageValues({});
+    setStoryPerPageValues({});
+    setPageCategoryCount({});
+    setTotalCostValues({});
+    const payload = [];
+    sendPlanDetails(payload);
+  };
   const applyFollowerRangeFilter = (data) => {
     if (!selectedFollowers?.length) return data;
 
@@ -159,7 +300,7 @@ const RightDrawer = ({
     setFilterData(pageData);
     setSelectedFollowers([]);
     setSelectedCategory([]);
-    setTagCategory([])
+    setTagCategory([]);
     setMinPrice(0);
     setMaxPrice(0);
   };

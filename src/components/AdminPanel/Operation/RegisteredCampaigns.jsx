@@ -245,7 +245,7 @@ const RegisteredCampaigns = () => {
             getData={getRegisterCampaign}
           />
         );
-        
+
       },
     },
   ];
@@ -277,9 +277,11 @@ const RegisteredCampaigns = () => {
     },
   ];
   // search filter
-  const filteredData = allCampaign?.filter((item) =>
-    item.campaign_data?.exeCmpName?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredData = allCampaign
+  // ?.filter((item) =>
+  //   item.campaign_data?.exeCmpName?.toLowerCase().includes(search.toLowerCase())
+  // );
+  console.log("first", allCampaign)
 
   return (
     <div>

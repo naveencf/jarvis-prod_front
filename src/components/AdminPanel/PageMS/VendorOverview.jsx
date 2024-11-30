@@ -62,6 +62,9 @@ const VendorOverview = () => {
   const platformData = platform?.data;
 
   const { data: cycle } = useGetPmsPayCycleQuery();
+
+  const [closedByCount , setClosedByCount] = useState([])
+  console.log(closedByCount , 'closed by count')
   const cycleData = cycle?.data;
   const {
     data: vendorData,
@@ -406,7 +409,7 @@ const VendorOverview = () => {
       renderRowCell: (row) => {
         return (
           <button
-            title="Bank Details"
+            title="Page Count"
             className="btn btn-outline-primary btn-sm user-button"
             onClick={() => showPagesOfVendor(row)}
             data-toggle="modal"
@@ -561,6 +564,20 @@ const VendorOverview = () => {
       vendor_id: row.vendor_id,
     });
   };
+  
+  useEffect(() => {
+    const fetchVendorCounts = async () => {
+      try {
+        const response = await axios.get(`${baseUrl}v1/get_vendor_counts`);
+        setClosedByCount(response.data.data.pageClosedBYCounts); 
+        console.log(response.data.data.pageClosedBYCounts, "console res"); 
+      } catch (error) {
+        console.error("Error fetching vendor counts:", error.message); 
+      }
+    };
+
+    fetchVendorCounts(); 
+  }, []);
 
   // for category statistics
   useEffect(() => {
@@ -636,6 +653,13 @@ const VendorOverview = () => {
       (item) => item.vendor_platform == platform
     );
     setFilterData(vendorwithplatforms);
+    setActiveTab("Tab1");
+  };
+  const vendorClosedBy = (closeby) => {
+    const vendorclosedby = tabFilterData.filter(
+      (item) => item.closed_by == closeby
+    );
+    setFilterData(vendorclosedby);
     setActiveTab("Tab1");
   };
 
@@ -920,6 +944,41 @@ const VendorOverview = () => {
                       </div>
                     </div>
                   ))}
+                  {/* {console.log(platformCounts)} */}
+                </div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header">
+                <h5 className="card-title">Vendor Closed By</h5>
+              </div>
+              <div className="card-body">
+                <div className="row">
+                  {closedByCount.map((item, index) => (
+                    <div
+                      className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
+                      key={index}
+                    >
+                      <div
+                        className="card"
+                        key={index}
+                        onClick={() => vendorClosedBy(item.closed_by)}
+                      >
+                        <div className="card-body pb20 flexCenter colGap14">
+                          <div className="iconBadge small bgPrimaryLight m-0">
+                            <span></span>
+                          </div>
+                          <div>
+                            <h6 className="colorMedium">
+                              {item.user_name}
+                            </h6>
+                            <h6 className="mt4 fs_16">{item.count}</h6>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {/* {console.log(platformCounts)} */}
                 </div>
               </div>
             </div>

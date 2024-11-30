@@ -1,5 +1,6 @@
 import { Avatar, Checkbox } from '@mui/material';
 import formatString from '../../../utils/formatString';
+import { ButtonTitle } from './helper';
 
 const DataGridColumns = ({
   vendorData,
@@ -152,7 +153,14 @@ const DataGridColumns = ({
       showCol: true,
     },
     {
-      key: 'selection',
+      key: 'page_layer',
+      name: 'Page Layer',
+      renderRowCell: (row) => ButtonTitle[row.page_layer],
+      width: 100,
+      showCol: true,
+    },
+    {
+      key: 'page_check',
       name: 'Selection',
       renderRowCell: (row, index) => (
         <div
@@ -190,6 +198,7 @@ const DataGridColumns = ({
       //   // }
       // },
     },
+
     {
       key: 'post_per_page',
       name: 'Post Per Page',

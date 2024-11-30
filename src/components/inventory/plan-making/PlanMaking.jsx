@@ -44,7 +44,7 @@ import Loader from '../../Finance/Loader/Loader';
 import { ImNext } from 'react-icons/im';
 import { ImPrevious } from 'react-icons/im';
 import PlanVersions from './PlanVersions';
-import { calculatePrice } from './helper';
+import { ButtonTitle, calculatePrice } from './helper';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -55,7 +55,6 @@ const PlanMaking = () => {
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
   // const [progress, setProgress] = useState(10);
-  const [contextData, setContextData] = useState(false);
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
@@ -174,10 +173,6 @@ const PlanMaking = () => {
     const detail = priceDetails?.find((item) => item[key] !== undefined);
     return detail ? detail[key] : 0;
   };
-  // Function to calculate price
-
-  // const { data: priceData, isLoading: isPriceLoading } =
-  //   useGetMultiplePagePriceQuery();
 
   const handlePostPerValue = (row, postPerPage, callback) => {
     setPostPerPageValues((prevValues) => {
@@ -268,18 +263,16 @@ const PlanMaking = () => {
       debouncedSendPlanDetails(updatedPlanData);
     }
   };
-  // let isProgrammaticChange = false;
+
   const handleCheckboxChange = (row, shortcut, event, index) => {
-    // Ignore if it's a programmatic change
-    // if (isProgrammaticChange) {
-    //   isProgrammaticChange = false; // Reset flag
-    //   return;
-    // }
     const isChecked = event.target.checked;
+
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked
       ? [...selectedRows, row]
       : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
+    // console.log('updatedSelectedRows', updatedSelectedRows);
+    // console.log('row', row, activeIndex, index);
     setActiveIndex(index);
     setSelectedRows(updatedSelectedRows);
     setLastSelectedRow(row);
@@ -353,9 +346,10 @@ const PlanMaking = () => {
       setPlanData(planxData);
       const planStatus = planDetails[0].plan_status;
       // Debounce plan details to avoid rapid state updates
-      // if (!isAutomaticCheck) {
-      debouncedSendPlanDetails(planxData, planStatus);
-      // }
+      if (!isAutomaticCheck) {
+        debouncedSendPlanDetails(planxData, planStatus);
+        debouncedSendPlanDetails(planxData, planStatus);
+      }
     });
 
     // 6. Update page category count safely
@@ -575,12 +569,6 @@ const PlanMaking = () => {
     }));
   };
 
-  const handleRowClick = (row, index) => {
-    console.log('row');
-    // setLastSelectedRow(row);
-    // setTempIndex(0)
-  };
-
   const { dataGridColumns } = DataGridColumns({
     vendorData,
     filterData,
@@ -613,7 +601,8 @@ const PlanMaking = () => {
   const handlePlatform = (id) => {
     setActiveTabPlatform(id);
   };
-
+  // console.log('cat', cat);
+  // console.log('filterDAta', filterData);
   const handleAutomaticSelection = (incomingData) => {
     // Clone the state to avoid direct mutation
     const updatedSelectedRows = [...selectedRows];
@@ -640,7 +629,7 @@ const PlanMaking = () => {
 
           // Override page_category_name with incoming category_name
           matchingPage.page_category_name = incomingPage.category_name;
-
+          // console.log('matchingPage', matchingPage);
           // Find the corresponding page_category_id using the categoryMap
           const matchingCategoryId = categoryMap[incomingPage?.category_name];
           if (matchingCategoryId) {
@@ -953,137 +942,6 @@ const PlanMaking = () => {
     setOpenVersionModal(false);
   };
 
-  const selectAllRows = () => {
-    const updatedSelectedRows = [...selectedRows];
-    const updatedPostValues = { ...postPerPageValues };
-    const updatedStoryValues = { ...storyPerPageValues };
-    const updatedShowTotalCost = { ...showTotalCost };
-
-    // Iterate over the table data and update counts and selections
-    getTableData.forEach((row) => {
-      const isAlreadySelected = updatedSelectedRows.some(
-        (selectedRow) => selectedRow._id === row._id
-      );
-
-      // If not already selected, add this row to selected rows
-      if (!isAlreadySelected) {
-        updatedSelectedRows.push(row);
-      }
-
-      // Use row values or default values if not present
-      updatedPostValues[row._id] = postCountDefault || 1;
-      updatedStoryValues[row._id] = storyCountDefault || 0;
-      // updatedStoryValues[row._id] = row.story_count || storyCountDefault || 0;
-
-      // Calculate costs (if applicable)
-      const postPrice = getPriceDetail(row.page_price_list, 'instagram_post');
-      const storyPrice = getPriceDetail(row.page_price_list, 'instagram_story');
-      const bothPrice = getPriceDetail(row.page_price_list, 'instagram_both');
-      const rateType = row.rate_type === 'Fixed';
-
-      const finalPostCost = rateType
-        ? postPrice
-        : calculatePrice(row.rate_type, row, 'post');
-      const finalStoryCost = rateType
-        ? storyPrice
-        : calculatePrice(row.rate_type, row, 'story');
-      const costOfBoth = rateType
-        ? bothPrice
-        : calculatePrice(row.rate_type, row, 'both');
-
-      const costPerPost = finalPostCost || 0;
-      const costPerStory = finalStoryCost || 0;
-
-      // function exists to calculate total cost
-      calculateTotalCost(
-        row._id,
-        updatedPostValues[row._id],
-        updatedStoryValues[row._id],
-        costPerPost,
-        costPerStory,
-        costOfBoth
-      );
-
-      // Mark this row's cost visibility as 'true'
-      updatedShowTotalCost[row._id] = true;
-
-      // Optional: Auto-check this row if needed (commented out in your logic)
-      // handleCheckboxChange(row)({ target: { checked: true } });
-    });
-
-    // Prepare the plan data to send
-    const planxData = updatedSelectedRows.map((row) => {
-      const {
-        _id,
-        page_price_list,
-        page_name,
-        rate_type,
-        m_story_price,
-        m_post_price,
-        followers_count,
-      } = row;
-
-      const isFixedRate = rate_type === 'fixed';
-
-      const getPrice = (type) =>
-        isFixedRate
-          ? getPriceDetail(page_price_list, `instagram_${type}`)
-          : calculatePrice(
-            rate_type,
-            { m_story_price, m_post_price, followers_count },
-            type
-          );
-
-      return {
-        _id,
-        page_name,
-        post_price: getPrice('post'),
-        story_price: getPrice('story'),
-        post_count: Number(updatedPostValues[_id]) || 0,
-        story_count: Number(updatedStoryValues[_id]) || 0,
-      };
-    });
-    // Send plan details and update the state
-    sendPlanDetails(planxData);
-    setPostPerPageValues(updatedPostValues);
-    setStoryPerPageValues(updatedStoryValues);
-    setSelectedRows(updatedSelectedRows);
-    setShowTotalCost(updatedShowTotalCost);
-
-    // Optional: Reset any automatic check flag if needed
-    // setIsAutomaticCheck(false);
-  };
-
-  const deSelectAllRows = () => {
-    setSelectedRows([]);
-    setPostPerPageValues({});
-    setStoryPerPageValues({});
-    setPageCategoryCount({});
-    setTotalCostValues({});
-    const payload = [];
-    sendPlanDetails(payload);
-  };
-
-  useEffect(() => {
-    if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            // setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
-    }
-
-    // getData();
-  }, []);
-
   useEffect(() => {
     if (pageList) {
       const pageData = pageList
@@ -1227,7 +1085,7 @@ const PlanMaking = () => {
 
     const handleRouteChange = async () => {
       if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
-        console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+        // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
         sendPlanxLogs('v1/planxlogs', payload);
       }
     };
@@ -1251,11 +1109,13 @@ const PlanMaking = () => {
       setShortcutTriggered(true); // Indicate shortcut use
       // Call handleCheckboxChange directly for the activeIndex
       handleCheckboxChange(
-        filterData[activeIndex],
+        getTableData[activeIndex],
+        // filterData[activeIndex],
         'shortcutkey',
         { target: { checked: true } },
         activeIndex
       );
+
       // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
     } else if (event.code === 'ArrowDown') {
       if (activeIndex < filterData.length - 1) {
@@ -1321,17 +1181,13 @@ const PlanMaking = () => {
     layering == 1
       ? sarcasmNetwork
       : layering == 2
-        ? filterData?.filter(
-          (item) => item?.ownership_type === 'Own'
-        )
+        ? ownPages
         : layering == 3
           ? advancePageList
           : layering == 4
             ? topUsedPageList
             : showOwnPage
-              ? filterData?.filter(
-                (item) => item?.ownership_type === 'Own'
-              )
+              ? ownPages
               : toggleShowBtn
                 ? selectedRows
                 : sortedRows(filterData, selectedRows);
@@ -1346,16 +1202,6 @@ const PlanMaking = () => {
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
   }, [descriptions]);
-
-  const ButtonTitle = [
-    '',
-    'Sarcasm Network',
-    'Own-Pages',
-    'Advanced-Pages',
-    'Recently Used Top Pages',
-    'All Inventory',
-    '',
-  ];
 
   return (
     <>
@@ -1532,7 +1378,14 @@ const PlanMaking = () => {
             <div>
               <RightDrawer
                 priceFilterType={priceFilterType}
-                deSelectAllRows={deSelectAllRows}
+                setShowTotalCost={setShowTotalCost}
+                setSelectedRows={setSelectedRows}
+                setStoryPerPageValues={setStoryPerPageValues}
+                setPostPerPageValues={setPostPerPageValues}
+                setPageCategoryCount={setPageCategoryCount}
+                setTotalCostValues={setTotalCostValues}
+                sendPlanDetails={sendPlanDetails}
+                // deSelectAllRows={deSelectAllRows}
                 selectedFollowers={selectedFollowers}
                 setSelectedFollowers={setSelectedFollowers}
                 setPriceFilterType={setPriceFilterType}
@@ -1551,7 +1404,7 @@ const PlanMaking = () => {
                 selectedCategory={selectedCategory}
                 cat={cat}
                 setFilterData={setFilterData}
-                selectAllRows={selectAllRows}
+                // selectAllRows={selectAllRows}
                 handleStoryCountChange={handleStoryCountChange}
                 handlePostCountChange={handlePostCountChange}
                 storyCountDefault={storyCountDefault}
@@ -1617,7 +1470,7 @@ const PlanMaking = () => {
                 // rowSelectable={true}
                 dataLoading={isPageListLoading}
                 columns={dataGridColumns}
-                data={tableData}
+                data={filterData}
                 Pagination={[100, 200]}
                 // selectedData={}
                 tableName={'PlanMakingDetails'}

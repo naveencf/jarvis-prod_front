@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DateISOtoNormal from "../../../utils/DateISOtoNormal";
 import { formatIndianNumber } from "../../../utils/formatIndianNumber";
 import { formatNumber } from "../../../utils/formatNumber";
+import getDecodedToken from "../../../utils/DecodedToken";
 
 const MonthlyWeeklyCard = ({
   data,
@@ -10,8 +11,91 @@ const MonthlyWeeklyCard = ({
   previousData,
   titleClass = "colorPrimary",
   colorClass = "bgPrimary",
+  getData,
 }) => {
+  let loginUserRole = getDecodedToken().role_id;
   const navigate = useNavigate();
+  const [slectedOption, SetSelectedOption] = useState("");
+  const [Options, SetOption] = useState([]);
+
+  let startDate = useRef(null);
+  let endDate = useRef(null);
+  let laststartDate = useRef(null);
+  let lastendDate = useRef(null);
+
+  useEffect(() => {
+    function getPastMonths() {
+      let setpo = new Date(data?.startDate);
+      SetOption(
+        new Date(setpo.setMonth(setpo.getMonth())).toLocaleString("default", {
+          month: "long",
+        })
+      );
+      const startdate = new Date(data?.startDate);
+      const enddate = new Date(data?.endDate);
+
+      const months = [];
+
+      for (let i = 0; i < 5; i++) {
+        const pastMonthStart = new Date(startdate);
+        pastMonthStart?.setMonth(pastMonthStart?.getMonth() - i);
+        pastMonthStart?.setDate(1);
+
+        const pastMonthEnd = new Date(pastMonthStart);
+        pastMonthEnd?.setMonth(pastMonthEnd?.getMonth() + 1);
+        pastMonthEnd?.setDate(0);
+
+        const monthName = pastMonthStart?.toLocaleString("default", {
+          month: "long",
+        });
+
+        months.push({
+          month: monthName,
+          startdate: pastMonthStart?.toISOString().split("T")[0],
+          enddate: pastMonthEnd?.toISOString().split("T")[0],
+        });
+      }
+
+      return months;
+    }
+    if (data && title == "Monthly") SetOption(getPastMonths());
+  }, [data]);
+
+  useEffect(() => {
+    if (slectedOption) {
+      let startindex = Options.findIndex(
+        (option) => option.month === slectedOption
+      );
+      let endindex = Options.findIndex(
+        (option) => option.month === slectedOption
+      );
+
+      startDate.current = Options.find(
+        (option) => option.month === slectedOption
+      )?.startdate;
+      endDate.current = Options.find(
+        (option) => option.month === slectedOption
+      )?.enddate;
+      laststartDate.current = Options[startindex + 1]?.startdate;
+      lastendDate.current = Options[endindex + 1]?.enddate;
+    }
+  }, [slectedOption]);
+
+  useEffect(() => {
+    if (title === "Monthly") {
+      getData(
+        startDate.current,
+        endDate.current,
+        laststartDate.current,
+        lastendDate.current
+      );
+    }
+  }, [lastendDate?.current]);
+
+  // console.log("startDate", startDate.current);
+  // console.log("endDate", endDate.current);
+  // console.log("laststartDate", laststartDate.current);
+  // console.log("lastendDate", lastendDate.current);
 
   const handleNavigate = (start, end) => {
     navigate("/admin/view-sales-booking", { state: { start, end } });
@@ -48,7 +132,22 @@ const MonthlyWeeklyCard = ({
             </div>
             <div className="titleCardText">
               <h2 className={titleClass}>{title}</h2>
-              {title !== "Total" && (
+              {title === "Total" ? null : (
+                // loginUserRole == 1 &&
+                //   title === "Monthly" ? (
+                //   <select
+                //     value={slectedOption}
+                //     onChange={(e) => {
+                //       SetSelectedOption(e.target.value);
+                //     }}
+                //   >
+                //     {Options.slice(0, 4).map((option, index) => (
+                //       <option key={index} value={option.month}>
+                //         {option.month}
+                //       </option>
+                //     ))}
+                //   </select>
+                // )
                 <h3>
                   {DateISOtoNormal(data?.startDate)} to{" "}
                   {DateISOtoNormal(data?.endDate)}

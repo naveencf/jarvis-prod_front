@@ -15,6 +15,7 @@ import { List } from "@phosphor-icons/react";
 import { formatNumber } from "../../../utils/formatNumber";
 import InternetSpeedChecker from "../User/UserDashboard/InternetSpeedChecker";
 import rupee from "../../../assets/img/icon/badge/rupee.png";
+import { useGlobalContext } from "../../../Context/Context";
 
 const badgeImageMap = {
   Diamond: Diamond,
@@ -34,6 +35,8 @@ const Navbar = () => {
   const [badge, setBadge] = useState("");
   const [adjustment, setAdjustment] = useState(0);
   const [isActive, setIsActive] = useState(0);
+  const { data } = useGlobalContext();
+
   useEffect(() => {
     const interval = setInterval(() => {
       setIsActive((prevIsActive) => (prevIsActive === 0 ? 1 : 0));
@@ -81,7 +84,6 @@ const Navbar = () => {
       setAdjustment(res?.data?.data?.adjustment_incentive_amount);
     } catch (error) {}
   };
-  console.log(adjustment);
 
   const getUserBadge = async () => {
     try {
@@ -186,8 +188,7 @@ const Navbar = () => {
           </li>
 
           {/* {deptId == 36 && ( */}
-          {
-            //  loginUserId !== 1 && deptId == 36 &&
+          {(deptId == 36 || RoleID == 6 || data[52]?.view_value == 1) && (
             <li className="nav-item" id="salesBadge">
               <div
                 className="navBadge"
@@ -237,7 +238,7 @@ const Navbar = () => {
                 </div>
               </div>
             </li>
-          }
+          )}
           {/* )} */}
           <InternetSpeedChecker />
 

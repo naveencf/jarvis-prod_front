@@ -49,7 +49,7 @@ const SalesDashboard = () => {
     isLoading: categoryDetailsLoading,
   } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
 
-  async function getweekly() {
+  async function getweekly(startDate, endDate, laststartDate, lastendDate) {
     setIsLoading(true);
     try {
       const response1 = await axios.get(
@@ -58,6 +58,17 @@ const SalesDashboard = () => {
             loginUserRole == 1 ? "true" : "false"
           }${
             loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
+          }${
+            startDate
+              ? "&startOfMonth=" +
+                startDate +
+                "&endofmonth=" +
+                endDate +
+                "lastMonthStart=" +
+                laststartDate +
+                "&lastMonthEnd=" +
+                lastendDate
+              : ""
           }`,
         {
           headers: {
@@ -393,6 +404,7 @@ How are you doing today?`}
           cardclassName="bgSecondary"
           titleclassName="colorSecondary"
           colorclassName="bgSecondary"
+          getData={getweekly}
         />
 
         <MonthlyWeeklyCard

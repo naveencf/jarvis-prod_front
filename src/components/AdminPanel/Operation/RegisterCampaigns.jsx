@@ -24,7 +24,7 @@ export default function RegisterCampaigns() {
   const { data: allBrandData } = useGetAllBrandQuery();
   const navigate = useNavigate();
   const location = useLocation();
-  const saleBookingId = location.state?.sale_id;
+  const saleBookingId = 2025;
   const [openCamp, setOpenCamp] = useState(false);
   const [openCampView, setOpenCampView] = useState(false);
   const handleOpenCampaign = () => setOpenCamp(true);
@@ -63,25 +63,25 @@ export default function RegisterCampaigns() {
   const handleSubmit = (e) => {
     e.preventDefault();
     let hasError = false;
-    if (
-      fields.length === 0 ||
-      fields.some((field) => !field.selectValue || !field.textValue)
-    ) {
-      hasError = true;
-    }
-    if (!selectedGoal) {
-      hasError = true;
-    }
-    if (!selectedDate) {
-      hasError = true;
-    }
-    if (!goal) {
-      hasError = true;
-    }
+    // if (
+    //   fields.length === 0 ||
+    //   fields.some((field) => !field.selectValue || !field.textValue)
+    // ) {
+    //   hasError = true;
+    // }
+    // if (!selectedGoal) {
+    //   hasError = true;
+    // }
+    // if (!selectedDate) {
+    //   hasError = true;
+    // }
+    // if (!goal) {
+    //   hasError = true;
+    // }
 
-    if (!campaignClosedBy) {
-      hasError = true;
-    }
+    // if (!campaignClosedBy) {
+    //   hasError = true;
+    // }
 
     if (hasError) {
       setShowAlert(true);
@@ -97,7 +97,7 @@ export default function RegisterCampaigns() {
       details: campaignDetailing,
       captions: caption,
       hash_tag: hashtag,
-      pre_goal_id: selectedGoal,
+      pre_goal_id: "65b0f6ee2446c351ab8e02cd",
       campaign_closed_by: campaignClosedBy,
       sale_booking_id: saleBookingId,
     };
@@ -181,15 +181,15 @@ export default function RegisterCampaigns() {
       );
       const brnadname = brand?.instaBrandName;
       const majorCategory = brand?.majorCategory;
-      setMajorCategory(majorCategory);
-      setInstaBrnadname(brnadname);
+      setMajorCategory("NBRS");
+      setInstaBrnadname("Zee");
       const campaign = exeCampaignData?.find(
         (item) => item._id === dataEx?.campaign_id
       );
       const agencyID = campaign?.agency_id;
       const agency = agencyData?.find((item) => item?._id === agencyID);
       const agencyName = agency?.agency_name;
-      setAgencyName(agencyName);
+      setAgencyName("agencyName");
     }
   }, [exeCampaignData, dataEx, agencyData, allBrandData]);
 
@@ -608,16 +608,16 @@ export default function RegisterCampaigns() {
             {commitmentOptions.filter(
               (e) => !fields.map((e) => e.selectValue).includes(e)
             ).length > 0 && (
-              <Button
-                variant="outlined"
-                sx={{ mt: 2 }}
-                color="secondary"
-                className="btn btn-primary cmnbtn btn_sm"
-                onClick={handleAddField}
-              >
-                Add Row
-              </Button>
-            )}
+                <Button
+                  variant="outlined"
+                  sx={{ mt: 2 }}
+                  color="secondary"
+                  className="btn btn-primary cmnbtn btn_sm"
+                  onClick={handleAddField}
+                >
+                  Add Row
+                </Button>
+              )}
           </div>
         </div>
         <br />

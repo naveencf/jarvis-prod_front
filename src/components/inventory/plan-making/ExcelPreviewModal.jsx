@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
   Modal,
   Box,
@@ -63,7 +63,7 @@ const ExcelPreviewModal = ({
   }, [previewData, categories]);
 
   const handleTabChange = (event, newValue) => {
-    const validTabValue = Math.min(newValue, Object.keys(categoryData).length); 
+    const validTabValue = Math.min(newValue, Object.keys(categoryData).length);
     setSelectedTab(validTabValue);
   };
 
@@ -160,12 +160,12 @@ const ExcelPreviewModal = ({
         category_name: categoryName,
       };
     });
- 
+
     // Update state with the modified data
     setCategoryData(updatedCategoryData);
     setPreviewDataMerge(finalPreviewData);
-    sendPlanDetails(finalPreviewData)
-    setMergedCategories([]);  
+    sendPlanDetails(finalPreviewData);
+    setMergedCategories([]);
   };
 
   return (
