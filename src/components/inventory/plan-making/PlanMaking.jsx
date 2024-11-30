@@ -1470,7 +1470,7 @@ const PlanMaking = () => {
                 // rowSelectable={true}
                 dataLoading={isPageListLoading}
                 columns={dataGridColumns}
-                data={filterData}
+                data={tableData}
                 Pagination={[100, 200]}
                 // selectedData={}
                 tableName={'PlanMakingDetails'}
