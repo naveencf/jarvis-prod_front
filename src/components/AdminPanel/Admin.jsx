@@ -855,8 +855,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1724,118 +1724,6 @@ const Admin = () => {
                       path="/exeexecution/:id"
                       element={<ExecutionDetail />}
                     />
-                    {/* -------------------Insta Api--------------------------- */}
-                    {/* <Route
-                    path="/instaapi"
-                    element={
-                      <InstaApiContext>
-                        <InstaAPIHome />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/:creatorName"
-                    element={
-                      <InstaApiContext>
-                        <InstaPageDashboard />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/all/:creatorName"
-                    element={
-                      <InstaApiContext>
-                        <AdminPageView />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/interpretor/:creatorName"
-                    element={
-                      <InstaApiContext>
-                        <InterpretorContext>
-                          <InterpretorPageDashboard />
-                        </InterpretorContext>
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/auditor/:creatorName"
-                    element={
-                      <InstaApiContext>
-                        <AuditorPageView />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/all/:creatorName/:shortCode"
-                    element={
-                      <InstaApiContext>
-                        <AdminPostView />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/:creatorName/:shortCode"
-                    element={
-                      <InstaApiContext>
-                        <InstaPostDashboard />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/:creatorName/track/:shortCode"
-                    element={
-                      <InstaApiContext>
-                        <CronExpression />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/analytics/:creatorName"
-                    element={
-                      <InstaApiContext>
-                        <InstaPageDetail />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/analytic"
-                    element={
-                      <InstaApiContext>
-                        <AnalyticsDashboard />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/track"
-                    element={
-                      <InstaApiContext>
-                        <AuditorTrack />
-                      </InstaApiContext>
-                    }
-                  />
-                  <Route
-                    path="/instaapi/interpretor/:creatorName/:shortCode"
-                    element={
-                      <InstaApiContext>
-                        <InterpretorContext>
-                          <InterpretorPostDashboard />
-                        </InterpretorContext>
-                      </InstaApiContext>
-                    }
-                  />
-
-                  <Route
-                    path="/instaapi/interpretor/:creatorName/post"
-                    element={
-                      <InstaApiContext>
-                        <InterpretorContext>
-                          <InterpretorPostDashboard />
-                        </InterpretorContext>
-                      </InstaApiContext>
-                    }
-                  /> */}
 
                     {/* TASK MANAGEMENT */}
 

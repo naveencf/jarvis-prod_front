@@ -19,6 +19,12 @@ export const getPriceDetail = (priceDetails, key) => {
   return detail ? detail[key] : 0;
 };
 
+// Helper function to convert Indian numbering string to a number
+function parseIndianNumber(indianNumber) {
+  // Remove commas and parse as an integer
+  return parseInt(indianNumber.replace(/,/g, ''), 10);
+}
+
 export const downloadExcel = async (
   selectedRow,
   category,
@@ -64,8 +70,8 @@ export const downloadExcel = async (
       row: 2 + topMargin / 20, // Convert points to Excel rows (approximately)
     },
     ext: {
-      width: 110, // Image width in points
-      height: 100, // Image height in points
+      width: 90, // Image width in points
+      height: 70, // Image height in points
       // height: 70 - bottomMargin,
     },
   });
@@ -121,9 +127,9 @@ export const downloadExcel = async (
 
     if (platform === 'Instagram') {
       const categories = {};
-      // console.log(platformData, "platformData")
+
       platformData.forEach((page) => {
-        console.log('page', page);
+
         const categoryId = page.page_category_id;
         const pageLink = `https://www.instagram.com/${page.page_name}`;
         const categoryName =
@@ -163,14 +169,23 @@ export const downloadExcel = async (
 
         sheet.columns = [
           // { header: '', width: 5 },
-          { header: 'S_No', width: 5 },
+          { header: 'S_No', width: 15 },
           { header: 'Username', width: 30 },
           { header: 'Profile Link', width: 50 },
           { header: 'Followers', width: 15 },
           { header: 'Post Count', width: 15 },
           hasStoryCount && { header: 'Story Count', width: 15 },
         ];
-
+        // Sort categoryData by Followers in descending order
+        categoryData.sort((a, b) => {
+          const followersA = parseIndianNumber(a.Followers); // Convert Indian format to number
+          const followersB = parseIndianNumber(b.Followers); // Convert Indian format to number
+          return followersB - followersA; // Sort descending
+        });
+        // Update serial numbers after sorting
+        categoryData.forEach((row, index) => {
+          row.S_No = index + 1;  // Set the serial number based on the sorted index
+        });
         categoryData.forEach((row) => sheet.addRow(row));
         // Apply border to all rows in category sheet
         sheet.eachRow((row, rowIndex) => {
@@ -265,12 +280,12 @@ export const downloadExcel = async (
           sNoCell.value = item['S_No']; // S_No in column A
           sNoCell.border = contentBorder; // Apply border to the S_No cell
           sNoCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-          sNoCell.font = { bold: true };
+          sNoCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
 
           const usernameCell = sheet.getCell(`B${index + 2}`);
           usernameCell.value = formatString(item['Username']); // Username in column B
           usernameCell.border = contentBorder; // Apply border to the Username cell
-          usernameCell.font = { bold: true };
+          usernameCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
 
           const profileLinkCell = sheet.getCell(`C${index + 2}`);
           // profileLinkCell.font = { bold: true };
@@ -283,7 +298,7 @@ export const downloadExcel = async (
           profileLinkCell.font = {
             color: { argb: 'FF0563C1' },
             underline: true,
-            bold: true,
+            bold: true, name: 'Comic Sans MS', size: 10,
           };
 
           // // Set the hyperlink
@@ -291,12 +306,13 @@ export const downloadExcel = async (
 
           const followersCell = sheet.getCell(`D${index + 2}`);
           followersCell.value = item['Followers']; // Followers in column D
+          // console.log(followersCell.value, "followersCell.value")
           followersCell.border = contentBorder; // Apply border to the Followers cell
           followersCell.alignment = {
             horizontal: 'center',
             vertical: 'middle',
           }; // Alignment
-          followersCell.font = { bold: true };
+          followersCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
 
           const postCountCell = sheet.getCell(`E${index + 2}`);
           postCountCell.value = item['Post Count']; // Post Count in column E
@@ -305,7 +321,7 @@ export const downloadExcel = async (
             horizontal: 'center',
             vertical: 'middle',
           }; // Alignment
-          postCountCell.font = { bold: true };
+          postCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
 
           // Only add Story Count if there's at least one story count > 0 in the category
           if (hasStoryCount) {
@@ -316,7 +332,7 @@ export const downloadExcel = async (
               horizontal: 'center',
               vertical: 'middle',
             }; // Alignment
-            storyCountCell.font = { bold: true };
+            storyCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
           }
         });
       }

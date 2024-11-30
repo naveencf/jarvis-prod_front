@@ -3,6 +3,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { baseUrl } from "../utils/config";
+import getDecodedToken from "../utils/DecodedToken";
 
 const AppContext = createContext();
 const AppProvider = ({ children }) => {
@@ -48,11 +49,20 @@ const AppProvider = ({ children }) => {
     });
   }
 
+  async function getauth() {
+    axios
+      .get(`${baseUrl}` + `get_single_user_auth_detail/${getDecodedToken().id}`)
+      .then((res) => {
+        setData(res.data);
+      });
+  }
+
   useEffect(() => {
     getAllCategoryContextFunction();
     getBrandData();
     getAssetData();
     getUserAPIData();
+    getauth();
   }, []);
   return (
     <AppContext.Provider

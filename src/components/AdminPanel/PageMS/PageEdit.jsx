@@ -5,7 +5,6 @@ import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
-import { useParams } from "react-router";
 import Select from "react-select";
 import "./Tagcss.css";
 import { useNavigate } from "react-router-dom";
@@ -37,13 +36,11 @@ import PageAddMasterModal from "./PageAddMasterModal";
 import PageInfoModal from "./PageInfoModal";
 import { FormatName } from "../../../utils/FormatName";
 
-
 setOpenShowAddModal;
 const Page = ({ pageMast_id, handleEditClose }) => {
   const { refetch: refetchPageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery();
   const navigate = useNavigate();
-  // const { pageMast_id } = useParams();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const dispatch = useDispatch();
   const { toastAlert, toastError } = useGlobalContext();
@@ -62,8 +59,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [tag, setTag] = useState([]);
   const [pageLevel, setPageLevel] = useState("");
   const [pageStatus, setPageStatus] = useState("");
-  // console.log(pageStatus, "new data saim ");
-  // const [userData, setUserData] = useState([]);
   const [closeBy, setCloseBy] = useState("");
   const [pageType, setPageType] = useState("");
   const [content, setContent] = useState("");
@@ -76,9 +71,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [description, setDescription] = useState("");
   const [bio, setBio] = useState("");
   const [singlePage, setSinglePage] = useState({});
-
-  console.log(singlePage.
-    temp_vendor_id , 'lalit console')
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -87,6 +79,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [rateType, setRateType] = useState("Fixed");
   const [languages, setLanguages] = useState([]);
   const [languageId, setLanguageId] = useState([]);
+  const [tempID, setTempID] = useState();
+
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
@@ -103,7 +97,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     { value: "super_active", label: "Super Active" },
     { value: "active", label: "Active" },
     { value: "semi_active", label: "Semi Active" },
-    { value: 'dead', label: "Dead" },
+    { value: "dead", label: "Dead" },
   ];
   const PageTypes = [
     { value: "Non Adult", label: "Non Adult" },
@@ -135,7 +129,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         },
       })
       .then((res) => {
-        // console.log(res.data.data, "res.data.data");
         setPriceDataNew(res.data.data);
       });
   };
@@ -230,7 +223,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
-          console.log(res?.data?.data, "res?.data?.data");
         });
     }
   }, [platformId]);
@@ -266,6 +258,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then((res) => {
         const data = [res.data.data];
+        setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
         setPageName(data[0].page_name);
         setLink(data[0].page_link);
@@ -279,16 +272,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             return { value: e._id, label: e.page_category };
           })
         );
-        // setPageLevel(data[0].preference_level);
         setPageLevel(data[0]?.preference_level);
-        if (data[0].page_activeness == 'dead') {
+        if (data[0].page_activeness == "dead") {
           setPageStatus("dead");
-        } else if (data[0].page_activeness == 'semi_active') {
+        } else if (data[0].page_activeness == "semi_active") {
           setPageStatus("semi_active");
-        } else if (data[0].page_activeness == 'super_active') {
+        } else if (data[0].page_activeness == "super_active") {
           setPageStatus("super_active");
-        }
-        else {
+        } else {
           setPageStatus("active");
         }
         setPageStatus(data[0].page_activeness);
@@ -296,33 +287,21 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setPageType(data[0].page_name_type);
         setContent(data[0].content_creation);
         setOwnerType(data[0].ownership_type);
-        console.log(data[0].ownership_type, 'kjhgfdsdfghjk');
         setVendorId(data[0].vendor_id);
         setFollowCount(data[0].followers_count);
         setBio(data[0].bio);
         setProfileId(data[0].page_profile_type_id);
-        // const platformActive = platformData.filter((e) =>
-        //   data[0].platform_active_on.includes(e._id)
-        // );
-        // setPlatformActive(
-        //   platformActive.map((e) => {
-        //     return { value: e._id, label: e.platform_name };
-        //   })
-        // );
         setRate(data[0].engagment_rate);
         setRateType(data[0].rate_type);
         setEngagment(data[0]?.engagment_rate);
         setDescription(data[0].description);
         setP_id(data[0].pageMast_id);
         setSinglePage(data[0]);
-        setLanguageId(data[0].page_language_name)
-        console.log(data[0].page_language_name, "data[0].page_language_name")
+        setLanguageId(data[0].page_language_name);
       });
   }, [platformData]);
 
-  console.log(singlePage, "singlePage ----------");
   useEffect(() => {
-
     if (singlePage && singlePage.length > 0) {
       axios
         .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
@@ -332,11 +311,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           },
         })
         .then((res) => {
-          // console.log(res?.data?.data)
           setSingleVendor(res?.data?.data);
         });
     }
-    getLanguage()
+    getLanguage();
   }, []);
 
   const getLanguage = async () => {
@@ -368,8 +346,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     } else if (!pageLevel) {
       toastAlert("Page Level is required");
       return;
-    }
-    else if (!closeBy) {
+    } else if (!closeBy) {
       toastAlert("Close by is required");
       return;
     } else if (!pageType) {
@@ -433,7 +410,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         ?.find((role) => role?._id === profileId)
         ?.profile_type?.toLowerCase(),
 
-      // page_language_name: ["Hindi"],
       page_language_name: languageId.map((item) => item?.label),
       tags_page_category_name: tag.map((e) => e.label),
       page_price_list: rowCount.map((item) => {
@@ -444,8 +420,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         };
       }),
     };
-    // console.log(payload, "payload",rowCount,priceTypeList);
-    // return;
     await axios
       .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
         headers: {
@@ -454,8 +428,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         },
       })
       .then(() => {
-        // setIsFormSubmitted(true);
-        // toastAlert("Submitted");
         const cat_name = categoryData?.find(
           (item) => item?._id == singlePage?.page_category_id
         )?.page_category;
@@ -473,7 +445,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
-          temp_vendor_id: singlePage.temp_vendor_id,
+          temp_vendor_id: tempID,
           story: storyPrice?.price,
           post: postPrice?.price,
           both_: bothPrice?.price,
@@ -483,12 +455,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           followers_count: followCount,
           preference_level: pageLevel,
           temp_page_cat_id: cat_name,
-          //temp_page_cat_id: singlePage.temp_page_cat_id
         };
-        console.log(payload, ' saim 1234', flag);
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => { })
+          .then(() => {})
           .catch((err) => {
             console.log(err);
           });
@@ -496,17 +466,12 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         if (flag) {
           toastAlert("Submitted");
           refetchPageList();
-          // navigate("/admin/pms-page-overview");
-          handleEditClose()
-          console.log(
-            "reach"
-          )
+          handleEditClose();
         }
         if (!flag) {
           toastAlert("Submitted");
         }
       });
-
   };
 
   const handleVariableTypeChange = (selectedOption) => {
@@ -616,7 +581,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Platform  <sup style={{ color: "red" }}>*</sup>
+          Platform <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={platformData.map((option) => ({
@@ -625,17 +590,16 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }))}
           value={{
             value: platformId,
-            label:
-              FormatName(platformData.find((role) => role._id === platformId)
-                ?.platform_name || ""),
+            label: FormatName(
+              platformData.find((role) => role._id === platformId)
+                ?.platform_name || ""
+            ),
           }}
           onChange={(e) => {
             setPlatformId(e.value);
           }}
         ></Select>
       </div>
-
-
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
@@ -650,9 +614,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               }))}
               value={{
                 value: categoryId,
-                label:
-                  FormatName(categoryData.find((role) => role._id === categoryId)
-                    ?.page_category || ""),
+                label: FormatName(
+                  categoryData.find((role) => role._id === categoryId)
+                    ?.page_category || ""
+                ),
               }}
               onChange={(e) => {
                 setCategoryId(e.value);
@@ -691,9 +656,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             }))}
             value={{
               value: subCategoryId,
-              label:
-                FormatName(subCategoryData.find((role) => role._id === subCategoryId)
-                  ?.page_sub_category || ""),
+              label: FormatName(
+                subCategoryData.find((role) => role._id === subCategoryId)
+                  ?.page_sub_category || ""
+              ),
             }}
             onChange={(e) => {
               setSubCategoryId(e.value);
@@ -758,12 +724,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           options={PageStatus}
           className="basic-multi-select"
           classNamePrefix="select"
-          value={PageStatus.find(
-            (option) => option.value === pageStatus
-          )}
-          // value={PageStatus.find(
-          //   (option) => console.log(option.label)
-          // )}
+          value={PageStatus.find((option) => option.value === pageStatus)}
           onChange={(selectedOption) => setPageStatus(selectedOption.value)}
         />
       </div>
@@ -821,24 +782,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         <label className="form-label">
           Ownership Type <sup style={{ color: "red" }}>*</sup>
         </label>
-        {/* <Select
-          className="w-100"
-          options={ownerShipData?.map((option) => ({
-            value: option.company_type_name,
-            label: option.company_type_name,
-          }))}
-          required={true}
-          value={{
-            value: ownerType,
-            label:
-              ownerShipData?.find(
-                (role) => role.company_type_name === ownerType
-              )?.company_type_name || "",
-          }}
-          onChange={(e) => {
-            setOwnerType(e.value);
-          }}
-        /> */}
+
         <Select
           className="w-100"
           options={[
@@ -862,17 +806,17 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         </label>
         <Select
           options={vendorData.map((option) => ({
-            value: option._id,
+            value: option.vendor_id,
             label: formatString(option.vendor_name),
           }))}
           value={{
-            value: vendorId,
+            value: tempID,
             label:
-              vendorData.find((role) => role._id === vendorId)?.vendor_name ||
+              vendorData.find((ob) => ob.vendor_id === tempID)?.vendor_name ||
               "",
           }}
           onChange={(e) => {
-            setVendorId(e.value);
+            setTempID(e.value);
           }}
         ></Select>
       </div>
@@ -929,24 +873,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }}
         ></Select>
       </div>
-
-      {/* <div className="form-group col-6">
-        <label className="form-label">
-          Platform Active On <sup style={{ color: 'red' }}>*</sup>
-        </label>
-        <Select
-          required={true}
-          options={platformData.map((option) => ({
-            value: option._id,
-            label: option.platform_name,
-          }))}
-          isMulti
-          value={platformActive}
-          onChange={(e) => {
-            setPlatformActive(e);
-          }}
-        ></Select>
-      </div> */}
 
       <div className="col-md-6 mb16">
         <div className="form-group m0">
@@ -1025,10 +951,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                   Price Type <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <Select
-                  // options={priceTypeList?.map((option) => ({
-                  //   value: option?._id,
-                  //   label: option?.name,
-                  // }))}
                   options={priceTypeList
                     ?.filter((option) =>
                       rowCount.every(
@@ -1127,7 +1049,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 };
 
 const PageEdit = ({ pageMast_id, handleEditClose }) => {
-  // const { pageMast_id } = useParams();
   const navigate = useNavigate();
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
@@ -1160,14 +1081,14 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
       <FormContainer
         mainTitle="Page Edit"
         title="Page Edit"
-        // handleSubmit={handleSubmit}
         accordionButtons={accordionButtons}
         activeAccordionIndex={activeAccordionIndex}
         onAccordionButtonClick={handleAccordionButtonClick}
         submitButton={true}
       >
-        {activeAccordionIndex === 0 && <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />}
-        {/* {activeAccordionIndex === 1 && <PageHealth />} */}
+        {activeAccordionIndex === 0 && (
+          <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />
+        )}
         {activeAccordionIndex === 1 &&
           navigate(`/admin/exe-history/${pageMast_id}`)}
         {activeAccordionIndex === 2 && <PerformanceDashboard />}

@@ -677,6 +677,8 @@ const VendorMaster = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("handlessubmit");
+    
     e.preventDefault();
 
     if (!vendorName || vendorName == '' || vendorName == null) {
@@ -750,6 +752,8 @@ const VendorMaster = () => {
   };
 
   const handleSubmitNew = async (e) => {
+    console.log("handlessubmitnew");
+
     e.preventDefault();
 
     if (!vendorName || vendorName == '' || vendorName == null) {
@@ -918,28 +922,34 @@ const VendorMaster = () => {
   };
 
   const handleFinalSubmit = async () => {
+    console.log("handlessubmit final");
+
     const handleError = (error) => {
       toastError(error?.message || 'Something went wrong!');
       setIsFormSubmitting(false);
     };
-  
+    
     const handleSuccess = (message) => {
       toastAlert(message);
       setIsFormSubmitting(false);
     };
-  
+    
     if (!_id) {
+      console.log("id is not");
+      
       setIsFormSubmitting(true);
-  
+      
+      
       try {
         const res = await addVendor(previewData);
         setIsFormSubmitting(false);
+        const resID = res.data.data._id;
+        console.log(resID);
   
         if (res?.status === 200) {
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
           toastAlert('Data Submitted Successfully');
-          const resID = res.data.data._id;
   
           // Add company data
           try {
@@ -958,6 +968,9 @@ const VendorMaster = () => {
           }
   
           // Add vendor documents in parallel
+
+          console.log(docPromises,"documnwts");
+          
           const docPromises = docDetails?.map((doc) => {
             const formData = new FormData();
             formData.append('vendor_id', resID);
@@ -984,6 +997,8 @@ const VendorMaster = () => {
         handleError(err);
       }
     } else {
+      console.log("id is");
+
       setIsFormSubmitting(true);
       previewData._id = _id;
   
@@ -1002,10 +1017,28 @@ const VendorMaster = () => {
         };
   
         try {
+          console.log("is working");
+          
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
           console.log('Error updating vendor data in PHP:', err);
         }
+        
+        const docPromises = docDetails?.map((doc) => {
+          console.log(doc);
+          
+          const formData = new FormData();
+          formData.append('vendor_id', vendorData._id);
+          formData.append('document_name', doc.docName);
+          formData.append('document_no', doc.docNumber);
+          formData.append('document_image_upload', doc.docImage);
+          
+          return addVendorDocument(formData).catch((err) => {
+            toastError(err.message);
+          });
+        });
+        await Promise.all(docPromises);
+        console.log(docPromises,"documnwts");
   
         handleSuccess("Data Updated Successfully");
       } catch (err) {
