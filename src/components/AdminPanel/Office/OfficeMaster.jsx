@@ -16,6 +16,7 @@ const OfficeMast = () => {
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const [officeData, setOfficeData] = useState([]);
+  const [totalNoSeats ,setTotalNoSeats] = useState('')
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -32,6 +33,7 @@ const OfficeMast = () => {
     const formData = new FormData();
     formData.append("sitting_ref_no", sittingMast);
     formData.append("room_image", roomimage);
+    formData.append("total_no_seats", totalNoSeats);
     formData.append("remarks", remark);
     formData.append("created_by", loginUserId);
     try {
@@ -77,17 +79,25 @@ const OfficeMast = () => {
             Office Register
           </div>
         </div>
-        <div className="card-body">
+        <div className="card-body row">
           <FieldContainer
             label="Sitting Area (Room)"
             type="number"
+            fieldGrid={4}
             value={sittingMast}
             onChange={(e) => setSittingMast(e.target.value)}
           />
           <FieldContainer
+            label="Total Number of Seats"
+            type="number"
+            fieldGrid={4}
+            value={totalNoSeats}
+            onChange={(e) => setTotalNoSeats(e.target.value)}
+          />
+          <FieldContainer
             label="Room Image"
             type="file"
-            fieldGrid={6}
+            fieldGrid={4}
             onChange={(e) => setRoomImage(e.target.files[0])}
           />
           {/* <FieldContainer

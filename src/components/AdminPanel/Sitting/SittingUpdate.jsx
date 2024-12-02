@@ -1,77 +1,65 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
 import jwtDecode from "jwt-decode";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
+import Select from "react-select";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const SittingUpdate = () => {
+  const navigate = useNavigate(); // Hook for navigation
   const { toastAlert } = useGlobalContext();
-  const [id, setId] = useState(0);
-  const [sittingRefrenceNum, setSittingRefNum] = useState("");
-  const [sittingArea, setSittingArea] = useState("");
-  const [roomId, setRoomId] = useState("");
-  const [remark, setRemark] = useState("");
+  const { userContextData } = useAPIGlobalContext();
+  const { id } = useParams();
   const [error, setError] = useState("");
-  const [roomData, setRoomData] = useState([]);
-  const [isFormSubmitted, setIsFormSubmited] = useState(false);
+  const [user, setUser] = useState("");
+  const [sittingNumber, setSittingNumber] = useState("");
+  const [room, setRoom] = useState("");
+  const [remark, setRemark] = useState("");
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserID = decodedToken.id;
 
+  // Fetch sitting details
+  useEffect(() => {
+    axios
+      .get(`${baseUrl}get_single_sitting/${id}`)
+      .then((res) => {
+        console.log(res.data, "datasitting");
+        const { sitting_ref_no, sitting_area, user_id, remark } = res.data;
+        setSittingNumber(sitting_ref_no);
+        setRoom(sitting_area);
+        setUser(user_id);
+        setRemark(remark);
+      })
+      .catch((error) => console.error("Error fetching room details:", error));
+  }, [id]);
+
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
 
     axios
-      .put(`${baseUrl}`+`update_sitting`, {
+      .put(`${baseUrl}update_sitting`, {
         sitting_id: id,
-        sitting_ref_no: sittingRefrenceNum,
-        sitting_area: sittingArea,
-        room_id: Number(roomId),
+        user_id: user,
         remarks: remark,
         last_updated_by: loginUserID,
       })
       .then(() => {
-        setSittingRefNum("");
-        setSittingArea("");
-        setRoomId("");
-        setRemark("");
-
-        toastAlert("form Submitted Success");
-        setIsFormSubmited(true);
+        toastAlert("Sitting Updated Successfully");
+        navigate(-1); // Navigate back to the previous page
       })
       .catch((error) => {
         setError("An Error occurred while submitting the form");
-        console.log(error);
+        console.error(error);
       });
   };
-
-  useEffect(() => {
-    axios
-      .get(baseUrl+"get_all_rooms")
-      .then((res) => {
-        setRoomData(res.data.data);
-      })
-      .catch((error) => {
-        console.log(error, "error hai yha");
-      });
-  }, []);
-
-  useEffect(() => {
-    setId(localStorage.getItem("sitting_id"));
-    setSittingRefNum(localStorage.getItem("sitting_ref_no"));
-    setRoomId(localStorage.getItem("room_id"));
-    setSittingArea(localStorage.getItem("sitting_area"));
-    setRemark(localStorage.getItem("remarks"));
-  }, []);
-
-  if (isFormSubmitted) {
-    return <Navigate to="/admin/sitting-overview" />;
-  }
 
   return (
     <>
@@ -81,30 +69,36 @@ const SittingUpdate = () => {
         handleSubmit={handleSubmit}
       >
         <FieldContainer
-          label="Sitting Refrence Number"
-          value={sittingRefrenceNum}
-          onChange={(e) => setSittingRefNum(e.target.value)}
+          label="Sitting Number"
+          fieldGrid={4}
+          value={sittingNumber}
+          onChange={(e) => setSittingNumber(e.target.value)}
         />
         <FieldContainer
-          label="Sitting Area"
-          Tag="select"
-          value={roomId}
-          onChange={(e) => {
-            const selectedRoomOption = e.target.value;
-            setRoomId(selectedRoomOption);
-            const selectedRoomNo = roomData.find(
-              (option) => option.room_id === Number(selectedRoomOption)
-            );
-            setSittingArea(selectedRoomNo ? selectedRoomNo.sitting_ref_no : "");
-          }}
-        >
-          <option value="">choose...</option>
-          {roomData.map((d) => (
-            <option value={d.room_id} key={d.room_id}>
-              {d.sitting_ref_no}
-            </option>
-          ))}
-        </FieldContainer>
+          label="Room"
+          fieldGrid={4}
+          value={room}
+          onChange={(e) => setRoom(e.target.value)}
+        />
+        
+        <div className="form-group col-4">
+          <label className="form-label">User Name</label>
+          <Select
+            className=""
+            options={userContextData?.map((option) => ({
+              value: option.user_id,
+              label: `${option.user_name}`,
+            }))}
+            value={{
+              value: user,
+              label:
+                userContextData.find((val) => val.user_id === user)
+                  ?.user_name || "",
+            }}
+            onChange={(e) => setUser(e.value)}
+            required
+          />
+        </div>
 
         <FieldContainer
           label="Remark"
