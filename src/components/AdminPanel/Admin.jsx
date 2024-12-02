@@ -1181,7 +1181,7 @@ const Admin = () => {
                             element={<OfficeMastOverview />}
                           />
                           <Route
-                            path="/office-mast-update"
+                            path="/office-mast-update/:id"
                             element={<OfficeMastUpdate />}
                           />
                         </>
@@ -1195,11 +1195,11 @@ const Admin = () => {
                             element={<SittingMaster />}
                           />
                           <Route
-                            path="/sitting-overview"
+                            path="/sitting-overview/:id"
                             element={<SittingOverview />}
                           />
                           <Route
-                            path="/sitting-update"
+                            path="/sitting-update/:id"
                             element={<SittingUpdate />}
                           />
                         </>

@@ -34,13 +34,13 @@ const OfficeMastOverview = () => {
       const res = await axios.get(
         baseUrl + "get_all_rooms"
       );
-
       setData(res.data.data);
       setFilterData(res.data.data);
     } catch (error) {
       console.error("An error occurred while fetching data", error);
     }
   }
+  
 
   const columns = [
     {
@@ -50,7 +50,7 @@ const OfficeMastOverview = () => {
       sortable: true,
     },
     {
-      name: "Sitting_Ref No",
+      name: "Room No",
       selector: (row) => row.sitting_ref_no,
       width: "20%",
       sortable: true,
@@ -68,6 +68,20 @@ const OfficeMastOverview = () => {
       sortable: true,
     },
     {
+      name: "Sittings",
+      cell: (row) => (
+        <Link to={`/admin/sitting-overview/${row.room_id}`}>
+                <button
+                  className="btn cmnbtn btn_sm btn-outline-primary"
+                  variant="outline"
+                  size="small"
+                >
+                 {row.total_no_seats} 
+                </button>
+              </Link>
+      ),
+    },
+    {
       name: "remark",
       selector: (row) => row.remarks,
     },
@@ -79,18 +93,10 @@ const OfficeMastOverview = () => {
           {contextData &&
             contextData[6] &&
             contextData[6].update_value === 1 && (
-              <Link to="/admin/office-mast-update">
+              <Link to={`/admin/office-mast-update/${row.room_id}`}>
                 <div
                   title="Edit"
                   className="icon"
-                  onClick={() =>
-                    setToLocalStorage(
-                      row.room_id,
-                      row.sitting_ref_no,
-                      row.remarks,
-                      row.created_by_name
-                    )
-                  }
                 >
                   <i className="bi bi-pencil"></i>
                 </div>
@@ -121,18 +127,6 @@ const OfficeMastOverview = () => {
     setFilterData(result);
   }, [search]);
 
-  const setToLocalStorage = (
-    room_id,
-    sitting_ref_no,
-    remarks,
-    created_by_name
-  ) => {
-    localStorage.setItem("room_id", room_id);
-    localStorage.setItem("sitting_ref_no", sitting_ref_no);
-    localStorage.setItem("remarks", remarks);
-    localStorage.setItem("created_by_name", created_by_name);
-  };
-
   return (
     <>
       <FormContainer
@@ -142,18 +136,6 @@ const OfficeMastOverview = () => {
           contextData && contextData[6] && contextData[6].insert_value === 1
         }
       />
-
-      <button
-        type="button"
-        className="btn cmnbtn  btn-primary"
-        style={{
-          float: "right",
-          position: "relative",
-        }}
-      >
-        <Link to="/admin/sitting-overview">Sittings</Link>
-      </button>
-
       <div className="card">
         <div className="card-header sb">
           <h5>Office Overview</h5>

@@ -40,6 +40,7 @@ import {
   useGetVendorWhatsappLinkTypeQuery,
   useUpdateVenodrMutation,
   useGetAllVendorQuery,
+  useUpdateVendorDocumentMutation,
 } from '../../Store/reduxBaseURL';
 
 import VendorTypeInfoModal from './VendorTypeInfoModal';
@@ -60,7 +61,6 @@ const VendorMaster = () => {
   const navigate = useNavigate();
   const { data: countries, isLoading: isCountriesLoading } =
     useGetCountryCodeQuery();
-
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
@@ -160,6 +160,7 @@ const VendorMaster = () => {
   const [addCompanyData] = useAddCompanyDataMutation();
   const [addVendorDocument] = useAddVendorDocumentMutation();
   const [updateVendor] = useUpdateVenodrMutation();
+  const [updateVendorDocument] = useUpdateVendorDocumentMutation();
   const [dob, setDob] = useState('');
   const [messageColor, setMessageColor] = useState('');
   const [existError, setExistError] = useState('');
@@ -296,7 +297,7 @@ const VendorMaster = () => {
 
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(_id);
-
+  // console.log(venodrDocuments, "venodrDocuments")
   useEffect(() => {
     // axios.get(baseUrl + 'get_all_users').then((res) => {
     //   setUserData(res.data.data);
@@ -329,7 +330,7 @@ const VendorMaster = () => {
           setMobile(data?.mobile);
           setAltMobile(data?.alternate_mobile);
           setEmail(data?.email);
-          setGst(data?.gst_no); 
+          setGst(data?.gst_no);
           setCompName(data?.company_name);
           setCompAddress(data?.company_address);
           setCompCity(data?.company_city);
@@ -399,9 +400,11 @@ const VendorMaster = () => {
     if (venodrDocuments?.length > 0 && !isVendorDocumentsLoading) {
       let doc = venodrDocuments?.map((doc) => {
         return {
+          _id: doc._id,
           docName: doc.document_name,
           docNumber: doc.document_no,
           docImage: doc.document_image_upload,
+          vendor_id: doc.vendor_id
         };
       });
       // setDocDetails(doc);
@@ -472,6 +475,7 @@ const VendorMaster = () => {
     setDocDetails([
       ...docDetails,
       {
+        _id: "",
         docName: "",
         docNumber: "",
         document_image_upload: "",
@@ -678,7 +682,7 @@ const VendorMaster = () => {
 
   const handleSubmit = async (e) => {
     console.log("handlessubmit");
-    
+
     e.preventDefault();
 
     if (!vendorName || vendorName == '' || vendorName == null) {
@@ -865,6 +869,7 @@ const VendorMaster = () => {
         .unwrap()
         .then(() => {
           toastAlert('Data Updated Successfully');
+
           for (let i = 0; i < docDetails?.length; i++) {
             const formData = new FormData();
 
@@ -922,35 +927,32 @@ const VendorMaster = () => {
   };
 
   const handleFinalSubmit = async () => {
-    console.log("handlessubmit final");
 
     const handleError = (error) => {
       toastError(error?.message || 'Something went wrong!');
       setIsFormSubmitting(false);
     };
-    
+
     const handleSuccess = (message) => {
       toastAlert(message);
       setIsFormSubmitting(false);
     };
-    
+
     if (!_id) {
       console.log("id is not");
-      
+
       setIsFormSubmitting(true);
-      
-      
       try {
         const res = await addVendor(previewData);
         setIsFormSubmitting(false);
         const resID = res.data.data._id;
         console.log(resID);
-  
+
         if (res?.status === 200) {
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
           toastAlert('Data Submitted Successfully');
-  
+
           // Add company data
           try {
             await addCompanyData({
@@ -966,26 +968,23 @@ const VendorMaster = () => {
           } catch (err) {
             toastError(err.message);
           }
-  
-          // Add vendor documents in parallel
 
-          console.log(docPromises,"documnwts");
-          
+          // Add vendor documents in parallel
           const docPromises = docDetails?.map((doc) => {
             const formData = new FormData();
             formData.append('vendor_id', resID);
             formData.append('document_name', doc.docName);
             formData.append('document_no', doc.docNumber);
             formData.append('document_image_upload', doc.docImage);
-  
+
             return addVendorDocument(formData).catch((err) => {
               toastError(err.message);
             });
           });
-  
+
           // Wait for all document upload promises to complete
           await Promise.all(docPromises);
-  
+
           handleSuccess("Vendor and documents added successfully!");
         } else if (res?.error?.status === 409) {
           toastError(res?.error?.data?.message);
@@ -1001,10 +1000,10 @@ const VendorMaster = () => {
 
       setIsFormSubmitting(true);
       previewData._id = _id;
-  
+
       try {
         await updateVendor(previewData);
-  
+
         const payload = {
           vendor_id: vendorData.vendor_id,
           mobile: mobile,
@@ -1015,38 +1014,57 @@ const VendorMaster = () => {
           bank_name: forPhp?.bank_name || bankRows[0].bank_name,
           vendor_name: vendorName,
         };
-  
+
         try {
           console.log("is working");
-          
+
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
           console.log('Error updating vendor data in PHP:', err);
         }
-        
-        const docPromises = docDetails?.map((doc) => {
-          console.log(doc);
-          
+
+        for (let i = 0; i < docDetails?.length; i++) {
           const formData = new FormData();
-          formData.append('vendor_id', vendorData._id);
-          formData.append('document_name', doc.docName);
-          formData.append('document_no', doc.docNumber);
-          formData.append('document_image_upload', doc.docImage);
-          
-          return addVendorDocument(formData).catch((err) => {
-            toastError(err.message);
-          });
-        });
-        await Promise.all(docPromises);
-        console.log(docPromises,"documnwts");
-  
+          formData.append('vendor_id', _id);
+          formData.append('_id', docDetails[i]._id || ""); // Add default values if undefined
+          formData.append('document_name', docDetails[i].docName || "");
+          formData.append('document_no', docDetails[i].docNumber || "");
+
+          if (docDetails[i].docImage) {
+            formData.append('document_image_upload', docDetails[i].docImage); // Append only if defined
+          } else {
+            console.warn(`Skipping docImage for document ${docDetails[i].docName}`);
+          }
+
+          console.log(docDetails[i], "docDetails[i]")
+
+          if (docDetails[i]._id) {
+
+            updateVendorDocument(formData)
+              .then((res) => {
+                // toastAlert("Document added successfully")
+              })
+              .catch((err) => {
+                toastError(err.message);
+              });
+          } else {
+            addVendorDocument(formData)
+              .then((res) => {
+                // toastAlert("Document added successfully")
+              })
+              .catch((err) => {
+                toastError(err.message);
+              });
+          }
+        }
+
         handleSuccess("Data Updated Successfully");
       } catch (err) {
         handleError(err);
       }
     }
   };
-  
+
   const handleCheckboxChange = (e) => {
     const { checked } = e.target;
     setSameAsPrevious(checked);
@@ -1254,7 +1272,7 @@ const VendorMaster = () => {
               <div className="row" key={index}>
                 <div className="col-md-3">
                   <label className="form-label">Document Name</label>
-                  {docDetails.length == 5 ? (
+                  {docDetails.length >= 5 ? (
                     <input
                       type="text"
                       value={link.docName}
@@ -1349,7 +1367,7 @@ const VendorMaster = () => {
                     required={false}
                     onChange={(e) => setCompCity(e.target.value)}
                   /> */}
-                    <div className="form-group col-6 mt-3">
+                  <div className="form-group col-6 mt-3">
                     <label htmlFor="">Company State</label>
                     <IndianStatesMui
                       selectedState={compState}
@@ -1380,7 +1398,7 @@ const VendorMaster = () => {
                   // }}
                   />
 
-                
+
                 </div>
               </>
             )}
@@ -2153,11 +2171,11 @@ const VendorMaster = () => {
                 {isFormSubmitting ? 'Submitting...' : _id ? 'Update' : 'Submit'}
               </Button>
             </Stack>
-            {_id ? (
+            {/* {_id ? (
               ''
             ) : (
               <Stack direction="row" spacing={2} style={{ marginLeft: '5px' }}>
-                <Button
+                {/* <Button
                   className="btn cmnbtn btn-info"
                   onClick={handleSubmitNew}
                   variant="contained"
@@ -2166,11 +2184,11 @@ const VendorMaster = () => {
                   {isFormSubmitting2
                     ? 'Submitting...'
                     : _id
-                      ? 'Update'
+                      ? 'Save'
                       : 'Add New Profile'}
                 </Button>
               </Stack>
-            )}
+            )} */}
           </div>
         </div>
       </div>

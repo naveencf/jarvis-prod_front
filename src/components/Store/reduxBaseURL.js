@@ -171,7 +171,7 @@ export const reduxBaseURL = createApi({
       }),
     }),
 
-    
+
     getAllVendor: builder.query({
       queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
         // Fetch the stored token from sessionStorage
@@ -270,6 +270,15 @@ export const reduxBaseURL = createApi({
       }),
     }),
 
+    updateVendorDocument: builder.mutation({
+      query: (data) => ({
+        url: `v1/document_detail/${data.get(_id)}`, // Include the _id in the endpoint
+        method: "PUT", // Use the PUT method for updating
+        body: data, // Pass the updated data in the body
+      }),
+      invalidatesTags: ["addVendor"], // Invalidate relevant tags to refresh data
+    }),
+
     //company name and details
     addCompanyData: builder.mutation({
       query: (data) => ({
@@ -313,4 +322,5 @@ export const {
   useAddVendorDocumentMutation,
   useAddCompanyDataMutation,
   useGetAllVendorWiseListQuery,
+  useUpdateVendorDocumentMutation,
 } = reduxBaseURL;

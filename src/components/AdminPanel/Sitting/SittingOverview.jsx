@@ -1,21 +1,23 @@
 import { useState, useEffect } from "react";
 import DataTable from "react-data-table-component";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
 import FormContainer from "../FormContainer";
 import jwtDecode from "jwt-decode";
 import {baseUrl} from '../../../utils/config'
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const SittingOverview = () => {
+  const {id} = useParams()
+  const {userContextData} = useAPIGlobalContext ()
   const [search, setSearch] = useState("");
-  const [datas, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [contextData, setDatas] = useState([]);
-  const [userData, getUsersData] = useState([]);
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
+
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
@@ -27,30 +29,17 @@ const SittingOverview = () => {
         });
     }
   }, [userID]);
-  function getData() {
-    axios.get(baseUrl+"get_all_sittings").then((res) => {
-      setData(res.data.data);
-      setFilterData(res.data.data);
-    });
-  }
+
   useEffect(() => {
-    getData();
-    axios.get(baseUrl+"get_all_users").then((res) => {
-      getUsersData(res.data.data);
-    });
-  }, []);
-  useEffect(() => {
-    const result = datas.filter((d) => {
-      const user = userData.find((user) => user.sitting_id === d.sitting_id);
-      const userName = user ? user.user_name.toLowerCase() : "";
-      return (
-        d.sitting_area.toLowerCase().includes(search.toLowerCase()) ||
-        d.sitting_ref_no.toLowerCase().includes(search.toLowerCase()) ||
-        userName.includes(search.toLowerCase())
-      );
-    });
-    setFilterData(result);
-  }, [search, datas, userData]);
+    axios
+      .get(`${baseUrl}get_total_sitting_by_room/${id}`)
+      .then((res) => {
+        setFilterData(res.data.room)
+        console.log(res.data.room , 'sitting')
+      })
+      .catch((error) => console.error("Error fetching room details:", error));
+  }, [id]);
+
   const columns = [
     {
       name: "S.No",
@@ -69,13 +58,15 @@ const SittingOverview = () => {
       sortable: true,
     },
     {
-      name: "UserName",
-      selector: (row) => {
-        const user = userData.find(
-          (user) => user.sitting_id === row.sitting_id
-        );
-        return <div>{user ? user.user_name : "N/A"}</div>;
-      },
+      name: "User Name",
+      cell: (row) => userContextData?.find((user) => user.user_id === row.user_id)
+      ?.user_name || "Not Alloted",
+      sortable: true,
+    },
+    {
+      name: "Remark",
+      selector: (row) => row.remarks,
+      sortable: true,
     },
     {
       name: "Action",
@@ -84,23 +75,10 @@ const SittingOverview = () => {
           {contextData &&
             contextData[7] &&
             contextData[7].update_value === 1 && (
-              <Link to="/admin/sitting-update">
+              <Link to={`/admin/sitting-update/${row.sitting_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button"
-                  onClick={() =>
-                    setToLocalStorage(
-                      row.sitting_id,
-                      row.sitting_ref_no,
-                      row.sitting_area,
-                      row.remarks,
-                      row.creation_date,
-                      row.created_by,
-                      row.last_updated_by,
-                      row.last_updated_date,
-                      row.room_id
-                    )
-                  }
                 >
                   <FaEdit />{" "}
                 </button>
@@ -112,38 +90,11 @@ const SittingOverview = () => {
       width: "22%",
     },
   ];
-  const setToLocalStorage = (
-    sitting_id,
-    sitting_ref_no,
-    sitting_area,
-    remarks,
-    creation_date,
-    created_by,
-    room_id,
-    last_updated_by,
-    last_updated_date
-  ) => {
-    localStorage.setItem("sitting_id", sitting_id);
-    localStorage.setItem("sitting_ref_no", sitting_ref_no);
-    localStorage.setItem("sitting_area", sitting_area);
-    localStorage.setItem("remarks", remarks);
-    localStorage.setItem("creation_date", creation_date);
-    localStorage.setItem("created_by", created_by);
-    localStorage.setItem("last_updated_by", last_updated_by);
-    localStorage.setItem("last_updated_date", last_updated_date);
-    localStorage.setItem("room_id", room_id);
-  };
   return (
     <>
       <FormContainer
         mainTitle="Sitting"
-        link="/admin/sitting-master"
-        buttonAccess={
-          contextData &&
-          contextData[7] &&
-          contextData[7].insert_value === 1 &&
-          true
-        }
+        link="/"
       />
       <div className="card">
         <div className="data_tbl table-responsive">
