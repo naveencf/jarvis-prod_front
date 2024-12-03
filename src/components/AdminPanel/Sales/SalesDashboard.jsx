@@ -42,15 +42,16 @@ const SalesDashboard = () => {
   const [endDate, setEndDate] = useState();
   const [salesBookingGridStat, setSalesBookingGridStat] = useState();
   const [salesBookingStat, setSalesBookingStat] = useState();
-  const [Cat_id, setCat_id] = useState(null);
+  const [Cat_id, setCat_id] = useState(loginUserRole === 1 ? 1 : null);
+  const [weeklyLoading, setWeeklyLoading] = useState(false);
   const {
     data: categoryDetails,
     error: categoryDetailsError,
     isLoading: categoryDetailsLoading,
   } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
-
+  console.log(categoryDetails);
   async function getweekly(startDate, endDate, laststartDate, lastendDate) {
-    setIsLoading(true);
+    setWeeklyLoading(true);
     try {
       const response1 = await axios.get(
         baseUrl +
@@ -62,9 +63,9 @@ const SalesDashboard = () => {
             startDate
               ? "&startOfMonth=" +
                 startDate +
-                "&endofmonth=" +
+                "&endOfMonth=" +
                 endDate +
-                "lastMonthStart=" +
+                "&lastMonthStart=" +
                 laststartDate +
                 "&lastMonthEnd=" +
                 lastendDate
@@ -81,12 +82,12 @@ const SalesDashboard = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false);
+      setWeeklyLoading(false);
     }
   }
 
   useEffect(() => {
-    getweekly();
+    if (Cat_id) getweekly();
   }, [Cat_id]);
 
   async function getData() {
@@ -182,7 +183,7 @@ const SalesDashboard = () => {
 
   const { data: totalSaleAmountDateWise, isError: totalSaleAmountError } =
     useGetTotalSaleAmountDateWiseQuery(
-      { startDate, endDate },
+      { startDate, endDate, Cat_id },
       { skip: !startDate || !endDate }
     );
 
@@ -291,7 +292,6 @@ const SalesDashboard = () => {
 
   return (
     <div>
-      {isLoading && <Loader />}
       <Modal
         className="salesModal"
         isOpen={releaseModal}
@@ -371,13 +371,10 @@ How are you doing today?`}
           <div className="card-header">
             <h5 className="card-title">Filter By Category</h5>
           </div>
-          <div className="card-body row">
+          <div className="row pl-3">
             <CustomSelect
               fieldGrid={4}
-              dataArray={[
-                ...categoryDetails,
-                { sales_category_id: null, sales_category_name: "All" },
-              ]?.reverse()}
+              dataArray={[...categoryDetails]?.reverse()}
               optionId="sales_category_id"
               optionLabel="sales_category_name"
               selectedId={Cat_id}
@@ -387,62 +384,66 @@ How are you doing today?`}
         </div>
       )}
 
-      <div className="row mt20">
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.weeklyData}
-          previousData={weekMonthCard?.lastWeekData}
-          title="Weekly"
-          cardclassName="bgPrimary"
-          titleclassName="colorPrimary"
-          colorclassName="bgPrimary"
-        />
+      {weekMonthCard && (
+        <>
+          <div className="row mt20">
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.weeklyData}
+              previousData={weekMonthCard?.lastWeekData}
+              title="Weekly"
+              cardclassName="bgPrimary"
+              titleclassName="colorPrimary"
+              colorclassName="bgPrimary"
+            />
 
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.monthlyData}
-          previousData={weekMonthCard?.lastMonthData}
-          title="Monthly"
-          cardclassName="bgSecondary"
-          titleclassName="colorSecondary"
-          colorclassName="bgSecondary"
-          getData={getweekly}
-        />
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.monthlyData}
+              previousData={weekMonthCard?.lastMonthData}
+              title="Monthly"
+              cardclassName="bgSecondary"
+              titleclassName="colorSecondary"
+              colorclassName="bgSecondary"
+              getData={getweekly}
+              loading={weeklyLoading}
+            />
 
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.quarterlyData}
-          previousData={weekMonthCard?.lastQuarterData}
-          title="Quarterly"
-          cardclassName="bgTertiary"
-          titleclassName="colorTertiary"
-          colorclassName="bgTertiary"
-        />
-      </div>
-      <div className="row mt20">
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.halfYearlyData}
-          previousData={weekMonthCard?.lastHalfYearData}
-          title="Half Yearly"
-          cardclassName="bgTertiary"
-          titleclassName="colorTertiary"
-          colorclassName="bgTertiary"
-        />
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.yearlyData}
-          previousData={weekMonthCard?.lastYearData}
-          title="Yearly"
-          cardclassName="bgTertiary"
-          titleclassName="colorTertiary"
-          colorclassName="bgTertiary"
-        />
-        <MonthlyWeeklyCard
-          data={weekMonthCard?.totalData}
-          previousData={weekMonthCard?.Last}
-          title="Total"
-          cardclassName="bgTertiary"
-          titleclassName="colorTertiary"
-          colorclassName="bgTertiary"
-        />
-      </div>
-
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.quarterlyData}
+              previousData={weekMonthCard?.lastQuarterData}
+              title="Quarterly"
+              cardclassName="bgTertiary"
+              titleclassName="colorTertiary"
+              colorclassName="bgTertiary"
+            />
+          </div>
+          <div className="row mt20">
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.halfYearlyData}
+              previousData={weekMonthCard?.lastHalfYearData}
+              title="Half Yearly"
+              cardclassName="bgTertiary"
+              titleclassName="colorTertiary"
+              colorclassName="bgTertiary"
+            />
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.yearlyData}
+              previousData={weekMonthCard?.lastYearData}
+              title="Yearly"
+              cardclassName="bgTertiary"
+              titleclassName="colorTertiary"
+              colorclassName="bgTertiary"
+            />
+            <MonthlyWeeklyCard
+              data={weekMonthCard?.totalData}
+              previousData={weekMonthCard?.Last}
+              title="Total"
+              cardclassName="bgTertiary"
+              titleclassName="colorTertiary"
+              colorclassName="bgTertiary"
+            />
+          </div>
+        </>
+      )}
       <div className="row">
         <div className="col">
           <NavLink to="/admin/sales-incentive-overview">
@@ -541,16 +542,17 @@ How are you doing today?`}
         )}
       </div>
 
-      {allTargetCompetitionsData?.map(
-        (data, index) =>
-          data?.status == 1 && (
-            <TargetCard
-              index={index}
-              data={data}
-              totalSaleAmountDateWise={totalSaleAmountDateWise}
-            />
-          )
-      )}
+      {allTargetCompetitionsData &&
+        allTargetCompetitionsData?.map(
+          (data, index) =>
+            data?.status == 1 && (
+              <TargetCard
+                index={index}
+                data={data}
+                totalSaleAmountDateWise={totalSaleAmountDateWise}
+              />
+            )
+        )}
 
       {/* {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />} */}
 

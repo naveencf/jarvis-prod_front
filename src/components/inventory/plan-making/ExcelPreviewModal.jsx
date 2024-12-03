@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Modal,
   Box,
@@ -30,6 +30,7 @@ const ExcelPreviewModal = ({
   setAgencyFees,
   agencyFees,
   selectedRow,
+  handleAutomaticSelection,
   category,
   postCount,
   storyPerPage,
@@ -47,6 +48,7 @@ const ExcelPreviewModal = ({
   const [previewDataMerge, setPreviewDataMerge] = useState([]);
   const { id } = useParams();
   const { sendPlanDetails } = useSendPlanDetails(id);
+
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
@@ -107,15 +109,12 @@ const ExcelPreviewModal = ({
   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
-    // Create a map of category names to IDs for easier lookups
     const categoryMap = categories.reduce((acc, cat) => {
-      acc[cat.page_category] = cat._id; // Map category name to its ID
+      acc[cat.page_category] = cat._id;
       return acc;
     }, {});
 
-    // Find the ID for the selected main category
     const mainCategoryId = categoryMap[mainCategory];
-
     if (!mainCategoryId) {
       console.error('Main category ID not found');
       return;
@@ -244,7 +243,7 @@ const ExcelPreviewModal = ({
           </div>
         </div>
 
-        <FormControl sx={{ mt: 2, width: '200px' }}>
+        {/* <FormControl sx={{ mt: 2, width: '200px' }}>
           <InputLabel>Main Category</InputLabel>
           <Select
             value={mainCategory}
@@ -278,8 +277,8 @@ const ExcelPreviewModal = ({
               return null;
             })}
           </Select>
-        </FormControl>
-
+        </FormControl> */}
+{/* 
         <Button
           variant="contained"
           color="primary"
@@ -288,7 +287,7 @@ const ExcelPreviewModal = ({
           disabled={!mainCategory || mergedCategories.length === 0}
         >
           Merge Categories
-        </Button>
+        </Button> */}
 
         <Tabs value={selectedTab} onChange={handleTabChange} centered>
           <Tab label="Total" />

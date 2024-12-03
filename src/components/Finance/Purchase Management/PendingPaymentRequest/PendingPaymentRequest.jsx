@@ -69,6 +69,7 @@ export default function PendingPaymentRequest() {
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [vendorNameList, setVendorNameList] = useState([]);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
+
   const [overviewDialog, setOverviewDialog] = useState(false);
   const [loading, setLoading] = useState(false);
   const [netAmount, setNetAmount] = useState("");
@@ -110,7 +111,6 @@ export default function PendingPaymentRequest() {
     axios
       .get(baseUrl + "phpvendorpaymentrequest")
       .then((res) => {
-        console.log(res, "getting node vendorpaymentrequest data");
         const x = res.data.modifiedData;
         setNodeData(x);
         axios
@@ -118,7 +118,6 @@ export default function PendingPaymentRequest() {
             "https://purchase.creativefuel.io/webservices/RestController.php?view=getpaymentrequest"
           )
           .then((res) => {
-            console.log(res, "getting paymentrequest user data from php");
             let y = res?.data?.body.filter((item) => {
               return !x.some((item2) => item.request_id === item2.request_id);
             });
@@ -617,10 +616,6 @@ export default function PendingPaymentRequest() {
 
     const isFileUploaded = rowIds?.length > 0 ? 1 : 0;
     setIsZohoStatusFileUploaded(isFileUploaded);
-
-    console.log(
-      rowIds?.length > 0 ? `Selected IDs: ${rowIds}` : "No rows selected"
-    );
   };
 
   const handleDownloadInvoices = async () => {
@@ -649,17 +644,14 @@ export default function PendingPaymentRequest() {
   };
 
   // Zoho Status
-  const handleZohoStatusUpload = async (e) => {
-    e.preventDefault();
-
+  const handleZohoStatusUpload = async (row) => {
     try {
-      const formData = new FormData();
-      rowSelectionModel?.forEach((id) => formData.append("request_id", id));
-      formData.append("zoho_status", isZohoStatusFileUploaded);
-
       const response = await axios.post(
         "https://purchase.creativefuel.io/webservices/RestController.php?view=updatezohostatus",
-        formData
+        {
+          request_id: row?.request_id,
+          zoho_status: "1",
+        }
       );
 
       if (response) {
@@ -682,8 +674,6 @@ export default function PendingPaymentRequest() {
     e.preventDefault();
     setFilterData(data);
   };
-
-  console.log(filterData, "filterData--===>>>>>>");
 
   return (
     <div>

@@ -63,8 +63,8 @@ const VendorOverview = () => {
 
   const { data: cycle } = useGetPmsPayCycleQuery();
 
-  const [closedByCount, setClosedByCount] = useState([])
-  console.log(closedByCount, 'closed by count')
+  const [closedByCount , setClosedByCount] = useState([])
+  console.log(closedByCount , 'closed by count')
   const cycleData = cycle?.data;
   const {
     data: vendorData,
@@ -425,11 +425,7 @@ const VendorOverview = () => {
       key: "mobile",
       name: "Mobile",
       width: 200,
-      // editable: true,
-      // renderRowCell: (row) => {
-      //   console.log(typeof (row.mobile))
-      // }
-
+      editable: true,
     },
     {
       key: "email",
@@ -568,19 +564,19 @@ const VendorOverview = () => {
       vendor_id: row.vendor_id,
     });
   };
-
+  
   useEffect(() => {
     const fetchVendorCounts = async () => {
       try {
         const response = await axios.get(`${baseUrl}v1/get_vendor_counts`);
-        setClosedByCount(response.data.data.pageClosedBYCounts);
-        console.log(response.data.data.pageClosedBYCounts, "console res");
+        setClosedByCount(response.data.data.pageClosedBYCounts); 
+        console.log(response.data.data.pageClosedBYCounts, "console res"); 
       } catch (error) {
-        console.error("Error fetching vendor counts:", error.message);
+        console.error("Error fetching vendor counts:", error.message); 
       }
     };
 
-    fetchVendorCounts();
+    fetchVendorCounts(); 
   }, []);
 
   // for category statistics

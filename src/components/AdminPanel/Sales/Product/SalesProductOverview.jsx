@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../../../../Context/Context";
 import FormContainer from "../../FormContainer";
 import DeleteButton from "../../DeleteButton";
@@ -16,6 +16,7 @@ import View from "../Account/View/View";
 import getDecodedToken from "../../../../utils/DecodedToken";
 
 const SalesProductOverview = () => {
+  const navigate = useNavigate();
   const { toastAlert, toastError } = useGlobalContext();
   const token = getDecodedToken();
   const loginUserRole = token.role_id;
@@ -115,6 +116,7 @@ const SalesProductOverview = () => {
       renderRowCell: (row) =>
         row.sales_service_master_Data?.service_name || row.service_name,
       width: 200,
+      compare: true,
     },
     {
       key: "value",
@@ -125,23 +127,7 @@ const SalesProductOverview = () => {
           (item) => item.sales_service_master_id === row._id
         )?.value,
       width: 150,
-      editable: loginUserRole === 1,
-      customEditElement: (row, index, setEditFlag, _, handleChange, column) => (
-        <div className="flex-row gap-2">
-          <input
-            className="form-control"
-            type="number"
-            value={row[column.key] || ""}
-            onChange={(e) => handleChange(e, index, column)}
-          />
-          <button
-            className="icon-1"
-            onClick={() => handleUpdatePercent(setEditFlag, row)}
-          >
-            <i className="bi bi-save"></i>
-          </button>
-        </div>
-      ),
+      compare: true,
     },
     {
       key: "status",
@@ -158,20 +144,17 @@ const SalesProductOverview = () => {
       ),
       width: 150,
     },
-    {},
-  ];
-  if (loginUserRole == 1) {
-    columns.push({
+    {
       key: "incentive_type",
       name: "Service Type",
       renderRowCell: (row) =>
         allIncentiveData?.find(
-          (data) => (row?._id === data?._id)?.incentive_type
-        ),
+          (data) => row?._id === data?.sales_service_master_id
+        )?.incentive_type,
       compare: true,
       width: 200,
-    });
-  }
+    },
+  ];
 
   if (loginUserRole === 1) {
     columns.push({
@@ -199,13 +182,28 @@ const SalesProductOverview = () => {
     <>
       {(salesLoading || incentiveLoading) && <Loader />}
       <div className="action_heading">
-        <FormContainer
-          mainTitle="Sales and Incentive Overview"
-          link="/admin/create-sales-services"
-          buttonAccess={loginUserRole === 1}
-          submitButton={false}
-        />
+        <div className="action_title">
+          <FormContainer
+            mainTitle="Product Overview"
+            submitButton={false}
+            link={true}
+          />
+        </div>
+        <div className="action_btns">
+          <button
+            className="btn cmnbtn btn_sm btn-primary"
+            onClick={() =>
+              navigate({
+                pathname: "/admin/product/create",
+                state: { task: "add" },
+              })
+            }
+          >
+            Add Product
+          </button>
+        </div>
       </div>
+
       <div className="tab">
         <button
           className={`named-tab ${activeTab === 0 ? "active-tab" : ""}`}
@@ -226,7 +224,7 @@ const SalesProductOverview = () => {
         isLoading={salesLoading || incentiveLoading}
         title="Overview"
         pagination
-        tableName="SalesProductOverview"
+        tableName="SalesProductOverview-1"
       />
     </>
   );

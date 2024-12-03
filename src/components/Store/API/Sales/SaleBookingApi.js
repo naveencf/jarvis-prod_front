@@ -53,8 +53,10 @@ const SaleBookingApi = createApi({
     }),
 
     getTotalSaleAmountDateWise: builder.query({
-      query: ({ startDate, endDate }) =>
-        `sales/date_range_total_sale_amount?startDate=${startDate}&endDate=${endDate}`,
+      query: ({ startDate, endDate, Cat_id }) =>
+        `sales/date_range_total_sale_amount?startDate=${startDate}&endDate=${endDate}${
+          Cat_id ? `&sales_category_id=${Cat_id}` : ""
+        }`,
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),
