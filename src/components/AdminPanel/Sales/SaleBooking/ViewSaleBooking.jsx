@@ -926,7 +926,7 @@ const ViewSaleBooking = () => {
             setSelectedId={setFilterByIncentive}
           />
           <CustomSelect
-            label="date"
+            label="Date"
             fieldGrid={4}
             dataArray={dateFilterOptions}
             optionId="value"

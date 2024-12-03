@@ -31,6 +31,8 @@ import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { downloadExcel, getPlatformName } from './downloadExcel';
 import { formatIndianNumber } from '../../../utils/formatIndianNumber';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -47,17 +49,23 @@ const LeftSideBar = ({
   totalFollowers,
   totalCost,
   totalPostsPerPage,
+  id,
   totalPagesSelected,
   totalDeliverables,
   totalStoriesPerPage,
   pageCategoryCount,
+  selectedRows,
   handleToggleBtn,
   selectedRow,
+  totalStoryCount,
   postCount,
   handleOwnPage,
   category,
   storyPerPage,
   handleTotalOwnCostChange,
+  totalPostCount,
+  planData,
+  sendPlanDetails,
   // searchInputValue,
   // allrows,
   // handleSearchChange,
@@ -65,7 +73,6 @@ const LeftSideBar = ({
   // clearSearch,
   // filterData,
   // pageList,
-  HandleSavePlan,
   ownPages,
   planDetails,
   checkedDescriptions,
@@ -84,6 +91,7 @@ const LeftSideBar = ({
   const [planName, setPlanName] = useState(
     formatString(planDetails?.[0]?.plan_name)
   );
+  const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
@@ -108,7 +116,58 @@ const LeftSideBar = ({
   //   };
   //   return platformMap[platformId] || 'Unknown';
   // };
+  const HandleSavePlan = async (planStatus) => {
+    const payload = {
+      id: id,
+      plan_status: 'open',
+      plan_saved: true,
+      post_count: totalPostCount,
+      story_count: totalStoryCount,
+      no_of_pages: selectedRows?.length,
+      cost_price: totalCost,
+      own_pages_cost_price: ownPagesCost,
+    };
 
+    if (planStatus === 'close') {
+      payload.plan_status = 'close';
+    }
+
+    try {
+      // Perform both the API call and sendPlanDetails in parallel
+      const [fetchResponse] = await Promise.all([
+        sendPlanxLogs('v1/planxlogs', payload),
+        sendPlanDetails(planData, planStatus),
+      ]);
+
+      // Check if the fetch request was successful
+      if (fetchResponse.ok) {
+        Swal.fire({
+          title: 'Success!',
+          text: 'Plan has been saved successfully.',
+          icon: 'success',
+          confirmButtonText: 'OK',
+        }).then(() => {
+          navigate('/admin/pms-plan-making');
+        });
+      } else {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Failed to save the plan. Please try again.',
+          icon: 'error',
+          confirmButtonText: 'OK',
+        });
+      }
+    } catch (error) {
+      console.error('Error processing plan:', error);
+
+      Swal.fire({
+        title: 'Error!',
+        text: 'Something went wrong. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
+  };
   const handleDownload = async () => {
     setIsDownloading(true);
     try {

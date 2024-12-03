@@ -84,15 +84,15 @@ const CustomTable = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-      columnsheader
-        .map((column) => column.key)
-        .some((key) =>
-          item[key]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-    )
+        columnsheader
+          .map((column) => column.key)
+          .some((key) =>
+            item[key]
+              ?.toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
+      )
     : unSortedData;
 
   // const tabledata = pagination
@@ -248,9 +248,9 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery]);
@@ -286,7 +286,6 @@ const CustomTable = ({
       console.error(e);
     }
   };
-
 
   useEffect(() => {
     // const isTableCreated = localStorage.getItem(
@@ -382,18 +381,19 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
         : unSortedData
     );
   }, [unSortedData]);
 
-
   const renderSort_v2 = useMemo(() => {
     if (!sortKey) return originalData;
 
-    const datatType = originalData[0][sortKey] ? typeof originalData[0][sortKey] : "string";
+    const datatType = originalData[0][sortKey]
+      ? typeof originalData[0][sortKey]
+      : "string";
     const sorted = [...originalData].sort((a, b) => {
       const val1 = a[sortKey];
       const val2 = b[sortKey];
@@ -416,9 +416,7 @@ const CustomTable = ({
     }
 
     return sorted;
-
   }, [sortKey, sortDirection, originalData]);
-
 
   // const renderSort = useMemo(() => {
   //   if (!sortKey) return originalData;
@@ -476,13 +474,9 @@ const CustomTable = ({
     setUnSortedData(data_v2);
   }, [renderSort_v2]);
 
-
   // useEffect(() => {
 
-
   // }, [sortKey, sortDirection, triggerSort]);
-
-
 
   return (
     <div className="table-pagination-container">
@@ -519,7 +513,6 @@ const CustomTable = ({
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
         sortedData={sortedData}
-
       />
       {showTotal && (
         <TotalRow
@@ -593,3 +586,235 @@ const CustomTable = ({
 };
 
 export default CustomTable;
+
+/* 
+
+import "./styles.css";
+import React, { useState, useRef, useEffect } from "react";
+import { Stage, Layer, Rect, Transformer, Text } from "react-konva";
+import Draggable from "react-draggable";
+
+export default function App() {
+  const [layouts, setLayouts] = useState({});
+
+  const saveLayout = (roomName, elements) => {
+    setLayouts({ ...layouts, [roomName]: elements });
+  };
+
+  return (
+    <div>
+      <Editor onSave={saveLayout} />
+      <Viewer layouts={layouts} />
+    </div>
+  );
+}
+
+const Viewer = ({ layouts }) => {
+  const [selectedRoom, setSelectedRoom] = useState(null);
+  const [elements, setElements] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+  const [hoveredElement, setHoveredElement] = useState(null);
+
+  const loadLayout = (roomName) => {
+    setSelectedRoom(roomName);
+    setElements(layouts[roomName]);
+    setSelectedId(null);
+  };
+  console.log(hoveredElement);
+  const assignEmployee = (employeeName) => {
+    if (!selectedId) {
+      alert("Please select a seat to assign an employee.");
+      return;
+    }
+    const updatedElements = elements.map((el) =>
+      el.id === selectedId ? { ...el, employee: employeeName } : el
+    );
+    setElements(updatedElements);
+    alert(`Employee "${employeeName}" assigned to seat ID ${selectedId}.`);
+  };
+
+  return (
+    <div>
+      <h1>Office Layout Viewer</h1>
+      <div>
+        <h2>Select a Room:</h2>
+        {Object.keys(layouts).map((roomName) => (
+          <button key={roomName} onClick={() => loadLayout(roomName)}>
+            {roomName}
+          </button>
+        ))}
+      </div>
+      {selectedRoom && (
+        <>
+          <h2>Room: {selectedRoom}</h2>
+          <input
+            type="text"
+            placeholder="Enter employee name"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") assignEmployee(e.target.value);
+            }}
+          />
+          <Stage
+            width={window.innerWidth}
+            height={window.innerHeight}
+            onMouseLeave={() => setHoveredElement(null)}
+          >
+            <Layer>
+              <Text
+                text={
+                  hoveredElement?.employee
+                    ? `Assigned to: ${hoveredElement.employee}`
+                    : "Not assigned"
+                }
+
+                x={hoveredElement?.x + hoveredElement?.width / 2}
+                  y={hoveredElement?.y - 20}
+              />
+              {elements.map((el) => (
+                <Rect
+                  key={el.id}
+                  x={el.x}
+                  y={el.y}
+                  width={el.width}
+                  height={el.height}
+                  fill={el.type === "Table" ? "lightblue" : "lightgreen"}
+                  stroke={selectedId === el.id ? "blue" : "black"}
+                  strokeWidth={selectedId === el.id ? 2 : 1}
+                  onClick={() => setSelectedId(el.id)}
+                  onMouseEnter={() => setHoveredElement(el)}
+                  onMouseLeave={() => setHoveredElement(null)}
+                />
+              ))}
+            </Layer>
+          </Stage>
+        </>
+      )}
+    </div>
+  );
+};
+
+const Editor = ({ onSave }) => {
+  const [elements, setElements] = useState([]);
+  const [roomName, setRoomName] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const transformerRef = useRef(null);
+  const layerRef = useRef(null);
+
+  const addElement = (type) => {
+    const newElement = {
+      id: elements.length + 1,
+      x: 50,
+      y: 50,
+      width: type === "Table" ? 100 : 50,
+      height: type === "Table" ? 50 : 50,
+      type,
+      employee: null,
+    };
+    setElements([...elements, newElement]);
+  };
+
+  const removeElement = () => {
+    if (!selectedId) {
+      alert("Please select an element to remove.");
+      return;
+    }
+    const updatedElements = elements.filter((el) => el.id !== selectedId);
+    setElements(updatedElements);
+    setSelectedId(null);
+  };
+
+  const handleTransformEnd = (node, id) => {
+    const updatedElements = elements.map((el) =>
+      el.id === id
+        ? {
+            ...el,
+            x: node.x(),
+            y: node.y(),
+            width: Math.max(20, node.width() * node.scaleX()),
+            height: Math.max(20, node.height() * node.scaleY()),
+          }
+        : el
+    );
+    setElements(updatedElements);
+    node.scaleX(1);
+    node.scaleY(1);
+  };
+
+  const saveLayout = () => {
+    if (!roomName.trim()) {
+      alert("Please enter a room name.");
+      return;
+    }
+    onSave(roomName, elements);
+    setRoomName("");
+    setElements([]);
+    alert(`Layout for "${roomName}" saved.`);
+  };
+
+  return (
+    <div>
+      <h1>Office Layout Editor</h1>
+      <div>
+        <button onClick={() => addElement("Table")}>Add Table</button>
+        <button onClick={() => addElement("Chair")}>Add Chair</button>
+        <button onClick={removeElement}>Remove Selected</button>
+      </div>
+      <div>
+        <input
+          type="text"
+          placeholder="Enter room name"
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
+        />
+        <button onClick={saveLayout}>Save Layout</button>
+      </div>
+      <Stage
+        width={window.innerWidth}
+        height={window.innerHeight}
+        onMouseDown={(e) => {
+          if (e.target === e.target.getStage()) {
+            setSelectedId(null);
+          }
+        }}
+      >
+        <Layer ref={layerRef}>
+          {elements.map((el) => (
+            <Rect
+              key={el.id}
+              id={`element-${el.id}`}
+              x={el.x}
+              y={el.y}
+              width={el.width}
+              height={el.height}
+              fill={el.type === "Table" ? "lightblue" : "lightgreen"}
+              stroke={selectedId === el.id ? "blue" : "black"}
+              strokeWidth={selectedId === el.id ? 2 : 1}
+              draggable
+              onClick={() => setSelectedId(el.id)}
+              onDragEnd={(e) => {
+                const updatedElements = elements.map((element) =>
+                  element.id === el.id
+                    ? { ...element, x: e.target.x(), y: e.target.y() }
+                    : element
+                );
+                setElements(updatedElements);
+              }}
+              onTransformEnd={(e) => handleTransformEnd(e.target, el.id)}
+            />
+          ))}
+
+          <Transformer
+            ref={transformerRef}
+            nodes={
+              selectedId
+                ? [layerRef.current.findOne(`#element-${selectedId}`)]
+                : []
+            }
+          />
+        </Layer>
+      </Stage>
+    </div>
+  );
+};
+
+  */

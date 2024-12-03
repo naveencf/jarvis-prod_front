@@ -21,8 +21,8 @@ const CustomTableV2 = ({
   selectedData = (selecteddata) => {
     return selecteddata;
   },
-  getFilteredData=(filterData)=>{
-    return filterData
+  getFilteredData = (filterData) => {
+    return filterData;
   },
 }) => {
   const tableref = useRef();
@@ -70,28 +70,20 @@ const CustomTableV2 = ({
   const [selectedId, setSelectedId] = useState(columnsheader.map(() => []));
   const [applyFlag, setApplyFlag] = useState(false);
   const [oldSortKey, setOldSortKey] = useState("");
-  const [pagination, setPagination] = useState(
+  const pagination = useRef(
     Pagination?.length > 0 ? Pagination : [100, 50, 10]
   );
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
-  useEffect(() => {
-    setPagination(Pagination?.length > 0 ? Pagination : [100, 50, 10]);
-  }, [Pagination]);
 
   useEffect(() => {
-    setPagination((prev) => {
-      if (
-        prev?.findIndex((item) => item === data?.length) === -1 &&
-        data?.length > 0
-      ) {
-        {
-          return [...prev, data?.length];
-        }
-      }
-    });
+    if (
+      pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
+      data?.length > 0
+    )
+      pagination.current = [...pagination?.current, data?.length];
   }, [data, columns]);
 
   useEffect(() => {
@@ -307,7 +299,6 @@ const CustomTableV2 = ({
     }
   };
 
-
   useEffect(() => {
     //console.log("table creation");
 
@@ -379,10 +370,11 @@ const CustomTableV2 = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-          apiColumns[index]?.visibility === undefined ||apiColumns[index]?.visibility === null
-            ? true
-            : apiColumns[index]?.visibility
-        )
+            apiColumns[index]?.visibility === undefined ||
+            apiColumns[index]?.visibility === null
+              ? true
+              : apiColumns[index]?.visibility
+          )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -468,11 +460,10 @@ const CustomTableV2 = ({
 
     // return sorted;
   }, [sortKey, sortDirection, originalData]);
-  
 
-  useEffect(()=>{
-    getFilteredData(unSortedData)
-  },[unSortedData])
+  useEffect(() => {
+    getFilteredData(unSortedData);
+  }, [unSortedData]);
 
   // const renderSort = useMemo(() => {
   //   if (!sortKey) return originalData;
@@ -633,7 +624,7 @@ const CustomTableV2 = ({
 
       <PaginationComp
         data={unSortedData}
-        Pagination={pagination}
+        Pagination={pagination?.current}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         itemsPerPage={itemsPerPage}

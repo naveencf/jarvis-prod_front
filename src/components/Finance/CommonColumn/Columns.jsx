@@ -2748,6 +2748,23 @@ export const pendingPaymentRequestColumns = ({
     },
   },
   {
+    key: "Zoho Uploaded",
+    name: "Zoho Uploaded",
+    width: 130,
+    renderRowCell: (row) => {
+      return (
+        <div>
+          <button
+            className="btn btn-primary cmnbtn btn_sm "
+            onClick={() => handleZohoStatusUpload(row)}
+          >
+            Zoho Uploaded
+          </button>
+        </div>
+      );
+    },
+  },
+  {
     key: "invc_no",
     name: "Invoice Number",
     width: 150,
@@ -3112,12 +3129,12 @@ export const pendingPaymentRequestColumns = ({
               Transaction List
             </Link>
           </button>
-          <button
+          {/* <button
             className="btn btn-primary cmnbtn btn_sm "
             onClick={(e) => handleZohoStatusUpload(e)}
           >
             Zoho Uploaded
-          </button>
+          </button> */}
         </div>
       );
     },
