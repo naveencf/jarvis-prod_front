@@ -6,7 +6,14 @@ import jwtDecode from "jwt-decode";
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
   reducerPath: "PageBaseURL",
-  tagTypes: ["profileList", "categoryList", "PageList", "subCategoryList", "pageClosedbyList", "getPageCount",],
+  tagTypes: [
+    "profileList",
+    "categoryList",
+    "PageList",
+    "subCategoryList",
+    "pageClosedbyList",
+    "getPageCount",
+  ],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
@@ -75,7 +82,7 @@ export const PageBaseURL = createApi({
             // ...payload
           },
         };
-      }
+      },
     }),
 
     //price List
@@ -107,29 +114,25 @@ export const PageBaseURL = createApi({
     }),
 
     //Page
-
     getAllPageList: builder.query({
       query: ({ decodedToken, userID, pagequery }) => {
-        // Check if the role is admin (role_id == 1)
-        // console.log(pagequery,"pagequery")
         if (decodedToken?.role_id === 1) {
-          // if(pagequery){
-
           return {
             url: `v1/get_all_pages?${pagequery}`, // Use GET request for admin
             method: "GET",
           };
-          // }
-          // return;
         } else {
           return {
-            url: `v1/get_all_pages_for_users`, // Use POST request for non-admin
+            url: `v1/get_all_pages_for_users`,
             method: "POST",
-            body: { user_id: userID }, // Send userID in the body
+            body: { user_id: userID },
           };
         }
       },
-      transformResponse: (response) => response.data.pageData, // Optionally transform the response data
+      transformResponse: (response) => {
+        const pageData = response.data.pageData || [];
+        return pageData.sort((a, b) => b.followers_count - a.followers_count);
+      },
     }),
 
     getPageById: builder.query({
@@ -255,7 +258,7 @@ export const PageBaseURL = createApi({
     // }),
     getAllCounts: builder.query({
       query: () => `v1/get_all_counts`,
-      transformResponse: (response) => response.data
+      transformResponse: (response) => response.data,
     }),
 
     // get page counts
@@ -267,18 +270,22 @@ export const PageBaseURL = createApi({
             start_date && end_date ? "&" : ""
           }${end_date ? `end_date=${end_date}` : ""}`;
         }
-    
+
         return {
           url,
           method: "GET",
         };
       },
     }),
-    
+
     //get category wise invetory details
     getAllCategoryWiseInventory: builder.query({
       query: () => `v1/category_wise_inventory_details`,
-      transformResponse: (response) => response.data
+      transformResponse: (response) => {
+        return response.data.sort(
+          (a, b) => b.totalPageCount - a.totalPageCount
+        ); // Ascending order
+      },
     }),
   }),
 });
@@ -313,5 +320,5 @@ export const {
   useGetAllCountsQuery,
   useGetAllPageClosebyListQuery,
   useGetPageCountQuery,
-  useGetAllCategoryWiseInventoryQuery
+  useGetAllCategoryWiseInventoryQuery,
 } = PageBaseURL;

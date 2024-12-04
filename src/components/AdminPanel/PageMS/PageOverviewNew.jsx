@@ -803,8 +803,25 @@ const PageOverviewNew = () => {
     {
       key: 'page_layer',
       name: 'Page Layer',
+      renderRowCell: (row) => {
+        switch (row.page_layer) {
+          case 0:
+            return 'Other Inventory';
+          case 1:
+            return 'Sarcasm Network';
+          case 2:
+            return 'Own Pages';
+          case 3:
+            return 'Advance Pages';
+          case 4:
+            return 'Top Used Pages';
+          default:
+            return 'Unknown';
+        }
+      },
       width: 200,
     },
+    
     {
       key: 'platform_name',
       name: 'Platform',
@@ -926,40 +943,40 @@ const PageOverviewNew = () => {
       },
       compare: true,
     },
-    {
-      key: 'm_story_price',
-      name: 'M Story',
-      width: 200,
-      renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
-        const storyPrice = storyData ? storyData.instagram_m_story : 0;
-        return storyPrice;
-      },
-      compare: true,
-    },
-    {
-      key: 'm_post_price',
-      name: 'M Post',
-      width: 200,
-      renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
-        const postPrice = postData ? postData.instagram_m_post : 0;
-        return postPrice;
-      },
-      compare: true,
-    },
-    {
-      key: 'm_both_price',
-      name: 'M Both',
-      width: 200,
-      renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
-        const bothPrice = bothData ? bothData.instagram_m_both : 0;
-        return bothPrice;
-      },
-      compare: true,
-    }
-    ,
+    // {
+    //   key: 'm_story_price',
+    //   name: 'M Story',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
+    //     const storyPrice = storyData ? storyData.instagram_m_story : 0;
+    //     return storyPrice;
+    //   },
+    //   compare: true,
+    // },
+    // {
+    //   key: 'm_post_price',
+    //   name: 'M Post',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
+    //     const postPrice = postData ? postData.instagram_m_post : 0;
+    //     return postPrice;
+    //   },
+    //   compare: true,
+    // },
+    // {
+    //   key: 'm_both_price',
+    //   name: 'M Both',
+    //   width: 200,
+    //   renderRowCell: (row) => {
+    //     const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
+    //     const bothPrice = bothData ? bothData.instagram_m_both : 0;
+    //     return bothPrice;
+    //   },
+    //   compare: true,
+    // }
+    // ,
 
     // {
     //   key: 'ownership_type',

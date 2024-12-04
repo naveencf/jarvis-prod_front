@@ -10,18 +10,19 @@ import { baseUrl } from '../../../../utils/config';
 const SarcasmBlog = () => {
   const { id } = useParams();
   const [blogData, setBlogData] = useState(null);
-  const [content, setContent] = useState('');
+  const [rawContent, setRawContent] = useState(''); // Raw content for ReactQuill
   const [error, setError] = useState(null);
   const [bannerImage, setBannerImage] = useState(null);
 
   const quillRef = useRef(null);
   const bannerImageRef = useRef();
+
+  // Transform content by adding custom classes
   const appendClassToSpecificTags = (htmlString) => {
     try {
       const parser = new DOMParser();
       const doc = parser.parseFromString(htmlString, 'text/html');
 
-      // Add classes to specific tags
       doc.body
         .querySelectorAll('h1')
         .forEach((element) => element.classList.add('heading-main'));
@@ -43,73 +44,21 @@ const SarcasmBlog = () => {
       doc.body
         .querySelectorAll('li')
         .forEach((element) => element.classList.add('list-item'));
-
-      const paragraphs = Array.from(
-        doc.querySelectorAll('p.paragraph-content')
-      );
-
-      paragraphs.forEach((paragraph, index) => {
-        const images = Array.from(paragraph.querySelectorAll('img'));
-
-        // If the current paragraph contains images and is followed by another paragraph with images
-        if (images.length > 0) {
-          const nextParagraph = paragraphs[index + 1];
-          const nextImages = nextParagraph
-            ? Array.from(nextParagraph.querySelectorAll('img'))
-            : [];
-
-          // If both the current and next paragraphs contain images
-          if (nextImages.length > 0) {
-            const rowDiv = document.createElement('div');
-            rowDiv.classList.add('row');
-
-            images.forEach((img) => {
-              const colDiv = document.createElement('div');
-              colDiv.classList.add('col-4');
-              colDiv.appendChild(img);
-              rowDiv.appendChild(colDiv);
-            });
-
-            nextImages.forEach((img) => {
-              const colDiv = document.createElement('div');
-              colDiv.classList.add('col-4');
-              colDiv.appendChild(img);
-              rowDiv.appendChild(colDiv);
-            });
-
-            // Replace both paragraphs with a single rowDiv
-            paragraph.replaceWith(rowDiv);
-            nextParagraph.remove(); // Remove the next paragraph as its images are now merged
-          } else {
-            // Wrap individual images in a row if they are not consecutive
-            const rowDiv = document.createElement('div');
-            rowDiv.classList.add('row');
-
-            images.forEach((img) => {
-              const colDiv = document.createElement('div');
-              colDiv.classList.add('col-4');
-              colDiv.appendChild(img);
-              rowDiv.appendChild(colDiv);
-            });
-
-            paragraph.appendChild(rowDiv); // Append the row to the paragraph
-          }
-        }
-      });
-
       return doc.body.innerHTML;
     } catch (error) {
       console.error('Error parsing HTML:', error);
-      return htmlString; // Return original string if parsing fails
+      return htmlString;
     }
   };
+
+  // Fetch blog by ID
   const fetchBlogByID = async () => {
     try {
       const response = await fetch(`${constant.CONST_SARCASM_BLOG_POST}${id}`);
       const json = await response.json();
       if (json.success) {
         setBlogData(json.data);
-        setContent(appendClassToSpecificTags(json.data.body));
+        setRawContent(json.data.body);
       } else {
         setError('Failed to fetch blog data');
       }
@@ -119,19 +68,26 @@ const SarcasmBlog = () => {
     }
   };
 
-  const handleContentChange = (value) => {
-    setContent(appendClassToSpecificTags(value));
+  // Handle content change from ReactQuill
+  const handleRawContentChange = (value) => {
+    setRawContent(value);
   };
 
+  // Save updated blog content
   const updateBlogContent = async () => {
     try {
+      // Transform content only on save
+      const bannerImgTag = `<img src="" alt="" id="banner" class="banner-img"/>`;
+      const transformedContent =
+        bannerImgTag + appendClassToSpecificTags(rawContent);
+      console.log('transformedContent', transformedContent);
       const formData = new FormData();
       formData.append('id', id);
-      formData.append('body', content);
+      formData.append('body', transformedContent);
       if (bannerImage) {
         formData.append('bannerImage', bannerImage);
       }
-
+      ('');
       const response = await fetch(`${constant.CONST_SARCASM_BLOG_POST}`, {
         method: 'PUT',
         body: formData,
@@ -140,7 +96,6 @@ const SarcasmBlog = () => {
       const json = await response.json();
       if (json.success) {
         alert('Blog content updated successfully!');
-        
       } else {
         setError('Failed to update blog content');
       }
@@ -150,12 +105,7 @@ const SarcasmBlog = () => {
     }
   };
 
-  useEffect(() => {
-    if (id) {
-      fetchBlogByID();
-    }
-  }, [id]);
-
+  // Handle image upload
   const handleImageUpload = () => {
     const input = document.createElement('input');
     input.setAttribute('type', 'file');
@@ -202,13 +152,21 @@ const SarcasmBlog = () => {
     bannerImageRef.current.value = '';
   };
 
+  // Set up custom image handler for Quill
   useEffect(() => {
     if (quillRef && quillRef.current) {
       const quill = quillRef.current.getEditor();
       const toolbar = quill.getModule('toolbar');
       toolbar.addHandler('image', handleImageUpload);
     }
-  }, [content]);
+  }, []);
+
+  // Fetch blog data on component mount
+  useEffect(() => {
+    if (id) {
+      fetchBlogByID();
+    }
+  }, [id]);
 
   const modules = {
     toolbar: [
@@ -268,8 +226,8 @@ const SarcasmBlog = () => {
 
           <ReactQuill
             ref={quillRef}
-            value={content}
-            onChange={handleContentChange}
+            value={rawContent}
+            onChange={handleRawContentChange}
             theme="snow"
             modules={modules}
           />

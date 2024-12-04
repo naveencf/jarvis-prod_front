@@ -64,6 +64,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [content, setContent] = useState("");
   const [ownerType, setOwnerType] = useState("");
   const [vendorId, setVendorId] = useState("");
+  console.log(vendorId, "vendorId");
+
   const [followCount, setFollowCount] = useState("");
   const [profileId, setProfileId] = useState("");
   const [platformActive, setPlatformActive] = useState();
@@ -808,17 +810,19 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           options={vendorData.map((option) => ({
             value: option.vendor_id,
             label: formatString(option.vendor_name),
+            id: option._id, 
           }))}
           value={{
-            value: tempID,
+            value: vendorId,
             label:
-              vendorData.find((ob) => ob.vendor_id === tempID)?.vendor_name ||
+              vendorData.find((ob) => ob._id === vendorId)?.vendor_name ||
               "",
           }}
           onChange={(e) => {
             setTempID(e.value);
+            setVendorId(e.id);
           }}
-        ></Select>
+        />
       </div>
       <div className="col-md-6 mb16">
         <div className="form-group m0">
