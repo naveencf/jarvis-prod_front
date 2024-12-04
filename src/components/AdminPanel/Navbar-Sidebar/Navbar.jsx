@@ -82,16 +82,15 @@ const Navbar = () => {
         }
       );
       setAdjustment(res?.data?.data?.adjustment_incentive_amount);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getUserBadge = async () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-          `sales/badges_sales_booking_data${
-            RoleID != 1 ? `?userId=${loginUserId}` : ""
-          }`,
+        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -192,7 +191,7 @@ const Navbar = () => {
             <li className="nav-item" id="salesBadge">
               <div
                 className="navBadge"
-                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+              // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
               >
                 <div className="navBadgeImg">
                   <img src={rupee} alt="badge" />
@@ -207,9 +206,8 @@ const Navbar = () => {
                     >
                       <div className="carousel-inner">
                         <div
-                          className={`carousel-item ${
-                            isActive === 0 ? "active" : ""
-                          } `}
+                          className={`carousel-item ${isActive === 0 ? "active" : ""
+                            } `}
                           data-interval="500"
                         >
                           <h4>
@@ -220,9 +218,8 @@ const Navbar = () => {
                           </h4>
                         </div>
                         <div
-                          class={`carousel-item  ${
-                            isActive === 1 ? "active" : ""
-                          } `}
+                          class={`carousel-item  ${isActive === 1 ? "active" : ""
+                            } `}
                           data-interval="1000"
                         >
                           <h4>
@@ -240,7 +237,7 @@ const Navbar = () => {
             </li>
           )}
           {/* )} */}
-          <InternetSpeedChecker />
+          {/* <InternetSpeedChecker /> */}
 
           <li className="nav-item">
             <div className="theme-switch">
