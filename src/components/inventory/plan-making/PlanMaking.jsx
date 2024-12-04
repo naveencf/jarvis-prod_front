@@ -401,6 +401,8 @@ const PlanMaking = () => {
       0
     );
   };
+  // const sarcasm = pageList.filter((item) => item.page_layer === 1);
+  // console.log('sarcasm', sarcasm);
 
   const getTotalStoryCount = () => {
     return Object.values(storyPerPageValues).reduce(
@@ -590,18 +592,10 @@ const PlanMaking = () => {
           // Calculate costs based on rate type
           const costPerPost = rateType
             ? postPrice
-            : calculatePrice(
-                matchingPage.rate_type,
-                matchingPage,
-                'post'
-              );
+            : calculatePrice(matchingPage.rate_type, matchingPage, 'post');
           const costPerStory = rateType
             ? storyPrice
-            : calculatePrice(
-                matchingPage.rate_type,
-                matchingPage,
-                'story'
-              );
+            : calculatePrice(matchingPage.rate_type, matchingPage, 'story');
           // const costPerStory = storyPrice;
           const costPerBoth = costPerPost + costPerStory;
 
@@ -852,7 +846,7 @@ const PlanMaking = () => {
       const advancedPostPages = [];
       const mostUsedPages = [];
       // Adding pages for layer
-      pageData?.filter((page) => {
+      pageList?.filter((page) => {
         if (page.followers_count > 0) {
           if (page?.page_layer == 1) {
             sarcasamNetworkPages.push(page);
@@ -1056,16 +1050,16 @@ const PlanMaking = () => {
     layering == 1
       ? sarcasmNetwork
       : layering == 2
-        ? ownPages
-        : layering == 3
-          ? advancePageList
-          : layering == 4
-            ? topUsedPageList
-            : showOwnPage
-              ? ownPages
-              : toggleShowBtn
-                ? selectedRows
-                : sortedRows(filterData, selectedRows);
+      ? ownPages
+      : layering == 3
+      ? advancePageList
+      : layering == 4
+      ? topUsedPageList
+      : showOwnPage
+      ? ownPages
+      : toggleShowBtn
+      ? selectedRows
+      : sortedRows(filterData, selectedRows);
 
   useEffect(() => {
     if (versionData) {
@@ -1335,7 +1329,7 @@ const PlanMaking = () => {
           <div className="thmTable">
             <Box
               sx={{ height: 700, width: '100%' }}
-            // onClick={(e) => handleClickOnTable(e)}
+              // onClick={(e) => handleClickOnTable(e)}
             >
               {/* {filterData && filterData.length > 0 ? ( */}
               <CustomTableV2

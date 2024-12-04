@@ -1,24 +1,24 @@
-import React from "react";
-
-const SittingOverview = () => {
-  return <div>SittingOverview</div>;
-};
-
-export default SittingOverview;
-
-/*
-import "./styles.css";
 import React, { useState, useRef, useEffect } from "react";
-import { Stage, Layer, Rect, Transformer, Text, Image} from "react-konva";
+import {
+  Stage,
+  Layer,
+  Rect,
+  Transformer,
+  Text,
+  Image,
+  Path,
+} from "react-konva";
 import Draggable from "react-draggable";
+import Viewer from "./Viewer";
 
-export default function App() {
+export default function SittingOverview() {
   const [layouts, setLayouts] = useState({});
+  console.log(layouts,"layouts");
+  
 
-  const saveLayout = (roomName, elements,floor) => {
-    setLayouts({ ...layouts, [roomName]: {"ele":elements,bg:floor} });
+  const saveLayout = (roomName, elements, floor) => {
+    setLayouts({ ...layouts, [roomName]: { ele: elements, bg: floor } });
   };
-
 
   return (
     <div>
@@ -28,114 +28,25 @@ export default function App() {
   );
 }
 
-const Viewer = ({ layouts }) => {
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [elements, setElements] = useState([]);
-  const [selectedId, setSelectedId] = useState(null);
-  const [hoveredElement, setHoveredElement] = useState(null);
-  const [backgroundImage,setBackgroundImage] = useState(null);
-
-  const loadLayout = (roomName) => {
-    setSelectedRoom(roomName);
-    setElements(layouts[roomName]["ele"]);
-    setSelectedId(null);
-    setBackgroundImage(layouts[roomName]["bg"])
-  };
-
-  const assignEmployee = (employeeName) => {
-    if (!selectedId) {
-      alert("Please select a seat to assign an employee.");
-      return;
-    }
-    const updatedElements = elements.map((el) =>
-      el.id === selectedId ? { ...el, employee: employeeName } : el
-    );
-    setElements(updatedElements);
-    alert(`Employee "${employeeName}" assigned to seat ID ${selectedId}.`);
-  };
-
-  return (
-    <div>
-      <h1>Office Layout Viewer</h1>
-      <div>
-        <h2>Select a Room:</h2>
-        {Object.keys(layouts).map((roomName) => (
-          <button key={roomName} onClick={() => loadLayout(roomName)}>
-            {roomName}
-          </button>
-        ))}
-      </div>
-      {selectedRoom && (
-        <>
-          <h2>Room: {selectedRoom}</h2>
-          <input
-            type="text"
-            placeholder="Enter employee name"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") assignEmployee(e.target.value);
-            }}
-          />
-          <Stage
-            width={window.innerWidth}
-            height={window.innerHeight}
-            onMouseLeave={() => setHoveredElement(null)}
-          >
-            <Layer>
-            {backgroundImage && (
-            <Image
-              image={backgroundImage}
-              width={window.innerWidth}
-              height={window.innerHeight}
-            />
-          )}
-              {elements.map((el) => (
-                <Rect
-                  key={el.id}
-                  x={el.x}
-                  y={el.y}
-                  width={el.width}
-                  height={el.height}
-                  fill={el.type === "Table" ? "lightblue" : "lightgreen"}
-                  stroke={selectedId === el.id ? "blue" : "black"}
-                  strokeWidth={selectedId === el.id ? 2 : 1}
-                  draggable={false}
-                  onClick={() => setSelectedId(el.id)}
-                  onMouseEnter={() => setHoveredElement(el)}
-                  onMouseLeave={() => setHoveredElement(null)}
-                />
-              ))}
-              {hoveredElement && (
-                <Text
-                  text={
-                    hoveredElement.employee
-                      ? `Assigned to: ${hoveredElement.employee}`
-                      : "Not assigned"
-                  }
-                  fontSize={16}
-                  x={hoveredElement.x + hoveredElement.width / 2}
-                  y={hoveredElement.y - 20}
-                  fill="black"
-                  align="center"
-                  width={150}
-                />
-              )}
-            </Layer>
-          </Stage>
-        </>
-      )}
-    </div>
-  );
-};
 
 const Editor = ({ onSave }) => {
   const [elements, setElements] = useState([]);
   const [roomName, setRoomName] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState([]); // Track multiple selected elements
   const [backgroundImage, setBackgroundImage] = useState(null);
+  const [chairSVG, setChairSVG] = useState(null); // Store the SVG path data
+  const [posSpacing, setPosSpacing] = useState({ x: 50, y: 50, spacing: 60 });
+  const [rotationDegree, setRotationDegree] = useState(0); // State for rotation degree
   const transformerRef = useRef(null);
   const layerRef = useRef(null);
 
-  // Load the image from file
+  useEffect(() => {
+    // Load the SVG file
+    fetch("/Blank.svg")
+      .then((res) => res.text())
+      .then(setChairSVG);
+  }, []);
+
   const handleBackgroundUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -154,61 +65,177 @@ const Editor = ({ onSave }) => {
       id: elements.length + 1,
       x: 50,
       y: 50,
-      width: type === "Table" ? 100 : 50,
-      height: type === "Table" ? 50 : 50,
+      width: 72,
+      height: 63.6,
       type,
-      employee: null,
+      rotation: 0, // Initialize rotation
     };
     setElements([...elements, newElement]);
   };
 
+  const toggleSelection = (id) => {
+    setSelectedIds((prevSelected) =>
+      prevSelected.includes(id)
+        ? prevSelected.filter((selectedId) => selectedId !== id) // Deselect
+        : [...prevSelected, id] // Select
+    );
+  };
+
   const removeElement = () => {
-    if (!selectedId) {
-      alert("Please select an element to remove.");
+    if (selectedIds.length === 0) {
+      alert("Please select elements to remove.");
       return;
     }
-    const updatedElements = elements.filter((el) => el.id !== selectedId);
+    const updatedElements = elements.filter((el) => !selectedIds.includes(el.id));
     setElements(updatedElements);
-    setSelectedId(null);
+    setSelectedIds([]);
   };
 
   const handleTransformEnd = (node, id) => {
-    const updatedElements = elements.map((el) =>
-      el.id === id
+  
+    
+    const updatedElements = elements.map((el) => {
+      return el.id === id
         ? {
             ...el,
             x: node.x(),
             y: node.y(),
-            width: Math.max(20, node.width() * node.scaleX()),
-            height: Math.max(20, node.height() * node.scaleY()),
+            width: Math.max(72, node.width() * node?.scaleX()),
+            height: Math.max(63.6, node.height() * node?.scaleY()),
           }
-        : el
-    );
+        : el;
+    });
     setElements(updatedElements);
+
     node.scaleX(1);
     node.scaleY(1);
   };
 
   const saveLayout = () => {
-   
     if (!roomName.trim()) {
       alert("Please enter a room name.");
       return;
     }
-    onSave(roomName, elements,backgroundImage);
+    onSave(roomName, elements, backgroundImage);
     setRoomName("");
     setElements([]);
     setBackgroundImage(null);
     alert(`Layout for "${roomName}" saved.`);
   };
 
+  const alignChairsHorizontally = () => {
+    const selectedChairs = elements.filter(
+      (el) => el.type === "Chair" && selectedIds.includes(el.id)
+    );
+
+   
+    let xOffset = posSpacing?.x;
+
+    const updatedElements = elements.map((el) => {
+      
+      if (selectedIds.includes(el.id)) {
+        const updatedElement = { ...el, x: xOffset, y: posSpacing?.y };
+        xOffset +=posSpacing?.spacing;
+        return updatedElement;
+      }
+      return el;
+    });
+
+    setElements(updatedElements);
+  };
+
+  const alignChairsVertically = () => {
+    const selectedChairs = elements.filter(
+      (el) => el.type === "Chair" && selectedIds.includes(el.id)
+    );
+
+   
+    let yOffset = posSpacing.y;
+
+    const updatedElements = elements.map((el) => {
+      if (selectedIds.includes(el.id)) {
+        const updatedElement = { ...el, x: posSpacing?.x, y: yOffset };
+        yOffset += posSpacing?.spacing;
+        return updatedElement;
+      }
+      return el;
+    });
+
+    setElements(updatedElements);
+  };
+
+  const rotateSelectedChairs = () => {
+    const updatedElements = elements.map((el) => {
+      if (selectedIds.includes(el.id)) {
+        return { ...el, rotation: el.rotation+rotationDegree };
+      }
+      return el;
+    });
+    setElements(updatedElements);
+  };
+
+  const handleDragEnd = (e) => {
+    const draggedNode = e.target;
+  
+    // Only update positions for selected elements
+    const updatedElements = elements.map((element) => {
+      if (selectedIds.includes(element.id)) {
+        const node = layerRef.current.findOne(`#element-${element.id}`);
+        return {
+          ...element,
+          x: node.x(),
+          y: node.y(),
+        };
+      }
+      return element;
+    });
+  
+    setElements(updatedElements);
+  };
+  
+
   return (
     <div>
-      <h1>Office Layout Editor</h1>
+      <h3>Office Layout Editor</h3>
       <div>
-        <button onClick={() => addElement("Table")}>Add Table</button>
         <button onClick={() => addElement("Chair")}>Add Chair</button>
         <button onClick={removeElement}>Remove Selected</button>
+        <input
+          type="number"
+          value={posSpacing.x}
+          onChange={(e) =>
+            setPosSpacing((prev) => ({
+              ...prev,
+              x: Number(e.target.value),
+            }))
+          }
+        />
+        <input
+          type="number"
+          value={posSpacing.y}
+          onChange={(e) =>
+            setPosSpacing((prev) => ({
+              ...prev,
+              y: Number(e.target.value),
+            }))
+          }
+        />
+        <input
+          type="number"
+          value={posSpacing.spacing}
+          onChange={(e) =>
+            setPosSpacing((prev) => ({
+              ...prev,
+              spacing: Number(e.target.value),
+            }))
+          }
+        />
+        <button onClick={() => alignChairsHorizontally()}>
+          Align Selected Chairs Horizontally
+        </button>
+        <button onClick={() => alignChairsVertically()}>
+          Align Selected Chairs Vertically
+        </button>
         <input type="file" accept="image/*" onChange={handleBackgroundUpload} />
       </div>
       <div>
@@ -220,55 +247,60 @@ const Editor = ({ onSave }) => {
         />
         <button onClick={saveLayout}>Save Layout</button>
       </div>
+      <div>
+        <label>Rotation (degrees): </label>
+        <input
+          type="number"
+          value={rotationDegree}
+          onChange={(e) => setRotationDegree(Number(e.target.value))}
+        />
+        <button onClick={rotateSelectedChairs}>Rotate Selected Chairs</button>
+      </div>
       <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
+        width={1100}
+        height={600}
         onMouseDown={(e) => {
-          if (e.target === e.target.getStage()) {
-            setSelectedId(null);
-          }
-        }}
+          if(selectedIds.includes(e.id))
+          setSelectedIds([]);
+        
+      }}
+       
       >
         <Layer ref={layerRef}>
           {backgroundImage && (
-            <Image
-              image={backgroundImage}
-              width={window.innerWidth}
-              height={window.innerHeight}
-            />
+            <Image image={backgroundImage} width={1100} height={600} onMouseDown={(e) => {
+                setSelectedIds([]);
+              
+            }} />
           )}
-          {elements.map((el) => (
-            <Rect
-              key={el.id}
-              id={`element-${el.id}`}
-              x={el.x}
-              y={el.y}
-              width={el.width}
-              height={el.height}
-              fill={el.type === "Table" ? "lightblue" : "lightgreen"}
-              stroke={selectedId === el.id ? "blue" : "black"}
-              strokeWidth={selectedId === el.id ? 2 : 1}
-              draggable
-              onClick={() => setSelectedId(el.id)}
-              onDragEnd={(e) => {
-                const updatedElements = elements.map((element) =>
-                  element.id === el.id
-                    ? { ...element, x: e.target.x(), y: e.target.y() }
-                    : element
-                );
-                setElements(updatedElements);
-              }}
-              onTransformEnd={(e) => handleTransformEnd(e.target, el.id)}
-            />
-          ))}
-          {selectedId && (
+          {elements.map((el) => {
+            if (el.type === "Chair" && chairSVG) {
+              
+              return (
+                <Path
+                  key={el.id}
+                  id={`element-${el.id}`}
+                  x={el.x}
+                  y={el.y}
+                  rotation={el.rotation} // Apply rotation
+                  scale={{ x: el.width / 100, y: el.height / 100 }}
+                  data={chairSVG}
+                  fill={selectedIds.includes(el.id) ? "blue" : "white"}
+                  stroke="grey"
+                  draggable
+                  onClick={() => toggleSelection(el.id)}
+                  onDragEnd={handleDragEnd}
+                  onTransformEnd={(e) => handleTransformEnd(e.target, el.id)}
+                />
+              );
+            }
+          })}
+          {selectedIds.length > 0 && (
             <Transformer
               ref={transformerRef}
-              nodes={
-                selectedId
-                  ? [layerRef.current.findOne(`#element-${selectedId}`)]
-                  : []
-              }
+              nodes={selectedIds.map((id) =>
+                layerRef.current.findOne(`#element-${id}`)
+              )}
             />
           )}
         </Layer>
@@ -277,4 +309,4 @@ const Editor = ({ onSave }) => {
   );
 };
 
-*/
+

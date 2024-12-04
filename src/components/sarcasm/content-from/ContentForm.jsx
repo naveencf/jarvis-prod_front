@@ -21,7 +21,7 @@ const ContentForm = () => {
   });
   const [loading, setLoading] = useState(false);
   const [categoryData, setCategoryData] = useState([]);
-  const [imageInsertLocation, setImageInsertLocation] = useState(null);
+  // const [imageInsertLocation, setImageInsertLocation] = useState(null);
   const bannerImageRef = useRef();
   // const blogImagesRef = useRef();
   const quillRef = useRef(null);
