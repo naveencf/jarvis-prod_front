@@ -821,7 +821,7 @@ const PageOverviewNew = () => {
       },
       width: 200,
     },
-    
+
     {
       key: 'platform_name',
       name: 'Platform',
@@ -943,17 +943,7 @@ const PageOverviewNew = () => {
       },
       compare: true,
     },
-    // {
-    //   key: 'm_story_price',
-    //   name: 'M Story',
-    //   width: 200,
-    //   renderRowCell: (row) => {
-    //     const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
-    //     const storyPrice = storyData ? storyData.instagram_m_story : 0;
-    //     return storyPrice;
-    //   },
-    //   compare: true,
-    // },
+
     // {
     //   key: 'm_post_price',
     //   name: 'M Post',
