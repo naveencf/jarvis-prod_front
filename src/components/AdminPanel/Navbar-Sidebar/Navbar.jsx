@@ -187,7 +187,7 @@ const Navbar = () => {
           </li>
 
           {/* {deptId == 36 && ( */}
-          {(deptId == 36 || RoleID == 6 || data[52]?.view_value == 1) && (
+          {((deptId == 36 || RoleID == 6 || loginUserId == 229) && data[52]?.view_value == 1) && (
             <li className="nav-item" id="salesBadge">
               <div
                 className="navBadge"
@@ -224,9 +224,7 @@ const Navbar = () => {
                         >
                           <h4>
                             TDS Outstanding: ₹
-                            {formatNumber(
-                              (userBadgeData?.totalOutstandingAmount - userBadgeData?.totalUnEarnedOutstandingAmount)
-                            ) || 0}
+                            {formatNumber(userBadgeData?.totalOutstandingAmount - userBadgeData?.totalUnEarnedOutstandingAmount) || 0}
                           </h4>
                         </div>
                         <div
