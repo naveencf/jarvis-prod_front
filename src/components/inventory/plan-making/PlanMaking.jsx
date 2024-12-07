@@ -584,7 +584,7 @@ const PlanMaking = () => {
             matchingPage.page_price_list,
             'instagram_story'
           );
- 
+
           const rateType = matchingPage.rate_type === 'Fixed';
 
           // Calculate costs based on rate type
@@ -762,7 +762,7 @@ const PlanMaking = () => {
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
- 
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
@@ -833,7 +833,6 @@ const PlanMaking = () => {
         activeIndex
       );
 
-      // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
     } else if (event.code === 'ArrowDown') {
       if (activeIndex < filterData.length - 1) {
         setShortcutTriggered(true); // Indicate shortcut use
