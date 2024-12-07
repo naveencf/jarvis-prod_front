@@ -11,7 +11,6 @@ import SalesAccountTypeApi from "./API/Sales/SalesAccountTypeApi";
 import CompanyTypeApi from "./API/Sales/CompanyTypeApi";
 import BrandCategoryTypeApi from "./API/Sales/BrandCategoryTypeApi";
 import SaleBookingApi from "./API/Sales/SaleBookingApi";
-import BrandApi from "./API/Sales/BrandApi";
 import DocumentTypeApi from "./API/Sales/DocumentTypeApi";
 import PointOfContactApi from "./API/Sales/PointOfContactApi";
 import AccountDocumentApi from "./API/Sales/AccountDocumentApi";
@@ -44,6 +43,7 @@ import SaleBookingTdsApi from "./API/Finance/SaleBookingTdsApi";
 import OutstandingNewApi from "./API/Finance/OutstandingNew";
 import SalesCategoryApi from "./API/Sales/salesCategoryApi";
 import IncentiveStatementApi from "./API/Sales/IncentiveSettelmentApi";
+import BrandApi from "./API/Sales/BrandApi";
 
 const store = configureStore({
   reducer: {
@@ -59,7 +59,6 @@ const store = configureStore({
     [BrandCategoryTypeApi.reducerPath]: BrandCategoryTypeApi.reducer,
     [PageBaseURL.reducerPath]: PageBaseURL.reducer,
     [SaleBookingApi.reducerPath]: SaleBookingApi.reducer,
-    [BrandApi.reducerPath]: BrandApi.reducer,
     [DocumentTypeApi.reducerPath]: DocumentTypeApi.reducer,
     [PointOfContactApi.reducerPath]: PointOfContactApi.reducer,
     [AccountDocumentApi.reducerPath]: AccountDocumentApi.reducer,
@@ -91,6 +90,7 @@ const store = configureStore({
     [OutstandingNewApi.reducerPath]: OutstandingNewApi.reducer,
     [SalesCategoryApi.reducerPath]: SalesCategoryApi.reducer,
     [IncentiveStatementApi.reducerPath]: IncentiveStatementApi.reducer,
+    [BrandApi.reducerPath]: BrandApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware()
@@ -101,7 +101,6 @@ const store = configureStore({
       .concat(BrandCategoryTypeApi.middleware)
       .concat(PageBaseURL.middleware)
       .concat(SaleBookingApi.middleware)
-      .concat(BrandApi.middleware)
       .concat(DocumentTypeApi.middleware)
       .concat(PointOfContactApi.middleware)
       .concat(AccountDocumentApi.middleware)
@@ -133,7 +132,8 @@ const store = configureStore({
       .concat(SaleBookingTdsApi.middleware)
       .concat(OutstandingNewApi.middleware)
       .concat(SalesCategoryApi.middleware)
-      .concat(IncentiveStatementApi.middleware),
+      .concat(IncentiveStatementApi.middleware)
+      .concat(BrandApi.middleware),
 });
 setupListeners(store.dispatch);
 
