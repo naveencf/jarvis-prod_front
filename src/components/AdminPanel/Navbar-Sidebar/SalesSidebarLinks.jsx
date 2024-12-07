@@ -57,10 +57,10 @@ const SalesSidebarLinks = () => {
             Closed Deal
           </NavLink>
 
-          {/* <NavLink className="collapse-item" to="/admin/product">
+          <NavLink className="collapse-item" to="/admin/product">
             <i className="bi bi-dot" />
             Product
-          </NavLink> */}
+          </NavLink>
 
           <NavLink
             className="collapse-item"

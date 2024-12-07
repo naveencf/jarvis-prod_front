@@ -112,7 +112,7 @@ const Navbar = () => {
           item.max_rate_amount > userBadgeRes.totalCampaignAmount &&
           item.min_rate_amount < userBadgeRes.totalCampaignAmount
       )[0]?.badge_name;
-
+      // console.log(userBadgeRes, "userBadgeRes")
       setBadge(userBadge);
       setBadgeData(badgeDataRes, "badge data");
       setUserBadgeData(userBadgeRes);
@@ -206,8 +206,8 @@ const Navbar = () => {
                     >
                       <div className="carousel-inner">
                         <div
-                          className={`carousel-item ${isActive === 0 ? "active" : ""
-                            } `}
+                          // className={`carousel-item ${isActive === 0 ? "active" : ""
+                          //   } `}
                           data-interval="500"
                         >
                           <h4>
@@ -218,16 +218,55 @@ const Navbar = () => {
                           </h4>
                         </div>
                         <div
-                          class={`carousel-item  ${isActive === 1 ? "active" : ""
-                            } `}
+                          // class={`carousel-item  ${isActive === 1 ? "active" : ""
+                          //   } `}
                           data-interval="1000"
                         >
                           <h4>
-                            Un-Earned Outstanding: ₹
+                            TDS Outstanding: ₹
                             {formatNumber(
-                              userBadgeData?.totalUnEarnedOutstandingAmount
+                              (userBadgeData?.totalOutstandingAmount - userBadgeData?.totalUnEarnedOutstandingAmount)
                             ) || 0}
-                          </h4>{" "}
+                          </h4>
+                        </div>
+                        <div
+                          // class={`carousel-item  ${isActive === 1 ? "active" : ""
+                          //   } `}
+                          data-interval="1000"
+                        >
+                          <h4>
+                            Un-Billed Outstanding: ₹
+                            {formatNumber(
+                              (userBadgeData?.totalUnEarnedOutstandingAmount - userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount)
+                            ) || 0}
+                          </h4>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+                <div className="navBadgeTxt">
+                  {/* /* <h5>{badge}</h5> */}
+                  <Link to="/admin/view-Outstanding-details">
+                    <div
+                      id="carouselExampleSlidesOnly"
+                      className="carousel slide"
+                      data-ride="carousel"
+                    >
+                      <div className="carousel-inner">
+
+
+                        <div
+                          // class={`carousel-item  ${isActive === 1 ? "active" : ""
+                          //   } `}
+                          data-interval="1000"
+                        >
+                          <h4>
+                            Billed Outstanding: ₹
+                            {formatNumber(
+                              userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                            ) || 0}
+                          </h4>
                         </div>
                       </div>
                     </div>

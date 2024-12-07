@@ -44,7 +44,8 @@ function PageOverviewHeader({
   setActivenessFilter,
   filterFollowers,
   setFilterFollowers,
-  selectedData
+  selectedData,
+  setSelectedData
 }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -365,7 +366,7 @@ function PageOverviewHeader({
               </Breadcrumbs>
             </h5>
             <div className="flexCenter colGap8">
-              <SarcasmNetwork selectedData={selectedData}/>
+              <SarcasmNetwork selectedData={selectedData} setSelectedData ={setSelectedData}/>
               <button
                 className="btn cmnbtn btn_sm btn-outline-danger"
                 onClick={handleDisabledPages}

@@ -111,9 +111,9 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
         "post",
         "story",
         "both",
-        "m_post",
-        "m_story",
-        "m_both",
+        // "m_post",
+        // "m_story",
+        // "m_both",
         "reel",
         "carousel",
       ],
@@ -167,9 +167,9 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
                 <TableCell>Story</TableCell>
                 <TableCell>Post</TableCell>
                 <TableCell>Both</TableCell>
-                <TableCell>Million-Story</TableCell>
+                {/* <TableCell>Million-Story</TableCell>
                 <TableCell>Million-Post</TableCell>
-                <TableCell>Million-Both</TableCell>
+                <TableCell>Million-Both</TableCell> */}
                 <TableCell>Reel</TableCell>
                 <TableCell>Carousel</TableCell>
               </TableRow>
@@ -184,9 +184,9 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
                   <TableCell>{row?.post}</TableCell>
                   <TableCell>{row?.story}</TableCell>
                   <TableCell>{row?.both}</TableCell>
-                  <TableCell>{row?.m_post}</TableCell>
+                  {/* <TableCell>{row?.m_post}</TableCell>
                   <TableCell>{row?.m_story}</TableCell>
-                  <TableCell>{row?.m_both}</TableCell>
+                  <TableCell>{row?.m_both}</TableCell> */}
                   <TableCell>{row?.reel}</TableCell>
                   <TableCell>{row?.carousel}</TableCell>
                 </TableRow>

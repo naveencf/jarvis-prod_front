@@ -14,15 +14,15 @@ import {
 } from "../../../../components/Store/API/Sales/SalesServiceApi";
 import Loader from "../../../Finance/Loader/Loader";
 
-const SalesServicesCreate = () => {
-  const { id, method } = useParams();
+const SalesServicesCreate = ({ service_name }) => {
+  const { id, method, task } = useParams();
   const navigate = useNavigate();
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const { userID } = useAPIGlobalContext();
-  const [servicename, setServiceName] = useState("");
   // const [postType, setPostType] = useState("");
   // const [excelUpload, setExcelUpload] = useState(false);
+  const [servicename, setServiceName] = useState("");
   const [brandName, setBrandName] = useState(false);
   const [amount, setAmount] = useState("");
   const [numberHours, setNumberHours] = useState(false);
@@ -54,7 +54,7 @@ const SalesServicesCreate = () => {
     data: singleSaleService,
     isLoading: isSingleSaleServiceLoading,
     error: singleSaleServiceError,
-  } = useGetSingleSaleServiceQuery(id, { skip: !id });
+  } = useGetSingleSaleServiceQuery(id || service_name);
 
   const [updatesalesservice, { isLoading: isUpdating, error: updateError }] =
     useEditSaleServiceMutation();
@@ -100,10 +100,11 @@ const SalesServicesCreate = () => {
     }
   };
   useEffect(() => {
-    if (isFormSubmitted) navigate("/admin/sales-services-overview");
+    if (isFormSubmitted && task != "create" && !service_name)
+      navigate("/admin/product");
   }, [isFormSubmitted]);
   useEffect(() => {
-    if (method === "put" || method === "post") {
+    if (method === "put" || method === "post" || service_name) {
       setServiceName(singleSaleService?.service_name);
       setAmount(singleSaleService?.amount_status);
       // setPostType(singleSaleService?.post_type);

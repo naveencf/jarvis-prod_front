@@ -84,7 +84,7 @@ const CustomTableV2 = ({
       data?.length > 0
     )
       pagination.current = [...pagination?.current, data?.length];
-  }, [data, columns]);
+  }, [data, columns,tableName]);
 
   useEffect(() => {
     // //console.log("selected data");
@@ -430,11 +430,16 @@ const CustomTableV2 = ({
     if (!sortKey) return unSortedData;
     let sorted = [...unSortedData];
     if (sortKey != oldSortKey) {
-      const datatType =
-        unSortedData[0][sortKey] != undefined &&
-        unSortedData[0][sortKey] != null
-          ? typeof unSortedData[0][sortKey]
-          : null;
+      let datatType = null;
+      for (let i = 0; i < unSortedData.length; i++) {
+        if (
+          unSortedData[i][sortKey] != undefined &&
+          unSortedData[i][sortKey] != null
+        ) {
+          datatType = typeof unSortedData[i][sortKey];
+          break;
+        }
+      }
       // console.log("datatType", datatType, unSortedData[0]);
       if (datatType === "number") {
         // console.log("number");

@@ -162,7 +162,13 @@ const SalesProductOverview = () => {
       name: "Action",
       renderRowCell: (row) => (
         <div className="flex-row gap-2">
-          <Link to={`/admin/sales-incentive-update/${row._id}`}>
+          <Link
+            to={`/admin/product/${
+              allIncentiveData?.find(
+                (data) => row?._id === data?.sales_service_master_id
+              )?._id
+            }`}
+          >
             <div className="icon-1">
               <i className="bi bi-pencil"></i>
             </div>

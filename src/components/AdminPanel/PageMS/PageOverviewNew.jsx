@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect, useContext, useRef } from 'react';
 import axios from 'axios';
 import { baseUrl } from '../../../utils/config';
 import { FaEdit } from 'react-icons/fa';
@@ -65,16 +65,15 @@ const PageOverviewNew = () => {
   const [pagequery, setPagequery] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editID, setEditID] = useState(null);
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [activenessFilter, setActivenessFilter] = useState(null);
   const [filterFollowers, setFilterFollowers] = useState(null);
-
 
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery })
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
@@ -117,9 +116,9 @@ const PageOverviewNew = () => {
 
   useEffect(() => {
     if (activeTab == 'Tab1') {
-      pageHealthToggleCheck()
+      pageHealthToggleCheck();
     }
-  }, [activeTab])
+  }, [activeTab]);
   function pageHealthToggleCheck() {
     // if (showPageHealthColumn) {
     const data = pageList?.map((item) => {
@@ -127,8 +126,7 @@ const PageOverviewNew = () => {
         (state) => state?.page_master_id === item?._id
       );
       if (matchingState) {
-
-        console.log(matchingState, "matchingState", item)
+        console.log(matchingState, 'matchingState', item);
       }
       return {
         ...item,
@@ -136,12 +134,10 @@ const PageOverviewNew = () => {
         ...matchingState,
         _id: item?._id,
       };
-
     });
 
     setNewFilterData(data);
   }
-
 
   const handleSetState = () => {
     dispatch(addRow(false));
@@ -156,7 +152,6 @@ const PageOverviewNew = () => {
       state: row.pageMast_id,
     });
   };
-
 
   const handlePriceClick = (row) => {
     return function () {
@@ -750,11 +745,10 @@ const PageOverviewNew = () => {
           : 0;
 
         return Number(averagePostPrice);
-
       },
       width: 150,
       showCol: true,
-      compare: true
+      compare: true,
     },
     {
       key: 'average_story_price',
@@ -770,12 +764,11 @@ const PageOverviewNew = () => {
           ? Math.floor(storyPrice / (followerCount / 1000000))
           : 0;
 
-        return Number(averageStoryPrice)
-
+        return Number(averageStoryPrice);
       },
       width: 150,
       showCol: true,
-      compare: true
+      compare: true,
     },
 
     {
@@ -806,7 +799,7 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         switch (row.page_layer) {
           case 0:
-            return 'Other Inventory';
+            return "Inventory Pages";
           case 1:
             return 'Sarcasm Network';
           case 2:
@@ -876,7 +869,7 @@ const PageOverviewNew = () => {
             onClick={() => handleClickVendorName(row)}
             className="link-primary cursor-pointer text-truncate"
           >
-            {formatString(row?.vendor_name || "Not Available")}
+            {formatString(row?.vendor_name || 'Not Available')}
           </div>
         );
       },
@@ -907,13 +900,11 @@ const PageOverviewNew = () => {
       name: 'Post Price',
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
-        const postPrice = postData ? postData.instagram_post : 0;
-        return (
-
-          postPrice > 0 ? Number(postPrice) : 0
-
+        const postData = row?.page_price_list?.find(
+          (item) => item?.instagram_post !== undefined
         );
+        const postPrice = postData ? postData.instagram_post : 0;
+        return postPrice > 0 ? Number(postPrice) : 0;
       },
       compare: true,
     },
@@ -922,13 +913,11 @@ const PageOverviewNew = () => {
       name: 'Story Price',
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
-        const storyPrice = storyData ? storyData.instagram_story : 0;
-        return (
-
-          storyPrice > 0 ? Number(storyPrice) : 0
-
+        const storyData = row?.page_price_list?.find(
+          (item) => item?.instagram_story !== undefined
         );
+        const storyPrice = storyData ? storyData.instagram_story : 0;
+        return storyPrice > 0 ? Number(storyPrice) : 0;
       },
       compare: true,
     },
@@ -937,9 +926,11 @@ const PageOverviewNew = () => {
       name: 'Both Price',
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
+        const bothData = row?.page_price_list?.find(
+          (item) => item?.instagram_both !== undefined
+        );
         const bothPrice = bothData ? bothData.instagram_both : 0;
-        return bothPrice
+        return bothPrice;
       },
       compare: true,
     },
@@ -1068,8 +1059,6 @@ const PageOverviewNew = () => {
     },
   ];
 
-
-
   return (
     <>
       <PriceModal
@@ -1097,7 +1086,7 @@ const PageOverviewNew = () => {
               <VendorDetails
                 vendorDetails={vendorDetails}
                 setVendorDetails={setVendorDetails}
-                tab1={"tab1"}
+                tab1={'tab1'}
               />
             )}
             <button
@@ -1134,8 +1123,10 @@ const PageOverviewNew = () => {
             </button>
 
             <button
-              className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
-              onClick={() => setActiveTab("Tab1")}
+              className={
+                activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'
+              }
+              onClick={() => setActiveTab('Tab1')}
             >
               Page Health
             </button>
@@ -1148,13 +1139,16 @@ const PageOverviewNew = () => {
                   columns={dataGridcolumns}
                   pagequery={pagequery}
                   setPagequery={setPagequery}
-                  categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
-                  activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter}
-                  filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers}
+                  categoryFilter={categoryFilter}
+                  setCategoryFilter={setCategoryFilter}
+                  activenessFilter={activenessFilter}
+                  setActivenessFilter={setActivenessFilter}
+                  filterFollowers={filterFollowers}
+                  setFilterFollowers={setFilterFollowers}
                 />
               </>
             )}
-            {activeTab === "Tab1" && (
+            {activeTab === 'Tab1' && (
               <div className="">
                 <div className="card">
                   <div className="card-body p0">
@@ -1162,12 +1156,12 @@ const PageOverviewNew = () => {
                       {isPageListLoading ? (
                         <Box
                           sx={{
-                            textAlign: "center",
-                            position: "relative",
-                            margin: "auto",
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "center",
+                            textAlign: 'center',
+                            position: 'relative',
+                            margin: 'auto',
+                            width: '100%',
+                            display: 'flex',
+                            justifyContent: 'center',
                           }}
                         >
                           <CircularProgress
@@ -1180,10 +1174,10 @@ const PageOverviewNew = () => {
                               left: 0,
                               bottom: 0,
                               right: 0,
-                              position: "absolute",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
+                              position: 'absolute',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
                             }}
                           >
                             <Typography
@@ -1200,16 +1194,15 @@ const PageOverviewNew = () => {
                           columns={[...dataSecondGridColumns]}
                           data={newFilterData}
                           isLoading={false}
-                          title={"Page Health"}
+                          title={'Page Health'}
                           rowSelectable={true}
                           pagination={[100, 200, 1000]}
-                          tableName={"Page Health"}
+                          tableName={'Page Health'}
                         />
                       )}
                     </div>
                   </div>
                 </div>
-
 
                 <TagCategoryListModal />
                 <VendorNotAssignedModal />

@@ -1,7 +1,7 @@
 import React, { use, useEffect, useState } from "react";
 import FormContainer from "../../FormContainer";
 import View from "../Account/View/View";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { baseUrl } from "../../../../utils/config";
 import axios from "axios";
 import getDecodedToken from "../../../../utils/DecodedToken";
@@ -372,6 +372,7 @@ const UserIncentive = () => {
             </div>
           )}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+            {/* <Link to="/admin/incentive-statement"> */}
             <div className="card">
               <div className="card-body pb20 flexCenter colGap14">
                 <div className="iconBadge bgInfoLight m-0">
@@ -389,6 +390,7 @@ const UserIncentive = () => {
                 </div>
               </div>
             </div>
+            {/* </Link> */}
           </div>
           {loginUserRole === 1 && (
             <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">

@@ -445,7 +445,6 @@ const ViewSaleBooking = () => {
       key: "sale_booking_date",
       name: "Booking Date",
       renderRowCell: (row) => DateISOtoNormal(row.sale_booking_date),
-
       showCol: true,
       width: 100,
     },
@@ -492,7 +491,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-          "uploaded" == row?.invoice_request_status ? (
+            "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>

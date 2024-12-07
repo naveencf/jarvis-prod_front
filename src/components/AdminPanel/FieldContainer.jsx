@@ -1,10 +1,11 @@
-import React from 'react';
+import React from "react";
 
 const FieldContainer = ({
+  className = "",
   label,
-  Tag = 'input',
-  type = 'text',
-  step = 'any',
+  Tag = "input",
+  type = "text",
+  step = "any",
   rows,
   cols,
   value,
@@ -28,19 +29,19 @@ const FieldContainer = ({
   return (
     <div
       className={
-        Tag == 'textarea'
-          ? 'col-xl-12 col-lg-12 col-md-12 col-sm-12'
+        Tag == "textarea"
+          ? "col-xl-12 col-lg-12 col-md-12 col-sm-12"
           : `col-xl-${fieldGrid} col-lg-${fieldGrid} col-md-${fieldGrid} col-sm-12`
       }
     >
-      <div className="form-group">
+      <div className={`form-group ${className}`}>
         <label htmlFor={label} className="form-label">
-          {label} {astric === true && <sup style={{ color: 'red' }}>*</sup>}
+          {label} {astric === true && <sup style={{ color: "red" }}>*</sup>}
         </label>
         <Tag
           id={label}
           step={step}
-          className={Tag == 'select' ? 'form-select' : 'form-control'}
+          className={Tag == "select" ? "form-select" : "form-control"}
           type={type}
           value={value}
           rows={rows}
@@ -61,7 +62,7 @@ const FieldContainer = ({
         >
           {children}
         </Tag>
-        {type === 'date' ? (
+        {type === "date" ? (
           <div className="custom-btn-2">
             <i className="bi bi-calendar-week"></i>
           </div>

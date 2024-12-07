@@ -1,9 +1,11 @@
 import { Avatar, Checkbox } from '@mui/material';
 import formatString from '../../../utils/formatString';
+import { FaEdit } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const DataGridColumns = ({
   vendorData,
-  filterData,
+  // filterData,
   selectedRows,
   handleCheckboxChange,
   postPerPageValues,
@@ -15,12 +17,12 @@ const DataGridColumns = ({
   shortcutTriggered,
   setShortcutTriggered,
   typeData,
-  cat,
-  platformData,
   pageStatsAuth,
-  handleRowClick,
+  // cat,
+  // platformData,
+  // handleRowClick,
+  // tempIndex,
   decodedToken,
-  tempIndex,
   activeIndex,
 }) => {
   const formatNumber = (num) => {
@@ -28,7 +30,14 @@ const DataGridColumns = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
+  const navigate = useNavigate();
+  const token = sessionStorage.getItem('token');
 
+  const handleEdit = (row) => {
+    console.log('called');
+    sessionStorage.setItem('token', token);
+    navigate(`/admin/pms-page-edit/${row._id}`);
+  };
   const dataGridColumns = [
     {
       key: 'serial_no',
@@ -143,6 +152,24 @@ const DataGridColumns = ({
       renderRowCell: (row) => formatString(row.page_sub_category_name),
       width: 100,
       showCol: true,
+    },
+    {
+      key: 'Action',
+      name: 'Action',
+      width: 150,
+      renderRowCell: (row) => (
+        <div
+        // className="flexCenter colGap8"
+        >
+          <button
+            title="Edit"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={() => handleEdit(row)}
+          >
+            <FaEdit />{' '}
+          </button>
+        </div>
+      ),
     },
     {
       key: 'engagment_rate',
