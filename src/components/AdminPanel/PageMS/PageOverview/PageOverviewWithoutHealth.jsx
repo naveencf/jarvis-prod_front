@@ -30,7 +30,6 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
   const [isLoading, setIsLoading] = useState(true);
 
 const [selectedData , setSelectedData] = useState([])
-console.log(selectedData , 'slelected console')
 
   const {
     data: pageList,
@@ -171,7 +170,7 @@ console.log(selectedData , 'slelected console')
 
   return (
     <div className="card">
-      <PageOverviewHeader selectedData={selectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
+      <PageOverviewHeader selectedData={selectedData} setSelectedData ={setSelectedData}onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter}
         activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
       <div className="card-body p0">
         <div className="data_tbl thm_table table-responsive">

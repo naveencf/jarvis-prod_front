@@ -1,84 +1,94 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
-import FieldContainer from "../FieldContainer";
-import FormContainer from "../FormContainer";
-import { baseUrl } from "../../../utils/config";
-import jwtDecode from "jwt-decode";
-import Select from "react-select";
-import "./Tagcss.css";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { AppContext, useGlobalContext } from '../../../Context/Context';
+import FieldContainer from '../FieldContainer';
+import FormContainer from '../FormContainer';
+import { baseUrl } from '../../../utils/config';
+import jwtDecode from 'jwt-decode';
+import Select from 'react-select';
+import './Tagcss.css';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageSubCategoryQuery,
   useGetAllPageListQuery,
   useGetAllProfileListQuery,
   useGetMultiplePagePriceQuery,
-} from "../../Store/PageBaseURL";
+} from '../../Store/PageBaseURL';
 import {
   useGetAllVendorQuery,
   useGetPmsPlatformQuery,
-} from "../../Store/reduxBaseURL";
-import { useDispatch, useSelector } from "react-redux";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useGetOwnershipTypeQuery } from "../../Store/PageBaseURL";
-import formatString from "../Operation/CampaignMaster/WordCapital";
-import { useContext } from "react";
-import { IconButton, Stack } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import InfoIcon from "@mui/icons-material/Info";
+} from '../../Store/reduxBaseURL';
+import { useDispatch, useSelector } from 'react-redux';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useGetOwnershipTypeQuery } from '../../Store/PageBaseURL';
+import formatString from '../Operation/CampaignMaster/WordCapital';
+import { useContext } from 'react';
+import { IconButton, Stack } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import InfoIcon from '@mui/icons-material/Info';
 import {
   setOpenShowAddModal,
   setModalType,
   setOpenShowPageInfoModal,
-} from "../../Store/PageMaster";
-import PageAddMasterModal from "./PageAddMasterModal";
-import PageInfoModal from "./PageInfoModal";
-import { FormatName } from "../../../utils/FormatName";
+} from '../../Store/PageMaster';
+import PageAddMasterModal from './PageAddMasterModal';
+import PageInfoModal from './PageInfoModal';
+import { FormatName } from '../../../utils/FormatName';
+import { Spinner } from 'react-bootstrap';
 
 setOpenShowAddModal;
 const Page = ({ pageMast_id, handleEditClose }) => {
-  const { refetch: refetchPageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery();
+  const params = useParams();
+  const pageMasterId = params.pageMast_id ? params.pageMast_id : pageMast_id;
+  const storedToken = sessionStorage.getItem('token');
+  const decodedToken = jwtDecode(storedToken);
+  const userID = decodedToken.id;
+  const pagequery = '';
+  const {
+    data: pageList,
+    refetch: refetchPageList,
+    isLoading: isPageListLoading,
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  // console.log('refetchPageList', refetchPageList());
+
   const navigate = useNavigate();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const dispatch = useDispatch();
   const { toastAlert, toastError } = useGlobalContext();
   const [rowCount, setRowCount] = useState([
-    { page_price_type_id: "", price: "" },
+    { page_price_type_id: '', price: '' },
   ]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [priceTypeList, setPriceTypeList] = useState([]);
 
-  const [pageName, setPageName] = useState("");
-  const [link, setLink] = useState("");
+  const [pageName, setPageName] = useState('');
+  const [link, setLink] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [platformId, setPlatformId] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [subCategoryId, setSubCategoryId] = useState("");
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [platformId, setPlatformId] = useState('');
+  const [categoryId, setCategoryId] = useState('');
+  const [subCategoryId, setSubCategoryId] = useState('');
   const [tag, setTag] = useState([]);
-  const [pageLevel, setPageLevel] = useState("");
-  const [pageStatus, setPageStatus] = useState("");
-  const [closeBy, setCloseBy] = useState("");
-  const [pageType, setPageType] = useState("");
-  const [content, setContent] = useState("");
-  const [ownerType, setOwnerType] = useState("");
-  const [vendorId, setVendorId] = useState("");
-  console.log(vendorId, "vendorId");
+  const [pageLevel, setPageLevel] = useState('');
+  const [pageStatus, setPageStatus] = useState('');
+  const [closeBy, setCloseBy] = useState('');
+  const [pageType, setPageType] = useState('');
+  const [content, setContent] = useState('');
+  const [ownerType, setOwnerType] = useState('');
+  const [vendorId, setVendorId] = useState('');
+  console.log(vendorId, 'vendorId');
 
-  const [followCount, setFollowCount] = useState("");
-  const [profileId, setProfileId] = useState("");
+  const [followCount, setFollowCount] = useState('');
+  const [profileId, setProfileId] = useState('');
   const [platformActive, setPlatformActive] = useState();
-  const [rate, setRate] = useState("");
-  const [description, setDescription] = useState("");
-  const [bio, setBio] = useState("");
+  const [rate, setRate] = useState('');
+  const [description, setDescription] = useState('');
+  const [bio, setBio] = useState('');
   const [singlePage, setSinglePage] = useState({});
-  const storedToken = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(storedToken);
-  const userID = decodedToken.id;
 
   const [priceDataNew, setPriceDataNew] = useState([]);
-  const [rateType, setRateType] = useState("Fixed");
+  const [rateType, setRateType] = useState('Fixed');
   const [languages, setLanguages] = useState([]);
   const [languageId, setLanguageId] = useState([]);
   const [tempID, setTempID] = useState();
@@ -86,47 +96,47 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const { usersDataContext } = useContext(AppContext);
 
   const PageLevels = [
-    { value: "high", label: "Level 1 (High)" },
-    { value: "medium", label: "Level 2 (Medium)" },
-    { value: "low", label: "Level 3 (Low)" },
+    { value: 'high', label: 'Level 1 (High)' },
+    { value: 'medium', label: 'Level 2 (Medium)' },
+    { value: 'low', label: 'Level 3 (Low)' },
   ];
 
   const PageStatus = [
-    { value: "super_active", label: "Super Active" },
-    { value: "active", label: "Active" },
-    { value: "semi_active", label: "Semi Active" },
-    { value: "dead", label: "Dead" },
+    { value: 'super_active', label: 'Super Active' },
+    { value: 'active', label: 'Active' },
+    { value: 'semi_active', label: 'Semi Active' },
+    { value: 'dead', label: 'Dead' },
   ];
   const PageTypes = [
-    { value: "Non Adult", label: "Non Adult" },
-    { value: "Adult", label: "Adult" },
+    { value: 'Non Adult', label: 'Non Adult' },
+    { value: 'Adult', label: 'Adult' },
   ];
 
   const Contents = [
-    { value: "By Vendor", label: "By Vendor" },
-    { value: "By CF", label: "By CF" },
-    { value: "Both", label: "Both" },
+    { value: 'By Vendor', label: 'By Vendor' },
+    { value: 'By CF', label: 'By CF' },
+    { value: 'Both', label: 'Both' },
   ];
 
   const RateTypes = [
-    { value: "Fixed", label: "Fixed" },
-    { value: "Variable", label: "Variable" },
+    { value: 'Fixed', label: 'Fixed' },
+    { value: 'Variable', label: 'Variable' },
   ];
 
   const [variableType, setVariableType] = useState({
-    value: "Per Thousand",
-    label: "Per Thousand",
+    value: 'Per Thousand',
+    label: 'Per Thousand',
   });
 
   const getData = () => {
     axios
-      .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMast_id}`, {
+      .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMasterId}`, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
@@ -203,7 +213,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     });
     axios.delete(baseUrl + `v1/pagePriceMultiple/${_id}`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
     });
@@ -219,7 +229,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       axios
         .get(baseUrl + `v1/pagePriceTypesForPlatformId/${platformId}`, {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         })
@@ -233,15 +243,15 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     if (rowCount.length > 0) {
       setRowCount((rowCount) => [
         ...rowCount,
-        { page_price_type_id: "", price: "" },
+        { page_price_type_id: '', price: '' },
       ]);
     } else {
-      setRowCount([{ page_price_type_id: "", price: "" }]);
+      setRowCount([{ page_price_type_id: '', price: '' }]);
     }
   };
 
-  const { data: priceData } = useGetMultiplePagePriceQuery(pageMast_id, {
-    skip: !pageMast_id,
+  const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
+    skip: !pageMasterId,
   });
 
   useEffect(() => {
@@ -252,14 +262,15 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   useEffect(() => {
     axios
-      .get(baseUrl + `v1/pageMaster/${pageMast_id}`, {
+      .get(baseUrl + `v1/pageMaster/${pageMasterId}`, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
       .then((res) => {
         const data = [res.data.data];
+        console.log('data', res.data);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
         setPageName(data[0].page_name);
@@ -267,7 +278,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setCategoryId(data[0].page_category_id);
         setSubCategoryId(data[0].page_sub_category_id);
         const tagFilter = categoryData.filter((e) =>
-          data[0].tags_page_category.includes(e._id)
+          data[0]?.tags_page_category?.includes(e._id)
         );
         setTag(
           tagFilter.map((e) => {
@@ -275,14 +286,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           })
         );
         setPageLevel(data[0]?.preference_level);
-        if (data[0].page_activeness == "dead") {
-          setPageStatus("dead");
-        } else if (data[0].page_activeness == "semi_active") {
-          setPageStatus("semi_active");
-        } else if (data[0].page_activeness == "super_active") {
-          setPageStatus("super_active");
+        if (data[0].page_activeness == 'dead') {
+          setPageStatus('dead');
+        } else if (data[0].page_activeness == 'semi_active') {
+          setPageStatus('semi_active');
+        } else if (data[0].page_activeness == 'super_active') {
+          setPageStatus('super_active');
         } else {
-          setPageStatus("active");
+          setPageStatus('active');
         }
         setPageStatus(data[0].page_activeness);
         setCloseBy(data[0].page_closed_by);
@@ -297,7 +308,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setRateType(data[0].rate_type);
         setEngagment(data[0]?.engagment_rate);
         setDescription(data[0].description);
-        setP_id(data[0].pageMast_id);
+        setP_id(data[0].pageMasterId);
         setSinglePage(data[0]);
         setLanguageId(data[0].page_language_name);
       });
@@ -308,7 +319,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       axios
         .get(baseUrl + `v1/vendor/${singlePage.vendor_id}`, {
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         })
@@ -330,44 +341,45 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const handleSubmit = async (e, flag) => {
     e.preventDefault();
+    setSubmitLoading(true);
     if (!pageName) {
-      toastAlert("Page Name is required");
+      toastAlert('Page Name is required');
       return;
     } else if (!link) {
-      toastAlert("Link is required");
+      toastAlert('Link is required');
       return;
     } else if (!platformId) {
-      toastAlert("Platform ID is required");
+      toastAlert('Platform ID is required');
       return;
     } else if (!categoryId) {
-      toastAlert("Category is required");
+      toastAlert('Category is required');
       return;
     } else if (!subCategoryId) {
-      toastAlert("Sub Category is required");
+      toastAlert('Sub Category is required');
       return;
     } else if (!pageLevel) {
-      toastAlert("Page Level is required");
+      toastAlert('Page Level is required');
       return;
     } else if (!closeBy) {
-      toastAlert("Close by is required");
+      toastAlert('Close by is required');
       return;
     } else if (!pageType) {
-      toastAlert("Page Name Type is required");
+      toastAlert('Page Name Type is required');
       return;
     } else if (!content) {
-      toastAlert("Content Creation is required");
+      toastAlert('Content Creation is required');
       return;
     } else if (!ownerType) {
-      toastAlert("Ownership type is required");
+      toastAlert('Ownership type is required');
       return;
     } else if (!vendorId) {
-      toastAlert("Vendor is required");
+      toastAlert('Vendor is required');
       return;
     } else if (!followCount) {
-      toastAlert("Followers Count is required");
+      toastAlert('Followers Count is required');
       return;
     } else if (!profileId) {
-      toastAlert("Profile Type is required");
+      toastAlert('Profile Type is required');
       return;
     }
 
@@ -388,10 +400,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       followers_count: followCount,
       bio: bio,
       page_profile_type_id: profileId,
-      rate_type: rateType || "",
+      rate_type: rateType || '',
       updated_by: userID,
       engagment_rate: engagment || 0,
-      variable_type: rateType == "Variable" ? variableType.value : null,
+      variable_type: rateType == 'Variable' ? variableType.value : null,
 
       platform_name: platformData
         ?.find((res) => res._id == platformId)
@@ -423,24 +435,25 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       }),
     };
     await axios
-      .put(baseUrl + `v1/pageMaster/${pageMast_id}`, payload, {
+      .put(baseUrl + `v1/pageMaster/${pageMasterId}`, payload, {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       })
       .then(() => {
+        setSubmitLoading(false);
         const cat_name = categoryData?.find(
           (item) => item?._id == singlePage?.page_category_id
         )?.page_category;
         const postPrice = rowCount.find(
-          (item) => item?.page_price_type_id == "667e6c7412fbbf002179f6d6"
+          (item) => item?.page_price_type_id == '667e6c7412fbbf002179f6d6'
         );
         const storyPrice = rowCount.find(
-          (item) => item?.page_price_type_id == "667e6c9112fbbf002179f72c"
+          (item) => item?.page_price_type_id == '667e6c9112fbbf002179f72c'
         );
         const bothPrice = rowCount.find(
-          (item) => item?.page_price_type_id == "667e6c9c12fbbf002179f72f"
+          (item) => item?.page_price_type_id == '667e6c9c12fbbf002179f72f'
         );
 
         const payload = {
@@ -466,12 +479,12 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           });
 
         if (flag) {
-          toastAlert("Submitted");
+          toastAlert('Submitted');
           refetchPageList();
           handleEditClose();
         }
         if (!flag) {
-          toastAlert("Submitted");
+          toastAlert('Submitted');
         }
       });
   };
@@ -496,22 +509,22 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   );
 
   const calculateFollowerCount = (index) => {
-    const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
+    const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
   };
 
   const handleUpadteFollowers = async () => {
     const payload = {
       creators: [pageName],
-      department: "65c38781c52b3515f77b0815",
+      department: '65c38781c52b3515f77b0815',
       userId: 111111,
     };
 
     const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
     const headers = {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     };
 
     try {
@@ -524,12 +537,12 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       if (followerData > 0) {
         setFollowCount(followerData);
-        toastAlert(" Followers updated successfully!");
+        toastAlert(' Followers updated successfully!');
       } else {
-        toastError("Page disabled or private.");
+        toastError('Page disabled or private.');
       }
     } catch (error) {
-      console.error("Error fetching followers:", errorMessage);
+      console.error('Error fetching followers:', errorMessage);
     }
   };
 
@@ -546,7 +559,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         <button
           type="submit"
           className="btn btn-primary mt-2 btn-sm"
-          style={{ width: "15%", float: "right" }}
+          style={{ width: '15%', float: 'right' }}
           onClick={(e) => {
             handleSubmit(e, 0);
           }}
@@ -583,7 +596,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Platform <sup style={{ color: "red" }}>*</sup>
+          Platform <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           options={platformData.map((option) => ({
@@ -594,7 +607,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             value: platformId,
             label: FormatName(
               platformData.find((role) => role._id === platformId)
-                ?.platform_name || ""
+                ?.platform_name || ''
             ),
           }}
           onChange={(e) => {
@@ -605,7 +618,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
-            Category <sup style={{ color: "red" }}>*</sup>
+            Category <sup style={{ color: 'red' }}>*</sup>
           </label>
           <div className="input-group inputAddGroup">
             <Select
@@ -618,7 +631,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                 value: categoryId,
                 label: FormatName(
                   categoryData.find((role) => role._id === categoryId)
-                    ?.page_category || ""
+                    ?.page_category || ''
                 ),
               }}
               onChange={(e) => {
@@ -626,7 +639,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               }}
             />
             <IconButton
-              onClick={handleOpenPageModal("Category")}
+              onClick={handleOpenPageModal('Category')}
               variant="contained"
               color="primary"
               aria-label="Add Platform.."
@@ -634,7 +647,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               <AddIcon />
             </IconButton>
             <IconButton
-              onClick={handleOpenInfoModal("Category Info")}
+              onClick={handleOpenInfoModal('Category Info')}
               variant="contained"
               color="primary"
               aria-label="Platform Info.."
@@ -647,7 +660,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Sub Category <sup style={{ color: "red" }}>*</sup>
+          Sub Category <sup style={{ color: 'red' }}>*</sup>
         </label>
         <div className="input-group inputAddGroup">
           <Select
@@ -660,7 +673,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               value: subCategoryId,
               label: FormatName(
                 subCategoryData.find((role) => role._id === subCategoryId)
-                  ?.page_sub_category || ""
+                  ?.page_sub_category || ''
               ),
             }}
             onChange={(e) => {
@@ -668,7 +681,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             }}
           />
           <IconButton
-            onClick={handleOpenPageModal("Sub Category")}
+            onClick={handleOpenPageModal('Sub Category')}
             variant="contained"
             color="primary"
             aria-label="Add Sub Category.."
@@ -676,7 +689,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             <AddIcon />
           </IconButton>
           <IconButton
-            onClick={handleOpenInfoModal("Sub Category Info")}
+            onClick={handleOpenInfoModal('Sub Category Info')}
             variant="contained"
             color="primary"
             aria-label="Sub Category Info.."
@@ -705,7 +718,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Level <sup style={{ color: "red" }}>*</sup>
+          Page Level <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           name="page level"
@@ -719,7 +732,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Activeness <sup style={{ color: "red" }}>*</sup>
+          Activeness <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           name="page status"
@@ -733,7 +746,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Close by <sup style={{ color: "red" }}>*</sup>
+          Close by <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           options={usersDataContext.map((option) => ({
@@ -744,7 +757,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             value: closeBy,
             label:
               usersDataContext.find((role) => role.user_id === closeBy)
-                ?.user_name || "",
+                ?.user_name || '',
           }}
           onChange={(e) => {
             setCloseBy(e.value);
@@ -754,7 +767,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Page Name Type <sup style={{ color: "red" }}>*</sup>
+          Page Name Type <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           name="page name type"
@@ -768,7 +781,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Content Creation <sup style={{ color: "red" }}>*</sup>
+          Content Creation <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           name="Content creation"
@@ -782,20 +795,20 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Ownership Type <sup style={{ color: "red" }}>*</sup>
+          Ownership Type <sup style={{ color: 'red' }}>*</sup>
         </label>
 
         <Select
           className="w-100"
           options={[
-            { value: "Own", label: "Own" },
-            { value: "Vendor", label: "Vendor" },
-            { value: "Partnership", label: "Partnership" },
+            { value: 'Own', label: 'Own' },
+            { value: 'Vendor', label: 'Vendor' },
+            { value: 'Partnership', label: 'Partnership' },
           ]}
           required
           value={{
             value: ownerType,
-            label: ownerType ? ownerType : "",
+            label: ownerType ? ownerType : '',
           }}
           onChange={handleOwnerTypeChange}
           placeholder="Select Ownership Type"
@@ -804,19 +817,18 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Vendor <sup style={{ color: "red" }}>*</sup>
+          Vendor <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           options={vendorData.map((option) => ({
             value: option.vendor_id,
             label: formatString(option.vendor_name),
-            id: option._id, 
+            id: option._id,
           }))}
           value={{
             value: vendorId,
             label:
-              vendorData.find((ob) => ob._id === vendorId)?.vendor_name ||
-              "",
+              vendorData.find((ob) => ob._id === vendorId)?.vendor_name || '',
           }}
           onChange={(e) => {
             setTempID(e.value);
@@ -827,7 +839,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
-            Language <sup style={{ color: "red" }}>*</sup>
+            Language <sup style={{ color: 'red' }}>*</sup>
           </label>
           <Select
             options={languages.map((option) => ({
@@ -835,8 +847,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               label: formatString(option.language_name),
             }))}
             value={languages
-              .filter((lang) => languageId.includes(lang.language_name))
-              .map((option) => ({
+              ?.filter((lang) => languageId?.includes(lang.language_name))
+              ?.map((option) => ({
                 value: option._id,
                 label: formatString(option.language_name),
               }))}
@@ -859,7 +871,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       <div className="form-group col-6">
         <label className="form-label">
-          Profile Type <sup style={{ color: "red" }}>*</sup>
+          Profile Type <sup style={{ color: 'red' }}>*</sup>
         </label>
         <Select
           options={profileData.map((option) => ({
@@ -870,7 +882,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             value: profileId,
             label:
               profileData.find((role) => role._id === profileId)
-                ?.profile_type || "",
+                ?.profile_type || '',
           }}
           onChange={(e) => {
             setProfileId(e.value);
@@ -881,7 +893,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       <div className="col-md-6 mb16">
         <div className="form-group m0">
           <label className="form-label">
-            Rate Type <sup style={{ color: "red" }}>*</sup>
+            Rate Type <sup style={{ color: 'red' }}>*</sup>
           </label>
           <Select
             options={RateTypes.map((option) => ({
@@ -898,13 +910,13 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       </div>
 
       <div className="col-md-6 mb16">
-        {rateType == "Variable" && (
+        {rateType == 'Variable' && (
           <div className="form-group m0">
             <label className="form-label">
-              Variable Type <sup style={{ color: "red" }}>*</sup>
+              Variable Type <sup style={{ color: 'red' }}>*</sup>
             </label>
             <Select
-              options={["Per Thousand", "Per Million"].map((option) => ({
+              options={['Per Thousand', 'Per Million'].map((option) => ({
                 value: option,
                 label: option,
               }))}
@@ -952,7 +964,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             <>
               <div className="form-group col-5 row">
                 <label className="form-label">
-                  Price Type <sup style={{ color: "red" }}>*</sup>
+                  Price Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
                 <Select
                   options={priceTypeList
@@ -975,7 +987,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                     value: rowCount[index]?.page_price_type_id,
                   }}
                   onChange={(e) => handlePriceTypeChange(e, index)}
-                  isDisabled={row.price !== ""}
+                  isDisabled={row.price !== ''}
                 />
               </div>
               <FieldContainer
@@ -986,9 +998,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                 value={rowCount[index].price}
               />
 
-              {rateType == "Variable" && (
-                <p className="ml-3" style={{ color: "blue" }}>
-                  This Profile Cost = {"  Rs "}{" "}
+              {rateType == 'Variable' && (
+                <p className="ml-3" style={{ color: 'blue' }}>
+                  This Profile Cost = {'  Rs '}{' '}
                   {calculateFollowerCount(index.toFixed(0))}
                 </p>
               )}
@@ -1021,44 +1033,52 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       </div>
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-          marginBottom: "10px",
+          display: 'flex',
+          justifyContent: 'space-between',
+          width: '100%',
+          marginBottom: '10px',
         }}
       >
-        <button
+        {submitLoading ? (
+          <div className="btn btn-primary mt-2 btn-sm ml-5">
+            <Spinner />
+          </div>
+        ) : (
+          <button
+            type="submit"
+            className="btn btn-primary mt-2 btn-sm"
+            style={{ width: '45%' }}
+            onClick={(e) => {
+              handleSubmit(e, 1);
+            }}
+          >
+            Submit
+          </button>
+        )}
+        {/* <button
           type="submit"
           className="btn btn-primary mt-2 btn-sm"
-          style={{ width: "45%" }}
-          onClick={(e) => {
-            handleSubmit(e, 1);
-          }}
-        >
-          Submit
-        </button>
-        <button
-          type="submit"
-          className="btn btn-primary mt-2 btn-sm"
-          style={{ width: "45%" }}
+          style={{ width: '45%' }}
           onClick={(e) => {
             handleSubmit(e, 0);
           }}
         >
           Save
-        </button>
+        </button> */}
       </div>
     </>
   );
 };
 
 const PageEdit = ({ pageMast_id, handleEditClose }) => {
+  const params = useParams();
+  const pageMasterId = params.pageMast_id ? params.pageMast_id : pageMast_id;
   const navigate = useNavigate();
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
-  const accordionButtons = ["Edit Page", "Page Health", "Performance"];
+  const accordionButtons = ['Edit Page', 'Page Health', 'Performance'];
 
   const goBack = () => {
     navigate(-1);
@@ -1072,11 +1092,11 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
     <>
       <div
         style={{
-          backgroundColor: "#52b2d6",
-          width: "3%",
-          padding: "7px",
-          marginBottom: "10px",
-          cursor: "pointer",
+          backgroundColor: '#52b2d6',
+          width: '3%',
+          padding: '7px',
+          marginBottom: '10px',
+          cursor: 'pointer',
         }}
       >
         <ArrowBackIcon onClick={() => handleEditClose()} />
@@ -1091,10 +1111,10 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
         submitButton={true}
       >
         {activeAccordionIndex === 0 && (
-          <Page pageMast_id={pageMast_id} handleEditClose={handleEditClose} />
+          <Page pageMast_id={pageMasterId} handleEditClose={handleEditClose} />
         )}
         {activeAccordionIndex === 1 &&
-          navigate(`/admin/exe-history/${pageMast_id}`)}
+          navigate(`/admin/exe-history/${pageMasterId}`)}
         {activeAccordionIndex === 2 && <PerformanceDashboard />}
       </FormContainer>
     </>

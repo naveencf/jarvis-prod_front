@@ -2,8 +2,6 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { baseUrl } from '../../../utils/config';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import { Button, Typography } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowPageHealthColumn } from '../../Store/PageOverview';
@@ -30,20 +28,16 @@ import PageDialog from './PageDialog';
 import LeftSideBar from './LeftSideBar';
 // import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
-import { X } from '@phosphor-icons/react';
-import { CiStickyNote, CiWarning } from 'react-icons/ci';
-import { BiSelectMultiple, BiSolidSelectMultiple } from 'react-icons/bi';
 import ActiveDescriptionModal from './ActiveDescriptionModal';
 import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
-import { MdCheckBoxOutlineBlank } from 'react-icons/md';
-import { FaRegStopCircle, FaStopCircle } from 'react-icons/fa';
-import { TbVersions } from 'react-icons/tb';
-import Loader from '../../Finance/Loader/Loader';
-import { ImNext } from 'react-icons/im';
-import { ImPrevious } from 'react-icons/im';
 import PlanVersions from './PlanVersions';
 import { ButtonTitle, calculatePrice } from './helper';
 import ScrollBlocker from './ScrollBlocker';
+import ActionButtons from './ActionButtons';
+import CountInputs from './CountInputs';
+import SearchAndClear from './SearchAndClear';
+import LayeringControls from './LayeringControls';
+import ProgressDisplay from './ProgressDisplay';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -66,6 +60,7 @@ const PlanMaking = () => {
   const pagequery = '';
   const { data: pageList, isLoading: isPageListLoading } =
     useGetAllPageListQuery({ decodedToken, userID, pagequery });
+
   const { data: vendorTypeData, isLoading: typeLoading } =
     useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
@@ -116,15 +111,12 @@ const PlanMaking = () => {
   const [tempIndex, setTempIndex] = useState(0);
   const [getTableData, setGetTableData] = useState([]);
   const [shortcutTriggered, setShortcutTriggered] = useState(false);
-
-  // console.log(getData,"hello");
-
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedVersion, setSelectedVersion] = useState(null);
-  const renderCount = useRef(0);
 
   const { id } = useParams();
-  renderCount.current++;
+  // const renderCount = useRef(0);
+  // renderCount.current++;
   // console.log(`Component re-rendered: ${renderCount.current} times`);
   const { pageDetail } = usePageDetail(id);
   const { planDetails } = useFetchPlanDetails(id);
@@ -162,8 +154,15 @@ const PlanMaking = () => {
   const vendorData = vendor;
 
   const getPriceDetail = (priceDetails, key) => {
-    const detail = priceDetails?.find((item) => item[key] !== undefined);
-    return detail ? detail[key] : 0;
+    const keyType = key.split('_')[1];
+
+    const detail = priceDetails?.find((item) => {
+      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+    });
+
+    return detail
+      ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
+      : 0;
   };
 
   const handlePostPerValue = (row, postPerPage, callback) => {
@@ -226,10 +225,10 @@ const PlanMaking = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              type
-            );
+            rate_type,
+            { page_price_list, followers_count },
+            type
+          );
 
       return {
         _id,
@@ -303,10 +302,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-                rate_type,
-                { page_price_list, followers_count },
-                type
-              );
+              rate_type,
+              { page_price_list, followers_count },
+              type
+            );
 
         return {
           _id,
@@ -401,8 +400,6 @@ const PlanMaking = () => {
       0
     );
   };
-  // const sarcasm = pageList.filter((item) => item.page_layer === 1);
-  // console.log('sarcasm', sarcasm);
 
   const getTotalStoryCount = () => {
     return Object.values(storyPerPageValues).reduce(
@@ -587,6 +584,7 @@ const PlanMaking = () => {
             matchingPage.page_price_list,
             'instagram_story'
           );
+ 
           const rateType = matchingPage.rate_type === 'Fixed';
 
           // Calculate costs based on rate type
@@ -615,14 +613,8 @@ const PlanMaking = () => {
 
       // Prepare the final plan data
       const planxData = updatedSelectedRows.map((row) => {
-        const {
-          _id,
-          page_price_list,
-          page_name,
-          rate_type,
-
-          followers_count,
-        } = row;
+        const { _id, page_price_list, page_name, rate_type, followers_count } =
+          row;
 
         const isFixedRate = rate_type === 'Fixed';
 
@@ -631,10 +623,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-                rate_type,
-                { page_price_list, followers_count },
-                type
-              );
+              rate_type,
+              { page_price_list, followers_count },
+              type
+            );
 
         return {
           _id,
@@ -726,7 +718,7 @@ const PlanMaking = () => {
       // Show not found pages if any
       if (notFound.length > 0) {
         setNotFoundPages(notFound);
-        handleOpenDialog(); // Open dialog to show not found pages
+        handleOpenDialog();
       } else {
         setNotFoundPages([]);
       }
@@ -770,10 +762,11 @@ const PlanMaking = () => {
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
-
+ 
   const handleCloseDialog = () => {
     setOpenDialog(false);
   };
+
   const handleVersionSelect = (detail) => {
     setSelectedRows([]);
     setLayering(4);
@@ -798,26 +791,15 @@ const PlanMaking = () => {
 
     setSearchInput('');
   };
-  // Function to sort rows: checked rows come first
-  const sortedRows = (rows, selectedRows) => {
+  // Function to filter rows based on the visibility of selected rows
+  const filterRowsBySelection = (rows, selectedRows) => {
     if (showCheckedRows) {
       return selectedRows;
     }
-    // Create a shallow copy of the rows to avoid modifying the original array
-    if (rows) {
-      // const rowsCopy = [...rows];
-      // return rowsCopy?.sort((a, b) => {
-      //   const aChecked = selectedRows.some(
-      //     (selectedRow) => selectedRow._id === a._id
-      //   );
-      //   const bChecked = selectedRows.some(
-      //     (selectedRow) => selectedRow._id === b._id
-      //   );
-      //   return aChecked === bChecked ? 0 : aChecked ? -1 : 1;
-      // });
-      return rows;
-    }
+    // Return the original rows if no filtering is required
+    return rows;
   };
+
   const handleDisableBack = () => {
     setDisableBack(!disableBack);
   };
@@ -827,10 +809,70 @@ const PlanMaking = () => {
   const handleOpenPlanVersion = () => {
     setOpenVersionModal(true);
   };
+  const sellingPrice = planDetails && planDetails[0]?.selling_price;
+  function calculatePercentage(totalCost, budget) {
+    if (budget === 0) return 0;
+    return (totalCost / budget) * 100;
+  }
+
+  const percentage = calculatePercentage(totalCost, sellingPrice);
 
   const handleVersionClose = () => {
     setOpenVersionModal(false);
   };
+
+  const handleKeyPress = (event) => {
+    if (event.code === 'Space') {
+      setShortcutTriggered(true); // Indicate shortcut use
+      // Call handleCheckboxChange directly for the activeIndex
+      handleCheckboxChange(
+        getTableData[activeIndex],
+        // filterData[activeIndex],
+        'shortcutkey',
+        { target: { checked: true } },
+        activeIndex
+      );
+
+      // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
+    } else if (event.code === 'ArrowDown') {
+      if (activeIndex < filterData.length - 1) {
+        setShortcutTriggered(true); // Indicate shortcut use
+        setActiveIndex(activeIndex + 1);
+        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
+      }
+    } else if (event.code === 'ArrowUp') {
+      if (activeIndex > 0) {
+        setShortcutTriggered(true); // Indicate shortcut use
+        setActiveIndex(activeIndex - 1);
+        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
+      }
+    }
+  };
+
+  const displayPercentage = Math.floor(percentage);
+
+  const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
+  const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
+
+  const tableData =
+    layering == 1
+      ? sarcasmNetwork
+      : layering == 2
+        ? ownPages
+        : layering == 3
+          ? advancePageList
+          : layering == 4
+            ? topUsedPageList
+            : showOwnPage
+              ? ownPages
+              : toggleShowBtn
+                ? selectedRows
+                : filterRowsBySelection(filterData, selectedRows);
+
+
+  const activeDescriptions = useMemo(() => {
+    return descriptions?.filter((desc) => desc.status === 'Active');
+  }, [descriptions]);
 
   useEffect(() => {
     if (pageList && activeTabPlatform.length) {
@@ -840,8 +882,6 @@ const PlanMaking = () => {
             item.followers_count > 0 &&
             activeTabPlatform.includes(item.platform_id)
         )
-        .sort((a, b) => b.followers_count - a.followers_count);
-
       const sarcasamNetworkPages = [];
       const advancedPostPages = [];
       const mostUsedPages = [];
@@ -901,7 +941,7 @@ const PlanMaking = () => {
       setStoryPerPageValues(initialStoryValues);
       setCostPerPostValues(initialCostPerPostValues);
       setCostPerStoryValues(initialCostPerStoryValues);
-      setCostPerBothValues(initialCostPerBothValues);
+      // setCostPerBothValues(initialCostPerBothValues);
     }
   }, [pageList, activeTabPlatform]);
 
@@ -956,14 +996,6 @@ const PlanMaking = () => {
     }
   }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
-  const sellingPrice = planDetails && planDetails[0]?.selling_price;
-  function calculatePercentage(totalCost, budget) {
-    if (budget === 0) return 0;
-    return (totalCost / budget) * 100;
-  }
-
-  const percentage = calculatePercentage(totalCost, sellingPrice);
-
   useEffect(() => {
     const currentRouteBase = '/admin/pms-plan-making';
     const payload = {
@@ -998,69 +1030,6 @@ const PlanMaking = () => {
     }
   }, [layering]);
 
-  const handleKeyPress = (event) => {
-    // console.log(event, "event")
-    if (event.code === 'Space' && event.shiftKey === true) {
-      const isCheckboxChecked = event.target.checked
-      setShortcutTriggered(true); // Indicate shortcut use
-      // Call handleCheckboxChange directly for the activeIndex
-      handleCheckboxChange(
-        getTableData[activeIndex],
-        // filterData[activeIndex],
-        'shortcutkey',
-        { target: { checked: false } },
-        activeIndex
-      );
-
-      // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-    } else if (event.code === 'ArrowDown') {
-      if (activeIndex < filterData.length - 1) {
-        setShortcutTriggered(true); // Indicate shortcut use
-        setActiveIndex(activeIndex + 1);
-        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-      }
-    } else if (event.code === 'ArrowUp') {
-      if (activeIndex > 0) {
-        setShortcutTriggered(true); // Indicate shortcut use
-        setActiveIndex(activeIndex - 1);
-        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-      }
-    } else if (event.code === 'Space') {
-      const isCheckboxChecked = event.target.checked
-      setShortcutTriggered(true); // Indicate shortcut use
-      // Call handleCheckboxChange directly for the activeIndex
-      handleCheckboxChange(
-        getTableData[activeIndex],
-        // filterData[activeIndex],
-        'shortcutkey',
-        { target: { checked: true } },
-        activeIndex
-      );
-
-      // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-    }
-  };
-
-  const displayPercentage = Math.floor(percentage);
-
-  const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
-  const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
-
-  const tableData =
-    layering == 1
-      ? sarcasmNetwork
-      : layering == 2
-      ? ownPages
-      : layering == 3
-      ? advancePageList
-      : layering == 4
-      ? topUsedPageList
-      : showOwnPage
-      ? ownPages
-      : toggleShowBtn
-      ? selectedRows
-      : sortedRows(filterData, selectedRows);
-
   useEffect(() => {
     if (versionData) {
       handleAutomaticSelection(versionData);
@@ -1068,9 +1037,6 @@ const PlanMaking = () => {
   }, [versionData]);
 
   // const versionPages = versionData ? versionData : tableData;
-  const activeDescriptions = useMemo(() => {
-    return descriptions?.filter((desc) => desc.status === 'Active');
-  }, [descriptions]);
 
   return (
     <>
@@ -1124,200 +1090,79 @@ const PlanMaking = () => {
 
       <div className="card">
         <div className="card-header flexCenterBetween">
-          <div className="flexCenter colGap12">
-            {/* <button
-              className="btn cmnbtn btn-primary btn_sm"
-              onClick={handleToggleLeftNavbar}
-            >
-              {!toggleLeftNavbar ? 'Show Left Sidebar' : 'Hide Left Sidebar'}
-            </button> */}
-            <button
-              className="icon"
-              onClick={handleUnselectPages}
-              title="Unselected Pages"
-            >
-              <MdCheckBoxOutlineBlank />
-            </button>
-            <button
-              className="icon"
-              onClick={handleOpenDialog}
-              title="Unfetched Pages"
-            >
-              <CiWarning />
-            </button>
-            <button
-              className="icon"
-              onClick={handleOpenModal}
-              title="Internal-Notes"
-            >
-              <CiStickyNote />
-            </button>
-            <button
-              className="icon"
-              title="Selected Rows"
-              onClick={toggleCheckedRows}
-            >
-              {!showCheckedRows ? (
-                <BiSelectMultiple />
-              ) : (
-                <BiSolidSelectMultiple />
-              )}
-            </button>
+          <ActionButtons
+            handleUnselectPages={handleUnselectPages}
+            handleOpenDialog={handleOpenDialog}
+            handleOpenModal={handleOpenModal}
+            toggleCheckedRows={toggleCheckedRows}
+            showCheckedRows={showCheckedRows}
+          />
+          <ProgressDisplay
+            pageList={pageList}
+            displayPercentage={displayPercentage}
+          />
+          <CountInputs
+            postCountDefault={postCountDefault}
+            storyCountDefault={storyCountDefault}
+            handlePostCountChange={handlePostCountChange}
+            handleStoryCountChange={handleStoryCountChange}
+            handleUpdateValues={handleUpdateValues}
+          />
+          <SearchAndClear
+            searchInput={searchInput}
+            handleSearchChange={handleSearchChange}
+            clearSearch={clearSearch}
+            clearRecentlySelected={clearRecentlySelected}
+          />
 
-            {pageList ? (
-              <div className="flexCenter icon">
-                <CircularProgress
-                  variant="determinate"
-                  value={displayPercentage}
-                  sx={{ position: 'absolute' }}
-                />
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    color: 'primary.main',
-                    fontSize: '12px',
-                    textAlign: 'center',
-                  }}
-                >
-                  {`${displayPercentage}%`}
-                </Typography>
-              </div>
-            ) : (
-              ''
-            )}
-          </div>
-          <div className="row" style={{ padding: '0.5rem' }}>
-            <div className="col">
-              <input
-                type="number"
-                className="filter-input form-control hundred"
-                placeholder="Post Count"
-                value={postCountDefault || ''}
-                onChange={handlePostCountChange}
-              />
-            </div>
-            <div className="col">
-              <input
-                type="number"
-                className="filter-input form-control hundred"
-                placeholder="Story Count"
-                value={storyCountDefault || ''}
-                onChange={handleStoryCountChange}
-              />
-            </div>
-            <div className="col">
-              <button
-                className="btn btn_sm cmnbtn btn-outline-success"
-                onClick={handleUpdateValues}
-              >
-                Update Values
-              </button>
-            </div>
-          </div>
-          <div className="flexCenter colGap12">
-            <div className="flexCenter colGap8">
-              <div className="input-group primaryInputGroup">
-                <input
-                  className="form-control"
-                  type="text"
-                  placeholder="Type values separated by spaces"
-                  value={searchInput}
-                  onChange={handleSearchChange}
-                />
-                <button
-                  className="btn btn_sm cmnbtn pl-2 pr-2 btn-outline-primary"
-                  type="button"
-                  id="button-addon2"
-                  onClick={clearSearch}
-                >
-                  <X />
-                </button>
-              </div>
-              <Button
-                variant="contained"
-                className="btn btn_sm cmnbtn btn-outline-danger"
-                onClick={clearRecentlySelected}
-              >
-                Clear Recenty Selected
-              </Button>
-            </div>
-            <div>
-              <RightDrawer
-                priceFilterType={priceFilterType}
-                setShowTotalCost={setShowTotalCost}
-                setSelectedRows={setSelectedRows}
-                setStoryPerPageValues={setStoryPerPageValues}
-                setPostPerPageValues={setPostPerPageValues}
-                setPageCategoryCount={setPageCategoryCount}
-                setTotalCostValues={setTotalCostValues}
-                sendPlanDetails={sendPlanDetails}
-                // deSelectAllRows={deSelectAllRows}
-                selectedFollowers={selectedFollowers}
-                setSelectedFollowers={setSelectedFollowers}
-                setPriceFilterType={setPriceFilterType}
-                minPrice={minPrice}
-                tagCategory={tagCategory}
-                setTagCategory={setTagCategory}
-                setMinPrice={setMinPrice}
-                maxPrice={maxPrice}
-                getTableData={getTableData}
-                setSelectedCategory={setSelectedCategory}
-                setMaxPrice={setMaxPrice}
-                minFollowers={minFollowers}
-                setMinFollowers={setMinFollowers}
-                maxFollowers={maxFollowers}
-                setMaxFollowers={setMaxFollowers}
-                selectedCategory={selectedCategory}
-                cat={cat}
-                setFilterData={setFilterData}
-                // selectAllRows={selectAllRows}
-                handleStoryCountChange={handleStoryCountChange}
-                handlePostCountChange={handlePostCountChange}
-                storyCountDefault={storyCountDefault}
-                postCountDefault={postCountDefault}
-                platformData={platformData}
-                activeTabPlatform={activeTabPlatform}
-                handlePlatform={handlePlatform}
-                pageList={pageList}
-              />
-            </div>
+          <div>
+            <RightDrawer
+              priceFilterType={priceFilterType}
+              setShowTotalCost={setShowTotalCost}
+              setSelectedRows={setSelectedRows}
+              setStoryPerPageValues={setStoryPerPageValues}
+              setPostPerPageValues={setPostPerPageValues}
+              setPageCategoryCount={setPageCategoryCount}
+              setTotalCostValues={setTotalCostValues}
+              sendPlanDetails={sendPlanDetails}
+              selectedFollowers={selectedFollowers}
+              setSelectedFollowers={setSelectedFollowers}
+              setPriceFilterType={setPriceFilterType}
+              minPrice={minPrice}
+              tagCategory={tagCategory}
+              setTagCategory={setTagCategory}
+              setMinPrice={setMinPrice}
+              maxPrice={maxPrice}
+              getTableData={getTableData}
+              setSelectedCategory={setSelectedCategory}
+              setMaxPrice={setMaxPrice}
+              minFollowers={minFollowers}
+              setMinFollowers={setMinFollowers}
+              maxFollowers={maxFollowers}
+              setMaxFollowers={setMaxFollowers}
+              selectedCategory={selectedCategory}
+              cat={cat}
+              setFilterData={setFilterData}
+              handleStoryCountChange={handleStoryCountChange}
+              handlePostCountChange={handlePostCountChange}
+              storyCountDefault={storyCountDefault}
+              postCountDefault={postCountDefault}
+              platformData={platformData}
+              activeTabPlatform={activeTabPlatform}
+              handlePlatform={handlePlatform}
+              pageList={pageList}
+            />
           </div>
         </div>
         <div className="card-header flexCenterBetween">
-          <div className="flexCenter colGap12">
-            <button
-              className="icon"
-              onClick={handleOpenPlanVersion}
-              title="History"
-            >
-              <TbVersions />
-            </button>
-            <button
-              className="icon"
-              onClick={handleDisableBack}
-              title="Disable Back"
-            >
-              {!disableBack ? <FaRegStopCircle /> : <FaStopCircle />}
-            </button>
-            <button
-              className="icon"
-              onClick={() => setLayering(layering - 1)}
-              title={ButtonTitle[(layering - 1) % 5]}
-              disabled={layering <= 1}
-            >
-              {layering > 1 && <ImPrevious />}
-            </button>
-            <button
-              className="icon"
-              onClick={() => setLayering(layering + 1)}
-              title={ButtonTitle[(layering + 1) % 6]}
-              disabled={layering >= 5}
-            >
-              {layering < 5 && <ImNext />}
-            </button>
-            <label>{ButtonTitle[layering]}</label>
-          </div>
+          <LayeringControls
+            layering={layering}
+            setLayering={setLayering}
+            ButtonTitle={ButtonTitle}
+            handleDisableBack={handleDisableBack}
+            disableBack={disableBack}
+            handleOpenPlanVersion={handleOpenPlanVersion}
+          />
         </div>
         <PlanVersions
           handleVersionClose={handleVersionClose}
@@ -1327,19 +1172,13 @@ const PlanMaking = () => {
         />
         <div className="card-body p0" onKeyDown={(e) => handleKeyPress(e)}>
           <div className="thmTable">
-            <Box
-              sx={{ height: 700, width: '100%' }}
-              // onClick={(e) => handleClickOnTable(e)}
-            >
+            <Box sx={{ height: 700, width: '100%' }}>
               {/* {filterData && filterData.length > 0 ? ( */}
               <CustomTableV2
-                // selectedData={setSelectedData}
-                // rowSelectable={true}
                 dataLoading={isPageListLoading}
                 columns={dataGridColumns}
                 data={tableData}
                 Pagination={[100, 200]}
-                // selectedData={}
                 tableName={'PlanMakingDetails'}
                 getFilteredData={setGetTableData}
               />

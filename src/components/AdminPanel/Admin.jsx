@@ -17,6 +17,9 @@ import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 import ErrorPage from "../../ErrorPage";
 import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
 
+const IncentiveStatements = lazy(() =>
+  import("./Sales/Incenti Dashboard/IncentiveStatements")
+);
 const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
@@ -856,8 +859,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1196,7 +1199,7 @@ const Admin = () => {
                             element={<SittingMaster />}
                           />
                           <Route
-                            path="/sitting-overview/:id"
+                            path="/sitting-overview"
                             element={<SittingOverview />}
                           />
                           <Route
@@ -2106,6 +2109,10 @@ const Admin = () => {
                     />
                     <Route path="/product" element={<SalesProductOverview />} />
                     <Route path="/product/:task" element={<SalesProductCU />} />
+                    <Route
+                      path="/incentive-statement"
+                      element={<IncentiveStatements />}
+                    />
 
                     {/* Sales Pratyush end */}
                     <Route

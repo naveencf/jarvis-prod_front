@@ -46,32 +46,32 @@ const SidebarLinks = () => {
     }
   }, [userID]);
 
-  useEffect(() => {
-    const formData = new URLSearchParams();
-    formData.append("loggedin_user_id", 36);
-    axios
-      .post(
-        "https://purchase.creativefuel.io/webservices/RestController.php?view=inventoryDataList",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      )
-      .then((res) => {
-        const filterVendorId = res.data.body.filter(
-          (check) => check.vendor_id == "8"
-        ).length;
-        setOwnCount(filterVendorId);
-        const filterVendorId1 = res.data.body.length;
-        setAllCount(filterVendorId1);
-        const filterVendorId2 = res.data.body.filter(
-          (check) => check.vendor_id !== "8"
-        ).length;
-        setOtherCount(filterVendorId2);
-      });
-  }, []);
+  // useEffect(() => {
+  //   const formData = new URLSearchParams();
+  //   formData.append("loggedin_user_id", 36);
+  //   axios
+  //     .post(
+  //       "https://purchase.creativefuel.io/webservices/RestController.php?view=inventoryDataList",
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //       }
+  //     )
+  //     .then((res) => {
+  //       const filterVendorId = res.data.body.filter(
+  //         (check) => check.vendor_id == "8"
+  //       ).length;
+  //       setOwnCount(filterVendorId);
+  //       const filterVendorId1 = res.data.body.length;
+  //       setAllCount(filterVendorId1);
+  //       const filterVendorId2 = res.data.body.filter(
+  //         (check) => check.vendor_id !== "8"
+  //       ).length;
+  //       setOtherCount(filterVendorId2);
+  //     });
+  // }, []);
 
   const isUserManagementVisible = [0, 1, 2, 6, 16, 23].some(
     (index) => contextData[index]?.view_value === 1

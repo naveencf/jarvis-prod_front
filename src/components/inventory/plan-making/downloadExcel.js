@@ -129,7 +129,6 @@ export const downloadExcel = async (
       const categories = {};
 
       platformData.forEach((page) => {
-
         const categoryId = page.page_category_id;
         const pageLink = `https://www.instagram.com/${page.page_name}`;
         const categoryName =
@@ -154,9 +153,9 @@ export const downloadExcel = async (
 
         totalCost +=
           postCountValue *
-          getPriceDetail(page.page_price_list, 'instagram_post') +
+            getPriceDetail(page.page_price_list, 'instagram_post') +
           storyCountValue *
-          getPriceDetail(page.page_price_list, 'instagram_story');
+            getPriceDetail(page.page_price_list, 'instagram_story');
       });
       let serialNumber = 1;
       for (const [categoryName, categoryData] of Object.entries(categories)) {
@@ -178,19 +177,23 @@ export const downloadExcel = async (
         ];
         // Sort categoryData by Followers in descending order
         categoryData.sort((a, b) => {
-          const followersA = parseIndianNumber(a.Followers); // Convert Indian format to number
-          const followersB = parseIndianNumber(b.Followers); // Convert Indian format to number
+          const followersA = parseIndianNumber(a.Followers);
+          const followersB = parseIndianNumber(b.Followers);
           return followersB - followersA; // Sort descending
         });
         // Update serial numbers after sorting
         categoryData.forEach((row, index) => {
-          row.S_No = index + 1;  // Set the serial number based on the sorted index
+          row.S_No = index + 1; // Set the serial number based on the sorted index
         });
         categoryData.forEach((row) => sheet.addRow(row));
         // Apply border to all rows in category sheet
         sheet.eachRow((row, rowIndex) => {
           row.eachCell((cell, colNumber) => {
-            cell.font = { name: 'Comic Sans MS', bold: true, color: { argb: 'FF000000' } };
+            cell.font = {
+              name: 'Comic Sans MS',
+              bold: true,
+              color: { argb: 'FF000000' },
+            };
             cell.border = {
               top: { style: 'thin' },
               left: { style: 'thin' },
@@ -258,7 +261,11 @@ export const downloadExcel = async (
         // Style header row
         sheet.getRow(1).eachCell((cell) => {
           // cell.font = { bold: true, color: { argb: 'FF000000' } };
-          cell.font = { name: 'Comic Sans MS', bold: true, color: { argb: 'FF000000' } };
+          cell.font = {
+            name: 'Comic Sans MS',
+            bold: true,
+            color: { argb: 'FF000000' },
+          };
           cell.alignment = { horizontal: 'center' };
           cell.fill = {
             type: 'pattern',
@@ -280,12 +287,12 @@ export const downloadExcel = async (
           sNoCell.value = item['S_No']; // S_No in column A
           sNoCell.border = contentBorder; // Apply border to the S_No cell
           sNoCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
-          sNoCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
+          sNoCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
 
           const usernameCell = sheet.getCell(`B${index + 2}`);
           usernameCell.value = formatString(item['Username']); // Username in column B
           usernameCell.border = contentBorder; // Apply border to the Username cell
-          usernameCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
+          usernameCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
 
           const profileLinkCell = sheet.getCell(`C${index + 2}`);
           // profileLinkCell.font = { bold: true };
@@ -298,7 +305,9 @@ export const downloadExcel = async (
           profileLinkCell.font = {
             color: { argb: 'FF0563C1' },
             underline: true,
-            bold: true, name: 'Comic Sans MS', size: 10,
+            bold: true,
+            name: 'Comic Sans MS',
+            size: 10,
           };
 
           // // Set the hyperlink
@@ -312,7 +321,7 @@ export const downloadExcel = async (
             horizontal: 'center',
             vertical: 'middle',
           }; // Alignment
-          followersCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
+          followersCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
 
           const postCountCell = sheet.getCell(`E${index + 2}`);
           postCountCell.value = item['Post Count']; // Post Count in column E
@@ -321,7 +330,7 @@ export const downloadExcel = async (
             horizontal: 'center',
             vertical: 'middle',
           }; // Alignment
-          postCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
+          postCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
 
           // Only add Story Count if there's at least one story count > 0 in the category
           if (hasStoryCount) {
@@ -332,7 +341,11 @@ export const downloadExcel = async (
               horizontal: 'center',
               vertical: 'middle',
             }; // Alignment
-            storyCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true }
+            storyCountCell.font = {
+              name: 'Comic Sans MS',
+              size: 10,
+              bold: true,
+            };
           }
         });
       }
@@ -452,7 +465,9 @@ export const downloadExcel = async (
   overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
   overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
   const sellingPriceforsheet = overviewSheet.getCell('G8');
-  sellingPriceforsheet.value = `₹${formatIndianNumber(planDetails[0]?.selling_price)}`;
+  sellingPriceforsheet.value = `₹${formatIndianNumber(
+    planDetails[0]?.selling_price
+  )}`;
 
   // Merge the B column cells for all note rows and set "Note" as the text
   if (checkedDescriptions.length > 0) {
@@ -544,8 +559,9 @@ export const downloadExcel = async (
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)
-      }.xlsx`;
+    a.download = `${
+      planDetails && formatString(planDetails[0]?.plan_name)
+    }.xlsx`;
     a.click();
     URL.revokeObjectURL(url); // Clean up the URL
   });
