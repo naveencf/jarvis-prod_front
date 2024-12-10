@@ -34,7 +34,6 @@ const DataGridColumns = ({
   const token = sessionStorage.getItem('token');
 
   const handleEdit = (row) => {
-    console.log('called');
     sessionStorage.setItem('token', token);
     navigate(`/admin/pms-page-edit/${row._id}`);
   };
@@ -379,11 +378,18 @@ const DataGridColumns = ({
       key: 'm_post_price',
       name: 'Cost Per Post',
       renderRowCell: (row) => {
-        const mPostPrice = row?.page_price_list;
-        const postDetail = mPostPrice?.find(
-          (item) => item.instagram_post !== undefined
-        );
-        const postPrice = postDetail?.instagram_post;
+        const findPostPrice = (priceList, keyword) => {
+          const detail = priceList?.find((item) =>
+            Object.keys(item).some((key) => key.includes(keyword))
+          );
+
+          return detail
+            ? detail[Object.keys(detail).find((key) => key.includes(keyword))]
+            : 0;
+        };
+
+        const postPrice = findPostPrice(row?.page_price_list, 'post');
+
         const price = Number(postPrice) || 0;
         // console.log('most', mPostPrice);
         // const postPrice = row?.post;
@@ -398,11 +404,18 @@ const DataGridColumns = ({
       key: 'm_story_price',
       name: 'Cost Per Story',
       renderRowCell: (row) => {
-        const mStoryPrice = row?.page_price_list;
-        const postDetail = mStoryPrice?.find(
-          (item) => item.instagram_story !== undefined
-        );
-        const storyPrice = postDetail?.instagram_story;
+        const findStoryPrice = (priceList, keyword) => {
+          const detail = priceList?.find((item) =>
+            Object.keys(item).some((key) => key.includes(keyword))
+          );
+
+          return detail
+            ? detail[Object.keys(detail).find((key) => key.includes(keyword))]
+            : 0;
+        };
+
+        const storyPrice = findStoryPrice(row?.page_price_list, 'story');
+
         const price = Number(storyPrice) || 0;
         // const storyPrice = row?.story;
         // return <div>{storyPrice ?? mStoryPrice}</div>;

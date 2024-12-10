@@ -85,7 +85,7 @@ const TableToolkit = ({
 
   useEffect(() => {
     const selectedRowData = selectedRowsIndex?.map(
-      (index) => unSortedData[index]
+      (index) => sortedData[index]
     );
 
     if (JSON.stringify(selectedRowData) !== JSON.stringify(selectedRowsData)) {

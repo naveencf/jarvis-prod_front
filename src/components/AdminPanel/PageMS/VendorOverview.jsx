@@ -1,53 +1,53 @@
-import { useState, useEffect } from "react";
-import { FaEdit } from "react-icons/fa";
-import DeleteButton from "../DeleteButton";
-import { Link } from "react-router-dom";
-import { Box, Grid, Skeleton } from "@mui/material";
-import DataTable from "react-data-table-component";
-import View from "../Sales/Account/View/View";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import { useState, useEffect } from 'react';
+import { FaEdit } from 'react-icons/fa';
+import DeleteButton from '../DeleteButton';
+import { Link } from 'react-router-dom';
+import { Box, Grid, Skeleton } from '@mui/material';
+import DataTable from 'react-data-table-component';
+import View from '../Sales/Account/View/View';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 import {
   setRowData,
   setShowBankDetailsModal,
   setShowWhatsappModal,
-} from "../../Store/PageOverview";
-import { useDispatch } from "react-redux";
-import VendorWhatsappLinkModla from "./VendorWhatsappLinkModla";
-import OpenWithIcon from "@mui/icons-material/OpenWith";
-import VendorPageModal from "./VendorPageModal";
+} from '../../Store/PageOverview';
+import { useDispatch } from 'react-redux';
+import VendorWhatsappLinkModla from './VendorWhatsappLinkModla';
+import OpenWithIcon from '@mui/icons-material/OpenWith';
+import VendorPageModal from './VendorPageModal';
 import {
   useGetAllVendorQuery,
   useGetAllVendorTypeQuery,
   useGetPmsPayCycleQuery,
   useGetPmsPaymentMethodQuery,
   useGetPmsPlatformQuery,
-} from "../../Store/reduxBaseURL";
-import VendorBankDetailModal from "./VendorBankDetailModal";
-import VendorDetails from "./Vendor/VendorDetails";
-import { useGetAllPageListQuery } from "../../Store/PageBaseURL";
-import jwtDecode from "jwt-decode";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
-import formatString from "../Operation/CampaignMaster/WordCapital";
-import UploadBulkVendorPages from "./Vendor/BulkVendor/UploadBulkVendorPages";
-import { constant } from "../../../utils/constants";
-import VendorMPriceModal from "./VendorMPriceModal";
-import { formatNumber } from "../../../utils/formatNumber";
-import CustomTableV2 from "../../CustomTable_v2/CustomTableV2";
+} from '../../Store/reduxBaseURL';
+import VendorBankDetailModal from './VendorBankDetailModal';
+import VendorDetails from './Vendor/VendorDetails';
+import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
+import jwtDecode from 'jwt-decode';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/config';
+import formatString from '../Operation/CampaignMaster/WordCapital';
+import UploadBulkVendorPages from './Vendor/BulkVendor/UploadBulkVendorPages';
+import { constant } from '../../../utils/constants';
+import VendorMPriceModal from './VendorMPriceModal';
+import { formatNumber } from '../../../utils/formatNumber';
+import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
 
 const VendorOverview = () => {
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
 
   const [vendorDetails, setVendorDetails] = useState(null);
   const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
-  const [rowVendor, setRowVendor] = useState('')
+  const [rowVendor, setRowVendor] = useState('');
   const [filterData, setFilterData] = useState([]);
   const [pageData, setPageData] = useState([]);
-  const token = sessionStorage.getItem("token");
-  const [activeTab, setActiveTab] = useState("Tab1");
+  const token = sessionStorage.getItem('token');
+  const [activeTab, setActiveTab] = useState('Tab1');
   const [tabFilterData, setTabFilterData] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [platformCounts, setPlatformCounts] = useState([]);
@@ -63,8 +63,8 @@ const VendorOverview = () => {
 
   const { data: cycle } = useGetPmsPayCycleQuery();
 
-  const [closedByCount, setClosedByCount] = useState([])
-  console.log(closedByCount, 'closed by count')
+  const [closedByCount, setClosedByCount] = useState([]);
+
   const cycleData = cycle?.data;
   const {
     data: vendorData,
@@ -74,13 +74,11 @@ const VendorOverview = () => {
 
   const handleUpdateVendorMPrice = (row) => {
     setOpenUpdateVendorMPrice(true);
-    setRowVendor(row)
-  }
+    setRowVendor(row);
+  };
   const handleCloseVendorMPriceModal = () => {
     setOpenUpdateVendorMPrice(false);
   };
-
-
 
   const getData = () => {
     refetchVendor();
@@ -139,15 +137,14 @@ const VendorOverview = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
 
       setPageData(result.data.data);
-      console.log(result.data.data);
     } catch (error) {
-      console.error("Error fetching vendor pages:", error);
+      console.error('Error fetching vendor pages:', error);
     }
   };
 
@@ -199,27 +196,25 @@ const VendorOverview = () => {
 
   const columns = [
     {
-      key: "S.No",
-      name: "S.No",
+      key: 'S.No',
+      name: 'S.No',
       renderRowCell: (row, index) => index + 1,
       width: 50,
-
     },
     {
-      key: "page_name",
-      name: "Page Name",
+      key: 'page_name',
+      name: 'Page Name',
       renderRowCell: (row) => (
         <a href={row.page_link} target="blank">
           {formatString(row.page_name)}
         </a>
       ),
       width: 200,
-
     },
 
     {
-      key: "followers",
-      name: "Followers",
+      key: 'followers',
+      name: 'Followers',
       // renderRowCell: (row) => row.followers_count,
       renderRowCell: (row) => {
         let followerCount = Math.max(0, row?.followers_count || 0);
@@ -238,13 +233,11 @@ const VendorOverview = () => {
       name: 'Post Price',
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find(item => item?.instagram_post !== undefined);
-        const postPrice = postData ? postData.instagram_post : 0;
-        return (
-
-          postPrice > 0 ? Number(postPrice) : 0
-
+        const postData = row?.page_price_list?.find(
+          (item) => item?.instagram_post !== undefined
         );
+        const postPrice = postData ? postData.instagram_post : 0;
+        return postPrice > 0 ? Number(postPrice) : 0;
       },
       compare: true,
     },
@@ -253,13 +246,11 @@ const VendorOverview = () => {
       name: 'Story Price',
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find(item => item?.instagram_story !== undefined);
-        const storyPrice = storyData ? storyData.instagram_story : 0;
-        return (
-
-          storyPrice > 0 ? Number(storyPrice) : 0
-
+        const storyData = row?.page_price_list?.find(
+          (item) => item?.instagram_story !== undefined
         );
+        const storyPrice = storyData ? storyData.instagram_story : 0;
+        return storyPrice > 0 ? Number(storyPrice) : 0;
       },
       compare: true,
     },
@@ -268,9 +259,11 @@ const VendorOverview = () => {
       name: 'Both Price',
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find(item => item?.instagram_both !== undefined);
+        const bothData = row?.page_price_list?.find(
+          (item) => item?.instagram_both !== undefined
+        );
         const bothPrice = bothData ? bothData.instagram_both : 0;
-        return bothPrice
+        return bothPrice;
       },
       compare: true,
     },
@@ -279,7 +272,9 @@ const VendorOverview = () => {
       name: 'M Story',
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find(item => item?.instagram_m_story !== undefined);
+        const storyData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_story !== undefined
+        );
         const storyPrice = storyData ? storyData.instagram_m_story : 0;
         return storyPrice;
       },
@@ -290,7 +285,9 @@ const VendorOverview = () => {
       name: 'M Post',
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
+        const postData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_post !== undefined
+        );
         const postPrice = postData ? postData.instagram_m_post : 0;
         return postPrice;
       },
@@ -301,35 +298,37 @@ const VendorOverview = () => {
       name: 'M Both',
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
+        const bothData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_both !== undefined
+        );
         const bothPrice = bothData ? bothData.instagram_m_both : 0;
         return bothPrice;
       },
       compare: true,
-    }
+    },
   ];
 
   const dataGridcolumns = [
     {
-      key: "sno",
-      name: "S.NO",
+      key: 'sno',
+      name: 'S.NO',
       width: 80,
       renderRowCell: (row, index) => {
         return index + 1;
       },
     },
     {
-      key: "vendorPercentage",
-      name: "Vendor %",
+      key: 'vendorPercentage',
+      name: 'Vendor %',
       width: 150,
       renderRowCell: (row) => {
         const fields = [
-          "vendor_name",
-          "email",
-          "mobile",
-          "home_address",
-          "payment_method",
-          "Pincode",
+          'vendor_name',
+          'email',
+          'mobile',
+          'home_address',
+          'payment_method',
+          'Pincode',
         ];
         const totalFields = fields?.length;
         let filledFields = 0;
@@ -343,17 +342,17 @@ const VendorOverview = () => {
         const percentage = (filledFields / totalFields) * 100;
 
         if (percentage === 100) {
-          return "Full";
+          return 'Full';
         } else if (percentage > 50) {
-          return "More than Partial";
+          return 'More than Partial';
         } else {
-          return "Less than Partial";
+          return 'Less than Partial';
         }
       },
     },
     {
-      key: "vendor_name",
-      name: "Vendor Name",
+      key: 'vendor_name',
+      name: 'Vendor Name',
       width: 200,
       // editable: true,
       renderRowCell: (row) => {
@@ -368,8 +367,8 @@ const VendorOverview = () => {
       },
     },
     {
-      key: "Price_Update",
-      name: "Price Update",
+      key: 'Price_Update',
+      name: 'Price Update',
       renderRowCell: (row) => {
         return (
           <div>
@@ -385,27 +384,27 @@ const VendorOverview = () => {
           </div>
         );
       },
-      width: "20%",
+      width: '20%',
     },
     {
-      key: "vendor_category",
-      name: "Vendor Category",
+      key: 'vendor_category',
+      name: 'Vendor Category',
       width: 150,
     },
     {
-      key: "primary_page",
-      name: "Primary Page",
+      key: 'primary_page',
+      name: 'Primary Page',
       width: 200,
       renderRowCell: (row) => {
         let name = pageList?.data?.find(
           (ele) => ele._id === row.primary_page
         )?.page_name;
-        return name ?? "NA";
+        return name ?? 'NA';
       },
     },
     {
-      key: "page_count",
-      name: "Page Count",
+      key: 'page_count',
+      name: 'Page Count',
       renderRowCell: (row) => {
         return (
           <button
@@ -422,44 +421,44 @@ const VendorOverview = () => {
       },
     },
     {
-      key: "mobile",
-      name: "Mobile",
+      key: 'mobile',
+      name: 'Mobile',
       width: 200,
       editable: true,
     },
     {
-      key: "email",
-      name: "Email",
+      key: 'email',
+      name: 'Email',
       width: 200,
       editable: true,
     },
     {
-      key: "Pincode",
-      name: "Home Pincode",
+      key: 'Pincode',
+      name: 'Home Pincode',
       width: 200,
       editable: true,
     },
     {
-      key: "home_city",
-      name: "Home City",
+      key: 'home_city',
+      name: 'Home City',
       width: 200,
       editable: true,
     },
     {
-      key: "home_state",
-      name: "Home State",
+      key: 'home_state',
+      name: 'Home State',
       width: 200,
       editable: true,
     },
     {
-      key: "home_address",
-      name: "Home Address",
+      key: 'home_address',
+      name: 'Home Address',
       width: 200,
       editable: true,
     },
     {
-      key: "vendor_type",
-      name: "Vendor Type",
+      key: 'vendor_type',
+      name: 'Vendor Type',
       renderRowCell: (row) => {
         return typeData?.find((item) => item?._id == row?.vendor_type)
           ?.type_name;
@@ -468,18 +467,18 @@ const VendorOverview = () => {
       editable: true,
     },
     {
-      key: "vendor_platform",
-      name: "Platform",
+      key: 'vendor_platform',
+      name: 'Platform',
       renderRowCell: (row) => {
         return platformData?.find((item) => item?._id == row?.vendor_platform)
-          ?.platform_name
+          ?.platform_name;
       },
       width: 200,
       editable: true,
     },
     {
-      key: "pay_cycle",
-      name: "Cycle",
+      key: 'pay_cycle',
+      name: 'Cycle',
       width: 200,
       renderRowCell: (row) => {
         return cycleData?.find((item) => item?._id == row?.pay_cycle)
@@ -494,8 +493,8 @@ const VendorOverview = () => {
       editable: true,
     },
     {
-      key: "Bank Details",
-      name: "Bank Details",
+      key: 'Bank Details',
+      name: 'Bank Details',
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -510,8 +509,8 @@ const VendorOverview = () => {
       },
     },
     {
-      key: "whatsapp_link",
-      name: "Whatsapp Link",
+      key: 'whatsapp_link',
+      name: 'Whatsapp Link',
       width: 200,
       renderRowCell: (row) => {
         return (
@@ -526,8 +525,8 @@ const VendorOverview = () => {
       },
     },
     {
-      key: "action",
-      name: "Action",
+      key: 'action',
+      name: 'Action',
       width: 200,
       renderRowCell: (row) => (
         <>
@@ -537,7 +536,7 @@ const VendorOverview = () => {
               title="Edit"
               className="btn btn-outline-primary btn-sm user-button"
             >
-              <FaEdit />{" "}
+              <FaEdit />{' '}
             </button>
           </Link>
           {/* )} */}
@@ -553,7 +552,6 @@ const VendorOverview = () => {
         </>
       ),
     },
-
   ];
 
   const deletePhpData = async (row) => {
@@ -583,8 +581,10 @@ const VendorOverview = () => {
   useEffect(() => {
     const countVendorCategories = (tabFilterData) => {
       const counts = {};
+      console.log("loogged");
       tabFilterData.forEach((item) => {
         const category = item.vendor_category;
+        console.log('category---', category);
         counts[category] = (counts[category] || 0) + 1;
       });
       return counts;
@@ -593,6 +593,7 @@ const VendorOverview = () => {
     const counts = countVendorCategories(tabFilterData);
     setCategoryCounts(counts);
   }, [tabFilterData]);
+  console.log('counts', tabFilterData);
 
   // for platform statistics
   useEffect(() => {
@@ -627,40 +628,40 @@ const VendorOverview = () => {
       (item) => item.mobile == 0
     );
     setFilterData(vendorwithnomobilenum);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
   const vendorWithNoEmail = () => {
-    const vendorwithnoemail = tabFilterData.filter((item) => item.email == "");
+    const vendorwithnoemail = tabFilterData.filter((item) => item.email == '');
     setFilterData(vendorwithnoemail);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
   const vendorWithNoPages = () => {
     const vendorwithnopages = tabFilterData.filter(
       (item) => item.page_count == 0
     );
     setFilterData(vendorwithnopages);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
   const vendorWithCategories = (category) => {
     const vendorwithcategories = tabFilterData.filter(
       (item) => item.vendor_category == category
     );
     setFilterData(vendorwithcategories);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
   const vendorWithPlatforms = (platform) => {
     const vendorwithplatforms = tabFilterData.filter(
       (item) => item.vendor_platform == platform
     );
     setFilterData(vendorwithplatforms);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
   const vendorClosedBy = (closeby) => {
     const vendorclosedby = tabFilterData.filter(
       (item) => item.closed_by == closeby
     );
     setFilterData(vendorclosedby);
-    setActiveTab("Tab1");
+    setActiveTab('Tab1');
   };
 
   return (
@@ -671,22 +672,23 @@ const VendorOverview = () => {
         rowData={rowVendor}
       />
       <div className="modal fade" id="myModal" role="dialog">
-        <div className="modal-dialog" style={{ maxWidth: "40%" }}>
+        <div className="modal-dialog" style={{ maxWidth: '40%' }}>
           <div className="modal-content">
             <div className="modal-header">
-              <h4 className="modal-title">Vendor Pages - {formatString(pageData[0]?.vendor_name)}</h4>
+              <h4 className="modal-title">
+                Vendor Pages - {formatString(pageData[0]?.vendor_name)}
+              </h4>
               <button type="button" className="close" data-dismiss="modal">
                 &times;
               </button>
             </div>
             <div className="modal-body">
-
               <CustomTableV2
                 columns={columns}
                 data={pageData}
                 // isLoading={false}
                 // title={"Vendor-Pages"}
-                tableName={"Vendor-Pages : Price"}
+                tableName={'Vendor-Pages : Price'}
               />
             </div>
             <div className="modal-footer">
@@ -704,27 +706,27 @@ const VendorOverview = () => {
 
       <div className="tabs">
         <button
-          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab1")}
+          className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'}
+          onClick={() => setActiveTab('Tab1')}
         >
           Overview
         </button>
         <button
-          className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab2")}
+          className={activeTab === 'Tab2' ? 'active btn btn-primary' : 'btn'}
+          onClick={() => setActiveTab('Tab2')}
         >
           Statistics
         </button>
         <button
-          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
-          onClick={() => setActiveTab("Tab3")}
+          className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'}
+          onClick={() => setActiveTab('Tab3')}
         >
           State/City Wise
         </button>
       </div>
 
       <div className="content">
-        {activeTab === "Tab1" && (
+        {activeTab === 'Tab1' && (
           <div>
             {filterData && (
               <div className="card">
@@ -768,7 +770,7 @@ const VendorOverview = () => {
               /> */}
                 <div className="data_tbl thm_table table-responsive card-body p0">
                   {loading ? (
-                    <Box mt={2} ml={2} mb={3} sx={{ width: "95%" }}>
+                    <Box mt={2} ml={2} mb={3} sx={{ width: '95%' }}>
                       <Grid
                         container
                         spacing={{ xs: 1, md: 10 }}
@@ -778,7 +780,7 @@ const VendorOverview = () => {
                           <Grid item md={1} key={index}>
                             <Skeleton
                               sx={{
-                                width: "100%",
+                                width: '100%',
                               }}
                             />
                           </Grid>
@@ -794,7 +796,7 @@ const VendorOverview = () => {
                             <Skeleton
                               animation="wave"
                               sx={{
-                                width: "100%",
+                                width: '100%',
                               }}
                             />
                           </Grid>
@@ -806,10 +808,10 @@ const VendorOverview = () => {
                       columns={dataGridcolumns}
                       data={filterData}
                       isLoading={false}
-                      title={"Vendor Overview"}
+                      title={'Vendor Overview'}
                       rowSelectable={true}
                       pagination={[100, 200, 1000]}
-                      tableName={"Vendor Overview"}
+                      tableName={'Vendor Overview'}
                       selectedData={setGetRowData}
                     />
                   )}
@@ -821,7 +823,7 @@ const VendorOverview = () => {
             )}
           </div>
         )}
-        {activeTab === "Tab2" && (
+        {activeTab === 'Tab2' && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -904,7 +906,7 @@ const VendorOverview = () => {
                       <h6 className="colorMedium">Vendor with no email id</h6>
                       <h6 className="mt4 fs_16">
                         {
-                          tabFilterData.filter((item) => item.email == "")
+                          tabFilterData.filter((item) => item.email == '')
                             ?.length
                         }
                       </h6>
@@ -969,9 +971,7 @@ const VendorOverview = () => {
                             <span></span>
                           </div>
                           <div>
-                            <h6 className="colorMedium">
-                              {item.user_name}
-                            </h6>
+                            <h6 className="colorMedium">{item.user_name}</h6>
                             <h6 className="mt4 fs_16">{item.count}</h6>
                           </div>
                         </div>
@@ -984,7 +984,7 @@ const VendorOverview = () => {
             </div>
           </div>
         )}
-        {activeTab === "Tab3" && (
+        {activeTab === 'Tab3' && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -1000,7 +1000,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={state}
-                      // onClick={() => vendorWithCategories(state)}
+                        // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -1032,7 +1032,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={city}
-                      // onClick={() => vendorWithCategories(city)}
+                        // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">

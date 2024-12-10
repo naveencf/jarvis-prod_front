@@ -208,6 +208,30 @@ function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
+    // this code may cause vulnerability so please  inform pratyush  to reserch on it and i am adding this comment for my self
+
+    const handleGlobalClick = (event) => {
+      // Check if the user pressed Ctrl (Windows/Linux) or Meta (macOS) while clicking
+      if (event.ctrlKey || event.metaKey) {
+        localStorage.setItem("token", sessionStorage.getItem("token"));
+        setTimeout(() => {
+          localStorage.removeItem("token");
+        }, 10000);
+      }
+    };
+
+    // Add a global click event listener
+    document.addEventListener("click", handleGlobalClick);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      document.removeEventListener("click", handleGlobalClick);
+    };
+  }, []);
+  if (localStorage.getItem("token"))
+    sessionStorage.setItem("token", localStorage.getItem("token"));
+
+  useEffect(() => {
     const handleOnlineStatusChange = () => {
       setIsOnline(navigator.onLine);
     };

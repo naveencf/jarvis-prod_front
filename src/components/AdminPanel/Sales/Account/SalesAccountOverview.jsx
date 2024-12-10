@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import FormContainer from "../../FormContainer";
 import View from "./View/View";
 import { useGetAllAccountQuery } from "../../../Store/API/Sales/SalesAccountApi";
-import { Link, useNavigate } from "react-router-dom";
+import { json, Link, useNavigate } from "react-router-dom";
 import { useGetAllBrandCategoryTypeQuery } from "../../../Store/API/Sales/BrandCategoryTypeApi";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { useGlobalContext } from "../../../../Context/Context";
@@ -45,7 +45,6 @@ const SalesAccountOverview = () => {
   const [toDate, setToDate] = useState("");
   const [combinedData, setCombinedFilter] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
-  console.log("selectedData", selectedData);
 
   let [modalHandler, setModalHandler] = useState("SalesAccountPOC");
 

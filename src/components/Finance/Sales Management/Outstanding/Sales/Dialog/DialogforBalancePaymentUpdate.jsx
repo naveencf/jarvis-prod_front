@@ -73,6 +73,7 @@ function DialogforBalancePaymentUpdate(props) {
     setPaymentDetails("");
     setPaidAmount([]);
     setPaidPercentage("");
+    setPaymentDate("");
   };
 
   const handleSubmit = async (e) => {
@@ -103,7 +104,7 @@ function DialogforBalancePaymentUpdate(props) {
       toastAlert("Failed to update data. Please try again.", "error");
     }
   };
-
+  // console.log(singleRow, "singleRow")
   const handlePaymentDetails = (e, id) => {
     if (id) {
       setPaymentDetails(id);
@@ -123,7 +124,7 @@ function DialogforBalancePaymentUpdate(props) {
   const handleCloseTDSFields = () => {
     setCloseDialog(false);
   };
-
+  // console.log(dropdownData, "dropdownData")
   return (
     <Dialog
       onClose={handleCloseImageModal}
@@ -131,7 +132,7 @@ function DialogforBalancePaymentUpdate(props) {
       open={ImageModalOpen}
     >
       <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-        Payment Update
+        Payment Update for {singleRow?.invoice_number}
       </DialogTitle>
       <IconButton
         aria-label="close"
@@ -149,33 +150,45 @@ function DialogforBalancePaymentUpdate(props) {
         <div className="row">
           <div className="col-md-12 ">
             <form onSubmit={handleSubmit}>
-              <div className="form-group col-12"></div>
-              <label htmlFor="paid-amount">Payment Date</label>
+              {/* <div className="form-group col-12">
+      
+              </div> */}
+              <div className="form-group mt-3">
+
+              </div>
+              <label >Account Name : {singleRow?.party_name} </label>
+              {/* <label >Invoice Number : {singleRow?.invoice_number} </label> */}
+              {/* <label htmlFor="paid-amount">Payment Date</label> */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 {" "}
                 <DatePicker
                   className="form-control mt-3"
-                  // label="Payment Date"
+                  label="Payment Date"
                   value={paymentDate}
                   format="DD/MM/YYYY"
                   onChange={setPaymentDate}
                 />
               </LocalizationProvider>
               <div className="form-group mt-3">
-                <label htmlFor="images">Balance Amount</label>
-                <input
+                <label >Balance Amount : ₹{balAmount}      |        Paid Amount :  ₹{paidAmountData}</label>
+
+                {/* <label >Paid Amount :  {paidAmountData}</label> */}
+                {/* <label htmlFor="images">{balAmount}</label> */}
+                {/* <input
                   type="number"
                   className="form-control"
                   id="balance Amount"
-                  name="balance Amount"
+                  // name="balance Amount"
+                  label='Balance Amount'
                   value={balAmount}
                   readOnly
                   required
-                />
+                /> */}
               </div>
               <div className="form-group mt-3">
-                <label htmlFor="images">Paid Amount</label>
-                <input
+                {/* <label htmlFor="images">Paid Amount :  {paidAmountData}</label> */}
+                {/* <label htmlFor="images">{paidAmountData}</label> */}
+                {/* <input
                   type="number"
                   className="form-control"
                   id="paid Amount"
@@ -183,40 +196,41 @@ function DialogforBalancePaymentUpdate(props) {
                   value={paidAmountData}
                   readOnly
                   required
+                /> */}
+                <TextField
+                  variant="outlined"
+                  className="form-control "
+                  placeholder="Transaction Amount"
+                  label="Transaction Amount"
+                  value={paidAmount}
+                  onChange={(e) => {
+                    const inputValue = e.target.value;
+                    if (!isNaN(inputValue) && inputValue !== "") {
+                      const parsedValue = parseFloat(inputValue);
+                      if (parsedValue <= balAmount) {
+                        setPaidAmount(parsedValue);
+                        setShowField(true);
+                        setPaymentType(
+                          parsedValue == balAmount
+                            ? { label: "Full", value: "full" }
+                            : { label: "Partial", value: "partial" }
+                        );
+                      } else {
+                        toastError(
+                          "Paid amount should be less than or equal to the balance amount"
+                        );
+                      }
+                    } else {
+                      toastError("Please enter a valid numeric value");
+                      setPaidAmount("");
+                      setShowField(false);
+                    }
+                  }}
                 />
               </div>
-              <label htmlFor="paid-amount" className="pb-2">
+              {/* <label htmlFor="paid-amount" className="pb-2">
                 Paid Amount
-              </label>
-              <TextField
-                variant="outlined"
-                className="form-control "
-                placeholder="Paid Amount"
-                value={paidAmount}
-                onChange={(e) => {
-                  const inputValue = e.target.value;
-                  if (!isNaN(inputValue) && inputValue !== "") {
-                    const parsedValue = parseFloat(inputValue);
-                    if (parsedValue <= balAmount) {
-                      setPaidAmount(parsedValue);
-                      setShowField(true);
-                      setPaymentType(
-                        parsedValue == balAmount
-                          ? { label: "Full", value: "full" }
-                          : { label: "Partial", value: "partial" }
-                      );
-                    } else {
-                      toastError(
-                        "Paid amount should be less than or equal to the balance amount"
-                      );
-                    }
-                  } else {
-                    toastError("Please enter a valid numeric value");
-                    setPaidAmount("");
-                    setShowField(false);
-                  }
-                }}
-              />
+              </label> */}
 
               {showField && paidAmount > 0 && (
                 <div className="row">
@@ -252,33 +266,48 @@ function DialogforBalancePaymentUpdate(props) {
               )}
 
               <div className="form-group mt-3">
-                <label htmlFor="images">Payment Reference Number</label>
-                <input
+                {/* <label htmlFor="images">Payment Reference Number</label> */}
+                {/* <input
                   type="text"
                   className="form-control"
                   id="images"
-                  name="images"
+                  // name="images"
+                  // id="combo-box-demo"
+                  label="Payment Reference Number"
+                  value={paymentRefNo}
+                  onChange={(e) => setPaymentRefNo(e.target.value)}
+                /> */}
+                <TextField
+                  variant="outlined"
+                  className="form-control "
+                  placeholder="Payment Reference Number"
+                  label="Payment Reference Number"
                   value={paymentRefNo}
                   onChange={(e) => setPaymentRefNo(e.target.value)}
                 />
               </div>
-              <label htmlFor="paid-amount">Payment Details *</label>
-              <Autocomplete
-                className="my-2 mt-3"
-                id="combo-box-demo"
-                options={
-                  dropdownData &&
-                  dropdownData?.map((item) => ({
-                    label: item.title,
-                    id: item._id,
-                    payment_mode_id: item.payment_mode_id,
-                  }))
-                }
-                onChange={(e, id) => handlePaymentDetails(e, id)}
-                renderInput={(params) => (
-                  <TextField {...params} variant="outlined" />
-                )}
-              />
+              <div className="form-group mt-3">
+
+                {/* <label htmlFor="paid-amount">Payment Details *</label> */}
+                <Autocomplete
+                  className="my-2 mt-3"
+                  id="combo-box-demo"
+                  // label="Payment Details"
+                  placeholder="Payment Details"
+                  options={
+                    dropdownData &&
+                    dropdownData?.map((item) => ({
+                      label: item.title,
+                      id: item._id,
+                      payment_mode_id: item.payment_mode_id,
+                    }))
+                  }
+                  onChange={(e, id) => handlePaymentDetails(e, id)}
+                  renderInput={(params) => (
+                    <TextField {...params} variant="outlined" label="Payment Details" />
+                  )}
+                />
+              </div>
 
               <div className="form-group">
                 <label htmlFor="images">Payment Reference Image</label>
@@ -291,7 +320,7 @@ function DialogforBalancePaymentUpdate(props) {
                   onChange={(e) => setPaymentRefImg(e.target.files[0])}
                 />
               </div>
-              <Autocomplete
+              {/* <Autocomplete
                 className="my-2 mt-3"
                 id="combo-box-demo"
                 value={paymentType}
@@ -307,7 +336,7 @@ function DialogforBalancePaymentUpdate(props) {
                 renderInput={(params) => (
                   <TextField {...params} label="Status" variant="outlined" />
                 )}
-              />
+              /> */}
             </form>
           </div>
         </div>
@@ -318,7 +347,7 @@ function DialogforBalancePaymentUpdate(props) {
             paidAmount === 0 ||
             paidAmount === "" ||
             paymentDetails === "" ||
-            paidPercentage >= 90 ||
+            // paidPercentage >= 90 ||
             updateOutstandingBalancePaymentLoading
           }
           variant="contained"
@@ -331,8 +360,8 @@ function DialogforBalancePaymentUpdate(props) {
             "Save"
           )}
         </Button>
-        {paidPercentage === 90 || paidPercentage >= 90 ? (
-          <Button variant="contained" autoFocus onClick={handleOpenTDSFields}>
+        {paidPercentage >= 90 ? (
+          <Button variant="contained" color="success" autoFocus onClick={handleOpenTDSFields}>
             Close
           </Button>
         ) : (

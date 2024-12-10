@@ -95,6 +95,13 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
           ?.user_name,
       showCol: true,
       width: 100,
+      colorRow: (row) => {
+        if (row?.incentive_earning_status === "earned") {
+          return "#c4fac4";
+        } else {
+          return "#ffff008c";
+        }
+      },
     },
     {
       key: "sale_booking_date",

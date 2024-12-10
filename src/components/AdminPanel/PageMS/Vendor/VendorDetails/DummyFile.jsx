@@ -20,14 +20,13 @@ import TimelineView from "./TimelineView";
 import PaymentView from "./PaymentView";
 import Loader from "../../../../Finance/Loader/Loader";
 
-const AccountInfo = () => {
+const DummyFile = () => {
   const [pocCount, setPocCount] = useState(0);
   const [docCount, setDocCount] = useState(0);
   const [salesLength, setSalesLength] = useState(0);
   const account = useParams();
   const navigate = useNavigate();
   const {
-    refetch: refetchSingleAccount,
     data: SingleAccount,
     error: SingleAccountErr,
     isLoading: SingleAccountLoading,
@@ -87,8 +86,7 @@ const AccountInfo = () => {
                 <i className="ph">
                   <ChartLineUp weight="duotone" />
                 </i>
-                <span>
-                  Sales
+                <span>Sales
                   <span className="badgeNum">{salesLength}</span>
                 </span>
               </div>
@@ -132,30 +130,12 @@ const AccountInfo = () => {
         </div>
       </div>
       <div className="sales-accountinfo-view">
-        <div className="actionNavbar">
-          <button className="icon" onClick={() => navigate(-1)}>
-            <i className="bi bi-arrow-left"></i>
-          </button>
-          <ul>
-            <li>
-              <a
-                className="btn cmnbtn btn_sm btn-primary"
-                onClick={() =>
-                  navigate(`/admin/create-sales-account/${SingleAccount?._id}`)
-                }
-              >
-                <i className="bi bi-pencil" />
-                Edit
-              </a>
-            </li>
-          </ul>
-        </div>
+       
 
         <section id="DetailView">
           <SalesDetail
             SingleAccount={SingleAccount}
             SingleAccountLoading={SingleAccountLoading}
-            refetchSingleAccount={refetchSingleAccount}
           />
         </section>
 
@@ -168,32 +148,7 @@ const AccountInfo = () => {
         </section>
 
         <section id="SalesView">
-          <SalesBookingDetails
-            SingleAccount={SingleAccount}
-            setSalesLength={setSalesLength}
-          />
-        </section>
-
-        <section id="DocumentsView">
-          <DocumentTypDetails
-            SingleAccount={SingleAccount}
-            SingleAccountLoading={SingleAccountLoading}
-            setDocCount={setDocCount}
-          />
-        </section>
-        <section id="TimelineView">
-          <TimelineView
-            SingleAccount={SingleAccount}
-            SingleAccountLoading={SingleAccountLoading}
-            setDocCount={setDocCount}
-          />
-        </section>
-        <section id="PaymentView">
-          <PaymentView
-            SingleAccount={SingleAccount}
-            SingleAccountLoading={SingleAccountLoading}
-            setDocCount={setDocCount}
-          />
+          <SalesBookingDetails SingleAccount={SingleAccount} setSalesLength={setSalesLength} />
         </section>
       </div>
     </div>

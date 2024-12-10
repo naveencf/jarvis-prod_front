@@ -225,7 +225,7 @@ function PlanHome() {
 
       if (response.ok) {
         const result = await response.json();
-        console.log('PUT result:', result);
+        // console.log('PUT result:', result);
 
         // Update the status in the state
         setDescriptions((prev) =>
@@ -253,7 +253,7 @@ function PlanHome() {
       );
 
       if (response.ok) {
-        console.log('Successfully deleted:', descriptionToDelete);
+        // console.log('Successfully deleted:', descriptionToDelete);
 
         setDescriptions((prev) => prev.filter((_, i) => i !== index));
       } else {

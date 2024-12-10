@@ -11,6 +11,8 @@ import {
   NearMeDisabledOutlined,
   NearMeDisabledSharp,
 } from "@mui/icons-material";
+import { formatDate } from "../../../utils/formatDate";
+import { type } from "jquery";
 
 export const saleBookingCloseColumns = ({
   handleOpenVerifyDialog,
@@ -71,9 +73,9 @@ export const saleBookingCloseColumns = ({
       key: "tds_amount",
       name: "TDS Amount",
       width: 150,
-      renderRowCell: (row) => (
-        <div>{row?.tds_amount !== "" ? row?.tds_amount : 0}</div>
-      ),
+      getTotal: true,
+      renderRowCell: (row) => { row?.tds_amount !== "" ? row?.tds_amount : 0 }
+
     },
     {
       key: "tds_percentage",
@@ -100,6 +102,7 @@ export const saleBookingCloseColumns = ({
       name: "Invoice Number",
       renderRowCell: (row) => row?.invoice_number,
       width: 150,
+      getTotal: true,
     },
     {
       key: "invoice_uploaded_date",
@@ -285,6 +288,7 @@ export const uniqueSaleBookingAccountColumn = ({
       field: "tds_amount",
       headerName: "TDS Amount",
       width: 150,
+      getTotal: true,
       renderCell: (params) => (
         <div>{params.row.tds_amount !== "" ? params.row.tds_amount : 0}</div>
       ),
@@ -2174,7 +2178,7 @@ export const outstandingColumns = ({
     {
       key: "sale_booking_id",
       name: "Booking Id",
-      renderRowCell: (row) => <div>{row?.sale_booking_id}</div>,
+      renderRowCell: (row) => row?.sale_booking_id,
     },
     {
       key: "aging",
@@ -3550,16 +3554,21 @@ export const paymentDoneColumns = ({
       key: "request_date",
       name: "Requested Date",
       width: 200,
-      renderRowCell: (row) => {
-        return moment(row?.request_date)?.format("DD-MM-YYYY HH:MM A");
-      },
+      // renderRowCell: (row) => {
+      //   return moment(row?.request_date)?.format("DD-MM-YYYY HH:MM A");
+      // },
+      type: 'date',
+      renderRowCell: (row) => { return formatDate(row?.request_date) },
     },
     {
       key: "payment_date",
       name: "Payment Date",
       width: 200,
+      // renderRowCell: (row) => {
+      //   return moment(row?.payment_date).format("DD-MM-YYYY HH:MM A");
+      // },
       renderRowCell: (row) => {
-        return moment(row?.payment_date).format("DD-MM-YYYY HH:MM A");
+        return (formatDate(row?.payment_date));
       },
     },
     {

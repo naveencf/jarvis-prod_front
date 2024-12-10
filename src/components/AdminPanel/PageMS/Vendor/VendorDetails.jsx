@@ -11,6 +11,7 @@ import axios from 'axios';
 import { baseUrl } from "../../../../utils/config";
 import { useGetVendorCompanyDetailQuery } from '../../../Store/PageBaseURL';
 import { Link } from "react-router-dom";
+import VendorDetailsNew from './VendorDetails/VendorDetailsNew';
 
 export default function VendorDetails({vendorDetails,setVendorDetails , tab1}) {
   
@@ -62,7 +63,8 @@ console.log(vendorDetails,"vendorDetails");
             ref={descriptionElementRef}
             tabIndex={-1}
           >
-          <VendorDetailAccordion vendorDetails={vendorDetails} bankRows={bankRows} tab1={tab1}/>
+          {/* <VendorDetailAccordion vendorDetails={vendorDetails} bankRows={bankRows} tab1={tab1}/> */}
+          <VendorDetailsNew vendorDetails={vendorDetails} bankRows={bankRows} tab1={tab1} />
                          
           </DialogContentText>
         </DialogContent>

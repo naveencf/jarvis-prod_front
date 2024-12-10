@@ -7,6 +7,7 @@ import { baseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import TotalRow from "./TableComponent/TotalRow";
+import { unstable_ClassNameGenerator } from "@mui/material";
 // note: sync the table pagination and  sorted rows
 
 const CustomTableV2 = ({

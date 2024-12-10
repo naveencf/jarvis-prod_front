@@ -33,6 +33,7 @@ import { downloadExcel, getPlatformName } from './downloadExcel';
 import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import { calculatePrice } from './helper';
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -181,7 +182,6 @@ const LeftSideBar = ({
         agencyFees,
         deliverableText
       );
-      console.log('Excel downloaded successfully!');
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {
@@ -206,10 +206,14 @@ const LeftSideBar = ({
         planxId: page._id,
         'Post Count': postCountForPage,
         'Story Count': storyCountForPage,
-        'Post Price': page.m_post_price,
-        'Story Price': page.m_story_price,
-        'Total Post Cost': postCountForPage * page.m_post_price,
-        'Total Story Cost': storyCountForPage * page.m_story_price,
+        'Post Price': getPriceDetail(page.page_price_list, 'instagram_post'),
+        'Story Price': getPriceDetail(page.page_price_list, 'instagram_story'),
+        'Total Post Cost':
+          postCountForPage *
+          getPriceDetail(page.page_price_list, 'instagram_post'),
+        'Total Story Cost':
+          storyCountForPage *
+          getPriceDetail(page.page_price_list, 'instagram_story'),
         category: page.page_category_id, // Add category ID for filtering
       };
     });
@@ -217,24 +221,25 @@ const LeftSideBar = ({
     setPreviewData(preview);
     setOpenPreviewModal(true); // Open the preview modal
   };
-  const calculatePrice = (rate_type, pageData, type) => {
-    if (rate_type === 'Variable') {
-      // Calculate for post price (followers_count / 10,000) * m_post_price
-      if (type === 'post') {
-        const postPrice =
-          (pageData.followers_count / 1000000) * pageData.m_post_price;
-        return postPrice;
-      } else if (type === 'story') {
-        const storyPrice =
-          (pageData.followers_count / 1000000) * pageData.m_story_price;
-        return storyPrice;
-      } else {
-        const bothPrice =
-          (pageData.followers_count / 1000000) * pageData.m_both_price;
-        return bothPrice;
-      }
-    }
-  };
+ 
+  // const calculatePrice = (rate_type, pageData, type) => {
+  //   if (rate_type === 'Variable') {
+  //     // Calculate for post price (followers_count / 10,000) * m_post_price
+  //     if (type === 'post') {
+  //       const postPrice =
+  //         (pageData.followers_count / 1000000) * pageData.m_post_price;
+  //       return postPrice;
+  //     } else if (type === 'story') {
+  //       const storyPrice =
+  //         (pageData.followers_count / 1000000) * pageData.m_story_price;
+  //       return storyPrice;
+  //     } else {
+  //       const bothPrice =
+  //         (pageData.followers_count / 1000000) * pageData.m_both_price;
+  //       return bothPrice;
+  //     }
+  //   }
+  // };
 
   // const formatFollowers = (followers) => `${followers} Followers`;
   // Function to calculate ownership counts and total costs based on selected rows

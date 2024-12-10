@@ -125,7 +125,6 @@ const store = configureStore({
       .concat(SalesReportApi.middleware)
       .concat(IncentiveSharingApi.middleware)
       .concat(TagCategoryApi.middleware)
-      .concat(TagCategoryApi.middleware)
       .concat(CatAssignment.middleware)
       .concat(OutstandingApi.middleware)
       .concat(InvoiceRequestApi.middleware)

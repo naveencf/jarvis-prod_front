@@ -18,6 +18,7 @@ import {
   Select,
   FormControl,
   InputLabel,
+  Autocomplete,
 } from '@mui/material';
 import { useSendPlanDetails } from './apiServices';
 import { useParams } from 'react-router-dom';
@@ -45,7 +46,8 @@ const ExcelPreviewModal = ({
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
   const [mergedCategories, setMergedCategories] = useState([]);
-  const [previewDataMerge, setPreviewDataMerge] = useState([]);
+  // const [previewDataMerge, setPreviewDataMerge] = useState([]);
+  const [updatedCategoryData, setUpdatedCategoryData] = useState(false);
   const { id } = useParams();
   const { sendPlanDetails } = useSendPlanDetails(id);
 
@@ -159,14 +161,24 @@ const ExcelPreviewModal = ({
         category_name: categoryName,
       };
     });
-
+    setUpdatedCategoryData(true);
     // Update state with the modified data
     setCategoryData(updatedCategoryData);
-    setPreviewDataMerge(finalPreviewData);
+    // setPreviewDataMerge(finalPreviewData);
     sendPlanDetails(finalPreviewData);
     setMergedCategories([]);
   };
 
+  const handleClose = () => {
+    onClose();
+    if (updatedCategoryData) {
+      window.location.reload();
+    }
+    setUpdatedCategoryData(false);
+  };
+  const handleCategoryChange = (event, newValue) => {
+    setMainCategory(newValue); // Update the selected value
+  };
   return (
     <Modal
       open={open}
@@ -187,7 +199,7 @@ const ExcelPreviewModal = ({
         }}
       >
         <Button
-          onClick={onClose}
+          onClick={handleClose}
           sx={{
             position: 'absolute',
             top: 8,
@@ -243,42 +255,36 @@ const ExcelPreviewModal = ({
           </div>
         </div>
 
-        {/* <FormControl sx={{ mt: 2, width: '200px' }}>
-          <InputLabel>Main Category</InputLabel>
-          <Select
-            value={mainCategory}
-            onChange={handleMainCategoryChange}
-            label="Main Category"
-          >
-            {categories?.map((cat) => (
-              <MenuItem key={cat._id} value={cat.page_category}>
-                {cat.page_category}
-              </MenuItem>
-            ))}
-          </Select>
+        <FormControl sx={{ mt: 2, width: '200px' }}>
+          <Autocomplete
+            // value={`${mainCategory}`}
+            onChange={handleCategoryChange || []}
+            // getOptionLabel={(option) => option.label}
+            options={categories?.map((cat) => cat.page_category) || []}
+            renderInput={(params) => (
+              <TextField {...params} label="Main Category" variant="outlined" />
+            )}
+          />
         </FormControl>
 
         <FormControl sx={{ mt: 2, width: '200px' }}>
-          <InputLabel>Merge Categories</InputLabel>
-          <Select
-            multiple
-            value={mergedCategories}
-            onChange={handleMergedCategoriesChange}
-            label="Merge Categories"
-          >
-            {Object.keys(categoryData).map((categoryName) => {
-              if (categoryName !== mainCategory) {
-                return (
-                  <MenuItem key={categoryName} value={categoryName}>
-                    {categoryName}
-                  </MenuItem>
-                );
-              }
-              return null;
-            })}
-          </Select>
-        </FormControl> */}
-{/* 
+          <Autocomplete
+            // value={`${mergedCategories}`}
+            // getOptionLabel={(option) => option.label}
+            onChange={(event, newValue) => setMergedCategories(newValue || [])}
+            options={Object.keys(categoryData).filter(
+              (categoryName) => categoryName !== mainCategory
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Merge Categories"
+                variant="outlined"
+              />
+            )}
+          />
+        </FormControl>
+
         <Button
           variant="contained"
           color="primary"
@@ -287,7 +293,7 @@ const ExcelPreviewModal = ({
           disabled={!mainCategory || mergedCategories.length === 0}
         >
           Merge Categories
-        </Button> */}
+        </Button>
 
         <Tabs value={selectedTab} onChange={handleTabChange} centered>
           <Tab label="Total" />

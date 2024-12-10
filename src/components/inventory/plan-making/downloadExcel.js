@@ -15,15 +15,22 @@ export const getPlatformName = (platformId) => {
 };
 
 export const getPriceDetail = (priceDetails, key) => {
-  const detail = priceDetails?.find((item) => item[key] !== undefined);
-  return detail ? detail[key] : 0;
+  const keyType = key.split('_')[1];
+
+  const detail = priceDetails?.find((item) => {
+    return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+  });
+
+  return detail
+    ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
+    : 0;
 };
 
 // Helper function to convert Indian numbering string to a number
-function parseIndianNumber(indianNumber) {
-  // Remove commas and parse as an integer
-  return parseInt(indianNumber.replace(/,/g, ''), 10);
-}
+// function parseIndianNumber(indianNumber) {
+//   // Remove commas and parse as an integer
+//   return parseInt(indianNumber.replace(/,/g, ''), 10);
+// }
 
 export const downloadExcel = async (
   selectedRow,
@@ -47,9 +54,6 @@ export const downloadExcel = async (
   const overviewSheet = workbook.addWorksheet('Overview');
 
   const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
-  // const logoUrl = 'https://i.ibb.co/bg5J6Gq/Cf-logo.jpg';
-  // <a href="https://ibb.co/1fG604h"><img src="https://i.ibb.co/bg5J6Gq/Cf-logo.jpg" alt="Cf-logo" border="0"></a>
-  // const logoUrl = 'https://i.ibb.co/QYz6H78/Untitled-design.png';
   const response = await fetch(logoUrl);
   const arrayBuffer = await response.arrayBuffer();
   const uint8Array = new Uint8Array(arrayBuffer);
@@ -117,48 +121,51 @@ export const downloadExcel = async (
   });
 
   const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat'];
-
+  var serialNumber = 1;
   for (const platform of platforms) {
-    const platformData = selectedRow?.filter(
-      (page) => getPlatformName(page.platform_id) === platform
-    );
+    const platformData = selectedRow?.filter((page) => !!page.platform_id);
 
     if (!platformData?.length) continue;
-
+    const categories = {};
     if (platform === 'Instagram') {
-      const categories = {};
-
       platformData.forEach((page) => {
-        const categoryId = page.page_category_id;
-        const pageLink = `https://www.instagram.com/${page.page_name}`;
-        const categoryName =
-          category?.find((cat) => cat._id === categoryId)?.page_category ||
-          'Unknown';
+        if (page.platform_name === 'instagram') {
+          const categoryId = page.page_category_id;
+          const pageLink = `https://www.${platform.toLowerCase()}.com/${
+            page.page_name
+          }`;
+          const categoryName =
+            category?.find((cat) => cat._id === categoryId)?.page_category ||
+            'Unknown';
 
-        categories[categoryName] = categories[categoryName] || [];
-        // Check if the post and story counts are coming through
-        const postCountValue = postCount[page._id] || 0;
-        const storyCountValue = storyPerPage[page._id] || 0;
+          categories[categoryName] = categories[categoryName] || [];
+          // Check if the post and story counts are coming through
+          const postCountValue = postCount[page._id] || 0;
+          const storyCountValue = storyPerPage[page._id] || 0;
 
-        categories[categoryName].push({
-          S_No: categories[categoryName].length + 1,
-          Username: page.page_name || 'N/A',
-          'Profile Link': pageLink || 'N/A',
-          Followers: formatIndianNumber(page.followers_count) || 0,
-          'Post Count': postCountValue,
-          'Story Count': storyCountValue,
-        });
+          categories[categoryName].push({
+            S_No: categories[categoryName].length + 1,
+            Username: page.page_name || 'N/A',
+            'Profile Link': pageLink || 'N/A',
+            Followers: page.followers_count || 0,
+            'Post Count': postCountValue,
+            'Story Count': storyCountValue,
+          });
 
-        totalPostsAndStories += postCountValue + storyCountValue;
+          totalPostsAndStories += postCountValue + storyCountValue;
 
-        totalCost +=
-          postCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_post') +
-          storyCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_story');
+          totalCost +=
+            postCountValue *
+              getPriceDetail(page.page_price_list, 'instagram_post') +
+            storyCountValue *
+              getPriceDetail(page.page_price_list, 'instagram_story');
+        }
       });
-      let serialNumber = 1;
-      for (const [categoryName, categoryData] of Object.entries(categories)) {
+
+      const categoriesEntries = Object.entries(categories);
+
+      for (let i = 0; i < categoriesEntries.length; i++) {
+        const [categoryName, categoryData] = categoriesEntries[i];
         const sheet = workbook.addWorksheet(formatString(categoryName));
 
         // Determine if the category has any Story Count > 0
@@ -177,14 +184,15 @@ export const downloadExcel = async (
         ];
         // Sort categoryData by Followers in descending order
         categoryData.sort((a, b) => {
-          const followersA = parseIndianNumber(a.Followers);
-          const followersB = parseIndianNumber(b.Followers);
+          const followersA = a.Followers;
+          const followersB = b.Followers;
           return followersB - followersA; // Sort descending
         });
         // Update serial numbers after sorting
         categoryData.forEach((row, index) => {
           row.S_No = index + 1; // Set the serial number based on the sorted index
         });
+
         categoryData.forEach((row) => sheet.addRow(row));
         // Apply border to all rows in category sheet
         sheet.eachRow((row, rowIndex) => {
@@ -203,33 +211,13 @@ export const downloadExcel = async (
           });
         });
 
-        // Calculate category total cost
-        const categoryTotalCost = categoryData.reduce((acc, item) => {
-          const page = platformData.find(
-            (p) => p.page_name === item['Username']
-          );
-          const postPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_post'
-          );
-          const storyPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_story'
-          );
-          const postCountValue = Number(postCount[page._id]) || 0;
-          const storyCountValue = Number(storyPerPage[page._id]) || 0;
-          return (
-            acc + postCountValue * postPrice + storyCountValue * storyPrice
-          );
-        }, 0);
-
         const newRow = overviewSheet.addRow([
           '',
           serialNumber, // Serial number based on the length of the sheet
           `Post ${hasStoryCount ? 'and Stories' : ''} on ${formatString(
             categoryName
           )} Profiles`, // Description
-          'Instagram', // Platform
+          platform, // Platform
           categoryData.reduce(
             (acc, item) =>
               acc +
@@ -310,6 +298,131 @@ export const downloadExcel = async (
             size: 10,
           };
 
+          const followersCell = sheet.getCell(`D${index + 2}`);
+          followersCell.value = item['Followers']; // Followers in column D
+          // console.log(followersCell.value, "followersCell.value")
+          followersCell.border = contentBorder; // Apply border to the Followers cell
+          followersCell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+          }; // Alignment
+          followersCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
+
+          const postCountCell = sheet.getCell(`E${index + 2}`);
+          postCountCell.value = item['Post Count']; // Post Count in column E
+          postCountCell.border = contentBorder; // Apply border to the Post Count cell
+          postCountCell.alignment = {
+            horizontal: 'center',
+            vertical: 'middle',
+          }; // Alignment
+          postCountCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
+
+          // Only add Story Count if there's at least one story count > 0 in the category
+          if (hasStoryCount) {
+            const storyCountCell = sheet.getCell(`F${index + 2}`);
+            storyCountCell.value = item['Story Count']; // Story Count in column F
+            storyCountCell.border = contentBorder; // Apply border to the Story Count cell
+            storyCountCell.alignment = {
+              horizontal: 'center',
+              vertical: 'middle',
+            }; // Alignment
+            storyCountCell.font = {
+              name: 'Comic Sans MS',
+              size: 10,
+              bold: true,
+            };
+          }
+        });
+      }
+    } else {
+      const platformPages = platformData.filter(
+        (page) => page.platform_name === platform.toLowerCase()
+      );
+
+      if (!platformPages?.length) continue; // Skip if no pages for the platform
+
+      // Group pages into categories based on platform
+      const groupedPages = platformPages.reduce((acc, page) => {
+        const pageLink = `https://www.${platform.toLowerCase()}.com/${
+          page.page_name
+        }`;
+        acc[platform] = acc[platform] || [];
+
+        acc[platform].push({
+          S_No: acc[platform].length + 1,
+          Username: page.page_name || 'N/A',
+          'Profile Link': pageLink || 'N/A',
+          Followers: page.followers_count || 0,
+          'Post Count': postCount[page._id] || 0,
+          'Story Count': storyPerPage[page._id] || 0,
+        });
+        return acc;
+      }, {});
+
+      // Loop through grouped platforms and create subsheets
+      Object.entries(groupedPages).forEach(([platformName, pages]) => {
+        // Ensure unique sheet name
+        let sheetName = platformName;
+        let counter = 1;
+        while (workbook.getWorksheet(sheetName)) {
+          sheetName = `${platformName} (${counter++})`;
+        }
+
+        // Create worksheet for the platform
+        const sheet = workbook.addWorksheet(sheetName);
+        const hasStoryCount = pages.some((item) => item['Story Count'] > 0);
+        // Define sheet columns
+        sheet.columns = [
+          { header: 'S_No', width: 10 },
+          { header: 'Username', width: 30 },
+          { header: 'Profile Link', width: 50 },
+          { header: 'Followers', width: 15 },
+          { header: 'Post Count', width: 15 },
+          hasStoryCount && { header: 'Story Count', width: 15 },
+        ];
+
+        // Sort pages by followers in descending order
+        pages.sort((a, b) => b.Followers - a.Followers);
+
+        // Update serial numbers after sorting
+        pages.forEach((row, index) => {
+          row.S_No = index + 1;
+        });
+
+        // Add rows to the sheet
+        if (pages.length > 0) {
+          pages.forEach((row) => sheet.addRow(row));
+        }
+
+        pages.forEach((item, index) => {
+          // Assign other values to respective columns and apply borders
+          const sNoCell = sheet.getCell(`A${index + 2}`);
+          sNoCell.value = item['S_No']; // S_No in column A
+          sNoCell.border = contentBorder; // Apply border to the S_No cell
+          sNoCell.alignment = { horizontal: 'center', vertical: 'middle' }; // Alignment
+          sNoCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
+
+          const usernameCell = sheet.getCell(`B${index + 2}`);
+          usernameCell.value = formatString(item['Username']); // Username in column B
+          usernameCell.border = contentBorder; // Apply border to the Username cell
+          usernameCell.font = { name: 'Comic Sans MS', size: 10, bold: true };
+
+          const profileLinkCell = sheet.getCell(`C${index + 2}`);
+          // profileLinkCell.font = { bold: true };
+          // profileLinkCell.value = item['Profile Link']; // Profile Link in column C
+          profileLinkCell.value = {
+            text: item['Profile Link'], // Display text in the cell
+            hyperlink: item['Profile Link'], // Hyperlink
+          };
+          profileLinkCell.border = contentBorder; // Apply border to the Profile Link cell
+          profileLinkCell.font = {
+            color: { argb: 'FF0563C1' },
+            underline: true,
+            bold: true,
+            name: 'Comic Sans MS',
+            size: 10,
+          };
+
           // // Set the hyperlink
           // profileLinkCell.hyperlink = item['Profile Link'];
 
@@ -348,7 +461,96 @@ export const downloadExcel = async (
             };
           }
         });
-      }
+        // Style header row
+        sheet.getRow(1).eachCell((cell) => {
+          cell.font = {
+            name: 'Comic Sans MS',
+            bold: true,
+            color: { argb: 'FF000000' },
+          };
+          cell.alignment = { horizontal: 'center', vertical: 'middle' };
+          cell.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'BFEE90' },
+          };
+          cell.border = {
+            top: { style: 'thin' },
+            bottom: { style: 'thin' },
+            left: { style: 'thin' },
+            right: { style: 'thin' },
+          };
+        });
+
+        // Style all rows
+        sheet.eachRow((row, rowIndex) => {
+          if (rowIndex === 1) return; // Skip header row
+          row.eachCell((cell) => {
+            cell.font = {
+              name: 'Comic Sans MS',
+              bold: true,
+              color: { argb: 'FF000000' },
+            };
+            cell.border = {
+              top: { style: 'thin' },
+              left: { style: 'thin' },
+              bottom: { style: 'thin' },
+              right: { style: 'thin' },
+            };
+          });
+        });
+
+        // Add overview entry for the platform
+        const totalPosts = pages.reduce(
+          (sum, page) => sum + page['Post Count'],
+          0
+        );
+        const totalStories = pages.reduce(
+          (sum, page) => sum + Number(page['Story Count']),
+          0
+        );
+
+        const platformTotalCost = pages.reduce((sum, page) => {
+          const postPrice = getPriceDetail(
+            platformPages.find((p) => p.page_name === page.Username)
+              ?.page_price_list,
+            `${platform.toLowerCase()}_post`
+          );
+          const storyPrice = getPriceDetail(
+            platformPages.find((p) => p.page_name === page.Username)
+              ?.page_price_list,
+            `${platform.toLowerCase()}_story`
+          );
+          return (
+            sum +
+            page['Post Count'] * postPrice +
+            page['Story Count'] * storyPrice
+          );
+        }, 0);
+
+        totalPostsAndStories = 0;
+        totalPostsAndStories += Number(totalPosts) + Number(totalStories);
+
+        const overviewRow = overviewSheet.addRow([
+          '',
+          serialNumber++, // Serial number
+          `Posts and Stories on (${platformName})`,
+          platformName, // Platform
+          totalPostsAndStories, // Total posts and stories
+          deliverableText, // Deliverables
+          `₹${platformTotalCost.toFixed(2)}`, // Total cost
+        ]);
+
+        // Apply styles to overview row
+        overviewRow.eachCell((cell, colNumber) => {
+          cell.font = { name: 'Comic Sans MS', bold: true };
+          cell.border = contentBorder;
+          cell.alignment =
+            colNumber === 3
+              ? { horizontal: 'left', vertical: 'middle' }
+              : { horizontal: 'center', vertical: 'middle' };
+        });
+      });
     }
   }
   // }
@@ -553,7 +755,7 @@ export const downloadExcel = async (
 
   workbook.xlsx.writeBuffer().then((buffer) => {
     const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      type: 'application/vnd.openxmlfor/ats-officedocument.spreadsheetml.sheet',
     });
     const url = URL.createObjectURL(blob);
 
