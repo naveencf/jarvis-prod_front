@@ -25,6 +25,7 @@ import { useGetAllTargetCompetitionsQuery } from "../../Store/API/Sales/TargetCo
 import { useGetTotalSaleAmountDateWiseQuery } from "../../Store/API/Sales/SaleBookingApi";
 import { useGetSalesCategoryListQuery } from "../../Store/API/Sales/salesCategoryApi";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
+import OutstandingComp from "./OutstandingComp";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -49,7 +50,7 @@ const SalesDashboard = () => {
     error: categoryDetailsError,
     isLoading: categoryDetailsLoading,
   } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
-  console.log(categoryDetails);
+
   async function getweekly(startDate, endDate, laststartDate, lastendDate) {
     setWeeklyLoading(true);
     try {
@@ -555,6 +556,7 @@ How are you doing today?`}
         )}
 
       {/* {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />} */}
+      {loginUserRole === 1 && <OutstandingComp />}
 
       {loginUserRole == 1 && (
         <>

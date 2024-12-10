@@ -80,6 +80,14 @@ const SalesAccountApi = createApi({
       },
     }),
 
+    updateImage: builder.mutation({
+      query: (data) => ({
+        url: `accounts/update_account_image/${data.get("account_id")}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+
     deleteAccount: builder.mutation({
       query: (id) => ({
         url: `accounts/delete_account/${id}`,
@@ -95,6 +103,7 @@ export const {
   useGetSingleAccountSalesBookingQuery,
   useAddAccountMutation,
   useEditAccountMutation,
+  useUpdateImageMutation,
   useDeleteAccountMutation,
 } = SalesAccountApi;
 

@@ -43,6 +43,7 @@ import {
   useGetSalesCategoryDetailsQuery,
   useGetSalesCategoryListQuery,
 } from "../../../Store/API/Sales/salesCategoryApi";
+import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -62,6 +63,12 @@ const ViewSaleBooking = () => {
     error: categoryDetailsError,
     isLoading: categoryDetailsLoading,
   } = useGetSalesCategoryListQuery({ skip: loginUserRole !== 1 });
+
+  const {
+    data: allCreditApprovals,
+    error: allCreditApprovalsError,
+    isLoading: allCreditApprovalsLoading,
+  } = useGetAllCreditApprovalsQuery();
 
   const navigate = useNavigate();
   const {
@@ -491,7 +498,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-            "uploaded" == row?.invoice_request_status ? (
+          "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -542,6 +549,16 @@ const ViewSaleBooking = () => {
         </div>
       ),
       width: 100,
+    },
+    {
+      key: "payment_terms",
+      name: "Payment Terms",
+      renderRowCell: (row) =>
+        allCreditApprovals?.find(
+          (item) => item._id == row.reason_credit_approval
+        )?.reason,
+      width: 100,
+      comaapre: true,
     },
     {
       key: "requested_amount",
@@ -596,15 +613,6 @@ const ViewSaleBooking = () => {
       showCol: true,
       width: 100,
       getTotal: true,
-    },
-
-    {
-      key: "createdAt",
-      name: "Booking Date Created",
-      compare: true,
-      renderRowCell: (row) => DateISOtoNormal(row.createdAt),
-      showCol: true,
-      width: 100,
     },
     {
       key: "record_service_amount",
@@ -739,7 +747,32 @@ const ViewSaleBooking = () => {
         }
       },
     },
-
+    {
+      key: "credit_note",
+      name: "Credit Note",
+      renderRowCell: (row) => {
+        const data = row?.salesInvoiceRequestData?.filter(
+          (item) => item.invoice_type_id == "credit_note"
+        );
+        if (data?.length == 0) {
+          return "N/A";
+        } else if (data?.length == 1) {
+          return (
+            <>
+              <a
+                className="icon-1"
+                target="__blank"
+                href={row?.url + "/" + data[0]?.credit_note_file}
+              >
+                <i className="bi bi-eye" />
+              </a>
+            </>
+          );
+        }
+      },
+      compare: true,
+      width: 100,
+    },
     {
       key: "actions",
       name: "Actions",

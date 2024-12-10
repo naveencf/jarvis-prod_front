@@ -180,7 +180,7 @@ const PlanMaking = () => {
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedPostValues = { ...postPerPageValues };
 
-    selectedRows.forEach((row) => {
+    getTableData.forEach((row) => {
       const isChecked = showTotalCost[row._id];
 
       if (isChecked) {
@@ -196,7 +196,7 @@ const PlanMaking = () => {
     setPostPerPageValues(updatedPostValues);
 
     // Trigger other updates or calculations
-    selectedRows.forEach((row) => {
+    getTableData.forEach((row) => {
       const postCount = updatedPostValues[row._id] ?? 1;
       const storyCount = updatedStoryValues[row._id] ?? 0;
       const postCost = costPerPostValues[row._id] ?? 0;
@@ -225,10 +225,10 @@ const PlanMaking = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-            rate_type,
-            { page_price_list, followers_count },
-            type
-          );
+              rate_type,
+              { page_price_list, followers_count },
+              type
+            );
 
       return {
         _id,
@@ -302,10 +302,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              type
-            );
+                rate_type,
+                { page_price_list, followers_count },
+                type
+              );
 
         return {
           _id,
@@ -531,7 +531,7 @@ const PlanMaking = () => {
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
     const updatedPageCategoryCount = { ...pageCategoryCount };
-
+    const categoryUpdatedData = [];
     // Create a map for faster lookup of categories by name and id
     if (cat) {
       const categoryMap = cat?.reduce((acc, category) => {
@@ -549,18 +549,22 @@ const PlanMaking = () => {
           const matchingPage = { ...pageList[matchingPageIndex] }; // Clone the page data
 
           // Override page_category_name with incoming category_name
-          matchingPage.page_category_name = incomingPage.category_name;
+          if (incomingPage.category_name !== '') {
+            matchingPage.page_category_name = incomingPage.category_name;
 
-          // Find the corresponding page_category_id using the categoryMap
-          const matchingCategoryId = categoryMap[incomingPage?.category_name];
-          if (matchingCategoryId) {
-            matchingPage.page_category_id = matchingCategoryId; // Set the correct page_category_id
+            // Find the corresponding page_category_id using the categoryMap
+            const matchingCategoryId = categoryMap[incomingPage.category_name];
+            if (matchingCategoryId) {
+              matchingPage.page_category_id = matchingCategoryId; // Set the correct page_category_id
+            }
           }
-
           // If the page is not already selected, add it to the selected rows and update category count
           const isAlreadySelected = updatedSelectedRows.some(
             (selectedRow) => selectedRow._id === matchingPage._id
           );
+          categoryUpdatedData.push(matchingPage);
+          console.log('incoming ', incomingData);
+          // console.log('matching page', matchingPage);
           if (!isAlreadySelected) {
             updatedSelectedRows.push(matchingPage);
 
@@ -611,6 +615,16 @@ const PlanMaking = () => {
         }
       });
 
+      pageList.forEach((page) => {
+        const isMatched = incomingData.some(
+          (incomingPage) =>
+            page.followers_count > 0 &&
+            incomingPage.page_name === page.page_name
+        );
+        if (!isMatched) {
+          categoryUpdatedData.push(page);
+        }
+      });
       // Prepare the final plan data
       const planxData = updatedSelectedRows.map((row) => {
         const { _id, page_price_list, page_name, rate_type, followers_count } =
@@ -623,10 +637,10 @@ const PlanMaking = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              type
-            );
+                rate_type,
+                { page_price_list, followers_count },
+                type
+              );
 
         return {
           _id,
@@ -646,6 +660,8 @@ const PlanMaking = () => {
       setShowTotalCost(updatedShowTotalCost);
       setPageCategoryCount(updatedPageCategoryCount);
     }
+
+    return categoryUpdatedData;
   };
 
   const normalize = (str) => {
@@ -832,7 +848,6 @@ const PlanMaking = () => {
         { target: { checked: true } },
         activeIndex
       );
-
     } else if (event.code === 'ArrowDown') {
       if (activeIndex < filterData.length - 1) {
         setShortcutTriggered(true); // Indicate shortcut use
@@ -857,102 +872,109 @@ const PlanMaking = () => {
     layering == 1
       ? sarcasmNetwork
       : layering == 2
-        ? ownPages
-        : layering == 3
-          ? advancePageList
-          : layering == 4
-            ? topUsedPageList
-            : showOwnPage
-              ? ownPages
-              : toggleShowBtn
-                ? selectedRows
-                : filterRowsBySelection(filterData, selectedRows);
-
+      ? ownPages
+      : layering == 3
+      ? advancePageList
+      : layering == 4
+      ? topUsedPageList
+      : showOwnPage
+      ? ownPages
+      : toggleShowBtn
+      ? selectedRows
+      : filterRowsBySelection(filterData, selectedRows);
 
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
   }, [descriptions]);
 
   useEffect(() => {
-    if (pageList && activeTabPlatform.length) {
-      const pageData = pageList
-        ?.filter(
+    const updatePageData = (data, activeTabPlatform) => {
+      if (data && activeTabPlatform.length) {
+        const pageData = data?.filter(
           (item) =>
             item.followers_count > 0 &&
             activeTabPlatform.includes(item.platform_id)
-        )
-      const sarcasamNetworkPages = [];
-      const advancedPostPages = [];
-      const mostUsedPages = [];
-      // Adding pages for layer
-      pageList?.filter((page) => {
-        if (page.followers_count > 0) {
-          if (page?.page_layer == 1) {
-            sarcasamNetworkPages.push(page);
-          } else if (page?.page_layer == 3) {
-            advancedPostPages.push(page);
-          } else if (page?.page_layer == 4) {
-            mostUsedPages.push(page);
+        );
+
+        const sarcasamNetworkPages = [];
+        const advancedPostPages = [];
+        const mostUsedPages = [];
+
+        // Adding pages for layer
+        data?.filter((page) => {
+          if (page.followers_count > 0) {
+            if (page?.page_layer === 1) {
+              sarcasamNetworkPages.push(page);
+            } else if (page?.page_layer === 3) {
+              advancedPostPages.push(page);
+            } else if (page?.page_layer === 4) {
+              mostUsedPages.push(page);
+            }
           }
-        }
-      });
-      setFilterData(pageData);
-      setSarcasmNetwork(sarcasamNetworkPages);
-      setAdvancePageList(advancedPostPages);
-      setTopUsedPageList(mostUsedPages);
-      const initialPostValues = {};
-      const initialStoryValues = {};
-      const initialCostPerPostValues = {};
-      const initialCostPerStoryValues = {};
-      const initialCostPerBothValues = {};
-      pageList?.forEach((page) => {
-        const postPrice = getPriceDetail(
-          page.page_price_list,
-          'instagram_post'
-        );
-        const storyPrice = getPriceDetail(
-          page.page_price_list,
-          'instagram_story'
-        );
-        const bothPrice = getPriceDetail(
-          page.page_price_list,
-          'instagram_both'
-        );
-        const rateType = page.rate_type === 'Fixed';
-        const costPerPost = rateType
-          ? postPrice
-          : calculatePrice(page.rate_type, page, 'post');
+        });
 
-        const costPerStory = rateType
-          ? storyPrice
-          : calculatePrice(page.rate_type, page, 'story');
-        const costOfBoth = rateType
-          ? bothPrice
-          : calculatePrice(page.rate_type, page, 'both');
+        setFilterData(pageData);
+        setSarcasmNetwork(sarcasamNetworkPages);
+        setAdvancePageList(advancedPostPages);
+        setTopUsedPageList(mostUsedPages);
 
-        initialPostValues[page._id] = 0;
-        initialStoryValues[page._id] = 0;
-        initialCostPerPostValues[page._id] = costPerPost || 0;
-        initialCostPerStoryValues[page._id] = costPerStory || 0;
-        initialCostPerBothValues[page._id] = costOfBoth || 0;
-      });
-      setPostPerPageValues(initialPostValues);
-      setStoryPerPageValues(initialStoryValues);
-      setCostPerPostValues(initialCostPerPostValues);
-      setCostPerStoryValues(initialCostPerStoryValues);
-      // setCostPerBothValues(initialCostPerBothValues);
-    }
-  }, [pageList, activeTabPlatform]);
+        const initialPostValues = {};
+        const initialStoryValues = {};
+        const initialCostPerPostValues = {};
+        const initialCostPerStoryValues = {};
+        const initialCostPerBothValues = {};
 
-  useEffect(() => {
+        data?.forEach((page) => {
+          const postPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_post'
+          );
+          const storyPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_story'
+          );
+          const bothPrice = getPriceDetail(
+            page.page_price_list,
+            'instagram_both'
+          );
+          const rateType = page.rate_type === 'Fixed';
+
+          const costPerPost = rateType
+            ? postPrice
+            : calculatePrice(page.rate_type, page, 'post');
+          const costPerStory = rateType
+            ? storyPrice
+            : calculatePrice(page.rate_type, page, 'story');
+          const costOfBoth = rateType
+            ? bothPrice
+            : calculatePrice(page.rate_type, page, 'both');
+
+          initialPostValues[page._id] = 0;
+          initialStoryValues[page._id] = 0;
+          initialCostPerPostValues[page._id] = costPerPost || 0;
+          initialCostPerStoryValues[page._id] = costPerStory || 0;
+          initialCostPerBothValues[page._id] = costOfBoth || 0;
+        });
+
+        // setPostPerPageValues(initialPostValues);
+        // setStoryPerPageValues(initialStoryValues);
+        setCostPerPostValues(initialCostPerPostValues);
+        setCostPerStoryValues(initialCostPerStoryValues);
+        // setCostPerBothValues(initialCostPerBothValues);
+      }
+    };
+
     // Call your function to handle automatic selection
-    if (filterData?.length > 0 && pageDetail?.length > 0) {
-      handleAutomaticSelection(pageDetail);
+    if (pageList?.length > 0 && pageDetail?.length > 0) {
+      const automaticCheckedData = handleAutomaticSelection(pageDetail);
+      if (automaticCheckedData) {
+        updatePageData(automaticCheckedData, activeTabPlatform);
+      }
       setLayering(5);
     } else if (filterData?.length > 0 && pageDetail?.length == 0) {
       setLayering(1);
     }
-  }, [filterData, pageDetail]);
+  }, [pageList, pageDetail, activeTabPlatform]);
 
   useEffect(() => {
     if (selectedRows?.length == 0) {

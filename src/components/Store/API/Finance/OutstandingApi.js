@@ -10,6 +10,7 @@ const OutstandingApi = createApi({
       transformResponse: (response) => response,
       keepUnusedDataFor: 0,
     }),
+
     updateOutstandingBalancePayment: builder.mutation({
       query: (data) => ({
         url: `sales/sale_balance_update`,

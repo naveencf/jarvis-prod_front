@@ -68,6 +68,10 @@ const PocDetails = ({ SingleAccount, setPocCount }) => {
                           {poc?.alternative_contact_no || "N/A"}
                         </li>
                         <li>
+                          <span>Email:</span>
+                          {poc?.email || "N/A"}
+                        </li>
+                        <li>
                           <span>Department:</span>
                           {poc?.department_name || "N/A"}
                         </li>

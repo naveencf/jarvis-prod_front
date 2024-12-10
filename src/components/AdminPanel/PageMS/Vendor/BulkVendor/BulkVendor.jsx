@@ -1,24 +1,23 @@
-import React, { useEffect, useState } from "react";
-import View from "../../../Sales/Account/View/View";
-import axios from "axios";
-import { baseUrl } from "../../../../../utils/config";
-import BulkVendorUploadModal from "../BulkVendorUploadModal";
-import { useGetAllVendorQuery } from "../../../../Store/reduxBaseURL";
-import { FaEdit } from "react-icons/fa";
-import { Box, Button, Typography, Modal } from "@mui/material";
-import FieldContainer from "../../../FieldContainer";
-import FormContainer from "../../../FormContainer";
-import { useGetAllPageListQuery } from "../../../../Store/PageBaseURL";
-import jwtDecode from "jwt-decode";
-import Select, { components } from "react-select";
-
+import React, { useEffect, useState } from 'react';
+import View from '../../../Sales/Account/View/View';
+import axios from 'axios';
+import { baseUrl } from '../../../../../utils/config';
+import BulkVendorUploadModal from '../BulkVendorUploadModal';
+import { useGetAllVendorQuery } from '../../../../Store/reduxBaseURL';
+import { FaEdit } from 'react-icons/fa';
+import { Box, Button, Typography, Modal } from '@mui/material';
+import FieldContainer from '../../../FieldContainer';
+import FormContainer from '../../../FormContainer';
+import { useGetAllPageListQuery } from '../../../../Store/PageBaseURL';
+import jwtDecode from 'jwt-decode';
+import Select, { components } from 'react-select';
 
 const BulkVendor = () => {
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
 
-  const token = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem('token');
   const [bulkData, setBulkData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [getRowData, setGetRowData] = useState([]);
@@ -37,28 +36,25 @@ const BulkVendor = () => {
   const [m_post, setM_post] = useState('');
   const [m_both, setM_both] = useState('');
 
-  const {
-    data: vendorData,
-  } = useGetAllVendorQuery();
+  const { data: vendorData } = useGetAllVendorQuery();
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID });
 
-
   useEffect(() => {
     axios
       .get(`${baseUrl}v1/bulk_vendor_data`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       })
       .then((res) => {
         setBulkData(res.data.data);
         setFilterData(res.data.data);
-        console.log(res.data.data, "res.datab");
+        console.log(res.data.data, 'res.datab');
       });
   }, []);
 
@@ -66,108 +62,110 @@ const BulkVendor = () => {
     setModalOpenUpdate(true);
 
     try {
-      const getSingleVendor = await axios.get(`${baseUrl}v1/get_single_bulk_vendor/${row._id}`);
-      const vendorDetails = getSingleVendor?.data?.data
+      const getSingleVendor = await axios.get(
+        `${baseUrl}v1/get_single_bulk_vendor/${row._id}`
+      );
+      const vendorDetails = getSingleVendor?.data?.data;
 
-      setID(vendorDetails?._id)
-      setVenderName(vendorDetails?.vendor_id)
-      setPageName(vendorDetails?.page_name)
-      setStory(vendorDetails?.story)
-      setPost(vendorDetails?.post)
-      setBothData(vendorDetails?.both)
-      setReel(vendorDetails?.reel)
-      setCarousel(vendorDetails?.carousel)
-      setM_story(vendorDetails?.m_story)
-      setM_post(vendorDetails?.m_post)
-      setM_both(vendorDetails?.m_both)
+      setID(vendorDetails?._id);
+      setVenderName(vendorDetails?.vendor_id);
+      setPageName(vendorDetails?.page_name);
+      setStory(vendorDetails?.story);
+      setPost(vendorDetails?.post);
+      setBothData(vendorDetails?.both);
+      setReel(vendorDetails?.reel);
+      setCarousel(vendorDetails?.carousel);
+      setM_story(vendorDetails?.m_story);
+      setM_post(vendorDetails?.m_post);
+      setM_both(vendorDetails?.m_both);
     } catch (error) {
       console.error('Error fetching vendor data:', error);
     }
   };
 
-
   const dataGridcolumns = [
     {
-      key: "S.NO",
-      name: "S.no",
+      key: 'S.NO',
+      name: 'S.no',
       renderRowCell: (row, index) => index + 1,
       width: 80,
     },
 
     {
-      key: "page_name",
-      name: "Page Name",
+      key: 'page_name',
+      name: 'Page Name',
       width: 200,
     },
     {
-      key: "vendor_id",
-      name: "Vendor",
+      key: 'vendor_id',
+      name: 'Vendor',
       width: 200,
       renderRowCell: (row) => {
-        const venName = vendorData?.find((item) => item?._id === row?.vendor_id)?.vendor_name;
-        return venName || "NA";
+        const venName = vendorData?.find(
+          (item) => item?._id === row?.vendor_id
+        )?.vendor_name;
+        return venName || 'NA';
       },
     },
     {
-      key: "story",
-      name: "Story",
+      key: 'story',
+      name: 'Story',
       width: 200,
     },
     {
-      key: "post",
-      name: "Post",
+      key: 'post',
+      name: 'Post',
       width: 200,
     },
     {
-      key: "both",
-      name: "Both",
+      key: 'both',
+      name: 'Both',
       width: 200,
     },
     {
-      key: "m_story",
-      name: "Million Story",
+      key: 'm_story',
+      name: 'Million Story',
       width: 200,
     },
     {
-      key: "m_post",
-      name: "Million Post",
+      key: 'm_post',
+      name: 'Million Post',
       width: 200,
     },
     {
-      key: "m_both",
-      name: "Million Both",
+      key: 'm_both',
+      name: 'Million Both',
       width: 200,
     },
     {
-      key: "reel",
-      name: "Reel",
-      width: 200,
-    },
-
-    {
-      key: "carousel",
-      name: "Carousel",
+      key: 'reel',
+      name: 'Reel',
       width: 200,
     },
 
     {
-      key: "createdAt",
+      key: 'carousel',
+      name: 'Carousel',
+      width: 200,
+    },
+
+    {
+      key: 'createdAt',
       width: 150,
-      name: "Creation Date",
+      name: 'Creation Date',
       renderRowCell: (row) => {
         let data = row?.createdAt;
         return data
-          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
-          : "NA";
+          ? Intl.DateTimeFormat('en-GB').format(new Date(data))
+          : 'NA';
       },
     },
     {
-      key: "Action",
-      name: "Action",
+      key: 'Action',
+      name: 'Action',
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
-
           <button
             title="Edit"
             className="btn btn-outline-primary btn-sm user-button"
@@ -186,10 +184,9 @@ const BulkVendor = () => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
-
   };
   const handleClose = () => {
-    setModalOpenUpdate(false)
+    setModalOpenUpdate(false);
   };
 
   const handleSubmitUpdate = async (e) => {
@@ -204,16 +201,14 @@ const BulkVendor = () => {
         m_story: m_story,
         m_both: m_both,
         reel: reel,
-        carousel: carousel
+        carousel: carousel,
       });
       setModalOpenUpdate(false);
-      alert(" Update SuccessFully")
-
+      alert(' Update SuccessFully');
     } catch (error) {
       console.log(error);
     }
   };
-
 
   return (
     <div>
@@ -221,7 +216,12 @@ const BulkVendor = () => {
         <h5 className="card-title">Bulk-Vendor-Pages</h5>
         <div className="flexCenter colGap8">
           {/* <UploadBulkVendorPages getRowData={getRowData} from={"pages"} /> */}
-          {openModal && <BulkVendorUploadModal open={openModal} onClose={handleCloseModal} />}
+          {openModal && (
+            <BulkVendorUploadModal
+              open={openModal}
+              onClose={handleCloseModal}
+            />
+          )}
 
           <button
             onClick={() => handleOpenModal()}
@@ -236,10 +236,10 @@ const BulkVendor = () => {
         columns={dataGridcolumns}
         data={filterData}
         isLoading={false}
-        title={"Bulk Vendor Overview"}
+        title={'Bulk Vendor Overview'}
         rowSelectable={true}
         pagination={[100, 200, 1000]}
-        tableName={"Bulk Vendor Overview"}
+        tableName={'Bulk Vendor Overview'}
         selectedData={setGetRowData}
       />
       <>
@@ -250,18 +250,23 @@ const BulkVendor = () => {
           aria-labelledby="create-meeting-page-modal"
           aria-describedby="create-meeting-page-description"
         >
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 800,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 24,
-            p: 4
-          }}>
-            <Button sx={{ float: 'right' }} variant="outlined" color='error'
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 800,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Button
+              sx={{ float: 'right' }}
+              variant="outlined"
+              color="error"
               onClick={handleClose}
             >
               X
@@ -281,7 +286,8 @@ const BulkVendor = () => {
                     type="text"
                     fieldGrid={4}
                     value={
-                      vendorData?.find((item) => item?._id === venderName)?.vendor_name || "NA"
+                      vendorData?.find((item) => item?._id === venderName)
+                        ?.vendor_name || 'NA'
                     }
                     disabled
                   />
@@ -295,7 +301,7 @@ const BulkVendor = () => {
                   <div className="col-md-6 mb16">
                     <div className="form-group m0">
                       <label className="form-label">
-                        Page Name <sup style={{ color: "red" }}>*</sup>
+                        Page Name <sup style={{ color: 'red' }}>*</sup>
                       </label>
                       <Select
                         name="Page"
@@ -342,7 +348,6 @@ const BulkVendor = () => {
                     fieldGrid={4}
                     value={reel}
                     onChange={(e) => setReel(e.target.value)}
-
                   />
                   <FieldContainer
                     label="Carousel"
@@ -373,15 +378,15 @@ const BulkVendor = () => {
                     value={m_both}
                     onChange={(e) => setM_both(e.target.value)}
                   />
-
-
-
-
                 </div>
               </div>
               <button
                 className="btn cmnbtn btn_sm btn-primary"
-                onClick={handleSubmitUpdate}> update</button>
+                onClick={handleSubmitUpdate}
+              >
+                {' '}
+                update
+              </button>
             </Box>
           </Box>
         </Modal>

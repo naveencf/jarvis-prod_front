@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Button,
   Dialog,
@@ -10,29 +10,36 @@ import {
   TableCell,
   TableHead,
   TableRow,
-} from "@mui/material";
-import * as XLSX from "xlsx";
-import { useGlobalContext } from "../../../../../Context/Context";
-import { baseUrl } from "../../../../../utils/config";
-import axios from "axios";
-const storedToken = sessionStorage.getItem("token");
+} from '@mui/material';
+import * as XLSX from 'xlsx';
+import { useGlobalContext } from '../../../../../Context/Context';
+import { baseUrl } from '../../../../../utils/config';
+import axios from 'axios';
+const storedToken = sessionStorage.getItem('token');
 
-const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
+const UploadBulkVendorPages = ({
+  getRowData,
+  from,
+  onClose,
+  category,
+  activePlatformId,
+  rateType,
+}) => {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
-  const [fileName, setFileName] = useState("");
+  const [fileName, setFileName] = useState('');
   const [file, setFile] = useState(null);
-  const { toastAlert, toastError } = useGlobalContext();
 
+  const { toastAlert, toastError } = useGlobalContext();
   const handleCheck = (event) => {
     if (!getRowData) {
-      toastError("Please select vendor first");
+      toastError('Please select vendor first');
       return;
     }
   };
   const handleUpload = (event) => {
     if (!getRowData) {
-      toastError("Please select vendor first");
+      toastError('Please select vendor first');
 
       return;
     }
@@ -45,7 +52,7 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
       const reader = new FileReader();
       reader.onload = (e) => {
         const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { type: 'array' });
         const worksheet = workbook.Sheets[workbook.SheetNames[0]];
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
 
@@ -74,29 +81,28 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
   };
 
   const handleSubmit = async () => {
-  
     const formdata = new FormData();
-      formdata.append("vendor_id", getRowData);
-      formdata.append("category_id", category);
-      formdata.append("bulk_vendor_excel", file);
-  
+    formdata.append('vendor_id', getRowData);
+    formdata.append('category_id', category);
+    formdata.append('rate_type', rateType);
+    formdata.append('platform_id', activePlatformId);
+    formdata.append('bulk_vendor_excel', file);
+    // rate_type, platform_id
 
     try {
       const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {
         headers: {
           Authorization: `Bearer ${storedToken}`,
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
-      toastAlert("Bulk Vendor Updated Succefully")
-      onClose()
+      toastAlert('Bulk Vendor Updated Succefully');
+      onClose();
       console.log(res);
     } catch (error) {
-      onClose()
-      toastError(error,"")
+      onClose();
+      toastError(error, '');
       console.error(error);
-      
-
     }
 
     setOpen(false);
@@ -105,25 +111,25 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
   const downloadTemplate = () => {
     const headers = [
       [
-        "page_name",
-        "page_link",
-        "followers",
-        "post",
-        "story",
-        "both",
+        'page_name',
+        'page_link',
+        'followers',
+        'post',
+        'story',
+        'both',
         // "m_post",
         // "m_story",
         // "m_both",
-        "reel",
-        "carousel",
+        'reel',
+        'carousel',
       ],
     ];
 
     const ws = XLSX.utils.aoa_to_sheet(headers);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Template");
+    XLSX.utils.book_append_sheet(wb, ws, 'Template');
 
-    XLSX.writeFile(wb, "vendor_pages_template.xlsx");
+    XLSX.writeFile(wb, 'vendor_pages_template.xlsx');
   };
 
   return (
@@ -136,7 +142,6 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
         Download Template
       </Button>
 
-     
       <Button
         component="label"
         className="btn cmnbtn btn_sm btn-outline-primary"
@@ -144,17 +149,17 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
       >
         Upload Bulk-Vendor-Pages
         {/* {getRowData.length === 1 && ( */}
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-            hidden
-            onChange={handleUpload}
-          />
+        <input
+          type="file"
+          accept=".xlsx, .xls"
+          hidden
+          onChange={handleUpload}
+        />
         {/* )} */}
       </Button>
 
       {/* Dialog to preview the uploaded data */}
-      <Dialog open={open} onClose={handleClose} maxWidth='lg' fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
         <DialogTitle>Preview: {fileName}</DialogTitle>
         <DialogContent>
           <Table>
@@ -177,7 +182,7 @@ const UploadBulkVendorPages = ({ getRowData,from, onClose,category }) => {
             <TableBody>
               {rows.map((row, index) => (
                 <TableRow key={index}>
-                  <TableCell>{index+1}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>{row?.page_name}</TableCell>
                   <TableCell>{row?.page_link}</TableCell>
                   <TableCell>{row?.followers}</TableCell>

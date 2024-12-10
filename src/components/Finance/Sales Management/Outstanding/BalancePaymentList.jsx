@@ -36,6 +36,7 @@ import { useGetAllInvoiceRequestQuery } from "../../../Store/API/Finance/Invoice
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDetailsApi";
 import { useGetAllOutstandingListNewQuery } from "../../../Store/API/Finance/OutstandingNew";
+import OutstandingComp from "../../../AdminPanel/Sales/OutstandingComp";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -85,7 +86,8 @@ const BalancePaymentList = () => {
   const [paidAmount, setPaidAmount] = useState([]);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [viewImgDialog, setViewImgDialog] = useState(false);
-  const [paymentDate, setPaymentDate] = useState(dayjs(new Date()));
+  // const [paymentDate, setPaymentDate] = useState(dayjs(new Date()));
+  const [paymentDate, setPaymentDate] = useState("");
 
   const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
@@ -142,13 +144,14 @@ const BalancePaymentList = () => {
     "All Tax Invoice",
     "Non-Gst Bookings",
     "Credit-Note Invoice",
+    "User-Wise Outstanding"
   ];
 
   const token = sessionStorage.getItem("token");
 
-  useEffect(() => {
-    pendingApprovalApi();
-  }, [dateFilter]);
+  // useEffect(() => {
+  //   pendingApprovalApi();
+  // }, [dateFilter]);
 
   useEffect(() => {
     if (allOutstandingList && !allOutstandingListLoading) {
@@ -236,21 +239,21 @@ const BalancePaymentList = () => {
     setUniqueNonInvoiceSalesExecutiveCount(111);
     setUniqueNonInvoiceSalesExecutiveData(111);
   };
-  const pendingApprovalApi = () => {
-    axios
-      .get(
-        baseUrl + `sales/payment_update_status_list_data/?status=${"pending"}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
-      .then((res) => {
-        const pedingAppData = res?.data?.data;
-        setTotalCount(pedingAppData?.length);
-      });
-  };
+  // const pendingApprovalApi = () => {
+  //   axios
+  //     .get(
+  //       baseUrl + `sales/payment_update_status_list_data/?status=${"pending"}`,
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       }
+  //     )
+  //     .then((res) => {
+  //       const pedingAppData = res?.data?.data;
+  //       setTotalCount(pedingAppData?.length);
+  //     });
+  // };
 
   const handleImageClick = (e, row) => {
     e.preventDefault();
@@ -381,7 +384,7 @@ const BalancePaymentList = () => {
   };
 
   const filteredData = getFilteredData(activeAccordionIndex, filterData);
-  console.log(filteredData, "hghjdghjg")
+  // console.log(filteredData, "hghjdghjg")
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -413,11 +416,11 @@ const BalancePaymentList = () => {
             balancePaymentAdditionalTitles={true}
           /> */}
 
-          <Button variant="contained" className="mb-4">
+          {/* <Button variant="contained" className="mb-4">
             <Link to="/admin/finance-pendingapproveupdate/">
               Pending Approval ({totalCount})
             </Link>
-          </Button>
+          </Button> */}
           {/* Add Icon TDS */}
           {closeDialog && (
             <TDSDialog
@@ -478,7 +481,7 @@ const BalancePaymentList = () => {
             />
           )}
 
-          <BalancePaymentListCardHeader filterData={filterData} />
+          {/* <BalancePaymentListCardHeader filterData={filterData} /> */}
 
           <CreditNoteDialog
             setCreditNotesDialog={setCreditNotesDialog}
@@ -513,39 +516,6 @@ const BalancePaymentList = () => {
                 handleOpenCreditNote,
               })}
               data={filteredData}
-              // data={
-              //   activeAccordionIndex === 3
-              //     ? filterData?.filter(
-              //       (invc) => invc.invoice_type_id !== "proforma"
-              //     )
-              //     : activeAccordionIndex === 0
-              //       ? filterData?.filter(
-              //         (invc) =>
-              //           invc.invoice_type_id === "tax-invoice" &&
-              //           invc.invoice_creation_status !== "pending" &&
-              //           invc.gst_status === true &&
-              //           invc.paid_amount <= invc.campaign_amount * 0.9
-              //       )
-              //       : activeAccordionIndex === 1
-              //         ? filterData?.filter(
-              //           (invc) =>
-              //             invc.invoice_type_id !== "tax-invoice" ||
-              //             invc.invoice_creation_status === "pending"
-              //         )
-              //         : activeAccordionIndex === 4
-              //           ? filterData?.filter(
-              //             (invc) =>
-              //               invc.gst_status === false &&
-              //               invc.invoice_creation_status !== "pending" &&
-              //               invc.paid_amount <= invc.campaign_amount * 0.9
-              //           )
-              //           : activeAccordionIndex === 5
-              //             ? filterData?.filter(
-              //               (invc) =>
-              //                 invc.invoice_type_id == "credit_note"
-              //             )
-              //             : []
-              // }
               isLoading={isLoading}
               title={"Outstanding"}
               rowSelectable={true}
@@ -567,6 +537,7 @@ const BalancePaymentList = () => {
           )}
 
         {activeAccordionIndex === 2 && <ApprovedList />}
+        {activeAccordionIndex === 6 && <OutstandingComp />}
       </div>
 
       {/* Dialog box for balance payment update*/}

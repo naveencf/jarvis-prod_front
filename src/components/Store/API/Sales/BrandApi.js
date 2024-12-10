@@ -8,10 +8,6 @@ const BrandApi = createApi({
     getAllBrand: builder.query({
       query: () => "accounts/brand",
       transformResponse: (response) => response?.data,
-      providesTags: (result) =>
-        result
-          ? [...result.map(({ id }) => ({ type: "Brand", id })), "Brand"]
-          : ["Brand"],
     }),
     getSingleBrand: builder.query({
       query: (id) => `accounts/brand/${id}`,

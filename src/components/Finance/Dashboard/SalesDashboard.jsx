@@ -90,9 +90,9 @@ export default function SalesDashboard() {
   }, []);
   return (
     <div>
-      <div className="card">
+      {/* <div className="card">
         <div className="card-body flex-row gap4">
-          <div className="row thm_form w-100">
+          {/* <div className="row thm_form w-100">
             <div className="col-md-2_5">
               <Autocomplete
                 disablePortal
@@ -155,7 +155,7 @@ export default function SalesDashboard() {
                 Reset
               </button>
             </div>
-          </div>
+          </div> 
           <div className=" flex-row d-flex" style={{ gap: "20px" }}>
             <i
               className="bi bi-list-ul"
@@ -173,7 +173,7 @@ export default function SalesDashboard() {
             ></i>
           </div>
         </div>
-      </div>
+      </div> */}
       {graph === 0 && (
         <div className="card">
           <div className="card-body pb0">
@@ -360,9 +360,9 @@ export default function SalesDashboard() {
                             .map((e) => e.toPay)
                             .reduce((prev, next) => prev + next, 0)
                             ? payoutData
-                                .map((e) => e.toPay)
-                                .reduce((prev, next) => prev + next, 0)
-                                .toLocaleString("en-IN")
+                              .map((e) => e.toPay)
+                              .reduce((prev, next) => prev + next, 0)
+                              .toLocaleString("en-IN")
                             : 0
                         }
                       />
@@ -507,8 +507,8 @@ export default function SalesDashboard() {
                             .reduce((prev, next) => prev + next, 0) === "Nan"
                             ? 0
                             : payoutData
-                                .map((e) => e.toPay)
-                                .reduce((prev, next) => prev + next, 0),
+                              .map((e) => e.toPay)
+                              .reduce((prev, next) => prev + next, 0),
                         label: " Total Payout Pending",
                       },
                     ],

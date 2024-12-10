@@ -298,7 +298,6 @@ const PlanPricing = () => {
       ...postPerPageValues,
       [row._id]: value,
     };
-    console.log('value', updatedPostValues);
     setPostPerPageValues(updatedPostValues);
     calculateTotalCost(
       row._id,
@@ -710,7 +709,6 @@ const PlanPricing = () => {
       setNotFoundPages([]);
     }
   };
-  console.log('page', postPerPageValues);
   const handleOpenDialog = () => {
     setOpenDialog(true);
   };
