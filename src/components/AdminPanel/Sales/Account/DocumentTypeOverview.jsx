@@ -41,8 +41,6 @@ const DocumentTypeOverview = () => {
       setEditFlag(false);
       toastAlert("Document Type Updated Successfully");
       // refetch();
-
-
     } catch (error) {
       setEditFlag(false);
 
@@ -62,7 +60,6 @@ const DocumentTypeOverview = () => {
       name: "Document Name",
       editable: true,
       Width: 100,
-
     },
     {
       key: "description",
@@ -87,25 +84,29 @@ const DocumentTypeOverview = () => {
               <i className="bi bi-pencil" />
             </button>
 
-            {editflag === index && <button
-              className="icon-1"
-              title="Cancel Edit"
-              onClick={() => {
-                setEditFlag(false);
-              }}
-            >
-              <i className="bi bi-x-square-fill" />
-            </button>}
+            {editflag === index && (
+              <button
+                className="icon-1"
+                title="Cancel Edit"
+                onClick={() => {
+                  setEditFlag(false);
+                }}
+              >
+                <i className="bi bi-x-square-fill" />
+              </button>
+            )}
 
-            {editflag === index && <button
-              className="icon-1"
-              title="Save"
-              onClick={() => {
-                HandleSave(row, setEditFlag);
-              }}
-            >
-              <i className="bi bi-save" />
-            </button>}
+            {editflag === index && (
+              <button
+                className="icon-1"
+                title="Save"
+                onClick={() => {
+                  HandleSave(row, setEditFlag);
+                }}
+              >
+                <i className="bi bi-save" />
+              </button>
+            )}
           </div>
         );
       },
@@ -117,15 +118,18 @@ const DocumentTypeOverview = () => {
         <div className="action_title">
           <FormContainer mainTitle={"Document Type"} link={true} />
         </div>
-        {loginUserRole === 1 && <div className="action_btns">
-          <Link to={"/admin/sales-document-type-master"}>
-            <button className="btn cmnbtn btn-primary btn_sm">
-              Add Document Type
-            </button>
-          </Link>
-        </div>}
+        {loginUserRole === 1 && (
+          <div className="action_btns">
+            <Link to={"/admin/sales-document-type-master"}>
+              <button className="btn cmnbtn btn-primary btn_sm">
+                Add Document Type
+              </button>
+            </Link>
+          </div>
+        )}
       </div>
       <View
+        version={1}
         columns={ViewDocumentTypeColumns}
         data={allDocumentType}
         // rowSelectable={true}

@@ -66,7 +66,7 @@ export default function ReadableList({ rowData }) {
           </ListItemAvatar>
           <ListItemText
             primary={`₹${rowData.outstandings}`}
-            secondary="Outstanding"
+            secondary="Balance"
           />
         </ListItem>
         <ListItem>

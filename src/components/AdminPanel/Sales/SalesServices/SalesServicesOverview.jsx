@@ -102,8 +102,9 @@ const SalesServicesOverview = () => {
       name: "Service Name",
     },
     {
-      key: "status",
+      key: "status_1",
       name: "Status",
+      compare: true,
       renderRowCell: (row, index) => {
         if (row.status == 0) {
           return (
@@ -234,6 +235,7 @@ const SalesServicesOverview = () => {
       </>
 
       <View
+        version={1}
         columns={columns}
         data={tableData}
         isLoading={allSalesServiceLoading || incentiveLoading}

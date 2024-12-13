@@ -28,7 +28,7 @@ const InvoiceRequestApi = createApi({
     deletePendingInvoice: builder.mutation({
       query: ({ id, data }) => ({
         url: `sales/invoice_request_rejected/${id}`,
-        method: "DELETE",
+        method: "PUT",
         body: data,
       }),
     }),

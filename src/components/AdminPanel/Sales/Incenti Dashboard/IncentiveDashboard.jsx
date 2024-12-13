@@ -521,7 +521,7 @@ const IncentiveDashboard = () => {
                 </span>
               </div>
               <div>
-                <h6 className="colorMedium">Total Paid Amount</h6>
+                <h6 className="colorMedium">Sales Amount Received</h6>
                 <h6 className="mt4 fs_16">
                   {formatNumber(incentiveTotalData?.totalPaidAmount)}
                 </h6>
@@ -538,7 +538,7 @@ const IncentiveDashboard = () => {
                 </span>
               </div>
               <div>
-                <h6 className="colorMedium">Total Release Request Amount</h6>
+                <h6 className="colorMedium">Release Request Amount</h6>
                 <h6 className="mt4 fs_16">
                   {formatNumber(
                     incentiveTotalData?.totalIncentiveRequestedAmount
@@ -558,7 +558,7 @@ const IncentiveDashboard = () => {
               </div>
               <div>
                 <h6 className="colorMedium">
-                  Total Release Request Pending Amount
+                  Earned Incentive Pending
                 </h6>
                 <h6 className="mt4 fs_16">
                   {formatNumber(
@@ -578,7 +578,7 @@ const IncentiveDashboard = () => {
                 </span>
               </div>
               <div>
-                <h6 className="colorMedium">Total Release Completed Amount</h6>
+                <h6 className="colorMedium">Incentive Released</h6>
                 <h6 className="mt4 fs_16">
                   {formatNumber(
                     incentiveTotalData?.totalIncentiveReleasedAmount

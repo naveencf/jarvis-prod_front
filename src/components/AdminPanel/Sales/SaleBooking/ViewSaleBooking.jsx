@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import React, { use, useContext, useEffect, useState } from "react";
 import FormContainer from "../../FormContainer";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { useGetAllAccountQuery } from "../../../Store/API/Sales/SalesAccountApi"
 import { useGlobalContext } from "../../../../Context/Context";
 import Modal from "react-modal";
 import ExecutionModal from "./ExecutionModal";
-import { useAPIGlobalContext } from "../../APIContext/APIContext";
+import { ApiContextData, useAPIGlobalContext } from "../../APIContext/APIContext";
 import FieldContainer from "../../FieldContainer";
 import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import formatString from "../../../../utils/formatString";
@@ -46,10 +46,11 @@ import {
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
 
 const ViewSaleBooking = () => {
+  const { contextData } = useContext(ApiContextData)
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  if (loginUserRole !== 1 || contextData[63]?.view_value != 1) {
     loginUserId = token.id;
   }
   const filterDate = useLocation().state;
@@ -82,6 +83,7 @@ const ViewSaleBooking = () => {
     error: allSalebBookingError,
     isLoading: allSaleBookingLoading,
   } = useGetAllSaleBookingQuery({ loginUserId, stats, selectedCategory });
+
   const {
     data: allAccount,
     error: allAccountError,
@@ -498,7 +500,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-          "uploaded" == row?.invoice_request_status ? (
+            "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -556,9 +558,9 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         allCreditApprovals?.find(
           (item) => item._id == row.reason_credit_approval
-        )?.reason,
+        )?.reason || "NA",
       width: 100,
-      comaapre: true,
+      compare: true,
     },
     {
       key: "requested_amount",
@@ -604,6 +606,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) => (row.incentive_amount / row?.base_amount) * 100,
       showCol: true,
       width: 100,
+      compare: true,
     },
     {
       key: "earned_incentive_amount",
@@ -622,7 +625,7 @@ const ViewSaleBooking = () => {
       width: 100,
     },
     {
-      key: "booking_status",
+      key: "booking_status1",
       name: "Booking Status",
       renderRowCell: (row) =>
         row.booking_status === "Request for Execution" ? (
@@ -637,6 +640,7 @@ const ViewSaleBooking = () => {
         ),
       width: 200,
       showCol: true,
+      compare: true,
     },
     {
       key: "multiSharing",
@@ -678,9 +682,10 @@ const ViewSaleBooking = () => {
       showCol: true,
     },
     {
-      key: "salesInvoiceRequestData",
+      key: "salesInvoiceRequestData_1",
       name: "Proforma Invoice",
       width: 100,
+      compare: true,
       renderRowCell: (row) => {
         const save = row?.salesInvoiceRequestData?.find(
           (obj) => obj?.invoice_type_id == "proforma"
@@ -1026,6 +1031,7 @@ const ViewSaleBooking = () => {
         </Accordion>
       </div>
       <View
+        version={1}
         columns={columns}
         data={filteredData}
         isLoading={allSaleBookingLoading || allAccountLoading}

@@ -1077,7 +1077,7 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "TDS",
-      cell: (row) => row.tds_deduction + " ₹",
+      cell: (row) => row.tds_deduction?.toFixed(0) + " ₹",
     },
     {
       name: "To Pay",

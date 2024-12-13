@@ -48,14 +48,15 @@ const TargetCard = ({ data, totalSaleAmountDateWise, index }) => {
   function updateProgress(percent) {
     console.log("percent", percent);
 
-    document.documentElement.style.setProperty('--LinearProgress-percent', percent);
+    document.documentElement.style.setProperty(
+      "--LinearProgress-percent",
+      percent
+    );
   }
 
   useEffect(() => {
     updateProgress((currentSaleAmount / finalTargetAmount) * 100);
-  }
-    , [currentSaleAmount, finalTargetAmount]);
-
+  }, [currentSaleAmount, finalTargetAmount]);
 
   return (
     <div className="row" key={index}>
@@ -124,6 +125,7 @@ const TargetCard = ({ data, totalSaleAmountDateWise, index }) => {
             </AccordionSummary>
             <AccordionDetails>
               <View
+                version={1}
                 columns={columns}
                 data={totalSaleAmountDateWise?.[0]?.userWiseData}
                 pagination

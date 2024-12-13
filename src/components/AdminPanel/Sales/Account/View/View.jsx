@@ -15,10 +15,14 @@ const View = ({
   selectedData,
   showTotal = false,
   addHtml,
+  version = 0,
 }) => {
+  console.log("data", data);
+  const Version = !version ? CustomTableV2 : CustomTable;
+
   return (
     <CustomTableWrapper title={title} addHtml={addHtml}>
-      <CustomTableV2
+      <Version
         columns={columns}
         data={data}
         fixedHeader

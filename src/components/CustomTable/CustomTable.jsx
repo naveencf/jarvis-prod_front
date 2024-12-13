@@ -11,7 +11,7 @@ import TotalRow from "./TableComponent/TotalRow";
 
 const CustomTable = ({
   columns,
-  data = [],
+  data,
   fixedHeader = true,
   Pagination = false,
   dataLoading = false,
@@ -20,6 +20,9 @@ const CustomTable = ({
   showTotal = false,
   selectedData = (selecteddata) => {
     return selecteddata;
+  },
+  getFilteredData = (filterData) => {
+    return filterData;
   },
 }) => {
   const tableref = useRef();
@@ -31,7 +34,7 @@ const CustomTable = ({
   const [itemsPerPage, setItemsPerPage] = useState(
     Pagination && Pagination.length > 0 ? Pagination[0] : 10
   );
-  const [originalData, setOriginalData] = useState(data);
+  const [originalData, setOriginalData] = useState(data || []);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortKey, setSortKey] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -66,19 +69,25 @@ const CustomTable = ({
   // Initialize selectedId for each column
   const [selectedId, setSelectedId] = useState(columnsheader.map(() => []));
   const [applyFlag, setApplyFlag] = useState(false);
-  const [triggerSort, setTriggerSort] = useState(false);
+  const [oldSortKey, setOldSortKey] = useState("");
+  const pagination = useRef(
+    Pagination?.length > 0 ? Pagination : [100, 50, 10]
+  );
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
-  let pagination = Pagination?.length > 0 ? Pagination : [100, 50, 10];
 
   useEffect(() => {
-    if (pagination.findIndex((item) => item === data.length) === -1)
-      pagination.push(data.length);
-  }, [data]);
+    if (
+      pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
+      data?.length > 0
+    )
+      pagination.current = [...pagination?.current, data?.length];
+  }, [data, columns, tableName]);
 
   useEffect(() => {
+    //console.log("selected data");
     selectedData(selectedRowsData);
   }, [selectedRowsData]);
 
@@ -187,6 +196,7 @@ const CustomTable = ({
   };
 
   useEffect(() => {
+    //console.log("filtering of data");
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
@@ -239,6 +249,8 @@ const CustomTable = ({
   };
 
   useEffect(() => {
+    //console.log("invade flag");
+
     if (invadeFlag) {
       cloudInvader();
     }
@@ -253,7 +265,7 @@ const CustomTable = ({
           )
         : unSortedData
     );
-  }, [itemsPerPage, currentPage, searchQuery]);
+  }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
 
   const memoize = (fn) => {
     const cache = new Map();
@@ -288,6 +300,8 @@ const CustomTable = ({
   };
 
   useEffect(() => {
+    //console.log("table creation");
+
     // const isTableCreated = localStorage.getItem(
     //   `isTableCreated_${tableName + loginUserId}`
     // );
@@ -307,7 +321,7 @@ const CustomTable = ({
   async function cloudInvader() {
     const arrayofvisiblecolumns = columnsheader?.map((column, index) => ({
       name: column.name,
-      visibility: true,
+      visibility: visibleColumns[index],
     }));
     try {
       await axios.put(`${baseUrl}edit_dynamic_table_data`, {
@@ -319,29 +333,33 @@ const CustomTable = ({
       console.error(e);
     } finally {
       setInvadeFlag(false);
+      fetchCreatedTable();
     }
   }
 
+  const fetchCreatedTable = async () => {
+    try {
+      const response = await axios.get(
+        `${baseUrl}get_dynamic_table_data?userId=${loginUserId}&tableName=${tableName}`
+      );
+      const responseData = response.data.data[0]?.column_order_Obj || [];
+      const savedFiltersData = response.data.data[0]?.filter_array;
+      setApiColumns(responseData);
+      setApiFilters(savedFiltersData);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const fetchCreatedTable = async () => {
-      try {
-        const response = await axios.get(
-          `${baseUrl}get_dynamic_table_data?userId=${loginUserId}&tableName=${tableName}`
-        );
-        const responseData = response.data.data[0]?.column_order_Obj || [];
-        const savedFiltersData = response.data.data[0]?.filter_array;
-        setApiColumns(responseData);
-        setApiFilters(savedFiltersData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    //console.log("use to fetch columns");
     fetchCreatedTable();
   }, [loginUserId, tableName]);
 
   useEffect(() => {
+    //console.log("initializing columns to update ui");
     const getIndex = (colName) =>
-      apiColumns?.findIndex((item) => item?.name === colName);
+      apiColumns?.findIndex((item) => item?.name?.trim() === colName?.trim());
+
     const sortedColumns = [...columns];
     sortedColumns.sort((a, b) => getIndex(a.name) - getIndex(b.name));
 
@@ -351,7 +369,12 @@ const CustomTable = ({
     setVisibleColumns(
       apiColumns?.length === 0
         ? columns?.map(() => true)
-        : apiColumns?.map((column) => column.visibility)
+        : sortedColumns?.map((column, index) =>
+            apiColumns[index]?.visibility === undefined ||
+            apiColumns[index]?.visibility === null
+              ? true
+              : apiColumns[index]?.visibility
+          )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -359,64 +382,120 @@ const CustomTable = ({
         column.editable === undefined ? false : column.editable
       )
     );
-    setUnSortedData(data);
-    setOriginalData(data);
-    setOriginalData((prev) =>
-      prev.map((item) => {
-        const cols = columnsheader.filter((column) => column.compare === true);
-        const additionalProps = cols.reduce((acc, column) => {
-          acc[column.key] = column.renderRowCell(item);
-          return acc;
-        }, {});
-        return {
-          ...item,
-          ...additionalProps,
-        };
-      })
-    );
-    // setTriggerSort(prev => !prev);
-  }, [dataLoading, columns, apiColumns]);
 
+    // setTriggerSort(prev => !prev);
+  }, [columns, apiColumns]);
   useEffect(() => {
-    setSortedData(
-      pagination
-        ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
-        : unSortedData
-    );
-  }, [unSortedData]);
+    //console.log("initializing data to update ui");
+
+    if (data) {
+      setUnSortedData(data);
+      setUnSortedData((prev) =>
+        prev.map((item) => {
+          const cols = columnsheader.filter(
+            (column) => column.compare === true
+          );
+          // const additionalProps = cols.reduce((acc, column) => {
+          //   acc[column.key] = column.renderRowCell(item);
+          //   return acc;
+          // }, {});
+          const getTextContent = (element) => {
+            if (React.isValidElement(element)) {
+              if (React.isValidElement(element.props.children || ""))
+                return getTextContent(element.props.children);
+              else return element.props.children ? element.props.children : "";
+            }
+            return element;
+          };
+
+          const additionalProps = cols.reduce((acc, column) => {
+            acc[column.key] = getTextContent(column.renderRowCell(item));
+            return acc;
+          }, {});
+          return {
+            ...item,
+            ...additionalProps,
+          };
+        })
+      );
+      setOriginalData(data);
+      setOriginalData((prev) =>
+        prev.map((item) => {
+          const cols = columnsheader.filter(
+            (column) => column.compare === true
+          );
+          // const additionalProps = cols.reduce((acc, column) => {
+          //   acc[column.key] = column.renderRowCell(item);
+          //   return acc;
+          // }, {});
+          const getTextContent = (element) => {
+            if (React.isValidElement(element)) {
+              if (React.isValidElement(element.props.children || ""))
+                return getTextContent(element.props.children);
+              else return element.props.children ? element.props.children : "";
+            }
+            return element;
+          };
+
+          const additionalProps = cols.reduce((acc, column) => {
+            acc[column.key] = getTextContent(column.renderRowCell(item));
+            return acc;
+          }, {});
+          return {
+            ...item,
+            ...additionalProps,
+          };
+        })
+      );
+    }
+  }, [data]);
 
   const renderSort_v2 = useMemo(() => {
-    if (!sortKey) return originalData;
+    // console.log("sortKey", sortKey, oldSortKey);
 
-    const datatType = originalData[0][sortKey]
-      ? typeof originalData[0][sortKey]
-      : "string";
-    const sorted = [...originalData].sort((a, b) => {
-      const val1 = a[sortKey];
-      const val2 = b[sortKey];
-
-      if (val1 === null || val1 === undefined) return -1;
-      if (val2 === null || val2 === undefined) return 1;
-
-      if (datatType === "string") {
-        return val1.trim().localeCompare(val2.trim());
-      } else if (datatType === "number") {
-        return val1 - val2;
+    if (!sortKey) return unSortedData;
+    let sorted = [...unSortedData];
+    if (sortKey != oldSortKey) {
+      let datatType = null;
+      for (let i = 0; i < unSortedData.length; i++) {
+        if (
+          unSortedData[i][sortKey] != undefined &&
+          unSortedData[i][sortKey] != null
+        ) {
+          datatType = typeof unSortedData[i][sortKey];
+          break;
+        }
       }
 
-      return 0; // Default case
-    });
+      console.log("datatType", datatType, unSortedData[0]);
+      if (datatType === "number") {
+        // console.log("number");
 
-    // Reverse if sorting direction is descending
-    if (sortDirection !== "asc") {
-      sorted.reverse();
-    }
+        sorted = [...unSortedData].sort((a, b) => {
+          const val1 = a[sortKey] || -Infinity;
+          const val2 = b[sortKey] || -Infinity;
+          return val1 - val2;
+        });
+      } else if (datatType === "string") {
+        // console.log("string");
+        sorted = [...unSortedData].sort((a, b) => {
+          const val1 = a[sortKey] || "";
+          const val2 = b[sortKey] || "";
 
-    return sorted;
+          return val1?.localeCompare(val2);
+        });
+      } else return sorted;
+    } else sorted.reverse();
+
+    setSortedData(sorted);
+    setUnSortedData(sorted);
+
+    // return sorted;
   }, [sortKey, sortDirection, originalData]);
+
+  useEffect(() => {
+    getFilteredData(unSortedData);
+  }, [unSortedData]);
 
   // const renderSort = useMemo(() => {
   //   if (!sortKey) return originalData;
@@ -468,11 +547,11 @@ const CustomTable = ({
   // }, [sortKey, sortDirection, unSortedData, originalData, columnsheader]);
 
   // Use effect to set the sorted data state
-  useEffect(() => {
-    const data_v2 = renderSort_v2;
-    setSortedData(data_v2);
-    setUnSortedData(data_v2);
-  }, [renderSort_v2]);
+  // useEffect(() => {
+  //   const data_v2 = renderSort_v2;
+  //   setSortedData(data_v2);
+  //   setUnSortedData(data_v2);
+  // }, [renderSort_v2]);
 
   // useEffect(() => {
 
@@ -513,6 +592,7 @@ const CustomTable = ({
         setApplyFlag={setApplyFlag}
         originalData1={originalData}
         sortedData={sortedData}
+        fetchCreatedTable={fetchCreatedTable}
       />
       {showTotal && (
         <TotalRow
@@ -527,6 +607,9 @@ const CustomTable = ({
       )}
       <div className="table-container" ref={tableref}>
         <RenderedTable
+          sortKey={sortKey}
+          oldSortKey={oldSortKey}
+          setOldSortKey={setOldSortKey}
           headref={headref}
           setUnSortedData={setUnSortedData}
           applyFlag={applyFlag}
@@ -535,7 +618,7 @@ const CustomTable = ({
           setFilterCondition={setFilterCondition}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
-          originalData={data}
+          originalData={originalData}
           setColSearch={setColSearch}
           colSearch={colSearch}
           tableref={tableref}
@@ -567,12 +650,13 @@ const CustomTable = ({
           baseUrl={baseUrl}
           tableName={tableName}
           loginUserId={loginUserId}
+          fetchCreatedTable={fetchCreatedTable}
         />
       </div>
 
       <PaginationComp
         data={unSortedData}
-        Pagination={pagination}
+        Pagination={pagination?.current}
         currentPage={currentPage}
         setCurrentPage={setCurrentPage}
         itemsPerPage={itemsPerPage}

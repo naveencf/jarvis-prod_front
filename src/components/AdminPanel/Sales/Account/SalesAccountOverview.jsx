@@ -276,6 +276,7 @@ const SalesAccountOverview = () => {
       name: "Company Email",
       renderRowCell: (row) => row?.company_email || "N/A",
       width: 100,
+      compare: true,
     },
     {
       key: "accountPocCounts",
@@ -362,7 +363,7 @@ const SalesAccountOverview = () => {
               style={{ hover: "pointer", color: "blue" }}
               href={
                 row?.website?.startsWith("http")
-                  ? row.website
+                  ? row.website || "N/A"
                   : `http://${row.website}`
               }
               target="_blank"
@@ -481,11 +482,13 @@ const SalesAccountOverview = () => {
       name: "Alternative Contact No",
       renderRowCell: (row) => row?.alternative_contact_no || "N/A",
       width: 100,
+      compare: true,
     },
   ];
   const modalMap = {
     SalesAccountPOC: (
       <View
+        version={1}
         columns={pocColumns}
         data={modalData}
         isLoading={isLoading}
@@ -705,6 +708,7 @@ const SalesAccountOverview = () => {
       </div>
 
       <View
+        version={1}
         columns={ViewSalesAccountColumns}
         data={combinedData}
         isLoading={isLoading}

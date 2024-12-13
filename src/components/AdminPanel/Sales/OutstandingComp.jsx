@@ -57,6 +57,7 @@ const OutstandingComp = () => {
   ];
   return (
     <View
+      version={1}
       title={"User Wise Outstanding"}
       data={userWieOutStanding}
       isLoading={userWieOutStandingLoading}

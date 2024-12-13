@@ -126,6 +126,7 @@ const ViewPaymentDetails = () => {
     {
       key: "status",
       name: "Status",
+      compare: true,
       renderRowCell: (row, index) => {
         if (!row.is_hide) {
           return (
@@ -214,6 +215,7 @@ const ViewPaymentDetails = () => {
       </div>
       <div className="page_height">
         <View
+          version={1}
           title={"Details"}
           columns={columns}
           data={allPaymentDetailsData}

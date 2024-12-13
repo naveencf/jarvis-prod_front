@@ -95,7 +95,7 @@ const DeletedSaleBooking = () => {
       renderRowCell: (row) => formatString(row?.credit_approval_status),
     },
     {
-      key: "reason_credit_approval",
+      key: "reason_credit_approval_1",
       name: "Reason credit approval",
       width: 100,
       renderRowCell: (row) => {
@@ -104,6 +104,7 @@ const DeletedSaleBooking = () => {
         );
         return creditApproval?.reason_credit_approval;
       },
+      compare: true,
     },
     {
       key: "reason_credit_approval_own_reason",
@@ -118,13 +119,15 @@ const DeletedSaleBooking = () => {
       width: 100,
       renderRowCell: (row) =>
         new Date(row?.balance_payment_ondate).toLocaleDateString(),
+      compare: true,
     },
     {
-      key: "gst_status",
+      key: "gst_status_1",
       name: "GST status",
       width: 100,
       compare: true,
       renderRowCell: (row) => (row?.gst_status ? "Yes" : "No"),
+      compare: true,
     },
     {
       key: "tds_status",
@@ -138,6 +141,7 @@ const DeletedSaleBooking = () => {
       width: 100,
       renderRowCell: (row) =>
         new Date(row?.Booking_close_date).toLocaleDateString(),
+      compare: true,
     },
     {
       key: "tds_verified_amount",
@@ -150,20 +154,23 @@ const DeletedSaleBooking = () => {
       name: "Record service file",
       width: 100,
       renderRowCell: (row) => row?.record_service_file,
+      compare: true,
     },
     {
       key: "booking_remarks",
       name: "Booking remarks",
       width: 100,
       renderRowCell: (row) => row?.booking_remarks,
+      compare: true,
     },
     {
-      key: "incentive_status",
+      key: "incentive_status_1",
       name: "Incentive",
       width: 100,
       renderRowCell: (row) => {
         return row?.incentive_status == "incentive" ? "Yes" : "No";
       },
+      compare: true,
     },
     {
       key: "incentive_earning_status",
@@ -184,10 +191,11 @@ const DeletedSaleBooking = () => {
       renderRowCell: (row) => row?.incentive_sharing_percent,
     },
     {
-      key: "bad_debt",
+      key: "bad_debt_1",
       name: "Bad debt",
       width: 100,
       renderRowCell: (row) => (row?.bad_debt ? "Yes" : "No"),
+      compare: true,
     },
     {
       key: "sale_booking_type",
@@ -232,7 +240,7 @@ const DeletedSaleBooking = () => {
       renderRowCell: (row) => row?.final_invoice,
     },
     {
-      key: "createdAt",
+      key: "created_At",
       name: "Booking Date Created",
       width: 100,
       renderRowCell: (row) =>
@@ -251,6 +259,7 @@ const DeletedSaleBooking = () => {
       />
 
       <View
+        version={1}
         columns={columns}
         data={deletedSaleBookingData}
         isLoading={deletedSaleBookingLoading || creditApprovalLoading}

@@ -74,16 +74,19 @@ const ViewTargetCompetition = () => {
       width: 150,
       name: "Start Date",
       renderRowCell: (row) => DateISOtoNormal(row.start_date),
+      compare: true,
     },
     {
       key: "end_date",
       width: 150,
       name: "End Date",
       renderRowCell: (row) => DateISOtoNormal(row.end_date),
+      compare: true,
     },
     {
       key: "status",
       name: "Status",
+      compare: true,
       renderRowCell: (row, index) => {
         console.log(row, "harshal");
         if (row.status == 0) {
@@ -149,6 +152,7 @@ const ViewTargetCompetition = () => {
       </div>
       <div className="page_height">
         <View
+          version={1}
           title={"Target Competition"}
           columns={columns}
           data={allTargetCompetitionsData}

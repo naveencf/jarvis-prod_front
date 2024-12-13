@@ -857,12 +857,12 @@ const WFHDOverview = () => {
               />
             </div>
             <div className="Tab">
-              <button
+              {/* <button
                 onClick={handleScrap}
                 className="ml-2 btn btn-warning btn-sm rounded-pill"
               >
                 Change Report L1
-              </button>
+              </button> */}
             </div>
           </div>
 

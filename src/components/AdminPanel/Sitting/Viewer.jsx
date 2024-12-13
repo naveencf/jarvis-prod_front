@@ -31,7 +31,7 @@ const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   );
 };
 
-const Viewer = ({ roomNameCard }) => {
+const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts }) => {
   console.log(roomNameCard, "card");
   const { userContextData } = useAPIGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -107,6 +107,10 @@ const Viewer = ({ roomNameCard }) => {
   };
 
   const updateAssignment = async () => {
+    if (!selectedEmployee) {
+      alert("Please select an employee before saving the layout.");
+      return;
+    }
     try {
       const updatedData = {
         _id: id,
@@ -115,6 +119,10 @@ const Viewer = ({ roomNameCard }) => {
       await axios.put(`${baseUrl}update_sitting_arrangement`, updatedData);
       alert("Layout updated successfully.");
       setSelectedEmployee(null); // Reset dropdown value after save
+      setSelectedId(null);
+      totalSittingDataCount()
+      fetchAllocationCounts()
+
     } catch (error) {
       console.error("Error updating layout:", error);
       alert("Failed to update layout.");

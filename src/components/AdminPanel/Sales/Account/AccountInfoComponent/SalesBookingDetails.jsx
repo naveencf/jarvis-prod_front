@@ -142,12 +142,13 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
     // },
 
     {
-      key: "incentive_status",
+      key: "incentive_status_1",
       name: "Incentive",
       renderRowCell: (row) =>
         row.incentive_status === "incentive" ? "Yes" : "No",
       showCol: true,
       width: 100,
+      comaare: true,
     },
 
     {
@@ -156,6 +157,7 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
       renderRowCell: (row) => DateISOtoNormal(row.createdAt),
       showCol: true,
       width: 100,
+      comapare: true,
     },
     {
       key: "record",
