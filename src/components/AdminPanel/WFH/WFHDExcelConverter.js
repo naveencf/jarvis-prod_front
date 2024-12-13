@@ -13,7 +13,12 @@ import * as XLSX from "xlsx";
       Address:data.permanent_address,
       City:data.permanent_city,
       State:data.permanent_state,
-      PinCode:data.permanent_pin_code
+      PinCode:data.permanent_pin_code,
+      PanNo:data.pan_no,
+      BankName:data.bank_name,
+      AccountNo:data.account_no,
+      ifscCode:data.ifsc_code,
+      Beneficiary:data.beneficiary,
     }));
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
     const workbook = XLSX.utils.book_new();

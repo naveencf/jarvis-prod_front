@@ -7,6 +7,7 @@ import FormContainer from "../../FormContainer";
 import { useGetIncentivePlanListQuery } from "../../../Store/API/Sales/IncentivePlanApi";
 import View from "../Account/View/View";
 import getDecodedToken from "../../../../utils/DecodedToken";
+import { Compare } from "@mui/icons-material";
 
 const IncentiveOverview = () => {
   const [incentiveData, setIncentiveData] = useState([]);
@@ -26,18 +27,19 @@ const IncentiveOverview = () => {
     isLoading: incentiveLoading,
   } = useGetIncentivePlanListQuery();
 
-
-
   useEffect(() => {
     if (allIncentiveData) {
       if (loginUserRole === 1) {
         setIncentiveData(allIncentiveData);
       } else {
-        setIncentiveData(allIncentiveData.filter((data) => data?.sales_service_master_Data?.status === 0));
+        setIncentiveData(
+          allIncentiveData.filter(
+            (data) => data?.sales_service_master_Data?.status === 0
+          )
+        );
       }
     }
   }, [allIncentiveData]);
-
 
   const columns = [
     {
@@ -49,10 +51,9 @@ const IncentiveOverview = () => {
     {
       key: "sales_service_name",
       name: "Service Name",
-      renderRowCell: (row) =>
-        row?.sales_service_master_Data
-          ?.service_name,
+      renderRowCell: (row) => row?.sales_service_master_Data?.service_name,
       width: 200,
+      compare: true,
     },
 
     {
@@ -102,8 +103,10 @@ const IncentiveOverview = () => {
         </div>
       </div>
       <View
-        title={`Incentive Overview (${allIncentiveData?.length
-          }) - ${"There will be no incentive for competitive plan"}`}
+        version={1}
+        title={`Incentive Overview (${
+          allIncentiveData?.length
+        }) - ${"There will be no incentive for competitive plan"}`}
         data={incentiveData}
         columns={columns}
         isLoading={incentiveLoading}

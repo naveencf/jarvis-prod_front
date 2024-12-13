@@ -7,7 +7,6 @@ import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { Link } from "react-router-dom";
 import { useGetAllRecordServicesQuery } from "../../../Store/API/Sales/RecordServicesApi";
 import View from "../Account/View/View";
-import { render } from "react-dom";
 import formatString from "../../../../utils/formatString";
 import getDecodedToken from "../../../../utils/DecodedToken";
 
@@ -26,7 +25,7 @@ const RecordServices = () => {
     isLoading: recordServiceDataLoading,
     error: recordServiceDataError,
     isError: recordServiceDataIsError,
-  } = useGetAllRecordServicesQuery(loginUserId)
+  } = useGetAllRecordServicesQuery(loginUserId);
   const getData = async () => {
     try {
       const response = await axios.get(
@@ -79,7 +78,6 @@ const RecordServices = () => {
       key: "sales_service_master_name",
       name: "Service Name",
       width: 150,
-
     },
     {
       key: "campaign_name",
@@ -91,17 +89,18 @@ const RecordServices = () => {
       key: "campaign_amount",
       name: "Campaign Amount",
       width: 150,
-
     },
     {
       key: "amount",
       width: 150,
-      name: "Record Service Amount"
-    }, {
+      name: "Record Service Amount",
+    },
+    {
       key: "brand_name",
       name: "Brand Name",
       width: 150,
-    }, {
+    },
+    {
       key: "day",
       name: "Day",
       width: 150,
@@ -131,7 +130,7 @@ const RecordServices = () => {
     {
       key: "individual_amount",
       name: "Individual Amount",
-      width: 150
+      width: 150,
     },
     {
       key: "no_of_creators",
@@ -142,7 +141,8 @@ const RecordServices = () => {
       key: "no_of_hours",
       name: "No of hours",
       width: 150,
-    }, {
+    },
+    {
       key: "per_month_amount",
       name: "Per month amount",
       width: 150,
@@ -163,27 +163,22 @@ const RecordServices = () => {
       renderRowCell: (row) => DateISOtoNormal(row?.start_date),
       compare: true,
       width: 150,
-
     },
-
   ];
   return (
     <div>
       <div className="action_heading">
         <div className="action_title">
-          <FormContainer
-            mainTitle="Record Services"
-            link={true}
-          />
+          <FormContainer mainTitle="Record Services" link={true} />
         </div>
       </div>
       <View
+        version={1}
         data={recordServicedata}
         columns={columns}
         pagination
         tableName={"Record Services Overview salebooking table navigation"}
         title={"Record Service Overview"}
-
       />
     </div>
   );

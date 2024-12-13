@@ -556,11 +556,12 @@ How are you doing today?`}
         )}
 
       {/* {loginUserRole !== 1 && <SalesBadges userBadgeData={userBadgeData} />} */}
-      {loginUserRole === 1 && <OutstandingComp />}
 
       {loginUserRole == 1 && (
         <>
+          <OutstandingComp />
           <View
+            version={1}
             title={"Sales Booking Status Grid"}
             data={salesBookingGridStat}
             columns={bookingGrid}
@@ -569,6 +570,7 @@ How are you doing today?`}
             tableName={"Sales Booking Status Grid on dashboard"}
           />
           <View
+            version={1}
             title={"Sales Booking Status"}
             data={salesBookingStat}
             columns={booking}
@@ -577,6 +579,7 @@ How are you doing today?`}
             tableName={"Sales Booking Statuson dashboard"}
           />
           <View
+            version={1}
             title={"Top Bookings"}
             data={data}
             columns={columns}

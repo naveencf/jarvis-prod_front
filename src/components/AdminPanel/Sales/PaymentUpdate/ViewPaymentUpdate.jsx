@@ -123,6 +123,7 @@ const ViewPaymentUpdate = () => {
       name: "Payment Date",
       renderRowCell: (row) => row?.payment_date?.split("-").reverse().join("-"),
       width: 100,
+      comapre: true,
     },
     {
       key: "created_by_name",
@@ -266,6 +267,7 @@ const ViewPaymentUpdate = () => {
         onTabClick={onTabClick}
       />
       <View
+        version={1}
         title={"Payment Update Overview"}
         columns={columns}
         data={activeData}

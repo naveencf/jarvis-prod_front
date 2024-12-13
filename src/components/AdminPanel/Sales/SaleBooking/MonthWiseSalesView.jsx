@@ -102,6 +102,7 @@ const MonthWiseSalesView = () => {
       </div>
 
       <View
+        version={1}
         columns={monthwiseColumns}
         data={monthwiseData}
         isLoading={monthwiseLoading}

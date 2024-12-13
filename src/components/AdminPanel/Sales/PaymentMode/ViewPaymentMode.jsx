@@ -94,6 +94,7 @@ const ViewPaymentMode = () => {
       </div>
       <div className="page_height">
         <View
+          version={1}
           title={"Payment Mode Overview"}
           columns={columns}
           data={allPaymentModeData}

@@ -41,7 +41,11 @@ const ViewOutstanding = () => {
 
   useEffect(() => {
     if (accountWiseStatus) {
-      setActiveData(accountWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
+      setActiveData(
+        accountWiseStatus?.filter(
+          (data) => data?.total_purchase_amount - data?.approved_amount !== 0
+        )
+      );
     }
   }, [accountWiseStatusLoading]);
 
@@ -51,9 +55,17 @@ const ViewOutstanding = () => {
 
   useEffect(() => {
     if (activeTab === 0) {
-      setActiveData(accountWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
+      setActiveData(
+        accountWiseStatus?.filter(
+          (data) => data?.total_purchase_amount - data?.approved_amount !== 0
+        )
+      );
     } else {
-      setActiveData(userWiseStatus?.filter(data => (data?.total_purchase_amount - data?.approved_amount !== 0)));
+      setActiveData(
+        userWiseStatus?.filter(
+          (data) => data?.total_purchase_amount - data?.approved_amount !== 0
+        )
+      );
     }
   }, [activeTab]);
 
@@ -70,9 +82,10 @@ const ViewOutstanding = () => {
       name: "Account Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row?.account_id)
-            ?._id
-            }`}
+          to={`/sales-account-info/${
+            allAccountData?.find((data) => data?.account_id === row?.account_id)
+              ?._id
+          }`}
         >
           {row.account_name}
         </Link>
@@ -163,16 +176,18 @@ const ViewOutstanding = () => {
     },
   ];
 
-
   return (
     <div>
       <FormContainer mainTitle={"Outstanding"} link={"true"} />
-      {loginUserRole === 1 && <Tab
-        tabName={tabName}
-        activeTabindex={activeTab}
-        onTabClick={onTabClick}
-      />}
+      {loginUserRole === 1 && (
+        <Tab
+          tabName={tabName}
+          activeTabindex={activeTab}
+          onTabClick={onTabClick}
+        />
+      )}
       <View
+        version={1}
         title={"Outstanding View"}
         columns={accountColumns}
         data={activeData}

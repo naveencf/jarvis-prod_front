@@ -25,9 +25,7 @@ const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
-const ViewSalesPoc = lazy(() =>
-  import("../CustomTable/TableComponent/ViewSalesPoc")
-);
+const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
 const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./User/UserMaster"));

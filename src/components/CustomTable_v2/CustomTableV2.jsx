@@ -7,7 +7,6 @@ import { baseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import TotalRow from "./TableComponent/TotalRow";
-import { unstable_ClassNameGenerator } from "@mui/material";
 // note: sync the table pagination and  sorted rows
 
 const CustomTableV2 = ({
@@ -85,7 +84,7 @@ const CustomTableV2 = ({
       data?.length > 0
     )
       pagination.current = [...pagination?.current, data?.length];
-  }, [data, columns,tableName]);
+  }, [data, columns, tableName]);
 
   useEffect(() => {
     // //console.log("selected data");

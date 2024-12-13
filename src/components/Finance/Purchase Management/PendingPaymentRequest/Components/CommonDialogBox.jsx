@@ -8,7 +8,7 @@ const CommonDialogBox = (props) => {
   const { dialog, handleCloseDialog, activeAccordionIndex, data, columnsData } =
     props;
 
-  console.log(data, "data----------->");
+  // console.log(data, "data----------->");
   return (
     <div>
       <Dialog
@@ -47,10 +47,10 @@ const CommonDialogBox = (props) => {
               activeAccordionIndex === 0
                 ? data || []
                 : activeAccordionIndex === 1
-                ? data?.filter((d) => d.status === "3") || []
-                : activeAccordionIndex === 2
-                ? data?.filter((d) => d.status === "0") || []
-                : []
+                  ? data?.filter((d) => d.status === "3") || []
+                  : activeAccordionIndex === 2
+                    ? data?.filter((d) => d.status === "0") || []
+                    : []
             }
             columns={columnsData}
             pageSize={5}

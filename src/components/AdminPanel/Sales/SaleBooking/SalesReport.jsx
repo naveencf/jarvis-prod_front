@@ -279,6 +279,7 @@ const SalesReport = () => {
       </div>
 
       <View
+        version={1}
         columns={columns}
         data={salesReportData}
         isLoading={salesLoad}

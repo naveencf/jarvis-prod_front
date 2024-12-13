@@ -7,25 +7,38 @@ import { baseUrl } from "../../../utils/config";
 const OfficeMastOverview = () => {
   const [roomWiseCount, setRoomWiseCount] = useState([]);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
+  const [totalSittingCount , setTotalSittingCount] = useState([])
+
+
+  const fetchAllocationCounts = async () => {
+    try {
+      const response = await axios.get(`${baseUrl}get_allocation_counts`);
+      const dataWithDefaults = response.data.map((d) => ({
+        ...d,
+        counts: {
+          allocated: d.counts?.allocated || 0, 
+          not_allocated: d.counts?.not_allocated || 0, 
+        },
+      }));
+      setRoomWiseCount(dataWithDefaults);
+      console.log("Allocation Counts:", dataWithDefaults);
+    } catch (error) {
+      console.error("Error fetching allocation counts:", error);
+    }
+  };
+  const totalSittingDataCount = async ()=>{
+    try{
+      const res = await axios.get(`${baseUrl}get_total_counts`);
+      setTotalSittingCount(res.data)
+      console.log(res.data , 'total count')
+    }
+    catch{
+
+    }
+  }
 
   useEffect(() => {
-    const fetchAllocationCounts = async () => {
-      try {
-        const response = await axios.get(`${baseUrl}get_allocation_counts`);
-        const dataWithDefaults = response.data.map((d) => ({
-          ...d,
-          counts: {
-            allocated: d.counts?.allocated || 0, // Default to 0 if not present
-            not_allocated: d.counts?.not_allocated || 0, // Default to 0 if not present
-          },
-        }));
-        setRoomWiseCount(dataWithDefaults);
-        console.log("Allocation Counts:", dataWithDefaults);
-      } catch (error) {
-        console.error("Error fetching allocation counts:", error);
-      }
-    };
-
+    totalSittingDataCount()
     fetchAllocationCounts();
   }, []);
 
@@ -35,8 +48,44 @@ const OfficeMastOverview = () => {
 
   return (
     <>
+    {/* <SittingOverview/> */}
       <div className="scrollRow">
         <div className="row">
+        <div className="col-md-3 col-sm-6 col-12">
+              <div class="timeDataCard card ">
+                <div class="card-header">
+                  <div class="titleCard w-100">
+                    <div class="titleCardImg bgPrimary border-0 ">
+                      <i class="bi bi-pc-display-horizontal"></i>
+                    </div>
+                    <div class="titleCardText w-75">
+                      <h2 class="colorPrimary">All Rooms</h2>
+                      <h3>
+                        Total Seats: {totalSittingCount?.total}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="timeDataCardInfo">
+                    <ul>
+                      <li>
+                        <span>Total Assigned</span>
+                        <div class="growthBadge growthSuccess">
+                          {totalSittingCount?.allocated}
+                        </div>
+                      </li>
+                      <li>
+                        <span>Total Not Assigned</span>
+                        <div class="growthBadge growthWarning">
+                          {totalSittingCount?.not_allocated}
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
           {roomWiseCount?.map((d, index) => (
             <div className="col-md-3 col-sm-6 col-12" key={index}>
               <div class="timeDataCard card " onClick={() => handleCardClick(d.roomName)}>
@@ -76,7 +125,7 @@ const OfficeMastOverview = () => {
           ))}
         </div>
       </div>
-      <Viewer roomNameCard={selectedRoomName}/>
+    <Viewer roomNameCard={selectedRoomName} totalSittingDataCount={totalSittingDataCount} fetchAllocationCounts={fetchAllocationCounts}/>
     </>
   );
 };
