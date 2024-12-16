@@ -45,7 +45,7 @@ const PageOverviewNew = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { usersDataContext } = useContext(AppContext);
+  // const { usersDataContext } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
   const [activeTab, setActiveTab] = useState('Tab0');
   const [user, setUser] = useState();
@@ -53,13 +53,13 @@ const PageOverviewNew = () => {
   const [showPriceModal, setShowPriceModal] = useState(false);
 
   const [selectedRow, setSelectedRow] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
+  // const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
   const [waData, setWaData] = useState(null);
 
   const [allVendorWhats, setAllVendorWhats] = useState([]);
-  const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
-  const [inputPrice, setInputPrice] = useState(''); // Holds the input price
+  // const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
+  // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState('');
   const [pagequery, setPagequery] = useState('');
@@ -68,51 +68,20 @@ const PageOverviewNew = () => {
   const [categoryFilter, setCategoryFilter] = useState('');
   const [activenessFilter, setActivenessFilter] = useState(null);
   const [filterFollowers, setFilterFollowers] = useState(null);
+  const [latestPageObject, setLatestPageObject] = useState({});
 
   const {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  } = useGetAllPageListQuery({
+    decodedToken,
+    userID,
+    pagequery,
+  });
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
-
-  const handleFilter = () => {
-    const filteredData = filterData?.filter((row) => {
-      let price = 0;
-      // Get the selected price based on the selectedPriceType
-      switch (selectedPriceType) {
-        case 'Post Price':
-          price = row?.price_details?.Insta_Post || 0;
-          break;
-        case 'Story Price':
-          price = row?.price_details?.Insta_Story || 0;
-          break;
-        case 'Both Price':
-          price = row?.price_details?.Both || 0;
-          break;
-        default:
-          return false;
-      }
-      // Return rows where price exactly matches the input price
-      return price === Number(inputPrice); // Ensures type matching
-    });
-    // Update the filtered data
-
-    setNewFilterData(filteredData);
-  };
-
-  // console.log(allVendorWhats,platformData,"test")
-  const handleVendorClick = async (_id) => {
-    const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-    setVendorDetails(res?.data?.data);
-  };
 
   useEffect(() => {
     if (activeTab == 'Tab1') {
@@ -126,7 +95,7 @@ const PageOverviewNew = () => {
         (state) => state?.page_master_id === item?._id
       );
       if (matchingState) {
-        console.log(matchingState, 'matchingState', item);
+        // console.log(matchingState, 'matchingState', item);
       }
       return {
         ...item,
@@ -208,13 +177,13 @@ const PageOverviewNew = () => {
         { headers }
       );
       const followerData = result?.data?.data?.[0]?.creatorDetails?.followers;
-
       if (followerData) {
         const updateRes = await axios.put(
           `${baseUrl}v1/pageMaster/${row._id}`,
-          { followers_count: followerData },
+          { followers_count: followerData, vendor_id: row.vendor_id },
           { headers }
         );
+        setLatestPageObject(updateRes.data.data);
       } else {
         console.error('No follower data found for this creator.');
       }
@@ -799,7 +768,7 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         switch (row.page_layer) {
           case 0:
-            return "Inventory Pages";
+            return 'Inventory Pages';
           case 1:
             return 'Sarcasm Network';
           case 2:
@@ -1137,6 +1106,7 @@ const PageOverviewNew = () => {
               <>
                 <PageOverviewWithoutHealth
                   columns={dataGridcolumns}
+                  latestPageObject={latestPageObject}
                   pagequery={pagequery}
                   setPagequery={setPagequery}
                   categoryFilter={categoryFilter}

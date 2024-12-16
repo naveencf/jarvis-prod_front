@@ -31,6 +31,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'plan_name',
@@ -125,6 +126,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'own_page_cost',
@@ -132,6 +134,7 @@ const DataGridOverviewColumns = ({
       renderRowCell: (row) => Math.floor(row.own_pages_cost_price),
       width: 150,
       showCol: true,
+      compare: true,
     },
     {
       key: 'plan_status',
@@ -156,6 +159,7 @@ const DataGridOverviewColumns = ({
       renderRowCell: (row) => Math.floor(row.costPrice),
       width: 120,
       showCol: true,
+      compare: true,
     },
     {
       key: 'selling_price',
@@ -165,6 +169,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 120,
       showCol: true,
+      compare: true,
     },
     {
       key: 'pages',
@@ -174,6 +179,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 120,
       showCol: true,
+      compare: true,
     },
     {
       key: 'createdAt',
@@ -192,6 +198,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 120,
       showCol: true,
+      compare: true,
     },
     {
       key: 'story_count',
@@ -201,6 +208,7 @@ const DataGridOverviewColumns = ({
       ),
       width: 120,
       showCol: true,
+      compare: true,
     },
     {
       key: 'description',

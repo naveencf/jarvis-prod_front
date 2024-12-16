@@ -15,6 +15,7 @@ import * as XLSX from 'xlsx';
 import { useGlobalContext } from '../../../../../Context/Context';
 import { baseUrl } from '../../../../../utils/config';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 const storedToken = sessionStorage.getItem('token');
 
 const UploadBulkVendorPages = ({
@@ -24,6 +25,9 @@ const UploadBulkVendorPages = ({
   category,
   activePlatformId,
   rateType,
+  selectedSubCategory,
+  closeBy,
+  tagCategoris,
 }) => {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
@@ -82,12 +86,32 @@ const UploadBulkVendorPages = ({
 
   const handleSubmit = async () => {
     const formdata = new FormData();
+    if (
+      !getRowData ||
+      !category ||
+      !rateType ||
+      !activePlatformId ||
+      !file ||
+      !selectedSubCategory?._id ||
+      !closeBy ||
+      !tagCategoris?.length
+    ) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Missing Information',
+        text: 'Please fill out all mandatory fields before submitting.',
+      });
+      return; // Stop further execution
+    }
     formdata.append('vendor_id', getRowData);
     formdata.append('category_id', category);
     formdata.append('rate_type', rateType);
     formdata.append('platform_id', activePlatformId);
     formdata.append('bulk_vendor_excel', file);
-    // rate_type, platform_id
+    formdata.append('page_sub_category_id', selectedSubCategory._id);
+    formdata.append('page_closed_by', closeBy);
+    formdata.append('tags_page_category_name', tagCategoris);
+    // tags_page_category_name
 
     try {
       const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {

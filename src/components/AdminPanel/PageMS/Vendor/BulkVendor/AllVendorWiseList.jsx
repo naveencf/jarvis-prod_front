@@ -1,29 +1,34 @@
-import React, { useState } from 'react'
-import { useGetAllVendorWiseListQuery } from '../../../../Store/reduxBaseURL'
+import React, { useState } from 'react';
+import { useGetAllVendorWiseListQuery } from '../../../../Store/reduxBaseURL';
 import View from '../../../Sales/Account/View/View';
 import axios from 'axios';
 import { baseUrl } from '../../../../../utils/config';
 import { Dialog, Box, Modal, Button } from '@mui/material';
-import { FaEdit } from "react-icons/fa";
+import { FaEdit } from 'react-icons/fa';
 import BulkVendorUploadModal from '../BulkVendorUploadModal';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FieldContainer from '../../../FieldContainer';
 import FormContainer from '../../../FormContainer';
-import Select, { components } from "react-select";
+import Select, { components } from 'react-select';
 import jwtDecode from 'jwt-decode';
-import { useGetAllPageCategoryQuery, useGetAllPageListQuery } from '../../../../Store/PageBaseURL';
+import {
+  useGetAllPageCategoryQuery,
+  useGetAllPageListQuery,
+} from '../../../../Store/PageBaseURL';
 import formatString from '../../../Operation/CampaignMaster/WordCapital';
 
 const AllVendorWiseList = () => {
   const [isSingleVendorView, setIsSingleVendorView] = useState(false);
 
-  const { data: vendorWiseList } = useGetAllVendorWiseListQuery()
-  const vendorData = vendorWiseList?.data
+  const { data: vendorWiseList } = useGetAllVendorWiseListQuery();
+
+  const vendorData = vendorWiseList?.data;
+ 
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const [vendorWiseData, setVendorWiseData] = useState([])
-  const [vendorName, setVendorName] = useState([])
+  const [vendorWiseData, setVendorWiseData] = useState([]);
+  const [vendorName, setVendorName] = useState([]);
   const [open, setOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [modalOpenUpdate, setModalOpenUpdate] = useState(false);
@@ -38,9 +43,9 @@ const AllVendorWiseList = () => {
   const [carousel, setCarousel] = useState('');
   const [m_story, setM_story] = useState('');
   const [m_post, setM_post] = useState('');
-  const [m_both, setM_both] = useState('');``
+  const [m_both, setM_both] = useState('');
 
-  const [rowID , setRowID] = useState("")
+  const [rowID, setRowID] = useState('');
 
   const {
     data: pageList,
@@ -53,19 +58,21 @@ const AllVendorWiseList = () => {
   const handleUpdate = async (row) => {
     setModalOpenUpdate(true);
     try {
-      const getSingleVendor = await axios.get(`${baseUrl}v1/get_single_bulk_vendor/${row._id}`);
-      const vendorDetails = getSingleVendor?.data?.data
-      setID(vendorDetails?._id)
-      setVenderName(vendorDetails?.vendor_id)
-      setPageName(vendorDetails?.page_name)
-      setStory(vendorDetails?.story)
-      setPost(vendorDetails?.post)
-      setBothData(vendorDetails?.both)
-      setReel(vendorDetails?.reel)
-      setCarousel(vendorDetails?.carousel)
-      setM_story(vendorDetails?.m_story)
-      setM_post(vendorDetails?.m_post)
-      setM_both(vendorDetails?.m_both)
+      const getSingleVendor = await axios.get(
+        `${baseUrl}v1/get_single_bulk_vendor/${row._id}`
+      );
+      const vendorDetails = getSingleVendor?.data?.data;
+      setID(vendorDetails?._id);
+      setVenderName(vendorDetails?.vendor_id);
+      setPageName(vendorDetails?.page_name);
+      setStory(vendorDetails?.story);
+      setPost(vendorDetails?.post);
+      setBothData(vendorDetails?.both);
+      setReel(vendorDetails?.reel);
+      setCarousel(vendorDetails?.carousel);
+      setM_story(vendorDetails?.m_story);
+      setM_post(vendorDetails?.m_post);
+      setM_both(vendorDetails?.m_both);
     } catch (error) {
       console.error('Error fetching vendor data:', error);
     }
@@ -82,63 +89,71 @@ const AllVendorWiseList = () => {
         m_story: m_story,
         m_both: m_both,
         reel: reel,
-        carousel: carousel
+        carousel: carousel,
       });
-      console.log(res.status === 200)
+
       if (res.status === 200) {
         await handleClickCatData(rowID);
-        console.log("Update Successfully");
+        console.log('Update Successfully');
       } else {
-        console.log("Failed to update. Please try again.");
+        console.log('Failed to update. Please try again.');
       }
-      alert(" Update SuccessFully")
+      alert(' Update SuccessFully');
       setModalOpenUpdate(false);
     } catch (error) {
       console.log(error);
     }
   };
-  console.log(vendorData);
-  const handleClickCatData = async (row) => {
-    setRowID(row)
-    setIsSingleVendorView(true)
-    const res = await axios.get(`${baseUrl}v1/get_bulk_vendor_data_by_vendor_id/${row?._id}`)
-    setVendorWiseData(res?.data?.data)
-    setVendorName(row?.vendor_name)
 
-  }
-console.log(rowID , 'clg row id')
+  const getPriceDetail = (priceDetails, key) => {
+    const keyType = key.split('_')[1];
+
+    const detail = priceDetails?.find((item) => {
+      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+    });
+
+    return detail
+      ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
+      : 0;
+  };
+
+  const handleClickCatData = async (row) => {
+    setRowID(row);
+    setIsSingleVendorView(true);
+    const res = await axios.get(
+      `${baseUrl}v1/get_bulk_vendor_data_by_vendor_id/${row?._id}`
+    );
+    setVendorWiseData(res?.data?.data);
+    setVendorName(row?.vendor_name);
+  };
+
   const handleOpenModal = (rowData) => {
     setOpenModal(true);
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
-
   };
   const handleClose = () => {
     setModalOpenUpdate(false);
-
   };
 
-console.log(categoryData.map((d)=>d._id),'ggggggggg')
   const dataGridcolumns = [
     {
-      key: "S.NO",
-      name: "S.no",
+      key: 'S.NO',
+      name: 'S.no',
       renderRowCell: (row, index) => index + 1,
       width: 80,
     },
     {
-      key: "vendor_name",
-      name: "Vendor Name",
+      key: 'vendor_name',
+      name: 'Vendor Name',
       width: 200,
-      renderRowCell: (row) => (
-        <> {(row?.vendor_name)}   </>
-      ),
+      renderRowCell: (row) => <> {row?.vendor_name} </>,
     },
     {
-      key: "page_count",
-      name: "Page Count",
+      key: 'page_count',
+      name: 'Page Count',
       width: 200,
       renderRowCell: (row) => (
         <div>
@@ -147,7 +162,7 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
               title="View Pages"
               onClick={() => handleClickCatData(row)}
               className="btn cmnbtn btn_sm btn-outline-primary"
-              style={{ minWidth: "120px", color: "blue" }}
+              style={{ minWidth: '120px', color: 'blue' }}
             >
               {row.page_count}
             </button>
@@ -156,167 +171,171 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
       ),
     },
     {
-      key: "Category",
-      name: "Category",
+      key: 'Category',
+      name: 'Category',
       width: 200,
       renderRowCell: (row) => {
-        const category = categoryData?.find((d) => d._id === row?.category_id)?.page_category;
-        return category ? formatString(category) : "NA";
-      }
-    },
-    
-    {
-      key: "avg_post_price",
-      name: "Avg Post",
-      width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_post_price)}   </>
-      ),
+        const category = categoryData?.find(
+          (d) => d._id === row?.category_id
+        )?.page_category;
+        return category ? formatString(category) : 'NA';
+      },
     },
 
     {
-      key: "iii",
-      name: "Avg Story",
+      key: 'avg_post_price',
+      name: 'Avg Post',
       width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_story_price)}   </>
-      ),
-    },
-    {
-      key: "avg_both_price",
-      name: "Avg Both",
-      width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_both_price)}   </>
-      ),
+      renderRowCell: (row) => <> {Math.round(row?.avg_post_price)} </>,
     },
 
     {
-      key: "avg_m_post_price",
-      name: "M Avg Post",
+      key: 'iii',
+      name: 'Avg Story',
       width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_m_post_price)}   </>
-      ),
+      renderRowCell: (row) => <> {Math.round(row?.avg_story_price)} </>,
     },
     {
-      key: "avg_m_story_price",
-      name: "M Avg Story",
+      key: 'avg_both_price',
+      name: 'Avg Both',
       width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_m_story_price)}   </>
-      ),
-    },
-    {
-      key: "avg_m_both_price",
-      name: "M Avg Both",
-      width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.avg_m_both_price)}   </>
-      ),
-    },
-    {
-      key: "reel",
-      name: "Reel",
-      width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.reel)}   </>
-      ),
-    },
-    {
-      key: "carousel",
-      name: "Carousel",
-      width: 200,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.carousel)}   </>
-      ),
+      renderRowCell: (row) => <> {Math.round(row?.avg_both_price)} </>,
     },
 
+    {
+      key: 'avg_m_post_price',
+      name: 'M Avg Post',
+      width: 200,
+      renderRowCell: (row) => <> {Math.round(row?.avg_m_post_price)} </>,
+    },
+    {
+      key: 'avg_m_story_price',
+      name: 'M Avg Story',
+      width: 200,
+      renderRowCell: (row) => <> {Math.round(row?.avg_m_story_price)} </>,
+    },
+    {
+      key: 'avg_m_both_price',
+      name: 'M Avg Both',
+      width: 200,
+      renderRowCell: (row) => <> {Math.round(row?.avg_m_both_price)} </>,
+    },
+    {
+      key: 'reel',
+      name: 'Reel',
+      width: 200,
+      renderRowCell: (row) => <> {Math.round(row?.reel)} </>,
+    },
+    {
+      key: 'carousel',
+      name: 'Carousel',
+      width: 200,
+      renderRowCell: (row) => <> {Math.round(row?.carousel)} </>,
+    },
   ];
+
   const singlevendorColumns = [
     {
-      key: "S.NO",
-      name: "S.no",
+      key: 'S.NO',
+      name: 'S.no',
       renderRowCell: (row, index) => index + 1,
       width: 80,
     },
     {
-      key: "page_name",
-      name: "Page Name",
+      key: 'page_name',
+      name: 'Page Name',
       width: 200,
     },
     {
-      key: "post",
-      name: "Post",
+      key: 'post',
+      name: 'Post',
       width: 200,
       renderRowCell: (row) => (
-        <> {Math.round(row?.post)}   </>
+        <>
+          {' '}
+          {Math.round(
+            getPriceDetail(row?.page_price_list, 'instgram_post')
+          )}{' '}
+        </>
       ),
     },
 
     {
-      key: "story",
-      name: " Story",
+      key: 'story',
+      name: ' Story',
       width: 150,
       renderRowCell: (row) => (
-        <> {Math.round(row?.story)}   </>
+        <>
+          {' '}
+          {Math.round(
+            getPriceDetail(row?.page_price_list, 'instgram_story')
+          )}{' '}
+        </>
       ),
     },
     {
-      key: "Both",
-      name: " Both",
+      key: 'Both',
+      name: ' Both',
       width: 150,
       renderRowCell: (row) => (
-        <> {Math.round(row?.both)}   </>
+        <>
+          {' '}
+          {Math.round(
+            getPriceDetail(row?.page_price_list, 'instgram_both')
+          )}{' '}
+        </>
+      ),
+    },
+    // {
+    //   key: 'm_post',
+    //   name: 'M Post',
+    //   width: 150,
+    //   renderRowCell: (row) => <> {Math.round(row?.m_post)} </>,
+    // },
+    // {
+    //   key: 'm_story',
+    //   name: 'M Story',
+    //   width: 150,
+    //   renderRowCell: (row) => <> {Math.round(row?.m_post)} </>,
+    // },
+    // {
+    //   key: 'm_both',
+    //   name: 'M  Both',
+    //   width: 150,
+    //   renderRowCell: (row) => <> {Math.round(row?.m_both)} </>,
+    // },
+    {
+      key: 'reel',
+      name: 'Reel',
+      width: 150,
+      renderRowCell: (row) => (
+        <>
+          {' '}
+          {Math.round(
+            getPriceDetail(row?.page_price_list, 'instagram_reel')
+          )}{' '}
+        </>
       ),
     },
     {
-      key: "m_post",
-      name: "M Post",
+      key: 'Carousel',
+      name: 'Carousel',
       width: 150,
       renderRowCell: (row) => (
-        <> {Math.round(row?.m_post)}   </>
+        <>
+          {' '}
+          {Math.round(
+            getPriceDetail(row?.page_price_list, 'instagram_carousel')
+          )}{' '}
+        </>
       ),
     },
     {
-      key: "m_story",
-      name: "M Story",
-      width: 150,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.m_post)}   </>
-      ),
-    },
-    {
-      key: "m_both",
-      name: "M  Both",
-      width: 150,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.m_both)}   </>
-      ),
-    },
-    {
-      key: "reel",
-      name: "Reel",
-      width: 150,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.reel)}   </>
-      ),
-    },
-    {
-      key: "Carousel",
-      name: "Carousel",
-      width: 150,
-      renderRowCell: (row) => (
-        <> {Math.round(row?.carousel)}   </>
-      ),
-    },
-    {
-      key: "Action",
-      name: "Action",
+      key: 'Action',
+      name: 'Action',
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
-
           <button
             title="Edit"
             className="btn btn-outline-primary btn-sm user-button"
@@ -327,12 +346,11 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
         </div>
       ),
     },
-  ]
+  ];
   return (
     <div>
       <div className="card-header flexCenterBetween">
-        <h5 className="card-title">
-          Bulk-Vendor</h5>
+        <h5 className="card-title">Bulk-Vendor</h5>
         {isSingleVendorView && (
           <button
             className="btn cmnbtn btn_sm btn-outline-secondary"
@@ -342,7 +360,12 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
           </button>
         )}
         <div className="flexCenter colGap8">
-          {openModal && <BulkVendorUploadModal open={openModal} onClose={handleCloseModal} />}
+          {openModal && (
+            <BulkVendorUploadModal
+              open={openModal}
+              onClose={handleCloseModal}
+            />
+          )}
           <button
             onClick={handleOpenModal}
             title="Edit"
@@ -378,7 +401,6 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
             pagination={[100, 200, 1000]}
             tableName="Single Vendor Data"
           />
-
         </Box>
       )}
       {/* update vendor modal */}
@@ -390,18 +412,23 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
           aria-labelledby="create-meeting-page-modal"
           aria-describedby="create-meeting-page-description"
         >
-          <Box sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: 800,
-            bgcolor: 'background.paper',
-            border: '2px solid #000',
-            boxShadow: 24,
-            p: 4
-          }}>
-            <Button sx={{ float: 'right' }} variant="outlined" color='error'
+          <Box
+            sx={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 800,
+              bgcolor: 'background.paper',
+              border: '2px solid #000',
+              boxShadow: 24,
+              p: 4,
+            }}
+          >
+            <Button
+              sx={{ float: 'right' }}
+              variant="outlined"
+              color="error"
               onClick={handleClose}
             >
               X
@@ -420,7 +447,8 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
                     type="text"
                     fieldGrid={4}
                     value={
-                      vendorData?.find((item) => item?._id === venderName)?.vendor_name || "NA"
+                      vendorData?.find((item) => item?._id === venderName)
+                        ?.vendor_name || 'NA'
                     }
                     disabled
                   />
@@ -428,7 +456,7 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
                   <div className="col-md-6 mb16">
                     <div className="form-group m0">
                       <label className="form-label">
-                        Page Name <sup style={{ color: "red" }}>*</sup>
+                        Page Name <sup style={{ color: 'red' }}>*</sup>
                       </label>
                       <Select
                         name="Page"
@@ -483,7 +511,7 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
                     value={carousel}
                     onChange={(e) => setCarousel(e.target.value)}
                   />
-                  <FieldContainer
+                  {/* <FieldContainer
                     label="M Post"
                     type="text"
                     fieldGrid={4}
@@ -503,19 +531,21 @@ console.log(categoryData.map((d)=>d._id),'ggggggggg')
                     fieldGrid={4}
                     value={m_both}
                     onChange={(e) => setM_both(e.target.value)}
-                  />
+                  /> */}
                 </div>
               </div>
               <button
                 className="btn cmnbtn btn_sm btn-primary"
-                onClick={handleSubmitUpdate}>
-                update</button>
+                onClick={handleSubmitUpdate}
+              >
+                update
+              </button>
             </Box>
           </Box>
         </Modal>
       </>
     </div>
-  )
-}
+  );
+};
 
-export default AllVendorWiseList
+export default AllVendorWiseList;

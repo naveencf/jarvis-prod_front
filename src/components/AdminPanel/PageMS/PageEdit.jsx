@@ -204,7 +204,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     };
     setRowCount(updatedRowCount);
   };
-
+console.log("testing--check");
   const handleFilterPriceType = (_id) => {
     let filteredData = priceTypeList.filter((row) => {
       return !rowCount.some(
@@ -312,7 +312,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setSinglePage(data[0]);
         setLanguageId(data[0].page_language_name);
       });
-  }, [platformData]);
+  }, []);
 
   useEffect(() => {
     if (singlePage && singlePage.length > 0) {
