@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { baseUrl } from '../../../utils/config';
 import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
@@ -29,7 +29,7 @@ import LeftSideBar from './LeftSideBar';
 // import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
 import ActiveDescriptionModal from './ActiveDescriptionModal';
-import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
+// import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
 import PlanVersions from './PlanVersions';
 import { ButtonTitle, calculatePrice } from './helper';
 import ScrollBlocker from './ScrollBlocker';
@@ -38,6 +38,7 @@ import CountInputs from './CountInputs';
 import SearchAndClear from './SearchAndClear';
 import LayeringControls from './LayeringControls';
 import ProgressDisplay from './ProgressDisplay';
+import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMaking = () => {
   // const { id } = useParams();
@@ -1195,7 +1196,7 @@ const PlanMaking = () => {
           <div className="thmTable">
             <Box sx={{ height: 700, width: '100%' }}>
               {/* {filterData && filterData.length > 0 ? ( */}
-              <CustomTableV2
+              <CustomTable
                 dataLoading={isPageListLoading}
                 columns={dataGridColumns}
                 data={tableData}

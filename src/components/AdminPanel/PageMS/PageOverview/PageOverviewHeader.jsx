@@ -1,28 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Autocomplete,
   TextField,
   Typography,
   Breadcrumbs,
-  Box, Modal
-} from "@mui/material";
-import jwtDecode from "jwt-decode";
+  Box,
+  Modal,
+} from '@mui/material';
+import jwtDecode from 'jwt-decode';
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
   useGetAllPageSubCategoryQuery,
   useGetAllProfileListQuery,
-} from "../../../Store/PageBaseURL";
-import formatString from "../../../../utils/formatString";
-import { useGetPmsPlatformQuery } from "../../../Store/reduxBaseURL";
-import { Link } from "react-router-dom";
-import AddIcon from "@mui/icons-material/Add";
-import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
-import ExportInventory from "../../../../components/AdminPanel/PageMS/PageOverview/ExportInventory";
-import SarcasmNetwork from "../SarcasmNetwork";
-import axios from "axios";
-import { baseUrl } from "../../../../utils/config";
-import View from "../../Sales/Account/View/View";
+} from '../../../Store/PageBaseURL';
+import formatString from '../../../../utils/formatString';
+import {
+  useGetAllVendorWiseListQuery,
+  useGetPmsPlatformQuery,
+} from '../../../Store/reduxBaseURL';
+import { Link } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import ExportInventory from '../../../../components/AdminPanel/PageMS/PageOverview/ExportInventory';
+import SarcasmNetwork from '../SarcasmNetwork';
+import axios from 'axios';
+import { baseUrl } from '../../../../utils/config';
+import View from '../../Sales/Account/View/View';
+import BulkVendor from '../Vendor/BulkVendor/BulkVendor';
 const style = {
   position: 'absolute',
   top: '50%',
@@ -45,9 +50,9 @@ function PageOverviewHeader({
   filterFollowers,
   setFilterFollowers,
   selectedData,
-  setSelectedData
+  setSelectedData,
 }) {
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const { data: platform } = useGetPmsPlatformQuery();
@@ -58,8 +63,9 @@ function PageOverviewHeader({
   const subCategoryData = subCategory?.data || [];
   const { data: profileData } = useGetAllProfileListQuery();
   const profileDataOptions = profileData?.data || [];
+  const { data: vendorWiseList } = useGetAllVendorWiseListQuery();
 
-  
+  const vendorData = vendorWiseList?.data;
 
   // Filter states
   // const [categoryFilter, setCategoryFilter] = useState("");
@@ -67,10 +73,10 @@ function PageOverviewHeader({
   const [profileTypeFilter, setProfileTypeFilter] = useState(null);
   const [platformFilter, setPlatformFilter] = useState(null);
   const [ownershipFilter, setOwnershipFilter] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
   const [disabledPagesData, setDisabledPagesData] = useState([]);
-  console.log(disabledPagesData,'disabledPagesData');
   const [openDisabledPages, setOpenDisabledPages] = useState(false);
+  const [bulkVendorSum, setBulkVendorSum] = useState(0);
   const handleCloseDisabled = () => setOpenDisabledPages(false);
 
   const {
@@ -80,28 +86,28 @@ function PageOverviewHeader({
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   // Sorting state
-  const [sortField, setSortField] = useState("");
-  const [sortOrder, setSortOrder] = useState("asc");
+  const [sortField, setSortField] = useState('');
+  const [sortOrder, setSortOrder] = useState('asc');
 
   // Construct page query string based on selected filters
   // Activeness options mapping
   const activenessOptions = [
-    { label: "Super-Active", value: "super_active" },
-    { label: "Active", value: "active" },
-    { label: "Semi-Active", value: "semi_active" },
-    { label: "Dead", value: "dead" },
+    { label: 'Super-Active', value: 'super_active' },
+    { label: 'Active', value: 'active' },
+    { label: 'Semi-Active', value: 'semi_active' },
+    { label: 'Dead', value: 'dead' },
   ];
   const FollowerRanges = [
-    { label: "0.1M To 0.3M", value: [100000, 300000] },
-    { label: "0.3M To 0.5M", value: [300000, 500000] },
-    { label: "0.5M To 0.7M", value: [500000, 700000] },
-    { label: "0.7M To 1M", value: [700000, 1000000] },
-    { label: "1M to 2M", value: [1000000, 2000000] },
-    { label: "2M to 5M", value: [2000000, 5000000] },
-    { label: " 5M", value: [5000000, 40000000] },
+    { label: '0.1M To 0.3M', value: [100000, 300000] },
+    { label: '0.3M To 0.5M', value: [300000, 500000] },
+    { label: '0.5M To 0.7M', value: [500000, 700000] },
+    { label: '0.7M To 1M', value: [700000, 1000000] },
+    { label: '1M to 2M', value: [1000000, 2000000] },
+    { label: '2M to 5M', value: [2000000, 5000000] },
+    { label: ' 5M', value: [5000000, 40000000] },
   ];
   useEffect(() => {
-    const storedFilters = JSON.parse(sessionStorage.getItem("filters"));
+    const storedFilters = JSON.parse(sessionStorage.getItem('filters'));
     if (storedFilters) {
       setCategoryFilter(storedFilters.categoryFilter);
       setSubCategoryFilter(storedFilters.subCategoryFilter);
@@ -115,14 +121,13 @@ function PageOverviewHeader({
 
   const handleDisabledPages = async () => {
     try {
-      setOpenDisabledPages(true); 
+      setOpenDisabledPages(true);
       const res = await axios.get(`${baseUrl}v1/get_disabled_pages`);
-      setDisabledPagesData(res?.data?.data) 
+      setDisabledPagesData(res?.data?.data);
     } catch (error) {
       console.error('Error fetching disabled pages:', error);
     }
   };
-  
 
   // Save filters to sessionStorage whenever they change
   useEffect(() => {
@@ -135,7 +140,7 @@ function PageOverviewHeader({
       activenessFilter,
       filterFollowers,
     };
-    sessionStorage.setItem("filters", JSON.stringify(filters));
+    sessionStorage.setItem('filters', JSON.stringify(filters));
   }, [
     categoryFilter,
     subCategoryFilter,
@@ -158,28 +163,28 @@ function PageOverviewHeader({
     const newQuery = [
       categoryFilter
         ? `page_category_name=${categoryFilter.toLowerCase()}`
-        : "",
+        : '',
       subCategoryFilter
         ? `page_sub_category_name=${subCategoryFilter.toLowerCase()}`
-        : "",
+        : '',
       profileTypeFilter
         ? `page_profile_type_name=${profileTypeFilter.toLowerCase()}`
-        : "",
-      platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : "",
-      ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : "",
+        : '',
+      platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : '',
+      ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : '',
       filterFollowers
         ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`
-        : "",
+        : '',
       activenessFilter
         ? `page_activeness=${activenessOptions
-            .find((option) => option.value === activenessFilter.toLowerCase())
-            ?.value?.toLowerCase()}`
-        : "",
-      searchTerm ? `search=${searchTerm.toLowerCase()}` : "",
-      sortField ? `sort_by=${sortField}&order=${sortOrder}` : "",
+          .find((option) => option.value === activenessFilter.toLowerCase())
+          ?.value?.toLowerCase()}`
+        : '',
+      searchTerm ? `search=${searchTerm.toLowerCase()}` : '',
+      sortField ? `sort_by=${sortField}&order=${sortOrder}` : '',
     ]
       .filter(Boolean)
-      .join("&");
+      .join('&');
     onFilterChange(newQuery);
   }, [
     categoryFilter,
@@ -205,30 +210,30 @@ function PageOverviewHeader({
   const subCategoryOptionsWithCount = subCategoryData.map((res) => {
     const count = getCount(
       pageList,
-      "page_sub_category_name",
+      'page_sub_category_name',
       res.page_sub_category
     );
     return `${formatString(res.page_sub_category)} (${count})`;
   });
 
   const platformOptionsWithCount = platformData.map((res) => {
-    const count = getCount(pageList, "platform_name", res.platform_name);
+    const count = getCount(pageList, 'platform_name', res.platform_name);
     return `${formatString(res.platform_name)} (${count})`;
   });
 
   const activenessOptionsWithCount = activenessOptions.map((res) => {
-    const count = getCount(pageList, "page_activeness", res.value);
+    const count = getCount(pageList, 'page_activeness', res.value);
     return `${formatString(res.value)} (${count})`;
   });
 
-  const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
-    const count = getCount(pageList, "ownership_type", res); // Pass the string directly
+  const ownershipWithCount = ['Vendor', 'Own', 'Partnership'].map((res) => {
+    const count = getCount(pageList, 'ownership_type', res); // Pass the string directly
     return `${formatString(res)} (${count})`; // Format the result with the count
   });
   const profileDataOptionsWithCount = profileDataOptions.map((res) => {
     const count = getCount(
       pageList,
-      "page_profile_type_name",
+      'page_profile_type_name',
       res.profile_type
     );
     return `${formatString(res.profile_type)} (${count})`;
@@ -237,7 +242,7 @@ function PageOverviewHeader({
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
-      return optionWithCount.split(" (")[0];
+      return optionWithCount.split(' (')[0];
     }
     return null;
   };
@@ -312,9 +317,14 @@ function PageOverviewHeader({
     //   },
     //   compare: true,
     // },
-
   ];
 
+  useEffect(() => {
+    if (vendorData?.length) {
+      const sum = vendorData.reduce((acc, val) => val.page_count + acc, 0);
+      setBulkVendorSum(sum);
+    }
+  }, [vendorData]);
 
   return (
     <div className="card">
@@ -322,8 +332,15 @@ function PageOverviewHeader({
         <div className="card">
           <div className="card-header flexCenterBetween">
             <h5 className="card-title flexCenterBetween">
-              <Typography>Inventory</Typography>
-              <Typography>: {pageList?.length}</Typography>
+              <Typography>Total Pages </Typography>
+              <Typography>: {pageList?.length + (bulkVendorSum || 0)} </Typography>
+              <Typography sx={{ marginLeft: '16px' }}>Inventory </Typography>
+              <Typography>: {pageList?.length} </Typography>
+              <Typography sx={{ marginLeft: '16px' }}>
+                {' '}
+                Bulk-Vendor Pages
+              </Typography>
+              {bulkVendorSum && <Typography>: {bulkVendorSum}</Typography>}
               <Breadcrumbs sx={{ ml: 2 }} aria-label="breadcrumb">
                 {platformFilter != null && (
                   <Typography>
@@ -345,14 +362,14 @@ function PageOverviewHeader({
                 )}
                 {categoryFilter != null && (
                   <Typography>
-                    Category -{" "}
+                    Category -{' '}
                     {categoryFilter.charAt(0).toUpperCase() +
                       categoryFilter.slice(1)}
                   </Typography>
                 )}
                 {subCategoryFilter != null && (
                   <Typography>
-                    SubCategory -{" "}
+                    SubCategory -{' '}
                     {subCategoryFilter.charAt(0).toUpperCase() +
                       subCategoryFilter.slice(1)}
                   </Typography>
@@ -366,7 +383,10 @@ function PageOverviewHeader({
               </Breadcrumbs>
             </h5>
             <div className="flexCenter colGap8">
-              <SarcasmNetwork selectedData={selectedData} setSelectedData ={setSelectedData}/>
+              <SarcasmNetwork
+                selectedData={selectedData}
+                setSelectedData={setSelectedData}
+              />
               <button
                 className="btn cmnbtn btn_sm btn-outline-danger"
                 onClick={handleDisabledPages}
@@ -497,9 +517,9 @@ function PageOverviewHeader({
               columns={dataGridcolumns}
               data={disabledPagesData}
               isLoading={false}
-              title={"Disabled Pages"}
+              title={'Disabled Pages'}
               pagination={[100, 200, 1000]}
-              tableName={"Disabled Pages"}
+              tableName={'Disabled Pages'}
             />
           </Box>
         </Modal>

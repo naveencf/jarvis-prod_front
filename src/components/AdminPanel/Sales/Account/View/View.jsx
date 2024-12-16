@@ -1,7 +1,6 @@
-import React from "react";
 import CustomTable from "../../../../CustomTable/CustomTable";
 import CustomTableWrapper from "../../../../ReusableComponents/CustomTableWrapper";
-import CustomTableV2 from "../../../../CustomTable_v2/CustomTableV2";
+// import CustomTableV2 from "../../../../CustomTable_v2/CustomTableV2";
 
 //c
 const View = ({
@@ -17,12 +16,12 @@ const View = ({
   addHtml,
   version = 0,
 }) => {
-  console.log("data", data);
-  const Version = !version ? CustomTableV2 : CustomTable;
+ 
+  // const Version = !version ? CustomTableV2 : CustomTable;
 
   return (
     <CustomTableWrapper title={title} addHtml={addHtml}>
-      <Version
+      <CustomTable
         columns={columns}
         data={data}
         fixedHeader

@@ -44,6 +44,7 @@ const DataGridColumns = ({
       renderRowCell: (row, index) => index + 1,
       width: 30,
       showCol: true,
+      compare: true,
     },
     {
       key: 'page_name',
@@ -176,6 +177,7 @@ const DataGridColumns = ({
       renderRowCell: (row) => row.engagment_rate,
       width: 100,
       showCol: true,
+      compare: true,
     },
     {
       key: 'page_check',
@@ -229,6 +231,7 @@ const DataGridColumns = ({
       ),
       width: 50,
       showCol: true,
+      compare: true,
     },
     {
       key: 'average_post_price',
@@ -304,6 +307,7 @@ const DataGridColumns = ({
       // </div>
       width: 50,
       showCol: true,
+      compare: true,
     },
     {
       key: 'preference_level',
