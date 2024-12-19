@@ -627,43 +627,6 @@ const PageOverviewNew = () => {
       width: 80,
     },
     {
-      key: 'WA Links',
-      name: 'WA Links',
-      width: 100,
-
-      renderRowCell: (row) => {
-        let name = allVendorWhats?.filter(
-          (item) => item?.vendor_id == row?.vendor_id
-        );
-        let countName = name?.length;
-        return (
-          <div
-            data-toggle="modal"
-            data-target="#waModal"
-            onClick={() => handlewhatsAppData(row)}
-            // onClick={<WhatsapplinksModel data={row} />}
-            style={{ cursor: 'pointer' }}
-          >
-            {countName}
-          </div>
-        );
-      },
-    },
-    {
-      key: 'Bio',
-      name: 'Bio',
-      width: 80,
-      renderRowCell: (row) => <div>{row.bio ? row.bio : 'NA '}</div>,
-    },
-    {
-      key: 'page_activeness',
-      name: 'Activeness',
-      width: 80,
-      renderRowCell: (row) => {
-        return formatString(row?.page_activeness);
-      },
-    },
-    {
       key: 'page_name',
       name: 'User Name',
       width: 200,
@@ -683,6 +646,77 @@ const PageOverviewNew = () => {
       },
     },
     {
+      key: 'page_activeness',
+      name: 'Activeness',
+      width: 80,
+      renderRowCell: (row) => {
+        return formatString(row?.page_activeness);
+      },
+    },
+
+
+
+    {
+      key: 'followers_count',
+      name: 'Followers',
+      width: 200,
+      renderRowCell: (row) => {
+        return row.followers_count;
+      },
+    },
+    {
+      key: 'max_cost_price',
+      name: 'Max Cost Price',
+      renderRowCell: (row) => {
+        const rateType = row?.rate_type;
+        const priceList = row?.page_price_list || [];
+        const followerCount = Math.max(0, row?.followers_count || 0);
+
+        // Extract all prices from priceList excluding 'instagram_both'
+        const prices = priceList.flatMap(item =>
+          Object.entries(item)
+            .filter(([key]) => key !== 'instagram_both') // Exclude 'instagram_both'
+            .map(([, value]) => Number(value) || 0)
+        );
+
+        // Calculate the maximum price in the list
+        const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+
+        if (rateType === "Variable") {
+          // Calculate the average story price based on follower count
+          const maxVariablePrice = maxPrice; // Maximum price among variable prices
+          const tempmaxVariablePrice = followerCount
+            ? Math.floor(maxVariablePrice / (followerCount / 1000000))
+            : 0;
+
+          // Return the higher value between tempmaxVariablePrice and maxPrice
+          return Math.max(tempmaxVariablePrice, maxPrice);
+        }
+
+        // Default behavior for non-Variable rate types
+        return maxPrice;
+      },
+      width: 150,
+      showCol: true,
+      compare: true,
+    },
+    {
+      key: 'link',
+      name: 'Link',
+      width: 80,
+      renderRowCell: (row) => {
+        return row.page_link ? row.page_link : 'NA';
+      },
+      compare: true,
+    }
+    ,
+    {
+      key: 'Bio',
+      name: 'Bio',
+      width: 80,
+      renderRowCell: (row) => <div>{row.bio ? row.bio : 'NA '}</div>,
+    },
+    {
       key: 'Logo',
       name: 'Logo',
       width: 150,
@@ -693,6 +727,29 @@ const PageOverviewNew = () => {
             <div className="profile-img">
               <img src={name} alt={row.page_name} width={40} />
             </div>
+          </div>
+        );
+      },
+    },
+    {
+      key: 'WA Links',
+      name: 'WA Links',
+      width: 100,
+
+      renderRowCell: (row) => {
+        let name = allVendorWhats?.filter(
+          (item) => item?.vendor_id == row?.vendor_id
+        );
+        let countName = name?.length;
+        return (
+          <div
+            data-toggle="modal"
+            data-target="#waModal"
+            onClick={() => handlewhatsAppData(row)}
+            // onClick={<WhatsapplinksModel data={row} />}
+            style={{ cursor: 'pointer' }}
+          >
+            {countName}
           </div>
         );
       },
@@ -818,14 +875,7 @@ const PageOverviewNew = () => {
         return formatNumber(followerCount);
       },
     },
-    {
-      key: 'followers_count',
-      name: 'Followers',
-      width: 200,
-      renderRowCell: (row) => {
-        return row.followers_count;
-      },
-    },
+
 
     {
       key: 'vendor_name',
@@ -904,29 +954,7 @@ const PageOverviewNew = () => {
       compare: true,
     },
 
-    // {
-    //   key: 'm_post_price',
-    //   name: 'M Post',
-    //   width: 200,
-    //   renderRowCell: (row) => {
-    //     const postData = row?.page_price_list?.find(item => item?.instagram_m_post !== undefined);
-    //     const postPrice = postData ? postData.instagram_m_post : 0;
-    //     return postPrice;
-    //   },
-    //   compare: true,
-    // },
-    // {
-    //   key: 'm_both_price',
-    //   name: 'M Both',
-    //   width: 200,
-    //   renderRowCell: (row) => {
-    //     const bothData = row?.page_price_list?.find(item => item?.instagram_m_both !== undefined);
-    //     const bothPrice = bothData ? bothData.instagram_m_both : 0;
-    //     return bothPrice;
-    //   },
-    //   compare: true,
-    // }
-    // ,
+
 
     // {
     //   key: 'ownership_type',
