@@ -68,6 +68,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
 
   const { data: documentData, isLoading: isDocumentDataLoading } =
     useGetVendorDocumentByVendorDetailQuery(vendorDetails?._id);
+    console.log(documentData,'documentData');
+    
   // const panData =
   //   !isDocumentDataLoading &&
   //   documentData?.find((ele) => ele.document_name == "Pan card");
@@ -79,7 +81,7 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
     documentData.length >= 1 &&
     documentData.find((ele) => ele.document_name === 'Pan card');
   const gstData =
-    Array.isArray(documentData) &&
+    Array?.isArray(documentData) &&
     documentData.find((ele) => ele.document_name === 'GST');
 
   const {

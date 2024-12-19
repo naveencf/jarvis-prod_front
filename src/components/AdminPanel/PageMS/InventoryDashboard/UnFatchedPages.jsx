@@ -5,9 +5,19 @@ import View from "../../Sales/Account/View/View";
 import { ApiContextData } from "../../APIContext/APIContext";
 import { useGetAllPageListQuery } from "../../../Store/PageBaseURL";
 import jwtDecode from "jwt-decode";
-import { TextField, Autocomplete } from "@mui/material";
+import {
+  TextField,
+  Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+} from "@mui/material";
+import { useGlobalContext } from "../../../../Context/Context";
 
 const UnFetchedPages = () => {
+  const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -21,7 +31,9 @@ const UnFetchedPages = () => {
 
   const [unfatchedData, setUnfatchedData] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
-  const [newSelectedData, setNewSelectedData] = useState("");
+  const [newSelectedData, setNewSelectedData] = useState(null);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const fetchUnfetchedPages = async () => {
     try {
@@ -99,37 +111,66 @@ const UnFetchedPages = () => {
 
   const handleChange = async (e, newValue) => {
     setNewSelectedData(newValue);
+  };
+
+  const handleUpdate = async () => {
     if (!selectedData || selectedData.length === 0) {
       alert("Please Select Pages First !!");
       return;
     }
+    if (!newSelectedData || newSelectedData.length === 0) {
+      alert("Please Select New Pages First !!");
+      return;
+    }
+    setOpenModal(true);
+  };
+
+  const handleModalClose = () => {
+    setOpenModal(false);
+  };
+
+  const handleConfirmUpdate = async () => {
+    setIsUpdating(true);
     try {
       const res = await axios.put(`${baseUrl}v1/update_unfetched_pages`, {
         page: selectedData[0]?.page,
-        new_value: newValue,
+        new_value: newSelectedData,
       });
+      setNewSelectedData(null);
+      setSelectedData([]);
       if (res?.status === 200) {
-        alert("Update Successfully");
+        toastAlert("Update Successfully");
+        fetchUnfetchedPages();
       }
-      fetchUnfetchedPages();
-      newSelectedData("");
+      console.log(newSelectedData, "newselected data");
     } catch (error) {
       console.error("Error updating pages:", error);
+      alert("Error updating the page. Please try again.");
+    } finally {
+      setIsUpdating(false);
+      setOpenModal(false);
     }
   };
 
   return (
     <>
-      <div className="card-header flexCenterBetween">
-        <div className="flexCenter colGap8">
-          <Autocomplete
-            options={pageList?.map((item) => item.page_name)}
-            sx={{ width: 300 }}
-            renderInput={(params) => <TextField {...params} label="Pages " />}
-            onChange={handleChange}
-          />
-        </div>
+      <div className="d-flex mb-2">
+        <Autocomplete
+          value={newSelectedData} // Controlled value
+          options={pageList?.map((item) => item.page_name)}
+          sx={{ width: 300 }}
+          renderInput={(params) => <TextField {...params} label="Pages " />}
+          onChange={handleChange} // Handle change on selection
+        />
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary ml-2"
+          onClick={handleUpdate}
+          disabled={isUpdating}
+        >
+          {isUpdating ? "Updating..." : "Update"}
+        </button>
       </div>
+
       <View
         columns={dataSecondGridColumns}
         data={unfatchedData}
@@ -140,6 +181,27 @@ const UnFetchedPages = () => {
         tableName={"Unfatched Pages"}
         selectedData={handleSelection}
       />
+
+      {/* Confirmation Modal */}
+      <Dialog
+        open={openModal}
+        onClose={handleModalClose}
+        aria-labelledby="confirmation-dialog-title"
+        aria-describedby="confirmation-dialog-description"
+      >
+        <DialogTitle id="confirmation-dialog-title">Confirm Update</DialogTitle>
+        <DialogContent>
+          <p>Are you sure you want to update this page?</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleModalClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmUpdate} color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

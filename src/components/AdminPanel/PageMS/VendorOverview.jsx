@@ -109,7 +109,6 @@ const VendorOverview = () => {
   }, [vendorData]);
 
   const handleOpenWhatsappModal = (row) => {
-    // console.log('row', row);
     return () => {
       dispatch(setShowWhatsappModal());
       dispatch(setRowData(row));
@@ -125,6 +124,8 @@ const VendorOverview = () => {
 
   const handleClickVendorName = (params) => {
     // setVendorDetails(params.row);
+    console.log(params,"params");
+    
     setVendorDetails(params);
   };
 
@@ -553,11 +554,8 @@ const VendorOverview = () => {
       ),
     },
   ];
-
+ 
   const deletePhpData = async (row) => {
-    // await axios.delete(`https://purchase.creativefuel.io/webservices/RestController.php?view=deletevendor`,{
-    //   vendor_id: row.vendor_id
-    // })
     await axios.delete(baseUrl + `node_data_to_php_delete_vendor`, {
       vendor_id: row.vendor_id,
     });
@@ -568,9 +566,8 @@ const VendorOverview = () => {
       try {
         const response = await axios.get(`${baseUrl}v1/get_vendor_counts`);
         setClosedByCount(response.data.data.pageClosedBYCounts);
-        console.log(response.data.data.pageClosedBYCounts, "console res");
       } catch (error) {
-        console.error("Error fetching vendor counts:", error.message);
+        console.error('Error fetching vendor counts:', error.message);
       }
     };
 
@@ -581,10 +578,8 @@ const VendorOverview = () => {
   useEffect(() => {
     const countVendorCategories = (tabFilterData) => {
       const counts = {};
-      console.log("loogged");
       tabFilterData.forEach((item) => {
         const category = item.vendor_category;
-        console.log('category---', category);
         counts[category] = (counts[category] || 0) + 1;
       });
       return counts;
@@ -593,7 +588,6 @@ const VendorOverview = () => {
     const counts = countVendorCategories(tabFilterData);
     setCategoryCounts(counts);
   }, [tabFilterData]);
-  console.log('counts', tabFilterData);
 
   // for platform statistics
   useEffect(() => {
@@ -740,16 +734,6 @@ const VendorOverview = () => {
                 <div className="card-header flexCenterBetween">
                   <h5 className="card-title">Vendor : {vendorData?.length}</h5>
                   <div className="flexCenter colGap8">
-                    {/* <Link
-                      // to={`/admin/pms-vendor-master`}
-                      className="btn cmnbtn btn_sm btn-outline-primary"
-                    >
-                     <i className="fa fa-plus" />
-                    </Link> */}
-                    {/* <UploadBulkVendorPages
-                      getRowData={getRowData}
-                      from={"vendor"}
-                    /> */}
                     <Link
                       to={`/admin/pms-vendor-master`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
@@ -764,10 +748,6 @@ const VendorOverview = () => {
                     </Link>
                   </div>
                 </div>
-                {/* <VendorFilters
-                filterData={filterData}
-                setFilterData={setFilterData}
-              /> */}
                 <div className="data_tbl thm_table table-responsive card-body p0">
                   {loading ? (
                     <Box mt={2} ml={2} mb={3} sx={{ width: '95%' }}>
@@ -946,7 +926,6 @@ const VendorOverview = () => {
                       </div>
                     </div>
                   ))}
-                  {/* {console.log(platformCounts)} */}
                 </div>
               </div>
             </div>

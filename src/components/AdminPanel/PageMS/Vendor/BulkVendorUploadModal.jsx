@@ -243,7 +243,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
           <div className="row mt-5">
             <div className="col-6">
               <label className="form-label">
-                Select User
+                Select Categories
                 <sup className="form-error">*</sup>
               </label>
               <Autocomplete

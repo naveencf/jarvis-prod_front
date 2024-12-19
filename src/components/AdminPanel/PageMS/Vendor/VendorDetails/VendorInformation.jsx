@@ -2,18 +2,18 @@
 
 import React from "react";
 import coverImage from "../../../../../../src/assets/imgs/other/cover1.jpg";
-import {
-  useGetAllVendorTypeQuery,
-  useGetPmsPlatformQuery,
-} from "../../../../Store/reduxBaseURL";
-import formatString from "../../../../../utils/formatString";
 
-const VendorInformation = ({ vendorDetails, bankRows, tab1 }) => {
+import formatString from "../../../../../utils/formatString";
+import { useGetAllVendorTypeQuery, useGetPmsPlatformQuery } from "../../../../Store/reduxBaseURL";
+
+const VendorInformation = ({ vendorDetails, bankRows, tab1 }) => {  
   const { data: paltform } = useGetPmsPlatformQuery();
   const platformData = paltform?.data || [];
 
   const { data: vendorType } = useGetAllVendorTypeQuery();
   const vendorTypeData = vendorType?.data || [];
+ 
+  
   return (
     <>
       <div className="card">

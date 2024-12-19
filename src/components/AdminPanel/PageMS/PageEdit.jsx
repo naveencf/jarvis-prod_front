@@ -77,7 +77,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [content, setContent] = useState('');
   const [ownerType, setOwnerType] = useState('');
   const [vendorId, setVendorId] = useState('');
-  console.log(vendorId, 'vendorId');
 
   const [followCount, setFollowCount] = useState('');
   const [profileId, setProfileId] = useState('');
@@ -95,6 +94,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
+  const [currentPage, setCurrentPage] = useState([]);
   const [p_id, setP_id] = useState();
   const token = sessionStorage.getItem('token');
   const { usersDataContext } = useContext(AppContext);
@@ -145,9 +145,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       });
   };
 
-  useEffect(() => {
-    getData();
-  }, []);
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   const {
     data: category,
@@ -204,7 +204,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     };
     setRowCount(updatedRowCount);
   };
-console.log("testing--check");
+
   const handleFilterPriceType = (_id) => {
     let filteredData = priceTypeList.filter((row) => {
       return !rowCount.some(
@@ -249,16 +249,45 @@ console.log("testing--check");
       setRowCount([{ page_price_type_id: '', price: '' }]);
     }
   };
-
+ 
   const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
     skip: !pageMasterId,
   });
 
   useEffect(() => {
     if (priceData) {
-      setRowCount(priceData);
+      const updatedRowCount = priceData.map((item) => {
+        if (item.page_price_type_id === '667e6c7412fbbf002179f6d6') {
+          // Instagram Post Price
+          return {
+            ...item,
+            price:
+              currentPage.find((page) => page.instagram_post)?.instagram_post ||
+              item.price,
+          };
+        } else if (item.page_price_type_id === '667e6c9112fbbf002179f72c') {
+          // Instagram Story Price
+          return {
+            ...item,
+            price:
+              currentPage.find((page) => page.instagram_story)
+                ?.instagram_story || item.price,
+          };
+        } else if (item.page_price_type_id === '667e6c9c12fbbf002179f72f') {
+          // Instagram Both Price
+          return {
+            ...item,
+            price:
+              currentPage.find((page) => page.instagram_both)?.instagram_both ||
+              item.price,
+          };
+        }
+        return item;
+      });
+
+      setRowCount(updatedRowCount);
     }
-  }, [priceData]);
+  }, [priceData, currentPage]);
 
   useEffect(() => {
     axios
@@ -270,7 +299,7 @@ console.log("testing--check");
       })
       .then((res) => {
         const data = [res.data.data];
-        console.log('data', res.data);
+        setCurrentPage(res.data.data.page_price_list);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
         setPageName(data[0].page_name);
@@ -549,6 +578,8 @@ console.log("testing--check");
   const handleOwnerTypeChange = (selectedOption) => {
     setOwnerType(selectedOption.value);
   };
+
+  console.log('priceTypeList', priceTypeList);
 
   return (
     <>
