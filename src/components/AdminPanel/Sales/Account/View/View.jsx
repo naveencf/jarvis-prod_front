@@ -1,5 +1,5 @@
-import CustomTable from "../../../../CustomTable/CustomTable";
-import CustomTableWrapper from "../../../../ReusableComponents/CustomTableWrapper";
+import CustomTable from '../../../../CustomTable/CustomTable';
+import CustomTableWrapper from '../../../../ReusableComponents/CustomTableWrapper';
 // import CustomTableV2 from "../../../../CustomTable_v2/CustomTableV2";
 
 //c
@@ -16,7 +16,6 @@ const View = ({
   addHtml,
   version = 0,
 }) => {
- 
   // const Version = !version ? CustomTableV2 : CustomTable;
 
   return (

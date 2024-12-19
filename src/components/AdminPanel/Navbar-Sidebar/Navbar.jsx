@@ -186,7 +186,7 @@ const Navbar = () => {
             </label>
           </li>
 
-
+          {/* {deptId == 36 && ( */}
           {((deptId == 36 || RoleID == 1 || loginUserId == 229) && data[52]?.view_value == 1) && (
             <li className="nav-item" id="salesBadge">
               <div

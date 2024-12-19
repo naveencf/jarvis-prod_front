@@ -70,8 +70,8 @@ const VendorMaster = () => {
   const isVendorModalOpen = useSelector(
     (state) => state.vendorMaster.showVendorInfoModal
   );
-  const [forPhp, setForPhp] = useState([])
-  const [vendorData, setVendorData] = useState([])
+  const [forPhp, setForPhp] = useState([]);
+  const [vendorData, setVendorData] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   const [isFormSubmitting2, setIsFormSubmitting2] = useState(false);
@@ -142,7 +142,11 @@ const VendorMaster = () => {
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
 
-  const { data: allVendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
+  const {
+    data: allVendorData,
+    isLoading: loading,
+    refetch: refetchVendor,
+  } = useGetAllVendorQuery();
 
   const { data: platformData } = useGetPmsPlatformQuery();
 
@@ -303,15 +307,16 @@ const VendorMaster = () => {
     //   setUserData(res.data.data);
     // });
 
-    axios.get(baseUrl + `v1/vendor_business_type`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((res) => {
-        setBusiTypeData(res.data.data)
+    axios
+      .get(baseUrl + `v1/vendor_business_type`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
       })
+      .then((res) => {
+        setBusiTypeData(res.data.data);
+      });
 
     if (_id) {
       axios
@@ -323,7 +328,7 @@ const VendorMaster = () => {
         })
         .then((res) => {
           const data = res.data.data;
-          setVendorData(data)
+          setVendorData(data);
           setUserId(data?.closed_by);
           setVendorName(data?.vendor_name);
           setCountryCode(data?.country_code);
@@ -345,8 +350,8 @@ const VendorMaster = () => {
           setCycleId(data?.pay_cycle);
           setHomePincode(data?.home_pincode);
           setVendorCategory(data?.vendor_category ?? 'Theme Page');
-          setDob(data?.dob)
-          setBusiType(data?.busi_type)
+          setDob(data?.dob);
+          setBusiType(data?.busi_type);
         });
 
       axios
@@ -359,8 +364,10 @@ const VendorMaster = () => {
         .then((res) => {
           const data = res.data.data;
           setBankRows(data);
-          const extractForPhp = bankRows?.find(item => item.payment_method === '666856874366007df1dfacde');
-          setForPhp(extractForPhp)
+          const extractForPhp = bankRows?.find(
+            (item) => item.payment_method === '666856874366007df1dfacde'
+          );
+          setForPhp(extractForPhp);
         });
 
       axios
@@ -395,7 +402,7 @@ const VendorMaster = () => {
         });
     }
   }, [_id]);
-
+  console.log('gst', gst);
   useEffect(() => {
     if (venodrDocuments?.length > 0 && !isVendorDocumentsLoading) {
       let doc = venodrDocuments?.map((doc) => {
@@ -404,7 +411,7 @@ const VendorMaster = () => {
           docName: doc.document_name,
           docNumber: doc.document_no,
           docImage: doc.document_image_upload,
-          vendor_id: doc.vendor_id
+          vendor_id: doc.vendor_id,
         };
       });
       // setDocDetails(doc);
@@ -450,9 +457,9 @@ const VendorMaster = () => {
           filteredDocs = combinedDocs.filter((doc) =>
             ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName)
           );
-        } else if (busiType === "670112e2579d1873b7ede528") {
-          filteredDocs = combinedDocs.filter(doc =>
-            ["Driving License", "Aadhar Card", "Pan Card"].includes(doc.docName)
+        } else if (busiType === '670112e2579d1873b7ede528') {
+          filteredDocs = combinedDocs.filter((doc) =>
+            ['Driving License', 'Aadhar Card', 'Pan Card'].includes(doc.docName)
           );
         }
         setDocDetails(filteredDocs);
@@ -475,10 +482,10 @@ const VendorMaster = () => {
     setDocDetails([
       ...docDetails,
       {
-        _id: "",
-        docName: "",
-        docNumber: "",
-        document_image_upload: "",
+        _id: '',
+        docName: '',
+        docNumber: '',
+        document_image_upload: '',
       },
     ]);
   };
@@ -498,7 +505,6 @@ const VendorMaster = () => {
           docNumber: '',
           document_image_upload: '',
         },
-
       ];
     } else if (busiType === '670112d0579d1873b7ede526') {
       newDocs = [
@@ -559,9 +565,12 @@ const VendorMaster = () => {
       return;
     }
     doc[i].docNumber = capitalizedValue;
+    if(docDetails[0].docName==="GST"){
+      setGst(doc[0].docNumber)
+    }
     setDocDetails(doc);
   };
-
+console.log("docDetail", docDetails);
   const handleDocImageChange = (i, e) => {
     const file = e.target.files[0];
 
@@ -681,7 +690,7 @@ const VendorMaster = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log("handlessubmit");
+    console.log('handlessubmit');
 
     e.preventDefault();
 
@@ -749,14 +758,14 @@ const VendorMaster = () => {
       vendorLinks: whatsappLink,
       closed_by: userId,
       dob: dob,
-      busi_type: busiType
+      busi_type: busiType,
     };
     setPreviewData(formData);
     setOpenPreviewModal(true);
   };
 
   const handleSubmitNew = async (e) => {
-    console.log("handlessubmitnew");
+    console.log('handlessubmitnew');
 
     e.preventDefault();
 
@@ -812,7 +821,7 @@ const VendorMaster = () => {
       vendorLinks: whatsappLink,
       closed_by: userId,
       dob: dob,
-      busi_type: busiType
+      busi_type: busiType,
     };
 
     if (!_id) {
@@ -910,7 +919,7 @@ const VendorMaster = () => {
                   },
                 }
               )
-              .then((res) => { })
+              .then((res) => {})
               .catch((err) => {
                 toastError(err.message);
               });
@@ -927,7 +936,6 @@ const VendorMaster = () => {
   };
 
   const handleFinalSubmit = async () => {
-
     const handleError = (error) => {
       toastError(error?.message || 'Something went wrong!');
       setIsFormSubmitting(false);
@@ -939,7 +947,7 @@ const VendorMaster = () => {
     };
 
     if (!_id) {
-      console.log("id is not");
+      console.log('id is not');
 
       setIsFormSubmitting(true);
       try {
@@ -985,18 +993,18 @@ const VendorMaster = () => {
           // Wait for all document upload promises to complete
           await Promise.all(docPromises);
 
-          handleSuccess("Vendor and documents added successfully!");
+          handleSuccess('Vendor and documents added successfully!');
         } else if (res?.error?.status === 409) {
           toastError(res?.error?.data?.message);
         } else {
-          handleSuccess("Vendor data added successfully!");
-          navigate('/admin/pms-vendor-overview')
+          handleSuccess('Vendor data added successfully!');
+          navigate('/admin/pms-vendor-overview');
         }
       } catch (err) {
         handleError(err);
       }
     } else {
-      console.log("id is");
+      console.log('id is');
 
       setIsFormSubmitting(true);
       previewData._id = _id;
@@ -1016,7 +1024,7 @@ const VendorMaster = () => {
         };
 
         try {
-          console.log("is working");
+          console.log('is working');
 
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
@@ -1026,20 +1034,21 @@ const VendorMaster = () => {
         for (let i = 0; i < docDetails?.length; i++) {
           const formData = new FormData();
           formData.append('vendor_id', _id);
-          formData.append('_id', docDetails[i]._id || ""); // Add default values if undefined
-          formData.append('document_name', docDetails[i].docName || "");
-          formData.append('document_no', docDetails[i].docNumber || "");
+          formData.append('_id', docDetails[i]._id || ''); // Add default values if undefined
+          formData.append('document_name', docDetails[i].docName || '');
+          formData.append('document_no', docDetails[i].docNumber || '');
 
           if (docDetails[i].docImage) {
             formData.append('document_image_upload', docDetails[i].docImage); // Append only if defined
           } else {
-            console.warn(`Skipping docImage for document ${docDetails[i].docName}`);
+            console.warn(
+              `Skipping docImage for document ${docDetails[i].docName}`
+            );
           }
 
-          console.log(docDetails[i], "docDetails[i]")
+          console.log(docDetails[i], 'docDetails[i]');
 
           if (docDetails[i]._id) {
-
             updateVendorDocument(formData)
               .then((res) => {
                 // toastAlert("Document added successfully")
@@ -1058,7 +1067,7 @@ const VendorMaster = () => {
           }
         }
 
-        handleSuccess("Data Updated Successfully");
+        handleSuccess('Data Updated Successfully');
       } catch (err) {
         handleError(err);
       }
@@ -1076,9 +1085,9 @@ const VendorMaster = () => {
       // setCompCity(homeCity);
       // setCompState(homeState);
       // setCompPin(homePincode);
-      setHomeCity(compCity)
-      setHomeState(compState)
-      setHomePincode(compPin)
+      setHomeCity(compCity);
+      setHomeState(compState);
+      setHomePincode(compPin);
     } else {
       // setCompAddress('');
       // setCompCity('');
@@ -1166,7 +1175,7 @@ const VendorMaster = () => {
     //   setExistError('Vendor Is Already Exist, Enter Another One Or ')
     //   setMessageColor('red');
     // }
-  }
+  };
 
   return (
     <>
@@ -1207,19 +1216,22 @@ const VendorMaster = () => {
           <div className="row thm_form">
             <div className="col-md-6 mb16">
               <div className="form-group m0">
-                <label className="form-label">Business Type <sup style={{ color: 'red' }}>*</sup></label>
+                <label className="form-label">
+                  Business Type <sup style={{ color: 'red' }}>*</sup>
+                </label>
                 <Select
-                  options={
-                    busiTypeData?.map((option) => ({
-                      value: option?._id,
-                      label: option?.busi_type_name,
-                    }))}
+                  options={busiTypeData?.map((option) => ({
+                    value: option?._id,
+                    label: option?.busi_type_name,
+                  }))}
                   astric={true}
                   required={true}
                   // required={true}
                   value={{
                     value: busiType,
-                    label: (busiTypeData?.find((role) => role._id == busiType)?.busi_type_name) || '',
+                    label:
+                      busiTypeData?.find((role) => role._id == busiType)
+                        ?.busi_type_name || '',
                   }}
                   onChange={(e) => {
                     setBusiType(e.value);
@@ -1276,7 +1288,9 @@ const VendorMaster = () => {
                     <input
                       type="text"
                       value={link.docName}
-                      onChange={(e) => handleDocNameChange(index, e.target.value)}
+                      onChange={(e) =>
+                        handleDocNameChange(index, e.target.value)
+                      }
                       className="form-control"
                       required
                     />
@@ -1343,7 +1357,9 @@ const VendorMaster = () => {
               </div>
             </div>
 
-            {busiType === "670112e2579d1873b7ede528" ? '' : (
+            {busiType === '670112e2579d1873b7ede528' ? (
+              ''
+            ) : (
               <>
                 <div className="card-header">Company Details</div>
                 <div className="card-body row">
@@ -1371,7 +1387,9 @@ const VendorMaster = () => {
                     <label htmlFor="">Company State</label>
                     <IndianStatesMui
                       selectedState={compState}
-                      onChange={(option) => setCompState(option ? option : null)}
+                      onChange={(option) =>
+                        setCompState(option ? option : null)
+                      }
                     />
                   </div>
                   <div className="form-group col-6">
@@ -1392,13 +1410,11 @@ const VendorMaster = () => {
                     required={false}
                     maxLength={6}
                     onChange={handleCompPincode}
-                  // onChange={(e) => {
-                  //   if (isNaN(e.target.value)) return;
-                  //   setCompPin(e.target.value);
-                  // }}
+                    // onChange={(e) => {
+                    //   if (isNaN(e.target.value)) return;
+                    //   setCompPin(e.target.value);
+                    // }}
                   />
-
-
                 </div>
               </>
             )}
@@ -1425,10 +1441,15 @@ const VendorMaster = () => {
               )}
               {existError && (
                 <>
-                  <small style={{ color: messageColor }}>
-                    {existError}
-                  </small>
-                  {messageColor == 'red' ? <Link to='/admin/pms-page-master' style={{ color: 'blue' }}> Add Page</Link> : ''}
+                  <small style={{ color: messageColor }}>{existError}</small>
+                  {messageColor == 'red' ? (
+                    <Link to="/admin/pms-page-master" style={{ color: 'blue' }}>
+                      {' '}
+                      Add Page
+                    </Link>
+                  ) : (
+                    ''
+                  )}
                 </>
               )}
             </div>
@@ -1778,14 +1799,14 @@ const VendorMaster = () => {
 
                 {(bankRows[i].payment_method == '66681c3c4366007df1df1481' ||
                   bankRows[i].payment_method == '666856624366007df1dfacc8') && (
-                    <FieldContainer
-                      label={'Registered Mobile Number'}
-                      value={bankRows[i].registered_number}
-                      required={false}
-                      type="number"
-                      onChange={(e) => handleRegisteredMobileChange(e, i)}
-                    />
-                  )}
+                  <FieldContainer
+                    label={'Registered Mobile Number'}
+                    value={bankRows[i].registered_number}
+                    required={false}
+                    type="number"
+                    onChange={(e) => handleRegisteredMobileChange(e, i)}
+                  />
+                )}
                 {i > 0 && (
                   <IconButton
                     onClick={handleRemoveBankInfoRow(i)}
@@ -1881,7 +1902,10 @@ const VendorMaster = () => {
               />
             </div>
 
-            <div className="col-md-6 threshold_style" style={{ display: 'flex' }}>
+            <div
+              className="col-md-6 threshold_style"
+              style={{ display: 'flex' }}
+            >
               <FieldContainer
                 label="Threshold Limit"
                 value={limit}
@@ -1893,10 +1917,16 @@ const VendorMaster = () => {
                 <p className="vendor_threshold" onClick={() => setLimit(50000)}>
                   50K
                 </p>
-                <p className="vendor_threshold" onClick={() => setLimit(100000)}>
+                <p
+                  className="vendor_threshold"
+                  onClick={() => setLimit(100000)}
+                >
                   100K
                 </p>
-                <p className="vendor_threshold" onClick={() => setLimit(200000)}>
+                <p
+                  className="vendor_threshold"
+                  onClick={() => setLimit(200000)}
+                >
                   200K
                 </p>
               </div>
