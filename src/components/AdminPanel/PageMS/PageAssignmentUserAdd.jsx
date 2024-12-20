@@ -11,6 +11,7 @@ import './Tagcss.css';
 import { useNavigate } from 'react-router';
 import { useGetAllPageCategoryQuery, useGetAllPageSubCategoryQuery } from '../../Store/PageBaseURL';
 import { useAPIGlobalContext } from '../APIContext/APIContext';
+import formatString from '../../../utils/formatString';
 
 const PageAssignmentUserAdd = () => {
   const location = useLocation();
@@ -164,11 +165,11 @@ const {userContextData} = useAPIGlobalContext()
                 <Select
                   options={categoryData.map((option) => ({
                     value: option._id,
-                    label: option.page_category,
+                    label: formatString(option.page_category),
                   }))}
                   value={{
                     value: categorys,
-                    label: categoryData.find((cat) => cat._id === categorys)?.page_category || '',
+                    label: formatString(categoryData.find((cat) => cat._id === categorys)?.page_category) || '',
                   }}
                   onChange={(e) => {
                     setCategorys(e.value);

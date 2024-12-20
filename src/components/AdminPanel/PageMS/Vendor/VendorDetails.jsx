@@ -4,6 +4,7 @@ import VendorDetailAccordion from "./VendorDetailAccordion";
 import { useEffect, useState } from "react";
 import Slide from "@mui/material/Slide";
 import logo from "/logo.png";
+import axios from "axios"; // Ensure axios is imported
 import {
   AddressBook,
   CashRegister,
@@ -12,7 +13,6 @@ import {
   CurrencyInr,
   Bank,
 } from "@phosphor-icons/react";
-
 import { Link } from "react-router-dom";
 // import VendorDetailsNew from "./VendorDetails/VendorDetailsNew";
 import VendorInformation from "./VendorDetails/VendorInformation";
@@ -21,6 +21,7 @@ import VendorPages from "./VendorDetails/VendorPages";
 import VendorPurchase from "./VendorDetails/VendorPurchase";
 import VendorDocuments from "./VendorDetails/VendorDocuments";
 import VendorBankDetails from "./VendorDetails/VendorBankDetails";
+import { baseUrl } from "../../../../utils/config";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -31,13 +32,14 @@ export default function VendorDetails({
   setVendorDetails,
   tab1,
 }) {
+  const storedToken = sessionStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
+
+  const [pageVendordata, setPageVendordata] = useState(null);
+  console.log(pageVendordata, "pageVendordata");
+
   const [open, setOpen] = React.useState(true);
   const [bankRows, setBankRows] = useState([]);
-  console.log(vendorDetails, "vendorDetails");
-  const sendingId = {
-    _id: vendorDetails._id,
-  };
-  const queryParams = new URLSearchParams(sendingId).toString();
 
   const handleClose = () => {
     setOpen(false);
@@ -54,12 +56,41 @@ export default function VendorDetails({
     }
   }, [open]);
 
+  // Fetch vendor details if tab1 is "tab1"
+  useEffect(() => {
+    const fetchVendorDetails = async () => {
+      if (tab1 === "tab1" && vendorDetails?.vendor_id) {
+        try {
+          const res = await axios.get(
+            `${baseUrl}v1/vendor/${vendorDetails.vendor_id}`,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setPageVendordata(res?.data?.data);
+        } catch (error) {
+          console.error("Error fetching vendor details:", error);
+        }
+      }
+    };
+
+    fetchVendorDetails();
+  }, [tab1, vendorDetails, setVendorDetails]);
+
   const handleClickScroll = (id) => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  const sendingId = {
+    _id: vendorDetails?._id,
+  };
+  const queryParams = new URLSearchParams(sendingId).toString();
 
   return (
     <Dialog
@@ -168,7 +199,7 @@ export default function VendorDetails({
         <div className="sales-accountinfo-view">
           <div className="actionNavbar">
             <button className="icon text-danger" onClick={() => handleClose()}>
-              <i class="bi bi-x"></i>
+              <i className="bi bi-x"></i>
             </button>
             <ul>
               <li>
@@ -198,12 +229,16 @@ export default function VendorDetails({
           <section id="VendorInformation">
             <VendorInformation
               vendorDetails={vendorDetails}
-              bankRows={bankRows}
               tab1={tab1}
+              pageVendordata={pageVendordata}
             />
           </section>
           <section id="Address">
-            <VendorAddress vendorDetails={vendorDetails} />
+            <VendorAddress
+              vendorDetails={vendorDetails}
+              tab1={tab1}
+              pageVendordata={pageVendordata}
+            />
           </section>
           <section id="pages">
             <VendorPages vendorDetails={vendorDetails} tab1={tab1} />
@@ -219,8 +254,6 @@ export default function VendorDetails({
           </section>
         </div>
       </div>
-
-      {/* <VendorDetailAccordion vendorDetails={vendorDetails} bankRows={bankRows} tab1={tab1}/> */}
     </Dialog>
   );
 }

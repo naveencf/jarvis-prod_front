@@ -11,7 +11,10 @@ import { useGetAllAccountQuery } from "../../../Store/API/Sales/SalesAccountApi"
 import { useGlobalContext } from "../../../../Context/Context";
 import Modal from "react-modal";
 import ExecutionModal from "./ExecutionModal";
-import { ApiContextData, useAPIGlobalContext } from "../../APIContext/APIContext";
+import {
+  ApiContextData,
+  useAPIGlobalContext,
+} from "../../APIContext/APIContext";
 import FieldContainer from "../../FieldContainer";
 import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import formatString from "../../../../utils/formatString";
@@ -46,17 +49,19 @@ import {
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
 
 const ViewSaleBooking = () => {
-  const { contextData } = useContext(ApiContextData)
   const token = getDecodedToken();
   let loginUserId;
+  const { userContextData, contextData } = useAPIGlobalContext();
+
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1 || contextData[63]?.view_value != 1) {
+
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
+
   const filterDate = useLocation().state;
   const [stats, setStats] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
-  const { userContextData } = useAPIGlobalContext();
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const {
@@ -500,7 +505,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-            "uploaded" == row?.invoice_request_status ? (
+          "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>

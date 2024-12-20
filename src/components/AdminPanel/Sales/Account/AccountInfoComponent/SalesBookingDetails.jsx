@@ -13,17 +13,18 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Loader from "../../../../Finance/Loader/Loader";
+import { useAPIGlobalContext } from "../../../APIContext/APIContext";
 
 const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
 
   const [userLoading, setUserLoading] = useState(false);
-  const [userContextData, setUserContextData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState([]);
   // const {
@@ -45,18 +46,7 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
       setSalesLength(SalesData.length);
     }
   }, [SalesData]);
-  async function getAllUserData() {
-    setUserLoading(true);
-    try {
-      const res = await axios.get(baseUrl + "get_all_users").then((res) => {
-        setUserContextData(res?.data.data);
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setUserLoading(false);
-    }
-  }
+
   useEffect(() => {
     getAllUserData();
   }, []);

@@ -3,7 +3,10 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import React from "react";
 
-const VendorAddress = ({ vendorDetails }) => {
+const VendorAddress = ({ vendorDetails, tab1, pageVendordata }) => {
+  console.log(vendorDetails, " 1  vendorDetails");
+  console.log(pageVendordata, " 2  pageVendordata");
+
   return (
     <div>
       <div className="cardAccordion">
@@ -26,7 +29,11 @@ const VendorAddress = ({ vendorDetails }) => {
                     <ul className="saleAccDetailInfo">
                       <li>
                         <span>Address:</span>
-                        {vendorDetails?.home_address || "N/A"}
+                        {tab1 === "tab1" ? (
+                          <>{pageVendordata?.home_address || "N/A"}</>
+                        ) : (
+                          <> {vendorDetails?.home_address || "N/A"}</>
+                        )}
                       </li>
                       <li>
                         <span>Country:</span>
@@ -36,15 +43,27 @@ const VendorAddress = ({ vendorDetails }) => {
                       </li>
                       <li>
                         <span>City:</span>
-                        {vendorDetails?.home_city || "N/A"}
+                        {tab1 === "tab1" ? (
+                          <>{pageVendordata?.home_city || "N/A"}</>
+                        ) : (
+                          <> {vendorDetails?.home_city || "N/A"}</>
+                        )}
                       </li>
                       <li>
                         <span>State:</span>
-                        {vendorDetails?.home_state || "N/A"}
+                        {tab1 === "tab1" ? (
+                          <>{pageVendordata?.home_state || "N/A"}</>
+                        ) : (
+                          <> {vendorDetails?.home_state || "N/A"}</>
+                        )}
                       </li>
                       <li>
                         <span>Pin Code :</span>
-                        {vendorDetails?.home_pincode || "N/A"}
+                        {tab1 === "tab1" ? (
+                          <>{pageVendordata?.home_pincode || "N/A"}</>
+                        ) : (
+                          <> {vendorDetails?.home_pincode || "N/A"}</>
+                        )}
                       </li>
                     </ul>
                   </div>

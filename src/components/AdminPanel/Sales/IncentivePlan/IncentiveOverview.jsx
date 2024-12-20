@@ -8,6 +8,7 @@ import { useGetIncentivePlanListQuery } from "../../../Store/API/Sales/Incentive
 import View from "../Account/View/View";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import { Compare } from "@mui/icons-material";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const IncentiveOverview = () => {
   const [incentiveData, setIncentiveData] = useState([]);
@@ -17,7 +18,8 @@ const IncentiveOverview = () => {
 
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
 

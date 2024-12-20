@@ -385,6 +385,7 @@ const CustomTable = ({
 
     // setTriggerSort(prev => !prev);
   }, [columns, apiColumns]);
+
   useEffect(() => {
     //console.log("initializing data to update ui");
 
@@ -467,7 +468,7 @@ const CustomTable = ({
         }
       }
 
-      console.log("datatType", datatType, unSortedData[0]);
+      // console.log("datatType", datatType, unSortedData[0]);
       if (datatType === "number") {
         // console.log("number");
 
@@ -607,6 +608,7 @@ const CustomTable = ({
       )}
       <div className="table-container" ref={tableref}>
         <RenderedTable
+          setVisibleColumns={setVisibleColumns}
           sortKey={sortKey}
           oldSortKey={oldSortKey}
           setOldSortKey={setOldSortKey}

@@ -23,6 +23,8 @@ import {
 import { useGlobalContext } from "../../../Context/Context";
 import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
 import Select from "react-select";
+import formatString from "../../../utils/formatString";
+
 
 export default function PageAddMasterModal() {
   const { toastAlert, toastError } = useGlobalContext();

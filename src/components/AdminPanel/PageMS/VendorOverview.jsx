@@ -3,10 +3,13 @@ import { FaEdit } from 'react-icons/fa';
 import DeleteButton from '../DeleteButton';
 import { Link } from 'react-router-dom';
 import { Box, Grid, Skeleton } from '@mui/material';
-import DataTable from 'react-data-table-component';
 import View from '../Sales/Account/View/View';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-
+import Brightness6Icon from '@mui/icons-material/Brightness6';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
+import HouseSidingIcon from '@mui/icons-material/HouseSiding';
+import { City } from "@phosphor-icons/react";
 import {
   setRowData,
   setShowBankDetailsModal,
@@ -823,7 +826,7 @@ const VendorOverview = () => {
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span><Brightness6Icon /></span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{category}</h6>
@@ -842,7 +845,7 @@ const VendorOverview = () => {
                 <div className="card" onClick={vendorWithNoPages}>
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
-                      <span></span>
+                      <span><FormatListNumberedIcon /></span>
                     </div>
                     <div>
                       <h6 className="colorMedium">Vendor with 0 pages</h6>
@@ -860,7 +863,7 @@ const VendorOverview = () => {
                 <div className="card" onClick={vendorWithNoMobileNum}>
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
-                      <span></span>
+                      <span><FormatListNumberedIcon /></span>
                     </div>
                     <div>
                       <h6 className="colorMedium">
@@ -880,7 +883,7 @@ const VendorOverview = () => {
                 <div className="card" onClick={vendorWithNoEmail}>
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
-                      <span></span>
+                      <span><FormatListNumberedIcon /></span>
                     </div>
                     <div>
                       <h6 className="colorMedium">Vendor with no email id</h6>
@@ -914,7 +917,7 @@ const VendorOverview = () => {
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span><AccountCircleIcon/></span>
                           </div>
                           <div>
                             <h6 className="colorMedium">
@@ -947,7 +950,7 @@ const VendorOverview = () => {
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span><AccountCircleIcon /></span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{item.user_name}</h6>
@@ -983,7 +986,7 @@ const VendorOverview = () => {
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span><HouseSidingIcon/></span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{state}</h6>
@@ -1015,7 +1018,7 @@ const VendorOverview = () => {
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
-                            <span></span>
+                            <span><City size={32} /></span>
                           </div>
                           <div>
                             <h6 className="colorMedium">{city}</h6>

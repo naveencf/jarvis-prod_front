@@ -19,6 +19,7 @@ import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDe
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 
 import Loader from "../../../Finance/Loader/Loader";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const CreatePaymentUpdate = () => {
   const test = useParams();
@@ -34,7 +35,8 @@ const CreatePaymentUpdate = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const { data: paymentDetailDatalist, isLoading: getPaymentDatilLoading } =
@@ -266,7 +268,6 @@ const CreatePaymentUpdate = () => {
       {isLoading && <Loader />}
       <FormContainer mainTitle="Payment Update" link={true} />
       <div className="card">
-
         <div className="card-body row">
           <div className="form-group col-4">
             <label className="form-label">Sale Booking</label>
@@ -371,12 +372,14 @@ const CreatePaymentUpdate = () => {
                 }
               }}
             />
-            {<span className="successText ml-4 pb-5">
-              {((paymentAmount / payAmt) * 100) ?
-
-                ((paymentAmount / payAmt) * 100).toFixed(2)
-                : 0}%
-            </span>}
+            {
+              <span className="successText ml-4 pb-5">
+                {(paymentAmount / payAmt) * 100
+                  ? ((paymentAmount / payAmt) * 100).toFixed(2)
+                  : 0}
+                %
+              </span>
+            }
             {isValidates.paymentAmount && (
               <div className="form-error">Please enter a payment amount</div>
             )}

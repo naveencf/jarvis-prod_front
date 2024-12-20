@@ -16,7 +16,7 @@ import Modal from "react-modal";
 import formatString from "../../../../utils/formatString";
 
 const ViewPaymentUpdate = () => {
-  const { userContextData } = useAPIGlobalContext();
+  const { userContextData, contextData } = useAPIGlobalContext();
 
   const [paymentUpdateData, setPaymentUpdateData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
@@ -31,7 +31,7 @@ const ViewPaymentUpdate = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const {

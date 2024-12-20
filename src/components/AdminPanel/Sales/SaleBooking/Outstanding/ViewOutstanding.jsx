@@ -10,6 +10,7 @@ import Tab from "../../../../Tab/Tab";
 import getDecodedToken from "../../../../../utils/DecodedToken";
 import { Link } from "react-router-dom";
 import { useGetAllAccountQuery } from "../../../../Store/API/Sales/SalesAccountApi";
+import { useAPIGlobalContext } from "../../../APIContext/APIContext";
 
 const ViewOutstanding = () => {
   const [activeData, setActiveData] = useState([]);
@@ -17,7 +18,8 @@ const ViewOutstanding = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const tabName = ["Account Outstanding", "Sales Executive Outstanding"];

@@ -6,6 +6,7 @@ import CustomSelect from "../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 
 const RenderedTable = ({
+  setVisibleColumns,
   headref,
   applyFlag,
   setApplyFlag,
@@ -256,12 +257,19 @@ const RenderedTable = ({
   const onDrop = async (e, target) => {
     const draggedIndex = e.dataTransfer.getData("dragged");
     const newColumns = [...columnsheader];
+    const newVisibleColumns = [...visibleColumns];
     const draggedColumn = newColumns[draggedIndex];
+    const draggedVisibility = newVisibleColumns[draggedIndex];
+
     newColumns.splice(draggedIndex, 1);
+    newVisibleColumns.splice(draggedIndex, 1);
+
     newColumns.splice(target, 0, draggedColumn);
+    newVisibleColumns.splice(target, 0, draggedVisibility);
+
     const arrayOfColumnsName = newColumns.map((column, index) => ({
       name: column.name,
-      visibility: visibleColumns[index],
+      visibility: newVisibleColumns[index],
     }));
 
     await axios
@@ -272,6 +280,7 @@ const RenderedTable = ({
       })
       .then(() => {
         setColumns(newColumns);
+        setVisibleColumns(newVisibleColumns);
         fetchCreatedTable();
       })
       .catch((error) => {
