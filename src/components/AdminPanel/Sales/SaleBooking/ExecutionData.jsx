@@ -6,14 +6,14 @@ import { useGetAllRecordServicesQuery } from "../../../Store/API/Sales/RecordSer
 import getDecodedToken from "../../../../utils/DecodedToken";
 import { useGlobalContext } from "../../../../Context/Context";
 import { useGetAllBrandQuery } from "../../../Store/API/Sales/BrandApi";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const ExecutionData = ({ selectedRowData }) => {
-  console.log(selectedRowData);
-
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const { toastAlert, toastError } = useGlobalContext();
@@ -27,7 +27,7 @@ const ExecutionData = ({ selectedRowData }) => {
     isLoading: BrandLoading,
     isError: BrandError,
   } = useGetAllBrandQuery();
-  console.log(RecordServiceData);
+
   const column = [
     {
       key: "serial",
@@ -69,7 +69,11 @@ const ExecutionData = ({ selectedRowData }) => {
               await navigator.clipboard.writeText(`
                 Campaign Name: ${selectedRowData?.campaign_name}
                 Account Name: ${selectedRowData?.account_name}
-                Brand Name: ${BrandData?.find(data => data?._id === selectedRowData.brand_id).brand_name}
+                Brand Name: ${
+                  BrandData?.find(
+                    (data) => data?._id === selectedRowData.brand_id
+                  ).brand_name
+                }
                 Token No.: ${row?.execution_token}`);
               toastAlert("Token Copied");
             } catch (err) {

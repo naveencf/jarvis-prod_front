@@ -52,7 +52,7 @@ const UnFetchedPages = () => {
   }, []);
 
   const handleSelection = (newSelectedData) => {
-    if (newSelectedData.length > 1) {
+    if (newSelectedData?.length > 1) {
       alert("You can only select one page at a time.");
       return;
     }
@@ -82,7 +82,7 @@ const UnFetchedPages = () => {
       width: 200,
       renderRowCell: (row) => {
         const sales = userContextData?.find(
-          (item) => item.user_id === row.sales_executive_id
+          (item) => item?.user_id === row?.sales_executive_id
         )?.user_name;
         return sales || "N/A";
       },
@@ -114,11 +114,11 @@ const UnFetchedPages = () => {
   };
 
   const handleUpdate = async () => {
-    if (!selectedData || selectedData.length === 0) {
+    if (!selectedData || selectedData?.length === 0) {
       alert("Please Select Pages First !!");
       return;
     }
-    if (!newSelectedData || newSelectedData.length === 0) {
+    if (!newSelectedData || newSelectedData?.length === 0) {
       alert("Please Select New Pages First !!");
       return;
     }
@@ -157,7 +157,7 @@ const UnFetchedPages = () => {
       <div className="d-flex mb-2">
         <Autocomplete
           value={newSelectedData} // Controlled value
-          options={pageList?.map((item) => item.page_name)}
+          options={pageList?.map((item) => item?.page_name)}
           sx={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Pages " />}
           onChange={handleChange} // Handle change on selection

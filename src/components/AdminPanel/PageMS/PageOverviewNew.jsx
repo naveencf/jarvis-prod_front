@@ -15,10 +15,7 @@ import View from '../Sales/Account/View/View';
 import DateFormattingComponent from '../../DateFormator/DateFormared';
 import TagCategoryListModal from './TagCategoryListModal';
 import VendorNotAssignedModal from './VendorNotAssignedModal';
-import {
-  useGetAllPageListQuery,
-  useGetPageStateQuery,
-} from '../../Store/PageBaseURL';
+import { useGetAllPageListQuery, useGetPageStateQuery } from '../../Store/PageBaseURL';
 import { setStatsUpdate } from '../../Store/PageMaster';
 import PageDetail from './PageOverview/PageDetail';
 import formatString from '../Operation/CampaignMaster/WordCapital';
@@ -79,9 +76,8 @@ const PageOverviewNew = () => {
     userID,
     pagequery,
   });
-
-  const { data: pageStates, isLoading: isPagestatLoading } =
-    useGetPageStateQuery();
+  console.log('pagelist', pageList);
+  const { data: pageStates, isLoading: isPagestatLoading } = useGetPageStateQuery();
 
   useEffect(() => {
     if (activeTab == 'Tab1') {
@@ -91,9 +87,7 @@ const PageOverviewNew = () => {
   function pageHealthToggleCheck() {
     // if (showPageHealthColumn) {
     const data = pageList?.map((item) => {
-      const matchingState = pageStates?.find(
-        (state) => state?.page_master_id === item?._id
-      );
+      const matchingState = pageStates?.find((state) => state?.page_master_id === item?._id);
       if (matchingState) {
         // console.log(matchingState, 'matchingState', item);
       }
@@ -164,25 +158,16 @@ const PageOverviewNew = () => {
       department: '65c38781c52b3515f77b0815',
       userId: 111111,
     };
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
     const headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
     try {
-      const result = await axios.post(
-        `https://insights.ist:8080/api/v1/creators_details_v3`,
-        payload,
-        { headers }
-      );
+      const result = await axios.post(`https://insights.ist:8080/api/v1/creators_details_v3`, payload, { headers });
       const followerData = result?.data?.data?.[0]?.creatorDetails?.followers;
       if (followerData) {
-        const updateRes = await axios.put(
-          `${baseUrl}v1/pageMaster/${row._id}`,
-          { followers_count: followerData, vendor_id: row.vendor_id },
-          { headers }
-        );
+        const updateRes = await axios.put(`${baseUrl}v1/pageMaster/${row._id}`, { followers_count: followerData, vendor_id: row.vendor_id }, { headers });
         setLatestPageObject(updateRes.data.data);
       } else {
         console.error('No follower data found for this creator.');
@@ -218,12 +203,7 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         let name = row.page_name;
         return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={row.page_link}
-            className="link-primary"
-          >
+          <a target="_blank" rel="noreferrer" href={row.page_link} className="link-primary">
             {formatString(name)}
           </a>
         );
@@ -238,11 +218,7 @@ const PageOverviewNew = () => {
         return (
           <>
             <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleSetState()}
-              >
+              <button type="button" className="btn cmnbtn btn_sm btn-outline-primary" onClick={handleSetState()}>
                 Add Stats
               </button>
             </Link>
@@ -256,11 +232,7 @@ const PageOverviewNew = () => {
       name: 'History',
       renderRowCell: (row) => {
         return (
-          <button
-            type="button"
-            className="btn cmnbtn btn_sm btn-outline-primary"
-            onClick={() => handleHistoryRowClick(row)}
-          >
+          <button type="button" className="btn cmnbtn btn_sm btn-outline-primary" onClick={() => handleHistoryRowClick(row)}>
             See History
           </button>
         );
@@ -279,11 +251,7 @@ const PageOverviewNew = () => {
                 state: { update: true },
               }}
             >
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleUpdateRowClick}
-              >
+              <button type="button" className="btn cmnbtn btn_sm btn-outline-primary" onClick={handleUpdateRowClick}>
                 Update
               </button>
             </Link>
@@ -491,9 +459,7 @@ const PageOverviewNew = () => {
       name: 'Creation Date',
       renderRowCell: (row) => {
         let data = row?.createdAt;
-        return data
-          ? Intl.DateTimeFormat('en-GB').format(new Date(data))
-          : 'NA';
+        return data ? Intl.DateTimeFormat('en-GB').format(new Date(data)) : 'NA';
       },
     },
 
@@ -606,11 +572,7 @@ const PageOverviewNew = () => {
       name: 'Story View Image',
       renderRowCell: (row) => {
         let data = row?.story_view_image_url;
-        return data ? (
-          <img src={data} style={{ width: '50px', height: '50px' }} />
-        ) : (
-          'NA'
-        );
+        return data ? <img src={data} style={{ width: '50px', height: '50px' }} /> : 'NA';
       },
     },
   ];
@@ -634,12 +596,7 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         let name = row.page_name;
         return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={row.page_link}
-            className="link-primary"
-          >
+          <a target="_blank" rel="noreferrer" href={row.page_link} className="link-primary">
             {formatString(name)}
           </a>
         );
@@ -759,16 +716,12 @@ const PageOverviewNew = () => {
       name: 'Average Post Price',
       renderRowCell: (row) => {
         const mPostPrice = row?.page_price_list;
-        const postDetail = mPostPrice?.find(
-          (item) => item.instagram_post !== undefined
-        );
+        const postDetail = mPostPrice?.find((item) => item.instagram_post !== undefined);
         const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
         let followerCount = Math.max(0, row?.followers_count || 0);
 
         // Calculate the average price only if followerCount is greater than zero
-        const averagePostPrice = followerCount
-          ? Math.floor(postPrice / (followerCount / 1000000))
-          : 0;
+        const averagePostPrice = followerCount ? Math.floor(postPrice / (followerCount / 1000000)) : 0;
 
         return Number(averagePostPrice);
       },
@@ -781,14 +734,10 @@ const PageOverviewNew = () => {
       name: 'Average Story Price',
       renderRowCell: (row) => {
         const mStoryPrice = row?.page_price_list;
-        const postDetail = mStoryPrice?.find(
-          (item) => item.instagram_story !== undefined
-        );
+        const postDetail = mStoryPrice?.find((item) => item.instagram_story !== undefined);
         const storyPrice = postDetail?.instagram_story || 0;
         let followerCount = Math.max(0, row?.followers_count || 0);
-        const averageStoryPrice = followerCount
-          ? Math.floor(storyPrice / (followerCount / 1000000))
-          : 0;
+        const averageStoryPrice = followerCount ? Math.floor(storyPrice / (followerCount / 1000000)) : 0;
 
         return Number(averageStoryPrice);
       },
@@ -884,10 +833,7 @@ const PageOverviewNew = () => {
       // editable: true,
       renderRowCell: (row) => {
         return (
-          <div
-            onClick={() => handleClickVendorName(row)}
-            className="link-primary cursor-pointer text-truncate"
-          >
+          <div onClick={() => handleClickVendorName(row)} className="link-primary cursor-pointer text-truncate">
             {formatString(row?.vendor_name || 'Not Available')}
           </div>
         );
@@ -899,9 +845,7 @@ const PageOverviewNew = () => {
       name: 'Closed By',
       width: 200,
       renderRowCell: (row) => {
-        let name = user?.find(
-          (item) => item?.user_id == row?.page_closed_by
-        )?.user_name;
+        let name = user?.find((item) => item?.user_id == row?.page_closed_by)?.user_name;
         return <div>{name ?? 'NA'}</div>;
       },
     },
@@ -919,9 +863,7 @@ const PageOverviewNew = () => {
       name: 'Post Price',
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find(
-          (item) => item?.instagram_post !== undefined
-        );
+        const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
         const postPrice = postData ? postData.instagram_post : 0;
         return postPrice > 0 ? Number(postPrice) : 0;
       },
@@ -932,9 +874,7 @@ const PageOverviewNew = () => {
       name: 'Story Price',
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find(
-          (item) => item?.instagram_story !== undefined
-        );
+        const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
         const storyPrice = storyData ? storyData.instagram_story : 0;
         return storyPrice > 0 ? Number(storyPrice) : 0;
       },
@@ -945,9 +885,7 @@ const PageOverviewNew = () => {
       name: 'Both Price',
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find(
-          (item) => item?.instagram_both !== undefined
-        );
+        const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
         const bothPrice = bothData ? bothData.instagram_both : 0;
         return bothPrice;
       },
@@ -970,11 +908,7 @@ const PageOverviewNew = () => {
         return (
           <div>
             {
-              <button
-                title="Price"
-                onClick={handlePriceClick(row)}
-                className="btn btn-outline-primary btn-sm user-button"
-              >
+              <button title="Price" onClick={handlePriceClick(row)} className="btn btn-outline-primary btn-sm user-button">
                 <PriceCheckIcon />
               </button>
             }
@@ -990,11 +924,7 @@ const PageOverviewNew = () => {
         return (
           <div>
             {
-              <button
-                title="Follower Logs"
-                onClick={() => handleFollowerLogs(row)}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
+              <button title="Follower Logs" onClick={() => handleFollowerLogs(row)} className="btn cmnbtn btn_sm btn-outline-primary">
                 Follower Logs
               </button>
             }
@@ -1010,11 +940,7 @@ const PageOverviewNew = () => {
         return (
           <div>
             {
-              <button
-                title="Price Logs"
-                onClick={() => handlePriceLogs(row)}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
+              <button title="Price Logs" onClick={() => handlePriceLogs(row)} className="btn cmnbtn btn_sm btn-outline-primary">
                 Price Logs
               </button>
             }
@@ -1028,27 +954,15 @@ const PageOverviewNew = () => {
       width: 500,
       renderRowCell: (row) => (
         <div className="flexCenter colGap8">
-          <button
-            title="Edit"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={() => editInNewTab(row._id)}
-          >
+          <button title="Edit" className="btn btn-outline-primary btn-sm user-button" onClick={() => editInNewTab(row._id)}>
             <FaEdit />{' '}
           </button>
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
-              <DeleteButton
-                endpoint="v1/pageMaster"
-                id={row._id}
-                getData={refetchPageList}
-              />
+              <DeleteButton endpoint="v1/pageMaster" id={row._id} getData={refetchPageList} />
             </div>
           )}
-          <button
-            title="Update Followers"
-            className="btn btn-outline-primary  user-button"
-            onClick={() => handleUpadteFollowers(row)}
-          >
+          <button title="Update Followers" className="btn btn-outline-primary  user-button" onClick={() => handleUpadteFollowers(row)}>
             Update Followers
           </button>
         </div>
@@ -1058,73 +972,28 @@ const PageOverviewNew = () => {
 
   return (
     <>
-      <PriceModal
-        setShowPriceModal={setShowPriceModal}
-        selectedRow={selectedRow}
-        showPriceModal={showPriceModal}
-      />
+      <PriceModal setShowPriceModal={setShowPriceModal} selectedRow={selectedRow} showPriceModal={showPriceModal} />
       {!editMode ? (
         <>
-          {waData && (
-            <WhatsapplinksModel waData={waData} setWaData={setWaData} />
-          )}
-          <FollowerLogsModal
-            open={openFollowerModal}
-            onClose={handleCloseFollowerModal}
-            rowData={rowDataFollower}
-          />
-          <PriceLogs
-            open={openPriceLogModal}
-            onClose={handleClosePriceModal}
-            rowData={rowDataPriceLog}
-          />
+          {waData && <WhatsapplinksModel waData={waData} setWaData={setWaData} />}
+          <FollowerLogsModal open={openFollowerModal} onClose={handleCloseFollowerModal} rowData={rowDataFollower} />
+          <PriceLogs open={openPriceLogModal} onClose={handleClosePriceModal} rowData={rowDataPriceLog} />
           <div className="tabs">
-            {vendorDetails && (
-              <VendorDetails
-                vendorDetails={vendorDetails}
-                setVendorDetails={setVendorDetails}
-                tab1={'tab1'}
-              />
-            )}
-            <button
-              className={
-                activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'
-              }
-              onClick={() => setActiveTab('Tab0')}
-            >
+            {vendorDetails && <VendorDetails vendorDetails={vendorDetails} setVendorDetails={setVendorDetails} tab1={'tab1'} />}
+            <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab0')}>
               Overview
             </button>
-            <button
-              className={
-                activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'
-              }
-              onClick={() => setActiveTab('Tab5')}
-            >
+            <button className={activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab5')}>
               Statistics
             </button>
-            <button
-              className={
-                activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'
-              }
-              onClick={() => setActiveTab('Tab3')}
-            >
+            <button className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab3')}>
               Category Wise
             </button>
-            <button
-              className={
-                activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'
-              }
-              onClick={() => setActiveTab('Tab4')}
-            >
+            <button className={activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab4')}>
               Page Added Details
             </button>
 
-            <button
-              className={
-                activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'
-              }
-              onClick={() => setActiveTab('Tab1')}
-            >
+            <button className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab1')}>
               Page Health
             </button>
           </div>
@@ -1132,18 +1001,7 @@ const PageOverviewNew = () => {
           <div className="content">
             {activeTab === 'Tab0' && (
               <>
-                <PageOverviewWithoutHealth
-                  columns={dataGridcolumns}
-                  latestPageObject={latestPageObject}
-                  pagequery={pagequery}
-                  setPagequery={setPagequery}
-                  categoryFilter={categoryFilter}
-                  setCategoryFilter={setCategoryFilter}
-                  activenessFilter={activenessFilter}
-                  setActivenessFilter={setActivenessFilter}
-                  filterFollowers={filterFollowers}
-                  setFilterFollowers={setFilterFollowers}
-                />
+                <PageOverviewWithoutHealth columns={dataGridcolumns} latestPageObject={latestPageObject} pagequery={pagequery} setPagequery={setPagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
               </>
             )}
             {activeTab === 'Tab1' && (
@@ -1162,10 +1020,7 @@ const PageOverviewNew = () => {
                             justifyContent: 'center',
                           }}
                         >
-                          <CircularProgress
-                            variant="determinate"
-                            value={progress}
-                          />
+                          <CircularProgress variant="determinate" value={progress} />
                           <Box
                             sx={{
                               top: 0,
@@ -1178,25 +1033,13 @@ const PageOverviewNew = () => {
                               justifyContent: 'center',
                             }}
                           >
-                            <Typography
-                              variant="caption"
-                              component="div"
-                              color="text-primary"
-                            >
+                            <Typography variant="caption" component="div" color="text-primary">
                               {`${Math.round(progress)}%`}
                             </Typography>
                           </Box>
                         </Box>
                       ) : (
-                        <View
-                          columns={[...dataSecondGridColumns]}
-                          data={newFilterData}
-                          isLoading={false}
-                          title={'Page Health'}
-                          rowSelectable={true}
-                          pagination={[100, 200, 1000]}
-                          tableName={'Page Health'}
-                        />
+                        <View columns={[...dataSecondGridColumns]} data={newFilterData} isLoading={false} title={'Page Health'} rowSelectable={true} pagination={[100, 200, 1000]} tableName={'Page Health'} />
                       )}
                     </div>
                   </div>
@@ -1207,13 +1050,9 @@ const PageOverviewNew = () => {
                 <PageDetail />
               </div>
             )}
-            {activeTab === 'Tab3' && (
-              <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
-            )}
+            {activeTab === 'Tab3' && <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />}
             {activeTab === 'Tab4' && <PageClosedByDetails />}
-            {activeTab === 'Tab5' && (
-              <StatsOfOverview dataGridcolumns={dataGridcolumns} />
-            )}
+            {activeTab === 'Tab5' && <StatsOfOverview dataGridcolumns={dataGridcolumns} />}
           </div>
         </>
       ) : (

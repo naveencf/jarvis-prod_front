@@ -7,13 +7,15 @@ import { render } from "react-dom";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import formatString from "../../../../utils/formatString";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const ViewInvoiceRequest = () => {
   const [invoiceData, setInvoiceData] = useState([]);
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   async function apicall() {

@@ -1,13 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  Autocomplete,
-  MenuItem,
-} from '@mui/material';
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Autocomplete, MenuItem } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
@@ -113,17 +104,12 @@ function PlanHome() {
     }); // Update the parent state
     setSuggestions([]); // Clear suggestions after selection
   };
-  const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery({ decodedToken, id, pagequery });
-
+  const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
+ 
   const { usersDataContext } = useContext(AppContext);
 
-  const salesUsers = usersDataContext?.filter(
-    (user) => user?.department_name === 'Sales'
-  );
-  const globalFilteredUsers = usersDataContext?.filter((user) =>
-    user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase())
-  );
+  const salesUsers = usersDataContext?.filter((user) => user?.department_name === 'Sales');
+  const globalFilteredUsers = usersDataContext?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
   const fetchDescriptions = async () => {
     try {
       const response = await fetch(`${baseUrl}v1/planxnote`);
@@ -176,10 +162,7 @@ function PlanHome() {
 
   const handleEditDescription = async (index) => {
     const currentDescription = descriptions[index];
-    const newDescription = prompt(
-      'Enter new description:',
-      currentDescription.description
-    );
+    const newDescription = prompt('Enter new description:', currentDescription.description);
 
     try {
       const response = await fetch(`${baseUrl}v1/planxnote`, {
@@ -197,11 +180,7 @@ function PlanHome() {
 
       if (response.ok) {
         // Update the description in the state
-        setDescriptions((prev) =>
-          prev.map((desc, i) =>
-            i === index ? { ...desc, description: newDescription } : desc
-          )
-        );
+        setDescriptions((prev) => prev.map((desc, i) => (i === index ? { ...desc, description: newDescription } : desc)));
       } else {
         console.error('Failed to update description');
       }
@@ -228,11 +207,7 @@ function PlanHome() {
         // console.log('PUT result:', result);
 
         // Update the status in the state
-        setDescriptions((prev) =>
-          prev.map((desc, i) =>
-            i === index ? { ...desc, status: status } : desc
-          )
-        );
+        setDescriptions((prev) => prev.map((desc, i) => (i === index ? { ...desc, status: status } : desc)));
       } else {
         console.error('Failed to update description');
       }
@@ -245,12 +220,9 @@ function PlanHome() {
     const descriptionToDelete = descriptions[index];
 
     try {
-      const response = await fetch(
-        `${baseUrl}v1/planxnote/${descriptionToDelete._id}`,
-        {
-          method: 'DELETE',
-        }
-      );
+      const response = await fetch(`${baseUrl}v1/planxnote/${descriptionToDelete._id}`, {
+        method: 'DELETE',
+      });
 
       if (response.ok) {
         // console.log('Successfully deleted:', descriptionToDelete);
@@ -287,10 +259,8 @@ function PlanHome() {
     const newErrors = {};
     if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
     if (!inputValue) newErrors.inputValue = 'Budget is required';
-    if (!planDetails.accountId)
-      newErrors.accountName = 'Account Name is required';
-    if (!planDetails.salesExecutiveId)
-      newErrors.salesExecutiveId = 'Sales Executive is required';
+    if (!planDetails.accountId) newErrors.accountName = 'Account Name is required';
+    if (!planDetails.salesExecutiveId) newErrors.salesExecutiveId = 'Sales Executive is required';
     return newErrors;
   };
 
@@ -335,29 +305,17 @@ function PlanHome() {
   const filterPlans = (criteria) => {
     let filtered;
     const today = new Date();
-    const startOfToday = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
-    );
+    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const startOfLastMonth = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      1
-    );
+    const startOfLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
     const endOfLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
 
     switch (criteria) {
       case 'today':
-        filtered = planRows.filter(
-          (plan) => new Date(plan.createdAt) >= startOfToday
-        );
+        filtered = planRows.filter((plan) => new Date(plan.createdAt) >= startOfToday);
         break;
       case 'thisMonth':
-        filtered = planRows.filter(
-          (plan) => new Date(plan.createdAt) >= startOfMonth
-        );
+        filtered = planRows.filter((plan) => new Date(plan.createdAt) >= startOfMonth);
         break;
       case 'lastMonth':
         filtered = planRows.filter((plan) => {
@@ -379,9 +337,7 @@ function PlanHome() {
 
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
-    const selectedUser = usersDataContext.find(
-      (user) => user.user_id === row.sales_executive_id
-    );
+    const selectedUser = usersDataContext.find((user) => user.user_id === row.sales_executive_id);
 
     setPlanDetails({
       planName: row.planName,
@@ -416,16 +372,13 @@ function PlanHome() {
   const handlePlanMaking = () => {
     setOpenDialog(true);
   };
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     // Handle account selection
     if (name === 'accountName') {
-      const selectedAccount = accounts.find(
-        (account) => account.account_name === value
-      );
+      const selectedAccount = accounts.find((account) => account.account_name === value);
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         accountName: selectedAccount ? selectedAccount.account_name : '',
@@ -435,9 +388,7 @@ function PlanHome() {
     }
     // Handle user selection from usersDataContext
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find(
-        (user) => user.user_name === value
-      );
+      const selectedUser = usersDataContext.find((user) => user.user_name === value);
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
@@ -567,12 +518,7 @@ function PlanHome() {
     setSelectedPlanId(null);
   };
 
-  const isSubmitDisabled =
-    submitLoader ||
-    !planDetails.planName ||
-    !inputValue ||
-    !planDetails.accountId ||
-    !planDetails.salesExecutiveId;
+  const isSubmitDisabled = submitLoader || !planDetails.planName || !inputValue || !planDetails.accountId || !planDetails.salesExecutiveId;
 
   const handleDuplicateClick = (params) => {
     const planId = params.id;
@@ -612,9 +558,7 @@ function PlanHome() {
     handleRowClick,
     handleEditClick,
   });
-  const finalPlanList = filteredPlans.length
-    ? filteredPlans
-    : planRows?.reverse();
+  const finalPlanList = filteredPlans.length ? filteredPlans : planRows?.reverse();
 
   useEffect(() => {
     if (inputValue <= 100) {
@@ -623,11 +567,7 @@ function PlanHome() {
   }, [inputValue]);
   return (
     <div>
-      <PageDialog
-        open={openPageDialog}
-        onClose={handleClosePageDialog}
-        notFoundPages={selectedPages}
-      />
+      <PageDialog open={openPageDialog} onClose={handleClosePageDialog} notFoundPages={selectedPages} />
       {/* Plan Making Dialog */}
       <Dialog
         open={openDialog}
@@ -638,32 +578,13 @@ function PlanHome() {
       >
         <DialogTitle>{isEdit ? 'Edit Plan' : 'Create a New Plan'}</DialogTitle>
         <DialogContent>
-          <div
-            className="thm_form pt8 d-flex flex-column rowGap12"
-            style={{ width: '30rem' }}
-          >
-            <TextField
-              className="mb16"
-              margin="dense"
-              label="Plan Name* (sheet name will be same)"
-              name="planName"
-              fullWidth
-              value={planDetails.planName}
-              onChange={handleInputChange}
-              error={!!errors.planName}
-              helperText={errors.planName}
-            />
+          <div className="thm_form pt8 d-flex flex-column rowGap12" style={{ width: '30rem' }}>
+            <TextField className="mb16" margin="dense" label="Plan Name* (sheet name will be same)" name="planName" fullWidth value={planDetails.planName} onChange={handleInputChange} error={!!errors.planName} helperText={errors.planName} />
             <Autocomplete
               options={accounts}
               getOptionLabel={(option) => option.account_name || ''}
-              isOptionEqualToValue={(option, value) =>
-                option._id === value?._id
-              }
-              defaultValue={
-                accounts.find(
-                  (acc) => acc.account_name === planDetails.accountName
-                ) || null
-              }
+              isOptionEqualToValue={(option, value) => option._id === value?._id}
+              defaultValue={accounts.find((acc) => acc.account_name === planDetails.accountName) || null}
               onChange={(event, value) => {
                 setPlanDetails((prevDetails) => ({
                   ...prevDetails,
@@ -673,14 +594,7 @@ function PlanHome() {
                   brandId: value ? value.brand_id : '',
                 }));
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Account Name *"
-                  error={!!errors.accountName}
-                  helperText={errors.accountName}
-                />
-              )}
+              renderInput={(params) => <TextField {...params} label="Account Name *" error={!!errors.accountName} helperText={errors.accountName} />}
             />
 
             {planDetails.accountTypeName && (
@@ -695,25 +609,8 @@ function PlanHome() {
               </div>
             )}
 
-            <TextField
-              margin="dense"
-              label="Description"
-              name="description"
-              fullWidth
-              value={planDetails.description}
-              onChange={handleInputChange}
-            />
-            <TextField
-              margin="dense"
-              label="Selling Price *"
-              name="sellingPrice"
-              fullWidth
-              type="number"
-              value={inputValue}
-              onChange={handleInputChangeWithSuggestions}
-              error={!!errors.sellingPrice}
-              helperText={errors.sellingPrice}
-            />
+            <TextField margin="dense" label="Description" name="description" fullWidth value={planDetails.description} onChange={handleInputChange} />
+            <TextField margin="dense" label="Selling Price *" name="sellingPrice" fullWidth type="number" value={inputValue} onChange={handleInputChangeWithSuggestions} error={!!errors.sellingPrice} helperText={errors.sellingPrice} />
             {inputValue > 100 && (
               <div
                 style={{
@@ -747,11 +644,7 @@ function PlanHome() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
-              defaultValue={
-                usersDataContext.find(
-                  (user) => user.user_id === planDetails.salesExecutiveId
-                ) || null
-              }
+              defaultValue={usersDataContext.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {
@@ -761,24 +654,10 @@ function PlanHome() {
                   salesExecutiveName: value ? value.user_name : '',
                 }));
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Sales Executive *"
-                  error={!!errors.salesExecutiveId}
-                  helperText={errors.salesExecutiveId}
-                />
-              )}
+              renderInput={(params) => <TextField {...params} label="Sales Executive *" error={!!errors.salesExecutiveId} helperText={errors.salesExecutiveId} />}
             />
 
-            <TextField
-              margin="dense"
-              label="Brief"
-              name="brief"
-              fullWidth
-              value={planDetails.brief}
-              onChange={handleInputChange}
-            />
+            <TextField margin="dense" label="Brief" name="brief" fullWidth value={planDetails.brief} onChange={handleInputChange} />
 
             {/* File Upload and Remove Section */}
             <div className="file-upload-section">
@@ -802,44 +681,19 @@ function PlanHome() {
           <Button className="btn cmnbtn btn-danger" onClick={handleCloseDialog}>
             Cancel
           </Button>
-          <Button
-            className="btn cmnbtn btn-primary"
-            onClick={handleFormSubmit}
-            variant="contained"
-            disabled={isSubmitDisabled}
-          >
+          <Button className="btn cmnbtn btn-primary" onClick={handleFormSubmit} variant="contained" disabled={isSubmitDisabled}>
             Submit
           </Button>
         </DialogActions>
       </Dialog>
 
-      {statusDialog && (
-        <PlanXStatusDialog
-          setPlanDetails={setPlanDetails}
-          statusDialogPlan={statusDialogPlan}
-          statusDialog={statusDialog}
-          setStatusDialog={setStatusDialog}
-          fetchPlans={fetchPlans}
-        />
-      )}
-      <PlanXNoteModal
-        isOpen={isModalOpen}
-        onClose={handleCloseModal}
-        descriptions={descriptions}
-        onEdit={handleEditDescription}
-        onDelete={handleDeleteDescription}
-        onAdd={handleAddDescription}
-        statusChange={handlePlanxNoteStatusChange}
-      />
+      {statusDialog && <PlanXStatusDialog setPlanDetails={setPlanDetails} statusDialogPlan={statusDialogPlan} statusDialog={statusDialog} setStatusDialog={setStatusDialog} fetchPlans={fetchPlans} />}
+      <PlanXNoteModal isOpen={isModalOpen} onClose={handleCloseModal} descriptions={descriptions} onEdit={handleEditDescription} onDelete={handleDeleteDescription} onAdd={handleAddDescription} statusChange={handlePlanxNoteStatusChange} />
       <div className="card">
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Plan X Overview </h5>
           <PlanXHeader planRows={planRows} onFilterChange={filterPlans} />
-          <button
-            className="icon"
-            onClick={handleOpenModal}
-            title="Internal-Notes"
-          >
+          <button className="icon" onClick={handleOpenModal} title="Internal-Notes">
             <CiStickyNote />
           </button>
           <div className="flexCenter colGap8">
@@ -848,22 +702,11 @@ function PlanHome() {
                 Create Plan <AddIcon />
               </button>
             </Link>
-            {/* <button className="btn cmnbtn btn-primary btn_sm">
-              Plan Pricing
-            </button> */}
           </div>
         </div>
         <div className="card-body p0 noCardHeader">
           <div className="data_tbl thm_table table-responsive">
-            {activeTab === 'Tab1' && (
-              <View
-                isLoading={loading}
-                columns={columns}
-                data={finalPlanList}
-                pagination={[100, 200]}
-                tableName={'PlanMakingDetails'}
-              />
-            )}
+            {activeTab === 'Tab1' && <View isLoading={loading} columns={columns} data={finalPlanList} pagination={[100, 200]} tableName={'PlanMakingDetails'} version={1}/>}
             {activeTab === 'Tab3' && <PlanPricing />}
           </div>
         </div>

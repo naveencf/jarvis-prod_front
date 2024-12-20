@@ -9,6 +9,7 @@ import { useGetAllNewDeletedSaleQuery } from "../../../Store/API/Sales/SaleBooki
 import getDecodedToken from "../../../../utils/DecodedToken";
 import formatString from "../../../../utils/formatString";
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const DeletedSaleBooking = () => {
   const [originalData, setOriginalData] = useState([]);
@@ -16,7 +17,8 @@ const DeletedSaleBooking = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const {

@@ -25,13 +25,15 @@ import {
 } from "date-fns";
 import ShareIncentive from "./ShareIncentive";
 import PieGraph from "./PieGraph";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const SalesAccountOverview = () => {
   let loginUserId;
   const navigate = useNavigate();
   const token = getDecodedToken();
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const [filteredData, setFilteredData] = useState([]);

@@ -1,23 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Autocomplete,
-  TextField,
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Autocomplete, TextField } from '@mui/material';
 import Select from 'react-select';
-import {
-  useGetAllVendorQuery,
-  useGetPmsPlatformQuery,
-} from '../../../Store/reduxBaseURL';
+import { useGetAllVendorQuery, useGetPmsPlatformQuery } from '../../../Store/reduxBaseURL';
 import UploadBulkVendorPages from './BulkVendor/UploadBulkVendorPages';
-import {
-  useGetAllPageCategoryQuery,
-  useGetAllPageSubCategoryQuery,
-} from '../../../Store/PageBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageSubCategoryQuery } from '../../../Store/PageBaseURL';
 import jwtDecode from 'jwt-decode';
 import { FormatName } from '../../../../utils/FormatName';
 import CustomSelect from '../../../ReusableComponents/CustomSelect';
@@ -39,9 +25,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
   const [closeBy, setCloseBy] = useState('');
   const [vendorId, setVendorId] = useState([]);
   const [selectedSubCategory, setSelectedSubCateogry] = useState(null);
-  const [activePlatformId, setActivePlatformId] = useState(
-    '666818824366007df1df1319'
-  );
+  const [activePlatformId, setActivePlatformId] = useState('666818824366007df1df1319');
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
   const [categoryName, setCategoryName] = useState('');
@@ -111,9 +95,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                 }))}
                 value={{
                   value: vendorId,
-                  label:
-                    vendorData.find((d) => d._id === vendorId)?.vendor_name ||
-                    '',
+                  label: vendorData.find((d) => d._id === vendorId)?.vendor_name || '',
                 }}
                 onChange={(e) => {
                   setVendorId(e.value);
@@ -182,22 +164,12 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
               </label>
               <Autocomplete
                 options={subCategoryData}
-                getOptionLabel={(option) =>
-                  option.page_sub_category || 'Unknown Sub-Category'
-                }
-                isOptionEqualToValue={(option, value) =>
-                  option._id === value._id
-                }
+                getOptionLabel={(option) => option.page_sub_category || 'Unknown Sub-Category'}
+                isOptionEqualToValue={(option, value) => option._id === value._id}
                 onChange={(event, newValue) => {
                   setSelectedSubCateogry(newValue);
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Sub-Category"
-                    variant="outlined"
-                  />
-                )}
+                renderInput={(params) => <TextField {...params} label="Select Sub-Category" variant="outlined" />}
               />
             </div>
             <div className="col-6">
@@ -211,32 +183,19 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                   label: option.user_name,
                 }))}
                 getOptionLabel={(option) => option.label || ''}
-                isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
-                }
+                isOptionEqualToValue={(option, value) => option.value === value.value}
                 value={
                   usersDataContext
                     ?.map((option) => ({
                       value: option.user_id,
                       label: option.user_name,
                     }))
-                    ?.find(
-                      (option) =>
-                        option.value === singleVendor?.closed_by ||
-                        option.value === closeBy?.value
-                    ) || null
+                    ?.find((option) => option.value === singleVendor?.closed_by || option.value === closeBy?.value) || null
                 }
                 onChange={(event, newValue) => {
                   setCloseBy(newValue);
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select User"
-                    variant="outlined"
-                    required
-                  />
-                )}
+                renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" required />}
               />
             </div>
           </div>
@@ -253,21 +212,12 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                   label: option.page_category,
                 }))}
                 getOptionLabel={(option) => option.label || ''}
-                isOptionEqualToValue={(option, value) =>
-                  option.value === value.value
-                }
+                isOptionEqualToValue={(option, value) => option.value === value.value}
                 value={tag}
                 onChange={(event, newValue) => {
                   setTag(newValue);
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Categories"
-                    variant="outlined"
-                    required
-                  />
-                )}
+                renderInput={(params) => <TextField {...params} label="Select Categories" variant="outlined" required />}
               />
             </div>
           </div>
@@ -275,17 +225,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
       )}
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <UploadBulkVendorPages
-          getRowData={vendorId}
-          category={categoryName?.value}
-          onClose={onClose}
-          rateType={rateType}
-          activePlatformId={activePlatformId}
-          selectedSubCategory={selectedSubCategory}
-          closeBy={closeBy?.value}
-          tagCategoris={tagCategoris}
-          from={'pages'}
-        />
+        <UploadBulkVendorPages getRowData={vendorId} category={categoryName?.value} onClose={onClose} rateType={rateType} activePlatformId={activePlatformId} selectedSubCategory={selectedSubCategory} closeBy={closeBy?.value} tagCategoris={tagCategoris} from={'pages'} />
       </DialogActions>
     </Dialog>
   );

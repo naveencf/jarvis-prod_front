@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useGetAllVendorWiseListQuery } from '../../../../Store/reduxBaseURL';
 import View from '../../../Sales/Account/View/View';
 import axios from 'axios';

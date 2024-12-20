@@ -84,7 +84,7 @@ const PageAssignmentUser = () => {
     },
     {
       key: "page_categories",
-      name: "Page Categories",
+      name: "Sub Categories",
       width: 300,
       renderRowCell: (row) => {
         return (
@@ -140,7 +140,7 @@ const PageAssignmentUser = () => {
           }}
         >
           <h5>Page Categories</h5>
-          <table class="table">
+          <table className="table">
             <thead>
               <tr>
                 <th scope="col">S.No.</th>

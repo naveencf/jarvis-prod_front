@@ -9,6 +9,7 @@ import { useGetAllRecordServicesQuery } from "../../../Store/API/Sales/RecordSer
 import View from "../Account/View/View";
 import formatString from "../../../../utils/formatString";
 import getDecodedToken from "../../../../utils/DecodedToken";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const RecordServices = () => {
   const [recordServiceData, setRecordServiceData] = useState([]);
@@ -17,7 +18,8 @@ const RecordServices = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const {

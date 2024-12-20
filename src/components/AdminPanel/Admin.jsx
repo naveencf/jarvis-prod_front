@@ -17,6 +17,8 @@ import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 import ErrorPage from "../../ErrorPage";
 import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
 import UnFatchedPages from "./PageMS/InventoryDashboard/UnFatchedPages";
+import TagCategory from "./PageMS/InventoryDashboard/TagCategory";
+
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -1829,6 +1831,10 @@ const Admin = () => {
                     <Route
                       path="/pms-unFatched-pages"
                       element={<UnFatchedPages />}
+                    />
+                    <Route
+                      path="/pms-tag-Category"
+                      element={<TagCategory />}
                     />
                     <Route path="/pms-profile-type" element={<ProfileType />} />
                     <Route

@@ -580,6 +580,7 @@ const CustomTableV2 = ({
       )}
       <div className="table-container" ref={tableref}>
         <RenderedTable
+          setVisibleColumns={setVisibleColumns}
           sortKey={sortKey}
           oldSortKey={oldSortKey}
           setOldSortKey={setOldSortKey}

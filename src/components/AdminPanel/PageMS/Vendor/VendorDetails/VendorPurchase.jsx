@@ -4,7 +4,7 @@ import View from "../../../Sales/Account/View/View";
 import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const VendorPurchase = ({ vendorDetails }) => {
+const  VendorPurchase = ({ vendorDetails }) => {
   const [purchaseData, setPurchaseData] = useState([]);
 
   const getPurchaseData = async () => {

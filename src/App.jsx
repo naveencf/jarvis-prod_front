@@ -208,6 +208,20 @@ function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
+    console.log("errorcought");
+    const handleGlobalError = (event) => {
+      console.error("Received Global API Error:", event.detail);
+      alert(event.detail); // Show error message to the user
+    };
+
+    window.addEventListener("globalApiError", handleGlobalError);
+
+    return () => {
+      window.removeEventListener("globalApiError", handleGlobalError);
+    };
+  });
+
+  useEffect(() => {
     // this code may cause vulnerability so please  inform pratyush  to reserch on it and i am adding this comment for my self
 
     const handleGlobalClick = (event) => {
@@ -228,6 +242,7 @@ function App() {
       document.removeEventListener("click", handleGlobalClick);
     };
   }, []);
+
   if (localStorage.getItem("token"))
     sessionStorage.setItem("token", localStorage.getItem("token"));
 

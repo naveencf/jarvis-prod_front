@@ -14,6 +14,7 @@ import {
   useGetAllPageSubCategoryQuery,
 } from "../../../Store/PageBaseURL";
 import { baseUrl } from "../../../../utils/config";
+import formatString from "../../../../utils/formatString";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -116,14 +117,14 @@ export default function MergeSubCategory() {
                 className=""
                 options={subCategoryData?.map((option) => ({
                   value: option._id,
-                  label: `${option.page_sub_category}`,
+                  label: formatString(`${option.page_sub_category}`),
                 }))}
                 value={{
                   value: preference,
                   label:
-                    subCategoryData.find(
+                  formatString(subCategoryData.find(
                       (user) => user._id === preference
-                    )?.page_sub_category || "",
+                    )?.page_sub_category || ""),
                 }}
                 onChange={(e) => {
                   setPreference(e.value);
@@ -139,14 +140,14 @@ export default function MergeSubCategory() {
                 className=""
                 options={subCategoryData?.map((option) => ({
                   value: option._id,
-                  label: `${option.page_sub_category}`,
+                  label: formatString(`${option.page_sub_category}`),
                 }))}
                 value={{
                   value: remove,
                   label:
-                    subCategoryData?.find(
+                  formatString( subCategoryData?.find(
                       (user) => user._id === remove
-                    )?.page_sub_category || "",
+                    )?.page_sub_category || ""),
                 }}
                 onChange={(e) => {
                   setRemove(e.value);

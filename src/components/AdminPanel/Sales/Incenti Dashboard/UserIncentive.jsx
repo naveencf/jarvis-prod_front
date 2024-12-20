@@ -71,6 +71,7 @@ const UserIncentive = () => {
       setDisabledState(false);
     }
   }, [buttonView, userIncentiveData]);
+
   const getAdjustment = async () => {
     try {
       const res = await axios.get(
@@ -84,6 +85,10 @@ const UserIncentive = () => {
       setAdjustment(res?.data?.data?.adjustment_incentive_amount);
     } catch (error) {}
   };
+
+  useEffect(() => {
+    getAdjustment();
+  }, []);
 
   async function getMonthWiseData() {
     setIsMonthWiseDataLoading(true);

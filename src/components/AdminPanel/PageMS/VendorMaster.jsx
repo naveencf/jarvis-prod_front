@@ -8,40 +8,12 @@ import jwtDecode from 'jwt-decode';
 import { Navigate, useNavigate } from 'react-router';
 import { Link } from 'react-router-dom';
 import Select from 'react-select';
-import {
-  Autocomplete,
-  Box,
-  Button,
-  Checkbox,
-  FormControlLabel,
-  IconButton,
-  Stack,
-  TextField,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Checkbox, FormControlLabel, IconButton, Stack, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  handleChangeVendorInfoModal,
-  setModalType,
-  setShowAddVendorModal,
-} from './../../Store/VendorMaster';
+import { handleChangeVendorInfoModal, setModalType, setShowAddVendorModal } from './../../Store/VendorMaster';
 import AddVendorModal from './AddVendorModal';
-import {
-  useAddCompanyDataMutation,
-  useAddVendorDocumentMutation,
-  useAddVendorMutation,
-  useGetAllVendorTypeQuery,
-  useGetBankNameDetailQuery,
-  useGetCountryCodeQuery,
-  useGetPmsPayCycleQuery,
-  useGetPmsPaymentMethodQuery,
-  useGetPmsPlatformQuery,
-  useGetVendorDocumentByVendorDetailQuery,
-  useGetVendorWhatsappLinkTypeQuery,
-  useUpdateVenodrMutation,
-  useGetAllVendorQuery,
-  useUpdateVendorDocumentMutation,
-} from '../../Store/reduxBaseURL';
+import { useAddCompanyDataMutation, useAddVendorDocumentMutation, useAddVendorMutation, useGetAllVendorTypeQuery, useGetBankNameDetailQuery, useGetCountryCodeQuery, useGetPmsPayCycleQuery, useGetPmsPaymentMethodQuery, useGetPmsPlatformQuery, useGetVendorDocumentByVendorDetailQuery, useGetVendorWhatsappLinkTypeQuery, useUpdateVenodrMutation, useGetAllVendorQuery, useUpdateVendorDocumentMutation } from '../../Store/reduxBaseURL';
 
 import VendorTypeInfoModal from './VendorTypeInfoModal';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
@@ -59,17 +31,14 @@ import { FormatName } from '../../../utils/FormatName';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
-  const { data: countries, isLoading: isCountriesLoading } =
-    useGetCountryCodeQuery();
+  const { data: countries, isLoading: isCountriesLoading } = useGetCountryCodeQuery();
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
   const { _id } = useParams();
   const dispatch = useDispatch();
-  const isVendorModalOpen = useSelector(
-    (state) => state.vendorMaster.showVendorInfoModal
-  );
+  const isVendorModalOpen = useSelector((state) => state.vendorMaster.showVendorInfoModal);
   const [forPhp, setForPhp] = useState([]);
   const [vendorData, setVendorData] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
@@ -142,11 +111,7 @@ const VendorMaster = () => {
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
 
-  const {
-    data: allVendorData,
-    isLoading: loading,
-    refetch: refetchVendor,
-  } = useGetAllVendorQuery();
+  const { data: allVendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
 
   const { data: platformData } = useGetPmsPlatformQuery();
 
@@ -173,16 +138,16 @@ const VendorMaster = () => {
 
   useEffect(() => {
     if (gst?.length === 15) {
-      getGstDetails({ gstNo: gst, flag: 1 })
+      getGstDetails({ gstNo: gst, flag: 2 })
         .then((response) => {
-          if (response?.data && response?.data?.success) {
-            const { data } = response?.data;
-            setCompName(data?.legal_business_name);
-            setCompAddress(data?.principal_place_of_business?.split(',')?.[0]);
-            const addressParts = data?.principal_place_of_business?.split(',');
-            setCompCity(addressParts[2]);
-            setCompPin(addressParts[7]);
-            setCompState(addressParts[2]);
+          if (response?.data) {
+            // const { data } = response?.data;
+            setCompName(response?.data.legal_name.value);
+            // setCompAddress(data?.principal_place_of_business?.split(',')?.[0]);
+            // const addressParts = data?.principal_place_of_business?.split(',');
+            // setCompCity(addressParts[2]);
+            // setCompPin(addressParts[7]);
+            // setCompState(addressParts[2]);
             setLimit('');
           } else {
             setCompName('');
@@ -299,8 +264,7 @@ const VendorMaster = () => {
     dispatch(setModalType('WhatsappLinkType'));
   };
 
-  const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
-    useGetVendorDocumentByVendorDetailQuery(_id);
+  const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } = useGetVendorDocumentByVendorDetailQuery(_id);
   // console.log(venodrDocuments, "venodrDocuments")
   useEffect(() => {
     // axios.get(baseUrl + 'get_all_users').then((res) => {
@@ -364,9 +328,7 @@ const VendorMaster = () => {
         .then((res) => {
           const data = res.data.data;
           setBankRows(data);
-          const extractForPhp = bankRows?.find(
-            (item) => item.payment_method === '666856874366007df1dfacde'
-          );
+          const extractForPhp = bankRows?.find((item) => item.payment_method === '666856874366007df1dfacde');
           setForPhp(extractForPhp);
         });
 
@@ -440,27 +402,18 @@ const VendorMaster = () => {
       ];
 
       const existingDocNames = doc.map((d) => d.docName);
-      const filteredStaticDocs = staticDocs.filter(
-        (staticDoc) => !existingDocNames.includes(staticDoc.docName)
-      );
+      const filteredStaticDocs = staticDocs.filter((staticDoc) => !existingDocNames.includes(staticDoc.docName));
       const combinedDocs = doc.concat(filteredStaticDocs);
       setDocDetails(combinedDocs);
 
       if (busiType !== '') {
         let filteredDocs;
-        if (
-          busiType === '670112aa579d1873b7ede523' ||
-          busiType === '670112bd579d1873b7ede524'
-        ) {
+        if (busiType === '670112aa579d1873b7ede523' || busiType === '670112bd579d1873b7ede524') {
           filteredDocs = combinedDocs;
         } else if (busiType === '670112d0579d1873b7ede526') {
-          filteredDocs = combinedDocs.filter((doc) =>
-            ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName)
-          );
+          filteredDocs = combinedDocs.filter((doc) => ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName));
         } else if (busiType === '670112e2579d1873b7ede528') {
-          filteredDocs = combinedDocs.filter((doc) =>
-            ['Driving License', 'Aadhar Card', 'Pan Card'].includes(doc.docName)
-          );
+          filteredDocs = combinedDocs.filter((doc) => ['Driving License', 'Aadhar Card', 'Pan Card'].includes(doc.docName));
         }
         setDocDetails(filteredDocs);
       }
@@ -492,10 +445,7 @@ const VendorMaster = () => {
 
   const addDocDetails = () => {
     let newDocs = [];
-    if (
-      busiType === '670112aa579d1873b7ede523' ||
-      busiType === '670112bd579d1873b7ede524'
-    ) {
+    if (busiType === '670112aa579d1873b7ede523' || busiType === '670112bd579d1873b7ede524') {
       newDocs = [
         { docName: 'GST', docNumber: '', document_image_upload: '' },
         { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
@@ -565,12 +515,12 @@ const VendorMaster = () => {
       return;
     }
     doc[i].docNumber = capitalizedValue;
-    if(docDetails[0].docName==="GST"){
-      setGst(doc[0].docNumber)
+    if (docDetails[0].docName === 'GST') {
+      setGst(doc[0].docNumber);
     }
     setDocDetails(doc);
   };
-console.log("docDetail", docDetails);
+  console.log('docDetail', docDetails);
   const handleDocImageChange = (i, e) => {
     const file = e.target.files[0];
 
@@ -621,10 +571,7 @@ console.log("docDetail", docDetails);
     }
 
     if (newContact?.length <= 10) {
-      if (
-        newContact === '' ||
-        (newContact?.length === 1 && parseInt(newContact) < 6)
-      ) {
+      if (newContact === '' || (newContact?.length === 1 && parseInt(newContact) < 6)) {
         setMobile('');
         setMobileValid(false);
         setMandatoryFieldsEmpty({
@@ -633,9 +580,7 @@ console.log("docDetail", docDetails);
         });
       } else {
         setMobile(newContact);
-        setMobileValid(
-          /^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(newContact)
-        );
+        setMobileValid(/^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(newContact));
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
           mobile: false,
@@ -650,10 +595,7 @@ console.log("docDetail", docDetails);
   const handleAlternateMobileNumSet = (e, setState) => {
     const newContact = e.target.value;
     if (newContact?.length <= 10) {
-      if (
-        newContact === '' ||
-        (newContact?.length === 1 && parseInt(newContact) < 6)
-      ) {
+      if (newContact === '' || (newContact?.length === 1 && parseInt(newContact) < 6)) {
         setState('');
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
@@ -886,16 +828,12 @@ console.log("docDetail", docDetails);
             formData.append('document_no', docDetails[i].docNumber);
             formData.append('document_image_upload', docDetails[i].docImage);
             axios
-              .put(
-                baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`,
-                formData,
-                {
-                  headers: {
-                    'Content-Type': 'multipart/form-data',
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
+              .put(baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`, formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data',
+                  Authorization: `Bearer ${token}`,
+                },
+              })
               .catch((err) => {
                 toastError(err.message);
               });
@@ -1041,9 +979,7 @@ console.log("docDetail", docDetails);
           if (docDetails[i].docImage) {
             formData.append('document_image_upload', docDetails[i].docImage); // Append only if defined
           } else {
-            console.warn(
-              `Skipping docImage for document ${docDetails[i].docName}`
-            );
+            console.warn(`Skipping docImage for document ${docDetails[i].docName}`);
           }
 
           console.log(docDetails[i], 'docDetails[i]');
@@ -1106,9 +1042,7 @@ console.log("docDetail", docDetails);
 
   useEffect(() => {
     const docNames = docDetails?.map((e) => e?.docName);
-    const filteredData = docOptions?.filter(
-      (option) => !docNames?.includes(option)
-    );
+    const filteredData = docOptions?.filter((option) => !docNames?.includes(option));
     setCopyOptions(filteredData);
   }, [docDetails]);
 
@@ -1117,9 +1051,7 @@ console.log("docDetail", docDetails);
     setHomePincode(newValue);
 
     try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${newValue}`
-      );
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
       const data = response.data;
 
       if (data[0].Status === 'Success') {
@@ -1139,9 +1071,7 @@ console.log("docDetail", docDetails);
     setCompPin(newValue);
 
     try {
-      const response = await axios.get(
-        `https://api.postalpincode.in/pincode/${newValue}`
-      );
+      const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
       const data = response.data;
 
       if (data[0].Status === 'Success') {
@@ -1197,16 +1127,7 @@ console.log("docDetail", docDetails);
       >
         <ArrowBackIcon onClick={goBack} />
       </div>
-      <PreviewModal
-        open={openPreviewModal}
-        onClose={() => setOpenPreviewModal(false)}
-        previewData={previewData}
-        bankRows={bankRows}
-        payData={payData}
-        bankName={bankName}
-        docDetails={docDetails}
-        handleFinalSubmit={handleFinalSubmit}
-      />
+      <PreviewModal open={openPreviewModal} onClose={() => setOpenPreviewModal(false)} previewData={previewData} bankRows={bankRows} payData={payData} bankName={bankName} docDetails={docDetails} handleFinalSubmit={handleFinalSubmit} />
       <div className="card">
         <div className="card-header">
           <h5 className="card-title">Add Vendor Master</h5>
@@ -1229,9 +1150,7 @@ console.log("docDetail", docDetails);
                   // required={true}
                   value={{
                     value: busiType,
-                    label:
-                      busiTypeData?.find((role) => role._id == busiType)
-                        ?.busi_type_name || '',
+                    label: busiTypeData?.find((role) => role._id == busiType)?.busi_type_name || '',
                   }}
                   onChange={(e) => {
                     setBusiType(e.value);
@@ -1262,21 +1181,7 @@ console.log("docDetail", docDetails);
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">NOTE:</label>
-                {busiType === '670112aa579d1873b7ede523' ? (
-                  <p>If Private Limited 2% TDS And If Not 1%.</p>
-                ) : busiType === '670112bd579d1873b7ede524' ? (
-                  <p>If Private Limited 2% TDS And If Not 1%.</p>
-                ) : busiType === '670112d0579d1873b7ede526' ? (
-                  <p>1% TDS.</p>
-                ) : busiType === '670112e2579d1873b7ede528' ? (
-                  <p>
-                    Max Limit is 25k Per Bill. Total Year Limit is 100k. Please
-                    Choose Unregistered Business & Upload Pan If You Believe
-                    Transaction will cross above 100k.
-                  </p>
-                ) : (
-                  <p>No TDS applicable for this business type.</p>
-                )}
+                {busiType === '670112aa579d1873b7ede523' ? <p>If Private Limited 2% TDS And If Not 1%.</p> : busiType === '670112bd579d1873b7ede524' ? <p>If Private Limited 2% TDS And If Not 1%.</p> : busiType === '670112d0579d1873b7ede526' ? <p>1% TDS.</p> : busiType === '670112e2579d1873b7ede528' ? <p>Max Limit is 25k Per Bill. Total Year Limit is 100k. Please Choose Unregistered Business & Upload Pan If You Believe Transaction will cross above 100k.</p> : <p>No TDS applicable for this business type.</p>}
               </div>
             </div>
 
@@ -1285,15 +1190,7 @@ console.log("docDetail", docDetails);
                 <div className="col-md-3">
                   <label className="form-label">Document Name</label>
                   {docDetails.length >= 5 ? (
-                    <input
-                      type="text"
-                      value={link.docName}
-                      onChange={(e) =>
-                        handleDocNameChange(index, e.target.value)
-                      }
-                      className="form-control"
-                      required
-                    />
+                    <input type="text" value={link.docName} onChange={(e) => handleDocNameChange(index, e.target.value)} className="form-control" required />
                   ) : (
                     <Select
                       className=""
@@ -1363,19 +1260,9 @@ console.log("docDetail", docDetails);
               <>
                 <div className="card-header">Company Details</div>
                 <div className="card-body row">
-                  <FieldContainer
-                    label="Company Name"
-                    value={compName}
-                    required={false}
-                    onChange={(e) => setCompName(e.target.value)}
-                  />
+                  <FieldContainer label="Company Name" value={compName} required={false} onChange={(e) => setCompName(e.target.value)} />
 
-                  <FieldContainer
-                    label="Company Address"
-                    value={compAddress}
-                    required={false}
-                    onChange={(e) => setCompAddress(e.target.value)}
-                  />
+                  <FieldContainer label="Company Address" value={compAddress} required={false} onChange={(e) => setCompAddress(e.target.value)} />
 
                   {/* <FieldContainer
                     label="Company City"
@@ -1385,12 +1272,7 @@ console.log("docDetail", docDetails);
                   /> */}
                   <div className="form-group col-6 mt-3">
                     <label htmlFor="">Company State</label>
-                    <IndianStatesMui
-                      selectedState={compState}
-                      onChange={(option) =>
-                        setCompState(option ? option : null)
-                      }
-                    />
+                    <IndianStatesMui selectedState={compState} onChange={(option) => setCompState(option ? option : null)} />
                   </div>
                   <div className="form-group col-6">
                     <label className="form-label">Company City</label>
@@ -1434,11 +1316,7 @@ console.log("docDetail", docDetails);
                   }
                 }}
               />
-              {validator.vendorName && (
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  Please enter vendor name
-                </span>
-              )}
+              {validator.vendorName && <span style={{ color: 'red', fontSize: '12px' }}>Please enter vendor name</span>}
               {existError && (
                 <>
                   <small style={{ color: messageColor }}>{existError}</small>
@@ -1473,11 +1351,7 @@ console.log("docDetail", docDetails);
                     setVendorCategory(e.value);
                   }}
                 ></Select>
-                {validator.vendorCategory && (
-                  <span style={{ color: 'red', fontSize: '12px' }}>
-                    Please select vendor category
-                  </span>
-                )}
+                {validator.vendorCategory && <span style={{ color: 'red', fontSize: '12px' }}>Please select vendor category</span>}
               </div>
             </div>
             <div className="col-md-6 p0 mb16">
@@ -1493,36 +1367,13 @@ console.log("docDetail", docDetails);
                   // handleMobileValidate();
                 }}
               />
-              {validator.mobile && (
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  Please enter mobile number
-                </span>
-              )}
+              {validator.mobile && <span style={{ color: 'red', fontSize: '12px' }}>Please enter mobile number</span>}
 
-              {
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  {!validator.mobile &&
-                    isContactTouched1 &&
-                    !mobileValid &&
-                    'Please enter valid mobile number'}
-                </span>
-              }
+              {<span style={{ color: 'red', fontSize: '12px' }}>{!validator.mobile && isContactTouched1 && !mobileValid && 'Please enter valid mobile number'}</span>}
             </div>
             <div className="col-6">
-              <FieldContainer
-                label="Alternate Mobile"
-                fieldGrid={12}
-                value={altMobile}
-                required={false}
-                type="number"
-                onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)}
-              />
-              {
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  {mandatoryFieldsEmpty.altMobile &&
-                    'Please enter alternate mobile'}
-                </span>
-              }
+              <FieldContainer label="Alternate Mobile" fieldGrid={12} value={altMobile} required={false} type="number" onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)} />
+              {<span style={{ color: 'red', fontSize: '12px' }}>{mandatoryFieldsEmpty.altMobile && 'Please enter alternate mobile'}</span>}
             </div>
             <div className="col-6">
               <FieldContainer
@@ -1561,11 +1412,7 @@ console.log("docDetail", docDetails);
                 required={true}
                 value={{
                   value: typeId,
-                  label:
-                    (!typeLoading &&
-                      typeData.data?.find((role) => role._id == typeId)
-                        ?.type_name) ||
-                    '',
+                  label: (!typeLoading && typeData.data?.find((role) => role._id == typeId)?.type_name) || '',
                 }}
                 onChange={(e) => {
                   setTypeId(e.value);
@@ -1574,27 +1421,13 @@ console.log("docDetail", docDetails);
                   }
                 }}
               />
-              <IconButton
-                onClick={handleAddVendorTypeClick}
-                variant="contained"
-                color="primary"
-                aria-label="Add Vendor Type.."
-              >
+              <IconButton onClick={handleAddVendorTypeClick} variant="contained" color="primary" aria-label="Add Vendor Type..">
                 <AddIcon />
               </IconButton>
-              <IconButton
-                onClick={handleInfoClick}
-                variant="contained"
-                color="primary"
-                aria-label="Vendor Type Info.."
-              >
+              <IconButton onClick={handleInfoClick} variant="contained" color="primary" aria-label="Vendor Type Info..">
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.typeId && (
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  Please select vendor type
-                </span>
-              )}
+              {validator.typeId && <span style={{ color: 'red', fontSize: '12px' }}>Please select vendor type</span>}
             </div>
 
             <div className="form-group col-6">
@@ -1609,9 +1442,7 @@ console.log("docDetail", docDetails);
                 required={true}
                 value={{
                   value: platformId,
-                  label:
-                    platformData?.data?.find((role) => role._id == platformId)
-                      ?.platform_name || '',
+                  label: platformData?.data?.find((role) => role._id == platformId)?.platform_name || '',
                 }}
                 onChange={(e) => {
                   setPlatformId(e.value);
@@ -1621,27 +1452,13 @@ console.log("docDetail", docDetails);
                 }}
               ></Select>
 
-              <IconButton
-                onClick={handleAddPlatformClick}
-                variant="contained"
-                color="primary"
-                aria-label="Add Platform.."
-              >
+              <IconButton onClick={handleAddPlatformClick} variant="contained" color="primary" aria-label="Add Platform..">
                 <AddIcon />
               </IconButton>
-              <IconButton
-                onClick={handlePlatformInfoClick}
-                variant="contained"
-                color="primary"
-                aria-label="Platform Info.."
-              >
+              <IconButton onClick={handlePlatformInfoClick} variant="contained" color="primary" aria-label="Platform Info..">
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.platformId && (
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  Please select platform
-                </span>
-              )}
+              {validator.platformId && <span style={{ color: 'red', fontSize: '12px' }}>Please select platform</span>}
             </div>
 
             {bankRows?.map((row, i) => (
@@ -1662,10 +1479,7 @@ console.log("docDetail", docDetails);
                       //   payData?.find((role) => role._id == payId)
                       //     ?.payMethod_name || "",
                       value: bankRows[i].payment_method,
-                      label:
-                        payData?.find(
-                          (role) => role._id == bankRows[i].payment_method
-                        )?.payMethod_name || '',
+                      label: payData?.find((role) => role._id == bankRows[i].payment_method)?.payMethod_name || '',
                     }}
                     onChange={(e) => {
                       // setPayId(e.value);
@@ -1679,27 +1493,13 @@ console.log("docDetail", docDetails);
                       }
                     }}
                   ></Select>
-                  <IconButton
-                    onClick={handleAddPaymentMethodClick}
-                    variant="contained"
-                    color="primary"
-                    aria-label="Add Payment Method.."
-                  >
+                  <IconButton onClick={handleAddPaymentMethodClick} variant="contained" color="primary" aria-label="Add Payment Method..">
                     <AddIcon />
                   </IconButton>
-                  <IconButton
-                    onClick={handlePaymentMethodInfoClick}
-                    variant="contained"
-                    color="primary"
-                    aria-label="Payment Method Info.."
-                  >
+                  <IconButton onClick={handlePaymentMethodInfoClick} variant="contained" color="primary" aria-label="Payment Method Info..">
                     <RemoveRedEyeIcon />
                   </IconButton>
-                  {validator.payment_method && (
-                    <span style={{ color: 'red', fontSize: '12px' }}>
-                      Please select payment method
-                    </span>
-                  )}
+                  {validator.payment_method && <span style={{ color: 'red', fontSize: '12px' }}>Please select payment method</span>}
                 </div>
 
                 {bankRows[i].payment_method == '666856874366007df1dfacde' && (
@@ -1720,9 +1520,7 @@ console.log("docDetail", docDetails);
                           value: bankRows[i]._id,
                           label:
                             // bankName?.find((role) => role._id == bankNameId)
-                            bankName?.find(
-                              (role) => role.bank_name == bankRows[i].bank_name
-                            )?.bank_name || '',
+                            bankName?.find((role) => role.bank_name == bankRows[i].bank_name)?.bank_name || '',
                         }}
                         onChange={(e) => {
                           // setBankNameId(e.value);
@@ -1736,20 +1534,10 @@ console.log("docDetail", docDetails);
                         }}
                       ></Select>
 
-                      <IconButton
-                        onClick={handleAddBankNameClick}
-                        variant="contained"
-                        color="primary"
-                        aria-label="Add Bank Detail.."
-                      >
+                      <IconButton onClick={handleAddBankNameClick} variant="contained" color="primary" aria-label="Add Bank Detail..">
                         <AddIcon />
                       </IconButton>
-                      <IconButton
-                        onClick={handleBankNameInfoClick}
-                        variant="contained"
-                        color="primary"
-                        aria-label="Bank Detail Info.."
-                      >
+                      <IconButton onClick={handleBankNameInfoClick} variant="contained" color="primary" aria-label="Bank Detail Info..">
                         <RemoveRedEyeIcon />
                       </IconButton>
                     </div>
@@ -1770,60 +1558,22 @@ console.log("docDetail", docDetails);
                         }}
                       />
                     </div>
-                    <FieldContainer
-                      label="Account Number "
-                      type="number"
-                      maxLength={20}
-                      max={20}
-                      required={false}
-                      value={bankRows[i].account_number}
-                      onChange={(e) => handleAccountNoChange(e, i)}
-                    />
-                    <FieldContainer
-                      required={false}
-                      maxLength={11}
-                      label="IFSC "
-                      value={bankRows[i].ifcs}
-                      onChange={(e) => handleIFSCChange(e, i)}
-                    />
+                    <FieldContainer label="Account Number " type="number" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
+                    <FieldContainer required={false} maxLength={11} label="IFSC " value={bankRows[i].ifcs} onChange={(e) => handleIFSCChange(e, i)} />
                   </>
                 )}
-                {bankRows[i].payment_method == '666856754366007df1dfacd2' && (
-                  <FieldContainer
-                    required={false}
-                    label="UPI ID "
-                    value={bankRows[i].upi_id}
-                    onChange={(e) => handleUPIidChange(e, i)}
-                  />
-                )}
+                {bankRows[i].payment_method == '666856754366007df1dfacd2' && <FieldContainer required={false} label="UPI ID " value={bankRows[i].upi_id} onChange={(e) => handleUPIidChange(e, i)} />}
 
-                {(bankRows[i].payment_method == '66681c3c4366007df1df1481' ||
-                  bankRows[i].payment_method == '666856624366007df1dfacc8') && (
-                  <FieldContainer
-                    label={'Registered Mobile Number'}
-                    value={bankRows[i].registered_number}
-                    required={false}
-                    type="number"
-                    onChange={(e) => handleRegisteredMobileChange(e, i)}
-                  />
-                )}
+                {(bankRows[i].payment_method == '66681c3c4366007df1df1481' || bankRows[i].payment_method == '666856624366007df1dfacc8') && <FieldContainer label={'Registered Mobile Number'} value={bankRows[i].registered_number} required={false} type="number" onChange={(e) => handleRegisteredMobileChange(e, i)} />}
                 {i > 0 && (
-                  <IconButton
-                    onClick={handleRemoveBankInfoRow(i)}
-                    variant="contained"
-                    color="error"
-                  >
+                  <IconButton onClick={handleRemoveBankInfoRow(i)} variant="contained" color="error">
                     <RemoveCircleTwoToneIcon />
                   </IconButton>
                 )}
               </>
             ))}
             <div className="row">
-              <IconButton
-                onClick={handleAddBankInfoRow}
-                variant="contained"
-                color="primary"
-              >
+              <IconButton onClick={handleAddBankInfoRow} variant="contained" color="primary">
                 {/* <AddCircleTwoToneIcon /> */}
                 <h5>Add Another Bank Details</h5>
               </IconButton>
@@ -1840,15 +1590,11 @@ console.log("docDetail", docDetails);
                     label: option.cycle_name,
                     createdAt: option.createdAt,
                   }))
-                  .sort(
-                    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
-                  )}
+                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))}
                 required={true}
                 value={{
                   value: cycleId,
-                  label:
-                    cycleData?.find((role) => role._id === cycleId)
-                      ?.cycle_name || '',
+                  label: cycleData?.find((role) => role._id === cycleId)?.cycle_name || '',
                 }}
                 onChange={(e) => {
                   setCycleId(e.value);
@@ -1857,27 +1603,13 @@ console.log("docDetail", docDetails);
                   }
                 }}
               ></Select>
-              <IconButton
-                onClick={handleAddPayCycleClick}
-                variant="contained"
-                color="primary"
-                aria-label="Add Pay Cycle.."
-              >
+              <IconButton onClick={handleAddPayCycleClick} variant="contained" color="primary" aria-label="Add Pay Cycle..">
                 <AddIcon />
               </IconButton>
-              <IconButton
-                onClick={handlePayCycleInfoClick}
-                variant="contained"
-                color="primary"
-                aria-label="Pay Cycle Info.."
-              >
+              <IconButton onClick={handlePayCycleInfoClick} variant="contained" color="primary" aria-label="Pay Cycle Info..">
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.cycleId && (
-                <span style={{ color: 'red', fontSize: '12px' }}>
-                  Please select pay cycle
-                </span>
-              )}
+              {validator.cycleId && <span style={{ color: 'red', fontSize: '12px' }}>Please select pay cycle</span>}
             </div>
 
             <div className="col-md-6">
@@ -1890,9 +1622,7 @@ console.log("docDetail", docDetails);
                 }))}
                 value={{
                   value: userId,
-                  label:
-                    usersDataContext.find((user) => user.user_id === userId)
-                      ?.user_name || '',
+                  label: usersDataContext.find((user) => user.user_id === userId)?.user_name || '',
                 }}
                 onChange={(e) => {
                   setUserId(e.value);
@@ -1902,31 +1632,16 @@ console.log("docDetail", docDetails);
               />
             </div>
 
-            <div
-              className="col-md-6 threshold_style"
-              style={{ display: 'flex' }}
-            >
-              <FieldContainer
-                label="Threshold Limit"
-                value={limit}
-                type="number"
-                required={false}
-                onChange={(e) => setLimit(e.target.value)}
-              />
+            <div className="col-md-6 threshold_style" style={{ display: 'flex' }}>
+              <FieldContainer label="Threshold Limit" value={limit} type="number" required={false} onChange={(e) => setLimit(e.target.value)} />
               <div style={{ display: 'flex' }}>
                 <p className="vendor_threshold" onClick={() => setLimit(50000)}>
                   50K
                 </p>
-                <p
-                  className="vendor_threshold"
-                  onClick={() => setLimit(100000)}
-                >
+                <p className="vendor_threshold" onClick={() => setLimit(100000)}>
                   100K
                 </p>
-                <p
-                  className="vendor_threshold"
-                  onClick={() => setLimit(200000)}
-                >
+                <p className="vendor_threshold" onClick={() => setLimit(200000)}>
                   200K
                 </p>
               </div>
@@ -1940,23 +1655,13 @@ console.log("docDetail", docDetails);
                 <div className="input-group inputAddGroup">
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input
-                        type="radio"
-                        className="form-check-input"
-                        name="verified"
-                        value=""
-                      />
+                      <input type="radio" className="form-check-input" name="verified" value="" />
                       Yes
                     </label>
                   </div>
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input
-                        type="radio"
-                        className="form-check-input"
-                        name="verified"
-                        value=""
-                      />
+                      <input type="radio" className="form-check-input" name="verified" value="" />
                       No
                     </label>
                   </div>
@@ -1966,13 +1671,7 @@ console.log("docDetail", docDetails);
 
             <div className="col-md-6">
               <label className="form-label"> DOB </label>
-              <input
-                type="date"
-                className="form-control"
-                max={new Date().toISOString().split('T')[0]}
-                required="false"
-                onChange={(e) => setDob(e.target.value)}
-              />
+              <input type="date" className="form-control" max={new Date().toISOString().split('T')[0]} required="false" onChange={(e) => setDob(e.target.value)} />
             </div>
 
             <div className="card-header">Personal Details</div>
@@ -1987,13 +1686,7 @@ console.log("docDetail", docDetails);
                   sx={{ width: 300 }}
                   options={countries}
                   required={true}
-                  value={
-                    (!isCountriesLoading &&
-                      countries?.find(
-                        (option) => option?.phone == countryCode
-                      )) ||
-                    null
-                  }
+                  value={(!isCountriesLoading && countries?.find((option) => option?.phone == countryCode)) || null}
                   onChange={(e, val) => {
                     setCountryCode(val ? val.phone : null);
                     if (val ? val.phone : null) {
@@ -2001,16 +1694,10 @@ console.log("docDetail", docDetails);
                     }
                   }}
                   autoHighlight
-                  getOptionLabel={(option) =>
-                    `+${option.phone} ${option.country_name}`
-                  }
+                  getOptionLabel={(option) => `+${option.phone} ${option.country_name}`}
                   // getOptionLabel={(option) => option.phone}
                   renderOption={(props, option) => (
-                    <Box
-                      component="li"
-                      sx={{ '& > img': { mr: 2, flexShrink: 0 } }}
-                      {...props}
-                    >
+                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
                       <img
                         loading="lazy"
                         style={{
@@ -2040,23 +1727,12 @@ console.log("docDetail", docDetails);
                   )}
                 />
               </div>
-              <FieldContainer
-                label="PinCode"
-                value={homePincode}
-                maxLength={6}
-                required={false}
-                onChange={handlepincode}
-              />
+              <FieldContainer label="PinCode" value={homePincode} maxLength={6} required={false} onChange={handlepincode} />
               {countryCode == '91' ? (
                 <div className=" row">
                   <div className="form-group col-6">
                     <label className="form-label">Home State</label>
-                    <IndianStatesMui
-                      selectedState={homeState}
-                      onChange={(option) =>
-                        setHomeState(option ? option : null)
-                      }
-                    />
+                    <IndianStatesMui selectedState={homeState} onChange={(option) => setHomeState(option ? option : null)} />
                   </div>
                   <div className="form-group col-6">
                     <label className="form-label">Home City</label>
@@ -2072,44 +1748,17 @@ console.log("docDetail", docDetails);
                   </div>
                 </div>
               ) : (
-                <FieldContainer
-                  label="Country"
-                  value={otherCountry}
-                  required={false}
-                  onChange={(e) => setOtherCountry(e.target.value)}
-                />
+                <FieldContainer label="Country" value={otherCountry} required={false} onChange={(e) => setOtherCountry(e.target.value)} />
               )}
-              <FieldContainer
-                label="Home Address"
-                value={homeAddress}
-                required={false}
-                onChange={(e) => setHomeAddress(e.target.value)}
-              />
+              <FieldContainer label="Home Address" value={homeAddress} required={false} onChange={(e) => setHomeAddress(e.target.value)} />
 
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={sameAsPrevious}
-                    onChange={(e) => handleCheckboxChange(e)}
-                    name="checked"
-                    color="primary"
-                  />
-                }
-                label="Same as Company Address"
-              />
+              <FormControlLabel control={<Checkbox checked={sameAsPrevious} onChange={(e) => handleCheckboxChange(e)} name="checked" color="primary" />} label="Same as Company Address" />
             </div>
 
             {whatsappLink?.map((link, index) => (
               <>
                 <div className="col-6">
-                  <FieldContainer
-                    key={index}
-                    fieldGrid={12}
-                    label={`Whatsapp Link ${index + 1}`}
-                    value={link.link}
-                    required={true}
-                    onChange={(e) => handleLinkChange(index, e.target.value)}
-                  />
+                  <FieldContainer key={index} fieldGrid={12} label={`Whatsapp Link ${index + 1}`} value={link.link} required={true} onChange={(e) => handleLinkChange(index, e.target.value)} />
                 </div>
                 <div className="col-md-4 mb16">
                   <div className="form-group m0">
@@ -2124,10 +1773,7 @@ console.log("docDetail", docDetails);
                         required={true}
                         value={{
                           value: link.type,
-                          label:
-                            whatsappLinkType?.data?.find(
-                              (role) => role._id === link.type
-                            )?.link_type || '',
+                          label: whatsappLinkType?.data?.find((role) => role._id === link.type)?.link_type || '',
                         }}
                         onChange={(e) => {
                           let updatedLinks = [...whatsappLink];
@@ -2138,20 +1784,10 @@ console.log("docDetail", docDetails);
                       {index == 0 && (
                         <>
                           {' '}
-                          <IconButton
-                            onClick={handleAddWhatsappGroupLinkTypeClick}
-                            variant="contained"
-                            color="primary"
-                            aria-label="Add Pay Cycle.."
-                          >
+                          <IconButton onClick={handleAddWhatsappGroupLinkTypeClick} variant="contained" color="primary" aria-label="Add Pay Cycle..">
                             <AddIcon />
                           </IconButton>
-                          <IconButton
-                            onClick={handleWhatsappGroupLinkTypeInfoClick}
-                            variant="contained"
-                            color="primary"
-                            aria-label="Pay Cycle Info.."
-                          >
+                          <IconButton onClick={handleWhatsappGroupLinkTypeInfoClick} variant="contained" color="primary" aria-label="Pay Cycle Info..">
                             <RemoveRedEyeIcon />
                           </IconButton>
                         </>
@@ -2192,12 +1828,7 @@ console.log("docDetail", docDetails);
         <div className="card-footer">
           <div style={{ display: 'flex' }}>
             <Stack direction="row" spacing={2}>
-              <Button
-                className="btn cmnbtn btn-primary"
-                onClick={handleSubmit}
-                variant="contained"
-                disabled={isFormSubmitting}
-              >
+              <Button className="btn cmnbtn btn-primary" onClick={handleSubmit} variant="contained" disabled={isFormSubmitting}>
                 {isFormSubmitting ? 'Submitting...' : _id ? 'Update' : 'Submit'}
               </Button>
             </Stack>

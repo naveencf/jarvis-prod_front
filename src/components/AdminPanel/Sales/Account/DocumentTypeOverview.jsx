@@ -5,7 +5,10 @@ import {
   useGetAllDocumentTypeQuery,
   useEditDocumentTypeMutation,
 } from "../../../Store/API/Sales/DocumentTypeApi";
-import { ApiContextData } from "../../APIContext/APIContext";
+import {
+  ApiContextData,
+  useAPIGlobalContext,
+} from "../../APIContext/APIContext";
 import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../../../Context/Context";
 import getDecodedToken from "../../../../utils/DecodedToken";
@@ -15,7 +18,8 @@ const DocumentTypeOverview = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const {

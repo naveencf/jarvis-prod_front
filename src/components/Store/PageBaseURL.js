@@ -1,54 +1,47 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import authBaseQuery from "../../utils/authBaseQuery";
-import { get } from "jquery";
-import jwtDecode from "jwt-decode";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import authBaseQuery from '../../utils/authBaseQuery';
+import { get } from 'jquery';
+import jwtDecode from 'jwt-decode';
 
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
-  reducerPath: "PageBaseURL",
-  tagTypes: [
-    "profileList",
-    "categoryList",
-    "PageList",
-    "subCategoryList",
-    "pageClosedbyList",
-    "getPageCount",
-  ],
+  reducerPath: 'PageBaseURL',
+  tagTypes: ['profileList', 'categoryList', 'PageList', 'subCategoryList', 'pageClosedbyList', 'getPageCount'],
   endpoints: (builder) => ({
     getAllProfileList: builder.query({
       query: () => `v1/profile_type`,
-      providesTags: ["profileList"],
+      providesTags: ['profileList'],
     }),
     addProfileType: builder.mutation({
       query: (data) => ({
         url: `v1/profile_type`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["profileList"],
+      invalidatesTags: ['profileList'],
     }),
     updateProfileType: builder.mutation({
       query: (data) => ({
         url: `v1/profile_type/${data._id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["profileList"],
+      invalidatesTags: ['profileList'],
     }),
     addPageCategory: builder.mutation({
       query: (data) => ({
         // url: `projectxpagecategory`,
         url: `v1/page_category`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["categoryList"],
+      invalidatesTags: ['categoryList'],
     }),
     getAllPageCategory: builder.query({
       // query: () => `getPageCatgList`,
       query: () => `v1/page_category`,
       // query: () => `projectxpagecategory`,
-      providesTags: ["categoryList"],
+      providesTags: ['categoryList'],
     }),
     // updatePageCategory: builder.mutation({
     //   query: (data) => {
@@ -74,7 +67,7 @@ export const PageBaseURL = createApi({
         // console.log(data, 'hello data')
         return {
           url: `v1/page_category/${_id}`,
-          method: "PUT",
+          method: 'PUT',
           body: {
             page_category: payload.page_category,
             description: payload.description,
@@ -94,7 +87,7 @@ export const PageBaseURL = createApi({
     addPlatformPrice: builder.mutation({
       query: (data) => ({
         url: `v1/pagePriceType`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
     }),
@@ -107,32 +100,37 @@ export const PageBaseURL = createApi({
         const { _id, ...bodyWithoutId } = data;
         return {
           url: `v1/pagePriceType/${_id}`,
-          method: "PUT",
+          method: 'PUT',
           body: bodyWithoutId,
         };
       },
     }),
 
-    //Page
+    //Page ALl Pages
     getAllPageList: builder.query({
       query: ({ decodedToken, userID, pagequery }) => {
-        if (decodedToken?.role_id === 1) {
-          return {
-            url: `v1/get_all_pages?${pagequery}`, // Use GET request for admin
-            method: "GET",
-          };
-        } else {
-          return {
-            url: `v1/get_all_pages_for_users`,
-            method: "POST",
-            body: { user_id: userID },
-          };
-        }
+        const isAdmin = decodedToken?.role_id === 1;
+
+        return isAdmin
+          ? {
+              url: `v1/get_all_pages?${pagequery}`, // Admin: GET request
+              method: 'GET',
+            }
+          : {
+              url: `v1/get_all_pages_for_users`, // User: POST request
+              method: 'POST',
+              body: { user_id: userID },
+            };
       },
-      transformResponse: (response) => {
-        const pageData = response.data.pageData || [];
+      transformResponse: (response, meta, { decodedToken }) => {
+        const isAdmin = decodedToken?.role_id === 1;
+        const pageData = isAdmin
+          ? response.data.pageData || [] // Admin response structure
+          : response.data || []; // User response structure
+
         return pageData.sort((a, b) => b.followers_count - a.followers_count);
       },
+      keepUnusedDataFor: 300,
     }),
 
     getPageById: builder.query({
@@ -156,15 +154,15 @@ export const PageBaseURL = createApi({
     addPageState: builder.mutation({
       query: (data) => ({
         url: `v1/page_states`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["pageState"],
+      invalidatesTags: ['pageState'],
     }),
     getPageState: builder.query({
       query: () => `v1/page_states`,
       transformResponse: (response) => response.data,
-      providesTags: ["pageState"],
+      providesTags: ['pageState'],
     }),
     getPageStateById: builder.query({
       query: (data) => `v1/page_states/${data}`,
@@ -173,7 +171,7 @@ export const PageBaseURL = createApi({
     updatePageState: builder.mutation({
       query: (data) => ({
         url: `v1/page_states/${data.id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data.formData,
       }),
     }),
@@ -199,10 +197,10 @@ export const PageBaseURL = createApi({
     addPageSubCategory: builder.mutation({
       query: (data) => ({
         url: `v1/page_sub_category`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["subCategoryList"],
+      invalidatesTags: ['subCategoryList'],
     }),
 
     updatePageSubCategory: builder.mutation({
@@ -210,7 +208,7 @@ export const PageBaseURL = createApi({
         const { _id, ...payload } = data;
         return {
           url: `v1/page_sub_category/${_id}`,
-          method: "PUT",
+          method: 'PUT',
           body: {
             page_sub_category: payload.sub_category_name,
             description: payload.description,
@@ -219,32 +217,32 @@ export const PageBaseURL = createApi({
           },
         };
       },
-      invalidatesTags: ["subCategoryList"],
+      invalidatesTags: ['subCategoryList'],
     }),
 
     deletePageSubCategory: builder.mutation({
       query: (id) => {
         return {
           url: `v1/page_sub_category/${id}`,
-          method: "DELETE",
+          method: 'DELETE',
         };
       },
-      invalidatesTags: ["subCategoryList"],
+      invalidatesTags: ['subCategoryList'],
     }),
 
     getAllPageSubCategory: builder.query({
       query: () => `v1/page_sub_category`,
-      providesTags: ["subCategoryList"],
+      providesTags: ['subCategoryList'],
     }),
 
     deletePageCategory: builder.mutation({
       query: (id) => {
         return {
           url: `v1/page_category/${id}`,
-          method: "DELETE",
+          method: 'DELETE',
         };
       },
-      invalidatesTags: ["categoryList"],
+      invalidatesTags: ['categoryList'],
     }),
 
     //PageCloseby
@@ -264,16 +262,14 @@ export const PageBaseURL = createApi({
     // get page counts
     getPageCount: builder.query({
       query: ({ start_date, end_date } = {}) => {
-        let url = "v1/get_page_count";
+        let url = 'v1/get_page_count';
         if (start_date || end_date) {
-          url += `?${start_date ? `start_date=${start_date}` : ""}${
-            start_date && end_date ? "&" : ""
-          }${end_date ? `end_date=${end_date}` : ""}`;
+          url += `?${start_date ? `start_date=${start_date}` : ''}${start_date && end_date ? '&' : ''}${end_date ? `end_date=${end_date}` : ''}`;
         }
 
         return {
           url,
-          method: "GET",
+          method: 'GET',
         };
       },
     }),
@@ -282,43 +278,10 @@ export const PageBaseURL = createApi({
     getAllCategoryWiseInventory: builder.query({
       query: () => `v1/category_wise_inventory_details`,
       transformResponse: (response) => {
-        return response.data.sort(
-          (a, b) => b.totalPageCount - a.totalPageCount
-        ); // Ascending order
+        return response.data.sort((a, b) => b.totalPageCount - a.totalPageCount); // Ascending order
       },
     }),
   }),
 });
 
-export const {
-  useGetAllProfileListQuery,
-  useAddProfileTypeMutation,
-  useUpdateProfileTypeMutation,
-  useAddPageCategoryMutation,
-  useGetAllPageCategoryQuery,
-  useUpdatePageCategoryMutation,
-  useGetAllPriceListQuery,
-  useAddPlatformPriceMutation,
-  useGetPlatformPriceQuery,
-  useUpdatePlatformPriceMutation,
-  useGetAllPageListQuery,
-  useGetPageByIdQuery,
-  useGetMultiplePagePriceQuery,
-  useGetpagePriceTypeQuery,
-  useAddPageStateMutation,
-  useGetPageStateQuery,
-  useGetPageStateByIdQuery,
-  useUpdatePageStateMutation,
-  useGetAllCitiesQuery,
-  useGetOwnershipTypeQuery,
-  useGetVendorCompanyDetailQuery,
-  useAddPageSubCategoryMutation,
-  useUpdatePageSubCategoryMutation,
-  useDeletePageSubCategoryMutation,
-  useGetAllPageSubCategoryQuery,
-  useDeletePageCategoryMutation,
-  useGetAllCountsQuery,
-  useGetAllPageClosebyListQuery,
-  useGetPageCountQuery,
-  useGetAllCategoryWiseInventoryQuery,
-} = PageBaseURL;
+export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery } = PageBaseURL;

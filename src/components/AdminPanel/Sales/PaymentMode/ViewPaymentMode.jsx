@@ -8,12 +8,14 @@ import DeleteButton from "../../DeleteButton";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 import View from "../Account/View/View";
 import getDecodedToken from "../../../../utils/DecodedToken";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const ViewPaymentMode = () => {
   const token = getDecodedToken();
   let loginUserId;
   const loginUserRole = token.role_id;
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
   const [paymentModeData, setPaymentModeData] = useState([]);

@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { ChartLineUp } from "@phosphor-icons/react";
 import getDecodedToken from "../../../utils/DecodedToken";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const SalesSidebarLinks = () => {
   const token = getDecodedToken();
@@ -10,15 +11,17 @@ const SalesSidebarLinks = () => {
   const loginUserRole = token.role_id;
   const deptId = token.dept_id;
 
-  if (loginUserRole !== 1) {
+  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
 
   return (
     <li className="nav-item">
       <Link
-        className={`nav-link nav-btn ${loginUserRole !== 1 && deptId == 36 ? "" : "collapsed"
-          }`}
+        className={`nav-link nav-btn ${
+          loginUserRole !== 1 && deptId == 36 ? "" : "collapsed"
+        }`}
         // data-toggle={`${deptId !== 36 && "collapse"}`}
         data-toggle={"collapse"}
         data-target="#collapseTwom99"
@@ -33,10 +36,11 @@ const SalesSidebarLinks = () => {
 
       <div
         id="collapseTwom99"
-        className={`${loginUserRole !== 1 && deptId == 36
+        className={`${
+          loginUserRole !== 1 && deptId == 36
             ? "collapse show"
             : "collapse hide"
-          }`}
+        }`}
         aria-labelledby="headingTwo"
         data-parent="#accordionSidebar"
       >
@@ -66,9 +70,9 @@ const SalesSidebarLinks = () => {
               loginUserRole === 1
                 ? "/admin/sales-incentive-dashboard"
                 : {
-                  pathname: "/admin/sales-user-incentve",
-                  state: { id: loginUserId, name: "monthwise" },
-                }
+                    pathname: "/admin/sales-user-incentve",
+                    state: { id: loginUserId, name: "monthwise" },
+                  }
             }
           >
             <i className="bi bi-dot" />
