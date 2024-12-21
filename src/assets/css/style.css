@@ -20399,6 +20399,7 @@ hr:not([size]) {
 
 .timeDataCard {
   position: relative;
+  width: 96% !important;
 
   .card-header {
     padding: 16px 20px 16px 20px;
