@@ -13,6 +13,7 @@ import ProfileSection from "./ProfileSection/ProfileSection";
 import JobSection from "./ProfileSection/JobSection";
 import { Link } from "react-router-dom";
 import AssetSingleUser from "../../../Sim/AssetSingeUser/AssetSingleUser";
+import DocumentTab from "../../../PreOnboarding/DocumentTab";
 // import GoogleSheetDownloader from "./googlesheet";
 
 const Profile = () => {
@@ -30,16 +31,38 @@ const Profile = () => {
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
 
+ 
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
   const accordionButtons = ["About", "Profile", "Job", "Document", "Assets"];
 
+  // Document Information Tab-------------------Start------------------------------------
+ const [documentData, setDocumentData] = useState([]);
+ async function getDocuments() {
+   const response = await axios.post(baseUrl + "get_user_doc", {
+     user_id: loginUserId,
+   });
+   setDocumentData(response.data.data);
+ }
+
+ useEffect(() => {
+   getDocuments();
+ }, [loginUserId]);
+
   const tab1 = <AboutSection educationData={educationData} familyData={familyData}/>
   const tab2 = <ProfileSection userData={userData} educationData={educationData} familyData={familyData}/>
   const tab3 = <JobSection userData={userData}/>
-  const tab4 = <h1>Four</h1>;
+  const tab4 = <div className="table-wrap-user">
+  <DocumentTab
+    documentData={documentData}
+    setDocumentData={setDocumentData}
+    getDocuments={getDocuments}
+    submitButton={false}
+    normalUserLayout={true}
+  />
+</div>;
   const tab5 = <AssetSingleUser/>
   function handleGetData() {
     axios.get(`${baseUrl}` + `get_single_user/${loginUserId}`).then((res) => {
@@ -325,9 +348,9 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="action_heading">
+            {/* <div className="action_heading">
               <div className="action_title">
-                {/* <FormContainer
+                <FormContainer
                   submitButton={false}
                   title=""
                   accordionButtons={accordionButtons}
@@ -339,9 +362,9 @@ const Profile = () => {
                   {activeAccordionIndex === 2 && tab3}
                   {activeAccordionIndex === 3 && tab4}
                   {activeAccordionIndex === 4 && tab5}
-                </FormContainer> */}
+                </FormContainer>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

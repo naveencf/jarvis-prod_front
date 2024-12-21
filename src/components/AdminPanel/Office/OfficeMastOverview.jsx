@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
+import Slider from "react-slick"; // Import Slider
 import Viewer from "../Sitting/Viewer";
 import SittingOverview from "../Sitting/SittingOverview";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
+import "slick-carousel/slick/slick.css"; // Import Slick CSS
+import "slick-carousel/slick/slick-theme.css"; // Import Slick Theme CSS
 
 const OfficeMastOverview = () => {
   const [roomWiseCount, setRoomWiseCount] = useState([]);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
-  const [totalSittingCount , setTotalSittingCount] = useState([])
-
+  const [totalSittingCount, setTotalSittingCount] = useState([]);
 
   const fetchAllocationCounts = async () => {
     try {
@@ -16,8 +18,8 @@ const OfficeMastOverview = () => {
       const dataWithDefaults = response.data.map((d) => ({
         ...d,
         counts: {
-          allocated: d.counts?.allocated || 0, 
-          not_allocated: d.counts?.not_allocated || 0, 
+          allocated: d.counts?.allocated || 0,
+          not_allocated: d.counts?.not_allocated || 0,
         },
       }));
       setRoomWiseCount(dataWithDefaults);
@@ -26,19 +28,19 @@ const OfficeMastOverview = () => {
       console.error("Error fetching allocation counts:", error);
     }
   };
-  const totalSittingDataCount = async ()=>{
-    try{
-      const res = await axios.get(`${baseUrl}get_total_counts`);
-      setTotalSittingCount(res.data)
-      console.log(res.data , 'total count')
-    }
-    catch{
 
+  const totalSittingDataCount = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}get_total_counts`);
+      setTotalSittingCount(res.data);
+      console.log(res.data, "total count");
+    } catch (error) {
+      console.error("Error fetching total counts:", error);
     }
-  }
+  };
 
   useEffect(() => {
-    totalSittingDataCount()
+    totalSittingDataCount();
     fetchAllocationCounts();
   }, []);
 
@@ -46,74 +48,109 @@ const OfficeMastOverview = () => {
     setSelectedRoomName(roomName); // Update state with the clicked roomName
   };
 
+  // Slider Settings
+  const sliderSettings = {
+    dots: false, // Disable navigation dots
+    infinite: false, // Disable infinite scroll
+    speed: 500, // Animation speed
+    slidesToShow: 4, // Number of slides to show at once
+    slidesToScroll: 1, // Number of slides to scroll
+    responsive: [
+      {
+        breakpoint: 1024, // For medium screens
+        settings: {
+          slidesToShow: 3,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 768, // For small screens
+        settings: {
+          slidesToShow: 2,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 480, // For very small screens
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <>
-    {/* <SittingOverview/> */}
+      {/* <SittingOverview /> */}
       <div className="scrollRow">
-        <div className="row">
-        <div className="col-md-3 col-sm-6 col-12">
-              <div class="timeDataCard card ">
-                <div class="card-header">
-                  <div class="titleCard w-100">
-                    <div class="titleCardImg bgPrimary border-0 ">
-                      <i class="bi bi-pc-display-horizontal"></i>
-                    </div>
-                    <div class="titleCardText w-75">
-                      <h2 class="colorPrimary">All Rooms</h2>
-                      <h3>
-                        Total Seats: {totalSittingCount?.total}
-                      </h3>
-                    </div>
+        <Slider {...sliderSettings}>
+          {/* First Card */}
+            <div className="timeDataCard card">
+              <div className="card-header">
+                <div className="titleCard w-100">
+                  <div className="titleCardImg bgPrimary border-0">
+                    <i className="bi bi-pc-display-horizontal"></i>
                   </div>
-                </div>
-                <div class="card-body">
-                  <div class="timeDataCardInfo">
-                    <ul>
-                      <li>
-                        <span>Total Assigned</span>
-                        <div class="growthBadge growthSuccess">
-                          {totalSittingCount?.allocated}
-                        </div>
-                      </li>
-                      <li>
-                        <span>Total Not Assigned</span>
-                        <div class="growthBadge growthWarning">
-                          {totalSittingCount?.not_allocated}
-                        </div>
-                      </li>
-                    </ul>
+                  <div className="titleCardText w-75">
+                    <h2 className="colorPrimary">All Rooms</h2>
+                    <h3>Total Seats: {totalSittingCount?.total}</h3>
                   </div>
                 </div>
               </div>
+              <div className="card-body">
+                <div className="timeDataCardInfo">
+                  <ul>
+                    <li>
+                      <span>Total Assigned</span>
+                      <div className="growthBadge growthSuccess">
+                        {totalSittingCount?.allocated}
+                      </div>
+                    </li>
+                    <li>
+                      <span>Total Not Assigned</span>
+                      <div className="growthBadge growthWarning">
+                        {totalSittingCount?.not_allocated}
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
+
+          {/* Dynamic Room Cards */}
           {roomWiseCount?.map((d, index) => (
-            <div className="col-md-3 col-sm-6 col-12" key={index}>
-              <div class="timeDataCard card " onClick={() => handleCardClick(d.roomName)}>
-                <div class="card-header">
-                  <div class="titleCard w-100">
-                    <div class="titleCardImg bgPrimary border-0 ">
-                      <i class="bi bi-pc-display-horizontal"></i>
+            <div className="RoomSlideCard" key={index}>
+              <div
+                className="timeDataCard card"
+                onClick={() => handleCardClick(d.roomName)}
+              >
+                <div className="card-header">
+                  <div className="titleCard w-100">
+                    <div className="titleCardImg bgPrimary border-0">
+                      <i className="bi bi-pc-display-horizontal"></i>
                     </div>
-                    <div class="titleCardText w-75">
-                      <h2 class="colorPrimary">{d.roomName}</h2>
+                    <div className="titleCardText w-75">
+                      <h2 className="colorPrimary">{d.roomName}</h2>
                       <h3>
-                        Total Seats: {d.counts.allocated + d.counts.not_allocated}
+                        Total Seats:{" "}
+                        {d.counts.allocated + d.counts.not_allocated}
                       </h3>
                     </div>
                   </div>
                 </div>
-                <div class="card-body">
-                  <div class="timeDataCardInfo">
+                <div className="card-body">
+                  <div className="timeDataCardInfo">
                     <ul>
                       <li>
                         <span>Assigned</span>
-                        <div class="growthBadge growthSuccess">
+                        <div className="growthBadge growthSuccess">
                           {d.counts.allocated}
                         </div>
                       </li>
                       <li>
                         <span>Not Assigned</span>
-                        <div class="growthBadge growthWarning">
+                        <div className="growthBadge growthWarning">
                           {d.counts.not_allocated}
                         </div>
                       </li>
@@ -123,14 +160,19 @@ const OfficeMastOverview = () => {
               </div>
             </div>
           ))}
-        </div>
+        </Slider>
       </div>
-    <Viewer roomNameCard={selectedRoomName} totalSittingDataCount={totalSittingDataCount} fetchAllocationCounts={fetchAllocationCounts}/>
+      <Viewer
+        roomNameCard={selectedRoomName}
+        totalSittingDataCount={totalSittingDataCount}
+        fetchAllocationCounts={fetchAllocationCounts}
+      />
     </>
   );
 };
 
 export default OfficeMastOverview;
+
 
 // import axios from "axios";
 // import { useEffect, useState } from "react";

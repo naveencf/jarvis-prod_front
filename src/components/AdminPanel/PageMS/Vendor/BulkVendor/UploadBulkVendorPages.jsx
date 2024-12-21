@@ -1,16 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import * as XLSX from 'xlsx';
 import { useGlobalContext } from '../../../../../Context/Context';
 import { baseUrl } from '../../../../../utils/config';
@@ -18,21 +7,12 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 const storedToken = sessionStorage.getItem('token');
 
-const UploadBulkVendorPages = ({
-  getRowData,
-  from,
-  onClose,
-  category,
-  activePlatformId,
-  rateType,
-  selectedSubCategory,
-  closeBy,
-  tagCategoris,
-}) => {
+const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlatformId, rateType, selectedSubCategory, closeBy, tagCategoris }) => {
   const [open, setOpen] = useState(false);
   const [rows, setRows] = useState([]);
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const { toastAlert, toastError } = useGlobalContext();
   const handleCheck = (event) => {
@@ -86,16 +66,15 @@ const UploadBulkVendorPages = ({
 
   const handleSubmit = async () => {
     const formdata = new FormData();
-    if (
-      !getRowData ||
-      !category ||
-      !rateType ||
-      !activePlatformId ||
-      !file ||
-      !selectedSubCategory?._id ||
-      !closeBy ||
-      !tagCategoris?.length
-    ) {
+    console.log('getRowData', getRowData);
+    console.log('category', category);
+    console.log('rateType', rateType);
+    console.log('activePlatformId', activePlatformId);
+    console.log('file', file);
+    console.log('tagCategoris', tagCategoris);
+    // console.log("selectedSubCategory",selectedSubCategory);
+    console.log('closeBy', closeBy);
+    if (!getRowData || !category || !rateType || !activePlatformId || !file || !selectedSubCategory?._id || !closeBy || !tagCategoris?.length) {
       Swal.fire({
         icon: 'error',
         title: 'Missing Information',
@@ -112,7 +91,7 @@ const UploadBulkVendorPages = ({
     formdata.append('page_closed_by', closeBy);
     formdata.append('tags_page_category_name', tagCategoris);
     // tags_page_category_name
-
+    setLoading(true);
     try {
       const res = await axios.post(`${baseUrl}v1/bulk_vendor_post`, formdata, {
         headers: {
@@ -128,7 +107,7 @@ const UploadBulkVendorPages = ({
       toastError(error, '');
       console.error(error);
     }
-
+    setLoading(false);
     setOpen(false);
   };
 
@@ -159,26 +138,14 @@ const UploadBulkVendorPages = ({
   return (
     <>
       {/* Button to download the template */}
-      <Button
-        onClick={downloadTemplate}
-        className="btn cmnbtn btn_sm btn-outline-primary"
-      >
+      <Button onClick={downloadTemplate} className="btn cmnbtn btn_sm btn-outline-primary">
         Download Template
       </Button>
 
-      <Button
-        component="label"
-        className="btn cmnbtn btn_sm btn-outline-primary"
-        onClick={handleCheck}
-      >
+      <Button component="label" className="btn cmnbtn btn_sm btn-outline-primary" onClick={handleCheck}>
         Upload Bulk-Vendor-Pages
         {/* {getRowData.length === 1 && ( */}
-        <input
-          type="file"
-          accept=".xlsx, .xls"
-          hidden
-          onChange={handleUpload}
-        />
+        <input type="file" accept=".xlsx, .xls" hidden onChange={handleUpload} />
         {/* )} */}
       </Button>
 
@@ -225,8 +192,12 @@ const UploadBulkVendorPages = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit} variant="contained">
-            Submit
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={loading} // Disable button when loading
+          >
+            {loading ? <CircularProgress size={24} /> : 'Submit'}
           </Button>
         </DialogActions>
       </Dialog>

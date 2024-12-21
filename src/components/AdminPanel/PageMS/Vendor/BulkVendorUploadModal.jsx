@@ -157,7 +157,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
             </div>
           </div>
           <div className="row">
-            <div className="col-6">
+            {/* <div className="col-6">
               <label className="form-label">
                 Select Sub-Category
                 <sup className="form-error">*</sup>
@@ -171,10 +171,31 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                 }}
                 renderInput={(params) => <TextField {...params} label="Select Sub-Category" variant="outlined" />}
               />
-            </div>
+            </div> */}
             <div className="col-6">
               <label className="form-label">
-                Select User
+                Select Tag Categories
+                <sup className="form-error">*</sup>
+              </label>
+              <Autocomplete
+                multiple
+                options={categoryData.map((option) => ({
+                  value: option._id,
+                  label: option.page_category,
+                }))}
+                getOptionLabel={(option) => option.label || ''}
+                isOptionEqualToValue={(option, value) => option.value === value.value}
+                value={tag}
+                onChange={(event, newValue) => {
+                  setTag(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} label="Select Tag Categories" variant="outlined" required />}
+              />
+            </div>
+
+            <div className="col-6">
+              <label className="form-label">
+                Closed By
                 <sup className="form-error">*</sup>
               </label>
               <Autocomplete
@@ -195,32 +216,26 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                 onChange={(event, newValue) => {
                   setCloseBy(newValue);
                 }}
-                renderInput={(params) => <TextField {...params} label="Select User" variant="outlined" required />}
+                renderInput={(params) => <TextField {...params} label="Closed By" variant="outlined" required />}
               />
             </div>
-          </div>
-          <div className="row mt-5">
-            <div className="col-6">
-              <label className="form-label">
-                Select Categories
-                <sup className="form-error">*</sup>
-              </label>
-              <Autocomplete
-                multiple
-                options={categoryData.map((option) => ({
-                  value: option._id,
-                  label: option.page_category,
-                }))}
-                getOptionLabel={(option) => option.label || ''}
-                isOptionEqualToValue={(option, value) => option.value === value.value}
-                value={tag}
-                onChange={(event, newValue) => {
-                  setTag(newValue);
-                }}
-                renderInput={(params) => <TextField {...params} label="Select Categories" variant="outlined" required />}
-              />
+            <div className="row mt-4">
+              <div className="col-6">
+                <Autocomplete
+                  options={subCategoryData}
+                  getOptionLabel={(option) => option.page_sub_category || 'Unknown Sub-Category'}
+                  isOptionEqualToValue={(option, value) => option._id === value._id}
+                  onChange={(event, newValue) => {
+                    setSelectedSubCateogry(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} label="Select Sub-Category" variant="outlined" />}
+                />
+              </div>
             </div>
           </div>
+          {/* <div className="row mt-5">
+          
+          </div> */}
         </DialogContent>
       )}
       <DialogActions>

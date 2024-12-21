@@ -1,44 +1,32 @@
-import React, { useEffect, useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-} from "@mui/material";
-import axios from "axios";
-import { baseUrl } from "../../../utils/config";
-import {
-  useGetAllPageCategoryQuery,
-  useGetAllPageSubCategoryQuery,
-} from "../../Store/PageBaseURL";
-import Select from "react-select";
-import { useAPIGlobalContext } from "../APIContext/APIContext";
-import { useGlobalContext } from "../../../Context/Context";
-import { useGetAllCatAssignmentQuery } from "../../Store/API/Inventory/CatAssignment";
-
+import React, { useEffect, useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button } from '@mui/material';
+import axios from 'axios';
+import { baseUrl } from '../../../utils/config';
+import { useGetAllPageCategoryQuery, useGetAllPageSubCategoryQuery } from '../../Store/PageBaseURL';
+import Select from 'react-select';
+import { useAPIGlobalContext } from '../APIContext/APIContext';
+import { useGlobalContext } from '../../../Context/Context';
+import { useGetAllCatAssignmentQuery } from '../../Store/API/Inventory/CatAssignment';
 
 export default function PageAssignmentUpdate({ open, onClose, row }) {
-  const [categorys, setCategory] = useState("");
-  const { data: authData, refetch:getData } = useGetAllCatAssignmentQuery();
+  const [categorys, setCategory] = useState('');
+  const { data: authData, refetch: getData } = useGetAllCatAssignmentQuery();
   const [subCategorys, setSubCategory] = useState([]);
-  const { data: category, refetch: refetchPageCate } =
-    useGetAllPageCategoryQuery();
-  const { data: subcategory, refetch: refetchSubCat } =
-    useGetAllPageSubCategoryQuery();
+  const { data: category, refetch: refetchPageCate } = useGetAllPageCategoryQuery();
+  const { data: subcategory, refetch: refetchSubCat } = useGetAllPageSubCategoryQuery();
   const categoryData = category?.data || [];
   const subCatData = subcategory?.data || [];
-  const [userName, setUserName] = useState("");
+  const [userName, setUserName] = useState('');
   const { userContextData, userID } = useAPIGlobalContext();
-  const {toastAlert} = useGlobalContext()
+  const { toastAlert } = useGlobalContext();
   const token = sessionStorage.getItem('token');
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
 
-console.log(row,"row")
-  
+ 
+
   const handleSubmit = () => {
-    const selectedSubCategoryIds = subCategorys.map(sub => sub.value);
-    
+    const selectedSubCategoryIds = subCategorys.map((sub) => sub.value);
+
     axios
       .post(baseUrl + `v1/edit_page_cat_assignment`, {
         user_id: userName,
@@ -46,11 +34,11 @@ console.log(row,"row")
         updated_by: userID,
       })
       .then(() => {
-        setUserName("");
+        setUserName('');
         setSubCategory([]);
         onClose();
-        getData()
-        toastAlert("Data updated successfully!")
+        getData();
+        toastAlert('Data updated successfully!');
       });
   };
 
@@ -79,26 +67,33 @@ console.log(row,"row")
   useEffect(() => {
     if (row) {
       setUserName(row?.user_id);
-      // const tagFilter = subCatData?.filter((subcategory) =>
-      //   row.page_sub_category_ids.includes(subcategory.page_sub_category_id) 
-      // );
-      // const formattedCategories = tagFilter.map((subcategory) => ({
-      //   value: subcategory.page_sub_category_ids, 
-      //   label: subcategory.page_categories,
-      // }));
 
-      // setSubCategory(formattedCategories);
+      // Map the `page_categories` and `page_sub_category_ids` to the format required for react-select
+      const formattedCategories = row.page_categories.map((category, index) => ({
+        value: row.page_sub_category_ids[index], // Match IDs with categories
+        label: category, // Use the category name as the label
+      }));
+
+      // Set the subcategories directly as the default value
+      setSubCategory(formattedCategories);
     }
-  }, [row, subCatData]);
+  }, [row]);
 
+  console.log('subb', subCategorys);
   return (
-    <Dialog open={open} onClose={onClose} fullWidth={true} maxWidth="md" PaperProps={{
-      style: {
-        height: '550px',
-        maxHeight: '80vh',
-      },
-    }}>
-      <DialogTitle>{"Update Page Cat Assignment To User"}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth={true}
+      maxWidth="md"
+      PaperProps={{
+        style: {
+          height: '550px',
+          maxHeight: '80vh',
+        },
+      }}
+    >
+      <DialogTitle>{'Update Page Cat Assignment To User'}</DialogTitle>
       <DialogContent>
         <div className="form-group col-12">
           <label className="form-label">User Name</label>
@@ -110,9 +105,7 @@ console.log(row,"row")
             }))}
             value={{
               value: userName,
-              label:
-                userContextData.find((user) => user.user_id === userName)
-                  ?.user_name || "",
+              label: userContextData.find((user) => user.user_id === userName)?.user_name || '',
             }}
             onChange={(e) => {
               setUserName(e.value);
@@ -123,16 +116,13 @@ console.log(row,"row")
         <div className="form-group col-12">
           <label className="form-label">Category</label>
           <Select
-         
             options={categoryData.map((option) => ({
               value: option._id,
               label: `${option.page_category}`,
             }))}
             value={{
               value: categorys,
-              label:
-                categoryData.find((user) => user._id === categorys)
-                  ?.page_category || "",
+              label: categoryData.find((user) => user._id === categorys)?.page_category || '',
             }}
             onChange={(e) => {
               setCategory(e.value);
@@ -143,7 +133,6 @@ console.log(row,"row")
         <div className="form-group col-12">
           <label className="form-label">Sub Category</label>
           <Select
-          
             options={selectedSubCategories.map((option) => ({
               value: option.page_sub_category_id,
               label: `${option.page_sub_category_name}`,
@@ -152,7 +141,7 @@ console.log(row,"row")
             onChange={(selectedOptions) => {
               setSubCategory(selectedOptions);
             }}
-            isMulti 
+            isMulti
             required
           />
         </div>
