@@ -124,6 +124,16 @@ const ViewSaleBooking = () => {
       toastError("Error deleting sale booking:", error);
     }
   };
+
+  function calculateAging(date1, date2) {
+    const oneDay = 24 * 60 * 60 * 1000;
+    const firstDate = new Date(date1).setHours(0, 0, 0, 0);
+    const secondDate = new Date(date2).setHours(0, 0, 0, 0);
+    const diffDays = Math.round(Math.abs((firstDate - secondDate) / oneDay));
+
+    return diffDays;
+  }
+
   const dateFilterOptions = [
     { value: "today", label: "Today" },
     { value: "this_week", label: "This Week" },
@@ -527,6 +537,13 @@ const ViewSaleBooking = () => {
       width: 100,
     },
     {
+      key: "Aging",
+      name: "Aging in Days",
+      renderRowCell: (row) => calculateAging(row.sale_booking_date, new Date()),
+      width: 100,
+      compare: true,
+    },
+    {
       key: "gst_amount",
       name: "GST Amount",
       renderRowCell: (row) => row.gst_amount,
@@ -608,7 +625,8 @@ const ViewSaleBooking = () => {
     {
       key: "incentive_percent",
       name: "Incentive Percent",
-      renderRowCell: (row) => (row.incentive_amount / row?.base_amount) * 100,
+      renderRowCell: (row) =>
+        ((row.incentive_amount / row?.base_amount) * 100).toFixed(0),
       showCol: true,
       width: 100,
       compare: true,
@@ -733,12 +751,8 @@ const ViewSaleBooking = () => {
           return "N/A";
         } else if (save?.length == 1) {
           return (
-            <a
-              className="icon-1"
-              target="__blank"
-              href={row?.url + "/" + save[0]?.invoice_file}
-            >
-              <i className="bi bi-eye" />
+            <a target="__blank" href={row?.url + "/" + save[0]?.invoice_file}>
+              {save[0]?.invoice_number}
             </a>
           );
         } else {
