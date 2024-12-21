@@ -56,7 +56,11 @@ const BalancePaymentList = () => {
   //   error: allOutstandingListError,
   //   isLoading: allOutstandingListLoading,
   // } = useGetAllOutstandingListQuery();
-  const { refetch: refetchOutstandingList, data: allOutstandingList, isLoading: allOutstandingListLoading, } = useGetAllOutstandingListNewQuery()
+  const {
+    refetch: refetchOutstandingList,
+    data: allOutstandingList,
+    isLoading: allOutstandingListLoading,
+  } = useGetAllOutstandingListNewQuery();
 
   const {
     refetch: refetchPaymentMode,
@@ -144,7 +148,7 @@ const BalancePaymentList = () => {
     "All Tax Invoice",
     "Non-Gst Bookings",
     "Credit-Note Invoice",
-    "User-Wise Outstanding"
+    "User-Wise Outstanding",
   ];
 
   const token = sessionStorage.getItem("token");
@@ -500,9 +504,12 @@ const BalancePaymentList = () => {
         onTabClick={handleAccordionButtonClick}
       />
       <div>
-        {(activeAccordionIndex === 3 || activeAccordionIndex === 4 || activeAccordionIndex === 5 ||
+        {(activeAccordionIndex === 3 ||
+          activeAccordionIndex === 4 ||
+          activeAccordionIndex === 5 ||
           activeAccordionIndex === 0 ||
-          activeAccordionIndex === 1) && filteredData.length > 0 && (
+          activeAccordionIndex === 1) &&
+          filteredData.length > 0 && (
             <View
               columns={outstandingColumns({
                 filterData,

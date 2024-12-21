@@ -364,7 +364,6 @@ const VendorMaster = () => {
         });
     }
   }, [_id]);
-  console.log('gst', gst);
   useEffect(() => {
     if (venodrDocuments?.length > 0 && !isVendorDocumentsLoading) {
       let doc = venodrDocuments?.map((doc) => {
@@ -520,7 +519,6 @@ const VendorMaster = () => {
     }
     setDocDetails(doc);
   };
-  console.log('docDetail', docDetails);
   const handleDocImageChange = (i, e) => {
     const file = e.target.files[0];
 
@@ -632,7 +630,7 @@ const VendorMaster = () => {
   };
 
   const handleSubmit = async (e) => {
-    console.log('handlessubmit');
+
 
     e.preventDefault();
 
@@ -706,175 +704,176 @@ const VendorMaster = () => {
     setOpenPreviewModal(true);
   };
 
-  const handleSubmitNew = async (e) => {
-    console.log('handlessubmitnew');
+  // const handleSubmitNew = async (e) => {
+  //   console.log('handlessubmitnew');
 
-    e.preventDefault();
+  //   e.preventDefault();
 
-    if (!vendorName || vendorName == '' || vendorName == null) {
-      setValidator((prev) => ({ ...prev, vendorName: true }));
-    }
-    if (!mobile) {
-      setValidator((prev) => ({ ...prev, mobile: true }));
-    }
-    if (!typeId) {
-      setValidator((prev) => ({ ...prev, typeId: true }));
-    }
-    if (!platformId) {
-      setValidator((prev) => ({ ...prev, platformId: true }));
-    }
-    if (!cycleId) {
-      setValidator((prev) => ({ ...prev, cycleId: true }));
-    }
-    if (
-      !vendorName ||
-      // !countryCode ||
-      !mobile ||
-      // !email ||
-      !typeId ||
-      !platformId ||
-      !cycleId
-    ) {
-      toastError('Please fill all the mandatory fields');
-      return;
-    }
-    const formData = {
-      vendor_name: vendorName.toLowerCase().trim(),
-      country_code: countryCode,
-      mobile: mobile,
-      alternate_mobile: altMobile,
-      email: email,
-      vendor_type: typeId,
-      vendor_platform: platformId,
-      pay_cycle: cycleId,
-      company_name: compName,
-      company_address: compAddress,
-      company_city: compCity,
-      company_pincode: compPin,
-      company_state: compState,
-      threshold_limit: limit,
-      home_address: homeAddress,
-      home_city: homeCity,
-      home_state: homeState,
-      home_pincode: homePincode,
-      created_by: userID,
-      vendor_category: vendorCategory,
-      bank_details: bankRows,
-      vendorLinks: whatsappLink,
-      closed_by: userId,
-      dob: dob,
-      busi_type: busiType,
-    };
+  //   if (!vendorName || vendorName == '' || vendorName == null) {
+  //     setValidator((prev) => ({ ...prev, vendorName: true }));
+  //   }
+  //   if (!mobile) {
+  //     setValidator((prev) => ({ ...prev, mobile: true }));
+  //   }
+  //   if (!typeId) {
+  //     setValidator((prev) => ({ ...prev, typeId: true }));
+  //   }
+  //   if (!platformId) {
+  //     setValidator((prev) => ({ ...prev, platformId: true }));
+  //   }
+  //   if (!cycleId) {
+  //     setValidator((prev) => ({ ...prev, cycleId: true }));
+  //   }
+  //   if (
+  //     !vendorName ||
+  //     // !countryCode ||
+  //     !mobile ||
+  //     // !email ||
+  //     !typeId ||
+  //     !platformId ||
+  //     !cycleId
+  //   ) {
+  //     toastError('Please fill all the mandatory fields');
+  //     return;
+  //   }
+  //   const formData = {
+  //     vendor_name: vendorName.toLowerCase().trim(),
+  //     country_code: countryCode,
+  //     mobile: mobile,
+  //     alternate_mobile: altMobile,
+  //     email: email,
+  //     vendor_type: typeId,
+  //     vendor_platform: platformId,
+  //     pay_cycle: cycleId,
+  //     company_name: compName,
+  //     company_address: compAddress,
+  //     company_city: compCity,
+  //     company_pincode: compPin,
+  //     company_state: compState,
+  //     threshold_limit: limit,
+  //     home_address: homeAddress,
+  //     home_city: homeCity,
+  //     home_state: homeState,
+  //     home_pincode: homePincode,
+  //     created_by: userID,
+  //     vendor_category: vendorCategory,
+  //     bank_details: bankRows,
+  //     vendorLinks: whatsappLink,
+  //     closed_by: userId,
+  //     dob: dob,
+  //     busi_type: busiType,
+  //   };
 
-    if (!_id) {
-      setIsFormSubmitting2(true);
+  //   if (!_id) {
+  //     setIsFormSubmitting2(true);
 
-      addVendor(formData)
-        .then((res) => {
-          toastAlert('Data Submitted Successfully');
-          const resID = res.data.data._id;
-          redirectAfterVendor(resID);
+  //     addVendor(formData)
+  //       .then((res) => {
+  //         toastAlert('Data Submitted Successfully');
+  //         const resID = res.data.data._id;
+  //         redirectAfterVendor(resID);
 
-          addCompanyData({
-            vendor_id: resID,
-            company_name: compName,
-            address: compAddress,
-            city: compCity,
-            pincode: compPin,
-            state: compState,
-            threshold_limit: limit,
-            created_by: userID,
-          })
-            .then((res) => {
-              // console.log(res.data, "res");
-            })
-            .catch((err) => {
-              toastError(err.message);
-            });
+  //         addCompanyData({
+  //           vendor_id: resID,
+  //           company_name: compName,
+  //           address: compAddress,
+  //           city: compCity,
+  //           pincode: compPin,
+  //           state: compState,
+  //           threshold_limit: limit,
+  //           created_by: userID,
+  //         })
+  //           .then((res) => {
+  //             // console.log(res.data, "res");
+  //           })
+  //           .catch((err) => {
+  //             toastError(err.message);
+  //           });
 
-          for (let i = 0; i < docDetails?.length; i++) {
-            const formData = new FormData();
-            formData.append('vendor_id', resID);
-            formData.append('document_name', docDetails[i].docName);
-            formData.append('document_no', docDetails[i].docNumber);
-            formData.append('document_image_upload', docDetails[i].docImage);
+  //         for (let i = 0; i < docDetails?.length; i++) {
+  //           const formData = new FormData();
+  //           formData.append('vendor_id', resID);
+  //           formData.append('document_name', docDetails[i].docName);
+  //           formData.append('document_no', docDetails[i].docNumber);
+  //           formData.append('document_image_upload', docDetails[i].docImage);
 
-            addVendorDocument(formData)
-              .then((res) => {
-                // toastAlert("Document added successfully")
-              })
-              .catch((err) => {
-                toastError(err.message);
-              });
-          }
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting2(false);
-        });
-    } else {
-      setIsFormSubmitting2(true);
+  //           addVendorDocument(formData)
+  //             .then((res) => {
+  //               // toastAlert("Document added successfully")
+  //             })
+  //             .catch((err) => {
+  //               toastError(err.message);
+  //             });
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         toastError(err.message);
+  //         setIsFormSubmitting2(false);
+  //       });
+  //   } else {
+  //     setIsFormSubmitting2(true);
 
-      formData._id = _id;
-      updateVendor(formData)
-        .unwrap()
-        .then(() => {
-          toastAlert('Data Updated Successfully');
+  //     formData._id = _id;
+  //     updateVendor(formData)
+  //       .unwrap()
+  //       .then(() => {
+  //         toastAlert('Data Updated Successfully');
 
-          for (let i = 0; i < docDetails?.length; i++) {
-            const formData = new FormData();
+  //         for (let i = 0; i < docDetails?.length; i++) {
+  //           const formData = new FormData();
 
-            formData.append('document_name', docDetails[i].docName);
-            formData.append('document_no', docDetails[i].docNumber);
-            formData.append('document_image_upload', docDetails[i].docImage);
-            axios
-              .put(baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`, formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                  Authorization: `Bearer ${token}`,
-                },
-              })
-              .catch((err) => {
-                toastError(err.message);
-              });
-          }
-          if (company_id) {
-            axios
-              .put(
-                baseUrl + `v1/company_name/${company_id}`,
-                {
-                  company_name: compName,
-                  address: compAddress,
-                  city: compCity,
-                  pincode: compPin,
-                  state: compState,
-                  threshold_limit: limit,
-                  created_by: userID,
-                },
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                }
-              )
-              .then((res) => {})
-              .catch((err) => {
-                toastError(err.message);
-              });
-          }
-          setIsFormSubmitted(true);
-          setIsFormSubmitting2(false);
-        })
-        .catch((err) => {
-          toastError(err.message);
-          setIsFormSubmitting2(false);
-          console.log(err, 'err');
-        });
-    }
-  };
+  //           formData.append('document_name', docDetails[i].docName);
+  //           formData.append('document_no', docDetails[i].docNumber);
+  //           formData.append('document_image_upload', docDetails[i].docImage);
+  //           axios
+  //             .put(baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`, formData, {
+  //               headers: {
+  //                 'Content-Type': 'multipart/form-data',
+  //                 Authorization: `Bearer ${token}`,
+  //               },
+  //             })
+  //             .catch((err) => {
+  //               toastError(err.message);
+  //             });
+  //         }
+  //         if (company_id) {
+  //           axios
+  //             .put(
+  //               baseUrl + `v1/company_name/${company_id}`,
+  //               {
+  //                 company_name: compName,
+  //                 address: compAddress,
+  //                 city: compCity,
+  //                 pincode: compPin,
+  //                 state: compState,
+  //                 threshold_limit: limit,
+  //                 created_by: userID,
+  //               },
+  //               {
+  //                 headers: {
+  //                   Authorization: `Bearer ${token}`,
+  //                 },
+  //               }
+  //             )
+  //             .then((res) => {})
+  //             .catch((err) => {
+  //               toastError(err.message);
+  //             });
+  //         }
+  //         setIsFormSubmitted(true);
+  //         setIsFormSubmitting2(false);
+  //       })
+  //       .catch((err) => {
+  //         toastError(err.message);
+  //         setIsFormSubmitting2(false);
+  //         console.log(err, 'err');
+  //       });
+  //   }
+  // };
 
   const handleFinalSubmit = async () => {
     const handleError = (error) => {
+      console.log(error, "error------------");
       toastError(error?.message || 'Something went wrong!');
       setIsFormSubmitting(false);
     };
@@ -892,8 +891,8 @@ const VendorMaster = () => {
         const res = await addVendor(previewData);
         setIsFormSubmitting(false);
         const resID = res.data.data._id;
-        console.log(resID);
-
+  
+        console.log("status", res);
         if (res?.status === 200) {
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
@@ -932,7 +931,8 @@ const VendorMaster = () => {
           await Promise.all(docPromises);
 
           handleSuccess('Vendor and documents added successfully!');
-        } else if (res?.error?.status === 409) {
+        } else if (res?.status === 409) {
+          console.log("resss",res.error);
           toastError(res?.error?.data?.message);
         } else {
           handleSuccess('Vendor data added successfully!');
@@ -942,7 +942,6 @@ const VendorMaster = () => {
         handleError(err);
       }
     } else {
-      console.log('id is');
 
       setIsFormSubmitting(true);
       previewData._id = _id;
@@ -962,7 +961,6 @@ const VendorMaster = () => {
         };
 
         try {
-          console.log('is working');
 
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
@@ -981,8 +979,6 @@ const VendorMaster = () => {
           } else {
             console.warn(`Skipping docImage for document ${docDetails[i].docName}`);
           }
-
-          console.log(docDetails[i], 'docDetails[i]');
 
           if (docDetails[i]._id) {
             updateVendorDocument(formData)

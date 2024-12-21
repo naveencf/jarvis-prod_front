@@ -1,28 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useEffect, useMemo, useState } from 'react';
-import {
-  ArrowUpRight,
-  DownloadSimple,
-  Eye,
-  FloppyDiskBack,
-  StackMinus,
-} from '@phosphor-icons/react';
-import {
-  Box,
-  Typography,
-  Modal,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Tooltip,
-  IconButton,
-  TextField,
-} from '@mui/material';
+import { ArrowUpRight, DownloadSimple, Eye, FloppyDiskBack, StackMinus } from '@phosphor-icons/react';
+import { Box, Typography, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, IconButton, TextField } from '@mui/material';
 import * as XLSX from 'xlsx-js-style';
 // import ExcelJS from 'exceljs';
 import ExcelPreviewModal from './ExcelPreviewModal';
@@ -86,25 +65,21 @@ const LeftSideBar = ({
   const [agencyFees, setAgencyFees] = useState(0);
   const [deliverableText, setDeliverableText] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
-  const [sellingPrice, setSellingPrice] = useState(
-    planDetails?.[0]?.selling_price
-  );
-  const [planName, setPlanName] = useState(
-    formatString(planDetails?.[0]?.plan_name)
-  );
+  const [planBrief, setPlanBrief] = useState(planDetails?.[0]?.brief);
+  const [sellingPrice, setSellingPrice] = useState(planDetails?.[0]?.selling_price);
+  const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
-    setPageDetails(
-      selectedRow?.filter((page) => page?.ownership_type === type) || []
-    );
+    setPageDetails(selectedRow?.filter((page) => page?.ownership_type === type) || []);
     setOpenModal(true); // Open the modal
   };
   // console.log(planDetails, "planDetails")
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
+  console.log('planDettails', planDetails);
   const planStatus = planDetails && planDetails[0]?.plan_status;
   // Function to get the platform name based on the platform ID
   // const getPlatformName = (platformId) => {
@@ -135,10 +110,7 @@ const LeftSideBar = ({
 
     try {
       // Perform both the API call and sendPlanDetails in parallel
-      const [fetchResponse] = await Promise.all([
-        sendPlanxLogs('v1/planxlogs', payload),
-        sendPlanDetails(planData, planStatus),
-      ]);
+      const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planData, planStatus)]);
 
       // Check if the fetch request was successful
       if (fetchResponse.ok) {
@@ -172,16 +144,7 @@ const LeftSideBar = ({
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      await downloadExcel(
-        selectedRow,
-        category,
-        postCount,
-        storyPerPage,
-        planDetails,
-        checkedDescriptions,
-        agencyFees,
-        deliverableText
-      );
+      await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText);
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {
@@ -208,12 +171,8 @@ const LeftSideBar = ({
         'Story Count': storyCountForPage,
         'Post Price': getPriceDetail(page.page_price_list, 'instagram_post'),
         'Story Price': getPriceDetail(page.page_price_list, 'instagram_story'),
-        'Total Post Cost':
-          postCountForPage *
-          getPriceDetail(page.page_price_list, 'instagram_post'),
-        'Total Story Cost':
-          storyCountForPage *
-          getPriceDetail(page.page_price_list, 'instagram_story'),
+        'Total Post Cost': postCountForPage * getPriceDetail(page.page_price_list, 'instagram_post'),
+        'Total Story Cost': storyCountForPage * getPriceDetail(page.page_price_list, 'instagram_story'),
         category: page.page_category_id, // Add category ID for filtering
       };
     });
@@ -221,7 +180,7 @@ const LeftSideBar = ({
     setPreviewData(preview);
     setOpenPreviewModal(true); // Open the preview modal
   };
- 
+
   // const calculatePrice = (rate_type, pageData, type) => {
   //   if (rate_type === 'Variable') {
   //     // Calculate for post price (followers_count / 10,000) * m_post_price
@@ -243,36 +202,20 @@ const LeftSideBar = ({
 
   // const formatFollowers = (followers) => `${followers} Followers`;
   // Function to calculate ownership counts and total costs based on selected rows
-  const calculateOwnershipCounts = (
-    selectedRow = [],
-    postCount = {},
-    storyPerPage = {}
-  ) =>
+  const calculateOwnershipCounts = (selectedRow = [], postCount = {}, storyPerPage = {}) =>
     selectedRow
       ?.filter((page) => page && page._id)
       ?.reduce(
         (acc, page) => {
           const postCountForPage = Number(postCount[page._id] || 0);
           const storyCountForPage = Number(storyPerPage[page._id] || 0);
-          const postPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_post'
-          );
-          const storyPrice = getPriceDetail(
-            page.page_price_list,
-            'instagram_story'
-          );
+          const postPrice = getPriceDetail(page.page_price_list, 'instagram_post');
+          const storyPrice = getPriceDetail(page.page_price_list, 'instagram_story');
           const rateType = page.rate_type === 'Fixed';
 
-          const finalPostCost = rateType
-            ? postPrice
-            : calculatePrice(page.rate_type, page, 'post');
-          const finalStoryCost = rateType
-            ? storyPrice
-            : calculatePrice(page.rate_type, page, 'story');
-          const totalCost =
-            postCountForPage * (finalPostCost || 0) +
-            storyCountForPage * (finalStoryCost || 0);
+          const finalPostCost = rateType ? postPrice : calculatePrice(page.rate_type, page, 'post');
+          const finalStoryCost = rateType ? storyPrice : calculatePrice(page.rate_type, page, 'story');
+          const totalCost = postCountForPage * (finalPostCost || 0) + storyCountForPage * (finalStoryCost || 0);
 
           if (page.ownership_type === 'Own') {
             acc.own.count += 1;
@@ -294,10 +237,7 @@ const LeftSideBar = ({
       );
 
   // Memoized calculation of ownership counts for performance optimization
-  const ownershipCounts = useMemo(
-    () => calculateOwnershipCounts(selectedRow, postCount, storyPerPage),
-    [selectedRow, postCount, storyPerPage]
-  );
+  const ownershipCounts = useMemo(() => calculateOwnershipCounts(selectedRow, postCount, storyPerPage), [selectedRow, postCount, storyPerPage]);
 
   const ownpages = selectedRow.filter((item) => item.ownership_type === 'Own');
 
@@ -323,6 +263,7 @@ const LeftSideBar = ({
       plan_status: 'open',
       plan_name: planName,
       selling_price: sellingPrice,
+      brief: planBrief,
       // plan_saved: true,
       // post_count: totalPostCount,
       // story_count: totalStoryCount,
@@ -366,11 +307,25 @@ const LeftSideBar = ({
                   type="number"
                 />
               ) : (
-                <span>
-                  {formatIndianNumber(
-                    sellingPrice || planDetails?.[0]?.selling_price
-                  )}
-                </span>
+                <span>{formatIndianNumber(sellingPrice || planDetails?.[0]?.selling_price)}</span>
+              )}
+            </h6>
+            <h6>
+              Plan Brief:
+              {isEditing ? (
+                <TextField
+                  value={planBrief || planDetails?.[0]?.brief || ''}
+                  onChange={(e) => setPlanBrief(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                  }}
+                  type="test"
+                />
+              ) : (
+                <span>{formatString(planBrief || planDetails?.[0]?.brief)}</span>
               )}
             </h6>
             <h6>
@@ -387,26 +342,21 @@ const LeftSideBar = ({
                   }}
                 />
               ) : (
-                <span>{planName || planDetails?.[0]?.plan_name}</span> // Display the default if no planName
+                <Tooltip title={planName || planDetails?.[0]?.plan_name}>
+                  <span>{planName || planDetails?.[0]?.plan_name}</span>
+                </Tooltip>
               )}
             </h6>
           </div>
           <h6>
             Account Name
-            <span>
-              {planDetails && formatString(planDetails[0]?.account_name)}
-            </span>
+            <span>{planDetails && formatString(planDetails[0]?.account_name)}</span>
           </h6>
         </div>
         <div className="planSmall">
           <h6>
             Total Profit
-            <span>
-              {planDetails &&
-                formatIndianNumber(
-                  Math.floor(planDetails?.[0]?.selling_price - totalCost)
-                )}
-            </span>
+            <span>{planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost))}</span>
           </h6>
           <h6>
             Total Followers
@@ -440,12 +390,7 @@ const LeftSideBar = ({
           </h6>
           <h6>
             Own Remaining Pages
-            <span>
-              {' '}
-              {ownPages?.length - selectedRow?.length > 0
-                ? ownPages?.length - selectedRow?.length
-                : 0}
-            </span>
+            <span> {ownPages?.length - selectedRow?.length > 0 ? ownPages?.length - selectedRow?.length : 0}</span>
           </h6>
         </div>
         <div className="planSmall">
@@ -458,9 +403,7 @@ const LeftSideBar = ({
             <span>1</span>
           </h6> */}
           {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
-            const categoryName =
-              category?.find((item) => item?._id === categoryId)
-                ?.page_category || 'Unknown'; // Get category name or default to 'Unknown'
+            const categoryName = category?.find((item) => item?._id === categoryId)?.page_category || 'Unknown'; // Get category name or default to 'Unknown'
             return (
               <h6 onClick={handleToggleBtn} key={categoryId}>
                 {formatString(categoryName)}
@@ -497,10 +440,8 @@ const LeftSideBar = ({
                   )
                 }
               >
-                {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{' '}
-                {ownershipCounts[type].count} <br />
-                Total Post & Story Cost : ₹{' '}
-                {Math.round(ownershipCounts[type].totalCost)}
+                {type.charAt(0).toUpperCase() + type.slice(1)} Pages : {ownershipCounts[type].count} <br />
+                Total Post & Story Cost : ₹ {Math.round(ownershipCounts[type].totalCost)}
                 {/* <h6 className=""></h6> */}
               </h6>
             </div>
@@ -582,21 +523,13 @@ const LeftSideBar = ({
           <div className="nav-item nav-item-single">
             <div className="row pl16 pr16 border-bottom">
               {Object.entries(pageCategoryCount).map(([categoryId, count]) => {
-                const categoryName =
-                  category?.find((item) => item._id === categoryId)
-                    ?.page_category || 'Unknown';
+                const categoryName = category?.find((item) => item._id === categoryId)?.page_category || 'Unknown';
 
                 return (
-                  <div
-                    className="col-lg-3 col-md-4 col-sm-6 col-12"
-                    key={categoryId}
-                  >
+                  <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={categoryId}>
                     <div>
                       <div className="flexCenter colGap14">
-                        <div
-                          className="iconBadge small bgPrimaryLight m-0"
-                          onClick={handleToggleBtn}
-                        >
+                        <div className="iconBadge small bgPrimaryLight m-0" onClick={handleToggleBtn}>
                           <h5>{count}</h5>
                         </div>
                         <div>
@@ -618,15 +551,11 @@ const LeftSideBar = ({
                 <div onClick={handleOwnPage}>
                   <div className="flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
-                      <h5>
-                        {Math.max(ownPages?.length - selectedRow?.length, 0)}
-                      </h5>
+                      <h5>{Math.max(ownPages?.length - selectedRow?.length, 0)}</h5>
                     </div>
                     <div>
                       <h6 className="colorMedium">Own Remaining Pages</h6>
-                      <h6 className="mt4">
-                        {Math.max(ownPages?.length - selectedRow?.length, 0)}
-                      </h6>
+                      <h6 className="mt4">{Math.max(ownPages?.length - selectedRow?.length, 0)}</h6>
                     </div>
                   </div>
                 </div>
@@ -653,13 +582,9 @@ const LeftSideBar = ({
                       </div>
                       <div>
                         <h6>
-                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{' '}
-                          {ownershipCounts[type]?.count || 0}
+                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages : {ownershipCounts[type]?.count || 0}
                         </h6>
-                        <h6 className="mt4">
-                          Total Post & Story Cost : ₹{' '}
-                          {ownershipCounts[type]?.totalCost || 0}
-                        </h6>
+                        <h6 className="mt4">Total Post & Story Cost : ₹ {ownershipCounts[type]?.totalCost || 0}</h6>
                       </div>
                     </div>
                   </div>
@@ -706,10 +631,7 @@ const LeftSideBar = ({
           </Typography>
 
           {/* Table to display page details */}
-          <TableContainer
-            component={Paper}
-            sx={{ maxHeight: 300, overflowY: 'auto' }}
-          >
+          <TableContainer component={Paper} sx={{ maxHeight: 300, overflowY: 'auto' }}>
             <Table>
               <TableHead>
                 <TableRow>

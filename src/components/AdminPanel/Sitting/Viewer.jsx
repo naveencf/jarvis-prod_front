@@ -97,7 +97,7 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
 
       // Load background image
       const img = new window.Image();
-      img.src = roomData.image;
+      img.src = roomData.room_image;
       img.onload = () => setBackgroundImage(img);
     }
   }, [layouts, selectedRoom]);
@@ -267,10 +267,14 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
                         {hoveredElement.image && (
                           <AvatarImage
                             url={hoveredElement.image}
-                            x={hoveredElement.x - 25}
-                            y={hoveredElement.y - 25}
+                            x={hoveredElement.x - 0}
+                            y={hoveredElement.y - 65}
                             width={40}
                             height={40}
+                            style={{
+                              border: "2px solid orange",
+                              borderRadius: "50%", // Optional for rounded borders
+                            }}
                           />
                         )}
                         <Text
@@ -280,8 +284,8 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
                               : "Not assigned"
                           }
                           fontSize={16}
-                          x={hoveredElement.x - 30}
-                          y={hoveredElement.y - 50} // Position above avatar
+                          x={hoveredElement.x - 20}
+                          y={hoveredElement.y - 25} // Position above avatar
                         />
                       </div>
                     )}
@@ -296,30 +300,6 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
           </div>
         </div>
       </div>
-      {/* <div className="">
-        <div className="d-flex">
-          {Object.keys(layouts).map((roomName) => (
-            <button
-              className="btn cmnbtn btn_sm btn-primary ml-2 mt-2"
-              key={roomName}
-              onClick={() => loadLayout(roomName)}
-            >
-              {roomName}
-            </button>
-          ))}
-        </div>
-        {selectedRoom && (
-          <>
-            <div className="">
-              <span className=" badge-success mr-2">Selected: Green</span>
-              <span className=" badge-primary mr-2">Assigned: Grey</span>
-              <span className=" badge-warning">Not Assigned: White</span>
-            </div>
-
-            <div className="d-flex justify-content-center"></div>
-          </>
-        )}
-      </div> */}
     </>
   );
 };
