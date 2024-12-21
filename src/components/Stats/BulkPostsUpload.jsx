@@ -152,19 +152,19 @@ export default function BulkPostsUpload({
       .map((row) => {
         // Assuming link format is something like "https://instagram.com/p/shortcode" or "https://instagram.com/reel/shortcode" with or without additional parameters
         // const regex = /instagram\.com\/(?:p|reel)\/([^/?]+)/;
-        const regex = /instagram\.com\/(?:[^/]+\/)?(?:p|reel)\/([^/?]+)/;
+        const regex = /instagram\.com\/(?:[^/]+\/)?(?:p|reel|share)\/([^/?]+)/;
         const match = row.link.match(regex);
         if (match) {
           return match[1]; // Extract the shortcode from the matched pattern
         } else {
-          console.log(row,"We are not acknowledging this link");
+          console.log(row, "We are not acknowledging this link");
         }
         return null; // If no match found or shortcode length > 16, return null
       })
       .filter((code) => code !== null); // Filter out null values
-    //       console.log(shortcodes);
+    console.log(shortcodes);
 
-    // return;
+    return;
     const token =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
 
