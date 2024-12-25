@@ -1,47 +1,10 @@
 import { useState, useEffect } from 'react';
-import {
-  Modal,
-  Box,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Tabs,
-  Tab,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  Autocomplete,
-} from '@mui/material';
+import { Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab, TextField, MenuItem, Select, FormControl, InputLabel, Autocomplete } from '@mui/material';
 import { useSendPlanDetails } from './apiServices';
 import { useParams } from 'react-router-dom';
+import formatString from '../../../utils/formatString';
 
-const ExcelPreviewModal = ({
-  open,
-  onClose,
-  previewData,
-  categories,
-  setAgencyFees,
-  agencyFees,
-  selectedRow,
-  handleAutomaticSelection,
-  category,
-  postCount,
-  storyPerPage,
-  planDetails,
-  checkedDescriptions,
-  downloadExcel,
-  isDownloading,
-  deliverableText,
-  setDeliverableText,
-}) => {
+const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
@@ -54,9 +17,7 @@ const ExcelPreviewModal = ({
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
-      const categoryName =
-        categories?.find((cat) => cat._id === item.category)?.page_category ||
-        'Unknown';
+      const categoryName = categories?.find((cat) => cat._id === item.category)?.page_category || 'Unknown';
 
       if (!categorizedData[categoryName]) {
         categorizedData[categoryName] = [];
@@ -111,7 +72,7 @@ const ExcelPreviewModal = ({
   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
-    const categoryMap = categories.reduce((acc, cat) => {
+    const categoryMap = categories?.reduce((acc, cat) => {
       acc[cat.page_category] = cat._id;
       return acc;
     }, {});
@@ -138,10 +99,7 @@ const ExcelPreviewModal = ({
         });
 
         // Merge the category data into the main category
-        updatedCategoryData[mainCategory] = [
-          ...(updatedCategoryData[mainCategory] || []),
-          ...updatedCategoryData[categoryName],
-        ];
+        updatedCategoryData[mainCategory] = [...(updatedCategoryData[mainCategory] || []), ...updatedCategoryData[categoryName]];
 
         // Delete the merged category
         delete updatedCategoryData[categoryName];
@@ -150,9 +108,7 @@ const ExcelPreviewModal = ({
 
     // Transform updatedPreviewData to include dynamic fields
     const finalPreviewData = updatedPreviewData.map((item) => {
-      const categoryName =
-        categories?.find((cat) => cat._id === item.category)?.page_category ||
-        'Unknown';
+      const categoryName = categories?.find((cat) => cat._id === item.category)?.page_category || 'Unknown';
       return {
         page_name: item['Page Name'] || 'Unknown Page',
         post_count: item['Post Count'] || 0,
@@ -179,13 +135,9 @@ const ExcelPreviewModal = ({
   const handleCategoryChange = (event, newValue) => {
     setMainCategory(newValue); // Update the selected value
   };
+
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      aria-labelledby="preview-modal-title"
-      aria-describedby="preview-modal-description"
-    >
+    <Modal open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
       <Box
         sx={{
           position: 'absolute',
@@ -228,28 +180,10 @@ const ExcelPreviewModal = ({
               sx={{ mt: 1, width: '11rem' }}
             />
             <Typography variant="body1">Deliverable Text</Typography>
-            <TextField
-              value={deliverableText || ''}
-              onChange={handleDeliverableTextChange}
-              label="Write Deliverable text"
-              sx={{ mt: 1, width: '11rem' }}
-            />
+            <TextField value={deliverableText || ''} onChange={handleDeliverableTextChange} label="Write Deliverable text" sx={{ mt: 1, width: '11rem' }} />
           </div>
           <div className="col d-flex justify-content-center align-items-center">
-            <button
-              className="btn cmnbtn btn-primary btn_sm"
-              disabled={isDownloading}
-              onClick={() =>
-                downloadExcel(
-                  selectedRow,
-                  category,
-                  postCount,
-                  storyPerPage,
-                  planDetails,
-                  checkedDescriptions
-                )
-              }
-            >
+            <button className="btn cmnbtn btn-primary btn_sm" disabled={isDownloading} onClick={() => downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
               {isDownloading ? 'Downloading...' : 'Download Excel'}
             </button>
           </div>
@@ -260,10 +194,8 @@ const ExcelPreviewModal = ({
             // value={`${mainCategory}`}
             onChange={handleCategoryChange || []}
             // getOptionLabel={(option) => option.label}
-            options={categories?.map((cat) => cat.page_category) || []}
-            renderInput={(params) => (
-              <TextField {...params} label="Main Category" variant="outlined" />
-            )}
+            options={categories?.map((cat) => formatString(cat.page_category)) || []}
+            renderInput={(params) => <TextField {...params} label="Main Category" variant="outlined" />}
           />
         </FormControl>
 
@@ -271,27 +203,13 @@ const ExcelPreviewModal = ({
           <Autocomplete
             // value={`${mergedCategories}`}
             // getOptionLabel={(option) => option.label}
-            onChange={(event, newValue) => setMergedCategories(newValue || [])}
-            options={Object.keys(categoryData).filter(
-              (categoryName) => categoryName !== mainCategory
-            )}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Merge Categories"
-                variant="outlined"
-              />
-            )}
+            onChange={(event, newValue) => setMergedCategories([newValue] || [])}
+            options={Object.keys(categoryData).filter((categoryName) => formatString(categoryName) !== formatString(mainCategory))}
+            renderInput={(params) => <TextField {...params} label="Merge Categories" variant="outlined" />}
           />
         </FormControl>
 
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2 }}
-          onClick={handleMergeCategories}
-          disabled={!mainCategory || mergedCategories.length === 0}
-        >
+        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleMergeCategories} disabled={!mainCategory || mergedCategories.length === 0}>
           Merge Categories
         </Button>
 
@@ -307,23 +225,12 @@ const ExcelPreviewModal = ({
             <Typography variant="h6" component="h4" sx={{ mt: 2 }}>
               Overall Totals
             </Typography>
-            <Typography variant="body1">
-              Total Post Count: {overallTotals.totalPostCount}
-            </Typography>
-            <Typography variant="body1">
-              Total Story Count: {overallTotals.totalStoryCount}
-            </Typography>
-            <Typography variant="body1">
-              Total Post Cost: ₹{overallTotals.totalPostCost.toFixed(2)}
-            </Typography>
-            <Typography variant="body1">
-              Total Story Cost: ₹{overallTotals.totalStoryCost.toFixed(2)}
-            </Typography>
+            <Typography variant="body1">Total Post Count: {overallTotals.totalPostCount}</Typography>
+            <Typography variant="body1">Total Story Count: {overallTotals.totalStoryCount}</Typography>
+            <Typography variant="body1">Total Post Cost: ₹{overallTotals.totalPostCost.toFixed(2)}</Typography>
+            <Typography variant="body1">Total Story Cost: ₹{overallTotals.totalStoryCost.toFixed(2)}</Typography>
 
-            <TableContainer
-              component={Paper}
-              sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}
-            >
+            <TableContainer component={Paper} sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}>
               <Table>
                 <TableHead>
                   <TableRow>

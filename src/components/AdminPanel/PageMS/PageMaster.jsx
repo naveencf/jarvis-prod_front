@@ -71,7 +71,7 @@ const PageMaster = () => {
   const [link, setLink] = useState('');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [platformId, setPlatformId] = useState('666818824366007df1df1319');
-  const [primary, setPrimary] = useState({ value: 'Yes', label: 'Yes' });
+  const [primary, setPrimary] = useState({ value: 'No', label: 'No' });
   const [categoryId, setCategoryId] = useState('');
   const [subCategoryId, setSubCategoryId] = useState('');
   const [tag, setTag] = useState([]);
@@ -101,6 +101,7 @@ const PageMaster = () => {
     value: 'Per Thousand',
     label: 'Per Thousand',
   });
+  
 
   const [validateFields, setValidateFields] = useState({
     pageName: false,
@@ -250,6 +251,7 @@ const PageMaster = () => {
     };
   };
 
+
   const handleRateTypeChange = (selectedOption) => {
     setRateType(selectedOption);
   };
@@ -391,12 +393,14 @@ const PageMaster = () => {
       page_language_id: languageId.map((item) => item?.value),
       page_language_name: languageId.map((item) => item?.label),
       primary_page: primary.value,
+      primary_page_name:pageName,
       page_price_list: rowCount.map((item) => {
         return { [item.page_price_type_name]: item.price };
       }),
 
     };
-
+ 
+  
     // return;
 
     if (pageMast_id) {

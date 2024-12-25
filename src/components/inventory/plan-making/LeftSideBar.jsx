@@ -79,7 +79,7 @@ const LeftSideBar = ({
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
-  console.log('planDettails', planDetails);
+
   const planStatus = planDetails && planDetails[0]?.plan_status;
   // Function to get the platform name based on the platform ID
   // const getPlatformName = (platformId) => {
@@ -257,6 +257,10 @@ const LeftSideBar = ({
     }
   };
 
+  function truncateString(inputString, maxLength = 10) {
+    return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
+  }
+
   const handleSave = () => {
     const payload = {
       id: planDetails && planDetails[0]._id,
@@ -325,7 +329,9 @@ const LeftSideBar = ({
                   type="test"
                 />
               ) : (
-                <span>{formatString(planBrief || planDetails?.[0]?.brief)}</span>
+                <span style={{ cursor: 'pointer' }} title={formatString(planBrief || planDetails?.[0]?.brief)}>
+                  {truncateString(formatString(planBrief || planDetails?.[0]?.brief))}
+                </span>
               )}
             </h6>
             <h6>
@@ -339,11 +345,12 @@ const LeftSideBar = ({
                   sx={{
                     backgroundColor: 'white',
                     borderRadius: '6px',
+                    color: 'white',
                   }}
                 />
               ) : (
                 <Tooltip title={planName || planDetails?.[0]?.plan_name}>
-                  <span>{planName || planDetails?.[0]?.plan_name}</span>
+                  <p style={{ cursor: 'pointer', color: 'white' }}>{planName || planDetails?.[0]?.plan_name}</p>
                 </Tooltip>
               )}
             </h6>

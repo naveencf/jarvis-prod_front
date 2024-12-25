@@ -39,7 +39,10 @@ const OutstandingComp = () => {
       name: "TDS Outstanding",
       width: 200,
       getTotal: true,
-      renderRowCell: (row) => (row?.totalOutstandingAmount - row?.totalUnEarnedOutstandingAmount)?.toFixed(),
+      renderRowCell: (row) =>
+        (
+          row?.totalOutstandingAmount - row?.totalUnEarnedOutstandingAmount
+        )?.toFixed(),
     },
     {
       key: "totalUnEarnedWithInvoiceUploadedOutstandingAmount",
@@ -48,11 +51,18 @@ const OutstandingComp = () => {
       getTotal: true,
     },
     {
-      key: "totalUnEarnedCampaignAmount",
+      key: "totalUnEarnedCampaignAmountOutstanding",
       name: "Un-Billed Outstanding",
       width: 200,
       getTotal: true,
-      renderRowCell: (row) => (row?.totalUnEarnedOutstandingAmount - row?.totalUnEarnedWithInvoiceUploadedOutstandingAmount)?.toFixed(),
+      renderRowCell: (row) =>
+        Number(
+          (
+            row?.totalUnEarnedOutstandingAmount -
+            row?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+          )?.toFixed(0)
+        ),
+      compare: true,
     },
   ];
   return (

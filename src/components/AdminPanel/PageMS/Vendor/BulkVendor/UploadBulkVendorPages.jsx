@@ -13,6 +13,8 @@ const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlat
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [duplicateData, setDuplicateData] = useState([]);
 
   const { toastAlert, toastError } = useGlobalContext();
   const handleCheck = (event) => {
@@ -63,24 +65,46 @@ const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlat
     setRows([]);
     setFile(null);
   };
+  const showDuplicateDialog = (duplicates) => {
+    Swal.fire({
+      title: 'Duplicate Pages',
+      html: `
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+          <thead>
+            <tr>
+              <th style="border-bottom: 1px solid #ddd; padding: 8px;">Page Name</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${duplicates
+              .map(
+                (item) => `
+                <tr>
+                  <td style="border-bottom: 1px solid #ddd; padding: 8px;">${item.page_name}</td>
+                </tr>
+              `
+              )
+              .join('')}
+          </tbody>
+        </table>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Close',
+    });
+  };
 
+  const handleDuplicateDialogClose = () => {
+    setDuplicateDialogOpen(false);
+  };
   const handleSubmit = async () => {
     const formdata = new FormData();
-    console.log('getRowData', getRowData);
-    console.log('category', category);
-    console.log('rateType', rateType);
-    console.log('activePlatformId', activePlatformId);
-    console.log('file', file);
-    console.log('tagCategoris', tagCategoris);
-    // console.log("selectedSubCategory",selectedSubCategory);
-    console.log('closeBy', closeBy);
     if (!getRowData || !category || !rateType || !activePlatformId || !file || !selectedSubCategory?._id || !closeBy || !tagCategoris?.length) {
       Swal.fire({
         icon: 'error',
         title: 'Missing Information',
         text: 'Please fill out all mandatory fields before submitting.',
       });
-      return; // Stop further execution
+      return;
     }
     formdata.append('vendor_id', getRowData);
     formdata.append('category_id', category);
@@ -105,6 +129,36 @@ const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlat
     } catch (error) {
       onClose();
       toastError(error, '');
+      if (error.response && error.response.status === 409) {
+        const { message, data } = error.response.data;
+
+        // Store the duplicates in state
+        setDuplicateData({
+          message,
+          data,
+        });
+
+        // Notify the user about duplicates
+        Swal.fire({
+          icon: 'warning',
+          title: 'Duplicates Found',
+          text: message,
+          footer: `<button id="view-duplicates-btn" class="swal2-confirm swal2-styled">Click here to see duplicate pages</button>`,
+          didOpen: () => {
+            const button = document.getElementById('view-duplicates-btn');
+            button.addEventListener('click', () => {
+              Swal.close();
+              showDuplicateDialog(data);
+            });
+          },
+        });
+      }
+      if (error.response && error.response.status === 400) {
+        const { message, data } = error.response.data;
+
+        toastAlert(message);
+        // Notify the user about duplicates
+      }
       console.error(error);
     }
     setLoading(false);
@@ -199,6 +253,31 @@ const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlat
           >
             {loading ? <CircularProgress size={24} /> : 'Submit'}
           </Button>
+        </DialogActions>
+      </Dialog>
+      {/* Duplicate Data Dialog */}
+      <Dialog open={duplicateDialogOpen} onClose={handleDuplicateDialogClose} maxWidth="lg" fullWidth>
+        <DialogTitle>Duplicate Pages</DialogTitle>
+        <DialogContent>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>S No</TableCell>
+                <TableCell>Page Name</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {duplicateData.map((item, index) => (
+                <TableRow key={index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{item.page_name}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDuplicateDialogClose}>Close</Button>
         </DialogActions>
       </Dialog>
     </>

@@ -7,6 +7,7 @@ import { useGlobalContext } from "../Context/Context";
 import { baseUrl } from "../utils/config";
 import "./Login.css"; // Add relevant CSS
 import "./LoginResponsive.css";
+import { de } from "date-fns/locale";
 
 const Login = () => {
   const { toastError } = useGlobalContext();
@@ -33,8 +34,9 @@ const Login = () => {
           const deptId = decodedToken.dept_id;
           const onboardStatus = decodedToken.onboard_status;
 
+          console.log(deptId, onboardStatus);
           if (status === "Active") {
-            if (deptId === 36 && onboardStatus === 1) {
+            if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
               navigate("/admin/sales-dashboard");
             } else {
               navigate("/");
@@ -98,7 +100,6 @@ const Login = () => {
                       {showPassword ? (
                         <i className="fas fa-eye"></i>
                       ) : (
-
                         <i className="fas fa-eye-slash"></i>
                       )}
                     </span>

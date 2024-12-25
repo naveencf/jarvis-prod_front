@@ -787,6 +787,16 @@ export default function FinanceWFHDashboard() {
               >
                 Retrieve
               </button>
+              <button
+                className="btn cmnbtn btn_sm btn-outline-primary tableIconBtn ml8"
+                title="View Invoice"
+                type="button"
+                onClick={() => {
+                  generatePDF(params.row);
+                }}
+              >
+                <FaEye />
+              </button>
             </form>
           </div>
         );

@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { handleChangeVendorInfoModal, setModalType, setShowAddVendorModal } from './../../Store/VendorMaster';
 import AddVendorModal from './AddVendorModal';
 import { useAddCompanyDataMutation, useAddVendorDocumentMutation, useAddVendorMutation, useGetAllVendorTypeQuery, useGetBankNameDetailQuery, useGetCountryCodeQuery, useGetPmsPayCycleQuery, useGetPmsPaymentMethodQuery, useGetPmsPlatformQuery, useGetVendorDocumentByVendorDetailQuery, useGetVendorWhatsappLinkTypeQuery, useUpdateVenodrMutation, useGetAllVendorQuery, useUpdateVendorDocumentMutation } from '../../Store/reduxBaseURL';
-
+import Swal from 'sweetalert2';
 import VendorTypeInfoModal from './VendorTypeInfoModal';
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import RemoveCircleTwoToneIcon from '@mui/icons-material/RemoveCircleTwoTone';
@@ -78,6 +78,10 @@ const VendorMaster = () => {
   const [getGstDetails] = useGstDetailsMutation();
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [previewData, setPreviewData] = useState({});
+
+  const [validationMessage, setValidationMessage] = useState(null);
+  const [isNumberValid, setIsNumberValid] = useState(null);
+
   const [bankRows, setBankRows] = useState([
     {
       payment_method: '666856874366007df1dfacde', // setting bank default to dropdown
@@ -266,6 +270,39 @@ const VendorMaster = () => {
 
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } = useGetVendorDocumentByVendorDetailQuery(_id);
   // console.log(venodrDocuments, "venodrDocuments")
+
+  useEffect(() => {
+    if (mobile && mobile.length === 10) {
+      axios
+        .get(`${baseUrl}v1/check_vendor_number_unique/${mobile}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        .then((res) => {
+          const isNumberUnique = res.data?.data?.isNumberUnique;
+          const message = res.data?.message || 'Unexpected response.';
+          setValidationMessage(message);
+          setIsNumberValid(isNumberUnique);
+
+          if (isNumberUnique) {
+            toastAlert(message);
+          } else {
+            toastError(message);
+          }
+        })
+        .catch((error) => {
+          console.error('Error during API call:', error);
+          setIsNumberValid(false);
+          setValidationMessage('An error occurred while validating the mobile number.');
+        });
+    } else {
+      setValidationMessage(null);
+      setIsNumberValid(null);
+    }
+  }, [mobile, token]);
+
   useEffect(() => {
     // axios.get(baseUrl + 'get_all_users').then((res) => {
     //   setUserData(res.data.data);
@@ -630,11 +667,9 @@ const VendorMaster = () => {
   };
 
   const handleSubmit = async (e) => {
-
-
     e.preventDefault();
 
-    if (!vendorName || vendorName == '' || vendorName == null) {
+    if (!vendorName || vendorName == '' || vendorName == null || homePincode.length !== 6) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
     // if (!countryCode) {
@@ -661,18 +696,13 @@ const VendorMaster = () => {
     //   toastError("Please enter a valid email");
     //   return;
     // }
-    if (
-      !vendorName ||
-      // !countryCode ||
-      !mobile ||
-      // !email ||
-      !typeId ||
-      !platformId ||
-      !cycleId
-    ) {
+
+    const cleanedMobile = mobile ? String(mobile).trim() : '';
+    if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
       toastError('Please fill all the mandatory fields');
       return;
     }
+
     const formData = {
       vendor_name: vendorName.toLowerCase().trim(),
       country_code: countryCode,
@@ -872,8 +902,18 @@ const VendorMaster = () => {
   // };
 
   const handleFinalSubmit = async () => {
+ 
+    const cleanedMobile = mobile ? String(mobile).trim() : '';
+    if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
+      toastError('Please fill all the mandatory fields');
+      return;
+    }
+
+    if (homePincode.length !== 6) {
+      toastError('Please Enter valid pincode');
+      return;
+    }
     const handleError = (error) => {
-      console.log(error, "error------------");
       toastError(error?.message || 'Something went wrong!');
       setIsFormSubmitting(false);
     };
@@ -891,8 +931,7 @@ const VendorMaster = () => {
         const res = await addVendor(previewData);
         setIsFormSubmitting(false);
         const resID = res.data.data._id;
-  
-        console.log("status", res);
+
         if (res?.status === 200) {
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
@@ -932,7 +971,7 @@ const VendorMaster = () => {
 
           handleSuccess('Vendor and documents added successfully!');
         } else if (res?.status === 409) {
-          console.log("resss",res.error);
+          console.log('resss', res.error);
           toastError(res?.error?.data?.message);
         } else {
           handleSuccess('Vendor data added successfully!');
@@ -942,7 +981,6 @@ const VendorMaster = () => {
         handleError(err);
       }
     } else {
-
       setIsFormSubmitting(true);
       previewData._id = _id;
 
@@ -961,7 +999,6 @@ const VendorMaster = () => {
         };
 
         try {
-
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
           console.log('Error updating vendor data in PHP:', err);
@@ -1045,40 +1082,77 @@ const VendorMaster = () => {
   const handlepincode = async (event) => {
     const newValue = event.target.value;
     setHomePincode(newValue);
+    if (newValue.length === 6) {
+      try {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+        const data = response.data;
 
-    try {
-      const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
-      const data = response.data;
-
-      if (data[0].Status === 'Success') {
-        const postOffice = data[0].PostOffice[0];
-        setHomeState(postOffice.State);
-        setHomeCity(postOffice.District);
-      } else {
-        console.log('Invalid Pincode');
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+          setHomeState(abbreviatedState);
+          setHomeCity(postOffice.District);
+        } else {
+          console.log('Invalid Pincode');
+        }
+      } catch (error) {
+        console.log('Error fetching details.');
       }
-    } catch (error) {
-      console.log('Error fetching details.');
     }
   };
-
+  const stateAbbreviations = {
+    'Andhra Pradesh': 'AP',
+    'Arunachal Pradesh': 'AR',
+    Assam: 'AS',
+    Bihar: 'BR',
+    Chhattisgarh: 'CG',
+    Goa: 'GA',
+    Gujarat: 'GJ',
+    Haryana: 'HR',
+    'Himachal Pradesh': 'HP',
+    Jharkhand: 'JH',
+    Karnataka: 'KA',
+    Kerala: 'KL',
+    'Madhya Pradesh': 'MP',
+    Maharashtra: 'MH',
+    Manipur: 'MN',
+    Meghalaya: 'ML',
+    Mizoram: 'MZ',
+    Nagaland: 'NL',
+    Odisha: 'OD',
+    Punjab: 'PB',
+    Rajasthan: 'RJ',
+    Sikkim: 'SK',
+    'Tamil Nadu': 'TN',
+    Telangana: 'TG',
+    Tripura: 'TR',
+    'Uttar Pradesh': 'UP',
+    Uttarakhand: 'UK',
+    'West Bengal': 'WB',
+    Delhi: 'DL',
+    'Jammu and Kashmir': 'JK',
+    Ladakh: 'LA',
+  };
+  
   const handleCompPincode = async (event) => {
     const newValue = event.target.value;
     setCompPin(newValue);
+    if (newValue.length === 6) {
+      try {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+        const data = response.data;
 
-    try {
-      const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
-      const data = response.data;
-
-      if (data[0].Status === 'Success') {
-        const postOffice = data[0].PostOffice[0];
-        setCompState(postOffice.State);
-        setCompCity(postOffice.District);
-      } else {
-        console.log('Invalid Pincode');
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+          setCompState(abbreviatedState);
+          setCompCity(postOffice.District);
+        } else {
+          console.log('Invalid Pincode');
+        }
+      } catch (error) {
+        console.log('Error fetching details.');
       }
-    } catch (error) {
-      console.log('Error fetching details.');
     }
   };
 
@@ -1090,18 +1164,18 @@ const VendorMaster = () => {
     navigate(-1);
   };
 
-  const setVendorNameFun = (e) => {
-    setVendorName(e);
-    // const checkVendorExist = allVendorData?.data?.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
-    // console.log(checkVendorExist)
-    // if(checkVendorExist == undefined){
-    //   setExistError('Vendor Is Not Exist, You Can Use This')
-    //   setMessageColor('green');
-    // }else{
-    //   setExistError('Vendor Is Already Exist, Enter Another One Or ')
-    //   setMessageColor('red');
-    // }
-  };
+  // const setVendorNameFun = (e) => {
+  //   setVendorName(e);
+  //   // const checkVendorExist = allVendorData?.data?.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
+  //   // console.log(checkVendorExist)
+  //   // if(checkVendorExist == undefined){
+  //   //   setExistError('Vendor Is Not Exist, You Can Use This')
+  //   //   setMessageColor('green');
+  //   // }else{
+  //   //   setExistError('Vendor Is Already Exist, Enter Another One Or ')
+  //   //   setMessageColor('red');
+  //   // }
+  // };
 
   return (
     <>
@@ -1305,8 +1379,8 @@ const VendorMaster = () => {
                 astric={true}
                 required={true}
                 onChange={(e) => {
-                  // setVendorName(e.target.value);
-                  setVendorNameFun(e.target.value);
+                  setVendorName(e.target.value);
+                  // setVendorNameFun(e.target.value);
                   if (e.target.value) {
                     setValidator((prev) => ({ ...prev, vendorName: false }));
                   }
@@ -1363,6 +1437,17 @@ const VendorMaster = () => {
                   // handleMobileValidate();
                 }}
               />
+              {validationMessage && (
+                <div
+                  style={{
+                    marginTop: '8px',
+                    color: isNumberValid ? 'green' : 'red', // Green for success, red for error
+                    fontSize: '14px',
+                  }}
+                >
+                  {validationMessage}
+                </div>
+              )}
               {validator.mobile && <span style={{ color: 'red', fontSize: '12px' }}>Please enter mobile number</span>}
 
               {<span style={{ color: 'red', fontSize: '12px' }}>{!validator.mobile && isContactTouched1 && !mobileValid && 'Please enter valid mobile number'}</span>}
@@ -1723,7 +1808,8 @@ const VendorMaster = () => {
                   )}
                 />
               </div>
-              <FieldContainer label="PinCode" value={homePincode} maxLength={6} required={false} onChange={handlepincode} />
+
+              <FieldContainer label="PinCode *" value={homePincode} maxLength={6} required={true} onChange={handlepincode} />
               {countryCode == '91' ? (
                 <div className=" row">
                   <div className="form-group col-6">

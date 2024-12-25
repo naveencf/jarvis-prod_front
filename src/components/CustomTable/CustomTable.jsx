@@ -24,6 +24,9 @@ const CustomTable = ({
   getFilteredData = (filterData) => {
     return filterData;
   },
+  exportData = (tool) => {
+    return true;
+  },
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -402,9 +405,14 @@ const CustomTable = ({
           // }, {});
           const getTextContent = (element) => {
             if (React.isValidElement(element)) {
-              if (React.isValidElement(element.props.children || ""))
+              if (React.isValidElement(element.props.children))
                 return getTextContent(element.props.children);
-              else return element.props.children ? element.props.children : "";
+              else {
+                return element.props.children &&
+                  !Array.isArray(element.props.children)
+                  ? element.props.children
+                  : "";
+              }
             }
             return element;
           };
@@ -430,15 +438,28 @@ const CustomTable = ({
           //   return acc;
           // }, {});
           const getTextContent = (element) => {
+            // console.log("element", element);
+
             if (React.isValidElement(element)) {
-              if (React.isValidElement(element.props.children || ""))
+              if (React.isValidElement(element.props.children))
                 return getTextContent(element.props.children);
-              else return element.props.children ? element.props.children : "";
+              else {
+                return element.props.children &&
+                  !Array.isArray(element.props.children)
+                  ? element.props.children
+                  : "";
+              }
             }
+
             return element;
           };
 
           const additionalProps = cols.reduce((acc, column) => {
+            // if (column.name === "Proforma Invoice")
+            //   console.log(
+            //     React.isValidElement(getTextContent(column.renderRowCell(item)))
+            //   );
+
             acc[column.key] = getTextContent(column.renderRowCell(item));
             return acc;
           }, {});
@@ -561,6 +582,8 @@ const CustomTable = ({
   return (
     <div className="table-pagination-container">
       <TableToolkit
+        exportData={exportData}
+        showTotal={showTotal}
         setApiFilters={setApiFilters}
         apiFilters={apiFilters}
         tableName={tableName}
@@ -672,7 +695,6 @@ const CustomTable = ({
 };
 
 export default CustomTable;
-
 /* 
 
 import "./styles.css";

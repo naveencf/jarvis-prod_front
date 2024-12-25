@@ -187,7 +187,11 @@ export const PageBaseURL = createApi({
       query: () => `accounts/get_all_account_company_type`,
       transformResponse: (response) => response.data,
     }),
-
+    //vendor document count
+    getCountDocuments: builder.query({
+      query: () => `v1/count_documents/`,
+      transformResponse: (response) => response.data,
+    }),
     //Vendor company detail by vendor id
     getVendorCompanyDetail: builder.query({
       query: (data) => `v1/company_name_wise_vendor/${data}`,
@@ -284,4 +288,4 @@ export const PageBaseURL = createApi({
   }),
 });
 
-export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery } = PageBaseURL;
+export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery, useGetCountDocumentsQuery } = PageBaseURL;
