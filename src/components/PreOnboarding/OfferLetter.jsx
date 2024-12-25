@@ -509,6 +509,8 @@ const OfferLetter = ({ allUserData, image64, EMPPF }) => {
           <Text style={styles.text}>Pallavi Tomar</Text>
           <Text style={styles.text}>(HR Manager)</Text>
         </View>
+        <View style={styles.section}></View>
+
         <View style={styles.section}>
           <Text style={[styles.heading, styles.underline]}>Acceptance</Text>
           <Text>

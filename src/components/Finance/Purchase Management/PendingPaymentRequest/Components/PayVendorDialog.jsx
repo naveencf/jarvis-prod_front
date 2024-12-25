@@ -55,13 +55,13 @@ function PayVendorDialog(props) {
   const [paymentMode, setPaymentMode] = useState(null);
   const [TDSValue, setTDSValue] = useState(0);
   const [tdsAdjustAmount, setTdsAdjustAmount] = useState(0);
-  const [paymentStatus, setPaymentStatus] = useState("Full-Payment");
+  const [paymentStatus, setPaymentStatus] = useState("Full");
   const [payRemark, setPayRemark] = useState("");
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [payThroughVendor, setPayThroughVendor] = useState(false);
-  rowSelectionModel;
+  const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
   const [preview, setPreview] = useState("");
   const [paymentDate, setPaymentDate] = useState(
     dayjs(new Date()).add(5, "hours").add(30, "minutes").$d.toGMTString()
@@ -69,11 +69,22 @@ function PayVendorDialog(props) {
 
   useEffect(() => {
     handleCalculatePaymentAmount();
+    if (paymentAmout > 0 && paymentAmout <= 1000) {
+      setGatewayPaymentMode("IMPS")
+    }
   }, [TDSPercentage, GSTHoldAmount, TDSDeduction, gstHold]);
 
   useEffect(() => {
     axios.get(`${baseUrl}` + `get_all_payment_mode`).then((res) => {
-      setPaymentModeData(res?.data);
+      if (res.status == 200) {
+
+        setPaymentModeData(res?.data);
+        const defaultOption = res?.data.find((res) => {
+          return res.payment_mode == 'PineLab'
+        })
+        setPaymentMode(defaultOption?.payment_mode)
+        // console.log(defaultOption, "paymentModeData", res.data)
+      }
     });
   }, []);
 
@@ -148,55 +159,65 @@ function PayVendorDialog(props) {
           "Content-Type": "multipart/form-data",
         },
       })
-      .then(() => {
-        const phpFormData = new FormData();
-        phpFormData.append("request_id", rowData.request_id);
-        phpFormData.append("payment_amount", paymentAmout);
-        phpFormData.append(
-          "payment_date",
-          new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " ")
-        );
-        phpFormData.append("payment_by", userName);
-        phpFormData.append("evidence", payMentProof);
-        phpFormData.append("finance_remark", payRemark);
-        phpFormData.append("status", 1);
-        phpFormData.append("payment_mode", paymentMode);
-        phpFormData.append("gst_hold", rowData.gst_amount);
-        phpFormData.append("adjust_amt", TDSValue ? adjustAmount : 0);
-        phpFormData.append("gst_hold_amount", GSTHoldAmount);
-        phpFormData.append("request_amount", rowData.request_amount);
-        phpFormData.append("tds_deduction", TDSValue);
-        phpFormData.append("gst_Hold_Bool", gstHold ? 1 : 0);
-        phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
-        phpFormData.append("tds_percentage", TDSPercentage);
-        axios
-          .post(
-            "https://purchase.creativefuel.io/webservices/RestController.php?view=updatePaymentrequestNew",
-            phpFormData,
-            {
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-          )
-          .then((res) => {
-            toastAlert("Payment Done Successfully");
+      .then((res) => {
+        if (res.status == 200) {
 
-            whatsappApi.callWhatsAPI(
-              "Extend Date by User",
-              JSON.stringify(9109266387),
-              rowData.vendor_name,
-              [paymentAmout, rowData.vendor_name, rowData.mob1]
-            );
-          });
+          const phpFormData = new FormData();
+          phpFormData.append("request_id", rowData.request_id);
+          phpFormData.append("payment_amount", paymentAmout);
+          phpFormData.append(
+            "payment_date",
+            new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " ")
+          );
+          phpFormData.append("payment_by", userName);
+          phpFormData.append("evidence", payMentProof);
+          phpFormData.append("finance_remark", payRemark);
+          phpFormData.append("status", 1);
+          phpFormData.append("payment_mode", paymentMode);
+          phpFormData.append("gst_hold", rowData.gst_amount);
+          phpFormData.append("adjust_amt", TDSValue ? adjustAmount : 0);
+          phpFormData.append("gst_hold_amount", GSTHoldAmount);
+          phpFormData.append("request_amount", rowData.request_amount);
+          phpFormData.append("tds_deduction", TDSValue);
+          phpFormData.append("gst_Hold_Bool", gstHold ? 1 : 0);
+          phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
+          phpFormData.append("tds_percentage", TDSPercentage);
+          axios
+            .post(
+              "https://purchase.creativefuel.io/webservices/RestController.php?view=updatePaymentrequestNew",
+              phpFormData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            )
+            .then((res) => {
+              if (res.status == 200) {
+                toastAlert("Payment Done Successfully");
+              } else {
 
-        setPaymentMode("Razor Pay");
-        setPayRemark("");
-        setPayMentProof("");
-        handleClosePayDialog();
-        setPaymentAmount("");
-        setNetAmount("");
-        callApi();
+                toastError("There is some error while uploading data on Php")
+              }
+
+              // whatsappApi.callWhatsAPI(
+              //   "Extend Date by User",
+              //   JSON.stringify(9109266387),
+              //   rowData.vendor_name,
+              //   [paymentAmout, rowData.vendor_name, rowData.mob1]
+              // );
+            });
+
+          // setPaymentMode("Razor Pay");
+          setPayRemark("");
+          setPayMentProof("");
+          handleClosePayDialog();
+          setPaymentAmount(0);
+          setNetAmount("");
+          callApi();
+        } else {
+          toastError("There is some error while uploading data on Jarvis")
+        }
       });
   };
 
@@ -218,9 +239,9 @@ function PayVendorDialog(props) {
     // }
 
     if (paymentAmout < Math.floor(netAmount)) {
-      setPaymentStatus("Partial-Payment");
+      setPaymentStatus("Partial");
     } else {
-      setPaymentStatus("Full-Payment");
+      setPaymentStatus("Full");
     }
 
     let paymentAmount = rowData.balance_amount;
@@ -238,7 +259,7 @@ function PayVendorDialog(props) {
     setTDSValue(tdsvalue);
     // setPaymentAmount(paymentAmount);
     if (rowData?.TDSDeduction !== "1") {
-      setPaymentAmount(paymentAmount);
+      setPaymentAmount(Number(paymentAmount));
     }
     setNetAmount(paymentAmount);
     setAdjustAmount((paymentAmount - Math.floor(paymentAmount)).toFixed(2));
@@ -267,12 +288,13 @@ function PayVendorDialog(props) {
         return "";
     }
   };
+
   const handleClosePayDialog = () => {
     setPayDialog(false);
     setPaymentMode("Razor Pay");
     setPayRemark("");
     setPayMentProof("");
-    setPaymentAmount("");
+    setPaymentAmount(0);
     setNetAmount("");
     setTDSDeduction(false);
     setGstHold(false);
@@ -299,26 +321,28 @@ function PayVendorDialog(props) {
   };
 
   const handleOpenPayThroughVendor = () => {
+    if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
+      toastError("Not valid amount to pay")
+      return;
+    }
     setPayThroughVendor(true);
+    axios
+      .post(`https://insights.ist:8080/api/v1/payment_otp_send`, {
+        "email": "naveen@creativefuel.io"
+        // headers: {
+        //   "Content-Type": "multipart/form-data",
+        // },
+      }).then((res) => {
+        if (res.status == 200) {
+          toastAlert("OTP sent to registered Id successfully")
+        }
+      })
+
   };
   return (
     <div>
       {/*Dialog Box */}
-      {/* {!payDialog ? (
-        <div
-          style={{
-            width: "100vw",
-            height: "100vh",
-            position: "absolute",
-            top: "28%",
-            width: "50%",
-            zIndex: "222",
-          }}
-        >
-        
-          <Loader/>
-        </div>
-      ) : ( */}
+
       <Dialog open={payDialog} onClose={handleClosePayDialog}>
         <DialogTitle>Vendor Payment</DialogTitle>
         <IconButton
@@ -363,8 +387,8 @@ function PayVendorDialog(props) {
                     renderInput={(params) => (
                       <TextField
                         {...params}
-                        // label="TDS %"
-                        // placeholder="TDS %"
+                      // label="TDS %"
+                      // placeholder="TDS %"
                       />
                     )}
                     disable={true}
@@ -529,15 +553,23 @@ function PayVendorDialog(props) {
             />
           </div>
           <div className="row gap-3">
-            <TextField
+            {/* <TextField
               onChange={(e) => {
                 // rowData.balance_amount;
 
                 const currentValue = e.target.value;
-                if (/^\d+$/.test(currentValue) || currentValue === "") {
+                // if (!e.target.value > 0) {
+                //   toastError("Payment Amount is not Correct");
+                //   return
+                // }
+                if (/^\d+$/.test(currentValue) || currentValue == "") {
                   // setPaymentAmount(currentValue);
+
                   if (currentValue <= +rowData.balance_amount) {
-                    setPaymentAmount(currentValue);
+                    setPaymentAmount(Number(currentValue));
+                    if (currentValue < 1000) {
+                      setGatewayPaymentMode("IMPS")
+                    }
                     // setAdjustAmount( rowData.balance_amount  - currentValue - TDSValue)
                     // setPaymentStatus;
                   } else {
@@ -545,15 +577,16 @@ function PayVendorDialog(props) {
                       "Payment Amount should be less than or equal to Requested Amount"
                     );
                   }
-                } else {
-                  setPaymentAmount("");
+                  if (currentValue < Math.floor(netAmount)) {
+                    setPaymentStatus("Partial");
+                  } else {
+                    setPaymentStatus("Full");
+                  }
+                }
+                else {
+                  setPaymentAmount(0);
                 }
 
-                if (currentValue < Math.floor(netAmount)) {
-                  setPaymentStatus("Partial-Payment");
-                } else {
-                  setPaymentStatus("Full-Payment");
-                }
               }}
               className="col"
               autoFocus
@@ -566,29 +599,74 @@ function PayVendorDialog(props) {
               value={
                 paymentAmout == 0 ? paymentAmout : Math.floor(paymentAmout)
               }
+            /> */}
+            <TextField
+              onChange={(e) => {
+                const currentValue = e.target.value;
+
+                // Ensure input is a valid number or empty
+                if (/^\d*$/.test(currentValue)) {
+                  if (currentValue === "") {
+                    setPaymentAmount(""); // Allow empty value
+                    setPaymentStatus("");
+                    setGatewayPaymentMode("");
+                  } else {
+                    const numericValue = Number(currentValue);
+
+                    if (numericValue <= +rowData.balance_amount) {
+                      setPaymentAmount(numericValue);
+
+                      // Set Gateway Payment Mode
+                      if (numericValue < 1000) {
+                        setGatewayPaymentMode("IMPS");
+                      }
+
+                      // Set Payment Status
+                      if (numericValue < Math.floor(netAmount)) {
+                        setPaymentStatus("Partial");
+                      } else {
+                        setPaymentStatus("Full");
+                      }
+                    } else {
+                      toastError(
+                        "Payment Amount should be less than or equal to Requested Amount"
+                      );
+                    }
+                  }
+                }
+              }}
+              className="col"
+              autoFocus
+              type="number"
+              margin="dense"
+              id="name"
+              label="Paid Amount *"
+              variant="outlined"
+              fullWidth
+              value={paymentAmout === "" ? "" : Math.floor(paymentAmout)}
             />
 
-            {TDSValue && (
+            {/* {TDSValue && (
               <TextField
-                className="col"
-                autoFocus
-                margin="dense"
+                // className="col"
+                // autoFocus
+                // margin="dense"
                 id="amount"
                 label="Adjust Amount"
                 type="number"
                 variant="outlined"
-                fullWidth
+                // fullWidth
                 readOnly
                 value={adjustAmount}
                 InputProps={{
                   readOnly: true,
                 }}
               />
-            )}
+            )} */}
           </div>
           <div className="row gap-3">
             <TextField
-              className="col"
+              className="col mt-2"
               onChange={(e, value) => setPaymentStatus(value)}
               value={paymentStatus}
               autoFocus
@@ -644,32 +722,48 @@ function PayVendorDialog(props) {
         <DialogActions>
           <Button
             variant="contained"
-            className="mx-2"
+            // className="mx-2"
+            size="small"
             onClick={(e) => handlePayVendorClick(e)}
             disabled={!paymentMode || !paymentAmout}
           >
             Pay Vendor
           </Button>
-          <Button
-            className="btn btn-success cmnbtn btn_sm ms-2"
+          {/* <Button
+            // className="btn btn-success cmnbtn btn_sm ms-2"
             variant="contained"
             color="primary"
             size="small"
             onClick={handleOpenPayThroughVendor}
+            disabled={!paymentAmout > 0}
           >
-            Pay Through Vendor
-          </Button>
+            Pay Through Gateway
+          </Button> */}
         </DialogActions>
       </Dialog>
 
       {/* Dialog for  */}
-      <PayThroughVendorDialog
+      {payThroughVendor && <PayThroughVendorDialog
         setPayThroughVendor={setPayThroughVendor}
         payThroughVendor={payThroughVendor}
         rowSelectionModel={rowSelectionModel}
         filterData={filterData}
-      />
-      {/* )} */}
+        paymentStatus={paymentStatus}
+        handlePayVendorClick={handlePayVendorClick}
+        handleClosePayDialog={handleClosePayDialog}
+        gatewayPaymentMode={gatewayPaymentMode}
+        setGatewayPaymentMode={setGatewayPaymentMode}
+        rowData={rowData}
+        paymentAmout={paymentAmout}
+        userName={userName}
+        payRemark={payRemark}
+        TDSValue={TDSValue}
+        GSTHoldAmount={GSTHoldAmount}
+        gstHold={gstHold}
+        TDSDeduction={TDSDeduction}
+        TDSPercentage={TDSPercentage}
+      />}
+
     </div>
   );
 }

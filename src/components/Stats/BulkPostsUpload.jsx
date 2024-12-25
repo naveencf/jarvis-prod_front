@@ -157,12 +157,12 @@ export default function BulkPostsUpload({
         if (match) {
           return match[1]; // Extract the shortcode from the matched pattern
         } else {
-          console.log(row,"We are not acknowledging this link");
+          console.log(row, "We are not acknowledging this link");
         }
         return null; // If no match found or shortcode length > 16, return null
       })
       .filter((code) => code !== null); // Filter out null values
-    //       console.log(shortcodes);
+    // console.log(shortcodes);
 
     // return;
     const token =

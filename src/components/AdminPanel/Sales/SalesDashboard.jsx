@@ -88,7 +88,7 @@ const SalesDashboard = () => {
   }
 
   useEffect(() => {
-    if (Cat_id) getweekly();
+    getweekly();
   }, [Cat_id]);
 
   async function getData() {
@@ -375,7 +375,10 @@ How are you doing today?`}
           <div className="row pl-3">
             <CustomSelect
               fieldGrid={4}
-              dataArray={[...categoryDetails]?.reverse()}
+              dataArray={[
+                ...categoryDetails,
+                { sales_category_id: null, sales_category_name: "All" },
+              ]?.reverse()}
               optionId="sales_category_id"
               optionLabel="sales_category_name"
               selectedId={Cat_id}
@@ -384,6 +387,8 @@ How are you doing today?`}
           </div>
         </div>
       )}
+
+      {console.log("weekMonthCard", Cat_id)}
 
       {weekMonthCard && (
         <>
@@ -568,6 +573,9 @@ How are you doing today?`}
             isLoading={isLoading}
             pagination
             tableName={"Sales Booking Status Grid on dashboard"}
+            exportData={(tool) => {
+              return true;
+            }}
           />
           <View
             version={1}

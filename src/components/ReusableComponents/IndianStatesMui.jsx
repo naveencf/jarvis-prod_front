@@ -15,7 +15,7 @@ const IndianStatesMui = ({ selectedState, onChange }) => {
   const handleInputChange = (event, newInputValue) => {
     setInputValue(newInputValue);
   };
-
+ 
   return (
     <Autocomplete
       options={states}

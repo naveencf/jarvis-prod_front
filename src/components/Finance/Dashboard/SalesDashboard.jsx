@@ -78,7 +78,7 @@ export default function SalesDashboard() {
         },
       })
       .then((res) => {
-        console.log(res, "res of sales dashnoard-->");
+        // console.log(res, "res of sales dashnoard-->");
         setData(res?.data?.data);
         setFilterData(res?.data?.data);
       })

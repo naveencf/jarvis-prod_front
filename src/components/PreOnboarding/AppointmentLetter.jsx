@@ -285,24 +285,33 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
               }}
             >
               <Text>
-                We take immense pleasure in offering you the position of{" "}
-              </Text>{" "}
+                We take immense pleasure in offering you the esteemed position
+                of{" "}
+              </Text>
               <Text style={{ fontFamily: "MB" }}>
                 {allUserData?.designation_name}
               </Text>
-              <Text>, with</Text>
-              <Text style={{ fontFamily: "MB" }}> Creativefuel </Text>
-              <Text style={{ fontFamily: "MB" }}>Private</Text>{" "}
-              <Text style={{ fontFamily: "MB" }}>Limited </Text>{" "}
-              <Text>
-                (the ‘Company’). Your employment with Company will be governed
-                by terms and conditions as deta-
-              </Text>{" "}
-              <Text>
-                iled in Annexure A (effective from joining date), and the other
-                documents listed as annexures in this Appointment Letter.
-              </Text>{" "}
-              <Text> </Text>
+              <View
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                }}
+              >
+                <Text>, with</Text>
+                <Text style={{ fontFamily: "MB" }}> Creativefuel </Text>
+                <Text style={{ fontFamily: "MB" }}>Private</Text>{" "}
+                <Text style={{ fontFamily: "MB" }}>Limited </Text>{" "}
+                <Text>
+                  (the ‘Company’). Your employment with Company will be governed
+                </Text>{" "}
+                <Text>
+                  by terms and conditions as detailed in Annexure A (effective
+                  from joining date), and the other documents listed as
+                  annexures in this Appointment Letter.
+                </Text>{" "}
+                <Text> </Text>
+              </View>
             </View>
           </View>
 
@@ -1165,7 +1174,6 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
           </View>
         </View>
         <View style={[styles.section, { paddingBottom: 2 }]}>
-
           <Text style={styles.points}></Text>
           <View style={[styles.section, { marginTop: 3 }]}>
             <Text>

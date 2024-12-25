@@ -15,6 +15,7 @@ const View = ({
   showTotal = false,
   addHtml,
   version = 0,
+  exportData,
 }) => {
   const Version = !version ? CustomTableV2 : CustomTable;
 
@@ -30,6 +31,7 @@ const View = ({
         tableName={tableName}
         selectedData={selectedData}
         showTotal={showTotal}
+        exportData={exportData}
       />
     </CustomTableWrapper>
   );

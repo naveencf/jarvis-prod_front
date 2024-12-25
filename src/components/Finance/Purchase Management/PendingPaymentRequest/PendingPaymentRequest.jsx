@@ -40,7 +40,7 @@ export default function PendingPaymentRequest() {
   const [payDialog, setPayDialog] = useState(false);
   const [rowData, setRowData] = useState({});
   const [showDisCardModal, setShowDiscardModal] = useState(false);
-  const [paymentAmout, setPaymentAmount] = useState("");
+  const [paymentAmout, setPaymentAmount] = useState(0);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [userName, setUserName] = useState("");
@@ -68,7 +68,7 @@ export default function PendingPaymentRequest() {
   const [nonGstCount, setNonGstCount] = useState(0);
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [vendorNameList, setVendorNameList] = useState([]);
-  const [rowSelectionModel, setRowSelectionModel] = useState([]);
+  // const [rowSelectionModel, setRowSelectionModel] = useState([]);
 
   const [overviewDialog, setOverviewDialog] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ export default function PendingPaymentRequest() {
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [bulkPayThroughVendor, setBulkPayThroughVendor] = useState("");
   const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState("");
-  const [selectedData, setSelectedData] = useState([]);
+  const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   var handleAcknowledgeClick = () => {
@@ -122,7 +122,7 @@ export default function PendingPaymentRequest() {
               return !x.some((item2) => item.request_id === item2.request_id);
             });
             setPhpData(y);
-
+            // console.log(y, "y", remindData)
             let c = res.data.body.filter((item) => {
               return remindData.some(
                 (item2) => item.request_id === item2.request_id
@@ -172,6 +172,7 @@ export default function PendingPaymentRequest() {
               // Add aging sorting logic if required
               return b.aging - a.aging;
             });
+            // console.log(mergedArray, "mergedArray")
             setIsLoading(false);
             setData(mergedArray);
             setFilterData(mergedArray);
@@ -269,8 +270,15 @@ export default function PendingPaymentRequest() {
   };
 
   const handlePayClick = (e, row) => {
+    if (!row || row?.mob1.length != 10) {
+      toastError("Mobile number is not correct for this vendor")
+      return;
+    } else if (row?.vendor_name.length == 0 || row?.vendor_name == "") {
+      toastError("Vendor Name is not available for this transaction")
+      return;
+    }
     e?.preventDefault();
-
+    setSelectedRows([row])
     let x = phpRemainderData.filter(
       (item) => item?.request_id == row?.request_id
     );
@@ -286,7 +294,7 @@ export default function PendingPaymentRequest() {
     };
     setLoading(true);
     setRowData(enrichedRow);
-    setPaymentAmount(row.balance_amount);
+    setPaymentAmount(Number(row.balance_amount));
     setNetAmount(row.balance_amount);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
 
@@ -611,12 +619,12 @@ export default function PendingPaymentRequest() {
     }
   }, [activeAccordionIndex, data]);
 
-  const handleRowSelectionModelChange = (rowIds) => {
-    setRowSelectionModel(rowIds);
+  // const handleRowSelectionModelChange = (rowIds) => {
+  //   setRowSelectionModel(rowIds);
 
-    const isFileUploaded = rowIds?.length > 0 ? 1 : 0;
-    setIsZohoStatusFileUploaded(isFileUploaded);
-  };
+  //   const isFileUploaded = rowIds?.length > 0 ? 1 : 0;
+  //   setIsZohoStatusFileUploaded(isFileUploaded);
+  // };
 
   const handleDownloadInvoices = async () => {
     const zip = new JSZip();
@@ -780,9 +788,8 @@ export default function PendingPaymentRequest() {
         <div className="tab">
           {accordionButtons.map((button, index) => (
             <div
-              className={`named-tab ${
-                activeAccordionIndex === index ? "active-tab" : ""
-              }`}
+              className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
+                }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               {button}
@@ -793,60 +800,60 @@ export default function PendingPaymentRequest() {
           {(activeAccordionIndex === 0 ||
             activeAccordionIndex === 1 ||
             activeAccordionIndex === 2) && (
-            <View
-              columns={pendingPaymentRequestColumns({
-                activeAccordionIndex,
-                filterData,
-                setOpenImageDialog,
-                setViewImgSrc,
-                phpRemainderData,
-                handleRemainderModal,
-                handleOpenBankDetail,
-                handleOpenSameVender,
-                handleOpenPaymentHistory,
-                getStatusText,
-                handlePayClick,
-                handleDiscardClick,
-                handleZohoStatusUpload,
-                nodeData,
-              })}
-              data={
-                activeAccordionIndex === 0
-                  ? filterData
-                  : activeAccordionIndex === 1
-                  ? filterData?.filter((d) => d.status === "3")
-                  : activeAccordionIndex === 2
-                  ? filterData?.filter((d) => d.status === "0")
-                  : []
-              }
-              isLoading={isLoading}
-              showTotal={true}
-              title={"Pending Payment Request"}
-              rowSelectable={true}
-              pagination={[100, 200]}
-              tableName={"finance-pending-payment-request"}
-              selectedData={setSelectedData}
-              addHtml={
-                <>
-                  <button
-                    className="btn cmnbtn btn_sm btn-secondary ms-2"
-                    onClick={(e) => handleClearSameRecordFilter(e)}
-                  >
-                    Clear
-                  </button>
-                  <button
-                    className="btn btn-success cmnbtn btn_sm ms-2"
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={handleOpenBulkPayThroughVendor}
-                  >
-                    Bulk Pay Through Vendor
-                  </button>
-                </>
-              }
-            />
-          )}
+              <View
+                columns={pendingPaymentRequestColumns({
+                  activeAccordionIndex,
+                  filterData,
+                  setOpenImageDialog,
+                  setViewImgSrc,
+                  phpRemainderData,
+                  handleRemainderModal,
+                  handleOpenBankDetail,
+                  handleOpenSameVender,
+                  handleOpenPaymentHistory,
+                  getStatusText,
+                  handlePayClick,
+                  handleDiscardClick,
+                  handleZohoStatusUpload,
+                  nodeData,
+                })}
+                data={
+                  activeAccordionIndex === 0
+                    ? filterData
+                    : activeAccordionIndex === 1
+                      ? filterData?.filter((d) => d.status === "3")
+                      : activeAccordionIndex === 2
+                        ? filterData?.filter((d) => d.status === "0")
+                        : []
+                }
+                isLoading={isLoading}
+                showTotal={true}
+                title={"Pending Payment Request"}
+                rowSelectable={true}
+                pagination={[100, 200]}
+                tableName={"finance-pending-payment-request"}
+                selectedData={setSelectedRows}
+                addHtml={
+                  <>
+                    <button
+                      className="btn cmnbtn btn_sm btn-secondary ms-2"
+                      onClick={(e) => handleClearSameRecordFilter(e)}
+                    >
+                      Clear
+                    </button>
+                    <button
+                      className="btn btn-success cmnbtn btn_sm ms-2"
+                      variant="contained"
+                      color="primary"
+                      size="small"
+                      onClick={handleOpenBulkPayThroughVendor}
+                    >
+                      Bulk Pay Through Vendor
+                    </button>
+                  </>
+                }
+              />
+            )}
           {openImageDialog && (
             <ImageView
               viewImgSrc={viewImgSrc}
@@ -871,7 +878,7 @@ export default function PendingPaymentRequest() {
           <PayThroughVendorDialog
             setPayThroughVendor={setPayThroughVendor}
             payThroughVendor={payThroughVendor}
-            rowSelectionModel={rowSelectionModel}
+            rowSelectionModel={selectedRows}
             filterData={filterData}
           />
         )}
@@ -879,7 +886,7 @@ export default function PendingPaymentRequest() {
           <BulkPayThroughVendorDialog
             setBulkPayThroughVendor={setBulkPayThroughVendor}
             bulkPayThroughVendor={bulkPayThroughVendor}
-            rowSelectionModel={rowSelectionModel}
+            rowSelectionModel={selectedRows}
             filterData={filterData}
           />
         )}
@@ -900,7 +907,7 @@ export default function PendingPaymentRequest() {
             setBaseAmount={setBaseAmount}
             payDialog={payDialog}
             setPayDialog={setPayDialog}
-            rowSelectionModel={rowSelectionModel}
+            rowSelectionModel={selectedRows}
             filterData={filterData}
           />
         )}

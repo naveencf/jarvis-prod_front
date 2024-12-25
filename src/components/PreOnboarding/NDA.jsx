@@ -10,17 +10,18 @@ import {
 } from "@react-pdf/renderer";
 import logo from "../../../public/logo.png";
 import DateFormattingComponent from "../DateFormator/DateFormared";
+import NDATable from "./table/NDATable";
 
-const NDA = ({allUserData}) => {
+const NDA = ({ allUserData }) => {
   const styles = StyleSheet.create({
     logoBold: {
       fontSize: 12,
       textAlign: "center",
       color: "black",
-      fontFamily: "PB",
+      fontFamily: "TB",
     },
     bold: {
-      fontFamily: "MB",
+      fontFamily: "TB",
     },
     pageBreak: {
       marginTop: 20,
@@ -115,7 +116,7 @@ const NDA = ({allUserData}) => {
       paddingLeft: 60, // Left margin
       paddingRight: 60,
       fontSize: 10,
-      fontFamily: "MR",
+      fontFamily: "TR",
     },
     header: {
       display: "flex",
@@ -132,7 +133,7 @@ const NDA = ({allUserData}) => {
       alignItems: "center",
     },
     footName: {
-      fontFamily: "PB",
+      fontFamily: "TB",
       fontSize: 12,
     },
     footRow: {
@@ -151,7 +152,7 @@ const NDA = ({allUserData}) => {
     },
 
     logoText: {
-      fontFamily: "PR",
+      fontFamily: "TR",
       fontSize: 12,
       textAlign: "center",
       color: "black",
@@ -166,11 +167,11 @@ const NDA = ({allUserData}) => {
     points: {
       paddingBottom: 7,
       fontSize: 11,
-      fontFamily: "MB",
+      fontFamily: "TB",
     },
     text: {
       fontSize: 11,
-      fontFamily: "MB",
+      fontFamily: "TB",
     },
     section: {
       paddingBottom: 14,
@@ -178,6 +179,11 @@ const NDA = ({allUserData}) => {
       color: "black",
       textAlign: "justify",
       lineHeight: 1.5,
+    },
+    ParaGraph: {
+      fontSize: 10,
+      color: "black",
+      fontFamily: "TR",
     },
     signatureImage: {
       width: "90px",
@@ -221,12 +227,11 @@ const NDA = ({allUserData}) => {
     },
   });
 
-
   const formatDate = (isoDate) => {
     const date = new Date(isoDate);
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return date.toLocaleDateString('en-US', options);
-  }
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    return date.toLocaleDateString("en-US", options);
+  };
 
   return (
     <>
@@ -245,10 +250,15 @@ const NDA = ({allUserData}) => {
           </View>
 
           <View style={styles.section}>
-            <View style={styles.section}>
+            <View style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                }}>
               <Text>
-                This Non-Disclosure Agreement (“Agreement”)  is effective from {" "}
-                {formatDate(allUserData?.joining_date)} ,(“Effective Date”), at Creativefuel Pvt. Ltd, Indore.
+                This Non-Disclosure Agreement </Text> <Text style={[styles.bold]}> (“Agreement”)</Text> <Text>is effective from{" "}</Text> 
+                <Text style={[styles.bold]}>{formatDate(allUserData?.joining_date)} </Text><Text>,(“Effective Date”), at </Text><Text>
+                Creativefuel Pvt. Ltd, Indore.
               </Text>
             </View>
 
@@ -256,34 +266,69 @@ const NDA = ({allUserData}) => {
               <Text style={styles.text}>BY AND BETWEEN</Text>
             </View>
 
-            <Text>
-              CREATIVEFUEL PRIVATE LIMITED, a company registered under the
-              Companies Act 2013, having its registered office at 105, Gravity
-              Mall, Warehouse Road, Vijay Nagar Indore MP 452010 (hereinafter
-              referred to as the “Disclosing Party”), which expression shall
-              unless repugnant to the context or meaning thereof means and
-              include its successors-in-interest and permitted assignees of the
-              FIRST PART.
-            </Text>
+            <View style={styles.section}>
+              <View
+                style={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  flexDirection: "row",
+                }}
+              >
+                <Text style={[styles.bold]}>Creativefuel </Text>
+                <Text style={[styles.bold]}>Private</Text>
+                <Text style={[styles.bold]}>Limited </Text>
+                <Text>
+                  , a company registered under the Companies Act 2013, having
+                  its registered office
+                </Text>
+                <Text>
+                  at 105, Gravity Mall, Warehouse Road, Vijay Nagar Indore MP
+                  452010 (hereinafter referred to as the{" "}
+                </Text>
+                <Text >“Disclosing Party”</Text>
+
+                <Text>
+                  , which expression shall unless repugnant to the context or
+                  meaning thereof means and{" "}
+                </Text>
+
+                <Text>
+                  include its successors-in-interest and permitted assignees of
+                  the{" "}
+                </Text>
+                <Text style={[styles.bold]}>FIRST PART.</Text>
+              </View>
+            </View>
 
             <View style={styles.header}>
               <Text style={styles.text}>AND</Text>
-            </View>
+            </View >
             <View style={styles.section}>
+                  <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
               <Text>
-                Mr./Ms./Mrs. {allUserData.user_name} S/o/D/o/W/o OM GOUR currently residing
-                at (hereinafter called the “Receiving Party”) which expression
-                shall unless excluded by or repugnant to the context mean and
-                include its heirs, administrators, successors in interest,
-                assignees, etc. of the SECOND PARTY.
-              </Text>
+               Mr./Ms./Mrs. </Text><Text style={[styles.bold]}>{allUserData.user_name} </Text><Text> S/o/D/o/W/o </Text><Text style={[styles.bold]}>{allUserData.fatherName}</Text>
+               <Text> currently residing at (hereinafter called the</Text><Text></Text><Text style={[styles.bold]}> “Receiving Party” </Text><Text>)
+                which expression shall unless excluded by or repugnant to the
+                context mean and include </Text><Text> its heirs, administrators, successors
+                in interest, assignees, etc. of the</Text><Text style={[styles.bold]}> SECOND PARTY</Text>.
+              </View>
             </View>
 
             <View style={styles.section}>
+            <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
               <Text>
-                The Disclosing Party and Receiving Party shall hereinafter be
-                jointly referred to as “Parties” and individually as a “Party.”
+                The </Text><Text style={[styles.bold]}>Disclosing Party </Text><Text>and </Text><Text style={[styles.bold]}> Receiving Party</Text><Text> shall hereinafter be
+                jointly referred to as “Parties” and individually </Text><Text> as a </Text><Text style={[styles.bold]}>“Party.”
               </Text>
+              </View>
             </View>
 
             <View style={styles.section}>
@@ -355,11 +400,17 @@ const NDA = ({allUserData}) => {
           </View>
 
           <View style={styles.section}>
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
             <Text>
               Party or its Representatives in whole or in part. Such information
-              is collectively referred to in this Agreement as “Confidential
+              is collectively referred to in this Agreement as </Text><Text style={[styles.bold]}> “Confidential
               Information.”
             </Text>
+            </View>
           </View>
           <View style={styles.section}>
             <Text>
@@ -390,13 +441,19 @@ const NDA = ({allUserData}) => {
             </Text>
           </View>
           <View style={styles.section}>
-            <Text>
-              NOW, THEREFORE, for and in consideration of the above premises,
-              and in further consideration of the mutual covenants and promises
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+            <Text style={[styles.bold]}>
+             NOW, THEREFORE,</Text><Text> for and in consideration of the above premises,
+              and in further consideration of the</Text><Text> mutual covenants and promises
               contained herein and other good and valuable consideration, the
               receipt, adequacy, and sufficiency of which are hereby
               acknowledged, the parties hereto agree as follows:
             </Text>
+            </View>
           </View>
 
           <View style={styles.header}>
@@ -409,16 +466,27 @@ const NDA = ({allUserData}) => {
             <Text style={styles.points}>1. DEFINITIONS</Text>
           </View>
           <View style={styles.section}>
-            <Text>
-              1.1 “Affiliate” means any legal entity that controls, is
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+            <Text style={[styles.bold]}>
+              1.1 “Affiliate”</Text><Text> means any legal entity that controls, is
               controlled by or is commonly controlled by a party. “Control”
               means having more than 50-50 ownership or the right to direct the
               management of the entity;
             </Text>
+            </View>
           </View>
           <View style={styles.section}>
-            <Text>
-              1.2 “Confidential Information” shall mean and include any
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+           <Text style={[styles.bold]}>
+              1.2 “Confidential Information”</Text><Text> shall mean and include any
               information disclosed by one Party to the other either directly or
               indirectly, in writing or orally, by inspection of tangible
               objects, documents, prototypes, samples, media, documentation,
@@ -438,6 +506,7 @@ const NDA = ({allUserData}) => {
               analysis, compilations, studies, summaries, extracts, or other
               documentation prepared by the Disclosing Party for the Company.
             </Text>
+            </View>
           </View>
 
           <View style={styles.footer} fixed>
@@ -473,38 +542,62 @@ const NDA = ({allUserData}) => {
             </Text>
           </View>
           <View style={styles.section}>
-            <Text>
-              1.3 “Effective Date” shall mean the date mentioned above.
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+           <Text style={[styles.bold]}>
+              1.3 “Effective Date” </Text><Text> shall mean the date mentioned above.
             </Text>
+            </View>
           </View>
           <View style={styles.section}>
-            <Text>
-              1.4 “Purpose” shall mean the purpose for which the confidential
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+           <Text style={[styles.bold]}>
+              1.4 “Purpose”</Text><Text> shall mean the purpose for which the confidential
               information shall be disclosed by the Disclosing Party to the
               Receiving Party and shall enable the Receiving Party to utilize
               such confidential information.
             </Text>
+            </View>
           </View>
           <View style={styles.section}>
-            <Text>
-              1.5 “Property” shall mean the area identified by the Disclosing
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+           <Text style={[styles.bold]}>
+              1.5 “Property”</Text><Text> shall mean the area identified by the Disclosing
               Party for possible acquisition by the Receiving Party.
             </Text>
+            </View>
           </View>
 
           <View style={styles.section}>
             <Text style={styles.points}>2. CONFIDENTIAL INFORMATION:</Text>
           </View>
           <View style={styles.section}>
-            <Text>
-              2.1 To this Agreement, the term "Confidential Information" shall
-              mean such information relating to the Disclosing Party as the
+          <View style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    flexDirection: "row",
+                  }}>
+           <Text>
+              2.1 To this Agreement, the term </Text><Text style={[styles.bold]}>"Confidential Information"</Text><Text> shall
+              mean such information relating to the </Text><Text>Disclosing Party as the
               Disclosing Party may from time to time provide to the Receiving
               Party under or relating to this Agreement including all
               information communicated in writing or orally relating to business
               affairs, any technical data, or know-how, including but not
               limited to, that which is or relates to:
             </Text>
+            </View>
           </View>
           <View>
             <Text>
@@ -514,33 +607,39 @@ const NDA = ({allUserData}) => {
               of software applications or systems or any other machine-readable
               codes.
             </Text>
+            <Text>{" "}</Text>
             <Text>
               b) Algorithm including but not limited to Mathematical formulas,
               procedures, or rules used for problem-solving or data processing
               within software systems;
             </Text>
+            <Text>{" "}</Text>
             <Text>
               c) System Designs including but not limited to Architectural
               plans, diagrams, or layouts detailing the structure, components,
               and interactions of computer systems, networks, or databases;
             </Text>
+            <Text>{" "}</Text>
             <Text>
               d) Documentation including but not limited to technical manuals,
               user guides, or any other written materials describing the
               functionality, configuration, or operation of software, hardware,
               or IT systems;
             </Text>
+            <Text>{" "}</Text>
             <Text>
               e) Specifications including but not limited to Detailed
               descriptions or requirements outlining the features, performance
               criteria, or functionality of software, hardware, or IT systems;
             </Text>
+            <Text>{" "}</Text>
             <Text>
               f) Proprietary Information including but not limited to Any
               information or intellectual property belonging to the Disclosing
               Party, including trade secrets, know-how, patents, copyrights,
               trademarks, or other proprietary rights;
             </Text>
+            <Text>{" "}</Text>
             <Text>
               g) Client Data including but not limited to Personal, financial,
               or other sensitive information collected, processed, or stored by
@@ -548,6 +647,7 @@ const NDA = ({allUserData}) => {
               limited to customer records, contact information, transaction
               history, or account credentials;
             </Text>
+
           </View>
           <View style={styles.footer} fixed>
             <Text style={styles.footName}>CREATIVEFUEL PRIVATE LIMITED</Text>
@@ -582,19 +682,23 @@ const NDA = ({allUserData}) => {
             specifications, other works of authorship, improvements,
             discoveries, developments, designs, and techniques;
           </Text>
+          <Text>{" "}</Text>
           <Text>
             i) Product plans, products, services, customers, markets,
             developments, inventions, processes, designs, drawings, engineering,
             hardware configuration information;
           </Text>
+          <Text>{" "}</Text>
           <Text>
             j) Any other non-public market information, product plans;
           </Text>
+          <Text>{" "}</Text>
           <Text>
             k) Marketing or finances of the company in any form, customer
             information, business plans and strategies, price lists and market
             studies;
           </Text>
+          <Text>{" "}</Text>
           <Text>
             l) Contracts and clientele database, computer models and programs,
             research records, statistical methods of doing business, customers,
@@ -602,6 +706,7 @@ const NDA = ({allUserData}) => {
             other proprietary information relating to the business of the
             Disclosing Party and is not in the public domain.
           </Text>
+          <Text>{" "}</Text>
           <Text>
             m) Any Other Sensitive Information: Any other information that is
             not publicly available and is considered sensitive, confidential, or
@@ -609,6 +714,7 @@ const NDA = ({allUserData}) => {
             plans, financial data, marketing strategies, research and
             development projects, or strategic partnerships;
           </Text>
+          <Text>{" "}</Text>
           <View style={styles.section}>
             <Text>
               n) Any derivative, modifications, combinations, compilations, or
@@ -1369,6 +1475,7 @@ const NDA = ({allUserData}) => {
               herein above written.
             </Text>
           </View>
+           <NDATable/>
           <View style={styles.footer} fixed>
             <Text style={styles.footName}>CREATIVEFUEL PRIVATE LIMITED</Text>
             <Text>
@@ -1390,5 +1497,30 @@ const NDA = ({allUserData}) => {
     </>
   );
 };
+
+Font.register({
+  family: "MR",
+  src: "/Lato-Regular.ttf",
+});
+Font.register({
+  family: "MB",
+  src: "/Lato-Bold.ttf",
+});
+Font.register({
+  family: "PR",
+  src: "/Poppins-Regular.ttf",
+});
+Font.register({
+  family: "PB",
+  src: "/Poppins-Bold.ttf",
+});
+Font.register({
+  family: "TR",
+  src: "/times new roman.ttf",
+});
+Font.register({
+  family: "TB",
+  src: "/times new roman bold.ttf",
+});
 
 export default NDA;

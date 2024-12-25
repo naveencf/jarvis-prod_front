@@ -1,36 +1,11 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Divider,
-  Box,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListItem, ListItemText, Typography, Divider, Box } from '@mui/material';
 
-const PlanVersions = ({
-  handleVersionClose,
-  openVersionModal,
-  versionDetails,
-  onVersionSelect,
-}) => {
+const PlanVersions = ({ handleVersionClose, openVersionModal, versionDetails, onVersionSelect }) => {
   // Sort version details by version in ascending order
-  const sortedDetails =
-    versionDetails?.details?.length > 0
-      ? [...versionDetails.details].sort((a, b) => a.version - b.version)
-      : [];
-  // console.log('versionDetails', versionDetails);
+  const sortedDetails = versionDetails?.details?.length > 0 ? [...versionDetails.details].sort((a, b) => a.version - b.version) : [];
+
   return (
-    <Dialog
-      open={openVersionModal}
-      onClose={handleVersionClose}
-      maxWidth="sm"
-      fullWidth
-    >
+    <Dialog open={openVersionModal} onClose={handleVersionClose} maxWidth="sm" fullWidth>
       <DialogTitle
         sx={{
           backgroundColor: '#f5f5f5',
@@ -42,6 +17,7 @@ const PlanVersions = ({
       >
         Plan Versions
       </DialogTitle>
+      <DialogTitle style={{ textAlign: 'center' }}>Total version : {sortedDetails?.length}</DialogTitle>
       <DialogContent
         sx={{
           backgroundColor: '#fafafa',
@@ -68,27 +44,17 @@ const PlanVersions = ({
                 >
                   <ListItemText
                     primary={
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: 'bold', color: '#333' }}
-                      >
+                      <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#333' }}>
                         Version {detail.version}
                       </Typography>
                     }
                     secondary={
-                      <Typography
-                        variant="body2"
-                        sx={{ color: '#666', mt: 0.5 }}
-                      >
+                      <Typography variant="body2" sx={{ color: '#666', mt: 0.5 }}>
                         Page Count: {detail.count}
                       </Typography>
                     }
                   />
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{ alignSelf: 'center' }}
-                  >
+                  <Button variant="contained" size="small" sx={{ alignSelf: 'center' }}>
                     Select
                   </Button>
                 </ListItem>
@@ -98,11 +64,7 @@ const PlanVersions = ({
           </List>
         ) : (
           <Box sx={{ textAlign: 'center', py: 2 }}>
-            <Typography
-              variant="body1"
-              color="textSecondary"
-              sx={{ fontStyle: 'italic' }}
-            >
+            <Typography variant="body1" color="textSecondary" sx={{ fontStyle: 'italic' }}>
               No version details available.
             </Typography>
           </Box>
@@ -115,12 +77,7 @@ const PlanVersions = ({
           backgroundColor: '#f5f5f5',
         }}
       >
-        <Button
-          onClick={handleVersionClose}
-          color="primary"
-          variant="outlined"
-          size="medium"
-        >
+        <Button onClick={handleVersionClose} color="primary" variant="outlined" size="medium">
           Close
         </Button>
       </DialogActions>

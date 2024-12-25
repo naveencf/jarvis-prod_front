@@ -1,15 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { City } from "country-state-city";
+import { City, State } from "country-state-city";
 
 const IndianCitiesMui = ({ selectedState, selectedCity, onChange }) => {
   const [cities, setCities] = useState([]);
   const [inputValue, setInputValue] = useState("");
 
+  const getStateCode = (stateName) => {
+    const state = State.getStatesOfCountry("IN").find(
+      (s) => s.name.toLowerCase() === stateName.toLowerCase()
+    );
+    return state ? state.isoCode : null; // Return the state code or null if not found
+  };
+
   useEffect(() => {
     if (selectedState) {
-      const fetchedCities = City.getCitiesOfState("IN", selectedState);
+      console.log("selectedState",);
+      const fetchedCities = City.getCitiesOfState("IN", "MP");
       setCities(fetchedCities);
     } else {
       setCities([]);
