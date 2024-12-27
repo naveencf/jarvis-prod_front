@@ -147,14 +147,14 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
     {
       key: 'postCount',
       name: 'Post Count',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{Number(row.postCount)}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{Math.floor(Number(row.postCount))}</div>,
       width: 120,
       showCol: true,
     },
     {
       key: 'storyCount',
       name: 'Story Count',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{Number(row.storyCount)}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{Math.floor(Number(row.storyCount))}</div>,
       width: 120,
       showCol: true,
     },

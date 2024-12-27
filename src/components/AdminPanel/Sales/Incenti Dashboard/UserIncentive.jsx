@@ -83,7 +83,7 @@ const UserIncentive = () => {
         }
       );
       setAdjustment(res?.data?.data?.adjustment_incentive_amount);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -187,12 +187,14 @@ const UserIncentive = () => {
         name: "Balance Amount",
         width: 100,
         renderRowCell: (row) => row.balanceAmount.toFixed(2),
+        getTotal: true,
       },
       {
         key: "campaignAmount",
         name: "Campaign Amount",
         width: 100,
         renderRowCell: (row) => row.campaignAmount.toFixed(2),
+        getTotal: true,
       },
       {
         key: "earnedIncentiveAmount",
@@ -216,24 +218,28 @@ const UserIncentive = () => {
             {row.earnedIncentiveAmount.toFixed(2)}{" "}
           </div>
         ),
+        getTotal: true,
       },
       {
         key: "incentiveAmount",
         name: "Incentive Amount",
         width: "100",
         renderRowCell: (row) => row.incentiveAmount.toFixed(2),
+        getTotal: true,
       },
       {
         key: "paidAmount",
         name: "Paid Amount",
         width: "100",
         renderRowCell: (row) => row.paidAmount.toFixed(2),
+        getTotal: true,
       },
       {
         key: "recordServiceAmount",
         name: "Record Service Amount",
         width: "100",
         renderRowCell: (row) => row.recordServiceAmount,
+        getTotal: true,
       },
       {
         key: "totalDocuments",
@@ -245,6 +251,7 @@ const UserIncentive = () => {
         key: "unEarnedIncentiveAmount",
         name: "Unearned Incentive Amount",
         width: "100",
+        getTotal: true,
         renderRowCell: (row) => (
           <div
             className="hov-pointer"
@@ -278,7 +285,7 @@ const UserIncentive = () => {
             <div
               title={
                 disabledsate &&
-                releaseButtonConditiondata?.finance_status === "pending"
+                  releaseButtonConditiondata?.finance_status === "pending"
                   ? "Pending from finance side"
                   : ""
               }
@@ -427,6 +434,7 @@ const UserIncentive = () => {
           tableName={"sales-individual-incentive-table"}
           pagination
           isLoading={ismonthWiseDataLoading}
+          showTotal={true}
         />
       </div>
     </>

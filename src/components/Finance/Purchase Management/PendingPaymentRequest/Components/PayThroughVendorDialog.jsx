@@ -8,17 +8,19 @@ import {
   Typography,
   TextField,
   Autocomplete,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
 import React from "react";
-import { baseUrl } from "../../../../../utils/config";
+import { baseUrl, insightsBaseUrl } from "../../../../../utils/config";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { TextFields } from "@mui/icons-material";
 import { useState } from "react";
 
 const PayThroughVendorDialog = (props) => {
   const { toastAlert, toastError } = useGlobalContext();
+  const [paymentInitiated, setPaymentInitiated] = useState(false);
   const {
     payThroughVendor,
     setPayThroughVendor,
@@ -59,7 +61,7 @@ const PayThroughVendorDialog = (props) => {
       }
       // Step 1: Get the JWT token
       const getTokenResponse = await axios.get(
-        `https://insights.ist:8080/api/v1/payment_gateway_access_token`
+        insightsBaseUrl + `v1/payment_gateway_access_token`
       );
       const token = getTokenResponse?.data?.data;
 
@@ -108,8 +110,9 @@ const PayThroughVendorDialog = (props) => {
         tds_percentage: TDSPercentage,
       };
       try {
+        setPaymentInitiated(true);
         const payResponse = await axios.post(
-          baseUrl + `create_payout`,
+          insightsBaseUrl + `create_payout`,
           paymentPayload,
           {
             headers: {
@@ -118,9 +121,10 @@ const PayThroughVendorDialog = (props) => {
             },
           }
         );
-        console.log(payResponse, "payResponse", payResponse.status);
+        // console.log(payResponse, "payResponse", payResponse.status);
         if (payResponse.status == 200) {
           // handlePayVendorClick();
+
           handleClosePayThroughVendor();
           handleClosePayDialog();
           return;
@@ -128,6 +132,7 @@ const PayThroughVendorDialog = (props) => {
         } else {
           toastError("Unknown Error found. Please inform IT team for this transaction.");
         }
+        setPaymentInitiated(false);
       } catch (error) {
         // console.log(error?.response?.data?.error?.code, "error")
         if (error?.response?.data?.error?.code == '4108') {
@@ -141,6 +146,7 @@ const PayThroughVendorDialog = (props) => {
           toastError(errorMessages);
           return;
         }
+        setPaymentInitiated(false);
         toastError("Payment Request Failed")
       }
 
@@ -166,25 +172,27 @@ const PayThroughVendorDialog = (props) => {
         justifyContent: "center",
       }}
     >
-      <DialogTitle> Verify OTP to Complete Payment</DialogTitle>
-      <IconButton
-        aria-label="close"
-        onClick={handleClosePayThroughVendor}
-        sx={{
-          position: "absolute",
-          right: 8,
-          top: 8,
-          color: (theme) => theme.palette.grey[500],
-        }}
-      >
-        <CloseIcon />
-      </IconButton>
-      <DialogContent dividers sx={{ maxHeight: "80vh", overflowY: "auto" }}>
+      {paymentInitiated ? <>
+
+        <DialogTitle> Verify OTP to Complete Payment</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClosePayThroughVendor}
+          sx={{
+            position: "absolute",
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers sx={{ maxHeight: "80vh", overflowY: "auto" }}>
 
 
 
-        {/* Uncomment and ensure activeAccordionIndex, filterData, and columns are passed as props if needed */}
-        {/* <DataGrid
+          {/* Uncomment and ensure activeAccordionIndex, filterData, and columns are passed as props if needed */}
+          {/* <DataGrid
           rows={
             activeAccordionIndex === 0
               ? filterData
@@ -200,29 +208,29 @@ const PayThroughVendorDialog = (props) => {
           components={{ Toolbar: GridToolbar }}
           getRowId={(row) => filterData?.indexOf(row)}
         /> */}
-        <Autocomplete
-          onChange={(e, value) => setGatewayPaymentMode(value)}
-          // className="col mt-1"
-          sx={{ mb: 2 }}
-          id="combo-box-demo"
-          options={["IMPS", "NEFT"]}
-          value={gatewayPaymentMode}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Payment Mode *"
-              placeholder="Payment Mode"
-            />
-          )}
-        />
-        <TextField id="outlined-basic" label="Type OTP" variant="outlined" />
-        {/* <Typography gutterBottom>
+          <Autocomplete
+            onChange={(e, value) => setGatewayPaymentMode(value)}
+            // className="col mt-1"
+            sx={{ mb: 2 }}
+            id="combo-box-demo"
+            options={["IMPS", "NEFT"]}
+            value={gatewayPaymentMode}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Payment Mode *"
+                placeholder="Payment Mode"
+              />
+            )}
+          />
+          <TextField id="outlined-basic" label="Type OTP" variant="outlined" />
+          {/* <Typography gutterBottom>
           Verify OTP to complete payment
         </Typography> */}
 
-      </DialogContent>
-      <DialogActions>
-        {/* <Button
+        </DialogContent>
+        <DialogActions>
+          {/* <Button
           variant="contained"
           color="primary"
           size="small"
@@ -230,16 +238,18 @@ const PayThroughVendorDialog = (props) => {
         >
           Pay
         </Button> */}
-        {paymentAmout > 0 &&
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={doPayment}
-          >
-            Pay ₹{paymentAmout}
-          </Button>}
-      </DialogActions>
+          {paymentAmout > 0 &&
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={doPayment}
+            >
+              Pay ₹{paymentAmout}
+            </Button>}
+        </DialogActions>
+      </> :
+        <CircularProgress />}
     </Dialog>
   );
 };

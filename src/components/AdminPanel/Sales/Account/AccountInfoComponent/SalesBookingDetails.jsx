@@ -47,9 +47,6 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
     }
   }, [SalesData]);
 
-  useEffect(() => {
-    getAllUserData();
-  }, []);
   function openModal(row) {
     setIsModalOpen(true);
     setModalData(row);

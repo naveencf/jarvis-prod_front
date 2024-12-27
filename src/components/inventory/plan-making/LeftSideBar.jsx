@@ -66,7 +66,7 @@ const LeftSideBar = ({
   const [deliverableText, setDeliverableText] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [planBrief, setPlanBrief] = useState(planDetails?.[0]?.brief);
-  const [sellingPrice, setSellingPrice] = useState(planDetails?.[0]?.selling_price);
+  const [sellingPrice, setSellingPrice] = useState(0);
   const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
@@ -92,6 +92,7 @@ const LeftSideBar = ({
   //   };
   //   return platformMap[platformId] || 'Unknown';
   // };
+
   const HandleSavePlan = async (planStatus) => {
     const payload = {
       id: id,
@@ -282,13 +283,17 @@ const LeftSideBar = ({
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
 
+  const handleEditing = () => {
+    setIsEditing(!isEditing)
+    setSellingPrice(planDetails?.[0]?.selling_price);
+  }
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
         <div className="planSmall">
           {' '}
           <div>
-            <Button variant="text" onClick={() => setIsEditing(!isEditing)}>
+            <Button variant="text" onClick={() => handleEditing()}>
               {isEditing ? 'Cancel' : 'Edit'}
             </Button>{' '}
             {isEditing && (
@@ -300,7 +305,7 @@ const LeftSideBar = ({
               Selling Price:
               {isEditing ? (
                 <TextField
-                  value={sellingPrice || planDetails?.[0]?.selling_price || ''}
+                  value={sellingPrice}
                   onChange={(e) => setSellingPrice(e.target.value)}
                   variant="outlined"
                   size="small"
@@ -372,6 +377,10 @@ const LeftSideBar = ({
           <h6>
             Total Cost
             <span>{formatIndianNumber(Math.floor(totalCost))}</span>
+          </h6>
+          <h6>
+            Actual Cost
+            <span>{formatIndianNumber(Math.floor(totalCost - ownershipCounts["own"].totalCost))}</span>
           </h6>
           <h6>
             Total Posts

@@ -49,7 +49,7 @@ const Dropdown = ({ children, btnHtml, tableref }) => {
       {isOpen && (
         <div className="dropdown-content" ref={refcontent}>
           {React.Children.map(children, (child) =>
-            React.cloneElement(child, { setIsOpen })
+            React.cloneElement(child || <></>, { setIsOpen })
           )}
         </div>
       )}

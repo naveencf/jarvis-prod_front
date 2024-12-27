@@ -28,6 +28,7 @@ import {
   pendingPaymentUniqueVendorColumns,
 } from "../../CommonColumn/Columns";
 import View from "../../../AdminPanel/Sales/Account/View/View";
+import ZohoBillCreation from "./Components/ZohoBillCreation";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
@@ -80,7 +81,8 @@ export default function PendingPaymentRequest() {
   const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
+  const [TDSValue, setTDSValue] = useState(0);
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
@@ -272,7 +274,7 @@ export default function PendingPaymentRequest() {
   const handlePayClick = (e, row) => {
     if (!row || row?.mob1.length != 10) {
       toastError("Mobile number is not correct for this vendor")
-      return;
+      // return;
     } else if (row?.vendor_name.length == 0 || row?.vendor_name == "") {
       toastError("Vendor Name is not available for this transaction")
       return;
@@ -421,7 +423,7 @@ export default function PendingPaymentRequest() {
     });
 
     const totalFY = dataFY?.reduce(
-      (acc, item) => acc + parseFloat(item.payment_amount),
+      (acc, item) => acc + parseFloat(item?.payment_amount),
       0
     );
 
@@ -685,7 +687,7 @@ export default function PendingPaymentRequest() {
 
   return (
     <div>
-      <FormContainer
+      {/* <FormContainer
         mainTitle="Pending Payment Request"
         link="/admin/finance-pruchasemanagement-pendingpaymentrequest"
         uniqueVendorCount={uniqueVendorCount}
@@ -716,7 +718,7 @@ export default function PendingPaymentRequest() {
         tdsDeductedCount={tdsDeductedCount}
         partialTDSDeduction={partialTDSDeduction}
         instantTDSDeduction={instantTDSDeduction}
-      />
+      /> */}
 
       {/* Bank Details 14 */}
 
@@ -909,8 +911,16 @@ export default function PendingPaymentRequest() {
             setPayDialog={setPayDialog}
             rowSelectionModel={selectedRows}
             filterData={filterData}
+            GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount}
           />
         )}
+        {/* <ZohoBillCreation
+          rowData={rowData}
+          paymentAmout={paymentAmout}
+          userName={userName}
+          GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount}
+          TDSValue={TDSValue} setTDSValue={setTDSValue}
+        /> */}
 
         {showDisCardModal && (
           <DiscardConfirmation

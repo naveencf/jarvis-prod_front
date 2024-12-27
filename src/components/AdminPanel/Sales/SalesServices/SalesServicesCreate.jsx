@@ -99,10 +99,12 @@ const SalesServicesCreate = ({ service_name }) => {
       console.error(error);
     }
   };
+
   useEffect(() => {
     if (isFormSubmitted && task != "create" && !service_name)
       navigate("/admin/product");
   }, [isFormSubmitted]);
+
   useEffect(() => {
     if (method === "put" || method === "post" || service_name) {
       setServiceName(singleSaleService?.service_name);

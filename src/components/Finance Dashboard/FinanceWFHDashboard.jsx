@@ -41,8 +41,6 @@ export default function FinanceWFHDashboard() {
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [rowForPayment, setRowForPayment] = useState([]);
-  console.log(rowForPayment , 'row for payment')
-  console.log(filterData , 'fillter data')
   const [invoice, setInvoice] = useState("");
   const [refrenceNumber, setRefrenceNumber] = useState(null);
   const [screenshot, setScreenshot] = useState([]);
@@ -1126,12 +1124,14 @@ export default function FinanceWFHDashboard() {
       <div>
         {rowForPayment.length > 0 && (
           <>
+           <div className="card-header">
             <button
               variant="contained"
               color="primary"
               size="small"
               sx={{ width: "200px" }}
-              className=" btn cmn-btn  btn-outline-primary ml-3 mb-2"
+              className="btn cmnbtn btn_sm btn-outline-primary ml-3"
+              // onClick={handleDownloadIPayoutReleased}
               onClick={handleDownloadIPayoutReleased}
             >
               Download Invoice 
@@ -1141,13 +1141,14 @@ export default function FinanceWFHDashboard() {
               color="primary"
               size="small"
               sx={{ width: "200px" }}
-              className=" btn cmnbtn btn-outline-primary ml-3 mb-2"
+              className=" btn cmnbtn btn_sm btn-outline-primary ml-3"
               onClick={handleDownloadExcel}
             >
               Download Excel
             </button>
+            </div>
           </>
-        )}
+         )}
         {/* <div style={{ height: "50px" }} className="d-flex">
           {rowForPayment.length > 0 && (
             <Button
@@ -1170,7 +1171,7 @@ export default function FinanceWFHDashboard() {
               (item) => item.attendence_status_flow == "Proceeded to bank"
             )}
             columns={pendingColumns}
-            getRowId={(row) => row.id}
+            getRowId={(row) => row._id}
             initialState={{
               pagination: {
                 paginationModel: {

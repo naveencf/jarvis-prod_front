@@ -8,17 +8,8 @@ import jwtDecode from 'jwt-decode';
 import Select from 'react-select';
 import './Tagcss.css';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  useGetAllPageCategoryQuery,
-  useGetAllPageSubCategoryQuery,
-  useGetAllPageListQuery,
-  useGetAllProfileListQuery,
-  useGetMultiplePagePriceQuery,
-} from '../../Store/PageBaseURL';
-import {
-  useGetAllVendorQuery,
-  useGetPmsPlatformQuery,
-} from '../../Store/reduxBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageSubCategoryQuery, useGetAllPageListQuery, useGetAllProfileListQuery, useGetMultiplePagePriceQuery } from '../../Store/PageBaseURL';
+import { useGetAllVendorQuery, useGetPmsPlatformQuery } from '../../Store/reduxBaseURL';
 import { useDispatch, useSelector } from 'react-redux';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useGetOwnershipTypeQuery } from '../../Store/PageBaseURL';
@@ -27,11 +18,7 @@ import { useContext } from 'react';
 import { IconButton, Stack } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import InfoIcon from '@mui/icons-material/Info';
-import {
-  setOpenShowAddModal,
-  setModalType,
-  setOpenShowPageInfoModal,
-} from '../../Store/PageMaster';
+import { setOpenShowAddModal, setModalType, setOpenShowPageInfoModal } from '../../Store/PageMaster';
 import PageAddMasterModal from './PageAddMasterModal';
 import PageInfoModal from './PageInfoModal';
 import { FormatName } from '../../../utils/FormatName';
@@ -45,20 +32,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const pagequery = '';
-  const {
-    data: pageList,
-    refetch: refetchPageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  const { data: pageList, refetch: refetchPageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
   // console.log('refetchPageList', refetchPageList());
 
   const navigate = useNavigate();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const dispatch = useDispatch();
   const { toastAlert, toastError } = useGlobalContext();
-  const [rowCount, setRowCount] = useState([
-    { page_price_type_id: '', price: '' },
-  ]);
+  const [rowCount, setRowCount] = useState([{ page_price_type_id: '', price: '' }]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [priceTypeList, setPriceTypeList] = useState([]);
 
@@ -149,42 +130,22 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   //   getData();
   // }, []);
 
-  const {
-    data: category,
-    error: categoryError,
-    isLoading: categoryIsLoading,
-  } = useGetAllPageCategoryQuery();
+  const { data: category, error: categoryError, isLoading: categoryIsLoading } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
 
-  const {
-    data: subCategory,
-    error: subCategoryError,
-    isLoading: subCategoryIsLoading,
-  } = useGetAllPageSubCategoryQuery();
+  const { data: subCategory, error: subCategoryError, isLoading: subCategoryIsLoading } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
 
-  const {
-    data: platform,
-    error: platformError,
-    isLoading: platformIsLoading,
-  } = useGetPmsPlatformQuery();
+  const { data: platform, error: platformError, isLoading: platformIsLoading } = useGetPmsPlatformQuery();
 
   const platformData = platform?.data || [];
 
-  const {
-    data: vendor,
-    error: vendorError,
-    isLoading: vendorIsLoading,
-  } = useGetAllVendorQuery();
+  const { data: vendor, error: vendorError, isLoading: vendorIsLoading } = useGetAllVendorQuery();
 
   const vendorData = vendor || [];
 
-  const {
-    data: profile,
-    error: profileError,
-    isLoading: profileIsLoading,
-  } = useGetAllProfileListQuery();
-
+  const { data: profile, error: profileError, isLoading: profileIsLoading } = useGetAllProfileListQuery();
+  console.log('page_price_type_id', rowCount.page_price_type_id);
   const profileData = profile?.data || [];
   const handlePriceTypeChange = (e, index) => {
     const updatedRowCount = [...rowCount];
@@ -207,9 +168,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const handleFilterPriceType = (_id) => {
     let filteredData = priceTypeList.filter((row) => {
-      return !rowCount.some(
-        (e) => e.page_price_type_id == row.page_price_type_id
-      );
+      return !rowCount.some((e) => e.page_price_type_id == row.page_price_type_id);
     });
     axios.delete(baseUrl + `v1/pagePriceMultiple/${_id}`, {
       headers: {
@@ -223,9 +182,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   useEffect(() => {
     if (platformId) {
       setPriceTypeList([]);
-      let priceData = platformData?.find(
-        (role) => role?._id == platformId
-      )?._id;
+      let priceData = platformData?.find((role) => role?._id == platformId)?._id;
       axios
         .get(baseUrl + `v1/pagePriceTypesForPlatformId/${platformId}`, {
           headers: {
@@ -241,48 +198,38 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const addPriceRow = () => {
     if (rowCount.length > 0) {
-      setRowCount((rowCount) => [
-        ...rowCount,
-        { page_price_type_id: '', price: '' },
-      ]);
+      setRowCount((rowCount) => [...rowCount, { page_price_type_id: '', price: '' }]);
     } else {
       setRowCount([{ page_price_type_id: '', price: '' }]);
     }
   };
- 
+
   const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
     skip: !pageMasterId,
   });
 
+  const priceTypeMappings = {
+    '667e6c7412fbbf002179f6d6': 'instagram_post',
+    '667e6c9112fbbf002179f72c': 'instagram_story',
+    '667e6c9c12fbbf002179f72f': 'instagram_both',
+    '66b9ba3b994d2209bfd4cf50': 'instagram_reel',
+    '66b9ba86994d2209bfd4cf53': 'instagram_comments',
+    '66b9ba76994d2209bfd4cf52': 'instagram_broadcast',
+    '66b9ba61994d2209bfd4cf51': 'instagram_bio',
+    '66b9ba09994d2209bfd4cf4f': 'instagram_carousel',
+  };
+
   useEffect(() => {
     if (priceData) {
       const updatedRowCount = priceData.map((item) => {
-        if (item.page_price_type_id === '667e6c7412fbbf002179f6d6') {
-          // Instagram Post Price
+        const priceTypeKey = priceTypeMappings[item.page_price_type_id];
+        if (priceTypeKey) {
           return {
             ...item,
-            price:
-              currentPage.find((page) => page.instagram_post)?.instagram_post ||
-              item.price,
-          };
-        } else if (item.page_price_type_id === '667e6c9112fbbf002179f72c') {
-          // Instagram Story Price
-          return {
-            ...item,
-            price:
-              currentPage.find((page) => page.instagram_story)
-                ?.instagram_story || item.price,
-          };
-        } else if (item.page_price_type_id === '667e6c9c12fbbf002179f72f') {
-          // Instagram Both Price
-          return {
-            ...item,
-            price:
-              currentPage.find((page) => page.instagram_both)?.instagram_both ||
-              item.price,
+            price: currentPage.find((page) => page[priceTypeKey])?.[priceTypeKey] || item.price,
           };
         }
-        return item;
+        return item; // If no mapping is found, return the item as is
       });
 
       setRowCount(updatedRowCount);
@@ -306,9 +253,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setLink(data[0].page_link);
         setCategoryId(data[0].page_category_id);
         setSubCategoryId(data[0].page_sub_category_id);
-        const tagFilter = categoryData.filter((e) =>
-          data[0]?.tags_page_category?.includes(e._id)
-        );
+        const tagFilter = categoryData.filter((e) => data[0]?.tags_page_category?.includes(e._id));
         setTag(
           tagFilter.map((e) => {
             return { value: e._id, label: e.page_category };
@@ -434,32 +379,20 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       engagment_rate: engagment || 0,
       variable_type: rateType == 'Variable' ? variableType.value : null,
 
-      platform_name: platformData
-        ?.find((res) => res._id == platformId)
-        ?.platform_name?.toLowerCase(),
+      platform_name: platformData?.find((res) => res._id == platformId)?.platform_name?.toLowerCase(),
 
-      page_category_name: categoryData
-        ?.find((role) => role._id === categoryId)
-        ?.page_category?.toLowerCase(),
-      page_sub_category_name: subCategoryData.find(
-        (role) => role._id === subCategoryId
-      )?.page_sub_category,
+      page_category_name: categoryData?.find((role) => role._id === categoryId)?.page_category?.toLowerCase(),
+      page_sub_category_name: subCategoryData.find((role) => role._id === subCategoryId)?.page_sub_category,
 
-      vendor_name: vendorData
-        ?.find((vendor) => vendor._id === vendorId)
-        ?.vendor_name?.toLowerCase(),
+      vendor_name: vendorData?.find((vendor) => vendor._id === vendorId)?.vendor_name?.toLowerCase(),
 
-      page_profile_type_name: profileData
-        ?.find((role) => role?._id === profileId)
-        ?.profile_type?.toLowerCase(),
+      page_profile_type_name: profileData?.find((role) => role?._id === profileId)?.profile_type?.toLowerCase(),
 
       page_language_name: languageId.map((item) => item?.label),
       tags_page_category_name: tag.map((e) => e.label),
       page_price_list: rowCount.map((item) => {
         return {
-          [priceTypeList?.find(
-            (priceobject) => priceobject?._id == item.page_price_type_id
-          )?.name]: item.price,
+          [priceTypeList?.find((priceobject) => priceobject?._id == item.page_price_type_id)?.name]: item.price,
         };
       }),
     };
@@ -472,34 +405,31 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then(() => {
         setSubmitLoading(false);
-        const cat_name = categoryData?.find(
-          (item) => item?._id == singlePage?.page_category_id
-        )?.page_category;
-        const postPrice = rowCount.find(
-          (item) => item?.page_price_type_id == '667e6c7412fbbf002179f6d6'
-        );
-        const storyPrice = rowCount.find(
-          (item) => item?.page_price_type_id == '667e6c9112fbbf002179f72c'
-        );
-        const bothPrice = rowCount.find(
-          (item) => item?.page_price_type_id == '667e6c9c12fbbf002179f72f'
-        );
+        const cat_name = categoryData?.find((item) => item?._id === singlePage?.page_category_id)?.page_category;
 
+        // Dynamically extract prices based on `priceTypeMappings`
+        const prices = Object.keys(priceTypeMappings).reduce((acc, typeId) => {
+          const priceType = priceTypeMappings[typeId];  
+          acc[priceType] = rowCount.find((item) => item?.page_price_type_id === typeId)?.price || null;
+          return acc;
+        }, {});
+        
+        // Construct the payload
         const payload = {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
           temp_vendor_id: tempID,
-          story: storyPrice?.price,
-          post: postPrice?.price,
-          both_: bothPrice?.price,
-          m_post_price: singlePage?.m_post_price,
-          m_story_price: singlePage?.m_story_price,
-          m_both_price: singlePage?.m_both_price,
+          ...prices,  
+          // m_post_price: singlePage?.m_post_price,
+          // m_story_price: singlePage?.m_story_price,
+          // m_both_price: singlePage?.m_both_price,
           followers_count: followCount,
           preference_level: pageLevel,
           temp_page_cat_id: cat_name,
         };
+      
+        
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
           .then(() => {})
@@ -533,9 +463,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       dispatch(setModalType(type));
     };
   };
-  const pageInfoModlaOpen = useSelector(
-    (state) => state.pageMaster.showInfoModal
-  );
+  const pageInfoModlaOpen = useSelector((state) => state.pageMaster.showInfoModal);
 
   const calculateFollowerCount = (index) => {
     const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
@@ -549,19 +477,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       userId: 111111,
     };
 
-    const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8';
     const headers = {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     };
 
     try {
-      const { data } = await axios.post(
-        `https://insights.ist:8080/api/v1/creators_details_v3`,
-        payload,
-        { headers }
-      );
+      const { data } = await axios.post(`https://insights.ist:8080/api/v1/creators_details_v3`, payload, { headers });
       const followerData = data?.data?.[0]?.creatorDetails?.followers;
 
       if (followerData > 0) {
@@ -579,7 +502,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     setOwnerType(selectedOption.value);
   };
 
-  console.log('priceTypeList', priceTypeList);
+ 
 
   return (
     <>
@@ -597,12 +520,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         >
           Save
         </button>
-        <button
-          type="button"
-          title="Update Followers"
-          className="btn btn-primary mt-2 btn-sm"
-          onClick={() => handleUpadteFollowers()}
-        >
+        <button type="button" title="Update Followers" className="btn btn-primary mt-2 btn-sm" onClick={() => handleUpadteFollowers()}>
           Update Followers
         </button>
       </div>
@@ -618,12 +536,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         }}
       />
 
-      <FieldContainer
-        label="Link *"
-        value={link}
-        required={true}
-        onChange={(e) => setLink(e.target.value)}
-      />
+      <FieldContainer label="Link *" value={link} required={true} onChange={(e) => setLink(e.target.value)} />
 
       <div className="form-group col-6">
         <label className="form-label">
@@ -636,10 +549,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }))}
           value={{
             value: platformId,
-            label: FormatName(
-              platformData.find((role) => role._id === platformId)
-                ?.platform_name || ''
-            ),
+            label: FormatName(platformData.find((role) => role._id === platformId)?.platform_name || ''),
           }}
           onChange={(e) => {
             setPlatformId(e.value);
@@ -660,29 +570,16 @@ const Page = ({ pageMast_id, handleEditClose }) => {
               }))}
               value={{
                 value: categoryId,
-                label: FormatName(
-                  categoryData.find((role) => role._id === categoryId)
-                    ?.page_category || ''
-                ),
+                label: FormatName(categoryData.find((role) => role._id === categoryId)?.page_category || ''),
               }}
               onChange={(e) => {
                 setCategoryId(e.value);
               }}
             />
-            <IconButton
-              onClick={handleOpenPageModal('Category')}
-              variant="contained"
-              color="primary"
-              aria-label="Add Platform.."
-            >
+            <IconButton onClick={handleOpenPageModal('Category')} variant="contained" color="primary" aria-label="Add Platform..">
               <AddIcon />
             </IconButton>
-            <IconButton
-              onClick={handleOpenInfoModal('Category Info')}
-              variant="contained"
-              color="primary"
-              aria-label="Platform Info.."
-            >
+            <IconButton onClick={handleOpenInfoModal('Category Info')} variant="contained" color="primary" aria-label="Platform Info..">
               <InfoIcon />
             </IconButton>
           </div>
@@ -702,29 +599,16 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             }))}
             value={{
               value: subCategoryId,
-              label: FormatName(
-                subCategoryData.find((role) => role._id === subCategoryId)
-                  ?.page_sub_category || ''
-              ),
+              label: FormatName(subCategoryData.find((role) => role._id === subCategoryId)?.page_sub_category || ''),
             }}
             onChange={(e) => {
               setSubCategoryId(e.value);
             }}
           />
-          <IconButton
-            onClick={handleOpenPageModal('Sub Category')}
-            variant="contained"
-            color="primary"
-            aria-label="Add Sub Category.."
-          >
+          <IconButton onClick={handleOpenPageModal('Sub Category')} variant="contained" color="primary" aria-label="Add Sub Category..">
             <AddIcon />
           </IconButton>
-          <IconButton
-            onClick={handleOpenInfoModal('Sub Category Info')}
-            variant="contained"
-            color="primary"
-            aria-label="Sub Category Info.."
-          >
+          <IconButton onClick={handleOpenInfoModal('Sub Category Info')} variant="contained" color="primary" aria-label="Sub Category Info..">
             <InfoIcon />
           </IconButton>
         </div>
@@ -751,28 +635,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         <label className="form-label">
           Page Level <sup style={{ color: 'red' }}>*</sup>
         </label>
-        <Select
-          name="page level"
-          options={PageLevels}
-          className="basic-multi-select"
-          classNamePrefix="select"
-          value={PageLevels.find((option) => option.value === pageLevel)}
-          onChange={(selectedOption) => setPageLevel(selectedOption.value)}
-        />
+        <Select name="page level" options={PageLevels} className="basic-multi-select" classNamePrefix="select" value={PageLevels.find((option) => option.value === pageLevel)} onChange={(selectedOption) => setPageLevel(selectedOption.value)} />
       </div>
 
       <div className="form-group col-6">
         <label className="form-label">
           Activeness <sup style={{ color: 'red' }}>*</sup>
         </label>
-        <Select
-          name="page status"
-          options={PageStatus}
-          className="basic-multi-select"
-          classNamePrefix="select"
-          value={PageStatus.find((option) => option.value === pageStatus)}
-          onChange={(selectedOption) => setPageStatus(selectedOption.value)}
-        />
+        <Select name="page status" options={PageStatus} className="basic-multi-select" classNamePrefix="select" value={PageStatus.find((option) => option.value === pageStatus)} onChange={(selectedOption) => setPageStatus(selectedOption.value)} />
       </div>
 
       <div className="form-group col-6">
@@ -786,9 +656,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }))}
           value={{
             value: closeBy,
-            label:
-              usersDataContext.find((role) => role.user_id === closeBy)
-                ?.user_name || '',
+            label: usersDataContext.find((role) => role.user_id === closeBy)?.user_name || '',
           }}
           onChange={(e) => {
             setCloseBy(e.value);
@@ -800,28 +668,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         <label className="form-label">
           Page Name Type <sup style={{ color: 'red' }}>*</sup>
         </label>
-        <Select
-          name="page name type"
-          options={PageTypes}
-          className="basic-multi-select"
-          classNamePrefix="select"
-          value={PageTypes.find((option) => option.value == pageType)}
-          onChange={(selectedOption) => setPageType(selectedOption.value)}
-        />
+        <Select name="page name type" options={PageTypes} className="basic-multi-select" classNamePrefix="select" value={PageTypes.find((option) => option.value == pageType)} onChange={(selectedOption) => setPageType(selectedOption.value)} />
       </div>
 
       <div className="form-group col-6">
         <label className="form-label">
           Content Creation <sup style={{ color: 'red' }}>*</sup>
         </label>
-        <Select
-          name="Content creation"
-          options={Contents}
-          className="basic-multi-select"
-          classNamePrefix="select"
-          value={Contents.find((option) => option.value == content)}
-          onChange={(selectedOption) => setContent(selectedOption.value)}
-        />
+        <Select name="Content creation" options={Contents} className="basic-multi-select" classNamePrefix="select" value={Contents.find((option) => option.value == content)} onChange={(selectedOption) => setContent(selectedOption.value)} />
       </div>
 
       <div className="form-group col-6">
@@ -858,8 +712,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }))}
           value={{
             value: vendorId,
-            label:
-              vendorData.find((ob) => ob._id === vendorId)?.vendor_name || '',
+            label: vendorData.find((ob) => ob._id === vendorId)?.vendor_name || '',
           }}
           onChange={(e) => {
             setTempID(e.value);
@@ -892,13 +745,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           />
         </div>
       </div>
-      <FieldContainer
-        label="Followers Count *"
-        type="number"
-        value={followCount}
-        required={true}
-        onChange={(e) => setFollowCount(e.target.value)}
-      />
+      <FieldContainer label="Followers Count *" type="number" value={followCount} required={true} onChange={(e) => setFollowCount(e.target.value)} />
 
       <div className="form-group col-6">
         <label className="form-label">
@@ -911,9 +758,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           }))}
           value={{
             value: profileId,
-            label:
-              profileData.find((role) => role._id === profileId)
-                ?.profile_type || '',
+            label: profileData.find((role) => role._id === profileId)?.profile_type || '',
           }}
           onChange={(e) => {
             setProfileId(e.value);
@@ -962,18 +807,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         )}
       </div>
 
-      <FieldContainer
-        label="Description"
-        value={description}
-        required={false}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <FieldContainer
-        label="Bio"
-        value={bio}
-        required={false}
-        onChange={(e) => setBio(e.target.value)}
-      />
+      <FieldContainer label="Description" value={description} required={false} onChange={(e) => setDescription(e.target.value)} />
+      <FieldContainer label="Bio" value={bio} required={false} onChange={(e) => setBio(e.target.value)} />
 
       <div className="col-md-6 p0 mb16">
         <FieldContainer
@@ -999,40 +834,25 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                 </label>
                 <Select
                   options={priceTypeList
-                    ?.filter((option) =>
-                      rowCount.every(
-                        (r, i) =>
-                          i === index || r.page_price_type_id !== option._id
-                      )
-                    )
+                    ?.filter((option) => rowCount.every((r, i) => i === index || r.page_price_type_id !== option._id))
                     ?.map((option) => ({
                       value: option?._id,
                       label: option?.name,
                     }))}
                   required={true}
                   value={{
-                    label: priceTypeList?.find(
-                      (role) =>
-                        role?._id === rowCount[index]?.page_price_type_id
-                    )?.name,
+                    label: priceTypeList?.find((role) => role?._id === rowCount[index]?.page_price_type_id)?.name,
                     value: rowCount[index]?.page_price_type_id,
                   }}
                   onChange={(e) => handlePriceTypeChange(e, index)}
                   isDisabled={row.price !== ''}
                 />
               </div>
-              <FieldContainer
-                label=" Price *"
-                required={true}
-                type="number"
-                onChange={(e) => handlePriceChange(e, index)}
-                value={rowCount[index].price}
-              />
+              <FieldContainer label=" Price *" required={true} type="number" onChange={(e) => handlePriceChange(e, index)} value={rowCount[index].price} />
 
               {rateType == 'Variable' && (
                 <p className="ml-3" style={{ color: 'blue' }}>
-                  This Profile Cost = {'  Rs '}{' '}
-                  {calculateFollowerCount(index.toFixed(0))}
+                  This Profile Cost = {'  Rs '} {calculateFollowerCount(index.toFixed(0))}
                 </p>
               )}
 
@@ -1041,10 +861,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                   className="btn btn-sm btn-danger mt-4 ml-2 col-1 mb-3"
                   type="button"
                   onClick={() => {
-                    setRowCount(
-                      (prev) => prev.filter((e, i) => i !== index),
-                      handleFilterPriceType(rowCount[index]._id)
-                    );
+                    setRowCount((prev) => prev.filter((e, i) => i !== index), handleFilterPriceType(rowCount[index]._id));
                   }}
                 >
                   Remove
@@ -1053,11 +870,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             </>
           ))}
         <div className="text-center">
-          <button
-            type="button"
-            onClick={addPriceRow}
-            className="btn btn-sm btn-primary"
-          >
+          <button type="button" onClick={addPriceRow} className="btn btn-sm btn-primary">
             Add Price
           </button>
         </div>
@@ -1133,19 +946,9 @@ const PageEdit = ({ pageMast_id, handleEditClose }) => {
         <ArrowBackIcon onClick={() => handleEditClose()} />
       </div>
 
-      <FormContainer
-        mainTitle="Page Edit"
-        title="Page Edit"
-        accordionButtons={accordionButtons}
-        activeAccordionIndex={activeAccordionIndex}
-        onAccordionButtonClick={handleAccordionButtonClick}
-        submitButton={true}
-      >
-        {activeAccordionIndex === 0 && (
-          <Page pageMast_id={pageMasterId} handleEditClose={handleEditClose} />
-        )}
-        {activeAccordionIndex === 1 &&
-          navigate(`/admin/exe-history/${pageMasterId}`)}
+      <FormContainer mainTitle="Page Edit" title="Page Edit" accordionButtons={accordionButtons} activeAccordionIndex={activeAccordionIndex} onAccordionButtonClick={handleAccordionButtonClick} submitButton={true}>
+        {activeAccordionIndex === 0 && <Page pageMast_id={pageMasterId} handleEditClose={handleEditClose} />}
+        {activeAccordionIndex === 1 && navigate(`/admin/exe-history/${pageMasterId}`)}
         {activeAccordionIndex === 2 && <PerformanceDashboard />}
       </FormContainer>
     </>

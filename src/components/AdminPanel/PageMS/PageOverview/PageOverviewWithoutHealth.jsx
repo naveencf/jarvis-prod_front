@@ -20,19 +20,9 @@ import { useEffect } from 'react';
 import CustomTableV2 from '../../../CustomTable_v2/CustomTableV2';
 // import SarcasmNetwork from '../SarcasmNetwork';
 
-function PageOverviewWithoutHealth({
-  columns,
-  pagequery,
-  setPagequery,
-  categoryFilter,
-  setCategoryFilter,
-  activenessFilter,
-  setActivenessFilter,
-  filterFollowers,
-  setFilterFollowers,
-  latestPageObject,
-}) {
+function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, latestPageObject }) {
   const token = sessionStorage.getItem('token');
+  const [activeTab, setActiveTab] = useState('Tab0');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");
@@ -49,6 +39,7 @@ function PageOverviewWithoutHealth({
     userID,
     pagequery,
   });
+
   // const {
   //   data: vendorData,
   //   isLoading: loading,
@@ -80,18 +71,25 @@ function PageOverviewWithoutHealth({
 
   return (
     <div className="card">
-      <PageOverviewHeader
-        selectedData={selectedData}
-        setSelectedData={setSelectedData}
-        onFilterChange={handleFilterChange}
-        pagequery={pagequery}
-        categoryFilter={categoryFilter}
-        setCategoryFilter={setCategoryFilter}
-        activenessFilter={activenessFilter}
-        setActivenessFilter={setActivenessFilter}
-        filterFollowers={filterFollowers}
-        setFilterFollowers={setFilterFollowers}
-      />
+      <PageOverviewHeader selectedData={selectedData} setSelectedData={setSelectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
+      {/* <div className="tabs">
+        <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab0')}>
+          Instagram
+        </button>
+        <button className={activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab5')}>
+          Facebook
+        </button>
+        <button className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab3')}>
+          Twitter
+        </button>
+        <button className={activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab4')}>
+          Youtube
+        </button>
+
+        <button className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab1')}>
+          Snapchat
+        </button>
+      </div> */}
       <div className="card-body p0">
         <div className="data_tbl thm_table table-responsive">
           {isLoading ? (

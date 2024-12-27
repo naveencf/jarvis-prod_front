@@ -21,7 +21,7 @@ const PaymentDoneFilters = (props) => {
 
   const handleDateFilter = () => {
     const filterData = data?.filter((item) => {
-      const date = new Date(item.request_date);
+      const date = new Date(item?.payment_date);
       const fromDate1 = new Date(fromDate);
       const toDate1 = new Date(toDate);
       toDate1.setDate(toDate1.getDate() + 1);
@@ -51,11 +51,11 @@ const PaymentDoneFilters = (props) => {
         const numericRequestedAmount = parseFloat(requestedAmountField);
         switch (requestAmountFilter) {
           case "greaterThan":
-            return +item.request_amount > numericRequestedAmount;
+            return +item.payment_amount > numericRequestedAmount;
           case "lessThan":
-            return +item.request_amount < numericRequestedAmount;
+            return +item.payment_amount < numericRequestedAmount;
           case "equalTo":
-            return +item.request_amount === numericRequestedAmount;
+            return +item.payment_amount === numericRequestedAmount;
           default:
             return true;
         }
@@ -210,7 +210,7 @@ const PaymentDoneFilters = (props) => {
                 </div>
                 <div className="col-md-4 col-sm-12">
                   <div className="form-group">
-                    <label>Request Amount Filter</label>
+                    <label>Payment Amount Filter</label>
                     <select
                       value={requestAmountFilter}
                       className="form-control"
@@ -225,7 +225,7 @@ const PaymentDoneFilters = (props) => {
                 </div>
                 <div className="col-md-4 col-sm-12">
                   <div className="form-group">
-                    <label>Requested Amount</label>
+                    <label>Payment Amount</label>
                     <input
                       value={requestedAmountField}
                       type="number"
