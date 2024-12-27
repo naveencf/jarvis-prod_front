@@ -59,7 +59,7 @@ const PageOverviewNew = () => {
   // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState('');
-  const [pagequery, setPagequery] = useState('');
+  const [pagequery, setPagequery] = useState('youtube');
   const [editMode, setEditMode] = useState(false);
   const [editID, setEditID] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -76,7 +76,7 @@ const PageOverviewNew = () => {
     userID,
     pagequery,
   });
-  console.log('pagelist', pageList);
+  console.log('pagequery', pagequery);
   const { data: pageStates, isLoading: isPagestatLoading } = useGetPageStateQuery();
 
   useEffect(() => {
@@ -611,8 +611,6 @@ const PageOverviewNew = () => {
       },
     },
 
-
-
     {
       key: 'followers_count',
       name: 'Followers',
@@ -630,7 +628,7 @@ const PageOverviewNew = () => {
         const followerCount = Math.max(0, row?.followers_count || 0);
 
         // Extract all prices from priceList excluding 'instagram_both'
-        const prices = priceList.flatMap(item =>
+        const prices = priceList.flatMap((item) =>
           Object.entries(item)
             .filter(([key]) => key !== 'instagram_both') // Exclude 'instagram_both'
             .map(([, value]) => Number(value) || 0)
@@ -639,12 +637,10 @@ const PageOverviewNew = () => {
         // Calculate the maximum price in the list
         const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-        if (rateType === "Variable") {
+        if (rateType === 'Variable') {
           // Calculate the average story price based on follower count
           const maxVariablePrice = maxPrice; // Maximum price among variable prices
-          const tempmaxVariablePrice = followerCount
-            ? Math.floor(maxVariablePrice / (followerCount / 1000000))
-            : 0;
+          const tempmaxVariablePrice = followerCount ? Math.floor(maxVariablePrice / (followerCount / 1000000)) : 0;
 
           // Return the higher value between tempmaxVariablePrice and maxPrice
           return Math.max(tempmaxVariablePrice, maxPrice);
@@ -665,8 +661,7 @@ const PageOverviewNew = () => {
         return row.page_link ? row.page_link : 'NA';
       },
       compare: true,
-    }
-    ,
+    },
     {
       key: 'Bio',
       name: 'Bio',
@@ -694,9 +689,7 @@ const PageOverviewNew = () => {
       width: 100,
 
       renderRowCell: (row) => {
-        let name = allVendorWhats?.filter(
-          (item) => item?.vendor_id == row?.vendor_id
-        );
+        let name = allVendorWhats?.filter((item) => item?.vendor_id == row?.vendor_id);
         let countName = name?.length;
         return (
           <div
@@ -825,7 +818,6 @@ const PageOverviewNew = () => {
       },
     },
 
-
     {
       key: 'vendor_name',
       name: 'Vendor Name',
@@ -870,6 +862,17 @@ const PageOverviewNew = () => {
       compare: true,
     },
     {
+      key: 'Reel Price',
+      name: 'Reel Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
+        const reelPrice = reelData ? reelData.instagram_reel : 0;
+        return reelPrice > 0 ? Number(reelPrice) : 0;
+      },
+      compare: true,
+    },
+    {
       key: 'Story Price',
       name: 'Story Price',
       width: 200,
@@ -891,8 +894,6 @@ const PageOverviewNew = () => {
       },
       compare: true,
     },
-
-
 
     // {
     //   key: 'ownership_type',

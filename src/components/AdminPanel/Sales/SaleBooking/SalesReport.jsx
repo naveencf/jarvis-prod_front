@@ -73,7 +73,6 @@ const SalesReport = () => {
   const handelSearch = () => {
     triggerGetSalesReport({ filter, fromDate, toDate, Cat_id });
   };
-  console.log(salesReportData);
 
   const options = [
     {

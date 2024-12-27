@@ -669,7 +669,7 @@ const VendorMaster = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!vendorName || vendorName == '' || vendorName == null || homePincode.length !== 6) {
+    if (!vendorName || vendorName == '' || vendorName == null || String(homePincode).length !== 6) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
     // if (!countryCode) {
@@ -902,14 +902,13 @@ const VendorMaster = () => {
   // };
 
   const handleFinalSubmit = async () => {
- 
     const cleanedMobile = mobile ? String(mobile).trim() : '';
     if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
       toastError('Please fill all the mandatory fields');
       return;
     }
-
-    if (homePincode.length !== 6) {
+ 
+    if (String(homePincode).length !== 6) {
       toastError('Please Enter valid pincode');
       return;
     }
@@ -1133,7 +1132,7 @@ const VendorMaster = () => {
     'Jammu and Kashmir': 'JK',
     Ladakh: 'LA',
   };
-  
+
   const handleCompPincode = async (event) => {
     const newValue = event.target.value;
     setCompPin(newValue);

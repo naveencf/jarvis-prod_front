@@ -34,7 +34,6 @@ const Login = () => {
           const deptId = decodedToken.dept_id;
           const onboardStatus = decodedToken.onboard_status;
 
-          console.log(deptId, onboardStatus);
           if (status === "Active") {
             if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
               navigate("/admin/sales-dashboard");

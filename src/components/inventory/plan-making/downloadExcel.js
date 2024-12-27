@@ -96,7 +96,8 @@ export const downloadExcel = async (
     'Deliverables',
     'Cost',
   ];
-
+  const headerColor = ["F9CB9C", "92C47C", "FCE5CD", "D9CABD", "E06666", "FFE599"]
+  const randomNumber = Math.floor(Math.random() * 9) + 1;
   // Apply border style
   const contentBorder = {
     top: { style: 'thin' },
@@ -113,7 +114,7 @@ export const downloadExcel = async (
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'D9CABD' }, // Light brown fill
+        fgColor: { argb: headerColor[randomNumber % 4] }, // Light brown fill
       };
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
       cell.border = contentBorder; // Apply border to content
@@ -131,9 +132,8 @@ export const downloadExcel = async (
       platformData.forEach((page) => {
         if (page.platform_name === 'instagram') {
           const categoryId = page.page_category_id;
-          const pageLink = `https://www.${platform.toLowerCase()}.com/${
-            page.page_name
-          }`;
+          const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name
+            }`;
           const categoryName =
             category?.find((cat) => cat._id === categoryId)?.page_category ||
             'Unknown';
@@ -156,9 +156,9 @@ export const downloadExcel = async (
 
           totalCost +=
             postCountValue *
-              getPriceDetail(page.page_price_list, 'instagram_post') +
+            getPriceDetail(page.page_price_list, 'instagram_post') +
             storyCountValue *
-              getPriceDetail(page.page_price_list, 'instagram_story');
+            getPriceDetail(page.page_price_list, 'instagram_story');
         }
       });
 
@@ -343,9 +343,8 @@ export const downloadExcel = async (
 
       // Group pages into categories based on platform
       const groupedPages = platformPages.reduce((acc, page) => {
-        const pageLink = `https://www.${platform.toLowerCase()}.com/${
-          page.page_name
-        }`;
+        const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name
+          }`;
         acc[platform] = acc[platform] || [];
 
         acc[platform].push({
@@ -748,7 +747,7 @@ export const downloadExcel = async (
       cell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: 'D3D3D3' }, // White background
+        fgColor: { argb: 'F3F3F3' }, // White background
       };
     }
   }
@@ -761,9 +760,8 @@ export const downloadExcel = async (
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${
-      planDetails && formatString(planDetails[0]?.plan_name)
-    }.xlsx`;
+    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)
+      }.xlsx`;
     a.click();
     URL.revokeObjectURL(url); // Clean up the URL
   });

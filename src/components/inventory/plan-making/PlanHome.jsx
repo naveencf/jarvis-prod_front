@@ -105,7 +105,7 @@ function PlanHome() {
     setSuggestions([]); // Clear suggestions after selection
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
- 
+
   const { usersDataContext } = useContext(AppContext);
 
   const salesUsers = usersDataContext?.filter((user) => user?.department_name === 'Sales');
@@ -259,7 +259,9 @@ function PlanHome() {
     const newErrors = {};
     if (!planDetails.planName) newErrors.planName = 'Plan Name is required';
     if (!inputValue) newErrors.inputValue = 'Budget is required';
-    if (!planDetails.accountId) newErrors.accountName = 'Account Name is required';
+    if (planDetails.brandType === 'existing' && !planDetails.accountId) {
+      newErrors.accountName = 'Account Name is required';
+    }
     if (!planDetails.salesExecutiveId) newErrors.salesExecutiveId = 'Sales Executive is required';
     return newErrors;
   };
@@ -446,7 +448,9 @@ function PlanHome() {
     // formData.append('story_count', parseInt(planDetails.storyCount, 10));
     formData.append('description', planDetails.description);
     formData.append('sales_executive_id', parseInt(id));
-    formData.append('account_id', planDetails.accountId);
+    if(planDetails.accountId){
+      formData.append('account_id', planDetails.accountId);
+    }
     if (planDetails.brandId || planDetails.brand_id) {
       formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
     }
@@ -518,7 +522,7 @@ function PlanHome() {
     setSelectedPlanId(null);
   };
 
-  const isSubmitDisabled = submitLoader || !planDetails.planName || !inputValue || !planDetails.accountId || !planDetails.salesExecutiveId;
+  const isSubmitDisabled = submitLoader || !planDetails.planName || !inputValue || (planDetails.brandType === 'existing' && !planDetails.accountId) || !planDetails.salesExecutiveId;
 
   const handleDuplicateClick = (params) => {
     const planId = params.id;
@@ -580,22 +584,62 @@ function PlanHome() {
         <DialogContent>
           <div className="thm_form pt8 d-flex flex-column rowGap12" style={{ width: '30rem' }}>
             <TextField className="mb16" margin="dense" label="Plan Name* (sheet name will be same)" name="planName" fullWidth value={planDetails.planName} onChange={handleInputChange} error={!!errors.planName} helperText={errors.planName} />
-            <Autocomplete
-              options={accounts}
-              getOptionLabel={(option) => option.account_name || ''}
-              isOptionEqualToValue={(option, value) => option._id === value?._id}
-              defaultValue={accounts.find((acc) => acc.account_name === planDetails.accountName) || null}
-              onChange={(event, value) => {
+
+            {/* Toggle between Existing or New Brand/Agency */}
+            <TextField
+              select
+              label="Brand/Agency Type *"
+              value={planDetails.brandType || 'existing'}
+              onChange={(e) =>
                 setPlanDetails((prevDetails) => ({
                   ...prevDetails,
-                  accountId: value ? value._id : '',
-                  accountName: value ? value.account_name : '',
-                  accountTypeName: value ? value.account_type_name : '',
-                  brandId: value ? value.brand_id : '',
-                }));
-              }}
-              renderInput={(params) => <TextField {...params} label="Account Name *" error={!!errors.accountName} helperText={errors.accountName} />}
-            />
+                  brandType: e.target.value,
+                  accountName: e.target.value === 'new' ? '' : planDetails.accountName,
+                }))
+              }
+              fullWidth
+            >
+              <MenuItem value="existing">Existing Brand/Agency</MenuItem>
+              <MenuItem value="new">New Brand/Agency</MenuItem>
+            </TextField>
+
+            {planDetails.brandType === 'existing' ? (
+              <Autocomplete
+                options={accounts}
+                getOptionLabel={(option) => option.account_name || ''}
+                isOptionEqualToValue={(option, value) => option._id === value?._id}
+                defaultValue={accounts.find((acc) => acc.account_name === planDetails.accountName) || null}
+                onChange={(event, value) => {
+                  setPlanDetails((prevDetails) => ({
+                    ...prevDetails,
+                    accountId: value ? value._id : '',
+                    accountName: value ? value.account_name : '',
+                    accountTypeName: value ? value.account_type_name : '',
+                    brandId: value ? value.brand_id : '',
+                  }));
+                }}
+                renderInput={(params) => <TextField {...params} label="Account Name *" error={!!errors.accountName} helperText={errors.accountName} />}
+              />
+            ) : (
+              <TextField
+                margin="dense"
+                label="New Account Name *"
+                name="accountName"
+                fullWidth
+                value={planDetails.accountName}
+                onChange={(e) =>
+                  setPlanDetails((prevDetails) => ({
+                    ...prevDetails,
+                    accountName: e.target.value,
+                    accountId: '',
+                    accountTypeName: '',
+                    brandId: '',
+                  }))
+                }
+                error={!!errors.accountName}
+                helperText={errors.accountName}
+              />
+            )}
 
             {planDetails.accountTypeName && (
               <div
@@ -661,11 +705,7 @@ function PlanHome() {
 
             {/* File Upload and Remove Section */}
             <div className="file-upload-section">
-              <input
-                type="file"
-                // accept=".jpg,.png,.pdf,.doc,.docx" // Customize based on allowed file types
-                onChange={handleFileChange}
-              />
+              <input type="file" onChange={handleFileChange} />
               {file && (
                 <div className="file-preview">
                   <span>{file.name}</span>
@@ -706,7 +746,7 @@ function PlanHome() {
         </div>
         <div className="card-body p0 noCardHeader">
           <div className="data_tbl thm_table table-responsive">
-            {activeTab === 'Tab1' && <View isLoading={loading} columns={columns} data={finalPlanList} pagination={[100, 200]} tableName={'PlanMakingDetails'} version={1}/>}
+            {activeTab === 'Tab1' && <View isLoading={loading} columns={columns} data={finalPlanList} pagination={[100, 200]} tableName={'PlanMakingDetails'} version={1} />}
             {activeTab === 'Tab3' && <PlanPricing />}
           </div>
         </div>

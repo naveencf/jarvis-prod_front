@@ -1,24 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Autocomplete,
-  TextField,
-  Typography,
-  Breadcrumbs,
-  Box,
-  Modal,
-} from '@mui/material';
+import { Autocomplete, TextField, Typography, Breadcrumbs, Box, Modal } from '@mui/material';
 import jwtDecode from 'jwt-decode';
-import {
-  useGetAllPageCategoryQuery,
-  useGetAllPageListQuery,
-  useGetAllPageSubCategoryQuery,
-  useGetAllProfileListQuery,
-} from '../../../Store/PageBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageListQuery, useGetAllPageSubCategoryQuery, useGetAllProfileListQuery } from '../../../Store/PageBaseURL';
 import formatString from '../../../../utils/formatString';
-import {
-  useGetAllVendorWiseListQuery,
-  useGetPmsPlatformQuery,
-} from '../../../Store/reduxBaseURL';
+import { useGetAllVendorWiseListQuery, useGetPmsPlatformQuery } from '../../../Store/reduxBaseURL';
 import { Link } from 'react-router-dom';
 import AddIcon from '@mui/icons-material/Add';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
@@ -40,18 +25,7 @@ const style = {
   p: 4,
 };
 
-function PageOverviewHeader({
-  onFilterChange,
-  pagequery,
-  categoryFilter,
-  setCategoryFilter,
-  activenessFilter,
-  setActivenessFilter,
-  filterFollowers,
-  setFilterFollowers,
-  selectedData,
-  setSelectedData,
-}) {
+function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, selectedData, setSelectedData }) {
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -77,13 +51,11 @@ function PageOverviewHeader({
   const [disabledPagesData, setDisabledPagesData] = useState([]);
   const [openDisabledPages, setOpenDisabledPages] = useState(false);
   const [bulkVendorSum, setBulkVendorSum] = useState(0);
+  const [activeTab, setActiveTab] = useState('Tab0');
+
   const handleCloseDisabled = () => setOpenDisabledPages(false);
 
-  const {
-    data: pageList,
-    refetch: refetchPageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  const { data: pageList, refetch: refetchPageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   // Sorting state
   const [sortField, setSortField] = useState('');
@@ -141,15 +113,7 @@ function PageOverviewHeader({
       filterFollowers,
     };
     sessionStorage.setItem('filters', JSON.stringify(filters));
-  }, [
-    categoryFilter,
-    subCategoryFilter,
-    profileTypeFilter,
-    platformFilter,
-    ownershipFilter,
-    activenessFilter,
-    filterFollowers,
-  ]);
+  }, [categoryFilter, subCategoryFilter, profileTypeFilter, platformFilter, ownershipFilter, activenessFilter, filterFollowers]);
 
   const handleSelectionChange = (event, newValue) => {
     if (newValue) {
@@ -158,62 +122,26 @@ function PageOverviewHeader({
       setFilterFollowers(null);
     }
   };
+  categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
 
   useEffect(() => {
-    const newQuery = [
-      categoryFilter
-        ? `page_category_name=${categoryFilter.toLowerCase()}`
-        : '',
-      subCategoryFilter
-        ? `page_sub_category_name=${subCategoryFilter.toLowerCase()}`
-        : '',
-      profileTypeFilter
-        ? `page_profile_type_name=${profileTypeFilter.toLowerCase()}`
-        : '',
-      platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : '',
-      ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : '',
-      filterFollowers
-        ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`
-        : '',
-      activenessFilter
-        ? `page_activeness=${activenessOptions
-          .find((option) => option.value === activenessFilter.toLowerCase())
-          ?.value?.toLowerCase()}`
-        : '',
-      searchTerm ? `search=${searchTerm.toLowerCase()}` : '',
-      sortField ? `sort_by=${sortField}&order=${sortOrder}` : '',
-    ]
-      .filter(Boolean)
-      .join('&');
+    const newQuery = [categoryFilter ? `page_category_name=${categoryFilter.toLowerCase()}` : '', subCategoryFilter ? `page_sub_category_name=${subCategoryFilter.toLowerCase()}` : '', profileTypeFilter ? `page_profile_type_name=${profileTypeFilter.toLowerCase()}` : '', platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : '', ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : '', filterFollowers ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}` : '', activenessFilter ? `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}` : '', searchTerm ? `search=${searchTerm.toLowerCase()}` : '', sortField ? `sort_by=${sortField}&order=${sortOrder}` : ''].filter(Boolean).join('&');
     onFilterChange(newQuery);
-  }, [
-    categoryFilter,
-    subCategoryFilter,
-    profileTypeFilter,
-    platformFilter,
-    ownershipFilter,
-    activenessFilter,
-    searchTerm,
-    sortField,
-    sortOrder,
-    filterFollowers,
-  ]);
-  // Utility function to count matching pages based on filter
+  }, [categoryFilter, subCategoryFilter, profileTypeFilter, platformFilter, ownershipFilter, activenessFilter, searchTerm, sortField, sortOrder, filterFollowers]);
+
+
   const getCount = (list, filterKey, value) => {
-    return (
-      list?.filter(
-        (page) => page[filterKey]?.toLowerCase() === value?.toLowerCase()
-      ).length || 0
-    );
+    return list?.filter((page) => page[filterKey]?.toLowerCase() === value?.toLowerCase()).length || 0;
   };
 
-  const subCategoryOptionsWithCount = subCategoryData.map((res) => {
-    const count = getCount(
-      pageList,
-      'page_sub_category_name',
-      res.page_sub_category
-    );
+  const subCategoryOptionsWithCount = subCategoryData?.map((res) => {
+    const count = getCount(pageList, 'page_sub_category_name', res.page_sub_category);
     return `${formatString(res.page_sub_category)} (${count})`;
+  });
+  const categoryOptionsWithCount = categoryData?.map((res) => {
+    console.log('ress', res);
+    const count = getCount(pageList, 'page_category_name', res.page_category);
+    return `${formatString(res.page_category)} (${count})`;
   });
 
   const platformOptionsWithCount = platformData.map((res) => {
@@ -231,11 +159,7 @@ function PageOverviewHeader({
     return `${formatString(res)} (${count})`; // Format the result with the count
   });
   const profileDataOptionsWithCount = profileDataOptions.map((res) => {
-    const count = getCount(
-      pageList,
-      'page_profile_type_name',
-      res.profile_type
-    );
+    const count = getCount(pageList, 'page_profile_type_name', res.profile_type);
     return `${formatString(res.profile_type)} (${count})`;
   });
 
@@ -319,6 +243,16 @@ function PageOverviewHeader({
     // },
   ];
 
+  const handleTabClick = (tab) => {
+    setActiveTab(tab);
+    localStorage.setItem('activeTab', tab);
+  };
+
+  useEffect(() => {
+    const platformName = activeTab === 'Tab0' ? 'Instagram' : activeTab === 'Tab5' ? 'Facebook' : activeTab === 'Tab3' ? 'Twitter' : activeTab === 'Tab4' ? 'Youtube' : activeTab === 'Tab1' ? 'Snapchat' : null;
+    onFilterChange(`platform_name=${platformName?.toLowerCase()}`);
+  }, [activeTab]);
+
   useEffect(() => {
     if (vendorData?.length) {
       const sum = vendorData.reduce((acc, val) => val.page_count + acc, 0);
@@ -326,84 +260,47 @@ function PageOverviewHeader({
     }
   }, [vendorData]);
 
+  useEffect(() => {
+    const storedTab = localStorage.getItem('activeTab');
+    if (storedTab) {
+      setActiveTab(storedTab);
+    }
+  }, []);
+
   return (
     <div className="card">
       <div className="">
         <div className="card">
           <div className="card-header flexCenterBetween">
             <h5 className="card-title flexCenterBetween">
-              <Typography>Total Pages </Typography>
-              <Typography>: {pageList?.length + (bulkVendorSum || 0)} </Typography>
+              {/* <Typography>Total Pages </Typography>
+              <Typography>: {pageList?.length + (bulkVendorSum || 0)} </Typography> */}
               <Typography sx={{ marginLeft: '16px' }}>Inventory </Typography>
               <Typography>: {pageList?.length} </Typography>
-              <Typography sx={{ marginLeft: '16px' }}>
+              {/* <Typography sx={{ marginLeft: '16px' }}>
                 {' '}
                 Bulk-Vendor Pages
               </Typography>
-              {bulkVendorSum && <Typography>: {bulkVendorSum}</Typography>}
+              {bulkVendorSum && <Typography>: {bulkVendorSum}</Typography>} */}
               <Breadcrumbs sx={{ ml: 2 }} aria-label="breadcrumb">
-                {platformFilter != null && (
-                  <Typography>
-                    {platformFilter.charAt(0).toUpperCase() +
-                      platformFilter.slice(1)}
-                  </Typography>
-                )}
-                {ownershipFilter != null && (
-                  <Typography>
-                    {ownershipFilter.charAt(0).toUpperCase() +
-                      ownershipFilter.slice(1)}
-                  </Typography>
-                )}
-                {profileTypeFilter != null && (
-                  <Typography>
-                    {profileTypeFilter.charAt(0).toUpperCase() +
-                      profileTypeFilter.slice(1)}
-                  </Typography>
-                )}
-                {categoryFilter != null && (
-                  <Typography>
-                    Category -{' '}
-                    {categoryFilter.charAt(0).toUpperCase() +
-                      categoryFilter.slice(1)}
-                  </Typography>
-                )}
-                {subCategoryFilter != null && (
-                  <Typography>
-                    SubCategory -{' '}
-                    {subCategoryFilter.charAt(0).toUpperCase() +
-                      subCategoryFilter.slice(1)}
-                  </Typography>
-                )}
-                {activenessFilter != null && (
-                  <Typography>
-                    {activenessFilter.charAt(0).toUpperCase() +
-                      activenessFilter.slice(1)}
-                  </Typography>
-                )}
+                {platformFilter != null && <Typography>{platformFilter.charAt(0).toUpperCase() + platformFilter.slice(1)}</Typography>}
+                {ownershipFilter != null && <Typography>{ownershipFilter.charAt(0).toUpperCase() + ownershipFilter.slice(1)}</Typography>}
+                {profileTypeFilter != null && <Typography>{profileTypeFilter.charAt(0).toUpperCase() + profileTypeFilter.slice(1)}</Typography>}
+                {categoryFilter != null && <Typography>Category - {categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)}</Typography>}
+                {subCategoryFilter != null && <Typography>SubCategory - {subCategoryFilter.charAt(0).toUpperCase() + subCategoryFilter.slice(1)}</Typography>}
+                {activenessFilter != null && <Typography>{activenessFilter.charAt(0).toUpperCase() + activenessFilter.slice(1)}</Typography>}
               </Breadcrumbs>
             </h5>
             <div className="flexCenter colGap8">
-              <SarcasmNetwork
-                selectedData={selectedData}
-                setSelectedData={setSelectedData}
-              />
-              <button
-                className="btn cmnbtn btn_sm btn-outline-danger"
-                onClick={handleDisabledPages}
-              >
+              <SarcasmNetwork selectedData={selectedData} setSelectedData={setSelectedData} />
+              <button className="btn cmnbtn btn_sm btn-outline-danger" onClick={handleDisabledPages}>
                 Disabled pages
               </button>
 
-              <Link
-                to={`/admin/pms-page-master`}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
+              <Link to={`/admin/pms-page-master`} className="btn cmnbtn btn_sm btn-outline-primary">
                 Add Profile <AddIcon />
               </Link>
-              <Link
-                to={`/admin/pms-vendor-overview`}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
+              <Link to={`/admin/pms-vendor-overview`} className="btn cmnbtn btn_sm btn-outline-primary">
                 Vendor <KeyboardArrowRightIcon />
               </Link>
             </div>
@@ -414,113 +311,61 @@ function PageOverviewHeader({
         <div>
           <div className="row thm_form">
             <div className="col-md-3 mb16">
-              <Autocomplete
-                value={categoryFilter}
-                onChange={(event, newValue) => setCategoryFilter(newValue)}
-                options={categoryData?.map((res) =>
-                  formatString(res.page_category)
-                )}
-                renderInput={(params) => (
-                  <TextField {...params} label="Category" />
-                )}
-              />
+              <Autocomplete value={categoryFilter} onChange={(event, newValue) => setCategoryFilter(extractLabel(newValue))} options={categoryOptionsWithCount} renderInput={(params) => <TextField {...params} label="Category" />} />
             </div>
 
             <div className="col-md-3 mb16">
-              <Autocomplete
-                value={subCategoryFilter}
-                onChange={(event, newValue) =>
-                  setSubCategoryFilter(extractLabel(newValue))
-                }
-                options={subCategoryOptionsWithCount}
-                renderInput={(params) => (
-                  <TextField {...params} label="Subcategory" />
-                )}
-              />
+              <Autocomplete value={subCategoryFilter} onChange={(event, newValue) => setSubCategoryFilter(extractLabel(newValue))} options={subCategoryOptionsWithCount} renderInput={(params) => <TextField {...params} label="Subcategory" />} />
             </div>
             <div className="col-md-3 mb16">
-              <Autocomplete
-                value={profileTypeFilter}
-                onChange={(event, newValue) =>
-                  setProfileTypeFilter(extractLabel(newValue))
-                }
-                options={profileDataOptionsWithCount}
-                renderInput={(params) => (
-                  <TextField {...params} label="Profile Type" />
-                )}
-              />
+              <Autocomplete value={profileTypeFilter} onChange={(event, newValue) => setProfileTypeFilter(extractLabel(newValue))} options={profileDataOptionsWithCount} renderInput={(params) => <TextField {...params} label="Profile Type" />} />
             </div>
-            <div className="col-md-3 mb16">
-              <Autocomplete
-                value={platformFilter}
-                onChange={(event, newValue) =>
-                  setPlatformFilter(extractLabel(newValue))
-                }
-                options={platformOptionsWithCount}
-                renderInput={(params) => (
-                  <TextField {...params} label="Platform" />
-                )}
-              />
-            </div>
+            {/* <div className="col-md-3 mb16">
+              <Autocomplete value={platformFilter} onChange={(event, newValue) => setPlatformFilter(extractLabel(newValue))} options={platformOptionsWithCount} renderInput={(params) => <TextField {...params} label="Platform" />} />
+            </div> */}
 
             <div className="col-md-3 mb16">
-              <Autocomplete
-                value={ownershipFilter}
-                onChange={(event, newValue) =>
-                  setOwnershipFilter(extractLabel(newValue))
-                }
-                options={ownershipWithCount}
-                renderInput={(params) => (
-                  <TextField {...params} label="Ownership" />
-                )}
-              />
+              <Autocomplete value={ownershipFilter} onChange={(event, newValue) => setOwnershipFilter(extractLabel(newValue))} options={ownershipWithCount} renderInput={(params) => <TextField {...params} label="Ownership" />} />
             </div>
 
             <div className="col-md-3 mb16">
               <Autocomplete
                 value={activenessFilter}
                 onChange={(event, newValue) => {
-                  setActivenessFilter(extractLabel(newValue)); // Set only the label, not the count
+                  setActivenessFilter(extractLabel(newValue));
                 }}
                 options={activenessOptionsWithCount}
-                renderInput={(params) => (
-                  <TextField {...params} label="Activeness" />
-                )}
+                renderInput={(params) => <TextField {...params} label="Activeness" />}
               />
             </div>
             <div className="col-md-3 mb16">
-              <Autocomplete
-                value={filterFollowers}
-                onChange={handleSelectionChange}
-                options={FollowerRanges}
-                getOptionLabel={(option) => option.label}
-                renderInput={(params) => (
-                  <TextField {...params} label="Followers" />
-                )}
-              />
+              <Autocomplete value={filterFollowers} onChange={handleSelectionChange} options={FollowerRanges} getOptionLabel={(option) => option.label} renderInput={(params) => <TextField {...params} label="Followers" />} />
             </div>
-            {decodedToken?.role_id == 1 && (
-              <ExportInventory pageList={pageList} />
-            )}
+            {decodedToken?.role_id == 1 && <ExportInventory pageList={pageList} />}
+            <div className="tabs">
+              <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab0')}>
+                Instagram
+              </button>
+              <button className={activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab5')}>
+                Facebook
+              </button>
+              <button className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab3')}>
+                Twitter
+              </button>
+              <button className={activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab4')}>
+                Youtube
+              </button>
+              <button className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab1')}>
+                Snapchat
+              </button>
+            </div>
           </div>
         </div>
       </div>
       <>
-        <Modal
-          open={openDisabledPages}
-          onClose={handleCloseDisabled}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
+        <Modal open={openDisabledPages} onClose={handleCloseDisabled} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
           <Box sx={style}>
-            <View
-              columns={dataGridcolumns}
-              data={disabledPagesData}
-              isLoading={false}
-              title={'Disabled Pages'}
-              pagination={[100, 200, 1000]}
-              tableName={'Disabled Pages'}
-            />
+            <View columns={dataGridcolumns} data={disabledPagesData} isLoading={false} title={'Disabled Pages'} pagination={[100, 200, 1000]} tableName={'Disabled Pages'} />
           </Box>
         </Modal>
       </>

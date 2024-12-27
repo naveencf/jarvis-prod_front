@@ -8,7 +8,10 @@ import { useEffect, useState } from "react";
 const Login = lazy(() => import("./Login/Login"));
 import SimUpdate from "./components/Sim/SimUpdate";
 import PreOnboardingUserMaster from "./components/PreOnboarding/PreOnboardingUserMaster";
-import { APIContext } from "./components/AdminPanel/APIContext/APIContext";
+import {
+  APIContext,
+  ApiContextData,
+} from "./components/AdminPanel/APIContext/APIContext";
 import ForgetPassword from "./Login/Forget/ForgetPassword";
 import AccountInfo from "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo";
 
@@ -404,7 +407,14 @@ function App() {
 
           {/* Execution history */}
           {/* sales Account Info Page route */}
-          <Route path="/sales-account-info/:id" element={<AccountInfo />} />
+          <Route
+            path="/sales-account-info/:id"
+            element={
+              <APIContext>
+                <AccountInfo />
+              </APIContext>
+            }
+          />
           <Route path="/instaapi/community/learning" element={<Learning />} />
 
           <Route path="*" element={<ErrorPage />} />

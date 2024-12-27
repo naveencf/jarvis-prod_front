@@ -15,7 +15,7 @@ import LeftSideBar from './LeftSideBar';
 // import PlanPricing from './PlanPricing';
 import RightDrawer from './RightDrawer';
 import ActiveDescriptionModal from './ActiveDescriptionModal';
-import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
+// import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
 import PlanVersions from './PlanVersions';
 import { ButtonTitle, calculatePrice } from './helper';
 import ScrollBlocker from './ScrollBlocker';
@@ -24,6 +24,7 @@ import CountInputs from './CountInputs';
 import SearchAndClear from './SearchAndClear';
 import LayeringControls from './LayeringControls';
 import ProgressDisplay from './ProgressDisplay';
+import CustomTable from '../../CustomTable/CustomTable';
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMaking = () => {
@@ -155,52 +156,47 @@ const PlanMaking = () => {
     });
   };
 
-  const handleUpdateValues = () => {
-    const updatedStoryValues = { ...storyPerPageValues };
-    const updatedPostValues = { ...postPerPageValues };
+  const handleUpdateValues = (type) => {
+    const isPost = type === 'post';
+    const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
 
     getTableData.forEach((row) => {
       const isChecked = showTotalCost[row._id];
 
       if (isChecked) {
-        const newPostPerPage = postCountDefault || 1;
-        const newStoryPerPage = storyCountDefault || 0;
-
-        updatedPostValues[row._id] = newPostPerPage;
-        updatedStoryValues[row._id] = newStoryPerPage;
+        const newValue = isPost ? postCountDefault || 1 : storyCountDefault || 0;
+        updatedValues[row._id] = newValue;
       }
     });
 
-    setStoryPerPageValues(updatedStoryValues);
-    setPostPerPageValues(updatedPostValues);
+    if (isPost) {
+      setPostPerPageValues(updatedValues);
+    } else {
+      setStoryPerPageValues(updatedValues);
+    }
 
-    // Trigger other updates or calculations
+    // Trigger other updates or calculations dynamically based on type
     getTableData.forEach((row) => {
-      const postCount = updatedPostValues[row._id] ?? 1;
-      const storyCount = updatedStoryValues[row._id] ?? 0;
-      const postCost = costPerPostValues[row._id] ?? 0;
-      const storyCost = costPerStoryValues[row._id] ?? 0;
-      const bothCost = costPerBothValues[row._id] ?? 0;
+      const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
+      const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
 
-      // Calculate total cost for each row
-      calculateTotalCost(row._id, postCount, storyCount, postCost, storyCost, bothCost);
+      // Calculate total cost based on type
+      calculateTotalCost(row._id, isPost ? count : 0, isPost ? 0 : count, isPost ? cost : 0, isPost ? 0 : cost, 0);
     });
 
-    // Update the plan data
+    // Update the plan data dynamically for post or story
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count } = row;
 
       const isFixedRate = rate_type === 'fixed';
 
-      const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { page_price_list, followers_count }, type));
+      const getPrice = (priceType) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${priceType}`) : calculatePrice(rate_type, { page_price_list, followers_count }, priceType));
 
       return {
         _id,
         page_name,
-        post_price: getPrice('post'),
-        story_price: getPrice('story'),
-        post_count: Number(updatedPostValues[row._id]) || 0,
-        story_count: Number(updatedStoryValues[row._id]) || 0,
+        [`${type}_price`]: getPrice(type),
+        [`${type}_count`]: Number(updatedValues[row._id]) || 0,
       };
     });
 
@@ -438,7 +434,6 @@ const PlanMaking = () => {
     setActiveTabPlatform(id);
   };
 
- 
   const handleAutomaticSelection = (incomingData) => {
     // Clone the state to avoid direct mutation
     const updatedSelectedRows = [...selectedRows];
@@ -694,27 +689,18 @@ const PlanMaking = () => {
 
   const handleKeyPress = (event) => {
     if (event.code === 'Space') {
-      setShortcutTriggered(true); // Indicate shortcut use
-      // Call handleCheckboxChange directly for the activeIndex
-      handleCheckboxChange(
-        getTableData[activeIndex],
-        // filterData[activeIndex],
-        'shortcutkey',
-        { target: { checked: true } },
-        activeIndex
-      );
-    } else if (event.code === 'ArrowDown') {
-      if (activeIndex < filterData.length - 1) {
-        setShortcutTriggered(true); // Indicate shortcut use
-        setActiveIndex(activeIndex + 1);
-        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-      }
-    } else if (event.code === 'ArrowUp') {
-      if (activeIndex > 0) {
-        setShortcutTriggered(true); // Indicate shortcut use
-        setActiveIndex(activeIndex - 1);
-        // setTimeout(() => setShortcutTriggered(false), 0); // Reset after execution
-      }
+      setShortcutTriggered(true);
+      const currentRow = getTableData[activeIndex];
+      const isChecked = showTotalCost[currentRow._id] || false;
+
+      // Toggle checkbox
+      handleCheckboxChange(currentRow, 'shortcutkey', { target: { checked: !isChecked } }, activeIndex);
+    } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
+      setShortcutTriggered(true);
+      setActiveIndex(activeIndex + 1);
+    } else if (event.code === 'ArrowUp' && activeIndex > 0) {
+      setShortcutTriggered(true);
+      setActiveIndex(activeIndex - 1);
     }
   };
 
@@ -724,12 +710,11 @@ const PlanMaking = () => {
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
 
   const tableData = layering == 1 ? sarcasmNetwork : layering == 2 ? ownPages : layering == 3 ? advancePageList : layering == 4 ? topUsedPageList : showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows);
- 
+
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
   }, [descriptions]);
 
- 
   useEffect(() => {
     const updatePageData = (data, activeTabPlatform) => {
       if (data && activeTabPlatform.length) {
@@ -940,7 +925,7 @@ const PlanMaking = () => {
           <div className="thmTable">
             <Box sx={{ height: 700, width: '100%' }}>
               {/* {filterData && filterData.length > 0 ? ( */}
-              <CustomTableV2 dataLoading={isPageListLoading} columns={dataGridColumns} data={tableData} Pagination={[100, 200]} tableName={'PlanMakingDetails'} getFilteredData={setGetTableData} />
+              <CustomTable dataLoading={isPageListLoading} columns={dataGridColumns} data={tableData} Pagination={[100, 200]} tableName={'PlanMakingDetails'} getFilteredData={setGetTableData} showTotal={true} />
               {/* ) : (
                 <Loader />
               )} */}

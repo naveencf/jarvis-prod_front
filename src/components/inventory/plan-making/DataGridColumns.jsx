@@ -130,6 +130,7 @@ const DataGridColumns = ({
       // </div>
       width: 150,
       showCol: true,
+      getTotal: true,
     },
 
     {
@@ -202,7 +203,7 @@ const DataGridColumns = ({
               handleCheckboxChange(row, 'column', event, index);
             }}
             onClick={() => setShortcutTriggered(false)}
-            // onClick={() => handleRowClick(row)}
+          // onClick={() => handleRowClick(row)}
           />
         </div>
       ),
@@ -254,6 +255,7 @@ const DataGridColumns = ({
       width: 150,
       showCol: true,
       compare: true,
+      getTotal: true,
     },
     {
       key: 'average_story_price',
@@ -276,6 +278,7 @@ const DataGridColumns = ({
       width: 150,
       showCol: true,
       compare: true,
+      getTotal: true,
     },
 
     {
@@ -308,6 +311,7 @@ const DataGridColumns = ({
       width: 50,
       showCol: true,
       compare: true,
+      getTotal: true,
     },
     {
       key: 'preference_level',

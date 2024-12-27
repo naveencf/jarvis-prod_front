@@ -39,8 +39,10 @@ function PayVendorDialog(props) {
     userName,
     callApi,
     rowSelectionModel,
-    filterData,
+    filterData, GSTHoldAmount, setGSTHoldAmount,
+    //  TDSValue, setTDSValue
   } = props;
+
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -59,7 +61,7 @@ function PayVendorDialog(props) {
   const [payRemark, setPayRemark] = useState("");
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
-  const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
+  // const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
   const [preview, setPreview] = useState("");
@@ -729,7 +731,7 @@ function PayVendorDialog(props) {
           >
             Pay Vendor
           </Button>
-          {/* <Button
+          <Button
             // className="btn btn-success cmnbtn btn_sm ms-2"
             variant="contained"
             color="primary"
@@ -738,11 +740,11 @@ function PayVendorDialog(props) {
             disabled={!paymentAmout > 0}
           >
             Pay Through Gateway
-          </Button> */}
+          </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Dialog for  */}
+
       {payThroughVendor && <PayThroughVendorDialog
         setPayThroughVendor={setPayThroughVendor}
         payThroughVendor={payThroughVendor}

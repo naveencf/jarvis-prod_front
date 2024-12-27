@@ -1,4 +1,3 @@
-import { data } from "jquery";
 import React from "react";
 import Select from "react-select";
 
