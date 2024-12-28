@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import axios from "axios";
-import { baseUrl } from "../../../../../utils/config";
+import { baseUrl, insightsBaseUrl } from "../../../../../utils/config";
 import ReadableList from "./ReadableList";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
@@ -329,7 +329,7 @@ function PayVendorDialog(props) {
     }
     setPayThroughVendor(true);
     axios
-      .post(`https://insights.ist:8080/api/v1/payment_otp_send`, {
+      .post(insightsBaseUrl + `v1/payment_otp_send`, {
         "email": "naveen@creativefuel.io"
         // headers: {
         //   "Content-Type": "multipart/form-data",

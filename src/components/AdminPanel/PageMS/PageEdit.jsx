@@ -42,6 +42,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [rowCount, setRowCount] = useState([{ page_price_type_id: '', price: '' }]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [priceTypeList, setPriceTypeList] = useState([]);
+ 
 
   const [pageName, setPageName] = useState('');
   const [link, setLink] = useState('');
@@ -75,8 +76,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
-  const [currentPage, setCurrentPage] = useState([]);
   const [p_id, setP_id] = useState();
+  const [pagePriceList, setPagePriceList] = useState([]);
   const token = sessionStorage.getItem('token');
   const { usersDataContext } = useContext(AppContext);
 
@@ -145,7 +146,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const vendorData = vendor || [];
 
   const { data: profile, error: profileError, isLoading: profileIsLoading } = useGetAllProfileListQuery();
-  console.log('page_price_type_id', rowCount.page_price_type_id);
+
   const profileData = profile?.data || [];
   const handlePriceTypeChange = (e, index) => {
     const updatedRowCount = [...rowCount];
@@ -170,12 +171,12 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     let filteredData = priceTypeList.filter((row) => {
       return !rowCount.some((e) => e.page_price_type_id == row.page_price_type_id);
     });
-    axios.delete(baseUrl + `v1/pagePriceMultiple/${_id}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // axios.delete(baseUrl + `v1/pagePriceMultiple/${_id}`, {
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
     setFilterPriceTypeList(filteredData);
   };
 
@@ -202,8 +203,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     } else {
       setRowCount([{ page_price_type_id: '', price: '' }]);
     }
+ 
   };
-
+  console.log('rowCount', rowCount);
   const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
     skip: !pageMasterId,
   });
@@ -220,21 +222,30 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   };
 
   useEffect(() => {
-    if (priceData) {
-      const updatedRowCount = priceData.map((item) => {
-        const priceTypeKey = priceTypeMappings[item.page_price_type_id];
-        if (priceTypeKey) {
-          return {
-            ...item,
-            price: currentPage.find((page) => page[priceTypeKey])?.[priceTypeKey] || item.price,
-          };
-        }
-        return item; // If no mapping is found, return the item as is
+    if (pagePriceList.length) {
+      const priceTypeKeys = pagePriceList.map((item) => Object.keys(item)[0]);
+      const updatedRowCount = pagePriceList.map((item) => {
+        return priceTypeKeys
+          .map((key) => {
+            const priceTypeId = Object.keys(priceTypeMappings).find((id) => priceTypeMappings[id] === key);
+
+            const price = item[key] !== undefined ? item[key] : 0;
+
+            if (price) {
+              return {
+                page_price_type_id: priceTypeId,
+                price: price,
+                isFromPagePriceList: true
+              };
+            }
+          })
+          .filter(Boolean);
       });
 
-      setRowCount(updatedRowCount);
+      const flattenedRowCount = updatedRowCount.flat();
+      setRowCount(flattenedRowCount);
     }
-  }, [priceData, currentPage]);
+  }, [pagePriceList]);
 
   useEffect(() => {
     axios
@@ -246,7 +257,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then((res) => {
         const data = [res.data.data];
-        setCurrentPage(res.data.data.page_price_list);
+        setPagePriceList(res.data.data.page_price_list);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
         setPageName(data[0].page_name);
@@ -409,18 +420,18 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
         // Dynamically extract prices based on `priceTypeMappings`
         const prices = Object.keys(priceTypeMappings).reduce((acc, typeId) => {
-          const priceType = priceTypeMappings[typeId];  
+          const priceType = priceTypeMappings[typeId];
           acc[priceType] = rowCount.find((item) => item?.page_price_type_id === typeId)?.price || null;
           return acc;
         }, {});
-        
+
         // Construct the payload
         const payload = {
           p_id: singlePage.p_id,
           page_name: pageName,
           page_link: link,
           temp_vendor_id: tempID,
-          ...prices,  
+          ...prices,
           // m_post_price: singlePage?.m_post_price,
           // m_story_price: singlePage?.m_story_price,
           // m_both_price: singlePage?.m_both_price,
@@ -428,8 +439,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           preference_level: pageLevel,
           temp_page_cat_id: cat_name,
         };
-      
-        
+
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
           .then(() => {})
@@ -501,8 +511,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const handleOwnerTypeChange = (selectedOption) => {
     setOwnerType(selectedOption.value);
   };
-
- 
 
   return (
     <>
@@ -856,12 +864,13 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                 </p>
               )}
 
-              {index !== 0 && (
+              {!row.isFromPagePriceList && index === rowCount.length - 1 && (
                 <button
                   className="btn btn-sm btn-danger mt-4 ml-2 col-1 mb-3"
                   type="button"
                   onClick={() => {
-                    setRowCount((prev) => prev.filter((e, i) => i !== index), handleFilterPriceType(rowCount[index]._id));
+                    setRowCount((prev) => prev.filter((e, i) => i !== index));
+                    handleFilterPriceType(rowCount[index]._id);
                   }}
                 >
                   Remove

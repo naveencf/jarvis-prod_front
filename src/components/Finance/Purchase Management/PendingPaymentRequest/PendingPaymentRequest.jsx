@@ -100,7 +100,7 @@ export default function PendingPaymentRequest() {
     let remindData = "";
     await axios
       .get(
-        "https://purchase.creativefuel.io//webservices/RestController.php?view=getpaymentrequestremind"
+        "https://ptest.creativefuel.io//webservices/RestController.php?view=getpaymentrequestremind"
       )
       .then((res) => {
         setPhpRemainderData(res.data.body);
@@ -117,7 +117,7 @@ export default function PendingPaymentRequest() {
         setNodeData(x);
         axios
           .get(
-            "https://purchase.creativefuel.io/webservices/RestController.php?view=getpaymentrequest"
+            "https://ptest.creativefuel.io/webservices/RestController.php?view=getpaymentrequest"
           )
           .then((res) => {
             let y = res?.data?.body.filter((item) => {

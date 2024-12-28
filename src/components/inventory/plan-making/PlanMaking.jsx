@@ -443,7 +443,7 @@ const PlanMaking = () => {
     const updatedPageCategoryCount = { ...pageCategoryCount };
     const categoryUpdatedData = [];
     // Create a map for faster lookup of categories by name and id
-    if (cat) {
+    if (cat && pageList) {
       const categoryMap = cat?.reduce((acc, category) => {
         acc[category.page_category] = category._id;
         return acc;
@@ -451,7 +451,7 @@ const PlanMaking = () => {
 
       // Process incoming data and update state
       incomingData?.forEach((incomingPage) => {
-        const matchingPageIndex = pageList.findIndex((page) => page.page_name === incomingPage.page_name);
+        const matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name);
 
         if (matchingPageIndex !== -1) {
           const matchingPage = { ...pageList[matchingPageIndex] }; // Clone the page data
@@ -692,7 +692,7 @@ const PlanMaking = () => {
       setShortcutTriggered(true);
       const currentRow = getTableData[activeIndex];
       const isChecked = showTotalCost[currentRow._id] || false;
-
+      console.log('currentRow', currentRow);
       // Toggle checkbox
       handleCheckboxChange(currentRow, 'shortcutkey', { target: { checked: !isChecked } }, activeIndex);
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {

@@ -17,7 +17,8 @@ import SkeletonLoader from '../../../CustomTable/TableComponent/SkeletonLoader';
 // import { baseUrl } from '../../../../utils/config';
 import PageOverviewHeader from './PageOverviewHeader';
 import { useEffect } from 'react';
-import CustomTableV2 from '../../../CustomTable_v2/CustomTableV2';
+// import CustomTableV2 from '../../../CustomTable_v2/CustomTableV2';
+import CustomTable from '../../../CustomTable/CustomTable';
 // import SarcasmNetwork from '../SarcasmNetwork';
 
 function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, latestPageObject }) {
@@ -95,7 +96,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
           {isLoading ? (
             <SkeletonLoader />
           ) : (
-            <CustomTableV2
+            <CustomTable
               columns={columns}
               data={pageList}
               isLoading={false}
