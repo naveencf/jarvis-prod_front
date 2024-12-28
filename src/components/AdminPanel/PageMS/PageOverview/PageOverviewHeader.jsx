@@ -122,13 +122,17 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
       setFilterFollowers(null);
     }
   };
-  categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
+  categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, '');
 
   useEffect(() => {
     const newQuery = [categoryFilter ? `page_category_name=${categoryFilter.toLowerCase()}` : '', subCategoryFilter ? `page_sub_category_name=${subCategoryFilter.toLowerCase()}` : '', profileTypeFilter ? `page_profile_type_name=${profileTypeFilter.toLowerCase()}` : '', platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : '', ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : '', filterFollowers ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}` : '', activenessFilter ? `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}` : '', searchTerm ? `search=${searchTerm.toLowerCase()}` : '', sortField ? `sort_by=${sortField}&order=${sortOrder}` : ''].filter(Boolean).join('&');
-    onFilterChange(newQuery);
+    if (newQuery != '') {
+      onFilterChange(newQuery);
+    } else {
+      const platformName = activeTab === 'Tab0' ? 'Instagram' : activeTab === 'Tab5' ? 'Facebook' : activeTab === 'Tab3' ? 'Twitter' : activeTab === 'Tab4' ? 'Youtube' : activeTab === 'Tab1' ? 'Snapchat' : null;
+      onFilterChange(`platform_name=${platformName?.toLowerCase()}`);
+    }
   }, [categoryFilter, subCategoryFilter, profileTypeFilter, platformFilter, ownershipFilter, activenessFilter, searchTerm, sortField, sortOrder, filterFollowers]);
-
 
   const getCount = (list, filterKey, value) => {
     return list?.filter((page) => page[filterKey]?.toLowerCase() === value?.toLowerCase()).length || 0;
@@ -139,7 +143,6 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
     return `${formatString(res.page_sub_category)} (${count})`;
   });
   const categoryOptionsWithCount = categoryData?.map((res) => {
-    console.log('ress', res);
     const count = getCount(pageList, 'page_category_name', res.page_category);
     return `${formatString(res.page_category)} (${count})`;
   });
@@ -250,6 +253,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
 
   useEffect(() => {
     const platformName = activeTab === 'Tab0' ? 'Instagram' : activeTab === 'Tab5' ? 'Facebook' : activeTab === 'Tab3' ? 'Twitter' : activeTab === 'Tab4' ? 'Youtube' : activeTab === 'Tab1' ? 'Snapchat' : null;
+    console.log('platfromName', platformName);
     onFilterChange(`platform_name=${platformName?.toLowerCase()}`);
   }, [activeTab]);
 
@@ -341,7 +345,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
             <div className="col-md-3 mb16">
               <Autocomplete value={filterFollowers} onChange={handleSelectionChange} options={FollowerRanges} getOptionLabel={(option) => option.label} renderInput={(params) => <TextField {...params} label="Followers" />} />
             </div>
-            {decodedToken?.role_id == 1 && <ExportInventory pageList={pageList} />}
+            {/* {decodedToken?.role_id == 1 && <ExportInventory pageList={pageList} />} */}
             <div className="tabs">
               <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab0')}>
                 Instagram

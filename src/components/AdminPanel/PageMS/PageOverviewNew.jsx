@@ -59,7 +59,7 @@ const PageOverviewNew = () => {
   // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState('');
-  const [pagequery, setPagequery] = useState('youtube');
+  const [pagequery, setPagequery] = useState('');
   const [editMode, setEditMode] = useState(false);
   const [editID, setEditID] = useState(null);
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -76,7 +76,6 @@ const PageOverviewNew = () => {
     userID,
     pagequery,
   });
-  console.log('pagequery', pagequery);
   const { data: pageStates, isLoading: isPagestatLoading } = useGetPageStateQuery();
 
   useEffect(() => {
@@ -1040,7 +1039,7 @@ const PageOverviewNew = () => {
                           </Box>
                         </Box>
                       ) : (
-                        <View columns={[...dataSecondGridColumns]} data={newFilterData} isLoading={false} title={'Page Health'} rowSelectable={true} pagination={[100, 200, 1000]} tableName={'Page Health'} />
+                        <View version={1} columns={[...dataSecondGridColumns]} data={newFilterData} isLoading={false} title={'Page Health'} rowSelectable={true} pagination={[100, 200, 1000]} tableName={'Page Health'} />
                       )}
                     </div>
                   </div>

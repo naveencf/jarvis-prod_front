@@ -172,7 +172,7 @@ const PayThroughVendorDialog = (props) => {
         justifyContent: "center",
       }}
     >
-      {paymentInitiated ? <>
+      {!paymentInitiated ? <>
 
         <DialogTitle> Verify OTP to Complete Payment</DialogTitle>
         <IconButton

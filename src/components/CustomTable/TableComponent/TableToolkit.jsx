@@ -342,28 +342,28 @@ const TableToolkit = ({
         .filter((_, index) => visibleColumns[index])
         .map((header) => header.name),
     ];
-    worksheet.mergeCells(1, 1, 1, headers.length);
-    const titleCell = worksheet.getCell("A1");
-    titleCell.value = "Overview";
-    titleCell.font = { bold: true, size: 24, color: { argb: "#101010" } };
-    titleCell.alignment = { horizontal: "center", vertical: "middle" };
-    titleCell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "#fafafa" },
-    };
-    worksheet.getRow(1).height = 80;
-    const imageWidth = 70;
-    const imageHeight = 70;
-    const cellWidth = worksheet.getColumn(1).width * 7.5; // Approximate width in pixels
-    const cellHeight = worksheet.getRow(1).height * 1.33; // Approximate height in pixels
-    const imageLeftOffset = (cellWidth - imageWidth) / 2;
-    const imageTopOffset = (cellHeight - imageHeight) / 2 - 30; // 30px spacing
+    // worksheet.mergeCells(1, 1, 1, headers.length);
+    // const titleCell = worksheet.getCell("A1");
+    // titleCell.value = "Overview";
+    // titleCell.font = { bold: true, size: 24, color: { argb: "101010" } };
+    // titleCell.alignment = { horizontal: "center", vertical: "middle" };
+    // titleCell.fill = {
+    //   type: "pattern",
+    //   pattern: "solid",
+    //   fgColor: { argb: "FAFAFA" },
+    // };
+    // worksheet.getRow(1).height = 80;
+    // const imageWidth = 70;
+    // const imageHeight = 70;
+    // const cellWidth = worksheet.getColumn(1).width * 7.5; // Approximate width in pixels
+    // const cellHeight = worksheet.getRow(1).height * 1.33; // Approximate height in pixels
+    // const imageLeftOffset = (cellWidth - imageWidth) / 2;
+    // const imageTopOffset = (cellHeight - imageHeight) / 2 - 30; // 30px spacing
 
-    worksheet.addImage(imageId, {
-      tl: { col: headers.length / 2 - 1, row: 0.2 },
-      ext: { width: imageWidth, height: imageHeight },
-    });
+    // worksheet.addImage(imageId, {
+    //   tl: { col: headers.length / 2 - 1, row: 0.2 },
+    //   ext: { width: imageWidth, height: imageHeight },
+    // });
 
     worksheet.addRow(headers);
 
@@ -410,27 +410,27 @@ const TableToolkit = ({
 
     // Style header row
     for (let index = 0; index <= elxdata.length; index++) {
-      const element = worksheet.getRow(index + 2);
-      element.getCell(1).border = {
-        top: { style: "none" },
-        bottom: { style: "none" },
-        left: { style: "thin" },
-        right: { style: "none" },
-      };
-      element.getCell(headers.length).border = {
-        top: { style: "none" },
-        bottom: { style: "none" },
-        left: { style: "none" },
-        right: { style: "thin" },
-      };
+      const element = worksheet.getRow(index + 1);
+      element.eachCell((cell) => {
+        cell.font = { bold: true, color: { argb: "100F0F" } };
+        cell.alignment = { horizontal: "center", vertical: "center" };
+        cell.border = {
+          top: { style: "thin" },
+          bottom: { style: "thin" },
+          left: { style: "thin" },
+          right: { style: "thin" },
+        };
+
+      })
+
     }
-    const headerRow = worksheet.getRow(2);
+    const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
-      cell.font = { bold: true, color: { argb: "#100f0f" } };
+      cell.font = { bold: true, color: { argb: "100F0F" } };
       cell.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "#d9cabd" },
+        fgColor: { argb: "D9CABD" },
       };
       cell.alignment = { horizontal: "center", vertical: "center" };
       cell.border = {
@@ -443,11 +443,11 @@ const TableToolkit = ({
     if (showTotal) {
       const totalRow = worksheet.getRow(worksheet.rowCount);
       totalRow.eachCell((cell) => {
-        cell.font = { bold: true, color: { argb: "#100f0f" } };
+        cell.font = { bold: true, color: { argb: "100F0F" } };
         cell.fill = {
           type: "pattern",
           pattern: "solid",
-          fgColor: { argb: "#d9cabd" },
+          fgColor: { argb: "D9CABD" },
         };
         cell.alignment = { horizontal: "center", vertical: "center" };
         cell.border = {
@@ -460,42 +460,42 @@ const TableToolkit = ({
     }
     //style border for the table view
 
-    const firstrow = worksheet.getRow(1);
-    firstrow.eachCell((cell) => {
-      cell.border = {
-        top: { style: "thin" },
-      };
-    });
-    firstrow.getCell(1).border = {
-      top: { style: "thin" },
-      bottom: { style: "none" },
-      left: { style: "thin" },
-      right: { style: "none" },
-    };
-    firstrow.getCell(headers.length).border = {
-      top: { style: "thin" },
-      bottom: { style: "none" },
-      left: { style: "none" },
-      right: { style: "thin" },
-    };
+    // const firstrow = worksheet.getRow(1);
+    // firstrow.eachCell((cell) => {
+    //   cell.border = {
+    //     top: { style: "thin" },
+    //   };
+    // });
+    // firstrow.getCell(1).border = {
+    //   top: { style: "thin" },
+    //   bottom: { style: "none" },
+    //   left: { style: "thin" },
+    //   right: { style: "none" },
+    // };
+    // firstrow.getCell(headers.length).border = {
+    //   top: { style: "thin" },
+    //   bottom: { style: "none" },
+    //   left: { style: "none" },
+    //   right: { style: "thin" },
+    // };
 
     const lastRow = worksheet.getRow(worksheet.rowCount);
     lastRow.eachCell((cell) => {
       cell.border = {
-        top: { style: "none" },
+        top: { style: "thin" },
         bottom: { style: "thin" },
         left: { style: "none" },
         right: { style: "none" },
       };
     });
     lastRow.getCell(1).border = {
-      top: { style: "none" },
+      top: { style: "thin" },
       bottom: { style: "thin" },
       left: { style: "thin" },
       right: { style: "none" },
     };
     lastRow.getCell(headers.length).border = {
-      top: { style: "none" },
+      top: { style: "thin" },
       bottom: { style: "thin" },
       left: { style: "none" },
       right: { style: "thin" },
@@ -714,9 +714,8 @@ function DropdownElement({
             </button>
           )}
           <button
-            className={`btn cmnbtn btn_sm ${
-              dragFlag ? "btn-danger" : "btn-primary"
-            }`}
+            className={`btn cmnbtn btn_sm ${dragFlag ? "btn-danger" : "btn-primary"
+              }`}
             onClick={() => setDragFlag(!dragFlag)}
           >
             {dragFlag ? "Cancel" : "Edit"}
