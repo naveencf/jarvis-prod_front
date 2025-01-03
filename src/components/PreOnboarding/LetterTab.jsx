@@ -43,9 +43,10 @@ const LetterTab = ({ allUserData, gettingData }) => {
 
   const date = new Date();
   const day = date.getDate();
-  const month = date.getMonth();
+  const month = date.getMonth() + 1;
   const year = date.getFullYear();
   const todayDate = `${year}-${month}-${day}`;
+  console.log(todayDate , 'todya datte is not')
 
   const UserDetails = allUserData;
   const handleReject = () => {

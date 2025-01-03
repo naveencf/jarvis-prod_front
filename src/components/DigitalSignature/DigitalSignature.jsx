@@ -19,6 +19,8 @@ const DigitalSignature = ({
     signature.clear();
   };
 
+  console.log(offetLetterAcceptanceDate , 'dddkddkdkd')
+
   const handleGenerate = async () => {
     setIsSubmitting(true);
     const canvas = signature.getTrimmedCanvas();
