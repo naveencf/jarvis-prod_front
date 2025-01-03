@@ -633,7 +633,8 @@ function PayVendorDialog(props) {
                     const numericValue = Number(currentValue)
                     const paymentProcessingAmount = Number(rowData?.getway_process_amt)
                     // (Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0
-                    if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
+                    if (numericValue <= +rowData.balance_amount) {
+                      // if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
                       setPaymentAmount(numericValue);
 
                       // Set Gateway Payment Mode
