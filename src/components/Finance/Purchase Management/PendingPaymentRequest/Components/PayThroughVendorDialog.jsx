@@ -74,9 +74,9 @@ const PayThroughVendorDialog = (props) => {
         toastError("Payment gateway server down.Please ask IT team for more details");
         return;
       }
-      if (paymentStatus == "Partial") {
+      // if (paymentStatus == "Partial") {
 
-      }
+      // }
       const paymentPayload = {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,

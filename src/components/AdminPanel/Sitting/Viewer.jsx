@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Stage, Layer, Path, Text, Image as KonvaImage } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Path,
+  Text,
+  Image as KonvaImage,
+  Rect,
+  Circle,
+} from "react-konva";
 import Select from "react-select";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 import axios from "axios";
@@ -8,15 +16,14 @@ import selectedChair from "../../../../public/icon/chair/selected.png";
 import assignedChair from "../../../../public/icon/chair/assigned.png";
 import notassignedChair from "../../../../public/icon/chair/not-assign.png";
 
-
 import * as XLSX from "xlsx";
 
 function SittingExcelRoomWise(element) {
-  console.log(element.roomName , 'elelement function')
+  console.log(element.roomName, "elelement function");
   const formattedData = element?.elements?.map((row, index) => ({
     "S.No": index + 1,
     "Employe Name":
-    row.employee && row.employee.trim() !== "" ? row.employee : "",
+      row.employee && row.employee.trim() !== "" ? row.employee : "",
   }));
 
   const fileName = `${element.roomName}.xlsx`;
@@ -25,7 +32,6 @@ function SittingExcelRoomWise(element) {
   XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
   XLSX.writeFile(workbook, fileName);
 }
-
 
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
@@ -50,8 +56,11 @@ const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   );
 };
 
-
-const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts }) => {
+const Viewer = ({
+  roomNameCard,
+  totalSittingDataCount,
+  fetchAllocationCounts,
+}) => {
   const { userContextData } = useAPIGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [elements, setElements] = useState([]);
@@ -62,8 +71,7 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
   const [layouts, setLayouts] = useState({});
   const [id, setID] = useState("");
 
-  const [matchData , setMatchData] = useState("")
-  console.log(matchData , 'match data is here')
+  const [matchData, setMatchData] = useState("");
 
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Track selected dropdown value
 
@@ -98,11 +106,11 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
           return acc;
         }, {});
         setLayouts(layoutsData);
-       
+
         const matchedData = response.data?.find(
           (d) => d.roomName === selectedRoom
         );
-        setMatchData(matchedData)
+        setMatchData(matchedData);
         setID(matchedData ? matchedData._id : "");
       })
       .catch((error) => {
@@ -143,9 +151,8 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
       alert("Layout updated successfully.");
       setSelectedEmployee(null); // Reset dropdown value after save
       setSelectedId(null);
-      totalSittingDataCount()
-      fetchAllocationCounts()
-
+      totalSittingDataCount();
+      fetchAllocationCounts();
     } catch (error) {
       console.error("Error updating layout:", error);
       alert("Failed to update layout.");
@@ -177,7 +184,6 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
     );
     setElements(updatedElements);
   };
-  
 
   return (
     <>
@@ -223,13 +229,13 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
             >
               Save
             </button>
-            {roomNameCard &&(
-            <button
-              className="btn cmnbtn btn_sm btn-primary ml-2"
-              onClick={()=> SittingExcelRoomWise(matchData)}
-            >
-              Excel
-            </button>
+            {roomNameCard && (
+              <button
+                className="btn cmnbtn btn_sm btn-primary ml-2"
+                onClick={() => SittingExcelRoomWise(matchData)}
+              >
+                Excel
+              </button>
             )}
           </div>
         </div>
@@ -270,39 +276,140 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
                         height={600}
                       />
                     )}
-                    {elements.map((el) => (
-                      <Path
-                        key={el.id}
-                        id={el.id}
-                        data={chairSVG}
-                        x={el.x}
-                        y={el.y}
-                        scale={{ x: el.width / 100, y: el.height / 100 }}
-                        rotation={el.rotation}
-                        fill={
-                          selectedId === el.id
-                            ? "green"
-                            : el.employee
-                            ? "grey"
-                            : "white"
-                        }
-                        stroke={selectedId === el.id ? "green" : "black"}
-                        strokeWidth={selectedId === el.id ? 2 : 1}
-                        draggable={false}
-                        onClick={() => setSelectedId(el.id)}
-                        onMouseEnter={() => setHoveredElement(el)}
-                        onMouseLeave={() => setHoveredElement(null)}
+                    {chairSVG &&
+                      elements?.map((el) => (
+                        <Path
+                          key={el.id}
+                          id={el.id}
+                          data={chairSVG}
+                          x={el.x}
+                          y={el.y}
+                          scale={{ x: el.width / 100, y: el.height / 100 }}
+                          rotation={el.rotation}
+                          fill={
+                            selectedId === el.id
+                              ? "green"
+                              : el.employee
+                              ? "grey"
+                              : "white"
+                          }
+                          stroke={selectedId === el.id ? "green" : "black"}
+                          strokeWidth={selectedId === el.id ? 2 : 1}
+                          draggable={false}
+                          onClick={() => setSelectedId(el.id)}
+                          onMouseEnter={() => setHoveredElement(el)}
+                          onMouseLeave={() => setHoveredElement(null)}
+                        />
+                      ))}
+
+                    {hoveredElement?.user_id ? (
+                      (() => {
+                        const matchedUser = userContextData?.find(
+                          (user) => user?.user_id === hoveredElement.user_id
+                        );
+                        if (!matchedUser) return null;
+
+                        const defaultX = 100;
+                        const defaultY = 100;
+
+                        return (
+                          <>
+                            {/* Card Background */}
+                            <Rect
+                              x={850} // Fixed x position for the top-right corner
+                              y={10} // Fixed y position for the top-right corner
+                              width={200}
+                              height={120}
+                              fill="white"
+                              shadowBlur={5}
+                              cornerRadius={5}
+                              stroke="black"
+                            />
+                            {matchedUser.image_url &&
+                            matchedUser.image_url !==
+                              "https://storage.googleapis.com/node-prod-bucket/" ? (
+                              <AvatarImage
+                                url={matchedUser.image_url}
+                                x={920} // Adjusted to align inside the card
+                                y={20} // Adjusted to align inside the card
+                                width={50}
+                                height={50}
+                                style={{
+                                  border: "2px solid orange",
+                                  borderRadius: "50%",
+                                }}
+                              />
+                            ) : (
+                              <>
+                              {/* Circle for the background */}
+                              <Circle
+                                x={945} // Center position for the fallback icon
+                                y={45}
+                                radius={25} // Circle radius
+                                fill="light-grey"
+                              />
+                              {/* Text inside the circle */}
+                              <Text
+                                text="👤" 
+                                fontSize={30} 
+                                fill="white"
+                                x={940 - 10} 
+                                y={45 - 10}  
+                              />
+                            </>
+                            )}
+                            <Text
+                              text={`Employee: ${
+                                matchedUser.user_name || "N/A"
+                              }`}
+                              fontSize={12}
+                              fontStyle="bold"
+                              x={860}
+                              y={80}
+                              fill="black"
+                            />
+                            <Text
+                              text={`Designation: ${
+                                matchedUser.designation_name || "N/A"
+                              }`}
+                              fontSize={12}
+                              fontStyle="bold" 
+                              x={860}
+                              y={95}
+                              fill="black"
+                            />
+                            <Text
+                              text={`Department: ${
+                                matchedUser.department_name || "N/A"
+                              }`}
+                              fontSize={12}
+                              fontStyle="bold" 
+                              x={860}
+                              y={110}
+                              fill="black"
+                            />
+                          </>
+                        );
+                      })()
+                    ) : (
+                      <Text
+                        text="Not Allocated"
+                        fontSize={14}
+                        x={(hoveredElement?.x ?? 100) - 20}
+                        y={(hoveredElement?.y ?? 100) - 25}
+                        fill="gray"
                       />
-                    ))}
-                    {hoveredElement && (
+                    )}
+                  </Layer>
+                  {/* {hoveredElement && (
                       <div className="roomTooltip">
                         {hoveredElement.image && (
                           <AvatarImage
                             url={hoveredElement.image}
                             x={hoveredElement.x - 0}
                             y={hoveredElement.y - 65}
-                            width={40}
-                            height={40}
+                            width={50}
+                            height={50}
                             style={{
                               border: "2px solid orange",
                               borderRadius: "50%", // Optional for rounded borders
@@ -320,8 +427,7 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
                           y={hoveredElement.y - 25} // Position above avatar
                         />
                       </div>
-                    )}
-                  </Layer>
+                    )} */}
                 </Stage>
               ) : (
                 <div className="no-room-message">

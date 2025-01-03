@@ -1,19 +1,23 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import React, { useState, useEffect } from "react";
-import { Badge, Button } from "@mui/material";
+import { Badge, Button, Chip, Stack } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { baseUrl, phpBaseUrl } from "../../../../../utils/config";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../../../../utils/config";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
 import ImageView from "../../../ImageView";
 import FormContainer from "../../../../AdminPanel/FormContainer";
+import UpdateIcon from '@mui/icons-material/Update';
+import { useGlobalContext } from "../../../../../Context/Context";
 
 const PaymentDoneTransactionList = () => {
+  const { toastAlert, toastError } = useGlobalContext();
   const [transactionData, setTransactionData] = useState([]);
   const [phpRemainderData, setPhpRemainderData] = useState([]);
   const [nodeData, setNodeData] = useState([]);
   const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
 
   const { request_id } = useParams();
@@ -58,6 +62,7 @@ const PaymentDoneTransactionList = () => {
 
   useEffect(() => {
     handleSubmitTransactionData();
+
   }, [request_id]);
 
   const getStatusText = (status) => {
@@ -73,6 +78,39 @@ const PaymentDoneTransactionList = () => {
     }
   };
 
+  const handleStatusCheck = async (row) => {
+    // Step 1: Get the JWT token
+    console.log(row, "row")
+    if (!row) return;
+    const getTokenResponse = await axios.get(
+      insightsBaseUrl + `v1/payment_gateway_access_token`
+    );
+    const token = getTokenResponse?.data?.data;
+    // https://insights.ist:8080/api/v1/check_payment_status?clientReferenceId=2017_1
+    try {
+      const payResponse = await axios.get(
+        insightsBaseUrl + `v1/check_payment_status?clientReferenceId=${row?.clientReferenceId}`,
+        // paymentPayload,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (payResponse.status == 200 && row?.payment_getway_status == payResponse?.data?.data?.message) {
+        toastAlert("Status Remain Same");
+      }
+      else if (payResponse.status == 200) {
+        toastAlert("Please wait while we are updating status");
+        setTransactionData([])
+        handleSubmitTransactionData();
+        console.log(payResponse.data.data, "payResponse");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
   const columns = [
     {
       field: "S.NO",
@@ -261,6 +299,23 @@ const PaymentDoneTransactionList = () => {
       field: "page_name",
       headerName: "Page Name",
       width: 150,
+    },
+    {
+      field: "payment_getway_status",
+      headerName: "Payment Status",
+      width: 150,
+      renderCell: (params) => {
+        const tempRow = params?.row
+        return (
+          <Stack direction="row" spacing={1}>
+
+            <Chip label={params?.row?.payment_getway_status} color="success" />
+            {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILURE" ? "" :
+              <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />}
+
+          </Stack>
+        )
+      },
     },
     {
       field: "total_paid",
