@@ -3,7 +3,7 @@ import axios from "axios";
 import React, { useState, useEffect } from "react";
 import { Badge, Button } from "@mui/material";
 import { useParams } from "react-router-dom";
-import { baseUrl } from "../../../../../utils/config";
+import { baseUrl, phpBaseUrl } from "../../../../../utils/config";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
 import ImageView from "../../../ImageView";
@@ -21,7 +21,7 @@ const PaymentDoneTransactionList = () => {
   const handleSubmitTransactionData = () => {
     axios
       .get(
-        "https://purchase.creativefuel.io/webservices/RestController.php?view=getpaymentrequest"
+        phpBaseUrl + `?view=getpaymentrequest`
       )
       .then((res) => {
         setPhpRemainderData(res.data.body || []);
@@ -42,7 +42,7 @@ const PaymentDoneTransactionList = () => {
 
     axios
       .post(
-        "https://purchase.creativefuel.io/webservices/RestController.php?view=getpaymentrequesttrans",
+        phpBaseUrl + `?view=getpaymentrequesttrans`,
         formData,
         {
           headers: {
@@ -310,13 +310,11 @@ const PaymentDoneTransactionList = () => {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
           }`
         );
         const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
           }`
         );
         const dataFY = nodeData.filter((e) => {
@@ -339,13 +337,11 @@ const PaymentDoneTransactionList = () => {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
           }`
         );
         const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
           }`
         );
         const dataFY = nodeData.filter((e) => {
@@ -530,10 +526,10 @@ const PaymentDoneTransactionList = () => {
           {params.row.status === "1"
             ? "Paid"
             : params.row.status === "2"
-            ? "Discard"
-            : params.row.status === "3"
-            ? "Partial"
-            : ""}
+              ? "Discard"
+              : params.row.status === "3"
+                ? "Partial"
+                : ""}
         </div>
       ),
     },

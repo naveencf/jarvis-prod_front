@@ -12,6 +12,8 @@ const EducationFields = ({
   handleRemoveEducationDetails,
 }) => {
   const canAddMoreEducation = educationDetails.length < 10;
+
+  console.log(educationDetails, "education details");
   return (
     <>
       {educationDetails?.map((detail, index) => (
@@ -114,9 +116,11 @@ const EducationFields = ({
                       name={key}
                       options={EducationList}
                       getOptionLabel={(option) => option.label}
-                      value={EducationList.find(
-                        (option) => option.value === detail[key]
-                      )}
+                      value={
+                        EducationList.find(
+                          (option) => option.value === detail[key]
+                        ) || null
+                      }
                       onChange={(e, newValue) => {
                         handleEducationDetailsChange(index, {
                           target: {

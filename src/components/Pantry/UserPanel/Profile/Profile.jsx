@@ -96,6 +96,7 @@ const Profile = () => {
     handleGetData();
     responsibilityAPI();
   }, [loginUserId]);
+console.log(("re-render"));
 
   const handleProfileUpdate = () => {
     const formData = new FormData();
@@ -230,6 +231,10 @@ const Profile = () => {
                         <span>Report L1</span>
                         {userData.Report_L1N}
                       </li>
+                      <li>
+                        <span>Employee ID</span>
+                         {" "}{userData.user_id}
+                      </li>
                     </ul>
                   </div>
                 </div>
@@ -348,7 +353,7 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* <div className="action_heading">
+            <div className="action_heading">
               <div className="action_title">
                 <FormContainer
                   submitButton={false}
@@ -364,7 +369,7 @@ const Profile = () => {
                   {activeAccordionIndex === 4 && tab5}
                 </FormContainer>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

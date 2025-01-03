@@ -3133,18 +3133,19 @@ export const pendingPaymentRequestColumns = ({
       renderRowCell: (row) => {
         return (
           <div className="flexCenter colGap8">
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={(e) => handlePayClick(e, row)}
-            >
-              Pay
-            </button>
-            <button
+            {(Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0 &&
+              < button
+                className="btn cmnbtn btn_sm btn-success"
+                onClick={(e) => handlePayClick(e, row)}
+              >
+                Pay
+              </button>}
+            < button
               className="btn cmnbtn btn_sm btn-danger"
               onClick={(e) => handleDiscardClick(e, row)}
             >
               Discard
-            </button>
+            </button >
             <button className="btn cmnbtn btn_sm btn-success">
               <Link
                 to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
@@ -3158,7 +3159,7 @@ export const pendingPaymentRequestColumns = ({
           >
             Zoho Uploaded
           </button> */}
-          </div>
+          </div >
         );
       },
     },

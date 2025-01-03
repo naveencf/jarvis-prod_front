@@ -165,6 +165,8 @@ function PayVendorDialog(props) {
         if (res.status == 200) {
 
           const phpFormData = new FormData();
+
+          phpFormData.append(clientReferenceId, `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
           phpFormData.append("request_id", rowData.request_id);
           phpFormData.append("payment_amount", paymentAmout);
           phpFormData.append(
@@ -180,10 +182,17 @@ function PayVendorDialog(props) {
           phpFormData.append("adjust_amt", TDSValue ? adjustAmount : 0);
           phpFormData.append("gst_hold_amount", GSTHoldAmount);
           phpFormData.append("request_amount", rowData.request_amount);
+          phpFormData.append("proccessingAmount", 0);
+          phpFormData.append("getway_process_amt", paymentAmout);
           phpFormData.append("tds_deduction", TDSValue);
           phpFormData.append("gst_Hold_Bool", gstHold ? 1 : 0);
           phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
           phpFormData.append("tds_percentage", TDSPercentage);
+          phpFormData.append("payment_getway_status", "SUCCESS");
+          phpFormData.append("getway_process_amt", paymentAmout);
+          phpFormData.append("proccessingAmount", 0);
+          // payment_getway_status,
+          // getway_process_amt,
           axios
             .post(
               "https://purchase.creativefuel.io/webservices/RestController.php?view=updatePaymentrequestNew",
@@ -323,8 +332,16 @@ function PayVendorDialog(props) {
   };
 
   const handleOpenPayThroughVendor = () => {
-    if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
-      toastError("Not valid amount to pay")
+    if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
+      console.log(rowSelectionModel, "rowSelectionModel")
+      toastError("Invalid Mobile Number")
+      return;
+    }
+    else if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
+      toastError("Invalid Amount")
+      return;
+    } else if (rowSelectionModel?.ifsc == "") {
+      toastError("Invalid IFSC Code")
       return;
     }
     setPayThroughVendor(true);
@@ -613,9 +630,10 @@ function PayVendorDialog(props) {
                     setPaymentStatus("");
                     setGatewayPaymentMode("");
                   } else {
-                    const numericValue = Number(currentValue);
-
-                    if (numericValue <= +rowData.balance_amount) {
+                    const numericValue = Number(currentValue)
+                    const paymentProcessingAmount = Number(rowData?.getway_process_amt)
+                    // (Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0
+                    if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
                       setPaymentAmount(numericValue);
 
                       // Set Gateway Payment Mode
@@ -631,7 +649,7 @@ function PayVendorDialog(props) {
                       }
                     } else {
                       toastError(
-                        "Payment Amount should be less than or equal to Requested Amount"
+                        "Payment Amount should be less than or equal to Remainning Amount"
                       );
                     }
                   }
@@ -722,7 +740,7 @@ function PayVendorDialog(props) {
           </div>
         </DialogContent>
         <DialogActions>
-          <Button
+          {paymentMode != "PineLab" ? <Button
             variant="contained"
             // className="mx-2"
             size="small"
@@ -730,17 +748,17 @@ function PayVendorDialog(props) {
             disabled={!paymentMode || !paymentAmout}
           >
             Pay Vendor
-          </Button>
-          <Button
-            // className="btn btn-success cmnbtn btn_sm ms-2"
-            variant="contained"
-            color="primary"
-            size="small"
-            onClick={handleOpenPayThroughVendor}
-            disabled={!paymentAmout > 0}
-          >
-            Pay Through Gateway
-          </Button>
+          </Button> :
+            <Button
+              // className="btn btn-success cmnbtn btn_sm ms-2"
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={handleOpenPayThroughVendor}
+              disabled={!paymentAmout > 0}
+            >
+              Pay Through Gateway
+            </Button>}
         </DialogActions>
       </Dialog>
 
@@ -764,6 +782,7 @@ function PayVendorDialog(props) {
         gstHold={gstHold}
         TDSDeduction={TDSDeduction}
         TDSPercentage={TDSPercentage}
+        paymentDate={paymentDate}
       />}
 
     </div>

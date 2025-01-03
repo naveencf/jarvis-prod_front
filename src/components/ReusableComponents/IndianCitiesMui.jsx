@@ -1,23 +1,15 @@
-import React, { useState, useEffect } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import { City, State } from "country-state-city";
+import React, { useState, useEffect } from 'react';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
+import { City, State } from 'country-state-city';
 
 const IndianCitiesMui = ({ selectedState, selectedCity, onChange }) => {
   const [cities, setCities] = useState([]);
-  const [inputValue, setInputValue] = useState("");
-
-  const getStateCode = (stateName) => {
-    const state = State.getStatesOfCountry("IN").find(
-      (s) => s.name.toLowerCase() === stateName.toLowerCase()
-    );
-    return state ? state.isoCode : null; // Return the state code or null if not found
-  };
+  const [inputValue, setInputValue] = useState('');
 
   useEffect(() => {
     if (selectedState) {
-      console.log("selectedState",);
-      const fetchedCities = City.getCitiesOfState("IN", "MP");
+      const fetchedCities = City.getCitiesOfState('IN', selectedState);
       setCities(fetchedCities);
     } else {
       setCities([]);
@@ -28,32 +20,34 @@ const IndianCitiesMui = ({ selectedState, selectedCity, onChange }) => {
     setInputValue(newInputValue);
   };
 
-  // Determine the value for the Autocomplete
   const determineValue = () => {
-    if (selectedCity) {
-      return cities.find((city) => city.name === selectedCity) || null;
+    if (selectedCity !== '' && selectedCity !== null) {
+      return cities.find((city) => city.name.toLowerCase() === selectedCity.toLowerCase()) || selectedCity;
     }
-    return null; // Return null if selectedCity is undefined or empty
+    return null;
   };
 
+  const options = [...cities.map((city) => city.name), ...(inputValue && !cities.some((city) => city.name.toLowerCase() === inputValue.toLowerCase()) ? [`Add "${inputValue}" manually`] : [])];
+ 
   return (
     <Autocomplete
-      options={cities}
-      getOptionLabel={(option) => (option ? option.name : "")}
+      options={options}
+      getOptionLabel={(option) => (typeof option === 'string' ? option : option.name)}
       value={determineValue()}
-      onChange={(event, newValue) => onChange(newValue ? newValue.name : "")}
+      onChange={(event, newValue) => {
+        // Handle manual addition
+        if (newValue?.startsWith('Add')) {
+          const manualCity = inputValue; // Use the current inputValue
+          onChange(manualCity);
+          setInputValue(manualCity); // Update the displayed value
+        } else {
+          onChange(newValue || '');
+        }
+      }}
       inputValue={inputValue}
       onInputChange={handleInputChange}
-      isOptionEqualToValue={(option, value) =>
-        option.name === value.name &&
-        option.countryCode === value.countryCode &&
-        option.stateCode === value.stateCode &&
-        option.latitude === value.latitude &&
-        option.longitude === value.longitude
-      }
-      renderInput={(params) => (
-        <TextField {...params} label="City" variant="outlined" required />
-      )}
+      freeSolo
+      renderInput={(params) => <TextField {...params} label="City" variant="outlined" required />}
       clearOnEscape
       disabled={!selectedState}
     />

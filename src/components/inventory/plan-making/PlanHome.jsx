@@ -295,6 +295,7 @@ function PlanHome() {
           brand_id: plan.brand_id,
           planx_log_file: plan.planx_log_file,
           own_pages_cost_price: plan.own_pages_cost_price,
+          sales_executive_created: plan.sales_executive_created,
         }));
         setPlanRows(formattedRows);
         // setFilteredPlans(formattedRows);
@@ -324,6 +325,9 @@ function PlanHome() {
           const createdAt = new Date(plan.createdAt);
           return createdAt >= startOfLastMonth && createdAt <= endOfLastMonth;
         });
+        break;
+      case 'RequestPlan':
+        filtered = planRows.filter((plan) => plan?.sales_executive_created);
         break;
       default:
         filtered = planRows; // Show all plans
@@ -448,7 +452,7 @@ function PlanHome() {
     // formData.append('story_count', parseInt(planDetails.storyCount, 10));
     formData.append('description', planDetails.description);
     formData.append('sales_executive_id', parseInt(id));
-    if(planDetails.accountId){
+    if (planDetails.accountId) {
       formData.append('account_id', planDetails.accountId);
     }
     if (planDetails.brandId || planDetails.brand_id) {

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from "react";
 import {
   Stage,
@@ -92,7 +90,7 @@ const Editor = ({ onSave }) => {
       id: Date.now(),
       x: 50,
       y: 50,
-      user_id:0,
+      user_id: 0,
       // employeeName:"",
       width: 72,
       height: 63.6,
@@ -220,65 +218,110 @@ const Editor = ({ onSave }) => {
   return (
     <div>
       <h3>Office Layout Editor</h3>
-      <div>
-        <button onClick={() => addElement("Chair")}>Add Chair</button>
-        <button onClick={removeElement}>Remove Selected</button>
-        <input
-          type="number"
-          value={posSpacing.x}
-          onChange={(e) =>
-            setPosSpacing((prev) => ({
-              ...prev,
-              x: Number(e.target.value),
-            }))
-          }
-        />
-        <input
-          type="number"
-          value={posSpacing.y}
-          onChange={(e) =>
-            setPosSpacing((prev) => ({
-              ...prev,
-              y: Number(e.target.value),
-            }))
-          }
-        />
-        <input
-          type="number"
-          value={posSpacing.spacing}
-          onChange={(e) =>
-            setPosSpacing((prev) => ({
-              ...prev,
-              spacing: Number(e.target.value),
-            }))
-          }
-        />
-        <button onClick={alignChairsHorizontally}>
+
+      <div className="d-flex mb-3 mt-2">
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary mr-2"
+          onClick={() => addElement("Chair")}
+        >
+          Add Chair
+        </button>
+        <button
+          className="btn cmnbtn btn_sm btn-outline-danger"
+          onClick={removeElement}
+        >
+          Remove Selected
+        </button>
+      </div>
+      <div className="mb-2">
+        <div className="d-flex">
+          <div>
+            <label>x position</label>
+            <input
+              type="number"
+              value={posSpacing.x}
+              onChange={(e) =>
+                setPosSpacing((prev) => ({
+                  ...prev,
+                  x: Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+          <div>
+            <label >y position</label>
+            <input
+              type="number"
+              value={posSpacing.y}
+              onChange={(e) =>
+                setPosSpacing((prev) => ({
+                  ...prev,
+                  y: Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+          <div>
+            <label >spacing</label>
+            <input
+              type="number"
+              value={posSpacing.spacing}
+              onChange={(e) =>
+                setPosSpacing((prev) => ({
+                  ...prev,
+                  spacing: Number(e.target.value),
+                }))
+              }
+            />
+          </div>
+     
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary ml-2 mr-2"
+          onClick={alignChairsHorizontally}
+        >
           Align Selected Chairs Horizontally
         </button>
-        <button onClick={alignChairsVertically}>
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary"
+          onClick={alignChairsVertically}
+        >
           Align Selected Chairs Vertically
         </button>
-        <input type="file" accept="image/*" onChange={handleBackgroundUpload} />
+        </div>
+
       </div>
-      <div>
+      <div className="d-flex mb-2">
+        <div>
+        <label >Rotation (degrees): </label>
+        <input
+          type="number"
+          value={rotationDegree}
+          onChange={(e) => setRotationDegree(Number(e.target.value))}
+        />
+        </div>
+        <button
+          className="btn cmnbtn btn_sm btn-outline-primary ml-2"
+          onClick={rotateSelectedChairs}
+        >
+          Rotate Selected Chairs
+        </button>
+      </div>
+      <div className="d-flex mb-2">
+        <input type="file" accept="image/*" onChange={handleBackgroundUpload} />
         <input
           type="text"
           placeholder="Enter room name"
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
         />
-        <button onClick={saveLayout}>Save Layout</button>
+        <button
+          className="btn cmnbtn btn_sm btn-success ml-2"
+          onClick={saveLayout}
+        >
+          Save Layout
+        </button>
       </div>
-      <div>
-        <label>Rotation (degrees): </label>
-        <input
-          type="number"
-          value={rotationDegree}
-          onChange={(e) => setRotationDegree(Number(e.target.value))}
-        />
-        <button onClick={rotateSelectedChairs}>Rotate Selected Chairs</button>
-      </div>
+      
       <Stage
         width={1100}
         height={600}

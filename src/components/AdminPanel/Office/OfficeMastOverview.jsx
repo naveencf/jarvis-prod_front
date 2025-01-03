@@ -23,7 +23,6 @@ const OfficeMastOverview = () => {
         },
       }));
       setRoomWiseCount(dataWithDefaults);
-      console.log("Allocation Counts:", dataWithDefaults);
     } catch (error) {
       console.error("Error fetching allocation counts:", error);
     }
@@ -33,7 +32,6 @@ const OfficeMastOverview = () => {
     try {
       const res = await axios.get(`${baseUrl}get_total_counts`);
       setTotalSittingCount(res.data);
-      console.log(res.data, "total count");
     } catch (error) {
       console.error("Error fetching total counts:", error);
     }
@@ -44,7 +42,7 @@ const OfficeMastOverview = () => {
     fetchAllocationCounts();
   }, []);
 
-  const handleCardClick = (roomName) => {
+  const handleCardClick = (roomName , d) => {
     setSelectedRoomName(roomName); // Update state with the clicked roomName
   };
 
@@ -55,6 +53,7 @@ const OfficeMastOverview = () => {
     speed: 500, // Animation speed
     slidesToShow: 4, // Number of slides to show at once
     slidesToScroll: 1, // Number of slides to scroll
+    centerPadding: '50px',
     responsive: [
       {
         breakpoint: 1024, // For medium screens
@@ -123,7 +122,7 @@ const OfficeMastOverview = () => {
             <div className="RoomSlideCard" key={index}>
               <div
                 className="timeDataCard card"
-                onClick={() => handleCardClick(d.roomName)}
+                onClick={() => handleCardClick(d.roomName ,d)}
               >
                 <div className="card-header">
                   <div className="titleCard w-100">
@@ -162,6 +161,7 @@ const OfficeMastOverview = () => {
           ))}
         </Slider>
       </div>
+      {/* This is a room viewer componenent  */}
       <Viewer
         roomNameCard={selectedRoomName}
         totalSittingDataCount={totalSittingDataCount}

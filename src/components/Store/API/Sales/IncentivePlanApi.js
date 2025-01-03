@@ -15,8 +15,14 @@ const IncentivePlanApi = createApi({
     // Fetch details of a single incentive plan
     getIncentivePlanDetails: builder.query({
       query: (id) => `sales/incentive_plan/${id}`,
-      transformResponse: (response) => response.data,
+      transformResponse: (response) => response.data.data,
       keepUnusedDataFor: 0,
+    }),
+
+    getAdjustment: builder.query({
+      query: (loginUserId) =>
+        `sales/user_adjustment_incentive_amount/${loginUserId}`,
+      transformResponse: (response) => response.data,
     }),
 
     // Add new incentive plan
@@ -108,6 +114,7 @@ const IncentivePlanApi = createApi({
 export const {
   useGetIncentivePlanListQuery,
   useGetIncentivePlanDetailsQuery,
+  useGetAdjustmentQuery,
   useCreateIncentivePlanMutation,
   useUpdateIncentivePlanMutation,
   useDeleteIncentivePlanMutation,

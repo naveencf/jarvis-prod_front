@@ -89,7 +89,7 @@ const SimMaster = () => {
             `get_asset_modal_by_asset_brandId/${brandName.asset_brand_id}`
         )
         .then((res) => {
-          setModalData(res.data);
+          setModalData(res?.data);
         });
     }
   }, [brandName]);

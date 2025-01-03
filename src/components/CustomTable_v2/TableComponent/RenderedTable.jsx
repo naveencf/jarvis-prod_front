@@ -57,7 +57,11 @@ const RenderedTable = ({
   );
   const [lastTap, setLastTap] = useState(0);
   const tapTimeout = useRef(null);
+
   useEffect(() => {
+    // Set the row colour function
+    console.log("setRowColour");
+
     setRowColour(
       columnsheader.filter((col) => col.hasOwnProperty("colorRow"))[0]
     );
@@ -160,7 +164,9 @@ const RenderedTable = ({
 
   // Sync selectedId with colSearch
   useEffect(() => {
-    // Create a new array of column search criteria based on selectedId
+    console.log(
+      "Create a new array of column search criteria based on selectedId"
+    );
     const newColSearch = columnsheader?.map((column, index) => {
       if (!visibleColumns[index]) return []; // Skip invisible columns
 

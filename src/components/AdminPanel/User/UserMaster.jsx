@@ -306,7 +306,7 @@ const UserMaster = () => {
   ];
 
   const castOption = ["General", "OBC", "SC", "ST"];
-  const maritialStatusData = ["Single", "Married"]; //,"Divorced","Widowed","Separated"
+  const maritialStatusData = ["Unmarried", "Married"]; //,"Divorced","Widowed","Separated"
   const [dobError, setDobError] = useState("");
   const [dobValidate, setDobValidate] = useState(0);
 

@@ -79,7 +79,7 @@ const SimOverview = () => {
 
   async function getData(buttonID) {
     await axios.get(baseUrl + "get_all_sims").then((res) => {
-      const simAllData = res?.data.data;
+      const simAllData = res?.data?.data;
 
       // if (status != "") {
       //   const AvailableData = simAllData?.filter(

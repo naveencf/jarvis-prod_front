@@ -79,6 +79,7 @@ const CustomTableV2 = ({
   const loginUserId = decodedToken.id;
 
   useEffect(() => {
+    //console.log("pagination");
     if (
       pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
       data?.length > 0
@@ -87,7 +88,7 @@ const CustomTableV2 = ({
   }, [data, columns, tableName]);
 
   useEffect(() => {
-    // //console.log("selected data");
+    // console.log("selected data");
     selectedData(selectedRowsData);
   }, [selectedRowsData]);
 
@@ -103,10 +104,6 @@ const CustomTableV2 = ({
           )
       )
     : unSortedData;
-
-  // const tabledata = pagination
-  //   ? filteredData?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-  //   : unSortedData;
 
   const filterFunctions = {
     none: () => true,
@@ -196,7 +193,7 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    //console.log("filtering of data");
+    // console.log("filtering of data");
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
@@ -227,21 +224,6 @@ const CustomTableV2 = ({
     setUnSortedData(filterData());
   }, [applyFlag]);
 
-  // useEffect(() => {
-  //   const filterData = () => {
-  //     return originalData.filter((item) => {
-  //       return colSearch.every((searchArray, index) => {
-  //         if (searchArray.length === 0) return true;
-  //         return searchArray.some((criteria) => {
-  //           const key = Object.keys(criteria)[0];
-  //           return item[key] === criteria[key];
-  //         });
-  //       });
-  //     });
-  //   };
-
-  //   setUnSortedData(filterData());
-  // }, [colSearch]);
   const toggleColumnVisibility = (index) => {
     setVisibleColumns(
       visibleColumns?.map((visible, i) => (i === index ? !visible : visible))
@@ -249,7 +231,7 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    //console.log("invade flag");
+    // console.log("invade flag");
 
     if (invadeFlag) {
       cloudInvader();
@@ -300,23 +282,10 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    //console.log("table creation");
+    // console.log("table creation");
 
-    // const isTableCreated = localStorage.getItem(
-    //   `isTableCreated_${tableName + loginUserId}`
-    // );
-    // if (!isTableCreated) {
     memoize(createTable)();
-    //   localStorage.setItem(`isTableCreated_${tableName + loginUserId}`, "true");
-    // }
   }, [tableName]);
-
-  // useEffect(() => {
-
-  //   if (data.length > 0) {
-  //     createTable();
-  //   }
-  // }, [data]);
 
   async function cloudInvader() {
     const arrayofvisiblecolumns = columnsheader?.map((column, index) => ({
@@ -351,12 +320,12 @@ const CustomTableV2 = ({
     }
   };
   useEffect(() => {
-    //console.log("use to fetch columns");
+    // console.log("use to fetch columns");
     fetchCreatedTable();
   }, [loginUserId, tableName]);
 
   useEffect(() => {
-    //console.log("initializing columns to update ui");
+    // console.log("initializing columns to update ui");
     const getIndex = (colName) =>
       apiColumns?.findIndex((item) => item?.name?.trim() === colName?.trim());
 
@@ -386,7 +355,7 @@ const CustomTableV2 = ({
     // setTriggerSort(prev => !prev);
   }, [columns, apiColumns]);
   useEffect(() => {
-    //console.log("initializing data to update ui");
+    // console.log("initializing data to update ui");
 
     if (data) {
       setUnSortedData(data);
@@ -440,7 +409,6 @@ const CustomTableV2 = ({
           break;
         }
       }
-      // console.log("datatType", datatType, unSortedData[0]);
       if (datatType === "number") {
         // console.log("number");
 
@@ -469,66 +437,6 @@ const CustomTableV2 = ({
   useEffect(() => {
     getFilteredData(unSortedData);
   }, [unSortedData]);
-
-  // const renderSort = useMemo(() => {
-  //   if (!sortKey) return originalData;
-
-  //   // Use the smallest dataset to avoid unnecessary copying
-  //   const unSortData =
-  //     unSortedData.length < originalData.length
-  //       ? unSortedData
-  //       : originalData;
-
-  //   const colm = columnsheader?.find((column) => column.key === sortKey);
-
-  //   // Cache the getValue function and data type determination
-  //   const getValue = (item) =>
-  //     colm?.compare && colm?.renderRowCell
-  //       ? colm.renderRowCell(item)
-  //       : item?.[sortKey];
-
-  //   const firstValidValue = unSortData.find(
-  //     (item) => getValue(item) !== undefined && getValue(item) !== null
-  //   );
-
-  //   const dataType =
-  //     firstValidValue !== undefined ? typeof getValue(firstValidValue) : "string";
-
-  //   // Optimized sorting logic
-  //   const sorted = [...unSortData].sort((a, b) => {
-  //     const val1 = getValue(a);
-  //     const val2 = getValue(b);
-
-  //     if (val1 === null || val1 === undefined) return -1;
-  //     if (val2 === null || val2 === undefined) return 1;
-
-  //     if (dataType === "string") {
-  //       return val1.trim().localeCompare(val2.trim());
-  //     } else if (dataType === "number") {
-  //       return val1 - val2;
-  //     }
-
-  //     return 0; // Default case
-  //   });
-
-  //   // Reverse if sorting direction is descending
-  //   if (sortDirection !== "asc") {
-  //     sorted.reverse();
-  //   }
-
-  //   return sorted;
-  // }, [sortKey, sortDirection, unSortedData, originalData, columnsheader]);
-
-  // Use effect to set the sorted data state
-  // useEffect(() => {
-  //   const data_v2 = renderSort_v2;
-  //   setSortedData(data_v2);
-  //   setUnSortedData(data_v2);
-  // }, [renderSort_v2]);
-
-  // useEffect(() => {
-
-  // }, [sortKey, sortDirection, triggerSort]);
 
   return (
     <div className="table-pagination-container">

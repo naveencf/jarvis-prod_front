@@ -216,7 +216,7 @@ const InvoiceRequest = ({
           <FieldContainer
             fieldGrid={12}
             astric
-            label="Invoice Amount"
+            label="Requesting Invoice Amount (with GST)"
             type="number"
             placeholder="Enter amount here"
             value={InvoiceAmount}

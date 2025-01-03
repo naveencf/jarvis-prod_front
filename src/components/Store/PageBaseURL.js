@@ -117,9 +117,9 @@ export const PageBaseURL = createApi({
               method: 'GET',
             }
           : {
-              url: `v1/get_all_pages_for_users`, // User: POST request
-              method: 'POST',
-              body: { user_id: userID },
+              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+              method: 'GET',
+              // body: { user_id: userID },
             };
       },
       transformResponse: (response, meta, { decodedToken }) => {

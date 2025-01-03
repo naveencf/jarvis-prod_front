@@ -23,6 +23,7 @@ import PageAddMasterModal from './PageAddMasterModal';
 import PageInfoModal from './PageInfoModal';
 import { FormatName } from '../../../utils/FormatName';
 import { Spinner } from 'react-bootstrap';
+import { error } from 'jquery';
 
 setOpenShowAddModal;
 const Page = ({ pageMast_id, handleEditClose }) => {
@@ -42,7 +43,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [rowCount, setRowCount] = useState([{ page_price_type_id: '', price: '' }]);
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [priceTypeList, setPriceTypeList] = useState([]);
- 
 
   const [pageName, setPageName] = useState('');
   const [link, setLink] = useState('');
@@ -179,13 +179,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     // });
     setFilterPriceTypeList(filteredData);
   };
-
   useEffect(() => {
     if (platformId) {
       setPriceTypeList([]);
-      let priceData = platformData?.find((role) => role?._id == platformId)?._id;
+
+      const priceData = platformData?.find((role) => role?._id === platformId)?._id;
+
       axios
-        .get(baseUrl + `v1/pagePriceTypesForPlatformId/${platformId}`, {
+        .get(`${baseUrl}v1/pagePriceTypesForPlatformId/${platformId}`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -193,19 +194,22 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         })
         .then((res) => {
           setPriceTypeList(res?.data?.data);
+        })
+        .catch((err) => {
+          console.log('Error:', err);
         });
     }
   }, [platformId]);
 
+ 
   const addPriceRow = () => {
     if (rowCount.length > 0) {
       setRowCount((rowCount) => [...rowCount, { page_price_type_id: '', price: '' }]);
     } else {
       setRowCount([{ page_price_type_id: '', price: '' }]);
     }
- 
   };
-  console.log('rowCount', rowCount);
+ 
   const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
     skip: !pageMasterId,
   });
@@ -222,31 +226,27 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   };
 
   useEffect(() => {
-    if (pagePriceList.length) {
-      const priceTypeKeys = pagePriceList.map((item) => Object.keys(item)[0]);
-      const updatedRowCount = pagePriceList.map((item) => {
-        return priceTypeKeys
-          .map((key) => {
-            const priceTypeId = Object.keys(priceTypeMappings).find((id) => priceTypeMappings[id] === key);
+    if (!pagePriceList.length) return;
 
-            const price = item[key] !== undefined ? item[key] : 0;
+    const reversePriceTypeMappings = Object.fromEntries(Object.entries(priceTypeMappings).map(([id, key]) => [key, id]));
 
-            if (price) {
-              return {
-                page_price_type_id: priceTypeId,
-                price: price,
-                isFromPagePriceList: true
-              };
-            }
-          })
-          .filter(Boolean);
-      });
-
-      const flattenedRowCount = updatedRowCount.flat();
-      setRowCount(flattenedRowCount);
+    const flattenedRowCount = [];
+    for (const item of pagePriceList) {
+      for (const key in item) {
+        if (reversePriceTypeMappings[key] && item[key] !== undefined) {
+          flattenedRowCount.push({
+            page_price_type_id: reversePriceTypeMappings[key],
+            price: item[key] || 0,
+            isFromPagePriceList: true,
+          });
+        }
+      }
     }
+
+    setRowCount(flattenedRowCount);
   }, [pagePriceList]);
 
+  console.log('rowCount', rowCount);
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMasterId}`, {
@@ -512,6 +512,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     setOwnerType(selectedOption.value);
   };
 
+  console.log(priceTypeList, 'priceTypeList');
   return (
     <>
       <PageAddMasterModal />

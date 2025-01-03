@@ -263,6 +263,7 @@ function App() {
     };
   }, []);
 
+  
   return (
     <>
       <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div>

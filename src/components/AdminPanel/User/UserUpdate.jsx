@@ -792,7 +792,9 @@ const handleJoiningDate = (e) =>{
     formData.append("user_email_id", email);
     formData.append("user_contact_no", contact ? contact : "");
     formData.append("user_login_id", loginId);
+    if(password.length !== 0){
     formData.append("user_login_password", password);
+    }
     formData.append("user_status", userStatus);
 
     formData.append(
@@ -815,7 +817,6 @@ const handleJoiningDate = (e) =>{
     const formDataa = new FormData();
     if (personalEmail && personalContact) {
       setLoading(true);
-console.log(Number(creditLimit),"formData",creditLimit)
       await axios
         .put(
           `${baseUrl}` + `update_user_for_general_information/${id}`,

@@ -8,6 +8,25 @@ import selectedChair from "../../../../public/icon/chair/selected.png";
 import assignedChair from "../../../../public/icon/chair/assigned.png";
 import notassignedChair from "../../../../public/icon/chair/not-assign.png";
 
+
+import * as XLSX from "xlsx";
+
+function SittingExcelRoomWise(element) {
+  console.log(element.roomName , 'elelement function')
+  const formattedData = element?.elements?.map((row, index) => ({
+    "S.No": index + 1,
+    "Employe Name":
+    row.employee && row.employee.trim() !== "" ? row.employee : "",
+  }));
+
+  const fileName = `${element.roomName}.xlsx`;
+  const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+  XLSX.writeFile(workbook, fileName);
+}
+
+
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
 
@@ -31,8 +50,8 @@ const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   );
 };
 
+
 const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts }) => {
-  console.log(roomNameCard, "card");
   const { userContextData } = useAPIGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [elements, setElements] = useState([]);
@@ -42,6 +61,9 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
   const [chairSVG, setChairSVG] = useState(null);
   const [layouts, setLayouts] = useState({});
   const [id, setID] = useState("");
+
+  const [matchData , setMatchData] = useState("")
+  console.log(matchData , 'match data is here')
 
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Track selected dropdown value
 
@@ -76,10 +98,11 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
           return acc;
         }, {});
         setLayouts(layoutsData);
-
+       
         const matchedData = response.data?.find(
           (d) => d.roomName === selectedRoom
         );
+        setMatchData(matchedData)
         setID(matchedData ? matchedData._id : "");
       })
       .catch((error) => {
@@ -154,6 +177,7 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
     );
     setElements(updatedElements);
   };
+  
 
   return (
     <>
@@ -199,6 +223,14 @@ const Viewer = ({ roomNameCard , totalSittingDataCount, fetchAllocationCounts })
             >
               Save
             </button>
+            {roomNameCard &&(
+            <button
+              className="btn cmnbtn btn_sm btn-primary ml-2"
+              onClick={()=> SittingExcelRoomWise(matchData)}
+            >
+              Excel
+            </button>
+            )}
           </div>
         </div>
         <div className="card-body">

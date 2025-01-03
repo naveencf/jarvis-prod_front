@@ -183,6 +183,10 @@ const styles = StyleSheet.create({
     textAlign: "justify",
     lineHeight: 1.5,
   },
+  boldText: {
+    fontFamily: "MB", // Use your bold font family here
+    fontWeight: "bold", // Extra assurance for bold styling
+  },
   subSection: {
     paddingBottom: 8,
     fontSize: 10,
@@ -276,7 +280,7 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
           </View>
         </View>
         <View style={styles.section}>
-          <View style={styles.section}>
+          {/* <View style={styles.section}>
             <View
               style={{
                 display: "flex",
@@ -313,7 +317,17 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
                 <Text> </Text>
               </View>
             </View>
-          </View>
+          </View> */}
+            <View style={styles.section}>
+    <Text>
+      We take immense pleasure in offering you the esteemed position of{" "}
+      <Text style={styles.boldText}>{allUserData?.designation_name}</Text>, with
+      <Text style={styles.boldText}> Creativefuel Private Limited</Text> (the
+      ‘Company’). Your employment with the Company will be governed by terms
+      and conditions as detailed in Annexure A (effective from joining date),
+      and the other documents listed as annexures in this Appointment Letter.
+    </Text>
+  </View>
 
           <View style={styles.section}>
             <Text style={styles.points}>1. COMMENCEMENT OF EMPLOYMENT:</Text>
