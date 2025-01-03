@@ -1,13 +1,252 @@
-import React from "react";
+import React, { useState } from "react";
 import DateFormattingComponent from "../../../../DateFormator/DateFormared";
 import AboutSection from "./AboutSection";
+import { Autocomplete, MenuItem, TextField } from "@mui/material";
+import AddressSection from "./AddressSection";
+import axios from "axios";
+import { baseUrl } from "../../../../../utils/config";
+import { useGlobalContext } from "../../../../../Context/Context";
 
-const ProfileSection = ({ userData , educationData , familyData }) => {
+const ProfileSection = ({ userData, educationData, familyData }) => {
+  const { toastAlert, toastError } = useGlobalContext();
+  // Personal Details Section states
+  const [username, setUserName] = useState(userData.user_name || "");
+  const [nickName, setNickName] = useState(userData.nick_name || "");
+  const [dateOfBirth, setDateOfBirth] = useState(
+    userData.DOB?.split("T")?.[0] || ""
+  );
+  const [maritalStatus, setMaritalStatus] = useState(
+    userData.MartialStatus || ""
+  );
+  const [dateOfMarriage, setDateOfMarriage] = useState(
+    userData.DateOfMarriage || ""
+  );
+  const [spouseName, setSpouseName] = useState(userData.spouse_name || "");
+  const [bloodGroup, setBloodGroup] = useState(userData.BloodGroup || "");
+  const [gender, setGender] = useState(userData.Gender || "");
+
+  //Contact Details section states
+  const [email, setEmail] = useState(userData.user_email_id || "");
+  const [personalEmail, setPersonalEmail] = useState(
+    userData.PersonalEmail || ""
+  );
+  const [contact, setContact] = useState(userData.user_contact_no || "");
+  const [personalContact, setPersonalContact] = useState(
+    userData.PersonalNumber || ""
+  );
+  const [alternateContact, setAlternateContact] = useState(
+    userData.alternate_contact || ""
+  );
+
+  const [contactErrors, setContactErrors] = useState({
+    email: "",
+    personalEmail: "",
+    personalContact: "",
+    contact: "",
+    alternateContact: "",
+  });
+
+  const [errors, setErrors] = useState({});
+  const maritalStatusData = ["Married", "Unmarried"];
+  const genderData = ["Male", "Female", "Other"];
+  const [isPrimaryModalOpen, setIsPrimaryModelOpen] = useState(false);
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
+  const closePrimaryModel = () => {
+    setIsPrimaryModelOpen(false);
+  };
+  const closeContactModel = () => {
+    setIsContactModalOpen(false);
+  };
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const contactRegex = /^\d{10}$/;
+
+  // Validation handler
+  const handleEmailChange = (e, field) => {
+    const { value } = e.target;
+    // Update the corresponding state for the email field
+    if (field === "email") {
+      setEmail(value);
+    } else if (field === "personalEmail") {
+      setPersonalEmail(value);
+    }
+  
+    // Check if the email is valid and clear the error if valid
+    if (emailRegex.test(value)) {
+      setContactErrors(prevErrors => ({
+        ...prevErrors,
+        [field]: ""
+      }));
+    }
+  };
+  const handlePhoneChange = (e, field) => {
+    const { value } = e.target;
+    // Update the corresponding state for the contact field
+    if (field === "personalContact") {
+      setPersonalContact(value);
+    } else if (field === "contact") {
+      setContact(value);
+    } else if (field === "alternateContact") {
+      setAlternateContact(value);
+    }
+  
+    // Validate and clear the error message if valid
+    if (contactRegex.test(value) || value === "") { // If it's empty, don't set an error
+      setContactErrors(prevErrors => ({
+        ...prevErrors,
+        [field]: ""
+      }));
+    }
+  };
+  const contactValidateForm = () => {
+    let isValid = true;
+    let errorMessages = { ...contactErrors };
+  
+    // Validate work email
+    if (!emailRegex.test(email)) {
+      errorMessages.email = "Please enter a valid work email.";
+      isValid = false;
+    } else {
+      errorMessages.email = "";
+    }
+  
+    // Validate personal email
+    if (!emailRegex.test(personalEmail)) {
+      errorMessages.personalEmail = "Please enter a valid personal email.";
+      isValid = false;
+    } else {
+      errorMessages.personalEmail = "";
+    }
+  
+    // Validate personal contact number
+    if (!contactRegex.test(personalContact)) {
+      errorMessages.personalContact =
+        "Please enter a valid 10-digit personal contact number.";
+      isValid = false;
+    } else {
+      errorMessages.personalContact = "";
+    }
+  
+    // Validate official contact number
+    if (!contactRegex.test(contact)) {
+      errorMessages.contact =
+        "Please enter a valid 10-digit official contact number.";
+      isValid = false;
+    } else {
+      errorMessages.contact = "";
+    }
+  
+    // Validate alternate contact number
+    if (alternateContact && !contactRegex.test(alternateContact)) {
+      errorMessages.alternateContact =
+        "Please enter a valid alternate contact number.";
+      isValid = false;
+    } else {
+      errorMessages.alternateContact = "";
+    }
+  
+    // Set the error messages
+    setContactErrors(errorMessages);
+  
+    return isValid;
+  };
+  const handleContactSubmit = () => {
+    if (contactValidateForm()) {
+      try {
+        const formData = new FormData();
+        formData.append("user_id", userData.user_id);
+        formData.append("Personal_email", personalEmail);
+        formData.append("personal_number", personalContact);
+        formData.append("alternate_contact", alternateContact);
+        formData.append("user_contact_no", contact);
+        const response = axios.put(
+          baseUrl + `update_user`,formData
+        );
+        closeContactModel()
+        toastAlert("Employee Personal Details are successfully updated.");
+      } catch (error) {
+        console.error(
+          "Update failed",
+          error.response ? error.response.data : error
+        );
+      }
+    }
+  };
+
+
+  const bloodGroupData = [
+    "A+ (A Positive)",
+    "A- (A Negative)",
+    "B+ (B Positive)",
+    "B- (B Negative)",
+    "AB+ (AB Positive)",
+    "AB- (AB Negative)",
+    "O+ (O Positive)",
+    "O- (O Negative)",
+  ];
+
+  const validateFields = () => {
+    const newErrors = {};
+    if (!dateOfBirth) {
+      newErrors.dateOfBirth = "Date of birth is required.";
+    }
+    if (!gender) {
+      newErrors.gender = "Gender is required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = () => {
+    if (validateFields()) {
+      try {
+        const formData = new FormData();
+        formData.append("user_id", userData.user_id);
+        // formData.append("Personal_email", personalEmail);
+        // formData.append("personal_number", personalContact);
+        // formData.append("alternate_contact", alternateContact);
+
+        formData.append("Gender", gender);
+        formData.append("DOB", dateOfBirth);
+        formData.append("nick_name", nickName);
+        // formData.append("Age", ageCalculate);
+        // formData.append("Nationality", nationality);
+        formData.append("MartialStatus", maritalStatus);
+        formData.append("DateofMarriage", dateOfMarriage);
+        formData.append("spouse_name", spouseName);
+        const response = axios.put(
+          baseUrl + `update_user`,
+          
+           formData
+          
+        );
+        closePrimaryModel()
+        toastAlert("Employee Personal Details are successfully updated.");
+      } catch (error) {
+        console.error(
+          "Update failed",
+          error.response ? error.response.data : error
+        );
+      }
+    } else {
+      console.log("Validation errors:", errors);
+    }
+  };
   return (
     <div className="container">
       <div className="row">
-        <div className="col-6" >
+        <div className="col-6">
           <h4>Primary Details</h4>
+          <button
+            className="btn btn-outline-primary"
+            type="button"
+            onClick={(e) => {
+              setIsPrimaryModelOpen(true);
+            }}
+          >
+            Edit
+          </button>
           <div className="profileInfo_area">
             <div className="row profileInfo_row pt-0">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
@@ -67,8 +306,17 @@ const ProfileSection = ({ userData , educationData , familyData }) => {
             </div>
           </div>
         </div>
-        <div className="col-6" >
+        <div className="col-6">
           <h4>Contact Details</h4>
+          <button
+            className="btn btn-outline-primary"
+            type="button"
+            onClick={(e) => {
+              setIsContactModalOpen(true);
+            }}
+          >
+            Edit
+          </button>
           <div className="profileInfo_area">
             <div className="row profileInfo_row pt-0">
               <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
@@ -120,172 +368,91 @@ const ProfileSection = ({ userData , educationData , familyData }) => {
             </div>
           </div>
         </div>
-        <div className="col-6" style={{ border: "1px solid " }}>
-          <h4>Addresses</h4>
-          <div className="profileInfo_area">
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Current Address</h3>
-                  <h4>
-                    {userData.current_address ? userData.current_address : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Current City</h3>
-                  <h4>
-                    {userData.current_city ? userData.current_city : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Current State</h3>
-                  <h4>
-                    {userData.current_state ? userData.current_state : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Current Pin Code</h3>
-                  <h4>
-                    {userData.current_pin_code
-                      ? userData.current_pin_code
-                      : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <hr />
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Permanent Address</h3>
-                  <h4>
-                    {userData.permanent_address
-                      ? userData.permanent_address
-                      : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Permanent City</h3>
-                  <h4>
-                    {userData.permanent_city ? userData.permanent_city : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Permanent State</h3>
-                  <h4>
-                    {userData.permanent_state ? userData.permanent_state : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Permanent Pin Code</h3>
-                  <h4>
-                    {userData.permanent_pin_code
-                      ? userData.permanent_pin_code
-                      : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <AddressSection userData={userData}/>
         <div className="col-6">
-      <AboutSection educationData={educationData} familyData={familyData}/>
-      </div>
-        
-      
-      <div className="row">
-        <div className="col-6" >
-          <h4>Identity Information</h4>
-          <div className="profileInfo_area">
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Aadhar Name</h3>
-                  <h4>{userData.aadharName ? userData.aadharName : "NA"}</h4>
+          <AboutSection educationData={educationData} familyData={familyData} />
+        </div>
+
+        <div className="row">
+          <div className="col-6">
+            <h4>Identity Information</h4>
+            <div className="profileInfo_area">
+              <div className="row profileInfo_row pt-0">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Aadhar Name</h3>
+                    <h4>{userData.aadharName ? userData.aadharName : "NA"}</h4>
+                  </div>
+                </div>
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Aadhar Number</h3>
+                    <h4>{userData.UID ? userData.UID : "NA"}</h4>
+                  </div>
                 </div>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Aadhar Number</h3>
-                  <h4>
-                  {userData.UID ? userData.UID : "NA"}
-                  </h4>
+              <div className="row profileInfo_row pt-0">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Pan Name</h3>
+                    <h4>{userData.panName ? userData.panName : "NA"}</h4>
+                  </div>
+                </div>
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Pan Number</h3>
+                    <h4>{userData.pan_no ? userData.pan_no : "NA"}</h4>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Pan Name</h3>
-                  <h4>
-                    {userData.panName ? userData.panName : "NA"}
-                  </h4>
+              <div className="row profileInfo_row pt-0">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Voter Name</h3>
+                    <h4>{userData.voterName ? userData.voterName : "NA"}</h4>
+                  </div>
+                </div>
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Voter Number</h3>
+                    <h4>{userData.BloodGroup ? userData.BloodGroup : "NA"}</h4>
+                  </div>
                 </div>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Pan Number</h3>
-                  <h4>{userData.pan_no ? userData.pan_no : "NA"}</h4>
+              <div className="row profileInfo_row pt-0">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>passportNumber</h3>
+                    <h4>
+                      {userData.passportNumber ? userData.passportNumber : "NA"}
+                    </h4>
+                  </div>
+                </div>
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>passportValidUpto</h3>
+                    <DateFormattingComponent
+                      date={userData.passportValidUpto?.split("T")[0]}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Voter Name</h3>
-                  <h4>{userData.voterName ? userData.voterName : "NA"}</h4>
+              <div className="row profileInfo_row pt-0">
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Vehicle Name</h3>
+                    <h4>
+                      {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
+                    </h4>
+                  </div>
                 </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Voter Number</h3>
-                  <h4>{userData.BloodGroup ? userData.BloodGroup : "NA"}</h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>passportNumber</h3>
-                  <h4>{userData.passportNumber ? userData.passportNumber : "NA"}</h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>passportValidUpto</h3>
-                  <DateFormattingComponent
-                    date={userData.passportValidUpto?.split("T")[0]}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Vehicle Name</h3>
-                  <h4>{userData.vehicleNumber ? userData.vehicleNumber : "NA"}</h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Vehicle Number</h3>
-                  <h4>{userData.vehicleNumber ? userData.vehicleNumber : "NA"}</h4>
+                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
+                  <div className="profileInfo_box">
+                    <h3>Vehicle Number</h3>
+                    <h4>
+                      {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
+                    </h4>
+                  </div>
                 </div>
               </div>
             </div>
@@ -293,7 +460,287 @@ const ProfileSection = ({ userData , educationData , familyData }) => {
         </div>
       </div>
 
+      {/* Primary details modal is here  */}
+      <div className="right-modal ">
+        <div
+          className={`modal fade right ${isPrimaryModalOpen ? "show" : ""}`}
+          id="sidebar-right"
+          tabIndex={-1}
+          role="dialog"
+          style={{ display: isPrimaryModalOpen ? "block" : "none" }}
+        >
+          <div className="modal-dialog modal-sm" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h4 className="modal-title">Primary Details</h4>
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  onClick={closePrimaryModel}
+                >
+                  <span aria-hidden="true" style={{ marginLeft: "250px" }}>
+                    ×
+                  </span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="col-sm-12 col-lg-12 p-2">
+                  <div className="form-group">
+                    <TextField
+                      id="outlined-basic"
+                      label="Full Name"
+                      variant="outlined"
+                      type="text"
+                      name="name"
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      value={username}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <TextField
+                      id="outlined-basic"
+                      label="Nick Name"
+                      variant="outlined"
+                      type="text"
+                      value={nickName}
+                      onChange={(e) => setNickName(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-group ">
+                    <TextField
+                      id="outlined-basic"
+                      label="Date Of Birth"
+                      variant="outlined"
+                      type="date"
+                      value={dateOfBirth}
+                      onChange={(e) => setDateOfBirth(e.target.value)}
+                      error={!!errors.dateOfBirth}
+                      helperText={errors.dateOfBirth}
+                      fullWidth
+                    />
+                  </div>
+                  <div className="form-group">
+                    <TextField
+                      select
+                      label="Select Marital Status"
+                      value={maritalStatus}
+                      onChange={(e) => setMaritalStatus(e.target.value)}
+                      fullWidth
+                      variant="outlined"
+                      required={false}
+                    >
+                      {maritalStatusData.map((option) => (
+                        <MenuItem key={option} value={option}>
+                          {option}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+
+                    {maritalStatus === "Married" && (
+                      <>
+                        <div
+                          style={{ marginTop: "20px" }}
+                          className="form-group"
+                        >
+                          <TextField
+                            label="Spouse Name"
+                            value={spouseName}
+                            onChange={(e) => setSpouseName(e.target.value)}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            fullWidth
+                            variant="outlined"
+                            required={false}
+                          />
+                        </div>
+                        <div
+                          style={{ marginTop: "20px" }}
+                          className="form-group"
+                        >
+                          <TextField
+                            label="Date Of Marriage"
+                            type="date"
+                            value={dateOfMarriage}
+                            onChange={(e) => setDateOfMarriage(e.target.value)}
+                            InputLabelProps={{
+                              shrink: true,
+                            }}
+                            fullWidth
+                            variant="outlined"
+                            required={false}
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                  <div className="form-group form_select">
+                    <Autocomplete
+                      disablePortal
+                      id="combo-box-demo"
+                      options={bloodGroupData}
+                      value={bloodGroup}
+                      onChange={(event, newValue) => {
+                        setBloodGroup(newValue);
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Blood Group" />
+                      )}
+                    />
+                  </div>
+                  <div className="form-group form_select">
+                    <Autocomplete
+                      id="combo-box-demo"
+                      options={genderData}
+                      value={gender}
+                      onChange={(e, newValue) => setGender(newValue)}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Gender"
+                          error={!!errors.gender}
+                          helperText={errors.gender}
+                        />
+                      )}
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary ml-2"
+                  onClick={handleSubmit}
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger ml-2"
+                  onClick={closePrimaryModel}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Contact details modal is here  */}
+      <div className="right-modal ">
+        <div
+          className={`modal fade right ${isContactModalOpen ? "show" : ""}`}
+          id="sidebar-right"
+          tabIndex={-1}
+          role="dialog"
+          style={{ display: isContactModalOpen ? "block" : "none" }}
+        >
+          <div className="modal-dialog modal-sm" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h4 className="modal-title">Primary Details</h4>
+                <button
+                  type="button"
+                  className="close"
+                  data-dismiss="modal"
+                  onClick={closeContactModel}
+                >
+                  <span aria-hidden="true" style={{ marginLeft: "250px" }}>
+                    ×
+                  </span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className="col-sm-12 col-lg-12 p-2">
+                  <div className="form-group">
+                  <TextField
+                  id="outlined-basic"
+                  label="Work Email"
+                  variant="outlined"
+                  type="email"
+                  name="name"
+                  disabled
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                  value={email}
+                  onChange={(e) => handleEmailChange(e, "email")}
+                  error={Boolean(contactErrors.email)}
+                  helperText={contactErrors.email || ""}
+                />
+                  </div>
+                  <div className="form-group">
+                  <TextField
+                  id="outlined-basic"
+                  label="Personal Email"
+                  variant="outlined"
+                  type="email"
+                  value={personalEmail}
+                  onChange={(e) => handleEmailChange(e, "personalEmail")}
+                  error={Boolean(contactErrors.personalEmail)}
+                  helperText={contactErrors.personalEmail || ""}
+                />
+                  </div>
+                  <div className="form-group">
+                  <TextField
+                  id="outlined-basic"
+                  label="Personal Number"
+                  variant="outlined"
+                  type="number"
+                  value={personalContact}
+                  onChange={(e) => handlePhoneChange(e, "personalContact")}
+                  error={Boolean(contactErrors.personalContact)}
+                  helperText={contactErrors.personalContact || ""}
+                />
+                  </div>
+                  <div className="form-group">
+                  <TextField
+                  id="outlined-basic"
+                  label="Official Number"
+                  variant="outlined"
+                  type="number"
+                  value={contact}
+                  onChange={(e) => handlePhoneChange(e, "contact")}
+                  error={Boolean(contactErrors.contact)}
+                  helperText={contactErrors.contact || ""}
+                />
+                  </div>
+                  <div className="form-group">
+                  <TextField
+                  id="outlined-basic"
+                  label="Alternate Number"
+                  variant="outlined"
+                  type="number"
+                  value={alternateContact}
+                  onChange={(e) => handlePhoneChange(e, "alternateContact")}
+                  error={Boolean(contactErrors.alternateContact)}
+                  helperText={contactErrors.alternateContact || ""}
+                />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="btn btn-primary ml-2"
+                  onClick={handleContactSubmit}
+                >
+                  Update
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger ml-2"
+                  onClick={closeContactModel}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+     
     </div>
   );
 };

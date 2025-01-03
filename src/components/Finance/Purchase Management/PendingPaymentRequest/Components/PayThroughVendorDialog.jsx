@@ -17,16 +17,21 @@ import { baseUrl, insightsBaseUrl } from "../../../../../utils/config";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { TextFields } from "@mui/icons-material";
 import { useState } from "react";
+import jwtDecode from "jwt-decode";
 
 const PayThroughVendorDialog = (props) => {
+  const token = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(token);
+  const userID = decodedToken.id;
   const { toastAlert, toastError } = useGlobalContext();
   const [paymentInitiated, setPaymentInitiated] = useState(false);
+  const [otptoVerify, setOtptoVerify] = useState(0);
   const {
     payThroughVendor,
     setPayThroughVendor,
     rowSelectionModel,
     filterData, handlePayVendorClick, handleClosePayDialog, paymentStatus, gatewayPaymentMode, setGatewayPaymentMode, rowData, paymentAmout, userName, payRemark, TDSValue, GSTHoldAmount, gstHold, TDSDeduction,
-    TDSPercentage
+    TDSPercentage, paymentDate
   } = props;
 
 
@@ -73,7 +78,8 @@ const PayThroughVendorDialog = (props) => {
 
       }
       const paymentPayload = {
-        clientReferenceId: selectedRow?.request_id,
+        clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
+        // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name),
         accountNumber: selectedRow?.account_no,
         branchCode: selectedRow?.ifsc,
@@ -81,7 +87,7 @@ const PayThroughVendorDialog = (props) => {
         phone: selectedRow?.mob1,
         amount: {
           currency: "INR",
-          value: paymentAmout,
+          value: paymentAmout * 100,
         },
         mode: gatewayPaymentMode || "NEFT",
         remarks: selectedRow?.remark_audit || "No Remark",
@@ -89,14 +95,14 @@ const PayThroughVendorDialog = (props) => {
         vendorName: selectedRow?.vendor_name,
         vendorPhpId: selectedRow?.vendor_id,
         requestId: selectedRow?.request_id,
-        zohoVendorId: "",
+        zohoVendorId: "1111",
 
         // payload for purchase
         request_id: rowData.request_id,
         payment_amount: paymentAmout,
-        // payment_date: new Date(paymentDate)?.toISOString().slice(0, 19).replace("T: " "),
+        payment_date: new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " "),
         payment_by: userName,
-        evidence: payMentProof,
+        // evidence: payMentProof,
         finance_remark: payRemark,
         status: 1,
         payment_mode: gatewayPaymentMode,
@@ -108,11 +114,22 @@ const PayThroughVendorDialog = (props) => {
         gst_Hold_Bool: gstHold ? 1 : 0,
         tds_Deduction_Bool: TDSDeduction ? 1 : 0,
         tds_percentage: TDSPercentage,
+        // clientReferenceId,
+
+        otp: Number(otptoVerify),
+        otpEmail: "naveen@creativefuel.io",
+        createdBy: userID,
+        paymentType: gatewayPaymentMode || "NEFT",
+        // payment_date,
+        // payment_getway_status,
+        // getway_process_amt,
+
       };
       try {
+
         setPaymentInitiated(true);
         const payResponse = await axios.post(
-          insightsBaseUrl + `create_payout`,
+          insightsBaseUrl + `v1/create_payout`,
           paymentPayload,
           {
             headers: {
@@ -130,7 +147,7 @@ const PayThroughVendorDialog = (props) => {
           return;
           // console.log("Payment successful:", payResponse);
         } else {
-          toastError("Unknown Error found. Please inform IT team for this transaction.");
+          toastError("Unknown Error found.");
         }
         setPaymentInitiated(false);
       } catch (error) {
@@ -152,12 +169,13 @@ const PayThroughVendorDialog = (props) => {
 
     } catch (error) {
       console.error("Error processing payment:", error);
+      toastError("Payment Request Failed.Contact IT team for the same.")
     }
   };
 
-  const handleOTPforPayment = () => {
+  const handleOTPforPayment = (e) => {
 
-    toastAlert("OTP sent to registered mail")
+    setOtptoVerify(e.target.value)
   }
   // console.log(typeof (paymentAmout), "paymentAmout", paymentAmout, "paymentAmout")
   return (
@@ -223,7 +241,7 @@ const PayThroughVendorDialog = (props) => {
               />
             )}
           />
-          <TextField id="outlined-basic" label="Type OTP" variant="outlined" />
+          <TextField id="outlined-basic" label="Type OTP" variant="outlined" onChange={(e) => handleOTPforPayment(e)} />
           {/* <Typography gutterBottom>
           Verify OTP to complete payment
         </Typography> */}

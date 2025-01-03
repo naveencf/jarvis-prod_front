@@ -55,7 +55,7 @@ const PageMaster = () => {
   const [pageLevel, setPageLevel] = useState('');
   const [pageStatus, setPageStatus] = useState('active');
   const [languages, setLanguages] = useState([]);
-
+  const [formLoading, setFormLoading] = useState(false);
   const [closeBy, setCloseBy] = useState('');
   const [pageType, setPageType] = useState('Non Adult');
   const [content, setContent] = useState('By CF');
@@ -118,7 +118,7 @@ const PageMaster = () => {
   const subCategoryData = subCategory?.data || [];
   const { data: vendor } = useGetAllVendorQuery();
   const vendorData = vendor || [];
-  const { data: singlePageData, isLoading: singlePageLoading } = useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
+  const { data: singlePageData, isLoading: singlePageLoading, isFetching, isSuccess } = useGetPageByIdQuery(pageMast_id, { skip: !pageMast_id });
   const { data: pageList, refetch: refetchPageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   const { data: platformPriceData, isLoading: isPriceLoading } = useGetPlatformPriceQuery();
@@ -349,7 +349,7 @@ const PageMaster = () => {
     };
 
     // return;
-
+    setFormLoading(true);
     if (pageMast_id) {
       payload.last_updated_by = userID;
       delete payload.created_by;
@@ -361,9 +361,17 @@ const PageMaster = () => {
           },
         })
         .then(() => {
-          refetchPageList();
+          refetchPageList().then((result) => {
+            if (result.error) {
+              console.error('Failed to refetch:', result.error);
+            } else {
+              if (result?.data?.length >0) {
+                setIsFormSubmitted(true);
+              }
+            }
+          });
+
           toastAlert(' Data Updated  saim create 1 put Successfully');
-          setIsFormSubmitted(true);
         })
         .catch((error) => {
           toastError(error.response.data.message);
@@ -380,8 +388,16 @@ const PageMaster = () => {
           const pltname = formatString(res?.data?.data?.savingObj?.platform_name);
           const instagramList = pageList?.map((item) => item?.platform_name).filter((op) => op === res?.data?.data?.savingObj?.platform_name);
           const instagramCount = instagramList.length;
-          refetchPageList();
-          setIsFormSubmitted(true);
+          refetchPageList().then((result) => {
+            if (result.error) {
+              console.error('Failed to refetch:', result.error);
+            } else {
+             
+              if (result?.data?.length > 0) {
+                setIsFormSubmitted(true);
+              }
+            }
+          });
           toastAlert(`${pltname} - (${instagramCount}) , Data Submitted Successfully`);
         })
         .catch((error) => {
@@ -396,6 +412,7 @@ const PageMaster = () => {
   };
 
   if (isFormSubmitted) {
+    setFormLoading(false);
     return navigate('/admin/pms-page-overview');
   }
 
@@ -1246,7 +1263,7 @@ const PageMaster = () => {
         </div>
         <div className="card-footer">
           <Stack direction="row" spacing={2}>
-            <button className="btn cmnbtn btn-primary" type="submit" onClick={handleSubmit}>
+            <button className="btn cmnbtn btn-primary" type="submit" onClick={handleSubmit} disabled={formLoading}>
               {pageMast_id ? 'Update' : 'Submit'}
             </button>
           </Stack>

@@ -31,7 +31,7 @@ const AssetCategoryMaster = () => {
     try {
       const response = await axios.get(baseUrl + "get_all_asset_category");
 
-      setCategoryData(response.data.data?.asset_categories);
+      setCategoryData(response?.data.data?.asset_categories);
     } catch (error) {
       // toastAlert("Data not submitted", error.message);
       return null;

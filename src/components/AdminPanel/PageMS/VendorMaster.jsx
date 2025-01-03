@@ -907,7 +907,7 @@ const VendorMaster = () => {
       toastError('Please fill all the mandatory fields');
       return;
     }
- 
+
     if (String(homePincode).length !== 6) {
       toastError('Please Enter valid pincode');
       return;
@@ -1090,6 +1090,7 @@ const VendorMaster = () => {
           const postOffice = data[0].PostOffice[0];
           const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
           setHomeState(abbreviatedState);
+          // console.log('postOffice', postOffice.District);
           setHomeCity(postOffice.District);
         } else {
           console.log('Invalid Pincode');
@@ -1099,6 +1100,7 @@ const VendorMaster = () => {
       }
     }
   };
+  // console.log('homeCity', homeCity);
   const stateAbbreviations = {
     'Andhra Pradesh': 'AP',
     'Arunachal Pradesh': 'AR',
@@ -1429,11 +1431,14 @@ const VendorMaster = () => {
                 fieldGrid={12}
                 value={mobile}
                 astric
-                type="number"
+                type="text"
                 required={true}
                 onChange={(e) => {
-                  handleMobileNumSet(e);
-                  // handleMobileValidate();
+                  const inputValue = e.target.value;
+                  // Allow only numbers using regex
+                  if (/^\d*$/.test(inputValue)) {
+                    handleMobileNumSet(e);
+                  }
                 }}
               />
               {validationMessage && (

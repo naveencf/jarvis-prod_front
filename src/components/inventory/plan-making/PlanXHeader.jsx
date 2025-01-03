@@ -6,6 +6,16 @@ function PlanXHeader({ planRows, onFilterChange }) {
     <>
       <Button
         className="btn cmnbtn btn-outline-primary"
+        onClick={() => onFilterChange('RequestPlan')}
+        variant="outlined"
+      >
+        <span className="badgeNum">{ planRows.filter(
+              (plan) =>
+                plan?.sales_executive_created
+            ).length}</span> Request Plans
+      </Button>
+      <Button
+        className="btn cmnbtn btn-outline-primary"
         onClick={() => onFilterChange('all')}
         variant="outlined"
       >

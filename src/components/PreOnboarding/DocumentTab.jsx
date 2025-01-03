@@ -384,16 +384,19 @@ const DocumentTab = ({
                         <td>
                           {" "}
                           <div className="flex-row" style={{display:'flex'}}>
-
+                            {item.status !== "Approved" && "approve" &&(
                             <button
                             title="delete"
+                            type="button"
                               className="btn icon-1  btn-danger btn-sm"
-                              onClick={() => handleDocDelete(item._id)}
+                              onClick={() =>
+                                handleDocDelete(item._id)}
                               style={{ borderRadius: 17, padding: 7 }}
                             >
                               < IoTrashBin  color="white"/>
                               {/* <i style={{ color: "white" }} className="bi bi-trash"></i> */}
                             </button>
+                            )}
                             {item.status == "Verification Pending" && (RoleID === constant.CONST_ADMIN_ROLE || RoleID === constant.CONST_HR_ROLE) &&
                               <button
                                 type="button"

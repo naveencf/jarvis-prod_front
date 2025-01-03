@@ -53,7 +53,7 @@ const AssetCategoryOverview = () => {
       const response = await axios.get(
         `${baseUrl}` + `get_total_asset_in_category/${row}`
       );
-      setTotalAssets(response?.data.data);
+      setTotalAssets(response?.data?.data);
       seAssetModel(true);
     } catch (error) {
       console.log("total asset not working", error);

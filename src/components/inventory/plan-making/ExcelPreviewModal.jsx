@@ -133,7 +133,7 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
     setUpdatedCategoryData(false);
   };
   const handleCategoryChange = (event, newValue) => {
-    setMainCategory(newValue); // Update the selected value
+    setMainCategory(newValue.toLowerCase()); // Update the selected value
   };
 
   return (

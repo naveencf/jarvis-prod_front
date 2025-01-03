@@ -6,7 +6,10 @@ const TargetCompetitionApi = createApi({
   baseQuery: authBaseQuery,
   endpoints: (builder) => ({
     getAllTargetCompetitions: builder.query({
-      query: () => "sales/target_competition",
+      query: (Cat_id) =>
+        `sales/target_competition${
+          Cat_id ? `?sales_category_id=${Cat_id}` : ""
+        }`,
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),

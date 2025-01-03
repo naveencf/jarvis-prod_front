@@ -692,7 +692,7 @@ const PlanMaking = () => {
       setShortcutTriggered(true);
       const currentRow = getTableData[activeIndex];
       const isChecked = showTotalCost[currentRow._id] || false;
-      console.log('currentRow', currentRow);
+    
       // Toggle checkbox
       handleCheckboxChange(currentRow, 'shortcutkey', { target: { checked: !isChecked } }, activeIndex);
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {

@@ -8,7 +8,7 @@ import DiscardConfirmation from "./Components/DiscardConfirmation";
 import jwtDecode from "jwt-decode";
 import ImageView from "../../ImageView";
 import { useGlobalContext } from "../../../../Context/Context";
-import { baseUrl } from "../../../../utils/config";
+import { baseUrl, phpBaseUrl } from "../../../../utils/config";
 import ShowDataModal from "./Components/ShowDataModal";
 import WhatsappAPI from "../../../WhatsappAPI/WhatsappAPI";
 import moment from "moment";
@@ -100,7 +100,7 @@ export default function PendingPaymentRequest() {
     let remindData = "";
     await axios
       .get(
-        "https://purchase.creativefuel.io//webservices/RestController.php?view=getpaymentrequestremind"
+        phpBaseUrl + `?view=getpaymentrequestremind`
       )
       .then((res) => {
         setPhpRemainderData(res.data.body);
@@ -117,7 +117,7 @@ export default function PendingPaymentRequest() {
         setNodeData(x);
         axios
           .get(
-            "https://purchase.creativefuel.io/webservices/RestController.php?view=getpaymentrequest"
+            phpBaseUrl + `?view=getpaymentrequest`
           )
           .then((res) => {
             let y = res?.data?.body.filter((item) => {
@@ -296,7 +296,8 @@ export default function PendingPaymentRequest() {
     };
     setLoading(true);
     setRowData(enrichedRow);
-    setPaymentAmount(Number(row.balance_amount));
+    console.log(Number(row.balance_amount) - Number(row?.getway_process_amt), "bal-proc")
+    setPaymentAmount(Number(row.balance_amount) - Number(row?.getway_process_amt));
     setNetAmount(row.balance_amount);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
 

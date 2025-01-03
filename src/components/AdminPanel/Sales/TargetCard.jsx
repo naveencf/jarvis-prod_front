@@ -46,8 +46,6 @@ const TargetCard = ({ data, totalSaleAmountDateWise, index }) => {
   ];
 
   function updateProgress(percent) {
-    console.log("percent", percent);
-
     document.documentElement.style.setProperty(
       "--LinearProgress-percent",
       percent

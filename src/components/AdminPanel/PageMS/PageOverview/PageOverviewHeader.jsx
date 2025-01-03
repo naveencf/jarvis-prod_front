@@ -52,6 +52,8 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
   const [openDisabledPages, setOpenDisabledPages] = useState(false);
   const [bulkVendorSum, setBulkVendorSum] = useState(0);
   const [activeTab, setActiveTab] = useState('Tab0');
+  const [startIndex, setStartIndex] = useState(0);
+  const itemsPerPage = 5;
 
   const handleCloseDisabled = () => setOpenDisabledPages(false);
 
@@ -60,7 +62,19 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
   // Sorting state
   const [sortField, setSortField] = useState('');
   const [sortOrder, setSortOrder] = useState('asc');
+  const visiblePlatforms = platformData.slice(startIndex, startIndex + itemsPerPage);
 
+  const handleNext = () => {
+    if (startIndex + itemsPerPage < platformData.length) {
+      setStartIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (startIndex > 0) {
+      setStartIndex((prev) => prev - 1);
+    }
+  };
   // Construct page query string based on selected filters
   // Activeness options mapping
   const activenessOptions = [
@@ -252,10 +266,15 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
   };
 
   useEffect(() => {
-    const platformName = activeTab === 'Tab0' ? 'Instagram' : activeTab === 'Tab5' ? 'Facebook' : activeTab === 'Tab3' ? 'Twitter' : activeTab === 'Tab4' ? 'Youtube' : activeTab === 'Tab1' ? 'Snapchat' : null;
-    console.log('platfromName', platformName);
-    onFilterChange(`platform_name=${platformName?.toLowerCase()}`);
-  }, [activeTab]);
+    if (platformData && platformData.length > 0) {
+      const platformIndex = parseInt(activeTab.replace('Tab', ''), 10); // Extract index from activeTab (e.g., "Tab0" -> 0)
+      const platformName = platformData[platformIndex]?.platform_name || null;
+
+      if (platformName) {
+        onFilterChange(`platform_name=${platformName.toLowerCase()}`);
+      }
+    }
+  }, [activeTab, platformData]);
 
   useEffect(() => {
     if (vendorData?.length) {
@@ -346,22 +365,32 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
               <Autocomplete value={filterFollowers} onChange={handleSelectionChange} options={FollowerRanges} getOptionLabel={(option) => option.label} renderInput={(params) => <TextField {...params} label="Followers" />} />
             </div>
             {/* {decodedToken?.role_id == 1 && <ExportInventory pageList={pageList} />} */}
-            <div className="tabs">
-              <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab0')}>
-                Instagram
-              </button>
-              <button className={activeTab === 'Tab5' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab5')}>
-                Facebook
-              </button>
-              <button className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab3')}>
-                Twitter
-              </button>
-              <button className={activeTab === 'Tab4' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab4')}>
-                Youtube
-              </button>
-              <button className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick('Tab1')}>
-                Snapchat
-              </button>
+            <div className="tabs-container tabslide">
+              <div className="navigation">
+                {/* Left Arrow */}
+                {/* {startIndex > 0 && ( */}
+                <button className="prev-arrow arrow-btn btn" onClick={handlePrevious}>
+                  <i class="bi bi-chevron-left"></i>
+                  {/* Left Arrow */}
+                </button>
+                {/* )} */}
+
+                {/* Dynamic Tabs */}
+                <div className="tabs">
+                  {visiblePlatforms.map((platform, index) => (
+                    <button key={platform._id} className={activeTab === `Tab${startIndex + index}` ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick(`Tab${startIndex + index}`)}>
+                      {platform.platform_name.charAt(0).toUpperCase() + platform.platform_name.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right Arrow */}
+                {/* {startIndex + itemsPerPage < platformData.length && ( */}
+                <button className="next-arrow arrow-btn btn" onClick={handleNext}>
+                  <i class="bi bi-chevron-right"></i> {/* Right Arrow */}
+                </button>
+                {/* )} */}
+              </div>
             </div>
           </div>
         </div>

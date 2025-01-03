@@ -26,6 +26,7 @@ import { useGetTotalSaleAmountDateWiseQuery } from "../../Store/API/Sales/SaleBo
 import { useGetSalesCategoryListQuery } from "../../Store/API/Sales/salesCategoryApi";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import OutstandingComp from "./OutstandingComp";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const SalesDashboard = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const SalesDashboard = () => {
   const [salesBookingStat, setSalesBookingStat] = useState();
   const [Cat_id, setCat_id] = useState(loginUserRole === 1 ? 1 : null);
   const [weeklyLoading, setWeeklyLoading] = useState(false);
+  const { contextData } = useAPIGlobalContext();
   const {
     data: categoryDetails,
     error: categoryDetailsError,
@@ -163,12 +165,12 @@ const SalesDashboard = () => {
     refetch: refetchTargetCompetitions,
     isError: targetCompetitionsError,
     isLoading: targetCompetitionsLoading,
-  } = useGetAllTargetCompetitionsQuery();
+  } = useGetAllTargetCompetitionsQuery(Cat_id ? Cat_id : "");
 
   useEffect(() => {
     if (!targetCompetitionsLoading && allTargetCompetitionsData) {
       const activeCompetitions = allTargetCompetitionsData?.filter(
-        (competition) => competition.status == 1
+        (competition) => competition.status == 0
       );
 
       if (activeCompetitions?.length > 0) {
@@ -388,8 +390,6 @@ How are you doing today?`}
         </div>
       )}
 
-      {console.log("weekMonthCard", Cat_id)}
-
       {weekMonthCard && (
         <>
           <div className="row mt20">
@@ -527,7 +527,7 @@ How are you doing today?`}
           </div>
         )}
 
-        {loginUserRole === 1 && (
+        {contextData?.find((data) => data?._id == 64)?.view_value !== 1 && (
           <div className="col">
             <NavLink to="/admin/deleted-sales-booking">
               <div className="card shadow-none bgDangerLight">
@@ -547,11 +547,11 @@ How are you doing today?`}
           </div>
         )}
       </div>
-
-      {allTargetCompetitionsData &&
+      {loginUserRole === 1 &&
+        allTargetCompetitionsData &&
         allTargetCompetitionsData?.map(
           (data, index) =>
-            data?.status == 1 && (
+            data?.status == 0 && (
               <TargetCard
                 index={index}
                 data={data}

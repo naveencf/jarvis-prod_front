@@ -47,6 +47,7 @@ import {
   useGetSalesCategoryListQuery,
 } from "../../../Store/API/Sales/salesCategoryApi";
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
+import { Badge } from "reactour";
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -564,13 +565,20 @@ const ViewSaleBooking = () => {
       name: "Payment Requested",
       comapare: true,
       renderRowCell: (row) => (
-        <div
-          style={{
-            color: `${row.requested_amount > 0 ? "green" : "red"}`,
-          }}
+        <span
+          className={`badge ${
+            row.requested_amount ? "badge-success" : "badge-danger"
+          }`}
         >
           {row.requested_amount > 0 ? "Requested" : "Not Requested"}
-        </div>
+        </span>
+        // <div
+        //   style={{
+        //     color: `${row.requested_amount > 0 ? "green" : "red"}`,
+        //   }}
+        // >
+        //   {row.requested_amount > 0 ? "Requested" : "Not Requested"}
+        // </div>
       ),
       width: 100,
     },
@@ -705,6 +713,21 @@ const ViewSaleBooking = () => {
       showCol: true,
     },
     {
+      key: "gst_status-1",
+      name: "GST Status",
+      renderRowCell: (row) => (
+        <span
+          className={`badge ${
+            row.gst_status ? "badge-success" : "badge-danger"
+          }`}
+        >
+          {row.gst_status ? "Applicable" : "Not Applicable"}
+        </span>
+      ),
+      width: 100,
+      compare: true,
+    },
+    {
       key: "salesInvoiceRequestData_1",
       name: "Proforma Invoice",
       width: 100,
@@ -752,7 +775,7 @@ const ViewSaleBooking = () => {
         } else if (save?.length == 1) {
           return (
             <a target="__blank" href={row?.url + "/" + save[0]?.invoice_file}>
-              {save[0]?.invoice_number}
+              {save[0]?.invoice_number?.trim()}
             </a>
           );
         } else {
@@ -761,15 +784,16 @@ const ViewSaleBooking = () => {
               className="icon-1"
               onClick={() => openModal(row, "InvoiceDownload")}
             >
-              {
+              {String(
                 save?.filter(
                   (item) => item.invoice_creation_status == "uploaded"
                 ).length
-              }
+              )}
             </button>
           );
         }
       },
+      compare: true,
     },
     {
       key: "credit_note",

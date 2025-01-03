@@ -33,6 +33,9 @@ import VendorDocCount from './Vendor/VendorDocCount';
 const VendorOverview = () => {
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
+  console.log(decodedToken, 'decodedToken');
+
+
   const dispatch = useDispatch();
 
   const [vendorDetails, setVendorDetails] = useState(null);
@@ -592,6 +595,9 @@ const VendorOverview = () => {
       setActiveTab('Tab1');
     }
   }, [vendorDocsCountData]);
+  const ExportData = () => {
+    return decodedToken?.role_id == 1;  // returns false if role_id is not 1, otherwise true
+  }
   return (
     <>
       <VendorMPriceModal open={openUpdateVendorMPrice} onClose={handleCloseVendorMPriceModal} rowData={rowVendor} />
@@ -680,7 +686,19 @@ const VendorOverview = () => {
                       </Grid>
                     </Box>
                   ) : (
-                    <View columns={dataGridcolumns} data={filterData} isLoading={false} title={'Vendor Overview'} rowSelectable={true} pagination={[100, 200, 1000]} tableName={'Vendor Overview'} selectedData={setGetRowData} />
+
+                    <View
+                      version={1}
+                      columns={dataGridcolumns}
+                      data={filterData}
+                      isLoading={false}
+                      title="Vendor Overview"
+                      rowSelectable={true}
+                      pagination={[100, 200, 1000]}
+                      tableName="Vendor Overview"
+                      selectedData={setGetRowData}
+                      exportData={ExportData}
+                    />
                   )}
                 </div>
                 <VendorBankDetailModal />
@@ -836,7 +854,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={state}
-                        // onClick={() => vendorWithCategories(state)}
+                      // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -867,7 +885,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={city}
-                        // onClick={() => vendorWithCategories(city)}
+                      // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">

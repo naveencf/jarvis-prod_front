@@ -86,28 +86,19 @@ const ViewTargetCompetition = () => {
     {
       key: "status",
       name: "Status",
-      compare: true,
       renderRowCell: (row, index) => {
-        console.log(row, "harshal");
-        if (row.status == 0) {
-          return (
-            <button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={() => handleUpdateStatus(row)}
-            >
-              Inactive
-            </button>
-          );
-        } else {
-          return (
-            <button
-              className="btn cmnbtn btn_sm btn-success"
-              onClick={() => handleUpdateStatus(row)}
-            >
-              Active
-            </button>
-          );
-        }
+        console.log(row.status, "harshal");
+
+        return (
+          <button
+            className={`btn cmnbtn btn_sm ${
+              row.status ? "btn-danger" : "btn-success"
+            }`}
+            onClick={() => handleUpdateStatus(row)}
+          >
+            {row.status ? "Inactive" : "Active"}
+          </button>
+        );
       },
     },
     {
