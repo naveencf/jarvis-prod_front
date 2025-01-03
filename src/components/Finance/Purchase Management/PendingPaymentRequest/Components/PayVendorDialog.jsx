@@ -166,7 +166,7 @@ function PayVendorDialog(props) {
 
           const phpFormData = new FormData();
 
-          phpFormData.append(clientReferenceId, `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
+          // phpFormData.append(clientReferenceId, `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
           phpFormData.append("request_id", rowData.request_id);
           phpFormData.append("payment_amount", paymentAmout);
           phpFormData.append(
