@@ -2,13 +2,7 @@ import { useState } from 'react';
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import Button from '@mui/material/Button';
 
-import {
-  Checks,
-  Sliders,
-  StackMinus,
-  StackPlus,
-  Trash,
-} from '@phosphor-icons/react';
+import { Checks, Sliders, StackMinus, StackPlus, Trash } from '@phosphor-icons/react';
 import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
 import { useDispatch, useSelector } from 'react-redux';
@@ -66,14 +60,7 @@ const RightDrawer = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
-  const calculateTotalCost = (
-    id,
-    postPerPage,
-    storyPerPage,
-    costPerPost,
-    costPerStory,
-    costPerBoth
-  ) => {
+  const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
     let totalCost;
     if (postPerPage === storyPerPage) {
       totalCost = postPerPage * costPerBoth;
@@ -128,12 +115,9 @@ const RightDrawer = ({
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
-
     // Iterate over the table data and update counts and selections
     getTableData.forEach((row) => {
-      const isAlreadySelected = updatedSelectedRows.some(
-        (selectedRow) => selectedRow._id === row._id
-      );
+      const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
 
       // If not already selected, add this row to selected rows
       if (!isAlreadySelected) {
@@ -151,28 +135,15 @@ const RightDrawer = ({
       const bothPrice = getPriceDetail(row.page_price_list, 'instagram_both');
       const rateType = row.rate_type === 'Fixed';
 
-      const finalPostCost = rateType
-        ? postPrice
-        : calculatePrice(row.rate_type, row, 'post');
-      const finalStoryCost = rateType
-        ? storyPrice
-        : calculatePrice(row.rate_type, row, 'story');
-      const costOfBoth = rateType
-        ? bothPrice
-        : calculatePrice(row.rate_type, row, 'both');
+      const finalPostCost = rateType ? postPrice : calculatePrice(row.rate_type, row, 'post');
+      const finalStoryCost = rateType ? storyPrice : calculatePrice(row.rate_type, row, 'story');
+      const costOfBoth = rateType ? bothPrice : calculatePrice(row.rate_type, row, 'both');
 
       const costPerPost = finalPostCost || 0;
       const costPerStory = finalStoryCost || 0;
 
       // function exists to calculate total cost
-      calculateTotalCost(
-        row._id,
-        updatedPostValues[row._id],
-        updatedStoryValues[row._id],
-        costPerPost,
-        costPerStory,
-        costOfBoth
-      );
+      calculateTotalCost(row._id, updatedPostValues[row._id], updatedStoryValues[row._id], costPerPost, costPerStory, costOfBoth);
 
       // Mark this row's cost visibility as 'true'
       updatedShowTotalCost[row._id] = true;
@@ -183,26 +154,11 @@ const RightDrawer = ({
 
     // Prepare the plan data to send
     const planxData = updatedSelectedRows.map((row) => {
-      const {
-        _id,
-        page_price_list,
-        page_name,
-        rate_type,
-        m_story_price,
-        m_post_price,
-        followers_count,
-      } = row;
+      const { _id, page_price_list, page_name, rate_type, m_story_price, m_post_price, followers_count } = row;
 
       const isFixedRate = rate_type === 'fixed';
 
-      const getPrice = (type) =>
-        isFixedRate
-          ? getPriceDetail(page_price_list, `instagram_${type}`)
-          : calculatePrice(
-              rate_type,
-              { m_story_price, m_post_price, followers_count },
-              type
-            );
+      const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { m_story_price, m_post_price, followers_count }, type));
 
       return {
         _id,
@@ -247,9 +203,7 @@ const RightDrawer = ({
   const applyCategoryFilter = (data) => {
     if (!selectedCategory?.length) return data;
 
-    return data.filter((item) =>
-      selectedCategory.includes(item.page_category_id)
-    );
+    return data.filter((item) => selectedCategory.includes(item.page_category_id));
   };
 
   const applyPriceFilter = (data) => {
@@ -275,18 +229,12 @@ const RightDrawer = ({
 
     if (tagCategory.length > 2) {
       filtered = data.filter((item) => {
-        const categoryArray = item.tags_page_category_name
-          ?.split(',')
-          .map((tag) => tag.trim());
-        return tagCategory.every((category) =>
-          categoryArray?.includes(category)
-        );
+        const categoryArray = item.tags_page_category_name?.split(',').map((tag) => tag.trim());
+        return tagCategory.every((category) => categoryArray?.includes(category));
       });
     } else {
       filtered = data.filter((item) => {
-        return tagCategory.some((category) =>
-          item.tags_page_category_name?.includes(category)
-        );
+        return tagCategory.some((category) => item.tags_page_category_name?.includes(category));
       });
     }
 
@@ -294,9 +242,7 @@ const RightDrawer = ({
   };
 
   const handleRemoveFilter = () => {
-    const pageData = pageList
-      ?.filter((item) => item.followers_count > 0)
-      .sort((a, b) => b.followers_count - a.followers_count);
+    const pageData = pageList?.filter((item) => item.followers_count > 0).sort((a, b) => b.followers_count - a.followers_count);
     setFilterData(pageData);
     setSelectedFollowers([]);
     setSelectedCategory([]);
@@ -315,10 +261,7 @@ const RightDrawer = ({
 
   // Function to calculate count for each category
   const getCategoryCount = (categoryName) => {
-    return getTableData?.filter(
-      (item) =>
-        item.followers_count > 0 && item.page_category_name === categoryName
-    ).length;
+    return getTableData?.filter((item) => item.followers_count > 0 && item.page_category_name === categoryName).length;
   };
 
   // Prepare categories with counts for CustomSelect
@@ -354,9 +297,7 @@ const RightDrawer = ({
   const removeFollowerSelection = (follower) => {
     setSelectedFollowers(selectedFollowers.filter((f) => f !== follower));
   };
-  const showRightSlidder = useSelector(
-    (state) => state.pageMaster.showRightSlidder
-  );
+  const showRightSlidder = useSelector((state) => state.pageMaster.showRightSlidder);
 
   const toggleDrawer = (openState) => () => {
     setOpen(openState);
@@ -387,25 +328,12 @@ const RightDrawer = ({
             {/* Follower Filter */}
             <div className="form-group col-12 mb8">
               <label>Follower Filter</label>
-              <CustomSelect
-                label="Select Follower Range"
-                fieldGrid="12"
-                dataArray={followerOptions}
-                optionId="id"
-                optionLabel="label"
-                selectedId={selectedFollowers}
-                setSelectedId={setSelectedFollowers}
-                multiple={true}
-              />
+              <CustomSelect label="Select Follower Range" fieldGrid="12" dataArray={followerOptions} optionId="id" optionLabel="label" selectedId={selectedFollowers} setSelectedId={setSelectedFollowers} multiple={true} />
             </div>
             {/* Price filter dropdown */}
             <div className="form-group col-12 mb16">
               <label>Filter by:</label>
-              <select
-                className="filter-dropdown form-control"
-                value={priceFilterType}
-                onChange={(e) => setPriceFilterType(e.target.value)}
-              >
+              <select className="filter-dropdown form-control" value={priceFilterType} onChange={(e) => setPriceFilterType(e.target.value)}>
                 <option value="post">Post Price</option>
                 <option value="story">Story Price</option>
                 <option value="both">Both Price</option>
@@ -416,23 +344,13 @@ const RightDrawer = ({
               <label className="filter-label flexCenterBetween">
                 Min Price: <p>{formatNumber(minPrice)}</p>
               </label>
-              <input
-                type="number"
-                className="filter-input form-control"
-                value={minPrice}
-                onChange={(e) => setMinPrice(e.target.value)}
-              />
+              <input type="number" className="filter-input form-control" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
             </div>
             <div className="form-group col-12 mb16">
               <label className="filter-label flexCenterBetween">
                 Max Price: <p>{formatNumber(maxPrice)}</p>
               </label>
-              <input
-                type="number"
-                className="filter-input form-control"
-                value={maxPrice}
-                onChange={(e) => setMaxPrice(e.target.value)}
-              />
+              <input type="number" className="filter-input form-control" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
             </div>
 
             {/* Display Selected Followers as Badges */}
@@ -482,16 +400,7 @@ const RightDrawer = ({
             {/* Filter by Category */}
             <div className="form-group col-12 mb8">
               {/* <label htmlFor="categoryFilter">Filter by Category:</labellabel> */}
-              <CustomSelect
-                fieldGrid="12"
-                label="Filter by Category"
-                dataArray={categoryOptions}
-                optionId="value"
-                optionLabel="label"
-                selectedId={selectedCategory}
-                setSelectedId={setSelectedCategory}
-                multiple={true}
-              />
+              <CustomSelect fieldGrid="12" label="Filter by Category" dataArray={categoryOptions} optionId="value" optionLabel="label" selectedId={selectedCategory} setSelectedId={setSelectedCategory} multiple={true} />
               <CustomSelect
                 fieldGrid="12"
                 label="Filter by Tag Category"
@@ -529,52 +438,24 @@ const RightDrawer = ({
         <div className="filterWrapperFooter">
           <div className="row">
             <div className="col-6">
-              <input
-                type="number"
-                className="filter-input form-control"
-                placeholder="Post Count"
-                value={postCountDefault || ''}
-                onChange={handlePostCountChange}
-              />
+              <input type="number" className="filter-input form-control" placeholder="Post Count" value={postCountDefault || ''} onChange={handlePostCountChange} />
             </div>
             <div className="col-6">
-              <input
-                type="number"
-                className="filter-input form-control"
-                placeholder="Story Count"
-                value={storyCountDefault || ''}
-                onChange={handleStoryCountChange}
-              />
+              <input type="number" className="filter-input form-control" placeholder="Story Count" value={storyCountDefault || ''} onChange={handleStoryCountChange} />
             </div>
           </div>
           {/* Action Buttons */}
           <div className="flexCenterBetween">
-            <button
-              className="btn icon btn-outline-danger"
-              title="Remove All Filter"
-              onClick={handleRemoveFilter}
-            >
+            <button className="btn icon btn-outline-danger" title="Remove All Filter" onClick={handleRemoveFilter}>
               <Trash />{' '}
             </button>
-            <button
-              className="btn icon btn-outline-success"
-              title="Apply Filter"
-              onClick={handleCombinedFilter}
-            >
+            <button className="btn icon btn-outline-success" title="Apply Filter" onClick={handleCombinedFilter}>
               <Checks />
             </button>
-            <button
-              className="btn icon btn-outline-primary"
-              title="Select All Rows"
-              onClick={selectAllRows}
-            >
+            <button className="btn icon btn-outline-primary" title="Select All Rows" onClick={selectAllRows}>
               <StackPlus />
             </button>
-            <button
-              className="btn icon btn-outline-danger"
-              title="Deselect All Rows"
-              onClick={deSelectAllRows}
-            >
+            <button className="btn icon btn-outline-danger" title="Deselect All Rows" onClick={deSelectAllRows}>
               <StackMinus />
             </button>
           </div>
@@ -585,20 +466,10 @@ const RightDrawer = ({
 
   return (
     <div>
-      <Button
-        className="btn pointer icon"
-        onClick={toggleDrawer(true)}
-        title="Right Sidebar"
-      >
+      <Button className="btn pointer icon" onClick={toggleDrawer(true)} title="Right Sidebar">
         <Sliders />
       </Button>
-      <SwipeableDrawer
-        anchor="right"
-        open={open}
-        onClose={toggleDrawer(false)}
-        onOpen={toggleDrawer(true)}
-        disableSwipeToOpen
-      >
+      <SwipeableDrawer anchor="right" open={open} onClose={toggleDrawer(false)} onOpen={toggleDrawer(true)} disableSwipeToOpen>
         {drawerList}
       </SwipeableDrawer>
     </div>

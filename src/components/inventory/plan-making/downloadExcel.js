@@ -501,6 +501,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
       // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
       cell.font = { name: 'Comic Sans MS', bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
     }
   });
 
@@ -514,6 +515,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
       // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
       cell.font = { name: 'Comic Sans MS', bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
     }
   });
 
@@ -525,6 +527,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
       // Start from the second column to avoid the first empty cell
       cell.border = contentBorder;
       cell.font = { name: 'Comic Sans MS', bold: true };
+      cell.alignment = { horizontal: 'center', vertical: 'middle' };
     }
   });
   // Merge cells B to E for each of the total rows

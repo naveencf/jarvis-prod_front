@@ -78,7 +78,7 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
   // Construct page query string based on selected filters
   // Activeness options mapping
   const activenessOptions = [
-    { label: 'Super-Active', value: 'super_active' },
+    // { label: 'Super-Active', value: 'super_active' },
     { label: 'Active', value: 'active' },
     { label: 'Semi-Active', value: 'semi_active' },
     { label: 'Dead', value: 'dead' },

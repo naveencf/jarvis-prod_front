@@ -7,7 +7,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
 
 import UpdateIcon from '@mui/icons-material/Update';
-import { phpBaseUrl } from "../../utils/config";
+import { insightsBaseUrl, phpBaseUrl } from "../../utils/config";
 import { useGlobalContext } from "../../Context/Context";
 import ImageView from "../Finance/ImageView";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
@@ -28,13 +28,17 @@ const PurchaseTransactions = () => {
 
         // Get yesterday's date
         const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 1);
+        yesterday.setDate(today.getDate() - 2);
+
+        // Get tomorrow's date
+        const tomorrow = new Date();
+        tomorrow.setDate(today.getDate() + 2);
 
         // Format the dates to YYYY-MM-DD
         const formatDate = (date) => date.toISOString().split("T")[0];
 
         const startDate = formatDate(yesterday);
-        const endDate = formatDate(today);
+        const endDate = formatDate(tomorrow);
 
         const formData = new FormData();
         formData.append("start_date", startDate);
@@ -269,7 +273,7 @@ const PurchaseTransactions = () => {
                     <Stack direction="row" spacing={1}>
 
                         <Chip label={params?.row?.payment_getway_status} color="success" />
-                        {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" ? "" :
+                        {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" || params?.row?.payment_getway_status == null ? "" :
                             <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
                         }
 
@@ -333,7 +337,7 @@ const PurchaseTransactions = () => {
             renderCell: (params) => {
                 const handleCopy = () => {
                     const { bankTransactionReferenceId, payment_amount } = params.row;
-                    const textToCopy = `Reference Number: ${bankTransactionReferenceId}, Payment Amount: ${payment_amount}`;
+                    const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
                     navigator.clipboard.writeText(textToCopy)
                         .then(() => alert("Copied to clipboard!"))
                         .catch((err) => console.error("Failed to copy text:", err));
@@ -342,10 +346,12 @@ const PurchaseTransactions = () => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <span>{params.row.bankTransactionReferenceId}</span>
-                        {params.row.bankTransactionReferenceId == "" ? <ContentCopyIcon
-                            style={{ cursor: "pointer", color: "gray" }}
-                            onClick={handleCopy}
-                        /> : ""}
+                        {!params.row.bankTransactionReferenceId == "" ?
+                            <ContentCopyIcon
+                                style={{ cursor: "pointer", color: "gray" }}
+                                onClick={handleCopy}
+                            />
+                            : ""}
                     </div>
                 );
             },

@@ -58,7 +58,7 @@ function PayVendorDialog(props) {
   const [TDSValue, setTDSValue] = useState(0);
   const [tdsAdjustAmount, setTdsAdjustAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState("Full");
-  const [payRemark, setPayRemark] = useState("");
+  const [payRemark, setPayRemark] = useState("Creativefuel");
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   // const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
@@ -71,7 +71,7 @@ function PayVendorDialog(props) {
 
   useEffect(() => {
     handleCalculatePaymentAmount();
-    if (paymentAmout > 0 && paymentAmout <= 1000) {
+    if (paymentAmout > 0 && paymentAmout <= 10000) {
       setGatewayPaymentMode("IMPS")
     }
   }, [TDSPercentage, GSTHoldAmount, TDSDeduction, gstHold]);
@@ -332,7 +332,7 @@ function PayVendorDialog(props) {
   };
 
   const handleOpenPayThroughVendor = () => {
-    if (paymentAmout > 10000) {
+    if (paymentAmout > 100000) {
       toastAlert("You are allow to pay below 10,000")
       return;
     }

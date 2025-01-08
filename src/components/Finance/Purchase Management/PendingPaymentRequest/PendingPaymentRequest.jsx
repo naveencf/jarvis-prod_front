@@ -83,6 +83,7 @@ export default function PendingPaymentRequest() {
   const [isLoading, setIsLoading] = useState(false);
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [TDSValue, setTDSValue] = useState(0);
+  const [refetch, setRefetch] = useState(false);
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
@@ -235,7 +236,7 @@ export default function PendingPaymentRequest() {
 
   useEffect(() => {
     callApi();
-  }, [dateFilter]);
+  }, [dateFilter, refetch]);
 
   const handleRemainderModal = (reaminderData) => {
     setReminderData(reaminderData);
@@ -838,6 +839,12 @@ export default function PendingPaymentRequest() {
                 selectedData={setSelectedRows}
                 addHtml={
                   <>
+                    <button
+                      className="btn cmnbtn btn_sm btn-primary ms-2"
+                      onClick={() => setRefetch(!refetch)}
+                    >
+                      Refetch
+                    </button>
                     <button
                       className="btn cmnbtn btn_sm btn-secondary ms-2"
                       onClick={(e) => handleClearSameRecordFilter(e)}
