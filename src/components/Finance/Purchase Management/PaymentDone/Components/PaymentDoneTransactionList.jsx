@@ -90,6 +90,7 @@ const PaymentDoneTransactionList = () => {
     try {
       const payResponse = await axios.get(
         insightsBaseUrl + `v1/check_payment_status?clientReferenceId=${row?.clientReferenceId}`,
+        // insightsBaseUrl + `v1/check_payment_status?clientReferenceId=3060_1`,
         // paymentPayload,
         {
           headers: {
@@ -310,9 +311,9 @@ const PaymentDoneTransactionList = () => {
           <Stack direction="row" spacing={1}>
 
             <Chip label={params?.row?.payment_getway_status} color="success" />
-            {/* {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" ? "" : */}
-            <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
-            {/* } */}
+            {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" || params?.row?.payment_getway_status == null ? "" :
+              <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
+            }
 
           </Stack>
         )

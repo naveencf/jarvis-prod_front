@@ -861,7 +861,7 @@ const PageOverviewNew = () => {
     },
     { key: 'rate_type', name: 'Rate Type', width: 200 },
     platformName !== 'twitter' &&
-      platformName !== 'thred' &&
+      platformName !== 'thread' &&
       platformName !== 'youtube' && {
         key: 'Post Price',
         name: 'Post Price',

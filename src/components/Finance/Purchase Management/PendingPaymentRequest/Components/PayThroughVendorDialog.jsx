@@ -57,9 +57,7 @@ const PayThroughVendorDialog = (props) => {
         toastAlert("Please select one Payment at a time")
         return;
       }
-
       const selectedRow = rowSelectionModel[0];
-      // console.log(selectedRow, "selectedRow")
       // return;
       if (selectedRow?.mob1.length != 10) {
         toastError("Mobile number is not valid for this payment.");
@@ -80,16 +78,14 @@ const PayThroughVendorDialog = (props) => {
         toastError("Payment gateway server down.Please ask IT team for more details");
         return;
       }
-      // if (paymentStatus == "Partial") {
 
-      // }
       const paymentPayload = {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name),
         accountNumber: selectedRow?.account_no,
         branchCode: selectedRow?.ifsc,
-        email: selectedRow?.email || "naveen@creativefuel.io",
+        email: selectedRow?.email,
         phone: selectedRow?.mob1,
         amount: {
           currency: "INR",
@@ -109,7 +105,7 @@ const PayThroughVendorDialog = (props) => {
         payment_date: new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " "),
         payment_by: userName,
         // evidence: payMentProof,
-        finance_remark: payRemark,
+        finance_remark: payRemark || "",
         status: 1,
         payment_mode: gatewayPaymentMode,
         gst_hold: rowData.gst_amount,
@@ -273,7 +269,7 @@ const PayThroughVendorDialog = (props) => {
             </Button>}
         </DialogActions>
       </> :
-        <CircularProgress />}
+        <CircularProgress sx={{ m: 4, p: 1 }} />}
     </Dialog>
   );
 };

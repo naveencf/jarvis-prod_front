@@ -25,6 +25,7 @@ import SearchAndClear from './SearchAndClear';
 import LayeringControls from './LayeringControls';
 import ProgressDisplay from './ProgressDisplay';
 import CustomTable from '../../CustomTable/CustomTable';
+import { ImCross } from 'react-icons/im';
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMaking = () => {
@@ -72,7 +73,7 @@ const PlanMaking = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [totalPostsPerPage, setTotalPostsPerPage] = useState(0);
   const [totalStoriesPerPage, setTotalStoriesPerPage] = useState(0);
-  const [priceFilterType, setPriceFilterType] = useState('post'); // Dropdown value
+  const [priceFilterType, setPriceFilterType] = useState('post');
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(0);
   const [minFollowers, setMinFollowers] = useState(null);
@@ -98,6 +99,10 @@ const PlanMaking = () => {
   const [shortcutTriggered, setShortcutTriggered] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedVersion, setSelectedVersion] = useState(null);
+  const [highPriceMemePages, setHighPriceMemePages] = useState([]);
+  const [blackListedPages, setBlackListedPages] = useState([]);
+  const [unCheckedPages, setUnCheckedPages] = useState([]);
+  const [showUnChecked, setShowUnCheked] = useState(false);
 
   const { id } = useParams();
   // const renderCount = useRef(0);
@@ -125,7 +130,9 @@ const PlanMaking = () => {
   // const handleToggleLeftNavbar = () => {
   //   setToggleLeftNavbar(!toggleLeftNavbar);
   // };
-
+  const toggleUncheckdPages = () => {
+    setShowUnCheked(!showUnChecked);
+  };
   const showRightSlidder = useSelector((state) => state.pageMaster.showRightSlidder);
 
   const { data: platData } = useGetPmsPlatformQuery();
@@ -137,13 +144,13 @@ const PlanMaking = () => {
   const vendorData = vendor;
 
   const getPriceDetail = (priceDetails, key) => {
-    const keyType = key.split('_')[1];
+    const keyType = key?.split('_')[1];
 
     const detail = priceDetails?.find((item) => {
-      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+      return Object?.keys(item)?.some((priceKey) => priceKey?.includes(keyType));
     });
 
-    return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
+    return detail ? detail[Object?.keys(detail).find((key) => key?.includes(keyType))] : 0;
   };
 
   const handlePostPerValue = (row, postPerPage, callback) => {
@@ -348,7 +355,7 @@ const PlanMaking = () => {
   };
 
   const toggleCheckedRows = () => {
-    setLayering(5);
+    setLayering(8);
     setShowCheckedRows(!showCheckedRows);
   };
 
@@ -710,7 +717,17 @@ const PlanMaking = () => {
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
 
-  const tableData = layering == 1 ? sarcasmNetwork : layering == 2 ? ownPages : layering == 3 ? advancePageList : layering == 4 ? topUsedPageList : layering === 6 ? handiPickedPages : showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows);
+  const layeringMapping = {
+    1: sarcasmNetwork,
+    2: ownPages,
+    3: advancePageList,
+    4: topUsedPageList,
+    5: handiPickedPages,
+    6: highPriceMemePages,
+    7: blackListedPages,
+  };
+
+  const tableData = showUnChecked ? unCheckedPages : layeringMapping[layering] ?? (showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows));
 
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
@@ -725,6 +742,8 @@ const PlanMaking = () => {
         const advancedPostPages = [];
         const mostUsedPages = [];
         const handiPicked = [];
+        const highPriceMemes = [];
+        const blackListed = [];
         // Adding pages for layer
         data?.filter((page) => {
           if (page.followers_count > 0) {
@@ -734,8 +753,12 @@ const PlanMaking = () => {
               advancedPostPages.push(page);
             } else if (page?.page_layer === 4) {
               mostUsedPages.push(page);
-            } else if (page?.page_layer === 6) {
+            } else if (page?.page_layer === 5) {
               handiPicked.push(page);
+            } else if (page?.page_layer === 6) {
+              highPriceMemes.push(page);
+            } else if (page?.page_layer === 7) {
+              blackListed.push(page);
             }
           }
         });
@@ -744,6 +767,8 @@ const PlanMaking = () => {
         setHandiPickedPages(handiPicked);
         setAdvancePageList(advancedPostPages);
         setTopUsedPageList(mostUsedPages);
+        setHighPriceMemePages(highPriceMemes);
+        setBlackListedPages(blackListed);
 
         const initialPostValues = {};
         const initialStoryValues = {};
@@ -782,15 +807,18 @@ const PlanMaking = () => {
       if (automaticCheckedData) {
         updatePageData(automaticCheckedData, activeTabPlatform);
       }
-      setLayering(5);
+      setLayering(8);
     } else if (filterData?.length > 0 && pageDetail?.length == 0) {
       setLayering(1);
     }
   }, [pageList, pageDetail, activeTabPlatform]);
 
   useEffect(() => {
-    if (selectedRows?.length == 0) {
+    if (selectedRows?.length === 0) {
       setToggleShowBtn(false);
+    } else {
+      const allUnCheckedRecords = filterData.filter((page) => !selectedRows.some((item) => item.page_name === page.page_name));
+      setUnCheckedPages(allUnCheckedRecords);
     }
   }, [selectedRows]);
 
@@ -864,6 +892,7 @@ const PlanMaking = () => {
       handleAutomaticSelection(versionData);
     }
   }, [versionData]);
+
   // const versionPages = versionData ? versionData : tableData;
   return (
     <>
@@ -903,6 +932,7 @@ const PlanMaking = () => {
               setSelectedCategory={setSelectedCategory}
               setMaxPrice={setMaxPrice}
               minFollowers={minFollowers}
+              selectedRows={selectedRows}
               setMinFollowers={setMinFollowers}
               maxFollowers={maxFollowers}
               setMaxFollowers={setMaxFollowers}
@@ -921,7 +951,7 @@ const PlanMaking = () => {
           </div>
         </div>
         <div className="card-header flexCenterBetween">
-          <LayeringControls layering={layering} setLayering={setLayering} ButtonTitle={ButtonTitle} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
+          <LayeringControls layering={layering} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
         </div>
         <PlanVersions handleVersionClose={handleVersionClose} openVersionModal={openVersionModal} versionDetails={versionDetails} onVersionSelect={handleVersionSelect} />
         <div className="card-body p0" onKeyDown={(e) => handleKeyPress(e)}>

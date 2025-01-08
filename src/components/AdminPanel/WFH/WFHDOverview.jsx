@@ -14,6 +14,7 @@ import Select from "react-select";
 import ReportL1Component from "./ReportL1Component";
 import WFHDExcelConverter from "./WFHDExcelConverter";
 import { GrUserNew } from "react-icons/gr";
+import WFHDSheetTemplete from "./WFHDSheetTemplete";
 
 const customStyles = {
   headCells: {
@@ -692,7 +693,7 @@ const WFHDOverview = () => {
   const handleExportClick = () => {
     WFHDExcelConverter(filterDataS, "WFHD Users");
   };
-
+console.log(filterDataS , 'overview')
   return (
     <>
       <>
@@ -890,6 +891,7 @@ const WFHDOverview = () => {
               >
                 Export Excel
               </button>
+              <WFHDSheetTemplete filterData={filterDataS} />
             </div>
             <div className="card-body body-padding">
               <DataTable

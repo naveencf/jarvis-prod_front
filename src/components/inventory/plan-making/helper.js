@@ -10,7 +10,7 @@ export const getPriceDetail = (priceDetails, key) => {
   return detail ? detail[key] : 0;
 };
 
-export const ButtonTitle = ['Other Inventory', 'Sarcasm Network', 'Own-Pages', 'Advanced-Pages', 'Recently Used Top Pages', 'All Inventory', 'Handi-Picked Pages', ''];
+export const ButtonTitle = ['Other Inventory', 'Sarcasm Network', 'Own-Pages', 'Advanced-Pages', 'Recently Used Top Pages', 'Handi-Picked Pages', 'High Price Meme Pages', 'Black Listed Pages', 'All Inventory', ''];
 
 export const calculatePrice = (rate_type, pageData, type) => {
   const getPriceDetail = (priceDetails, key) => {

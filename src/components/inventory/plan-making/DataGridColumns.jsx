@@ -130,7 +130,7 @@ const DataGridColumns = ({
       showCol: true,
     },
     {
-      key: 'name_type',
+      key: 'page_name_type',
       name: 'Name Type',
       renderRowCell: (row) => row.page_name_type,
       width: 100,

@@ -1,18 +1,42 @@
 import React from "react";
 import { saveAs } from "file-saver";
-// import XLSX from "xlsx";
 import * as XLSX from "xlsx";
 import { Button } from "@mui/material";
 
-const WFHDSheetTemplete = () => {
+const WFHDSheetTemplete = ({ filterData }) => {
   const createExcelTemplate = () => {
-    const headers = ["S.No", "user_name","user_id", "total_days", "absent_days", "salary", "bonus" ,"arrear_from_last_month","salary_deduction"];
-    const data = [];
+    // Define headers for the Excel file
+    const headers = [
+      "S.No",
+      "user_name",
+      "user_id",
+      "total_days",
+      "absent_days",
+      "salary",
+      "bonus",
+      "arrear_from_last_month",
+      "salary_deduction",
+    ];
 
+    // Map filterData to match the headers
+    const data = filterData.map((item, index) => ({
+      "S.No": index + 1,
+      user_name: item.user_name || "",
+      user_id: item.user_id || "",
+      total_days:"",
+      absent_days: "",
+      salary: item.salary || "",
+      bonus: "",
+      arrear_from_last_month: "",
+      salary_deduction: "",
+    }));
+
+    // Convert JSON data into Excel sheet
     const ws = XLSX.utils.json_to_sheet(data, { header: headers });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
 
+    // Convert workbook to Blob for download
     const blob = new Blob(
       [s2ab(XLSX.write(wb, { bookType: "xlsx", type: "binary" }))],
       {
@@ -22,7 +46,8 @@ const WFHDSheetTemplete = () => {
 
     saveAs(blob, "template.xlsx");
   };
-  // Convert string to ArrayBuffer
+
+  // Helper function to convert string to ArrayBuffer
   const s2ab = (s) => {
     const buf = new ArrayBuffer(s.length);
     const view = new Uint8Array(buf);
@@ -31,9 +56,10 @@ const WFHDSheetTemplete = () => {
     }
     return buf;
   };
+
   return (
     <Button
-      className="btn cmnBtnSmall btn-outline-primary"
+      className="btn cmnBtnSmall btn-primary"
       type="file"
       onClick={createExcelTemplate}
     >

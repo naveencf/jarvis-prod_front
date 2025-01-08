@@ -18,7 +18,6 @@ import FormContainer from "../FormContainer";
 import { constant } from "../../../utils/constants";
 import { Navigate } from "react-router-dom";
 import WFHDSheetUpload from "./WFHDSheetUpload";
-import WFHDSheetTemplete from "./WFHDSheetTemplete";
 
 const Attendence = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -39,6 +38,8 @@ const Attendence = () => {
   const [deptSalary, setDeptSalary] = useState([]);
 
   const [rowUpdateError, setRowUpdateError] = useState(null);
+
+  console.log(filterData , 'ddddddd')
 
   let isInEditMode = false;
 
@@ -628,7 +629,6 @@ const Attendence = () => {
                   Complete Attendance
                 </button>
               )}
-              <WFHDSheetTemplete/>
             {filterData?.length == 0 &&
               department &&
               selectedMonth &&
