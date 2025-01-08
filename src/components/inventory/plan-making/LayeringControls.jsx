@@ -14,8 +14,8 @@ const LayeringControls = ({ layering, setLayering, ButtonTitle, handleDisableBac
     <button className="icon" onClick={() => setLayering(layering - 1)} title={ButtonTitle[(layering - 1) % 5]} disabled={layering <= 1}>
       {layering > 1 && <ImPrevious />}
     </button>
-    <button className="icon" onClick={() => setLayering(layering + 1)} title={ButtonTitle[(layering + 1) % 6]} disabled={layering >= 5}>
-      {layering < 5 && <ImNext />}
+    <button className="icon" onClick={() => setLayering(layering + 1)} title={ButtonTitle[(layering + 1) % 6]} disabled={layering >= 6}>
+      {layering <= 6 && <ImNext />}
     </button>
     <label>{ButtonTitle[layering]}</label>
   </div>

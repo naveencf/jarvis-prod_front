@@ -344,7 +344,7 @@ const PageMaster = () => {
       primary_page: primary.value,
       primary_page_name: pageName,
       page_price_list: rowCount.map((item) => {
-        return { [item.page_price_type_name]: item.price };
+        return { [item.page_price_type_name]: Number(item.price) };
       }),
     };
 

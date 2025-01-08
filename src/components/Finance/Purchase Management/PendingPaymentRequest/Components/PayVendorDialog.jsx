@@ -270,7 +270,7 @@ function PayVendorDialog(props) {
     setTDSValue(tdsvalue);
     // setPaymentAmount(paymentAmount);
     if (rowData?.TDSDeduction !== "1") {
-      setPaymentAmount(Number(paymentAmount));
+      setPaymentAmount(Number(paymentAmount) - Number(rowData?.proccessingAmount));
     }
     setNetAmount(paymentAmount);
     setAdjustAmount((paymentAmount - Math.floor(paymentAmount)).toFixed(2));
@@ -332,7 +332,11 @@ function PayVendorDialog(props) {
   };
 
   const handleOpenPayThroughVendor = () => {
-    if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
+    if (paymentAmout > 10000) {
+      toastAlert("You are allow to pay below 10,000")
+      return;
+    }
+    else if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
       console.log(rowSelectionModel, "rowSelectionModel")
       toastError("Invalid Mobile Number")
       return;
@@ -358,6 +362,7 @@ function PayVendorDialog(props) {
       })
 
   };
+  console.log(paymentAmout, "paymentAmout")
   return (
     <div>
       {/*Dialog Box */}
@@ -631,9 +636,9 @@ function PayVendorDialog(props) {
                     setGatewayPaymentMode("");
                   } else {
                     const numericValue = Number(currentValue)
-                    const paymentProcessingAmount = Number(rowData?.getway_process_amt)
-                    // (Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0
-                    if (numericValue <= +rowData.balance_amount) {
+                    const paymentProcessingAmount = Number(rowData?.proccessingAmount)
+                    // (Number(row?.outstandings) - Number(row?.proccessingAmount)) > 0
+                    if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
                       // if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
                       setPaymentAmount(numericValue);
 
@@ -664,7 +669,7 @@ function PayVendorDialog(props) {
               label="Paid Amount *"
               variant="outlined"
               fullWidth
-              value={paymentAmout === "" ? "" : Math.floor(paymentAmout)}
+              value={paymentAmout === "" ? "" : (paymentAmout)}
             />
 
             {/* {TDSValue && (

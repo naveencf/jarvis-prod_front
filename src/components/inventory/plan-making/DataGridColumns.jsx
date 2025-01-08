@@ -2,6 +2,7 @@ import { Avatar, Checkbox } from '@mui/material';
 import formatString from '../../../utils/formatString';
 import { FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { calculatePrice } from './helper';
 
 const DataGridColumns = ({
   vendorData,
@@ -78,12 +79,7 @@ const DataGridColumns = ({
         return (
           <div className="profile-sec sb">
             <div className="profile-img">
-              <a
-                target="_blank"
-                rel="noreferrer"
-                href={row.page_link}
-                className="link-primary"
-              >
+              <a target="_blank" rel="noreferrer" href={row.page_link} className="link-primary">
                 <img src={name} alt={row.page_name} width={40} />
               </a>
             </div>
@@ -96,9 +92,7 @@ const DataGridColumns = ({
       key: 'vendor',
       name: 'Vendor',
       renderRowCell: (row) => {
-        const name = vendorData?.find(
-          (item) => item?._id === row?.vendor_id
-        )?.vendor_name;
+        const name = vendorData?.find((item) => item?._id === row?.vendor_id)?.vendor_name;
         return formatString(name);
       },
       width: 250,
@@ -109,12 +103,7 @@ const DataGridColumns = ({
       key: 'page_link',
       name: 'Page Link',
       renderRowCell: (row) => (
-        <a
-          target="_blank"
-          rel="noreferrer"
-          href={row.page_link}
-          className="link-primary"
-        >
+        <a target="_blank" rel="noreferrer" href={row.page_link} className="link-primary">
           {row.page_link}
         </a>
       ),
@@ -162,11 +151,7 @@ const DataGridColumns = ({
         <div
         // className="flexCenter colGap8"
         >
-          <button
-            title="Edit"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={() => handleEdit(row)}
-          >
+          <button title="Edit" className="btn btn-outline-primary btn-sm user-button" onClick={() => handleEdit(row)}>
             <FaEdit />{' '}
           </button>
         </div>
@@ -174,7 +159,7 @@ const DataGridColumns = ({
     },
     {
       key: 'engagment_rate',
-      name: 'Engagment Rate',
+      name: 'ER',
       renderRowCell: (row) => row.engagment_rate,
       width: 100,
       showCol: true,
@@ -192,9 +177,7 @@ const DataGridColumns = ({
         >
           <input
             type="checkbox"
-            checked={selectedRows?.some(
-              (selectedRow) => selectedRow?._id === row?._id
-            )}
+            checked={selectedRows?.some((selectedRow) => selectedRow?._id === row?._id)}
             // onClick={handleCheckboxChange(row, "column")}
             // onClick={(event) => handleCheckboxChange(row, 'column', event, index)}
             onChange={(event) => {
@@ -222,14 +205,7 @@ const DataGridColumns = ({
     {
       key: 'post_per_page',
       name: 'Post Per Page',
-      renderRowCell: (row) => (
-        <input
-          type="number"
-          style={{ width: '70%' }}
-          value={postPerPageValues[row?._id] || ''}
-          onChange={handlePostPerPageChange(row)}
-        />
-      ),
+      renderRowCell: (row) => <input type="number" style={{ width: '70%' }} value={postPerPageValues[row?._id] || ''} onChange={handlePostPerPageChange(row)} />,
       width: 50,
       showCol: true,
       compare: true,
@@ -239,16 +215,12 @@ const DataGridColumns = ({
       name: 'Average Post Price',
       renderRowCell: (row) => {
         const mPostPrice = row?.page_price_list;
-        const postDetail = mPostPrice?.find(
-          (item) => item.instagram_post !== undefined
-        );
+        const postDetail = mPostPrice?.find((item) => item.instagram_post !== undefined);
         const postPrice = postDetail?.instagram_post || 0;
         const followerCount = row?.followers_count || 0;
 
         // Calculate the average price only if followerCount is greater than zero
-        const averagePostPrice = followerCount
-          ? Math.floor(postPrice / (followerCount / 1000000))
-          : 0;
+        const averagePostPrice = followerCount ? Math.floor(postPrice / (followerCount / 1000000)) : 0;
 
         return averagePostPrice;
       },
@@ -262,16 +234,12 @@ const DataGridColumns = ({
       name: 'Average Story Price',
       renderRowCell: (row) => {
         const mStoryPrice = row?.page_price_list;
-        const postDetail = mStoryPrice?.find(
-          (item) => item.instagram_story !== undefined
-        );
+        const postDetail = mStoryPrice?.find((item) => item.instagram_story !== undefined);
         const storyPrice = postDetail?.instagram_story || 0;
         const followerCount = row?.followers_count || 0;
 
         // Calculate the average price only if followerCount is greater than zero
-        const averageStoryPrice = followerCount
-          ? Math.floor(storyPrice / (followerCount / 1000000))
-          : 0;
+        const averageStoryPrice = followerCount ? Math.floor(storyPrice / (followerCount / 1000000)) : 0;
 
         return followerCount ? averageStoryPrice : 0;
       },
@@ -284,24 +252,14 @@ const DataGridColumns = ({
     {
       key: 'story_per_page',
       name: 'Story Per Page',
-      renderRowCell: (row) => (
-        <input
-          type="number"
-          style={{ width: '70%' }}
-          value={storyPerPageValues[row?._id] || ''}
-          onChange={handleStoryPerPageChange(row)}
-        />
-      ),
+      renderRowCell: (row) => <input type="number" style={{ width: '70%' }} value={storyPerPageValues[row?._id] || ''} onChange={handleStoryPerPageChange(row)} />,
       width: 50,
       showCol: true,
     },
     {
       key: 'total_cost',
       name: 'Total Cost',
-      renderRowCell: (row) =>
-        showTotalCost[row?._id]
-          ? Math.floor(totalCostValues[row?._id]) || 0
-          : 0,
+      renderRowCell: (row) => (showTotalCost[row?._id] ? Math.floor(totalCostValues[row?._id]) || 0 : 0),
       // <div style={{ border: '1px solid red', padding: '10px' }}>
       // {'₹'}
       // {showTotalCost[row?._id]
@@ -333,12 +291,8 @@ const DataGridColumns = ({
       key: 'vendor_type',
       name: 'Vendor Type',
       renderRowCell: (row) => {
-        const name = vendorData?.find(
-          (item) => item?._id == row?.vendor_id
-        )?.vendor_type;
-        const finalName = typeData?.find(
-          (item) => item?._id === name
-        )?.type_name;
+        const name = vendorData?.find((item) => item?._id == row?.vendor_id)?.vendor_type;
+        const finalName = typeData?.find((item) => item?._id === name)?.type_name;
         return <div>{finalName}</div>;
       },
       width: 100,
@@ -347,9 +301,7 @@ const DataGridColumns = ({
     {
       key: 'page_category_name',
       name: 'Category',
-      renderRowCell: (row) => (
-        <div>{formatString(row?.page_category_name)}</div>
-      ),
+      renderRowCell: (row) => <div>{formatString(row?.page_category_name)}</div>,
       // renderRowCell: (row) => {
       //   const name = cat?.find(
       //     (item) => item?._id === row?.page_category_id
@@ -386,23 +338,18 @@ const DataGridColumns = ({
       key: 'm_post_price',
       name: 'Cost Per Post',
       renderRowCell: (row) => {
-        const findPostPrice = (priceList, keyword) => {
-          const detail = priceList?.find((item) =>
-            Object.keys(item).some((key) => key.includes(keyword))
-          );
-
-          return detail
-            ? detail[Object.keys(detail).find((key) => key.includes(keyword))]
-            : 0;
+        const findPriceByKeyword = (priceList, keyword) => {
+          if (!priceList) return 0;
+          const detail = priceList.find((item) => Object.keys(item).some((key) => key.includes(keyword)));
+          return detail ? detail[Object.keys(detail).find((key) => key.includes(keyword))] : 0;
         };
 
-        const postPrice = findPostPrice(row?.page_price_list, 'post');
+        const postPrice = findPriceByKeyword(row?.page_price_list, 'post');
+        const isFixedRate = row.rate_type === 'Fixed';
 
-        const price = Number(postPrice) || 0;
-        // console.log('most', mPostPrice);
-        // const postPrice = row?.post;
-        // return <div>{postPrice ?? mPostPrice}</div>;
-        return price;
+        const finalPrice = isFixedRate ? postPrice : calculatePrice(row.rate_type, row, 'post');
+
+        return Math.floor(Number(finalPrice)) || 0;
       },
       width: 150,
       showCol: true,
@@ -412,22 +359,18 @@ const DataGridColumns = ({
       key: 'm_story_price',
       name: 'Cost Per Story',
       renderRowCell: (row) => {
-        const findStoryPrice = (priceList, keyword) => {
-          const detail = priceList?.find((item) =>
-            Object.keys(item).some((key) => key.includes(keyword))
-          );
-
-          return detail
-            ? detail[Object.keys(detail).find((key) => key.includes(keyword))]
-            : 0;
+        const findPriceByKeyword = (priceList, keyword) => {
+          if (!priceList) return 0;
+          const detail = priceList.find((item) => Object.keys(item).some((key) => key.includes(keyword)));
+          return detail ? detail[Object.keys(detail).find((key) => key.includes(keyword))] : 0;
         };
 
-        const storyPrice = findStoryPrice(row?.page_price_list, 'story');
+        const storyPrice = findPriceByKeyword(row?.page_price_list, 'story');
+        const isFixedRate = row.rate_type === 'Fixed';
 
-        const price = Number(storyPrice) || 0;
-        // const storyPrice = row?.story;
-        // return <div>{storyPrice ?? mStoryPrice}</div>;
-        return price;
+        const finalPrice = isFixedRate ? storyPrice : calculatePrice(row.rate_type, row, 'story');
+
+        return Math.floor(Number(finalPrice)) || 0;
       },
       width: 150,
       showCol: true,
@@ -438,9 +381,7 @@ const DataGridColumns = ({
       name: 'Both Price',
       renderRowCell: (row) => {
         const mBothPrice = row?.page_price_list;
-        const postDetail = mBothPrice?.find(
-          (item) => item.instagram_both !== undefined
-        );
+        const postDetail = mBothPrice?.find((item) => item.instagram_both !== undefined);
         const bothPrice = postDetail?.instagram_both;
         const price = Number(bothPrice) || 0;
         // const bothPrice = row?.both_;

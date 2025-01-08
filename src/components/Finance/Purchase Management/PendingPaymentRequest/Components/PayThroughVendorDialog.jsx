@@ -58,11 +58,17 @@ const PayThroughVendorDialog = (props) => {
         return;
       }
 
-
       const selectedRow = rowSelectionModel[0];
+      // console.log(selectedRow, "selectedRow")
+      // return;
       if (selectedRow?.mob1.length != 10) {
         toastError("Mobile number is not valid for this payment.");
         return;
+      }
+      else if (selectedRow?.ifsc == "") {
+        toastError("Branch Code is not valid.");
+        return;
+
       }
       // Step 1: Get the JWT token
       const getTokenResponse = await axios.get(

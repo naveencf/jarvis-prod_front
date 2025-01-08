@@ -93,6 +93,7 @@ const PlanMaking = () => {
   const [advancePageList, setAdvancePageList] = useState([]);
   const [topUsedPageList, setTopUsedPageList] = useState([]);
   const [tempIndex, setTempIndex] = useState(0);
+  const [handiPickedPages, setHandiPickedPages] = useState([]);
   const [getTableData, setGetTableData] = useState([]);
   const [shortcutTriggered, setShortcutTriggered] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -692,7 +693,7 @@ const PlanMaking = () => {
       setShortcutTriggered(true);
       const currentRow = getTableData[activeIndex];
       const isChecked = showTotalCost[currentRow._id] || false;
-    
+
       // Toggle checkbox
       handleCheckboxChange(currentRow, 'shortcutkey', { target: { checked: !isChecked } }, activeIndex);
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
@@ -709,7 +710,7 @@ const PlanMaking = () => {
   const handleStoryCountChange = (e) => setStoryCountDefault(e.target.value);
   const handlePostCountChange = (e) => setPostCountDefault(e.target.value);
 
-  const tableData = layering == 1 ? sarcasmNetwork : layering == 2 ? ownPages : layering == 3 ? advancePageList : layering == 4 ? topUsedPageList : showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows);
+  const tableData = layering == 1 ? sarcasmNetwork : layering == 2 ? ownPages : layering == 3 ? advancePageList : layering == 4 ? topUsedPageList : layering === 6 ? handiPickedPages : showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows);
 
   const activeDescriptions = useMemo(() => {
     return descriptions?.filter((desc) => desc.status === 'Active');
@@ -723,7 +724,7 @@ const PlanMaking = () => {
         const sarcasamNetworkPages = [];
         const advancedPostPages = [];
         const mostUsedPages = [];
-
+        const handiPicked = [];
         // Adding pages for layer
         data?.filter((page) => {
           if (page.followers_count > 0) {
@@ -733,11 +734,14 @@ const PlanMaking = () => {
               advancedPostPages.push(page);
             } else if (page?.page_layer === 4) {
               mostUsedPages.push(page);
+            } else if (page?.page_layer === 6) {
+              handiPicked.push(page);
             }
           }
         });
         setFilterData(pageData);
         setSarcasmNetwork(sarcasamNetworkPages);
+        setHandiPickedPages(handiPicked);
         setAdvancePageList(advancedPostPages);
         setTopUsedPageList(mostUsedPages);
 
@@ -860,7 +864,6 @@ const PlanMaking = () => {
       handleAutomaticSelection(versionData);
     }
   }, [versionData]);
-
   // const versionPages = versionData ? versionData : tableData;
   return (
     <>

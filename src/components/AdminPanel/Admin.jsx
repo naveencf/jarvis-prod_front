@@ -18,6 +18,9 @@ import ErrorPage from "../../ErrorPage";
 import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
 import UnFatchedPages from "./PageMS/InventoryDashboard/UnFatchedPages";
 import TagCategory from "./PageMS/InventoryDashboard/TagCategory";
+import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest";
+import CalenderCreation from "../Operation/Calender/CalenderCreation";
+import PurchaseTransactions from "../Purchase/PurchaseTransactions";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -859,8 +862,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1290,6 +1293,7 @@ const Admin = () => {
                       path="/finance-transaction-list/:sale_booking_id"
                       element={<BalanceTransactionList />}
                     />
+
                     <Route
                       path="/finance-incentivepayment"
                       element={<IncentivePayment />}
@@ -1373,6 +1377,10 @@ const Admin = () => {
                     <Route
                       path="/finance-pruchasemanagement-paymentdone-transactionlist/:request_id"
                       element={<PaymentDoneTransactionList />}
+                    />
+                    <Route
+                      path="/purchase-transaction"
+                      element={<PurchaseTransactions />}
                     />
                     <Route
                       path="/finance-dashboard"
@@ -1490,6 +1498,10 @@ const Admin = () => {
                     <Route
                       path="/operation-contents"
                       element={<OperationContents />}
+                    />
+                    <Route
+                      path="/calender"
+                      element={<CalenderCreation />}
                     />
                     <Route
                       path="/register-campaign"
@@ -1992,6 +2004,10 @@ const Admin = () => {
                     <Route
                       path="/sales-user-incentve"
                       element={<UserIncentive />}
+                    />
+                    <Route
+                      path="/sales-plan-request"
+                      element={<PlanRequest />}
                     />
                     <Route
                       path="/sales-user-report"

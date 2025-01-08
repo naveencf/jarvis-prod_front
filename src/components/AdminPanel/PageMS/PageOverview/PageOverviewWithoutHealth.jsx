@@ -21,7 +21,7 @@ import { useEffect } from 'react';
 import CustomTable from '../../../CustomTable/CustomTable';
 // import SarcasmNetwork from '../SarcasmNetwork';
 
-function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, latestPageObject }) {
+function PageOverviewWithoutHealth({ setPlanFormName, columns, pagequery, setPagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, latestPageObject }) {
   const token = sessionStorage.getItem('token');
   const [activeTab, setActiveTab] = useState('Tab0');
   const decodedToken = jwtDecode(token);
@@ -72,7 +72,7 @@ function PageOverviewWithoutHealth({ columns, pagequery, setPagequery, categoryF
 
   return (
     <div className="card">
-      <PageOverviewHeader selectedData={selectedData} setSelectedData={setSelectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
+      <PageOverviewHeader setPlanFormName={setPlanFormName} selectedData={selectedData} setSelectedData={setSelectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
       {/* <div className="tabs">
         <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab0')}>
           Instagram

@@ -2,7 +2,7 @@ import "./App.css";
 import "./assets/css/style.css";
 import "./assets/css/responsive.css";
 import React, { Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 const Login = lazy(() => import("./Login/Login"));
@@ -263,7 +263,6 @@ function App() {
     };
   }, []);
 
-  
   return (
     <>
       <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div>

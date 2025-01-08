@@ -297,10 +297,10 @@ export default function PendingPaymentRequest() {
     setLoading(true);
     setRowData(enrichedRow);
     console.log(Number(row.balance_amount) - Number(row?.getway_process_amt), "bal-proc")
-    setPaymentAmount(Number(row.balance_amount));
+    setPaymentAmount(Number(row.balance_amount) - Number(row?.proccessingAmount));
     setNetAmount(row.balance_amount);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
-
+    console.log(row.balance_amount, row?.proccessingAmount)
     setPayDialog(true);
   };
 

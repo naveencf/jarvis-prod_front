@@ -540,7 +540,8 @@ const ViewSaleBooking = () => {
     {
       key: "Aging",
       name: "Aging in Days",
-      renderRowCell: (row) => calculateAging(row.sale_booking_date, new Date()),
+      renderRowCell: (row) =>
+        Number(calculateAging(row.sale_booking_date, new Date())),
       width: 100,
       compare: true,
     },

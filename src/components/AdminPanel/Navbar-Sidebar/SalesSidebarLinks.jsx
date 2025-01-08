@@ -59,18 +59,18 @@ const SalesSidebarLinks = () => {
               loginUserRole === 1
                 ? '/admin/sales-incentive-dashboard'
                 : {
-                    pathname: '/admin/sales-user-incentve',
-                    state: { id: loginUserId, name: 'monthwise' },
-                  }
+                  pathname: '/admin/sales-user-incentve',
+                  state: { id: loginUserId, name: 'monthwise' },
+                }
             }
           >
             <i className="bi bi-dot" />
             Incentive
           </NavLink>
-          {/* <NavLink className="collapse-item" to={loginUserRole === 1 ? '/admin/sales-plan-request' : ''}>
+          <NavLink className="collapse-item" to="/admin/sales-plan-request">
             <i className="bi bi-dot" />
-            Request Plan
-          </NavLink> */}
+            Plan Request
+          </NavLink>
         </div>
       </div>
     </li>

@@ -25,7 +25,6 @@ import FieldContainer from "../../FieldContainer";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { baseUrl } from "../../../../utils/config";
 import { downloadSelectedInvoices } from "./ZipGenerator";
-import BankExcelConverter from "../../../../utils/BankExcelConverter";
 import { FaEye } from "react-icons/fa6"
 
 const images = [
@@ -1045,11 +1044,10 @@ async function handleBulkSendToFinance() {
       name: "Total Salary",
       width: "120px",
 
-      cell: (row) => row.total_salary + " ₹",
+      cell: (row) => row.total_salary .toFixed(0)+ " ₹",
       footer: {
         cell: (row) =>
           row.reduce((total, rows) => {
-            // Assuming row.bonus is a numeric value
             return total + Number(rows.total_salary);
           }, 0),
       },
@@ -1072,6 +1070,10 @@ async function handleBulkSendToFinance() {
       cell: (row) => row.salary_deduction + " ₹",
     },
     {
+      name: "Arrear Last Month",
+      cell: (row) => row.arrear_from_last_month + " ₹",
+    },
+    {
       name: "Net Salary",
       cell: (row) => row.net_salary?.toFixed(0) + " ₹",
     },
@@ -1081,7 +1083,7 @@ async function handleBulkSendToFinance() {
     },
     {
       name: "To Pay",
-      cell: (row) => row.toPay?.toFixed() + " ₹",
+      cell: (row) => row.toPay?.toFixed(0) + " ₹",
     },
     {
       name: "Status",
@@ -1200,6 +1202,7 @@ async function handleBulkSendToFinance() {
       "Total Salary": `${row.total_salary} ₹`,
       Bonus: row.bonus + " ₹",
       Deductions: row.salary_deduction,
+      ArrearLastMonth: row.arrear_from_last_month,
       "Net Salary": `${row.net_salary} ₹`,
       TDS: `${row.tds_deduction} ₹`,
       "To Pay": row.toPay + " ₹",
@@ -1805,7 +1808,7 @@ async function handleBulkSendToFinance() {
                 exportToCSV
                 paginationPerPage={100} 
                 // subHeader
-                conditionalRowStyles={conditionalRowStyles}
+                // conditionalRowStyles={conditionalRowStyles}
                 selectableRows={activeTab == 0 ? true : false}
                 onSelectedRowsChange={handleRowSelected}
               />

@@ -6,7 +6,7 @@ const WFHDExcelConverter = (apiData, fileName) => {
     sno: index + 1,
     UserName: data.user_name,
     EmployeeID: data.user_id,
-    Department: data.department_name,
+    salary: data.salary,
     status: data.att_status,
     JobType: data.job_type,
     Email: data.user_email_id,
@@ -33,5 +33,9 @@ const WFHDExcelConverter = (apiData, fileName) => {
   });
   FileSaver.saveAs(data, fileName + "_report.xlsx");
 };
+
+
+
+
 
 export default WFHDExcelConverter

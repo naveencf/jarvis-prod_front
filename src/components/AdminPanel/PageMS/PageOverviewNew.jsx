@@ -55,6 +55,7 @@ const PageOverviewNew = () => {
   const [waData, setWaData] = useState(null);
 
   const [allVendorWhats, setAllVendorWhats] = useState([]);
+  const [platformName, setPlanFormName] = useState('');
   // const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
   // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
@@ -579,6 +580,15 @@ const PageOverviewNew = () => {
   const handleClickVendorName = (params) => {
     setVendorDetails(params);
   };
+  const getPriceDetail = (priceDetails, key) => {
+    const keyType = key.split('_')[1];
+
+    const detail = priceDetails?.find((item) => {
+      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+    });
+
+    return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
+  };
 
   const dataGridcolumns = [
     {
@@ -586,6 +596,7 @@ const PageOverviewNew = () => {
       name: 'S.no',
       renderRowCell: (row, index) => index + 1,
       width: 80,
+      showCol: true,
     },
     {
       key: 'page_name',
@@ -849,50 +860,109 @@ const PageOverviewNew = () => {
       },
     },
     { key: 'rate_type', name: 'Rate Type', width: 200 },
-    {
-      key: 'Post Price',
-      name: 'Post Price',
+    platformName !== 'twitter' &&
+      platformName !== 'thred' &&
+      platformName !== 'youtube' && {
+        key: 'Post Price',
+        name: 'Post Price',
+        width: 200,
+        renderRowCell: (row) => {
+          const postPrice = getPriceDetail(row?.page_price_list, 'platform_post');
+          // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+          // const postPrice = postData ? postData.instagram_post : 0;
+          return postPrice > 0 ? Number(postPrice) : 0;
+        },
+        compare: true,
+      },
+    platformName === 'youtube' && {
+      key: 'Youtube Short Price',
+      name: 'Youtube Short Price',
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-        const postPrice = postData ? postData.instagram_post : 0;
+        const postPrice = getPriceDetail(row?.page_price_list, 'platform_post');
+        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        // const postPrice = postData ? postData.instagram_post : 0;
         return postPrice > 0 ? Number(postPrice) : 0;
       },
       compare: true,
     },
-    {
-      key: 'Reel Price',
-      name: 'Reel Price',
+    platformName === 'youtube' && {
+      key: 'Youtube Video Price',
+      name: 'Youtube Video Price',
       width: 200,
       renderRowCell: (row) => {
-        const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
-        const reelPrice = reelData ? reelData.instagram_reel : 0;
-        return reelPrice > 0 ? Number(reelPrice) : 0;
-      },
-      compare: true,
-    },
-    {
-      key: 'Story Price',
-      name: 'Story Price',
-      width: 200,
-      renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
-        const storyPrice = storyData ? storyData.instagram_story : 0;
+        const storyPrice = getPriceDetail(row?.page_price_list, 'platform_story');
+        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        // const postPrice = postData ? postData.instagram_post : 0;
         return storyPrice > 0 ? Number(storyPrice) : 0;
       },
       compare: true,
     },
-    {
-      key: 'Both Price',
-      name: 'Both Price',
+    platformName === 'twitter' && {
+      key: 'xtweet Price',
+      name: 'X-tweet Price',
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
-        const bothPrice = bothData ? bothData.instagram_both : 0;
-        return bothPrice;
+        const storyPrice = getPriceDetail(row?.page_price_list, 'platform_post');
+        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        // const postPrice = postData ? postData.instagram_post : 0;
+        return storyPrice > 0 ? Number(storyPrice) : 0;
       },
       compare: true,
     },
+    platformName === 'thread' && {
+      key: 'thred-tweet Price',
+      name: 'Thread-tweet Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const storyPrice = getPriceDetail(row?.page_price_list, 'platform_post');
+        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        // const postPrice = postData ? postData.instagram_post : 0;
+        return storyPrice > 0 ? Number(storyPrice) : 0;
+      },
+      compare: true,
+    },
+    platformName !== 'youtube' &&
+      platformName !== 'twitter' &&
+      platformName !== 'thread' && {
+        key: 'Reel Price',
+        name: 'Reel Price',
+        width: 200,
+        renderRowCell: (row) => {
+          const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
+          const reelPrice = reelData ? reelData.instagram_reel : 0;
+          return reelPrice > 0 ? Number(reelPrice) : 0;
+        },
+        compare: true,
+      },
+    platformName !== 'youtube' &&
+      platformName !== 'twitter' &&
+      platformName !== 'thread' && {
+        key: 'Story Price',
+        name: 'Story Price',
+        width: 200,
+        renderRowCell: (row) => {
+          const storyPrice = getPriceDetail(row?.page_price_list, 'platform_story');
+
+          // const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
+          // const storyPrice = storyData ? storyData.instagram_story : 0;
+          return storyPrice > 0 ? Number(storyPrice) : 0;
+        },
+        compare: true,
+      },
+    platformName !== 'youtube' &&
+      platformName !== 'twitter' &&
+      platformName !== 'thread' && {
+        key: 'Both Price',
+        name: 'Both Price',
+        width: 200,
+        renderRowCell: (row) => {
+          const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
+          const bothPrice = bothData ? bothData.instagram_both : 0;
+          return bothPrice;
+        },
+        compare: true,
+      },
 
     // {
     //   key: 'ownership_type',
@@ -1001,7 +1071,7 @@ const PageOverviewNew = () => {
           <div className="content">
             {activeTab === 'Tab0' && (
               <>
-                <PageOverviewWithoutHealth columns={dataGridcolumns} latestPageObject={latestPageObject} pagequery={pagequery} setPagequery={setPagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
+                <PageOverviewWithoutHealth columns={dataGridcolumns} latestPageObject={latestPageObject} pagequery={pagequery} setPagequery={setPagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} setPlanFormName={setPlanFormName} />
               </>
             )}
             {activeTab === 'Tab1' && (
