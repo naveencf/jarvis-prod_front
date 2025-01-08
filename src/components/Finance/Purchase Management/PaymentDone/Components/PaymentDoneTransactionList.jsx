@@ -310,8 +310,9 @@ const PaymentDoneTransactionList = () => {
           <Stack direction="row" spacing={1}>
 
             <Chip label={params?.row?.payment_getway_status} color="success" />
-            {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILURE" ? "" :
-              <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />}
+            {/* {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" ? "" : */}
+            <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
+            {/* } */}
 
           </Stack>
         )
@@ -550,12 +551,12 @@ const PaymentDoneTransactionList = () => {
       field: "payment_amount",
       headerName: "Payment Amount",
       width: 150,
-      renderCell: (params) => {
-        const paymentAmount = nodeData.filter(
-          (e) => e.request_id == params.row.request_id
-        )[0]?.payment_amount;
-        return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
-      },
+      // renderCell: (params) => {
+      //   const paymentAmount = nodeData.filter(
+      //     (e) => e.request_id == params.row.request_id
+      //   )[0]?.payment_amount;
+      //   return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
+      // },
     },
     {
       field: "payment_by",

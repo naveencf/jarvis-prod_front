@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AppContext, useGlobalContext } from '../../../Context/Context';
 import FieldContainer from '../FieldContainer';
@@ -46,7 +46,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
   const [pageName, setPageName] = useState('');
   const [link, setLink] = useState('');
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+  // const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [platformId, setPlatformId] = useState('');
   const [categoryId, setCategoryId] = useState('');
@@ -73,6 +73,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [languages, setLanguages] = useState([]);
   const [languageId, setLanguageId] = useState([]);
   const [tempID, setTempID] = useState();
+  const [showPriceFields, setShowPriceFields] = useState(false);
+  const [newPriceRow, setNewPriceRow] = useState({});
 
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
@@ -159,12 +161,15 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   };
 
   const handlePriceChange = (e, index) => {
-    const updatedRowCount = [...rowCount];
-    updatedRowCount[index] = {
-      ...updatedRowCount[index],
-      price: e.target.value,
+    const updatedValue = e.target.value;
+    const updatedPagePriceList = [...pagePriceList];
+
+    const priceTypeName = Object.keys(updatedPagePriceList[index])[0];
+
+    updatedPagePriceList[index] = {
+      [priceTypeName]: updatedValue,
     };
-    setRowCount(updatedRowCount);
+    setPagePriceList(updatedPagePriceList);
   };
 
   const handleFilterPriceType = (_id) => {
@@ -201,15 +206,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     }
   }, [platformId]);
 
- 
   const addPriceRow = () => {
-    if (rowCount.length > 0) {
-      setRowCount((rowCount) => [...rowCount, { page_price_type_id: '', price: '' }]);
-    } else {
-      setRowCount([{ page_price_type_id: '', price: '' }]);
-    }
+    setShowPriceFields(true);
+    setNewPriceRow({
+      priceType: '',
+      value: 0,
+    });
   };
- 
+
   const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
     skip: !pageMasterId,
   });
@@ -223,30 +227,33 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     '66b9ba76994d2209bfd4cf52': 'instagram_broadcast',
     '66b9ba61994d2209bfd4cf51': 'instagram_bio',
     '66b9ba09994d2209bfd4cf4f': 'instagram_carousel',
+    '66b9bb9e994d2209bfd4cf57': 'xtweet_post',
+    '66b9bbad994d2209bfd4cf58': 'x_retweet',
+    '66b9bbb9994d2209bfd4cf59': 'x_comment',
+    '66b9bab0994d2209bfd4cf54': 'facebook_story',
+    '66b9bac0994d2209bfd4cf55': 'facebook_post',
+    '66b9bad4994d2209bfd4cf56': 'facebook_comment',
+    '66b9bbf2994d2209bfd4cf5a': 'youtubevideo_story',
+    '66b9bc01994d2209bfd4cf5b': 'youtubeshorts_post',
+    '66bb092ad492fa2a17287109': 'snapchat_post',
+    '66bb0d45d492fa2a17287112': 'whatsapp_post',
+    '66bb0d7cd492fa2a17287114': 'telegramchannel_post',
+    '66bb0db2d492fa2a17287115': 'linkedin_post',
+    '6746c5c3fc48d70fbf1c2d9e': 'sharechat_post',
+    '6746c5defc48d70fbf1c2d9f': 'sharechat_story',
+    '6746c5f2fc48d70fbf1c2da0': 'sharechat_both',
+    '6746c604fc48d70fbf1c2da1': 'sharechat_reel',
+    '6746c631fc48d70fbf1c2da2': 'moj_post',
+    '6746c644fc48d70fbf1c2da3': 'moj_story',
+    '6746c654fc48d70fbf1c2da4': 'moj_both',
+    '6746c666fc48d70fbf1c2da5': 'moj_reel',
+    '67472a66fc48d70fbf1c2dde': 'thread_post',
+    '67480eb67bd2057dd708d244': 'thread_repost',
+    '67480ede7bd2057dd708d245': 'thread_quote',
+    '67480efc7bd2057dd708d246': 'thread_comment',
+    '67480fe67bd2057dd708d249': 'x_quote',
   };
 
-  useEffect(() => {
-    if (!pagePriceList.length) return;
-
-    const reversePriceTypeMappings = Object.fromEntries(Object.entries(priceTypeMappings).map(([id, key]) => [key, id]));
-
-    const flattenedRowCount = [];
-    for (const item of pagePriceList) {
-      for (const key in item) {
-        if (reversePriceTypeMappings[key] && item[key] !== undefined) {
-          flattenedRowCount.push({
-            page_price_type_id: reversePriceTypeMappings[key],
-            price: item[key] || 0,
-            isFromPagePriceList: true,
-          });
-        }
-      }
-    }
-
-    setRowCount(flattenedRowCount);
-  }, [pagePriceList]);
-
-  console.log('rowCount', rowCount);
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMasterId}`, {
@@ -314,7 +321,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     }
     getLanguage();
   }, []);
-
+  console.log('pagePriceLIst', pagePriceList);
   const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
@@ -367,7 +374,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       toastAlert('Profile Type is required');
       return;
     }
-
     const payload = {
       page_name: pageName,
       page_link: link,
@@ -401,12 +407,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
       page_language_name: languageId.map((item) => item?.label),
       tags_page_category_name: tag.map((e) => e.label),
-      page_price_list: rowCount.map((item) => {
-        return {
-          [priceTypeList?.find((priceobject) => priceobject?._id == item.page_price_type_id)?.name]: item.price,
-        };
-      }),
+      page_price_list: pagePriceList,
+      // page_price_list: rowCount.map((item) => {
+      //   return {
+      //     [priceTypeList?.find((priceobject) => priceobject?._id == item.page_price_type_id)?.name]: item.price,
+      //   };
+      // }),
     };
+
     await axios
       .put(baseUrl + `v1/pageMaster/${pageMasterId}`, payload, {
         headers: {
@@ -474,7 +482,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     };
   };
   const pageInfoModlaOpen = useSelector((state) => state.pageMaster.showInfoModal);
-
+  console.log('newPricee');
   const calculateFollowerCount = (index) => {
     const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
@@ -512,7 +520,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     setOwnerType(selectedOption.value);
   };
 
-  console.log(priceTypeList, 'priceTypeList');
   return (
     <>
       <PageAddMasterModal />
@@ -833,58 +840,101 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       </div>
 
       <div className="col-12 row">
-        {rowCount &&
-          rowCount.length > 0 &&
-          rowCount.map((row, index) => (
-            <>
+        {pagePriceList?.map((row, index) => {
+          const [key, value] = Object.entries(row)[0] || [null, null];
+          const isLastRow = index === pagePriceList.length - 1;
+          const isValueNotNull = value !== null;
+
+          const filteredPriceTypeList = priceTypeList
+            ?.filter((option) => pagePriceList.every((r, i) => i === index || Object.keys(r)[0] !== option.name))
+            ?.map((option) => ({
+              value: option._id,
+              label: option.name,
+            }));
+
+          const selectedPriceType = priceTypeList?.find((pt) => pt.name === key);
+
+          return (
+            <React.Fragment key={index}>
               <div className="form-group col-5 row">
                 <label className="form-label">
                   Price Type <sup style={{ color: 'red' }}>*</sup>
                 </label>
-                <Select
-                  options={priceTypeList
-                    ?.filter((option) => rowCount.every((r, i) => i === index || r.page_price_type_id !== option._id))
-                    ?.map((option) => ({
-                      value: option?._id,
-                      label: option?.name,
-                    }))}
-                  required={true}
-                  value={{
-                    label: priceTypeList?.find((role) => role?._id === rowCount[index]?.page_price_type_id)?.name,
-                    value: rowCount[index]?.page_price_type_id,
-                  }}
-                  onChange={(e) => handlePriceTypeChange(e, index)}
-                  isDisabled={row.price !== ''}
-                />
+                <Select options={filteredPriceTypeList} required value={{ label: selectedPriceType?.name || '', value: key }} onChange={(e) => handlePriceTypeChange(e, index)} isDisabled={isValueNotNull} />
               </div>
-              <FieldContainer label=" Price *" required={true} type="number" onChange={(e) => handlePriceChange(e, index)} value={rowCount[index].price} />
-
-              {rateType == 'Variable' && (
+              <FieldContainer label="Price *" required type="number" onChange={(e) => handlePriceChange(e, index)} value={value || 0} />
+              {rateType === 'Variable' && (
                 <p className="ml-3" style={{ color: 'blue' }}>
-                  This Profile Cost = {'  Rs '} {calculateFollowerCount(index.toFixed(0))}
+                  This Profile Cost = {' Rs '} {calculateFollowerCount(value)}
                 </p>
               )}
-
-              {!row.isFromPagePriceList && index === rowCount.length - 1 && (
+              {isLastRow && newPriceRow.value > 0 && !showPriceFields && (
                 <button
                   className="btn btn-sm btn-danger mt-4 ml-2 col-1 mb-3"
                   type="button"
                   onClick={() => {
-                    setRowCount((prev) => prev.filter((e, i) => i !== index));
-                    handleFilterPriceType(rowCount[index]._id);
+                    pagePriceList.splice(index, 1);
+                    handleFilterPriceType(key);
                   }}
                 >
                   Remove
                 </button>
               )}
-            </>
-          ))}
+            </React.Fragment>
+          );
+        })}
+
+        {showPriceFields && (
+          <React.Fragment>
+            <div className="form-group col-5 row">
+              <label className="form-label">
+                Price Type <sup style={{ color: 'red' }}>*</sup>
+              </label>
+              <Select
+                options={priceTypeList
+                  ?.filter((option) => !pagePriceList.some((r) => Object.keys(r)[0] === option.name))
+                  ?.map((option) => ({
+                    value: option._id,
+                    label: option.name,
+                  }))}
+                value={{
+                  label: priceTypeList.find((pt) => pt._id === newPriceRow.priceType)?.name || '',
+                  value: newPriceRow.priceType,
+                }}
+                onChange={(e) => setNewPriceRow({ ...newPriceRow, priceType: e.value })}
+                required
+              />
+            </div>
+            <FieldContainer label="Price *" required type="number" onChange={(e) => setNewPriceRow({ ...newPriceRow, value: e.target.value })} value={newPriceRow.value || 0} />
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => {
+                  const selectedPriceType = priceTypeList.find((pt) => pt._id === newPriceRow.priceType);
+                  if (selectedPriceType && newPriceRow.value > 0) {
+                    setPagePriceList([...pagePriceList, { [selectedPriceType.name]: Number(newPriceRow.value) }]);
+                    setShowPriceFields(false);
+                  } else {
+                    alert('Please select a price type and enter a valid price.');
+                  }
+                }}
+                className="btn btn-sm btn-primary"
+              >
+                Add Price
+              </button>
+            </div>
+          </React.Fragment>
+        )}
+
         <div className="text-center">
-          <button type="button" onClick={addPriceRow} className="btn btn-sm btn-primary">
-            Add Price
-          </button>
+          {!showPriceFields && (
+            <button type="button" onClick={addPriceRow} className="btn btn-sm btn-primary">
+              Add Price
+            </button>
+          )}
         </div>
       </div>
+
       <div
         style={{
           display: 'flex',

@@ -25,7 +25,7 @@ const style = {
   p: 4,
 };
 
-function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, selectedData, setSelectedData }) {
+function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, selectedData, setSelectedData }) {
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -66,13 +66,13 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
 
   const handleNext = () => {
     if (startIndex + itemsPerPage < platformData.length) {
-      setStartIndex((prev) => prev + 1);
+      setStartIndex((prev) => prev + 4);
     }
   };
 
   const handlePrevious = () => {
     if (startIndex > 0) {
-      setStartIndex((prev) => prev - 1);
+      setStartIndex((prev) => prev - 4);
     }
   };
   // Construct page query string based on selected filters
@@ -269,6 +269,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
     if (platformData && platformData.length > 0) {
       const platformIndex = parseInt(activeTab.replace('Tab', ''), 10); // Extract index from activeTab (e.g., "Tab0" -> 0)
       const platformName = platformData[platformIndex]?.platform_name || null;
+      setPlanFormName(platformName);
 
       if (platformName) {
         onFilterChange(`platform_name=${platformName.toLowerCase()}`);
@@ -370,7 +371,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
                 {/* Left Arrow */}
                 {/* {startIndex > 0 && ( */}
                 <button className="prev-arrow arrow-btn btn" onClick={handlePrevious}>
-                  <i class="bi bi-chevron-left"></i>
+                  <i className="bi bi-chevron-left"></i>
                   {/* Left Arrow */}
                 </button>
                 {/* )} */}
@@ -387,7 +388,7 @@ function PageOverviewHeader({ onFilterChange, pagequery, categoryFilter, setCate
                 {/* Right Arrow */}
                 {/* {startIndex + itemsPerPage < platformData.length && ( */}
                 <button className="next-arrow arrow-btn btn" onClick={handleNext}>
-                  <i class="bi bi-chevron-right"></i> {/* Right Arrow */}
+                  <i className="bi bi-chevron-right"></i> {/* Right Arrow */}
                 </button>
                 {/* )} */}
               </div>

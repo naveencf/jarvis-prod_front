@@ -2,9 +2,7 @@ export const parseRange = (range) => {
   if (range === 'lessThan10K') {
     return { min: 0, max: 10000 };
   }
-  const [min, max] = range
-    .split('to')
-    .map((val) => parseInt(val.replace('K', '')) * 1000);
+  const [min, max] = range.split('to').map((val) => parseInt(val.replace('K', '')) * 1000);
   return { min, max };
 };
 export const getPriceDetail = (priceDetails, key) => {
@@ -12,15 +10,7 @@ export const getPriceDetail = (priceDetails, key) => {
   return detail ? detail[key] : 0;
 };
 
-export const ButtonTitle = [
-  'Other Inventory',
-  'Sarcasm Network',
-  'Own-Pages',
-  'Advanced-Pages',
-  'Recently Used Top Pages',
-  'All Inventory',
-  '',
-];
+export const ButtonTitle = ['Other Inventory', 'Sarcasm Network', 'Own-Pages', 'Advanced-Pages', 'Recently Used Top Pages', 'All Inventory', 'Handi-Picked Pages', ''];
 
 export const calculatePrice = (rate_type, pageData, type) => {
   const getPriceDetail = (priceDetails, key) => {
@@ -32,19 +22,13 @@ export const calculatePrice = (rate_type, pageData, type) => {
     const followersCountInMillions = pageData.followers_count / 1000000;
 
     if (type === 'post') {
-      const postPrice =
-        followersCountInMillions *
-        getPriceDetail(pageData.page_price_list, 'instagram_post');
+      const postPrice = followersCountInMillions * getPriceDetail(pageData.page_price_list, 'instagram_post');
       return postPrice;
     } else if (type === 'story') {
-      const storyPrice =
-        followersCountInMillions *
-        getPriceDetail(pageData.page_price_list, 'instagram_story');
+      const storyPrice = followersCountInMillions * getPriceDetail(pageData.page_price_list, 'instagram_story');
       return storyPrice;
     } else {
-      const bothPrice =
-        followersCountInMillions *
-        getPriceDetail(pageData.page_price_list, 'instagram_both');
+      const bothPrice = followersCountInMillions * getPriceDetail(pageData.page_price_list, 'instagram_both');
       return bothPrice;
     }
   }

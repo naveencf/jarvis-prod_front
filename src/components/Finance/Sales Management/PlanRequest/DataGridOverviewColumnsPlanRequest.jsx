@@ -1,8 +1,9 @@
 import { CopySimple, Eye, PencilSimple } from '@phosphor-icons/react';
-import { formatUTCDate } from '../../../utils/formatUTCDate';
-import formatString from '../../../utils/formatString';
+import { formatUTCDate } from '../../../../utils/formatUTCDate';
+import formatString from '../../../../utils/formatString';
 
-const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleDuplicateClick, handleRowClick, handleEditClick }) => {
+const DataGridOverviewColumnsPlanRequest = ({ handleOpenDialog, handleStatusChange, handleDuplicateClick, handleRowClick, handleEditClick }) => {
+
   function truncateString(inputString, maxLength = 20) {
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
@@ -52,13 +53,11 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
     {
       key: 'brief',
       name: 'Brief',
-      renderRowCell: (row) => (
-        <div>
-          <span style={{ cursor: 'pointer' }} title={formatString(row?.brief)}>
-            {truncateString(formatString(row?.brief))}
-          </span>
-        </div>
-      ),
+      renderRowCell: (row) => <div>
+        <span style={{ cursor: 'pointer' }} title={formatString(row?.brief)}>
+          {truncateString(formatString(row?.brief))}
+        </span>
+      </div>,
       width: 150,
       showCol: true,
     },
@@ -172,14 +171,9 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
       key: 'description',
       name: 'Description',
       // renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{row.description}</div>,
-      renderRowCell: (row) => (
-        <div style={{ cursor: 'pointer' }}>
-          {' '}
-          <span style={{ cursor: 'pointer' }} title={formatString(row.description)}>
-            {truncateString(formatString(row.description))}
-          </span>
-        </div>
-      ),
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}> <span style={{ cursor: 'pointer' }} title={formatString(row.description)}>
+        {truncateString(formatString(row.description))}
+      </span></div>,
       width: 250,
       showCol: true,
     },
@@ -191,9 +185,9 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
           <button title="Duplicate" onClick={() => handleDuplicateClick(row)} className="btn icon">
             <CopySimple />
           </button>
-          <button title="View" className="btn icon" onClick={() => handleRowClick(row)}>
+          {/* <button title="View" className="btn icon" onClick={() => handleRowClick(row)}>
             <Eye />
-          </button>
+          </button> */}
           <button title="Edit" className="btn icon" onClick={() => handleEditClick(row)}>
             <PencilSimple />
           </button>
@@ -206,4 +200,4 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
   return { columns };
 };
 
-export default DataGridOverviewColumns;
+export default DataGridOverviewColumnsPlanRequest;

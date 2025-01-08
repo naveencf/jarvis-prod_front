@@ -18,20 +18,7 @@ import notassignedChair from "../../../../public/icon/chair/not-assign.png";
 
 import * as XLSX from "xlsx";
 
-function SittingExcelRoomWise(element) {
-  console.log(element.roomName, "elelement function");
-  const formattedData = element?.elements?.map((row, index) => ({
-    "S.No": index + 1,
-    "Employe Name":
-      row.employee && row.employee.trim() !== "" ? row.employee : "",
-  }));
 
-  const fileName = `${element.roomName}.xlsx`;
-  const worksheet = XLSX.utils.json_to_sheet(formattedData);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-  XLSX.writeFile(workbook, fileName);
-}
 
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
@@ -82,6 +69,37 @@ const Viewer = ({
   const userData = userContextData.filter(
     (d) => d.user_status === "Active" && d.job_type === "WFO"
   );
+
+
+  function SittingExcelRoomWise(element) {
+    // Map the element's data to include tooltip details
+    const formattedData = element?.elements?.map((row, index) => {
+      const matchedUser = userContextData?.find(
+        (user) => user?.user_id === row.user_id
+      );
+  
+      return {
+        "S.No": index + 1,
+        "Employee Name": matchedUser?.user_name || "Not Assigned",
+        "Department": matchedUser?.department_name || "N/A",
+        "Designation": matchedUser?.designation_name || "N/A",
+      };
+    });
+  
+    // Define the file name
+    const fileName = `${element.roomName}.xlsx`;
+  
+    // Convert JSON data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+  
+    // Create a new workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
+  
+    // Write the workbook to a file
+    XLSX.writeFile(workbook, fileName);
+  }
+  
 
   useEffect(() => {
     // Load chair SVG

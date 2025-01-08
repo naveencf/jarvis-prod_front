@@ -13,6 +13,7 @@ import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
 import { calculatePrice } from './helper';
+import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -68,6 +69,8 @@ const LeftSideBar = ({
   const [planBrief, setPlanBrief] = useState(planDetails?.[0]?.brief);
   const [sellingPrice, setSellingPrice] = useState(0);
   const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
+  const [isdownloadExcel, setIsDownloadExcel] = useState(false);
+  const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
   // Function to handle opening the modal and setting the page details
@@ -144,8 +147,9 @@ const LeftSideBar = ({
   };
   const handleDownload = async () => {
     setIsDownloading(true);
+    setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText);
+      await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {
@@ -153,9 +157,45 @@ const LeftSideBar = ({
     }
   };
 
+  const handleGetSpreadSheet = async () => {
+    setIsDownloading(true);
+    setIsDownloadExcel(false);
+    try {
+      // Attempt to download the Excel file
+      const result = await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
+      console.log('Downloaded Excel result:', result);
+
+      // Assuming `result` contains the file or related details
+      const formData = new FormData();
+      formData.append('file', result); // Ensure you're appending the correct file
+
+      try {
+        // Attempt to upload the Excel file
+        await uploadExcel(formData).unwrap();
+        alert('File uploaded successfully!');
+      } catch (uploadError) {
+        console.error('File upload failed:', uploadError);
+        alert('Failed to upload the file.');
+      }
+    } catch (downloadError) {
+      console.error('Error downloading Excel:', downloadError);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  // const getPriceDetail = (priceDetails, key) => {
+  //   const detail = priceDetails?.find((item) => item[key] !== undefined);
+  //   return detail ? detail[key] : 0;
+  // };
   const getPriceDetail = (priceDetails, key) => {
-    const detail = priceDetails?.find((item) => item[key] !== undefined);
-    return detail ? detail[key] : 0;
+    const keyType = key.split('_')[1];
+
+    const detail = priceDetails?.find((item) => {
+      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
+    });
+
+    return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
 
   const handlePreviewExcel = () => {
@@ -170,10 +210,10 @@ const LeftSideBar = ({
         planxId: page._id,
         'Post Count': postCountForPage,
         'Story Count': storyCountForPage,
-        'Post Price': getPriceDetail(page.page_price_list, 'instagram_post'),
-        'Story Price': getPriceDetail(page.page_price_list, 'instagram_story'),
-        'Total Post Cost': postCountForPage * getPriceDetail(page.page_price_list, 'instagram_post'),
-        'Total Story Cost': storyCountForPage * getPriceDetail(page.page_price_list, 'instagram_story'),
+        'Post Price': getPriceDetail(page.page_price_list, 'platform_post'),
+        'Story Price': getPriceDetail(page.page_price_list, 'platform_story'),
+        'Total Post Cost': postCountForPage * getPriceDetail(page.page_price_list, 'platform_post'),
+        'Total Story Cost': storyCountForPage * getPriceDetail(page.page_price_list, 'platform_story'),
         category: page.page_category_id, // Add category ID for filtering
       };
     });
@@ -213,27 +253,21 @@ const LeftSideBar = ({
           const postPrice = getPriceDetail(page.page_price_list, 'instagram_post');
           const storyPrice = getPriceDetail(page.page_price_list, 'instagram_story');
           const rateType = page.rate_type === 'Fixed';
-
-          const finalPostCost = rateType ? postPrice : calculatePrice(page.rate_type, page, 'post');
-          const finalStoryCost = rateType ? storyPrice : calculatePrice(page.rate_type, page, 'story');
+          const finalPostCost = rateType ? Math.floor(postPrice) : calculatePrice(page.rate_type, page, 'post');
+          const finalStoryCost = rateType ? Math.floor(storyPrice) : calculatePrice(page.rate_type, page, 'story');
           const totalCost = postCountForPage * (finalPostCost || 0) + storyCountForPage * (finalStoryCost || 0);
-
           if (page.ownership_type === 'Own') {
             acc.own.count += 1;
             acc.own.totalCost += totalCost;
           } else if (page.ownership_type === 'Vendor') {
             acc.vendor.count += 1;
             acc.vendor.totalCost += totalCost;
-          } else if (page.ownership_type === 'Solo') {
-            acc.solo.count += 1;
-            acc.solo.totalCost += totalCost;
           }
           return acc;
         },
         {
           own: { count: 0, totalCost: 0 },
           vendor: { count: 0, totalCost: 0 },
-          solo: { count: 0, totalCost: 0 },
         }
       );
 
@@ -445,9 +479,10 @@ const LeftSideBar = ({
           deliverableText={deliverableText}
           isDownloading={isDownloading}
           downloadExcel={handleDownload}
+          handleGetSpreadSheet={handleGetSpreadSheet}
         />
         <div className="planSmall planLarge">
-          {['own', 'vendor', 'solo'].map((type) => (
+          {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
               <h6
                 onClick={() =>
@@ -582,7 +617,7 @@ const LeftSideBar = ({
           {/* Ownership Types */}
           <div className="nav-item nav-item-single">
             <div className="row p16">
-              {['own', 'vendor', 'solo'].map((type) => (
+              {['own', 'vendor'].map((type) => (
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={type}>
                   <div onClick={handleOwnPage}>
                     <div className="flexCenter colGap14">

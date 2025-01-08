@@ -10,6 +10,7 @@ export const getPlatformName = (platformId) => {
     '666856d34366007df1dfacf6': 'YouTube',
     '666818c34366007df1df1328': 'Twitter',
     '666856e04366007df1dfacfc': 'Snapchat',
+    '67472a28fc48d70fbf1c2ddb': 'Thread',
   };
   return platformMap[platformId] || 'Unknown';
 };
@@ -21,9 +22,7 @@ export const getPriceDetail = (priceDetails, key) => {
     return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
   });
 
-  return detail
-    ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
-    : 0;
+  return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
 };
 
 // Helper function to convert Indian numbering string to a number
@@ -32,16 +31,7 @@ export const getPriceDetail = (priceDetails, key) => {
 //   return parseInt(indianNumber.replace(/,/g, ''), 10);
 // }
 
-export const downloadExcel = async (
-  selectedRow,
-  category,
-  postCount,
-  storyPerPage,
-  planDetails,
-  checkedDescriptions,
-  agencyFees,
-  deliverableText
-) => {
+export const downloadExcel = async (selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isGetSheet) => {
   const workbook = new ExcelJS.Workbook();
   // selling_price
   // Overview Data
@@ -50,7 +40,6 @@ export const downloadExcel = async (
   // Calculate GST
   const gst = totalCost * 0.18; // 18% GST
   const totalWithGst = totalCost + gst; // Total after GST
-
   const overviewSheet = workbook.addWorksheet('Overview');
 
   const logoUrl = 'https://i.ibb.co/jZ3pgnS/logo.webp';
@@ -121,7 +110,7 @@ export const downloadExcel = async (
     }
   });
 
-  const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat'];
+  const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat', 'Thread'];
   var serialNumber = 1;
   for (const platform of platforms) {
     const platformData = selectedRow?.filter((page) => !!page.platform_id);
@@ -132,11 +121,8 @@ export const downloadExcel = async (
       platformData.forEach((page) => {
         if (page.platform_name === 'instagram') {
           const categoryId = page.page_category_id;
-          const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name
-            }`;
-          const categoryName =
-            category?.find((cat) => cat._id === categoryId)?.page_category ||
-            'Unknown';
+          const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name}`;
+          const categoryName = category?.find((cat) => cat._id === categoryId)?.page_category || 'Unknown';
 
           categories[categoryName] = categories[categoryName] || [];
           // Check if the post and story counts are coming through
@@ -154,11 +140,7 @@ export const downloadExcel = async (
 
           totalPostsAndStories += postCountValue + storyCountValue;
 
-          totalCost +=
-            postCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_post') +
-            storyCountValue *
-            getPriceDetail(page.page_price_list, 'instagram_story');
+          totalCost += postCountValue * getPriceDetail(page.page_price_list, 'instagram_post') + storyCountValue * getPriceDetail(page.page_price_list, 'instagram_story');
         }
       });
 
@@ -169,9 +151,7 @@ export const downloadExcel = async (
         const sheet = workbook.addWorksheet(formatString(categoryName));
 
         // Determine if the category has any Story Count > 0
-        const hasStoryCount = categoryData.some(
-          (item) => item['Story Count'] > 0
-        );
+        const hasStoryCount = categoryData.some((item) => item['Story Count'] > 0);
 
         sheet.columns = [
           // { header: '', width: 5 },
@@ -214,17 +194,9 @@ export const downloadExcel = async (
         const newRow = overviewSheet.addRow([
           '',
           serialNumber, // Serial number based on the length of the sheet
-          `Post ${hasStoryCount ? 'and Stories' : ''} on ${formatString(
-            categoryName
-          )} Profiles`, // Description
+          `Post ${hasStoryCount ? 'and Stories' : ''} on ${formatString(categoryName)} Profiles`, // Description
           platform, // Platform
-          categoryData.reduce(
-            (acc, item) =>
-              acc +
-              Number(item['Post Count']) +
-              Number(item['Story Count'] || 0),
-            0
-          ), // Total post and story count for category
+          categoryData.reduce((acc, item) => acc + Number(item['Post Count']) + Number(item['Story Count'] || 0), 0), // Total post and story count for category
           deliverableText,
           ``, // Total cost for category. ₹${categoryTotalCost.toFixed(2)}
         ]);
@@ -335,16 +307,12 @@ export const downloadExcel = async (
         });
       }
     } else {
-      const platformPages = platformData.filter(
-        (page) => page.platform_name === platform.toLowerCase()
-      );
-
+      const platformPages = platformData.filter((page) => page.platform_name === platform.toLowerCase());
       if (!platformPages?.length) continue; // Skip if no pages for the platform
 
       // Group pages into categories based on platform
       const groupedPages = platformPages.reduce((acc, page) => {
-        const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name
-          }`;
+        const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name}`;
         acc[platform] = acc[platform] || [];
 
         acc[platform].push({
@@ -371,14 +339,7 @@ export const downloadExcel = async (
         const sheet = workbook.addWorksheet(sheetName);
         const hasStoryCount = pages.some((item) => item['Story Count'] > 0);
         // Define sheet columns
-        sheet.columns = [
-          { header: 'S_No', width: 10 },
-          { header: 'Username', width: 30 },
-          { header: 'Profile Link', width: 50 },
-          { header: 'Followers', width: 15 },
-          { header: 'Post Count', width: 15 },
-          hasStoryCount && { header: 'Story Count', width: 15 },
-        ];
+        sheet.columns = [{ header: 'S_No', width: 10 }, { header: 'Username', width: 30 }, { header: 'Profile Link', width: 50 }, { header: 'Followers', width: 15 }, { header: 'Post Count', width: 15 }, hasStoryCount && { header: 'Story Count', width: 15 }];
 
         // Sort pages by followers in descending order
         pages.sort((a, b) => b.Followers - a.Followers);
@@ -500,31 +461,13 @@ export const downloadExcel = async (
         });
 
         // Add overview entry for the platform
-        const totalPosts = pages.reduce(
-          (sum, page) => sum + page['Post Count'],
-          0
-        );
-        const totalStories = pages.reduce(
-          (sum, page) => sum + Number(page['Story Count']),
-          0
-        );
+        const totalPosts = pages.reduce((sum, page) => sum + page['Post Count'], 0);
+        const totalStories = pages.reduce((sum, page) => sum + Number(page['Story Count']), 0);
 
         const platformTotalCost = pages.reduce((sum, page) => {
-          const postPrice = getPriceDetail(
-            platformPages.find((p) => p.page_name === page.Username)
-              ?.page_price_list,
-            `${platform.toLowerCase()}_post`
-          );
-          const storyPrice = getPriceDetail(
-            platformPages.find((p) => p.page_name === page.Username)
-              ?.page_price_list,
-            `${platform.toLowerCase()}_story`
-          );
-          return (
-            sum +
-            page['Post Count'] * postPrice +
-            page['Story Count'] * storyPrice
-          );
+          const postPrice = getPriceDetail(platformPages.find((p) => p.page_name === page.Username)?.page_price_list, `${platform.toLowerCase()}_post`);
+          const storyPrice = getPriceDetail(platformPages.find((p) => p.page_name === page.Username)?.page_price_list, `${platform.toLowerCase()}_story`);
+          return sum + page['Post Count'] * postPrice + page['Story Count'] * storyPrice;
         }, 0);
 
         totalPostsAndStories = 0;
@@ -544,28 +487,15 @@ export const downloadExcel = async (
         overviewRow.eachCell((cell, colNumber) => {
           cell.font = { name: 'Comic Sans MS', bold: true };
           cell.border = contentBorder;
-          cell.alignment =
-            colNumber === 3
-              ? { horizontal: 'left', vertical: 'middle' }
-              : { horizontal: 'center', vertical: 'middle' };
+          cell.alignment = colNumber === 3 ? { horizontal: 'left', vertical: 'middle' } : { horizontal: 'center', vertical: 'middle' };
         });
       });
     }
   }
   // }
 
-  const agencyFee = Number(
-    ((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2)
-  );
-  let agencyRow = overviewSheet.addRow([
-    '',
-    `Agency Fees (${agencyFees}%)`,
-    '',
-    '',
-    '',
-    '',
-    `₹${formatIndianNumber(agencyFee)}`,
-  ]);
+  const agencyFee = Number(((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2));
+  let agencyRow = overviewSheet.addRow(['', `Agency Fees (${agencyFees}%)`, '', '', '', '', `₹${formatIndianNumber(agencyFee)}`]);
   agencyRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
       // Start from the second column to avoid the first empty cell
@@ -574,21 +504,11 @@ export const downloadExcel = async (
     }
   });
 
-  const gstPrice = Number(
-    ((agencyFee + planDetails[0]?.selling_price) * 0.18).toFixed(2)
-  );
+  const gstPrice = Number(((agencyFee + planDetails[0]?.selling_price) * 0.18).toFixed(2));
 
   // console.log(typeof (gstPrice), 'gstPrice', typeof (agencyFees), typeof (planDetails[0]?.selling_price), agencyFees + planDetails[0]?.selling_price)
 
-  let gstRow = overviewSheet.addRow([
-    '',
-    'GST (18%)',
-    '',
-    '',
-    '',
-    '',
-    `₹${formatIndianNumber(gstPrice)}`,
-  ]);
+  let gstRow = overviewSheet.addRow(['', 'GST (18%)', '', '', '', '', `₹${formatIndianNumber(gstPrice)}`]);
   gstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
       // Start from the second column to avoid the first empty cell
@@ -598,15 +518,7 @@ export const downloadExcel = async (
   });
 
   const totalCostWithGst = planDetails[0]?.selling_price + agencyFee + gstPrice;
-  let totalWithGstRow = overviewSheet.addRow([
-    '',
-    'Total with GST',
-    '',
-    '',
-    '',
-    '',
-    `₹${formatIndianNumber(totalCostWithGst)}`,
-  ]);
+  let totalWithGstRow = overviewSheet.addRow(['', 'Total with GST', '', '', '', '', `₹${formatIndianNumber(totalCostWithGst)}`]);
 
   totalWithGstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
@@ -618,9 +530,7 @@ export const downloadExcel = async (
   // Merge cells B to E for each of the total rows
   overviewSheet.mergeCells(`B${agencyRow.number}:F${agencyRow.number}`);
   overviewSheet.mergeCells(`B${gstRow.number}:F${gstRow.number}`);
-  overviewSheet.mergeCells(
-    `B${totalWithGstRow.number}:F${totalWithGstRow.number}`
-  );
+  overviewSheet.mergeCells(`B${totalWithGstRow.number}:F${totalWithGstRow.number}`);
 
   // Center-align and add styling to the merged cells
   [gstRow, agencyRow].forEach((row) => {
@@ -666,9 +576,7 @@ export const downloadExcel = async (
   overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
   overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
   const sellingPriceforsheet = overviewSheet.getCell('G8');
-  sellingPriceforsheet.value = `₹${formatIndianNumber(
-    planDetails[0]?.selling_price
-  )}`;
+  sellingPriceforsheet.value = `₹${formatIndianNumber(planDetails[0]?.selling_price)}`;
 
   // Merge the B column cells for all note rows and set "Note" as the text
   if (checkedDescriptions.length > 0) {
@@ -734,12 +642,7 @@ export const downloadExcel = async (
   for (let row = 1; row <= totalRows; row++) {
     for (let col = 1; col <= totalCols; col++) {
       // Skip the cells in the content area
-      if (
-        row >= contentStartRow &&
-        row <= contentEndRow &&
-        col >= contentStartCol &&
-        col <= contentEndCol
-      ) {
+      if (row >= contentStartRow && row <= contentEndRow && col >= contentStartCol && col <= contentEndCol) {
         continue;
       }
 
@@ -752,6 +655,7 @@ export const downloadExcel = async (
     }
   }
 
+  // if (!isGetSheet) {
   workbook.xlsx.writeBuffer().then((buffer) => {
     const blob = new Blob([buffer], {
       type: 'application/vnd.openxmlfor/ats-officedocument.spreadsheetml.sheet',
@@ -760,9 +664,13 @@ export const downloadExcel = async (
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)
-      }.xlsx`;
+    a.download = `${planDetails && formatString(planDetails[0]?.plan_name)}.xlsx`;
     a.click();
-    URL.revokeObjectURL(url); // Clean up the URL
+    URL.revokeObjectURL(url);
   });
+  // } else {
+  // const buffer = await workbook.xlsx.writeBuffer();
+  // console.log('buffer', buffer);
+  // return buffer;
+  // }
 };

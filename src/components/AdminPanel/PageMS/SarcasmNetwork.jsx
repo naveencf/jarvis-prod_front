@@ -1,40 +1,41 @@
-import { baseUrl } from "../../../utils/config";
-import { Autocomplete, TextField } from "@mui/material";
-import axios from "axios";
-import Swal from "sweetalert2";
-import React, { useState } from "react";
-import { useGetAllPageListQuery } from "../../Store/PageBaseURL";
-import jwtDecode from "jwt-decode";
+import { baseUrl } from '../../../utils/config';
+import { Autocomplete, TextField } from '@mui/material';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import React, { useState } from 'react';
+import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
+import jwtDecode from 'jwt-decode';
 
-const SarcasmNetwork = ({ selectedData,setSelectedData }) => {
-  const token = sessionStorage.getItem("token");
+const SarcasmNetwork = ({ selectedData, setSelectedData }) => {
+  const token = sessionStorage.getItem('token');
   const [planx, setPlanx] = useState(null); // Initialize with null
-  const storedToken = sessionStorage.getItem("token");
+  const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const { refetch: refetchPageList } = useGetAllPageListQuery();
 
   const options = [
-    { label: "Inventory Pages", value: 0 },
-    { label: "Sarcasm Network", value: 1 },
-    { label: "Own Pages", value: 2 },
-    { label: "Advanced Pages", value: 3 },
+    { label: 'Inventory Pages', value: 0 },
+    { label: 'Sarcasm Network', value: 1 },
+    { label: 'Own Pages', value: 2 },
+    { label: 'Advanced Pages', value: 3 },
+    { label: 'HandlePicked Pages', value: 6 },
   ];
 
   const handleOptionChange = async (event, newValue) => {
-    if (!selectedData || selectedData.length === 0) {
-      alert("Please Select Pages First!");
+    if (!selectedData || selectedData?.length === 0) {
+      alert('Please Select Pages First!');
       return;
     }
 
     if (newValue) {
       const confirmResult = await Swal.fire({
-        title: "Are you sure?",
+        title: 'Are you sure?',
         text: `Do you want to select "${newValue.label}"?`,
-        icon: "warning",
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: "Yes, confirm it!",
-        cancelButtonText: "No, cancel",
+        confirmButtonText: 'Yes, confirm it!',
+        cancelButtonText: 'No, cancel',
       });
 
       if (confirmResult.isConfirmed) {
@@ -45,7 +46,7 @@ const SarcasmNetwork = ({ selectedData,setSelectedData }) => {
               { page_layer: newValue.value, vendor_id: id.vendor_id },
               {
                 headers: {
-                  "Content-Type": "application/json",
+                  'Content-Type': 'application/json',
                   Authorization: `Bearer ${token}`,
                 },
               }
@@ -53,16 +54,12 @@ const SarcasmNetwork = ({ selectedData,setSelectedData }) => {
             console.log(`Response for ID ${id._id}:`, response.data);
           }
           refetchPageList();
-          Swal.fire("Confirmed!", "Your selection has been saved.", "success");
-          setPlanx(null); 
-          setSelectedData([])
+          Swal.fire('Confirmed!', 'Your selection has been saved.', 'success');
+          setPlanx(null);
+          setSelectedData([]);
         } catch (error) {
-          console.error("Error during PUT requests:", error);
-          Swal.fire(
-            "Error",
-            "An error occurred while saving your selection.",
-            "error"
-          );
+          console.error('Error during PUT requests:', error);
+          Swal.fire('Error', 'An error occurred while saving your selection.', 'error');
         }
       }
     }
@@ -71,13 +68,7 @@ const SarcasmNetwork = ({ selectedData,setSelectedData }) => {
   return (
     <div className="row thm_form">
       <div className="col-md-12">
-        <Autocomplete
-          value={options.find((option) => option.value === planx) || null}
-          onChange={handleOptionChange}
-          options={options}
-          getOptionLabel={(option) => option.label}
-          renderInput={(params) => <TextField {...params} label="Plan X" />}
-        />
+        <Autocomplete value={options.find((option) => option.value === planx) || null} onChange={handleOptionChange} options={options} getOptionLabel={(option) => option.label} renderInput={(params) => <TextField {...params} label="Plan X" />} />
       </div>
     </div>
   );

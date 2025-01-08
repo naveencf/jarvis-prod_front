@@ -1,19 +1,11 @@
-import { createApi } from "@reduxjs/toolkit/query/react";
-import authBaseQuery from "../../utils/authBaseQuery";
-import { add } from "date-fns";
-import jwtDecode from "jwt-decode";
+import { createApi } from '@reduxjs/toolkit/query/react';
+import authBaseQuery from '../../utils/authBaseQuery';
+import { add } from 'date-fns';
+import jwtDecode from 'jwt-decode';
 
 export const reduxBaseURL = createApi({
   baseQuery: authBaseQuery,
-  tagTypes: [
-    "addVendor",
-    "addPaycycle",
-    "addPlatform",
-    "addPayMethod",
-    "whatsappLinkType",
-    "addBankName",
-    "addVendorMaster",
-  ],
+  tagTypes: ['addVendor', 'addPaycycle', 'addPlatform', 'addPayMethod', 'whatsappLinkType', 'addBankName', 'addVendorMaster'],
   endpoints: (builder) => ({
     getnotAssignedVendors: builder.query({
       query: () => `notAssignedToPageVendors`,
@@ -22,20 +14,19 @@ export const reduxBaseURL = createApi({
       query: (data) => ({
         // url: `addVendor`,
         url: `/v1/vendor_type`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addVendor"],
+      invalidatesTags: ['addVendor'],
     }),
     getAllVendorType: builder.query({
       // query: () => `getAllVendor`,
       query: () => `v1/vendor_type`,
-      providesTags: ["addVendor"],
+      providesTags: ['addVendor'],
     }),
 
-
     getAllVendorWiseList: builder.query({
-      query: () => "v1/get_page_count_with_unique_vendor_name",
+      query: () => 'v1/get_page_count_with_unique_vendor_name',
       transformResponse: (response) => response,
       keepUnusedDataFor: 0,
     }),
@@ -44,46 +35,46 @@ export const reduxBaseURL = createApi({
       query: (data) => ({
         // url: `updateVendor/${data._id}`,
         url: `/v1/vendor_type`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addVendor"],
+      invalidatesTags: ['addVendor'],
     }),
     addPmsPlatform: builder.mutation({
       query: (data) => ({
         url: `v1/vendor_platform`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addPlatform"],
+      invalidatesTags: ['addPlatform'],
     }),
 
     getPmsPlatform: builder.query({
       query: () => `v1/vendor_platform`,
-      providesTags: ["addPlatform"],
+      providesTags: ['addPlatform'],
     }),
     updatePmsPlatform: builder.mutation({
       query: (data) => ({
         // url: `updatePlatform/${data._id}`,
         url: `v1/vendor_platform`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addPlatform"],
+      invalidatesTags: ['addPlatform'],
     }),
     addPmsPaymentMethod: builder.mutation({
       query: (data) => ({
         // url: `addpayMethod`,
         url: `v1/payment_method`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addPayMethod"],
+      invalidatesTags: ['addPayMethod'],
     }),
 
     getPmsPaymentMethod: builder.query({
       query: () => `v1/payment_method`,
-      providesTags: ["addPayMethod"],
+      providesTags: ['addPayMethod'],
       transformResponse: (res) => res.data,
     }),
 
@@ -91,55 +82,55 @@ export const reduxBaseURL = createApi({
       query: (data) => ({
         // url: `updatePay/${data._id}`,
         url: `v1/payment_method`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addPayMethod"],
+      invalidatesTags: ['addPayMethod'],
     }),
     addPmsPayCycle: builder.mutation({
       query: (data) => ({
         // url: `addPayCycle`,
         url: `v1/paycycle`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addPaycycle"],
+      invalidatesTags: ['addPaycycle'],
     }),
     getPmsPayCycle: builder.query({
       query: () => `v1/paycycle`,
-      providesTags: ["addPaycycle"],
+      providesTags: ['addPaycycle'],
     }),
 
     updatePmsPayCycle: builder.mutation({
       query: (data) => ({
         // url: `updatePayCycle/${data._id}`,
         url: `v1/paycycle`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addPaycycle"],
+      invalidatesTags: ['addPaycycle'],
     }),
 
     //Vendor Whatsapp group
     addVendorWhatsappLinkType: builder.mutation({
       query: (data) => ({
         url: `v1/group_link_type`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["whatsappLinkType"],
+      invalidatesTags: ['whatsappLinkType'],
     }),
     getVendorWhatsappLinkType: builder.query({
       query: () => `v1/group_link_type`,
-      providesTags: ["whatsappLinkType"],
+      providesTags: ['whatsappLinkType'],
     }),
     updateVendorWhatsappLinkType: builder.mutation({
       query: (data) => ({
         url: `v1/group_link_type`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["whatsappLinkType"],
+      invalidatesTags: ['whatsappLinkType'],
     }),
     getSingleBankDetail: builder.query({
       query: (data) => `v1/bank_details_by_vendor_id/${data}`,
@@ -159,25 +150,24 @@ export const reduxBaseURL = createApi({
     addCountryCode: builder.mutation({
       query: (data) => ({
         url: `v1/country_code`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
     }),
     updateCountryCode: builder.mutation({
       query: (data) => ({
         url: `v1/country_code`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
     }),
 
-
     getAllVendor: builder.query({
       queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
         // Fetch the stored token from sessionStorage
-        const storedToken = sessionStorage.getItem("token");
+        const storedToken = sessionStorage.getItem('token');
         if (!storedToken) {
-          return { error: { status: 401, message: "No token found" } };
+          return { error: { status: 401, message: 'No token found' } };
         }
 
         // Decode the token to get the user ID and role
@@ -188,12 +178,12 @@ export const reduxBaseURL = createApi({
         let res;
         if (roleToken === 1) {
           // If the user is an admin, fetch all vendor data
-          res = await baseQuery({ url: `v1/vendor`, method: "GET" });
+          res = await baseQuery({ url: `v1/vendor`, method: 'GET' });
         } else {
           // If the user is not an admin, fetch vendors based on their user ID
           res = await baseQuery({
             url: `v1/get_all_vendors_for_users`,
-            method: "POST",
+            method: 'POST',
             body: { user_id: userID },
           });
         }
@@ -206,24 +196,24 @@ export const reduxBaseURL = createApi({
         return { data: res.data.data || res.data };
       },
       keepUnusedDataFor: 60 * 60,
-      providesTags: ["addVendorMaster"],
+      providesTags: ['addVendorMaster'],
     }),
 
     addVendor: builder.mutation({
       query: (data) => ({
         url: `v1/vendor`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addVendorMaster"],
+      invalidatesTags: ['addVendorMaster'],
     }),
     updateVenodr: builder.mutation({
       query: (data) => ({
         url: `v1/vendor/${data._id}`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addVendorMaster"],
+      invalidatesTags: ['addVendorMaster'],
       transformErrorResponse: (error) => {
         return error.data;
       },
@@ -232,27 +222,27 @@ export const reduxBaseURL = createApi({
     // Bank Detail Api's:-
     getBankNameDetail: builder.query({
       query: () => `v1/bank_name`,
-      providesTags: ["addBankName"],
+      providesTags: ['addBankName'],
     }),
 
     addBankNameDetail: builder.mutation({
       query: (data) => ({
         // url: `addPayCycle`,
         url: `v1/bank_name`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
-      invalidatesTags: ["addBankName"],
+      invalidatesTags: ['addBankName'],
     }),
 
     updateBankNameDetail: builder.mutation({
       query: (data) => ({
         // url: `updatePayCycle/${data._id}`,
         url: `v1/bank_name`,
-        method: "PUT",
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: ["addBankName"],
+      invalidatesTags: ['addBankName'],
     }),
     getVendorDocumentByVendorDetail: builder.query({
       query: (data) => ({
@@ -265,7 +255,7 @@ export const reduxBaseURL = createApi({
     addVendorDocument: builder.mutation({
       query: (data) => ({
         url: `v1/document_detail`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
     }),
@@ -273,54 +263,31 @@ export const reduxBaseURL = createApi({
     updateVendorDocument: builder.mutation({
       query: (data) => ({
         url: `v1/document_detail/${data.get(_id)}`, // Include the _id in the endpoint
-        method: "PUT", // Use the PUT method for updating
+        method: 'PUT', // Use the PUT method for updating
         body: data, // Pass the updated data in the body
       }),
-      invalidatesTags: ["addVendor"], // Invalidate relevant tags to refresh data
+      invalidatesTags: ['addVendor'], // Invalidate relevant tags to refresh data
     }),
 
     //company name and details
     addCompanyData: builder.mutation({
       query: (data) => ({
         url: `v1/company_name`,
-        method: "POST",
+        method: 'POST',
         body: data,
       }),
+    }),
+    //upload csv file to get spreadsheet
+    uploadExcel: builder.mutation({
+      query: (formData) => ({
+        url: `//192.168.2.28:8080/google_sheet_static_with_excel`,
+        method: 'POST',
+        body: formData,
+      }),
+      invalidatesTags: [],
     }),
   }),
 });
 
-export const {
-  useGetnotAssignedVendorsQuery,
-  useAddPmsVendorTypeMutation,
-  useGetAllVendorTypeQuery,
-  useUpdateVendorTypeMutation,
-  useAddPmsPlatformMutation,
-  useGetPmsPlatformQuery,
-  useUpdatePmsPlatformMutation,
-  useAddPmsPaymentMethodMutation,
-  useGetPmsPaymentMethodQuery,
-  useUpdatePmsPaymentMethodMutation,
-  useAddPmsPayCycleMutation,
-  useGetPmsPayCycleQuery,
-  useUpdatePmsPayCycleMutation,
-  useAddVendorWhatsappLinkTypeMutation,
-  useGetVendorWhatsappLinkTypeQuery,
-  useUpdateVendorWhatsappLinkTypeMutation,
-  useGetSingleBankDetailQuery,
-  useGetVendorWhatsappLinkQuery,
-  useGetCountryCodeQuery,
-  useAddCountryCodeMutation,
-  useUpdateCountryCodeMutation,
-  useGetAllVendorQuery,
-  useAddVendorMutation,
-  useUpdateVenodrMutation,
-  useGetBankNameDetailQuery,
-  useAddBankNameDetailMutation,
-  useUpdateBankNameDetailMutation,
-  useGetVendorDocumentByVendorDetailQuery,
-  useAddVendorDocumentMutation,
-  useAddCompanyDataMutation,
-  useGetAllVendorWiseListQuery,
-  useUpdateVendorDocumentMutation,
-} = reduxBaseURL;
+export const { useGetnotAssignedVendorsQuery, useAddPmsVendorTypeMutation, useGetAllVendorTypeQuery, useUpdateVendorTypeMutation, useAddPmsPlatformMutation, useGetPmsPlatformQuery, useUpdatePmsPlatformMutation, useAddPmsPaymentMethodMutation, useGetPmsPaymentMethodQuery, useUpdatePmsPaymentMethodMutation, useAddPmsPayCycleMutation, useGetPmsPayCycleQuery, useUpdatePmsPayCycleMutation, useAddVendorWhatsappLinkTypeMutation, useGetVendorWhatsappLinkTypeQuery, useUpdateVendorWhatsappLinkTypeMutation, useGetSingleBankDetailQuery, useGetVendorWhatsappLinkQuery, useGetCountryCodeQuery, useAddCountryCodeMutation, useUpdateCountryCodeMutation, useGetAllVendorQuery, useAddVendorMutation, useUpdateVenodrMutation, useGetBankNameDetailQuery, useAddBankNameDetailMutation, useUpdateBankNameDetailMutation, useGetVendorDocumentByVendorDetailQuery, useAddVendorDocumentMutation, useAddCompanyDataMutation, useGetAllVendorWiseListQuery, useUpdateVendorDocumentMutation, useUploadExcelMutation } =
+  reduxBaseURL;

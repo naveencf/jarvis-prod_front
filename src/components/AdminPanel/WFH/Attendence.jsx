@@ -16,11 +16,14 @@ import ClearIcon from "@mui/icons-material/Clear";
 import { baseUrl } from "../../../utils/config";
 import FormContainer from "../FormContainer";
 import { constant } from "../../../utils/constants";
-import { Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
+import WFHDSheetUpload from "./WFHDSheetUpload";
+import WFHDSheetTemplete from "./WFHDSheetTemplete";
 
 const Attendence = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const { ContextDept, RoleIDContext } = useAPIGlobalContext();
+
   const [department, setDepartment] = useState("");
   const [departmentdata, getDepartmentData] = useState([]);
   const [noOfAbsent, setNoOfAbsent] = useState(null);
@@ -34,20 +37,19 @@ const Attendence = () => {
   const [completedYearsMonths, setCompletedYearsMonths] = useState([]);
   const [selectedCardIndex, setSelectedCardIndex] = useState(null);
   const [deptSalary, setDeptSalary] = useState([]);
-  
+
   const [rowUpdateError, setRowUpdateError] = useState(null);
 
   let isInEditMode = false;
-  
+
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  
-  const [workDaysLastDate , setWorkDaysLastDate] = useState()
+
+  const [workDaysLastDate, setWorkDaysLastDate] = useState();
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  
   var settings = {
     dots: false,
     arrows: true,
@@ -61,12 +63,12 @@ const Attendence = () => {
   };
 
   useEffect(() => {
-  if (new Date().getMonth() > 3) {
-    settings.initialSlide = new Date().getMonth - 4;
-  } else {
-    settings.initialSlide = new Date().getMonth() + 8;
-  }
-}, []);
+    if (new Date().getMonth() > 3) {
+      settings.initialSlide = new Date().getMonth - 4;
+    } else {
+      settings.initialSlide = new Date().getMonth() + 8;
+    }
+  }, []);
 
   function gettingSliderData() {
     axios.get(baseUrl + "get_month_year_merged_data").then((res) => {
@@ -146,6 +148,7 @@ const Attendence = () => {
 
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     setRowUpdateError(null);
+    toastAlert("saved")
   };
 
   const handleCancelClick = (id) => () => {
@@ -162,7 +165,7 @@ const Attendence = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const handleAttendence = async () => {
     try {
-      setIsButtonDisabled(true)
+      setIsButtonDisabled(true);
       await axios.post(baseUrl + "add_attendance", {
         dept: department,
         user_id: userName.user_id,
@@ -179,9 +182,8 @@ const Attendence = () => {
       // toastError("Billing header not set for this department");
       // console.error("Error submitting attendance:", error);
       // Handle error as needed
-    }
-    finally{
-      setIsButtonDisabled(false)
+    } finally {
+      setIsButtonDisabled(false);
     }
   };
 
@@ -253,8 +255,6 @@ const Attendence = () => {
     fetchData();
   }, [department, selectedMonth, selectedYear]);
 
-  
-
   const getAttendanceData = () => {
     const payload = {
       dept_id: department,
@@ -269,14 +269,11 @@ const Attendence = () => {
       })
       .catch(() => {
         setFilterData([]);
-        department &&
-          selectedMonth &&
-          selectedYear 
-          // &&
-          // toastError("Attendance not created");
+        department && selectedMonth && selectedYear;
+        // &&
+        // toastError("Attendance not created");
       });
   };
-
 
   useEffect(() => {
     if (department || selectedMonth || selectedYear !== "") {
@@ -303,22 +300,22 @@ const Attendence = () => {
       });
       getAttendanceData();
       toastAlert("Attendance Completed");
-      setIsFormSubmitted(true)
-
+      setIsFormSubmitted(true);
     } catch (error) {
       console.error("Error updating attendance status", error);
       toastError("Failed to complete attendance");
     }
   };
-  
 
   const processRowUpdate = (newRow) => {
+ console.log(newRow, 'hello hello')
     if (newRow.noOfabsent < 0 || newRow.noOfabsent > newRow.present_days) {
       toastError("Absent days cannot be greater present days.");
       return null;
     } else {
       const updatedRow = { ...newRow, isNew: false };
       // console.log(updatedRow, "update row");
+      console.log(updatedRow.attendence_id , 'okkkkkkkkk')
       axios
         .post(baseUrl + "add_attendance", {
           attendence_id: updatedRow.attendence_id,
@@ -327,6 +324,7 @@ const Attendence = () => {
           // attendence_id: updatedRow.attendence_id,
           noOfabsent: updatedRow.noOfabsent,
           salary_deduction: Number(updatedRow.salary_deduction),
+          arrear_from_last_month: Number(updatedRow.arrear_from_last_month),
           month: selectedMonth,
           year: selectedYear,
           bonus: Number(updatedRow.bonus),
@@ -339,18 +337,31 @@ const Attendence = () => {
   };
 
   function getLastDateOfMonth(month, year) {
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
     const monthIndex = monthNames.indexOf(month);
     if (monthIndex === -1) {
-      throw new Error('Invalid month name');
+      throw new Error("Invalid month name");
     }
     let nextMonth = new Date(year, monthIndex + 1, 1);
     let lastDateOfMonth = new Date(nextMonth - 1);
-    return setWorkDaysLastDate(lastDateOfMonth.getDate())
+    return setWorkDaysLastDate(lastDateOfMonth.getDate());
   }
-  useEffect(()=>{
-    getLastDateOfMonth(selectedMonth,selectedYear)
-  },[selectedMonth,selectedYear])
+  useEffect(() => {
+    getLastDateOfMonth(selectedMonth, selectedYear);
+  }, [selectedMonth, selectedYear]);
 
   const columns = [
     {
@@ -451,63 +462,80 @@ const Attendence = () => {
       type: "Number",
       editable: true,
     },
+    {
+      field: "arrear_from_last_month",
+      headerName: "Arrear Last Month",
+      type: "Number",
+      editable: true,
+    },
     // filterData?.length !== 0 &&
-    //   filterData[0]?.attendence_generated == 0 && 
-      {
-        field: "actions",
-        type: "actions",
-        headerName: "Actions",
-        width: 100,
-        cellClassName: "actions",
-        getActions: ({ id }) => {
-          isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-          if (isInEditMode) {
-            return [
-              <GridActionsCellItem
-                icon={<ClearIcon />}
-                label="Cancel"
-                className="textPrimary"
-                onClick={handleCancelClick(id)}
-                color="inherit"
-              />,
-              <GridActionsCellItem
-                icon={<SaveAsIcon />}
-                label="Save"
-                sx={{
-                  color: "primary.main",
-                }}
-                onClick={handleSaveClick(id)}
-              />,
-            ];
-          }
-
+    //   filterData[0]?.attendence_generated == 0 &&
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Actions",
+      width: 100,
+      cellClassName: "actions",
+      getActions: ({ id }) => {
+        isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+        if (isInEditMode) {
           return [
             <GridActionsCellItem
-              icon={<EditIcon />}
-              label="Edit"
+              icon={<ClearIcon />}
+              label="Cancel"
               className="textPrimary"
-              onClick={handleEditClick(id)}
+              onClick={handleCancelClick(id)}
               color="inherit"
             />,
+            <GridActionsCellItem
+              icon={<SaveAsIcon />}
+              label="Save"
+              sx={{
+                color: "primary.main",
+              }}
+              onClick={handleSaveClick(id)}
+            />,
           ];
-        },
+        }
+
+        return [
+          <GridActionsCellItem
+            icon={<EditIcon />}
+            label="Edit"
+            className="textPrimary"
+            onClick={handleEditClick(id)}
+            color="inherit"
+          />,
+        ];
       },
+    },
   ];
 
   const monthToNumber = (month) => {
     const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     return months.indexOf(month) + 1;
   };
-  
+
   const currentYearForDis = new Date().getFullYear();
   const currentMonthForDis = new Date().getMonth() + 1;
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/salaryWFH"/>;
+    return <Navigate to="/admin/salaryWFH" />;
   }
+
   return (
     <>
       {/* Cards */}
@@ -516,64 +544,69 @@ const Attendence = () => {
         <Slider {...settings} className="timeline_slider">
           {completedYearsMonths.map((data, index) => {
             const cardMonth = monthToNumber(data.month);
-            const isFutureCard = data.year > currentYearForDis || (data.year === currentYearForDis && cardMonth >= currentMonthForDis);
-            return(
-            <div
-              className={`timeline_slideItem
+            const isFutureCard =
+              data.year > currentYearForDis ||
+              (data.year === currentYearForDis &&
+                cardMonth >= currentMonthForDis);
+            return (
+              <div
+                className={
+                  `timeline_slideItem
                   ${
                     // data.deptCount == departmentdata?.length && "completed"
-                  // data.atdGenerated && "completed"
-                // }
-                RoleIDContext === constant.CONST_MANAGER_ROLE  
-                ? data.atdGenerated && "completed" 
-                : data.deptCount == departmentdata?.length && "completed"
-            } 
+                    // data.atdGenerated && "completed"
+                    // }
+                    RoleIDContext === constant.CONST_MANAGER_ROLE
+                      ? data.atdGenerated && "completed"
+                      : data.deptCount == departmentdata?.length && "completed"
+                  } 
 
                 ${selectedCardIndex === index ? "selected" : ""} ${
-                  currentMonthForDis === cardMonth+1 && "current"
-                  // currentMonthForDis === cardMonth && "current"
-                } 
+                    currentMonthForDis === cardMonth + 1 && "current"
+                    // currentMonthForDis === cardMonth && "current"
+                  } 
                 ${isFutureCard && "disabled"}`
-              //    ${
-              //   data.atdGenerated && "completed"
-              // } ${selectedCardIndex === index ? "selected" : ""} ${
-              //   currentMonth == data.month && "current"
-              // }`
-            }
-              onClick={() => handleCardSelect(index, data)}
-              key={index}
-            >
-              <h2>
-                {data.month} <span>{data.year}</span>
-              </h2>
-              <h3>
-                {data?.atdGenerated == 1 ? (
-                  <span>
-                    <i className="bi bi-check2-circle" />
-                  </span>
-                ) : currentMonthNumber - 5 - index < 0 ? (
-                  <span>
-                    <i className="bi bi-clock-history" />
-                  </span>
-                ) : (
-                  <span>
-                    <i className="bi bi-hourglass-top" />
-                  </span>
-                )}
-                { RoleIDContext === constant.CONST_MANAGER_ROLE ?
-                 data.atdGenerated == 1
-                  ? "Completed"
-                  : currentMonthNumber - 5 - index < 0
-                  ? "Upcoming"
-                  : "Pending"
-                  : data.deptCount == departmentdata?.length
-                  ? "Completed"
-                  : currentMonthNumber - 5 - index < 0
-                  ? "Upcoming"
-                  : "Pending"}
-              </h3>
-            </div>)
-})}
+                  //    ${
+                  //   data.atdGenerated && "completed"
+                  // } ${selectedCardIndex === index ? "selected" : ""} ${
+                  //   currentMonth == data.month && "current"
+                  // }`
+                }
+                onClick={() => handleCardSelect(index, data)}
+                key={index}
+              >
+                <h2>
+                  {data.month} <span>{data.year}</span>
+                </h2>
+                <h3>
+                  {data?.atdGenerated == 1 ? (
+                    <span>
+                      <i className="bi bi-check2-circle" />
+                    </span>
+                  ) : currentMonthNumber - 5 - index < 0 ? (
+                    <span>
+                      <i className="bi bi-clock-history" />
+                    </span>
+                  ) : (
+                    <span>
+                      <i className="bi bi-hourglass-top" />
+                    </span>
+                  )}
+                  {RoleIDContext === constant.CONST_MANAGER_ROLE
+                    ? data.atdGenerated == 1
+                      ? "Completed"
+                      : currentMonthNumber - 5 - index < 0
+                      ? "Upcoming"
+                      : "Pending"
+                    : data.deptCount == departmentdata?.length
+                    ? "Completed"
+                    : currentMonthNumber - 5 - index < 0
+                    ? "Upcoming"
+                    : "Pending"}
+                </h3>
+              </div>
+            );
+          })}
         </Slider>
       </div>
       <div className="card">
@@ -595,18 +628,23 @@ const Attendence = () => {
                   Complete Attendance
                 </button>
               )}
+              <WFHDSheetTemplete/>
             {filterData?.length == 0 &&
               department &&
               selectedMonth &&
               selectedYear && (
-                <button
-                  onClick={handleAttendence}
-                  disabled={isButtonDisabled}
-                  className="btn  cmnbtn btn_sm btn-danger"
-                >
-                  No Absents, Create Attendance{" "}
-                  <i className="bi bi-arrow-right"></i>
-                </button>
+                <>
+                  <button
+                    onClick={handleAttendence}
+                    disabled={isButtonDisabled}
+                    className="btn  cmnbtn btn_sm btn-danger"
+                  >
+                    No Absents, Create Attendance{" "}
+                    <i className="bi bi-arrow-right"></i>
+                  </button>
+
+                  <WFHDSheetUpload department={department} selectedMonth={selectedMonth} selectedYear={selectedYear}/>
+                </>
               )}
             {/* {deptSalary?.length !== departmentdata?.length &&
               (RoleIDContext == 1 || RoleIDContext == 5) && (
@@ -630,12 +668,12 @@ const Attendence = () => {
                 Array.isArray(deptSalary) &&
                 deptSalary.some((d) => d.dept === option.dept_id);
 
-              // const 
+              // const
               // className = `btn ${
               //   department === option.dept_id
               //     ? "btn-primary"
               //     : isDeptInSalary
-              //     ? "btn-outline-primary"  
+              //     ? "btn-outline-primary"
               //     : "btn-outline-primary"
               // }`;
 

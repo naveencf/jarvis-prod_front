@@ -4,7 +4,7 @@ import { useSendPlanDetails } from './apiServices';
 import { useParams } from 'react-router-dom';
 import formatString from '../../../utils/formatString';
 
-const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText }) => {
+const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
@@ -186,6 +186,9 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
             <button className="btn cmnbtn btn-primary btn_sm" disabled={isDownloading} onClick={() => downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
               {isDownloading ? 'Downloading...' : 'Download Excel'}
             </button>
+            {/* <button className="btn cmnbtn btn-primary btn_sm" onClick={() => handleGetSpreadSheet(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
+              Get SpreadSheet
+            </button> */}
           </div>
         </div>
 
