@@ -9,8 +9,11 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
+import { baseUrl } from "../../../../../utils/config";
+import View from "../../../../AdminPanel/Sales/Account/View/View";
 
 const GstNongstIncentiveReport = () => {
+  const token = sessionStorage.getItem("token");
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [customerName, setCustomerName] = useState("");
@@ -37,39 +40,44 @@ const GstNongstIncentiveReport = () => {
   const callApi = () => {
     const formData = new FormData();
 
-    formData.append("loggedin_user_id", 36);
+    // formData.append("loggedin_user_id", 36);
     axios
-      .post(
-        "https://sales.creativefuel.io/webservices/RestController.php?view=sales_users_settled_final_incentive",
-        formData,
+      .get(
+        baseUrl + `sales/incentive_request`,
+
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
         }
       )
       .then((res) => {
-        const resData = res.data.body;
-        setData(resData);
-        setFilterData(resData);
-        const uniqueCustomers = new Set(resData.map((item) => item.cust_name));
-        setUniqueCustomerCount(uniqueCustomers.size);
-        const uniqueCustomerData = Array.from(uniqueCustomers).map(
-          (customerName) => {
-            return resData.find((item) => item.cust_name === customerName);
-          }
-        );
-        setUniqueCustomerData(uniqueCustomerData);
+        const resData = res.data.data;
+        console.log(res, "incentive report")
+        const filterData = resData?.filter(res => res?.finance_status != "pending")
+        setData(filterData);
+        setFilterData(filterData);
+        // const uniqueCustomers = new Set(resData.map((item) => item.cust_name));
+        // setUniqueCustomerCount(uniqueCustomers.size);
+        // const uniqueCustomerData = Array.from(uniqueCustomers).map(
+        //   (customerName) => {
+        //     return resData.find((item) => item.cust_name === customerName);
+        //   }
+        // );
+        // setUniqueCustomerData(uniqueCustomerData);
 
-        // For Unique Sales Executive
-        const uniqueSalesEx = new Set(
-          resData.map((item) => item.sales_executive_name)
-        );
-        setUniqueSalesExecutiveCount(uniqueSalesEx.size);
-        const uniqueSEData = Array.from(uniqueSalesEx).map((salesEName) => {
-          return resData.find(
-            (item) => item.sales_executive_name === salesEName
-          );
-        });
-        setUniqueSalesExecutiveData(uniqueSEData);
+        // // For Unique Sales Executive
+        // const uniqueSalesEx = new Set(
+        //   resData.map((item) => item.sales_executive_name)
+        // );
+        // setUniqueSalesExecutiveCount(uniqueSalesEx.size);
+        // const uniqueSEData = Array.from(uniqueSalesEx).map((salesEName) => {
+        //   return resData.find(
+        //     (item) => item.sales_executive_name === salesEName
+        //   );
+        // });
+        // setUniqueSalesExecutiveData(uniqueSEData);
       });
   };
 
@@ -550,79 +558,102 @@ const GstNongstIncentiveReport = () => {
   ];
   const columns = [
     {
-      field: "s_no",
-      headerName: "S.NO",
+      key: "s_no",
+      name: "S.NO",
       width: 90,
-      editable: false,
-      renderCell: (params) => {
-        const rowIndex = filterData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      renderRowCell: (row, index) => index + 1,
+    },
+    {
+      key: "finance_released_amount",
+      name: "Released Amount",
+      // width: 90,
+      getTotal: true,
+
+    },
+    {
+      key: "sales_executive_name",
+      name: "Name",
+      width: 200,
+    },
+    {
+      key: "payment_date",
+      name: "Payment Date",
+      // width: 90,
+    },
+    {
+      key: "payment_ref_no",
+      name: "Refrence No.",
+      width: 90,
+    },
+    {
+      key: "account_number",
+      name: "Last 4 Digit of Acc No.",
+      // width: 90,
     },
 
-    {
-      field: "cust_name",
-      headerName: " Customer Name",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.cust_name;
-      },
-    },
-    {
-      field: "sales_executive_name",
-      headerName: "Sales Executive Name ",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.sales_executive_name;
-      },
-    },
+    // {
+    //   key: "cust_name",
+    //   name: " Customer Name",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.cust_name;
+    //   },
+    // },
+    // {
+    //   key: "sales_executive_name",
+    //   name: "Sales Executive Name ",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.sales_executive_name;
+    //   },
+    // },
 
-    {
-      field: "campaign_amount",
-      headerName: "Campaign Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.campaign_amount;
-      },
-    },
+    // {
+    //   key: "campaign_amount",
+    //   name: "Campaign Amount",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.campaign_amount;
+    //   },
+    // },
 
-    {
-      field: "base_amount",
-      headerName: "Base Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount;
-      },
-    },
-    {
-      field: "gst_amount",
-      headerName: "GST Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount;
-      },
-    },
-    {
-      field: "gst_status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gst_status === "1" ? "GST" : " Non GST";
-      },
-    },
-    {
-      field: "final_incentive_amount",
-      headerName: "Incentive Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.final_incentive_amount;
-      },
-    },
+    // {
+    //   key: "base_amount",
+    //   name: "Base Amount",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.base_amount;
+    //   },
+    // },
+    // {
+    //   key: "gst_amount",
+    //   name: "GST Amount",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.gst_amount;
+    //   },
+    // },
+    // {
+    //   key: "gst_status",
+    //   name: "Status",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.gst_status === "1" ? "GST" : " Non GST";
+    //   },
+    // },
+    // {
+    //   key: "final_incentive_amount",
+    //   name: "Incentive Amount",
+    //   width: 150,
+    //   renderCell: (params) => {
+    //     return params.row.final_incentive_amount;
+    //   },
+    // },
   ];
 
   return (
     <div>
-      <FormContainer
+      {/* <FormContainer
         mainTitle="Incentive Reports"
         link="/admin/finance-pruchasemanagement-paymentdone"
         uniqueCustomerCount={uniqueCustomerCount}
@@ -631,9 +662,9 @@ const GstNongstIncentiveReport = () => {
         uniqueSalesExecutiveCount={uniqueSalesExecutiveCount}
         handleOpenUniqueCustomerClick={handleOpenUniqueCustomerClick}
         gstNongstIncentiveReport={true}
-      />
+      /> */}
       {/* Same Sales Executive Dialog Box */}
-      <Dialog
+      {/* <Dialog
         open={sameSalesExecutiveDialog}
         onClose={handleCloseSameSalesExecutive}
         fullWidth={"md"}
@@ -677,9 +708,9 @@ const GstNongstIncentiveReport = () => {
             getRowId={(row) => sameSalesExecutiveData.indexOf(row)}
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       {/* Unique Sales Executive Dialog Box */}
-      <Dialog
+      {/* <Dialog
         open={uniqueSalesExecutiveDialog}
         onClose={handleCloseUniquesalesExecutive}
         fullWidth={"md"}
@@ -723,9 +754,9 @@ const GstNongstIncentiveReport = () => {
             getRowId={(row) => uniqueSalesExecutiveData.indexOf(row)}
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       {/* Same Customer Dialog */}
-      <Dialog
+      {/* <Dialog
         open={sameCustomerDialog}
         onClose={handleCloseSameCustomer}
         fullWidth={"md"}
@@ -769,9 +800,9 @@ const GstNongstIncentiveReport = () => {
             getRowId={(row) => sameCustomerData.indexOf(row)}
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       {/* Unique Customer Dialog Box */}
-      <Dialog
+      {/* <Dialog
         open={uniqueCustomerDialog}
         onClose={handleCloseUniqueCustomer}
         fullWidth={"md"}
@@ -815,9 +846,9 @@ const GstNongstIncentiveReport = () => {
             getRowId={(row) => uniqueCustomerData.indexOf(row)}
           />
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
 
-      <div className="row">
+      {/* <div className="row">
         <div className="col-12">
           <div className="card">
             <div className="card-header">
@@ -971,13 +1002,26 @@ const GstNongstIncentiveReport = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="row">
         <div className="col-12">
           <div className="card" style={{ height: "600px" }}>
             <div className="card-body table-responsive thm_table">
-              <DataGrid
+              <View
+                columns={columns}
+                data={filterData}
+                // isLoading={isLoading}
+                showTotal={true}
+                title={"Incentive Report"}
+                rowSelectable={true}
+                pagination={[100, 200]}
+                tableName={"incentive_transaction"}
+              // selectedData={setSelectedRows}
+
+
+              />
+              {/* <DataGrid
                 rows={filterData}
                 columns={columns}
                 pageSize={5}
@@ -991,7 +1035,7 @@ const GstNongstIncentiveReport = () => {
                   },
                 }}
                 getRowId={(row) => filterData.indexOf(row)}
-              />
+              /> */}
               {/* {openImageDialog && (
               <ImageView
                 viewImgSrc={viewImgSrc}

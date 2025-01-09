@@ -11,7 +11,9 @@ import { insightsBaseUrl, phpBaseUrl } from "../../utils/config";
 import { useGlobalContext } from "../../Context/Context";
 import ImageView from "../Finance/ImageView";
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-
+import View from "../AdminPanel/Sales/Account/View/View";
+import { formatDate } from "../../utils/formatDate";
+import ImageIcon from '@mui/icons-material/Image';
 const PurchaseTransactions = () => {
     const { toastAlert, toastError } = useGlobalContext();
     const [transactionData, setTransactionData] = useState([]);
@@ -21,6 +23,7 @@ const PurchaseTransactions = () => {
     const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
     const [viewImgSrc, setViewImgSrc] = useState("");
     // const { request_id } = useParams();
+
 
     const handleSubmitTransactionData = () => {
         // Get today's date
@@ -35,10 +38,10 @@ const PurchaseTransactions = () => {
         tomorrow.setDate(today.getDate() + 2);
 
         // Format the dates to YYYY-MM-DD
-        const formatDate = (date) => date.toISOString().split("T")[0];
+        const formatDatehere = (date) => date.toISOString().split("T")[0];
 
-        const startDate = formatDate(yesterday);
-        const endDate = formatDate(tomorrow);
+        const startDate = formatDatehere(yesterday);
+        const endDate = formatDatehere(tomorrow);
 
         const formData = new FormData();
         formData.append("start_date", startDate);
@@ -55,8 +58,24 @@ const PurchaseTransactions = () => {
                 }
             )
             .then((res) => {
-                console.log(res?.data?.body, "res?.data?.body");
-                setTransactionData(res?.data?.body || []);
+                try {
+                    // console.log(res, "Full response");
+                    const rawData = res?.data?.body || [];
+
+                    // Format the date for each record in the array
+                    const formattedData = rawData.map((item) => ({
+                        ...item,
+                        request_date: formatDate(item.request_date), // Replace 'request_date' with your date field
+                        payment_date: formatDate(item.payment_date), // Replace 'payment_date' with your date field
+                    }));
+
+                    console.log(formattedData, "Formatted Data");
+                    setTransactionData(formattedData);
+                } catch (error) {
+                    console.error("Error processing transaction data:", error);
+                    setTransactionData([]);
+                }
+
             })
             .catch((err) => console.error("Error fetching transaction data:", err));
     };
@@ -102,61 +121,42 @@ const PurchaseTransactions = () => {
             console.log(error)
         }
     }
-    const formatDate = (dateString) => {
-        if (!dateString) return "";
-        const date = new Date(dateString);
-        const day = String(date.getDate()).padStart(2, "0");
-        const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
-        const year = String(date.getFullYear());// Get last two digits of the year
-        return `${day}-${month}-${year}`;
-    };
+
     const columns = [
         {
-            field: "S.NO",
-            headerName: "S.NO",
+            key: "S.NO",
+            name: "S.NO",
             width: 90,
-            editable: false,
-            valueGetter: (params) => transactionData.indexOf(params.row) + 1,
-            renderCell: (params) => {
-                const rowIndex = transactionData.indexOf(params.row);
-                return <div>{rowIndex + 1}</div>;
-            },
+            renderRowCell: (row, index) => index + 1,
+
         },
         {
-            field: "invc_img",
-            headerName: "Invoice Image",
-            renderCell: (params) => {
-                if (!params.row.invc_img) {
+            key: "invc_img",
+            name: "Invoice Image",
+            renderRowCell: (row) => {
+                if (!row.invc_img) {
                     return "No Image";
                 }
-                // Extract file extension and check if it's a PDF
-                const fileExtension = params.row.invc_img
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-                const isPdf = fileExtension === "pdf";
 
-                const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+                // Extract file extension and check if it's a PDF
+                const fileExtension = row.invc_img.split(".").pop().toLowerCase();
+                const isPdf = fileExtension === "pdf";
+                const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
+                // console.log(imgUrl, isPdf, "Image URL and isPdf");
+
                 return isPdf ? (
                     <div
-                        style={{ position: "relative", overflow: "hidden", height: "40px" }}
+                        style={{ position: "relative", overflow: "hidden", height: "80px" }}
                         onClick={() => {
                             setOpenImageDialog(true);
                             setViewImgSrc(imgUrl);
                         }}
                     >
                         <embed
-                            allowFullScreen={true}
                             src={imgUrl}
-                            title="PDF Viewer"
-                            scrollbar="0"
                             type="application/pdf"
-                            style={{
-                                width: "80px",
-                                height: "80px",
-                                cursor: "pointer",
-                                pointerEvents: "none",
-                            }}
+                            title="PDF Viewer"
+                            style={{ width: "100px", height: "150px" }}
                         />
                     </div>
                 ) : (
@@ -167,113 +167,101 @@ const PurchaseTransactions = () => {
                         }}
                         src={imgUrl}
                         alt="Invoice"
-                        style={{ width: "80px", height: "80px" }}
+                        style={{
+                            width: "40px",
+                            height: "80px",
+                            objectFit: "cover",
+                            cursor: "pointer",
+                        }}
+                        onError={(e) => {
+                            e.target.src = "https://via.placeholder.com/80?text=No+Image"; // Fallback image
+                        }}
                     />
                 );
             },
-            width: 250,
+            width: 100,
         },
-        {
-            field: "evidence",
-            headerName: "Payment Screenshot",
-            renderCell: (params) => {
-                if (!params.row.evidence) {
-                    return "No Image";
-                }
-                // Extract file extension and check if it's a PDF
-                const fileExtension = params.row.evidence
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-                const isPdf = fileExtension === "pdf";
 
-                const imgUrl = `https://purchase.creativefuel.io/${params.row.evidence}`;
 
-                return isPdf ? (
-                    <img
-                        onClick={() => {
-                            setOpenImageDialog(true);
-                            setViewImgSrc(imgUrl);
-                        }}
-                        src={imgUrl}
-                        style={{ width: "40px", height: "40px" }}
-                        title="PDF Preview"
-                    />
-                ) : (
-                    <img
-                        onClick={() => {
-                            setOpenImageDialog(true);
-                            setViewImgSrc(imgUrl);
-                        }}
-                        src={imgUrl}
-                        alt="Invoice"
-                        style={{ width: "100px", height: "100px" }}
-                    />
-                );
-            },
-            width: 130,
-        },
         {
-            field: "request_date",
-            headerName: "Requested Date",
+            key: "evidence",
+            name: "SS",
             width: 150,
-            renderCell: (params) => {
-                return formatDate(params?.row?.request_date)
+            conpare: true,
+            renderRowCell: (row) => {
+                const imgUrl = `https://purchase.creativefuel.io/${row.evidence}`;
+
+                return row.evidence ? <img
+                    onClick={() => {
+                        setOpenImageDialog(true);
+                        setViewImgSrc(imgUrl);
+                    }}
+                    src={imgUrl}
+                    alt="payment screenshot"
+                    style={{ width: "50px", height: "50px" }}
+                /> : ""
+
+
             },
         },
         {
-            field: "payment_date",
-            headerName: "Payment Date ",
+            key: "request_date",
+            name: "Requested Date",
             width: 150,
-            renderCell: (params) => {
-                return formatDate(params?.row?.payment_date)
-            },
+
+
+        },
+        {
+            key: "payment_date",
+            name: "Payment Date ",
+            width: 150,
+
         },
 
         {
-            field: "vendor_name",
-            headerName: "Vendor Name",
+            key: "vendor_name",
+            name: "Vendor Name",
             width: 200,
-            renderCell: (params) => {
-                return (
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                        {/* Hold for confirmation of sourabh sir */}
-                        <Button
-                            disabled={
-                                params.row.payment_details
-                                    ? !params.row.payment_details.length > 0
-                                    : true
-                            }
-                            onClick={() => handleOpenBankDetail(params.row)}
-                        >
-                            <AccountBalanceIcon style={{ fontSize: "25px" }} />
-                        </Button>
-                        <div
-                            style={{ cursor: "pointer", marginRight: "20px" }}
-                            onClick={() => handleOpenSameVender(params.row.vendor_name)}
-                        >
-                            {params.row.vendor_name}
-                        </div>
-                    </div>
-                );
-            },
+            // renderRowCell: (row) => {
+            //     return (
+            //         <div style={{ display: "flex", alignItems: "center" }}>
+            //             {/* Hold for confirmation of sourabh sir */}
+            //             <Button
+            //                 disabled={
+            //                     row.payment_details
+            //                         ? !row.payment_details.length > 0
+            //                         : true
+            //                 }
+            //                 onClick={() => handleOpenBankDetail(row)}
+            //             >
+            //                 <AccountBalanceIcon style={{ fontSize: "25px" }} />
+            //             </Button>
+            //             <div
+            //                 style={{ cursor: "pointer", marginRight: "20px" }}
+            //                 onClick={() => handleOpenSameVender(row.vendor_name)}
+            //             >
+            //                 {row.vendor_name}
+            //             </div>
+            //         </div>
+            //     );
+            // },
         },
         {
-            field: "page_name",
-            headerName: "Page Name",
+            key: "page_name",
+            name: "Page Name",
             width: 150,
         },
         {
-            field: "payment_getway_status",
-            headerName: "Payment Status",
+            key: "payment_getway_status",
+            name: "Payment Status",
             width: 150,
-            renderCell: (params) => {
-                const tempRow = params?.row
+            renderRowCell: (row) => {
+                const tempRow = row
                 return (
                     <Stack direction="row" spacing={1}>
 
-                        <Chip label={params?.row?.payment_getway_status} color="success" />
-                        {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" || params?.row?.payment_getway_status == null ? "" :
+                        <Chip label={row?.payment_getway_status} color="success" />
+                        {row?.payment_getway_status == "SUCCESS" || row?.payment_getway_status == "FAILED" || row?.payment_getway_status == null ? "" :
                             <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
                         }
 
@@ -284,69 +272,66 @@ const PurchaseTransactions = () => {
 
 
         {
-            field: "remark_audit",
-            headerName: "Remark",
+            key: "remark_audit",
+            name: "Remark",
             width: 150,
-            renderCell: (params) => {
-                return params.row.remark_audit;
+            renderRowCell: (row) => {
+                return row.remark_audit;
             },
         },
 
         {
-            field: "request_amount",
-            headerName: "Requested Amount",
+            key: "request_amount",
+            name: "Requested Amount",
             width: 150,
-            renderCell: (params) => {
-                return <p> &#8377; {params.row.request_amount}</p>;
+            renderRowCell: (row) => {
+                return <p> &#8377; {row.request_amount}</p>;
             },
         },
 
 
 
         {
-            field: "outstandings",
-            headerName: "OutStanding ",
+            key: "outstandings",
+            name: "OutStanding ",
             width: 150,
-            renderCell: (params) => {
-                return <p> &#8377; {params.row.outstandings}</p>;
+            renderRowCell: (row) => {
+                return <p> &#8377; {row.outstandings}</p>;
             },
         },
 
         {
-            field: "payment_amount",
-            headerName: "Payment Amount",
+            key: "payment_amount",
+            name: "Payment Amount",
             width: 150,
-            // renderCell: (params) => {
-            //   const paymentAmount = nodeData.filter(
-            //     (e) => e.request_id == params.row.request_id
-            //   )[0]?.payment_amount;
-            //   return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
-            // },
+            getTotal: true
+
         },
         {
-            field: "name",
-            headerName: "Requested By",
+            key: "name",
+            name: "Requested By",
             width: 150,
-            // renderCell: (params) => <div>{params.row.payment_by}</div>,
+            // renderRowCell: (row) => <div>{row.payment_by}</div>,
         },
 
         {
-            field: "ref",
-            headerName: "Reference Number",
+            key: "ref",
+            name: "Reference Number",
             width: 250,
-            renderCell: (params) => {
+            renderRowCell: (row) => {
+
                 const handleCopy = () => {
-                    const { bankTransactionReferenceId, payment_amount } = params.row;
+                    const { bankTransactionReferenceId, payment_amount } = row;
                     const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
                     navigator.clipboard.writeText(textToCopy)
-                        .then(() => alert("Copied to clipboard!"))
+                        .then(() => toastAlert("Copied to clipboard!"))
                         .catch((err) => console.error("Failed to copy text:", err));
                 };
 
                 return (
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                        <span>{params.row.bankTransactionReferenceId}</span>
-                        {!params.row.bankTransactionReferenceId == "" ?
+                        <span>{row.bankTransactionReferenceId}</span>
+                        {!row.bankTransactionReferenceId == "" ?
                             <ContentCopyIcon
                                 style={{ cursor: "pointer", color: "gray" }}
                                 onClick={handleCopy}
@@ -357,35 +342,6 @@ const PurchaseTransactions = () => {
             },
         },
 
-        // {
-        //     field: "actions",
-        //     headerName: "Actions",
-        //     width: 200,
-        //     renderCell: (params) => {
-        //         const handleCopy = () => {
-        //             const { bankTransactionReferenceId, payment_amount } = params.row;
-        //             const textToCopy = `Reference Number: ${bankTransactionReferenceId}, Payment Amount: ${payment_amount}`;
-        //             navigator.clipboard.writeText(textToCopy)
-        //                 .then(() => alert("Copied to clipboard!"))
-        //                 .catch((err) => console.error("Failed to copy text:", err));
-        //         };
-
-        //         return (
-
-        //             <ContentCopyIcon onClick={handleCopy} />
-        //         );
-        //     },
-        // },
-        // {
-        //   field: "Aging (in hours)",
-        //   headerName: "Aging (in hours)",
-        //   width: 150,
-        //   renderCell: (params) => {
-        //     return (
-        //       <p> {calculateHours(params.row.request_date, new Date())} Hours</p>
-        //     );
-        //   },
-        // },
 
     ];
     return (
@@ -396,19 +352,18 @@ const PurchaseTransactions = () => {
             /> */}
             <div className="card" style={{ height: "600px" }}>
                 <div className="card-body thm_table">
-                    <DataGrid
-                        rows={transactionData}
+
+                    <View
                         columns={columns}
-                        pageSize={5}
-                        rowsPerPageOptions={[5]}
-                        disableSelectionOnClick
-                        slots={{ toolbar: GridToolbar }}
-                        slotProps={{
-                            toolbar: {
-                                showQuickFilter: true,
-                            },
-                        }}
-                        getRowId={(row) => transactionData.indexOf(row)}
+                        data={transactionData}
+                        // isLoading={isLoading}
+                        showTotal={true}
+                        title={"Recent Transaction"}
+                        rowSelectable={true}
+                        pagination={[100, 200]}
+                        tableName={"purchase_transaction"}
+                    // selectedData={setSelectedRows}
+
                     />
                     {openImageDialog && (
                         <ImageView

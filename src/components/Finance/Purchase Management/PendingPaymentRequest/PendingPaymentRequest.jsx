@@ -8,7 +8,7 @@ import DiscardConfirmation from "./Components/DiscardConfirmation";
 import jwtDecode from "jwt-decode";
 import ImageView from "../../ImageView";
 import { useGlobalContext } from "../../../../Context/Context";
-import { baseUrl, phpBaseUrl } from "../../../../utils/config";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../../../utils/config";
 import ShowDataModal from "./Components/ShowDataModal";
 import WhatsappAPI from "../../../WhatsappAPI/WhatsappAPI";
 import moment from "moment";
@@ -29,6 +29,8 @@ import {
 } from "../../CommonColumn/Columns";
 import View from "../../../AdminPanel/Sales/Account/View/View";
 import ZohoBillCreation from "./Components/ZohoBillCreation";
+import { Balance } from "@mui/icons-material";
+import { formatNumber } from "../../../../utils/formatNumber";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
@@ -84,6 +86,7 @@ export default function PendingPaymentRequest() {
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [TDSValue, setTDSValue] = useState(0);
   const [refetch, setRefetch] = useState(false);
+  const [yesBankBalance, setYesBankBalance] = useState(0);
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
@@ -686,6 +689,30 @@ export default function PendingPaymentRequest() {
     e.preventDefault();
     setFilterData(data);
   };
+  const handleCheckBalance = async () => {
+    // Step 1: Get the JWT token
+    const getTokenResponse = await axios.get(
+      insightsBaseUrl + `v1/payment_gateway_access_token`
+    )
+
+    if (getTokenResponse.status == 200) {
+      const token = getTokenResponse?.data?.data;
+      const tempBalance = axios.get(
+        insightsBaseUrl + `v1/get_balance`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      ).then((res) => {
+        console.log(res.data.data.balance.value, "tempBalance")
+        const tempYesBankBalance = formatNumber(res.data.data.balance.value / 100)
+        setYesBankBalance(tempYesBankBalance)
+      })
+    }
+
+  };
 
   return (
     <div>
@@ -839,6 +866,15 @@ export default function PendingPaymentRequest() {
                 selectedData={setSelectedRows}
                 addHtml={
                   <>
+
+                    <p className="btn cmnbtn btn_sm ms-2">
+                      {yesBankBalance}</p>
+                    <button
+                      className="btn cmnbtn btn_sm btn-primary ms-2"
+                      onClick={(e) => handleCheckBalance(e)}
+                    >
+                      Check Balance
+                    </button>
                     <button
                       className="btn cmnbtn btn_sm btn-primary ms-2"
                       onClick={() => setRefetch(!refetch)}

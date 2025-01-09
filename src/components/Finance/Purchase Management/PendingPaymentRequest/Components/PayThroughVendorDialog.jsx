@@ -78,14 +78,17 @@ const PayThroughVendorDialog = (props) => {
         toastError("Payment gateway server down.Please ask IT team for more details");
         return;
       }
-
+      let mailTo = selectedRow?.email;
+      if (!selectedRow?.email || selectedRow?.email == "") {
+        mailTo = "naveen@creativefuel.io";
+      }
       const paymentPayload = {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name),
         accountNumber: selectedRow?.account_no,
         branchCode: selectedRow?.ifsc,
-        email: selectedRow?.email,
+        email: mailTo,
         phone: selectedRow?.mob1,
         amount: {
           currency: "INR",
