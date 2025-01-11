@@ -282,10 +282,10 @@ const NDA = ({ allUserData }) => {
                   its registered office
                 </Text>
                 <Text>
-                  at 105, Gravity Mall, Warehouse Road, Vijay Nagar Indore MP
-                  452010 (hereinafter referred to as the{" "}
+                  at 105, Gravity Mall, Warehouse Road, Vijay Nagar Indore MP “Disclosing Party”
+                  452010 (hereinafter referred to as the
                 </Text>
-                <Text >“Disclosing Party”</Text>
+                <Text ></Text>
 
                 <Text>
                   , which expression shall unless repugnant to the context or

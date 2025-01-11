@@ -70,6 +70,7 @@ const LeftSideBar = ({
   const [sellingPrice, setSellingPrice] = useState(0);
   const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
   const [isdownloadExcel, setIsDownloadExcel] = useState(false);
+  const [updatedCategories, setUpdatedCategories] = useState({});
   const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
@@ -149,7 +150,7 @@ const LeftSideBar = ({
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
+      await downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {
@@ -318,9 +319,9 @@ const LeftSideBar = ({
   }, [ownPagesCost]);
 
   const handleEditing = () => {
-    setIsEditing(!isEditing)
+    setIsEditing(!isEditing);
     setSellingPrice(planDetails?.[0]?.selling_price);
-  }
+  };
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
@@ -414,7 +415,7 @@ const LeftSideBar = ({
           </h6>
           <h6>
             Actual Cost
-            <span>{formatIndianNumber(Math.floor(totalCost - ownershipCounts["own"].totalCost))}</span>
+            <span>{formatIndianNumber(Math.floor(totalCost - ownershipCounts['own'].totalCost))}</span>
           </h6>
           <h6>
             Total Posts
@@ -464,6 +465,8 @@ const LeftSideBar = ({
         </div>
         <ExcelPreviewModal
           open={openPreviewModal} // Pass the modal open state
+          updatedCategories={updatedCategories}
+          setUpdatedCategories={setUpdatedCategories}
           onClose={() => setOpenPreviewModal(false)} // Pass the close handler
           previewData={previewData} // Pass the preview data
           categories={category}

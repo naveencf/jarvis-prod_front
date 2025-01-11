@@ -26,6 +26,8 @@ import LayeringControls from './LayeringControls';
 import ProgressDisplay from './ProgressDisplay';
 import CustomTable from '../../CustomTable/CustomTable';
 import { ImCross } from 'react-icons/im';
+import PageAddMasterModal from '../../AdminPanel/PageMS/PageAddMasterModal';
+import Swal from 'sweetalert2';
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMaking = () => {
@@ -61,6 +63,7 @@ const PlanMaking = () => {
   const [showTotalCost, setShowTotalCost] = useState({});
   const [totalDeliverables, setTotalDeliverables] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState([]);
+  const [selectCategoryOption, setSelectCategoryOption] = useState(null);
   const [searchInput, setSearchInput] = useState('');
   const [isAutomaticCheck, setIsAutomaticCheck] = useState(false);
   const [lastSelectedRow, setLastSelectedRow] = useState(null);
@@ -103,6 +106,7 @@ const PlanMaking = () => {
   const [blackListedPages, setBlackListedPages] = useState([]);
   const [unCheckedPages, setUnCheckedPages] = useState([]);
   const [showUnChecked, setShowUnCheked] = useState(false);
+  const [selectedData, setSelectedData] = useState([]);
 
   const { id } = useParams();
   // const renderCount = useRef(0);
@@ -110,9 +114,11 @@ const PlanMaking = () => {
   // console.log(`Component re-rendered: ${renderCount.current} times`);
   const { pageDetail } = usePageDetail(id);
   const { planDetails } = useFetchPlanDetails(id);
-  const { sendPlanDetails } = useSendPlanDetails(id);
+  const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   const { versionDetails, loading, error } = usePlanPagesVersionDetails(id);
+  const { data: category } = useGetAllPageCategoryQuery();
+  const categoryData = category?.data || [];
   const { versionData } = useGetPlanPages(id, selectedVersion?.version);
 
   const { descriptions } = useFetchPlanDescription();
@@ -163,7 +169,9 @@ const PlanMaking = () => {
       return newValues;
     });
   };
-
+  const handleSelection = (newSelectedData) => {
+    setSelectedData(newSelectedData);
+  };
   const handleUpdateValues = (type) => {
     const isPost = type === 'post';
     const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
@@ -216,7 +224,79 @@ const PlanMaking = () => {
     }
   };
 
-  const handleCheckboxChange = (row, shortcut, event, index) => {
+  const handleOptionChange = (event, newValue) => {
+    if (!newValue) return;
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `Do you want to change the category to "${newValue.page_category}" for this plan?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, change it!',
+      cancelButtonText: 'No, cancel!',
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        Swal.fire({
+          title: 'Cancelled',
+          text: 'The category change has been cancelled.',
+          icon: 'info',
+        });
+        return;
+      }
+
+      setSelectCategoryOption(newValue);
+
+      const updatedSelectedRows = [...selectedRows, ...selectedData];
+      const updatedPostValues = { ...postPerPageValues };
+      const updatedStoryValues = { ...storyPerPageValues };
+
+      const selectedDataIds = new Set(selectedData.map((data) => data._id));
+      const uniquePageNames = new Set(); //  unique page names
+
+      const finalPreviewData = updatedSelectedRows
+        .map((row) => {
+          const { _id, page_price_list, page_name, rate_type, followers_count } = row;
+
+          // Skip duplicate `page_name`
+          if (uniquePageNames.has(page_name)) return null;
+          uniquePageNames.add(page_name);
+
+          const isFromSelectedData = selectedDataIds.has(row._id);
+          const isFixedRate = rate_type === 'Fixed';
+
+          const postPrice = isFixedRate ? getPriceDetail(page_price_list, 'instagram_post') : calculatePrice(rate_type, { page_price_list, followers_count }, 'post');
+
+          const storyPrice = isFixedRate ? getPriceDetail(page_price_list, 'instagram_story') : calculatePrice(rate_type, { page_price_list, followers_count }, 'story');
+
+          return {
+            _id,
+            page_name,
+            post_price: postPrice,
+            story_price: storyPrice,
+            post_count: Number(updatedPostValues[_id]) || 0,
+            story_count: Number(updatedStoryValues[_id]) || 0,
+            ...(isFromSelectedData && { category_name: newValue.page_category }),
+          };
+        })
+        .filter(Boolean); // Remove `null` entries caused by duplicates
+
+      sendPlanDetails(finalPreviewData);
+      // console.log('result', result1);
+
+      if (planSuccess.length) {
+        Swal.fire({
+          title: 'Success!',
+          text: `The category has been changed to "${newValue.page_category}".`,
+          icon: 'success',
+        });
+        handleAutomaticSelection(planSuccess);
+      }
+
+      // Clear selected data
+      setSelectedData([]);
+    });
+  };
+   const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
@@ -450,6 +530,7 @@ const PlanMaking = () => {
     const updatedShowTotalCost = { ...showTotalCost };
     const updatedPageCategoryCount = { ...pageCategoryCount };
     const categoryUpdatedData = [];
+
     // Create a map for faster lookup of categories by name and id
     if (cat && pageList) {
       const categoryMap = cat?.reduce((acc, category) => {
@@ -462,7 +543,7 @@ const PlanMaking = () => {
         const matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name);
 
         if (matchingPageIndex !== -1) {
-          const matchingPage = { ...pageList[matchingPageIndex] }; // Clone the page data
+          const matchingPage = { ...pageList[matchingPageIndex] };
 
           // Override page_category_name with incoming category_name
           if (incomingPage.category_name !== '') {
@@ -471,19 +552,7 @@ const PlanMaking = () => {
             // Find the corresponding page_category_id using the categoryMap
             const matchingCategoryId = categoryMap[incomingPage.category_name];
             if (matchingCategoryId) {
-              matchingPage.page_category_id = matchingCategoryId; // Set the correct page_category_id
-            }
-          }
-          // If the page is not already selected, add it to the selected rows and update category count
-          const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === matchingPage._id);
-          categoryUpdatedData.push(matchingPage);
-          // console.log('matching page', matchingPage);
-          if (!isAlreadySelected) {
-            updatedSelectedRows.push(matchingPage);
-
-            const categoryId = matchingPage.page_category_id;
-            if (categoryId) {
-              updatedPageCategoryCount[categoryId] = (updatedPageCategoryCount[categoryId] || 0) + 1;
+              matchingPage.page_category_id = matchingCategoryId;
             }
           }
 
@@ -500,22 +569,34 @@ const PlanMaking = () => {
           // Calculate costs based on rate type
           const costPerPost = rateType ? postPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'post');
           const costPerStory = rateType ? storyPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'story');
-          // const costPerStory = storyPrice;
           const costPerBoth = costPerPost + costPerStory;
 
           // Update total cost calculations
           calculateTotalCost(matchingPage._id, incomingPage.post_count, incomingPage.story_count, costPerPost, costPerStory, costPerBoth);
 
           updatedShowTotalCost[matchingPage._id] = true;
+
+          // Add to categoryUpdatedData
+          categoryUpdatedData.push(matchingPage);
+
+          if ((incomingPage.post_count > 0 || incomingPage.story_count > 0) && !updatedSelectedRows.some((row) => row._id === matchingPage._id)) {
+            updatedSelectedRows.push(matchingPage);
+
+            const categoryId = matchingPage.page_category_id;
+            if (categoryId) {
+              updatedPageCategoryCount[categoryId] = (updatedPageCategoryCount[categoryId] || 0) + 1;
+            }
+          }
         }
       });
 
       pageList.forEach((page) => {
-        const isMatched = incomingData.some((incomingPage) => page.followers_count > 0 && incomingPage.page_name === page.page_name);
+        const isMatched = incomingData.some((incomingPage) => incomingPage.page_name === page.page_name);
         if (!isMatched) {
           categoryUpdatedData.push(page);
         }
       });
+
       // Prepare the final plan data
       const planxData = updatedSelectedRows.map((row) => {
         const { _id, page_price_list, page_name, rate_type, followers_count } = row;
@@ -733,6 +814,12 @@ const PlanMaking = () => {
     return descriptions?.filter((desc) => desc.status === 'Active');
   }, [descriptions]);
 
+  // checked description in notes
+  useEffect(() => {
+    const activeDescriptions = descriptions?.map((res) => res.description);
+    setCheckedDescriptions(activeDescriptions || []);
+  }, [descriptions, setCheckedDescriptions]);
+
   useEffect(() => {
     const updatePageData = (data, activeTabPlatform) => {
       if (data && activeTabPlatform.length) {
@@ -802,8 +889,9 @@ const PlanMaking = () => {
     };
 
     // Call your function to handle automatic selection
-    if (pageList?.length > 0 || pageDetail?.length > 0) {
-      const automaticCheckedData = handleAutomaticSelection(pageDetail);
+    if (planSuccess.length > 0 || pageList?.length > 0 || pageDetail?.length > 0) {
+      const planData = planSuccess.length ? planSuccess : pageDetail;
+      const automaticCheckedData = handleAutomaticSelection(planData);
       if (automaticCheckedData) {
         updatePageData(automaticCheckedData, activeTabPlatform);
       }
@@ -811,7 +899,7 @@ const PlanMaking = () => {
     } else if (filterData?.length > 0 && pageDetail?.length == 0) {
       setLayering(1);
     }
-  }, [pageList, pageDetail, activeTabPlatform]);
+  }, [pageList, pageDetail, activeTabPlatform, planSuccess]);
 
   useEffect(() => {
     if (selectedRows?.length === 0) {
@@ -909,7 +997,7 @@ const PlanMaking = () => {
           <ProgressDisplay pageList={pageList} displayPercentage={displayPercentage} />
           <CountInputs postCountDefault={postCountDefault} storyCountDefault={storyCountDefault} handlePostCountChange={handlePostCountChange} handleStoryCountChange={handleStoryCountChange} handleUpdateValues={handleUpdateValues} />
           <SearchAndClear searchInput={searchInput} handleSearchChange={handleSearchChange} clearSearch={clearSearch} clearRecentlySelected={clearRecentlySelected} />
-
+          <PageAddMasterModal />
           <div>
             <RightDrawer
               priceFilterType={priceFilterType}
@@ -951,14 +1039,14 @@ const PlanMaking = () => {
           </div>
         </div>
         <div className="card-header flexCenterBetween">
-          <LayeringControls layering={layering} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
+          <LayeringControls categoryData={categoryData} layering={layering} handleOptionChange={handleOptionChange} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
         </div>
         <PlanVersions handleVersionClose={handleVersionClose} openVersionModal={openVersionModal} versionDetails={versionDetails} onVersionSelect={handleVersionSelect} />
         <div className="card-body p0" onKeyDown={(e) => handleKeyPress(e)}>
           <div className="thmTable">
             <Box sx={{ height: 700, width: '100%' }}>
               {/* {filterData && filterData.length > 0 ? ( */}
-              <CustomTable dataLoading={isPageListLoading} columns={dataGridColumns} data={tableData} Pagination={[100, 200]} tableName={'PlanMakingDetails'} getFilteredData={setGetTableData} showTotal={true} />
+              <CustomTable selectedData={handleSelection} rowSelectable={true} dataLoading={isPageListLoading} columns={dataGridColumns} data={tableData} Pagination={[100, 200]} tableName={'PlanMakingDetails'} getFilteredData={setGetTableData} showTotal={true} />
               {/* ) : (
                 <Loader />
               )} */}

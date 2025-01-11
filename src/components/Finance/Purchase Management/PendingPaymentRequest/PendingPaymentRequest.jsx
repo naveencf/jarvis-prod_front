@@ -87,6 +87,7 @@ export default function PendingPaymentRequest() {
   const [TDSValue, setTDSValue] = useState(0);
   const [refetch, setRefetch] = useState(false);
   const [yesBankBalance, setYesBankBalance] = useState(0);
+  const [yesBankBalanceProcessing, setYesBankBalanceProcessing] = useState(false);
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
@@ -99,6 +100,113 @@ export default function PendingPaymentRequest() {
   };
 
   const callApi = async () => {
+    //Reminder API
+    setIsLoading(true);
+    // let remindData = "";
+    // await axios
+    //   .get(
+    //     phpBaseUrl + `?view=getpaymentrequestremind`
+    //   )
+    //   .then((res) => {
+    //     setPhpRemainderData(res.data.body);
+    //     remindData = res.data.body;
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error while getting reminder data");
+    //   });
+
+    // axios
+    //   .get(baseUrl + "phpvendorpaymentrequest")
+    //   .then((res) => {
+    //     const x = res.data.modifiedData;
+    //     setNodeData(x);
+    await axios
+      .get(
+        phpBaseUrl + `?view=getpaymentrequest`
+      )
+      .then((res) => {
+        let y = res?.data?.body;
+        const requestPayments = y.filter((res) => res.proccessingAmount == 0 && (res.status == 0 || res.status == 3));
+        console.log(requestPayments, "resf")
+        setPhpData(requestPayments);
+        setIsLoading(false);
+        setData(requestPayments);
+        setFilterData(requestPayments);
+        setPendingRequestCount(requestPayments.length);
+        // // console.log(y, "y", remindData)
+        // let c = res.data.body.filter((item) => {
+        //   return remindData.some(
+        //     (item2) => item.request_id === item2.request_id
+        //   );
+        // });
+
+        // y.push(...c);
+
+        // let mergedArray = [...y, ...c];
+
+        // // Creating a set of unique request_ids from the merged data
+        // let t = new Set(mergedArray.map((item) => item.request_id));
+        // mergedArray = Array.from(t).map((request_id) => {
+        //   return mergedArray.find((item) => item.request_id === request_id);
+        // });
+
+        // mergedArray = mergedArray.filter(
+        //   (item) => item.status == 0 || item.status == 3 || item.status == 2
+        // );
+        //0-pending,1-fullypaid,2-discard,3-partial,
+        // mergedArray = mergedArray.sort((a, b) => {
+        //   const aReminder = remindData.some(
+        //     (remind) => remind.request_id === a.request_id
+        //   );
+        //   const bReminder = remindData.some(
+        //     (remind) => remind.request_id === b.request_id
+        //   );
+
+        //   if (aReminder && !bReminder) return -1;
+        //   if (!aReminder && bReminder) return 1;
+
+        //   // Add aging sorting logic if required
+        //   return new Date(a.request_date) - new Date(b.request_date);
+        // });
+
+        // mergedArray = mergedArray.sort((a, b) => {
+        //   const aReminder = remindData.some(
+        //     (remind) => remind.request_id === a.request_id
+        //   );
+        //   const bReminder = remindData.some(
+        //     (remind) => remind.request_id === b.request_id
+        //   );
+
+        //   if (aReminder && !bReminder) return -1;
+        //   if (!aReminder && bReminder) return 1;
+
+        //   // Add aging sorting logic if required
+        //   return b.aging - a.aging;
+        // });
+        // console.log(mergedArray, "mergedArray")
+
+
+
+
+      })
+      .catch((error) => {
+        console.log("Error while getting Node Data");
+      });
+    // })
+    // .catch((error) => {
+    //   console.log("Error while getting php pending payment request data");
+    // });
+
+    axios
+      .get(`${baseUrl}` + `get_single_user/${userID}`)
+      .then((res) => {
+        setUserName(res.data.user_name);
+      })
+      .catch((error) => {
+        console.log("Error while getting single user data");
+      });
+  };
+  const OldcallApi = async () => {
     //Reminder API
     setIsLoading(true);
     let remindData = "";
@@ -183,6 +291,7 @@ export default function PendingPaymentRequest() {
             setData(mergedArray);
             setFilterData(mergedArray);
             setPendingRequestCount(mergedArray.length);
+
             const uniqueVendors = new Set(
               mergedArray.map((item) => item.vendor_name)
             );
@@ -276,13 +385,13 @@ export default function PendingPaymentRequest() {
   };
 
   const handlePayClick = (e, row) => {
-    if (!row || row?.mob1.length != 10) {
-      toastError("Mobile number is not correct for this vendor")
-      // return;
-    } else if (row?.vendor_name.length == 0 || row?.vendor_name == "") {
-      toastError("Vendor Name is not available for this transaction")
-      return;
-    }
+    // if (!row || row?.mob1.length != 10) {
+    //   toastError("Mobile number is not correct for this vendor")
+    //   // return;
+    // } else if (row?.vendor_name.length == 0 || row?.vendor_name == "") {
+    //   toastError("Vendor Name is not available for this transaction")
+    //   return;
+    // }
     e?.preventDefault();
     setSelectedRows([row])
     let x = phpRemainderData.filter(
@@ -690,6 +799,7 @@ export default function PendingPaymentRequest() {
     setFilterData(data);
   };
   const handleCheckBalance = async () => {
+    setYesBankBalanceProcessing(true);
     // Step 1: Get the JWT token
     const getTokenResponse = await axios.get(
       insightsBaseUrl + `v1/payment_gateway_access_token`
@@ -709,6 +819,7 @@ export default function PendingPaymentRequest() {
         console.log(res.data.data.balance.value, "tempBalance")
         const tempYesBankBalance = formatNumber(res.data.data.balance.value / 100)
         setYesBankBalance(tempYesBankBalance)
+        setYesBankBalanceProcessing(false);
       })
     }
 
@@ -872,6 +983,7 @@ export default function PendingPaymentRequest() {
                     <button
                       className="btn cmnbtn btn_sm btn-primary ms-2"
                       onClick={(e) => handleCheckBalance(e)}
+                      disabled={yesBankBalanceProcessing}
                     >
                       Check Balance
                     </button>
@@ -956,6 +1068,8 @@ export default function PendingPaymentRequest() {
             rowSelectionModel={selectedRows}
             filterData={filterData}
             GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount}
+            refetch={refetch}
+            setRefetch={setRefetch}
           />
         )}
         {/* <ZohoBillCreation

@@ -47,6 +47,7 @@ import PendingOrderSingleUser from "./components/Pantry/UserPanel/PendingOrderSi
 import Loader from "./components/Finance/Loader/Loader";
 import Learning from "./components/SuperTracker/CommunityManagement/Learning/Learning";
 import ErrorPage from "./ErrorPage";
+import { AppProvider } from "./Context/Context";
 // import AssetCategoryMaster from "./components/Sim/AssetCategory/AssetCategoryMaster";
 // import AssetCategoryOverview from "./components/Sim/AssetCategory/AssetCategoryOverview";
 // import AssetCategoryUpdate from "./components/Sim/AssetCategory/AssetCategoryUpdate";
@@ -286,19 +287,19 @@ function App() {
           />
           <Route path="/forget-password" element={<ForgetPassword />} />
           <Route path="/" element={<Protected />}>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<AppProvider><Home /> </AppProvider>} />
             <Route
               path="/pre-onboard-user-from"
-              element={<PreOnboardingUserMaster />}
+              element={<AppProvider><PreOnboardingUserMaster /> </AppProvider>}
             />
 
-            <Route path="/pantry-user" element={<User />} />
-            <Route path="/pantry-delivery" element={<Delivery />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/order-history" element={<OrderHistory />} />
+            <Route path="/pantry-user" element={<AppProvider><User /> </AppProvider>} />
+            <Route path="/pantry-delivery" element={<AppProvider><Delivery /> </AppProvider>} />
+            <Route path="/profile" element={<AppProvider><Profile /> </AppProvider>} />
+            <Route path="/order-history" element={<AppProvider><OrderHistory /> </AppProvider>} />
             <Route
               path="/pending-order-single-user"
-              element={<PendingOrderSingleUser />}
+              element={<AppProvider><PendingOrderSingleUser /> </AppProvider>}
             />
           </Route>
           <Route
@@ -311,113 +312,117 @@ function App() {
                   </div>
                 }
               >
+                 <AppProvider>
                 <APIContext>
                   <Admin />
                 </APIContext>
+                </AppProvider>
               </Suspense>
             }
           />
 
           {/* sim */}
-          <Route path="/sim-overview/:id" element={<SimOverview />} />
+          <Route path="/sim-overview/:id" element={<AppProvider><SimOverview /> </AppProvider>} />
           <Route
             path="/singleAssetDetails/:id"
-            element={<SingleAssetUserDetails />}
+            element={<AppProvider><SingleAssetUserDetails /> </AppProvider>}
           />
-          <Route path="/sim-master" element={<SimMaster />} />
-          <Route path="/sim-update/:id" element={<SimUpdate />} />
-          <Route path="/sim-dashboard" element={<SimDashboard />} />
+          <Route path="/sim-master" element={<AppProvider><SimMaster /> </AppProvider>} />
+          <Route path="/sim-update/:id" element={<AppProvider><SimUpdate /> </AppProvider>} />
+          <Route path="/sim-dashboard" element={<AppProvider><SimDashboard /> </AppProvider>} />
           <Route
             path="/sim-allocation-overview"
-            element={<SimAllocationOverview />}
+            element={<AppProvider><SimAllocationOverview /> </AppProvider>}
           />
-          <Route path="/sim-summary/:id" element={<SimSummary />} />
+          <Route path="/sim-summary/:id" element={<AppProvider><SimSummary /> </AppProvider>} />
 
           <Route
             path="/asset-category-master"
-            element={<AssetCategoryMaster />}
+            element={<AppProvider><AssetCategoryMaster /> </AppProvider>}
           />
           <Route
             path="/asset-category-overview"
-            element={<AssetCategoryOverview />}
+            element={<AppProvider><AssetCategoryOverview /> </AppProvider>}
           />
           <Route
             path="/asset-category-update/:id"
-            element={<AssetCategoryUpdate />}
+            element={<AppProvider><AssetCategoryUpdate /> </AppProvider>}
           />
           {/* Asset sub cat */}
           <Route
             path="/asset/subCategory"
-            element={<AssetSubCategoryMaster />}
+            element={<AppProvider><AssetSubCategoryMaster /> </AppProvider>}
           />
-          <Route path="/brand-mast" element={<BrandMast />} />
-          <Route path="/modal-mast" element={<ModalMast />} />
-          <Route path="/repair-reason" element={<RepairReason />} />
-          <Route path="/repair-request" element={<RepairRequest />} />
+          <Route path="/brand-mast" element={<AppProvider><BrandMast /> </AppProvider>} />
+          <Route path="/modal-mast" element={<AppProvider><ModalMast /> </AppProvider>} />
+          <Route path="/repair-reason" element={<AppProvider><RepairReason /> </AppProvider>} />
+          <Route path="/repair-request" element={<AppProvider><RepairRequest /> </AppProvider>} />
 
           <Route
             path="/asset/subCategory/overview"
-            element={<AssetSubCategoryOverview />}
+            element={<AppProvider><AssetSubCategoryOverview /> </AppProvider>}
           />
           <Route
             path="/asset/subcategory-update/:id"
-            element={<AssetSubCategoryUpdate />}
+            element={<AppProvider><AssetSubCategoryUpdate /> </AppProvider>}
           />
           {/* vender pages */}
 
-          <Route path="/venderOverView" element={<VenderOverView />} />
-          <Route path="/vendorMaster" element={<VenderMaster />} />
-          <Route path="/vendorUpdate/:id" element={<VendorUpdate />} />
+          <Route path="/venderOverView" element={<AppProvider><VenderOverView /> </AppProvider>} />
+          <Route path="/vendorMaster" element={<AppProvider><VenderMaster /> </AppProvider>} />
+          <Route path="/vendorUpdate/:id" element={<AppProvider><VendorUpdate /> </AppProvider>} />
 
-          <Route path="/ip-overview" element={<IpOverview />} />
-          <Route path="/ip-master" element={<IpMaster />} />
-          <Route path="/ip-update/:id" element={<IpUpdate />} />
+          <Route path="/ip-overview" element={<AppProvider><IpOverview /> </AppProvider>} />
+          <Route path="/ip-master" element={<AppProvider><IpMaster /></AppProvider>} />
+          <Route path="/ip-update/:id" element={<AppProvider><IpUpdate /> </AppProvider>} />
 
-          <Route path="/ip-history/:id" element={<IpHistory />} />
-          <Route path="/ip-countupdate/:id" element={<IpCountUpdate />} />
-          <Route path="/ip-graph/:id" element={<IpGraph />} />
+          <Route path="/ip-history/:id" element={<AppProvider><IpHistory /></AppProvider>} />
+          <Route path="/ip-countupdate/:id" element={<AppProvider><IpCountUpdate /></AppProvider>} />
+          <Route path="/ip-graph/:id" element={<AppProvider><IpGraph /></AppProvider>} />
 
-          <Route path="/brand-master" element={<BrandMaster />} />
-          <Route path="/brand-overview" element={<BrandOverview />} />
-          <Route path="/brand-update/:id" element={<BrandUpdate />} />
-          <Route path="/brand-view/:id" element={<BrandView />} />
+          <Route path="/brand-master" element={<AppProvider> <BrandMaster /></AppProvider>} />
+          <Route path="/brand-overview" element={<AppProvider><BrandOverview /> </AppProvider>} />
+          <Route path="/brand-update/:id" element={<AppProvider> <BrandUpdate /> </AppProvider>} />
+          <Route path="/brand-view/:id" element={<AppProvider><BrandView /> </AppProvider>} />
 
           {/* ------------------------------ case Study start----------------------------------------- */}
-          <Route path="/case-study/brand" element={<BrandCaseStudy />} />
-          <Route path="/casestudy-dashboard" element={<CaseStudyDashboard />} />
-          <Route path="/case-platform" element={<CaseStudyplateform />} />
-          <Route path="/casestudy-update/:id" element={<UpdateCaseStudy />} />
-          <Route path="/caseStudy-view/:id" element={<CaseStudyView />} />
+          <Route path="/case-study/brand" element={<AppProvider> <BrandCaseStudy /> </AppProvider>} />
+          <Route path="/casestudy-dashboard" element={<AppProvider> <CaseStudyDashboard /></AppProvider>} />
+          <Route path="/case-platform" element={ <AppProvider><CaseStudyplateform /> </AppProvider>} />
+          <Route path="/casestudy-update/:id" element={<AppProvider><UpdateCaseStudy /> </AppProvider>} />
+          <Route path="/caseStudy-view/:id" element={<AppProvider><CaseStudyView /> </AppProvider>} />
 
           {/* ------------------------------ case Study end----------------------------------------- */}
 
-          <Route path="/data-brand-dashboard" element={<Dashboard />} />
-          <Route path="/data-brand-master" element={<DataBrandMaster />} />
-          <Route path="/data-brand-overview" element={<DataBrandOverview />} />
-          <Route path="/data-brand-update/:id" element={<DataBrandUpdate />} />
-          <Route path="/data-brand-view/:id" element={<DataBrandView />} />
-          <Route path="/data-brand-category" element={<DataCategory />} />
+          <Route path="/data-brand-dashboard" element={<AppProvider><Dashboard /></AppProvider>} />
+          <Route path="/data-brand-master" element={<AppProvider><DataBrandMaster /> </AppProvider>} />
+          <Route path="/data-brand-overview" element={<AppProvider><DataBrandOverview /> </AppProvider>} />
+          <Route path="/data-brand-update/:id" element={<AppProvider><DataBrandUpdate /> </AppProvider>} />
+          <Route path="/data-brand-view/:id" element={<AppProvider><DataBrandView /> </AppProvider>} />
+          <Route path="/data-brand-category" element={<AppProvider><DataCategory /> </AppProvider>} />
           <Route
             path="/data-brand-sub-category"
-            element={<DataSubCategory />}
+            element={<AppProvider><DataSubCategory /></AppProvider>}
           />
-          <Route path="/data-platform" element={<Platform />} />
-          <Route path="/data-content-type" element={<ContentType />} />
-          <Route path="/data-brand" element={<DataBrand />} />
+          <Route path="/data-platform" element={<AppProvider><Platform /> </AppProvider>} />
+          <Route path="/data-content-type" element={<AppProvider><ContentType /> </AppProvider>} />
+          <Route path="/data-brand" element={<AppProvider><DataBrand /> </AppProvider>} />
 
           {/* Execution history */}
           {/* sales Account Info Page route */}
           <Route
             path="/sales-account-info/:id"
             element={
+              <AppProvider>
               <APIContext>
                 <AccountInfo />
               </APIContext>
+              </AppProvider>
             }
           />
-          <Route path="/instaapi/community/learning" element={<Learning />} />
+          <Route path="/instaapi/community/learning" element={<AppProvider><Learning /> </AppProvider>} />
 
-          <Route path="*" element={<ErrorPage />} />
+          <Route path="*" element={<AppProvider><ErrorPage /> </AppProvider>} />
         </Routes>
       </BrowserRouter>
     </>

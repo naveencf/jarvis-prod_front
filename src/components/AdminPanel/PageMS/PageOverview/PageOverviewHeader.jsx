@@ -139,14 +139,31 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
   categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, '');
 
   useEffect(() => {
-    const newQuery = [categoryFilter ? `page_category_name=${categoryFilter.toLowerCase()}` : '', subCategoryFilter ? `page_sub_category_name=${subCategoryFilter.toLowerCase()}` : '', profileTypeFilter ? `page_profile_type_name=${profileTypeFilter.toLowerCase()}` : '', platformFilter ? `platform_name=${platformFilter.toLowerCase()}` : '', ownershipFilter ? `ownership_type=${ownershipFilter.toLowerCase()}` : '', filterFollowers ? `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}` : '', activenessFilter ? `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}` : '', searchTerm ? `search=${searchTerm.toLowerCase()}` : '', sortField ? `sort_by=${sortField}&order=${sortOrder}` : ''].filter(Boolean).join('&');
-    if (newQuery != '') {
-      onFilterChange(newQuery);
-    } else {
-      const platformName = activeTab === 'Tab0' ? 'Instagram' : activeTab === 'Tab5' ? 'Facebook' : activeTab === 'Tab3' ? 'Twitter' : activeTab === 'Tab4' ? 'Youtube' : activeTab === 'Tab1' ? 'Snapchat' : null;
-      onFilterChange(`platform_name=${platformName?.toLowerCase()}`);
+    const getPlatformName = (tab) => {
+      switch (tab) {
+        case 'Tab0':
+          return 'Instagram';
+        case 'Tab1':
+          return 'Snapchat';
+        case 'Tab3':
+          return 'Twitter';
+        case 'Tab4':
+          return 'Youtube';
+        case 'Tab5':
+          return 'Facebook';
+        default:
+          return null;
+      }
+    };
+
+    const platformName = getPlatformName(activeTab)?.toLowerCase();
+
+    const queryParams = [platformName && `platform_name=${platformName}`, categoryFilter && `page_category_name=${categoryFilter?.toLowerCase()}`, subCategoryFilter && `page_sub_category_name=${subCategoryFilter.toLowerCase()}`, profileTypeFilter && `page_profile_type_name=${profileTypeFilter.toLowerCase()}`, ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`, filterFollowers && `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`, activenessFilter && `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}`, searchTerm && `search=${searchTerm.toLowerCase()}`, sortField && `sort_by=${sortField}&order=${sortOrder}`].filter(Boolean).join('&');
+
+    if (queryParams) {
+      onFilterChange(queryParams);
     }
-  }, [categoryFilter, subCategoryFilter, profileTypeFilter, platformFilter, ownershipFilter, activenessFilter, searchTerm, sortField, sortOrder, filterFollowers]);
+  }, [categoryFilter, subCategoryFilter, profileTypeFilter, platformFilter, ownershipFilter, activenessFilter, searchTerm, sortField, sortOrder, filterFollowers, activeTab]);
 
   const getCount = (list, filterKey, value) => {
     return list?.filter((page) => page[filterKey]?.toLowerCase() === value?.toLowerCase()).length || 0;
@@ -265,17 +282,17 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
     localStorage.setItem('activeTab', tab);
   };
 
-  useEffect(() => {
-    if (platformData && platformData.length > 0) {
-      const platformIndex = parseInt(activeTab.replace('Tab', ''), 10); // Extract index from activeTab (e.g., "Tab0" -> 0)
-      const platformName = platformData[platformIndex]?.platform_name || null;
-      setPlanFormName(platformName);
+  // useEffect(() => {
+  //   if (platformData && platformData.length > 0) {
+  //     const platformIndex = parseInt(activeTab.replace('Tab', ''), 10); // Extract index from activeTab (e.g., "Tab0" -> 0)
+  //     const platformName = platformData[platformIndex]?.platform_name || null;
+  //     setPlanFormName(platformName);
 
-      if (platformName) {
-        onFilterChange(`platform_name=${platformName.toLowerCase()}`);
-      }
-    }
-  }, [activeTab, platformData]);
+  //     if (platformName) {
+  //       onFilterChange(`platform_name=${platformName.toLowerCase()}`);
+  //     }
+  //   }
+  // }, [activeTab, platformData]);
 
   useEffect(() => {
     if (vendorData?.length) {
@@ -290,6 +307,15 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
       setActiveTab(storedTab);
     }
   }, []);
+
+  useEffect(() => {
+    setCategoryFilter(null);
+    setSubCategoryFilter(null);
+    setProfileTypeFilter(null);
+    setOwnershipFilter(null);
+    setActivenessFilter(null);
+    setFilterFollowers(null);
+  }, [activeTab]);
 
   return (
     <div className="card">
@@ -363,7 +389,7 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
               />
             </div>
             <div className="col-md-3 mb16">
-              <Autocomplete value={filterFollowers} onChange={handleSelectionChange} options={FollowerRanges} getOptionLabel={(option) => option.label} renderInput={(params) => <TextField {...params} label="Followers" />} />
+              <Autocomplete value={filterFollowers} onChange={handleSelectionChange} options={FollowerRanges} /*getOptionLabel={(option) => option.label}*/ renderInput={(params) => <TextField {...params} label="Followers" />} />
             </div>
             {/* {decodedToken?.role_id == 1 && <ExportInventory pageList={pageList} />} */}
             <div className="tabs-container tabslide">

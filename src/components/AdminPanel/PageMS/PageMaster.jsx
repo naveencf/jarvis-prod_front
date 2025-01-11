@@ -306,6 +306,13 @@ const PageMaster = () => {
     ) {
       return toastError('Please Fill All Required Fields');
     }
+    const postWithZeroAmount = rowCount.some((e) => {
+      const isPostType = e.page_price_type_name.split('_').includes('post');
+      return isPostType && e.price === '0';
+    });
+    if (postWithZeroAmount) {
+      return toastError('Price Sould not be zero');
+    }
 
     const payload = {
       page_name: pageName,
@@ -365,7 +372,7 @@ const PageMaster = () => {
             if (result.error) {
               console.error('Failed to refetch:', result.error);
             } else {
-              if (result?.data?.length >0) {
+              if (result?.data?.length > 0) {
                 setIsFormSubmitted(true);
               }
             }
@@ -392,7 +399,6 @@ const PageMaster = () => {
             if (result.error) {
               console.error('Failed to refetch:', result.error);
             } else {
-             
               if (result?.data?.length > 0) {
                 setIsFormSubmitted(true);
               }

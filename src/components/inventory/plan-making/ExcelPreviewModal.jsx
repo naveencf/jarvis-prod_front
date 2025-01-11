@@ -4,13 +4,15 @@ import { useSendPlanDetails } from './apiServices';
 import { useParams } from 'react-router-dom';
 import formatString from '../../../utils/formatString';
 
-const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
+const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
   const [mergedCategories, setMergedCategories] = useState([]);
   // const [previewDataMerge, setPreviewDataMerge] = useState([]);
   const [updatedCategoryData, setUpdatedCategoryData] = useState(false);
+  const [oldCategoryName, setOldCategoryName] = useState('');
+  const [newCategoryName, setNewCategoryName] = useState('');
   const { id } = useParams();
   const { sendPlanDetails } = useSendPlanDetails(id);
 
@@ -124,7 +126,6 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
     sendPlanDetails(finalPreviewData);
     setMergedCategories([]);
   };
-
   const handleClose = () => {
     onClose();
     if (updatedCategoryData) {
@@ -133,9 +134,36 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
     setUpdatedCategoryData(false);
   };
   const handleCategoryChange = (event, newValue) => {
-    setMainCategory(newValue.toLowerCase()); // Update the selected value
+    setMainCategory(newValue.toLowerCase());
+  };
+  const renameCategory = (oldCategoryName, newCategoryName) => {
+    if (!oldCategoryName || !newCategoryName) return;
+
+    const updatedCategoriesData = categories.map((category) => {
+      if (category?.page_category === oldCategoryName) {
+        return { ...category, page_category: newCategoryName };
+      }
+      return category;
+    });
+
+    setUpdatedCategories(updatedCategoriesData);
+
+    const updatedCategoryData = { ...categoryData };
+    Object.keys(updatedCategoryData).forEach((categoryName) => {
+      if (categoryName === oldCategoryName) {
+        updatedCategoryData[newCategoryName] = updatedCategoryData[categoryName];
+        delete updatedCategoryData[categoryName];
+      }
+    });
+
+    setCategoryData(updatedCategoryData);
   };
 
+  const handleRenameCategory = () => {
+    renameCategory(oldCategoryName, newCategoryName);
+    setOldCategoryName('');
+    setNewCategoryName('');
+  };
   return (
     <Modal open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
       <Box
@@ -164,7 +192,21 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
         <Typography id="preview-modal-title" variant="h6" component="h2">
           Excel Data Preview
         </Typography>
-
+        {/* Rename Category Section */}
+        <Box sx={{ mt: 4 }}>
+          <Typography variant="h6" component="h4">
+            Rename Category
+          </Typography>
+          <FormControl sx={{ mr: 2, mt: 1, width: '200px' }}>
+            <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} label="Old Category" variant="outlined" />} />
+          </FormControl>
+          <FormControl sx={{ mt: 1, width: '200px' }}>
+            <TextField value={newCategoryName} onChange={(event) => setNewCategoryName(event.target.value)} label="New Category Name" variant="outlined" />
+          </FormControl>
+          <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleRenameCategory} disabled={!oldCategoryName || !newCategoryName}>
+            Rename Category
+          </Button>
+        </Box>
         <div className="row">
           <div className="col d-flex justify-content-center align-items-center">
             <Typography variant="body1">Agency Fee Percentage</Typography>
@@ -182,8 +224,10 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
             <Typography variant="body1">Deliverable Text</Typography>
             <TextField value={deliverableText || ''} onChange={handleDeliverableTextChange} label="Write Deliverable text" sx={{ mt: 1, width: '11rem' }} />
           </div>
+          {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
+
           <div className="col d-flex justify-content-center align-items-center">
-            <button className="btn cmnbtn btn-primary btn_sm" disabled={isDownloading} onClick={() => downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
+            <button className="btn cmnbtn btn-primary btn_sm" disabled={isDownloading} onClick={() => downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions)}>
               {isDownloading ? 'Downloading...' : 'Download Excel'}
             </button>
             {/* <button className="btn cmnbtn btn-primary btn_sm" onClick={() => handleGetSpreadSheet(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
@@ -249,8 +293,8 @@ const ExcelPreviewModal = ({ open, onClose, previewData, categories, setAgencyFe
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {previewData?.map((item, idx) => (
-                    <TableRow key={idx}>
+                  {previewData?.map((item, id) => (
+                    <TableRow key={id}>
                       <TableCell>{item['Page Name']}</TableCell>
                       <TableCell>{item.Platform}</TableCell>
                       <TableCell>{item.Followers}</TableCell>

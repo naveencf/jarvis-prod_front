@@ -10,7 +10,7 @@ import "./LoginResponsive.css";
 import { de } from "date-fns/locale";
 
 const Login = () => {
-  const { toastError } = useGlobalContext();
+  // const { toastError } = useGlobalContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const Login = () => {
             }, 1000 * 60 * 60 * 10); // 10 hours
           } else {
             navigate("/login");
-            toastError("You are an inactive user");
+            // toastError("You are an inactive user");
           }
         }
       })

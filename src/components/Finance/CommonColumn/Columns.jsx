@@ -2803,32 +2803,32 @@ export const pendingPaymentRequestColumns = ({
         );
       },
     },
-    {
-      key: "Reminder",
-      name: "Reminder",
-      width: 150,
-      renderRowCell: (row) => {
-        const reminder = phpRemainderData?.filter(
-          (item) => item.request_id == row?.request_id
-        );
+    // {
+    //   key: "Reminder",
+    //   name: "Reminder",
+    //   width: 150,
+    //   renderRowCell: (row) => {
+    //     const reminder = phpRemainderData?.filter(
+    //       (item) => item.request_id == row?.request_id
+    //     );
 
-        return (
-          <>
-            <span>
-              {reminder?.length > 0 ? (
-                <Badge badgeContent={reminder?.length} color="primary">
-                  <NotificationsActiveTwoToneIcon
-                    onClick={() => handleRemainderModal(reminder)}
-                  />
-                </Badge>
-              ) : (
-                0
-              )}
-            </span>
-          </>
-        );
-      },
-    },
+    //     return (
+    //       <>
+    //         <span>
+    //           {reminder?.length > 0 ? (
+    //             <Badge badgeContent={reminder?.length} color="primary">
+    //               <NotificationsActiveTwoToneIcon
+    //                 onClick={() => handleRemainderModal(reminder)}
+    //               />
+    //             </Badge>
+    //           ) : (
+    //             0
+    //           )}
+    //         </span>
+    //       </>
+    //     );
+    //   },
+    // },
     {
       key: "vendor_name",
       name: "Vendor Name",
@@ -2899,107 +2899,107 @@ export const pendingPaymentRequestColumns = ({
       name: "Payment Cycle",
       width: 150,
     },
-    {
-      key: "total_paid",
-      name: "Total Paid",
-      width: 150,
-      renderRowCell: (row) => {
-        return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
-          .length > 0 ? (
-          <span>
-            <h6
-              onClick={() => handleOpenPaymentHistory(row, "TP")}
-              style={{ cursor: "pointer" }}
-              className="pointer lead  text-decoration-underline text-black-50"
-            >
-              {/* Total Paid */}
-              {nodeData
-                .filter(
-                  (e) => e.vendor_name === row?.vendor_name && e.status == 1
-                )
-                .reduce((acc, item) => acc + +item.payment_amount, 0)}
-            </h6>
-          </span>
-        ) : (
-          <h6
-            style={{ cursor: "pointer" }}
-            className="pointer lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h6>
-        );
-      },
-    },
-    {
-      key: "F.Y",
-      name: "F.Y",
-      width: 150,
-      renderRowCell: (row) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-        const dataFY = nodeData?.filter((e) => {
-          const paymentDate = new Date(e.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e.vendor_name === row?.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2 &&
-            e.status !== 3
-          );
-        });
-        return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
-          .length > 0 ? (
-          <h5
-            onClick={() => handleOpenPaymentHistory(row, "FY")}
-            style={{ cursor: "pointer" }}
-            className="pointer font-sm lead  text-decoration-underline text-black-50"
-          >
-            {/* Financial Year */}
+    // {
+    //   key: "total_paid",
+    //   name: "Total Paid",
+    //   width: 150,
+    //   renderRowCell: (row) => {
+    //     return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+    //       .length > 0 ? (
+    //       <span>
+    //         <h6
+    //           onClick={() => handleOpenPaymentHistory(row, "TP")}
+    //           style={{ cursor: "pointer" }}
+    //           className="pointer lead  text-decoration-underline text-black-50"
+    //         >
+    //           {/* Total Paid */}
+    //           {nodeData
+    //             .filter(
+    //               (e) => e.vendor_name === row?.vendor_name && e.status == 1
+    //             )
+    //             .reduce((acc, item) => acc + +item.payment_amount, 0)}
+    //         </h6>
+    //       </span>
+    //     ) : (
+    //       <h6
+    //         style={{ cursor: "pointer" }}
+    //         className="pointer lead  text-decoration-underline text-black-50"
+    //       >
+    //         0
+    //       </h6>
+    //     );
+    //   },
+    // },
+    // {
+    //   key: "F.Y",
+    //   name: "F.Y",
+    //   width: 150,
+    //   renderRowCell: (row) => {
+    //     const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
+    //     const currentYear = new Date().getFullYear();
+    //     const startDate = new Date(
+    //       `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+    //       }`
+    //     );
+    //     const endDate = new Date(
+    //       `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+    //       }`
+    //     );
+    //     const dataFY = nodeData?.filter((e) => {
+    //       const paymentDate = new Date(e.request_date);
+    //       return (
+    //         paymentDate >= startDate &&
+    //         paymentDate <= endDate &&
+    //         e.vendor_name === row?.vendor_name &&
+    //         e.status !== 0 &&
+    //         e.status !== 2 &&
+    //         e.status !== 3
+    //       );
+    //     });
+    //     return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
+    //       .length > 0 ? (
+    //       <h5
+    //         onClick={() => handleOpenPaymentHistory(row, "FY")}
+    //         style={{ cursor: "pointer" }}
+    //         className="pointer font-sm lead  text-decoration-underline text-black-50"
+    //       >
+    //         {/* Financial Year */}
 
-            {dataFY.reduce(
-              (acc, item) => acc + parseFloat(item.payment_amount),
-              0
-            )}
-          </h5>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="pointer font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      key: "pan_img",
-      name: "Pan Img",
-      renderRowCell: (row) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
-        return row?.pan_img.includes("uploads") ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(ImgUrl);
-            }}
-            src={ImgUrl}
-            alt="Pan"
-            style={{ width: "40px", height: "40px" }}
-          />
-        ) : (
-          "NA"
-        );
-      },
-    },
+    //         {dataFY.reduce(
+    //           (acc, item) => acc + parseFloat(item.payment_amount),
+    //           0
+    //         )}
+    //       </h5>
+    //     ) : (
+    //       <h5
+    //         style={{ cursor: "pointer" }}
+    //         className="pointer font-sm lead  text-decoration-underline text-black-50"
+    //       >
+    //         0
+    //       </h5>
+    //     );
+    //   },
+    // },
+    // {
+    //   key: "pan_img",
+    //   name: "Pan Img",
+    //   renderRowCell: (row) => {
+    //     const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
+    //     return row?.pan_img.includes("uploads") ? (
+    //       <img
+    //         onClick={() => {
+    //           setOpenImageDialog(true);
+    //           setViewImgSrc(ImgUrl);
+    //         }}
+    //         src={ImgUrl}
+    //         alt="Pan"
+    //         style={{ width: "40px", height: "40px" }}
+    //       />
+    //     ) : (
+    //       "NA"
+    //     );
+    //   },
+    // },
     {
       key: "pan",
       name: "Pan",

@@ -95,6 +95,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     { value: 'semi_active', label: 'Semi Active' },
     { value: 'dead', label: 'Dead' },
   ];
+  
   const PageTypes = [
     { value: 'Non Adult', label: 'Non Adult' },
     { value: 'Adult', label: 'Adult' },
@@ -321,8 +322,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     }
     getLanguage();
   }, []);
-  console.log('pagePriceLIst', pagePriceList);
-  const getLanguage = async () => {
+   const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
       setLanguages(res?.data?.data);
@@ -482,7 +482,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     };
   };
   const pageInfoModlaOpen = useSelector((state) => state.pageMaster.showInfoModal);
-  console.log('newPricee');
+ 
   const calculateFollowerCount = (index) => {
     const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);

@@ -28,8 +28,8 @@ const PlanXNoteModal = ({
 
   const handleAddDescription = () => {
     if (newDescription.trim()) {
-      onAdd(newDescription); // Trigger onAdd to add the new description
-      setNewDescription(''); // Clear the input field
+      onAdd(newDescription); 
+      setNewDescription('');  
     }
   };
 

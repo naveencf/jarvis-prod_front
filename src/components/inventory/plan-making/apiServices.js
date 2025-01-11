@@ -9,9 +9,7 @@ export const usePageDetail = (id) => {
 
   const fetchPageDetail = async () => {
     try {
-      const response = await fetch(
-        `${baseUrl}v1/plan_page_details_with_planxid/${id}`
-      );
+      const response = await fetch(`${baseUrl}v1/plan_page_details_with_planxid/${id}`);
       if (!response.ok) throw new Error('Failed to fetch page details');
       const json = await response.json();
       setPageDetail(json?.data);
@@ -31,7 +29,7 @@ export const usePageDetail = (id) => {
 };
 
 export const useSendPlanDetails = (id) => {
-  const [planSuccess, setPlanSuccess] = useState(null);
+  const [planSuccess, setPlanSuccess] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -44,24 +42,21 @@ export const useSendPlanDetails = (id) => {
       plan_status: planStatus === 'close' ? 'saved' : '',
     };
     try {
-      setLoading(true); // Start loading state
-      const response = await fetch(
-        `${baseUrl}v1/add_multiple_plan_page_data_v2`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      setLoading(true);
+      const response = await fetch(`${baseUrl}v1/add_multiple_plan_page_data_v2`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      setPlanSuccess(data);
+      setPlanSuccess(data.data);
     } catch (error) {
       console.error('Error calling the API:', error);
       setError(error.message);
@@ -129,9 +124,7 @@ export const usePlanPagesVersionDetails = (id) => {
 
   const fetchVersionDetails = async () => {
     try {
-      const response = await fetch(
-        `${baseUrl}v1/get_plan_pages_version_details/${id}`
-      );
+      const response = await fetch(`${baseUrl}v1/get_plan_pages_version_details/${id}`);
       if (!response.ok) throw new Error('Failed to fetch version details');
       const data = await response.json();
       setVersionDetails(data?.data);
@@ -164,9 +157,7 @@ export const useGetPlanPages = (id, version) => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          `${baseUrl}v1/get_plan_pages_by_id_version/?planx_id=${id}&version=${version}`
-        );
+        const response = await fetch(`${baseUrl}v1/get_plan_pages_by_id_version/?planx_id=${id}&version=${version}`);
         if (!response.ok) {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }

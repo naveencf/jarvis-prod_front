@@ -23,6 +23,7 @@ const PayThroughVendorDialog = (props) => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
+  const userEmail = decodedToken.email;
   const { toastAlert, toastError } = useGlobalContext();
   const [paymentInitiated, setPaymentInitiated] = useState(false);
   const [otptoVerify, setOtptoVerify] = useState(0);
@@ -31,7 +32,7 @@ const PayThroughVendorDialog = (props) => {
     setPayThroughVendor,
     rowSelectionModel,
     filterData, handlePayVendorClick, handleClosePayDialog, paymentStatus, gatewayPaymentMode, setGatewayPaymentMode, rowData, paymentAmout, userName, payRemark, TDSValue, GSTHoldAmount, gstHold, TDSDeduction,
-    TDSPercentage, paymentDate
+    TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi
   } = props;
 
 
@@ -59,11 +60,13 @@ const PayThroughVendorDialog = (props) => {
       }
       const selectedRow = rowSelectionModel[0];
       // return;
-      if (selectedRow?.mob1.length != 10) {
-        toastError("Mobile number is not valid for this payment.");
-        return;
-      }
-      else if (selectedRow?.ifsc == "") {
+      // if (vendorDetail?.mobile.length != 10) {
+      //   console.log(vendorDetail?.mobile, "mobile", vendorDetail?.mobile.length, "vendorDetail", vendorDetail)
+      //   toastError("Mobile number is not valid for this payment.");
+      //   return;
+      // }
+      // else 
+      if (vendorDetail?.ifsc == "") {
         toastError("Branch Code is not valid.");
         return;
 
@@ -78,26 +81,26 @@ const PayThroughVendorDialog = (props) => {
         toastError("Payment gateway server down.Please ask IT team for more details");
         return;
       }
-      let mailTo = selectedRow?.email;
-      if (!selectedRow?.email || selectedRow?.email == "") {
+      let mailTo = userEmail;
+      if (!userEmail || userEmail == "") {
         mailTo = "naveen@creativefuel.io";
       }
       const paymentPayload = {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
-        payeeName: extractPayeeName(selectedRow?.vendor_name),
-        accountNumber: selectedRow?.account_no,
-        branchCode: selectedRow?.ifsc,
-        email: mailTo,
-        phone: selectedRow?.mob1,
+        payeeName: extractPayeeName(vendorDetail?.vendor_name),
+        accountNumber: vendorDetail?.account_no,
+        branchCode: vendorDetail?.ifsc,
+        email: vendorDetail?.email,
+        phone: vendorDetail?.mobile,
         amount: {
           currency: "INR",
           value: paymentAmout * 100,
         },
         mode: gatewayPaymentMode || "NEFT",
-        remarks: selectedRow?.remark_audit || "No Remark",
+        remarks: "Creativefuel",
         // vendorId: "67690a8250051ca0d5074dd6",
-        vendorName: selectedRow?.vendor_name,
+        vendorName: vendorDetail?.vendor_name,
         vendorPhpId: selectedRow?.vendor_id,
         requestId: selectedRow?.request_id,
         zohoVendorId: "1111",
@@ -108,7 +111,7 @@ const PayThroughVendorDialog = (props) => {
         payment_date: new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " "),
         payment_by: userName,
         // evidence: payMentProof,
-        finance_remark: payRemark || "",
+        finance_remark: selectedRow?.remark_audit || "No Remark",
         status: 1,
         payment_mode: gatewayPaymentMode,
         gst_hold: rowData.gst_amount,
@@ -122,7 +125,7 @@ const PayThroughVendorDialog = (props) => {
         // clientReferenceId,
 
         otp: Number(otptoVerify),
-        otpEmail: "naveen@creativefuel.io",
+        otpEmail: mailTo,
         createdBy: userID,
         paymentType: gatewayPaymentMode || "NEFT",
         // payment_date,
@@ -149,6 +152,7 @@ const PayThroughVendorDialog = (props) => {
 
           handleClosePayThroughVendor();
           handleClosePayDialog();
+          callApi();
           return;
           // console.log("Payment successful:", payResponse);
         } else {
