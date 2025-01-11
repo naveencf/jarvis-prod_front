@@ -35,11 +35,6 @@ const UserOverview = () => {
   const [isloading, setLoading] = useState(true);
   const [contextData, setData] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
-  const [designationData, setDesignationData] = useState([]);
-  const [desiOrgData, setDesiOrgData] = useState([]);
-  const [departmentFilter, setDepartmentFilter] = useState("");
-  const [designationFilter, setDesignationFilter] = useState("");
-  const [jobType, setJobType] = useState("ALL");
   const [transferResponsibilityData, setTransferResponsibilityData] = useState(
     []
   );
@@ -241,7 +236,6 @@ const UserOverview = () => {
       setLoadingUser(false);
     }
   }
-
   const departmentAPI = () => {
     axios.get(baseUrl + "get_all_departments").then((res) => {
       setDepartmentData(res.data);
@@ -249,98 +243,54 @@ const UserOverview = () => {
     });
   };
 
-  const designationAPI = () => {
-    axios.get(baseUrl + "get_all_designations").then((res) => {
-      setDesiOrgData(res.data.data);
-    });
-  };
+  // const handleDelete = (userId) => {
+  //   const swalWithBootstrapButtons = Swal.mixin({
+  //     customClass: {
+  //       confirmButton: "btn btn-success",
+  //       cancelButton: "btn btn-danger",
+  //     },
+  //     buttonsStyling: false,
+  //   });
 
-  const handleDelete = (userId) => {
-    const swalWithBootstrapButtons = Swal.mixin({
-      customClass: {
-        confirmButton: "btn btn-success",
-        cancelButton: "btn btn-danger",
-      },
-      buttonsStyling: false,
-    });
-
-    swalWithBootstrapButtons
-      .fire({
-        title: "Are you sure?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel!",
-        reverseButtons: true,
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          axios
-            .delete(`${baseUrl}` + `delete_user/${userId}`)
-            .then(() => {
-              // Check if no error occurred and then show the success alert
-              swalWithBootstrapButtons.fire(
-                "Deleted!",
-                "Your file has been deleted.",
-                "success"
-              );
-              getData();
-            })
-            .catch(() => {
-              showErrorAlert();
-            });
-        } else if (result.dismiss === Swal.DismissReason.cancel) {
-          swalWithBootstrapButtons.fire(
-            "Cancelled",
-            "Your imaginary file is safe :)"
-          );
-        }
-      });
-  };
+  //   swalWithBootstrapButtons
+  //     .fire({
+  //       title: "Are you sure?",
+  //       text: "You won't be able to revert this!",
+  //       icon: "warning",
+  //       showCancelButton: true,
+  //       confirmButtonText: "Yes, delete it!",
+  //       cancelButtonText: "No, cancel!",
+  //       reverseButtons: true,
+  //     })
+  //     .then((result) => {
+  //       if (result.isConfirmed) {
+  //         axios
+  //           .delete(`${baseUrl}` + `delete_user/${userId}`)
+  //           .then(() => {
+  //             // Check if no error occurred and then show the success alert
+  //             swalWithBootstrapButtons.fire(
+  //               "Deleted!",
+  //               "Your file has been deleted.",
+  //               "success"
+  //             );
+  //             getData();
+  //           })
+  //           .catch(() => {
+  //             showErrorAlert();
+  //           });
+  //       } else if (result.dismiss === Swal.DismissReason.cancel) {
+  //         swalWithBootstrapButtons.fire(
+  //           "Cancelled",
+  //           "Your imaginary file is safe :)"
+  //         );
+  //       }
+  //     });
+  // };
 
   useEffect(() => {
+    departmentAPI()
     getData();
-    departmentAPI();
-    designationAPI();
   }, []);
-
-  useEffect(() => {
-    const deptWiseDesi = desiOrgData.filter(
-      (d) => d.dept_id == departmentFilter
-    );
-    setDesignationData(deptWiseDesi);
-  }, [departmentFilter]);
-
-  useEffect(() => {
-    const result1 = datas.filter((d) => {
-      return (
-        d.user_name?.toLowerCase().includes(search.toLowerCase()) ||
-        d.department_name?.toLowerCase().includes(search.toLowerCase()) ||
-        d.user_status?.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-    setFilterData(result1);
-  }, [search]);
-
-  useEffect(() => {
-    const result = datas.filter((d) => {
-      const departmentMatch =
-        !departmentFilter || d.dept_id === departmentFilter;
-      const designationMatch =
-        !designationFilter || d.user_designation === designationFilter;
-      const jobtypeMatch = jobType === "ALL" || d.job_type === jobType;
-      return departmentMatch && designationMatch && jobtypeMatch;
-    });
-    setFilterData(result);
-  }, [departmentFilter, designationFilter, jobType]);
-
-  const jobTypeOptions = [
-    { value: "ALL", label: "All" },
-    { value: "WFO", label: "WFO" },
-    { value: "WFH", label: "WFH" },
-    { value: "WFHD", label: "WFHD" },
-  ];
 
   function convertDateToDDMMYYYY(dateString) {
     if (String(dateString).startsWith("0000-00-00")) {
@@ -573,22 +523,22 @@ const UserOverview = () => {
       sortable: true,
     },
 
-    {
-      key: "Summary",
-      name: "Summary",
-      renderRowCell: (row) =>
-        <button
-      className="btn cmnbtn btn_sm btn-outline-secondary"
-      variant="contained"
-      color="warning"
-      onClick={() => handleUpdateSummary(row.user_id)}
-    >
-      Summary
-    </button>
-          ,
-      width: 100,
-      sortable: true,
-    },
+    // {
+    //   key: "Summary",
+    //   name: "Summary",
+    //   renderRowCell: (row) =>
+    //     <button
+    //   className="btn cmnbtn btn_sm btn-outline-secondary"
+    //   variant="contained"
+    //   color="warning"
+    //   onClick={() => handleUpdateSummary(row.user_id)}
+    // >
+    //   Summary
+    // </button>
+    //       ,
+    //   width: 100,
+    //   sortable: true,
+    // },
     {
       key: "Action_edits",
       name: "Actions",
@@ -736,11 +686,6 @@ const UserOverview = () => {
               Job Type
             </button>
           </Link>
-          {/* <Link to="/admin/billing-overview">
-            <button type="button" className="btn btn-outline-primary btn-sm">
-              Billing{" "}
-            </button>
-          </Link> */}
           <Link to="/admin/hobbies-overview">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Hobbies
@@ -834,99 +779,6 @@ const UserOverview = () => {
           </button>
         </div>
 
-        <div className="card">
-          <div className="card-body">
-            <div className="row thm_form">
-              <div className="form-group col-3">
-                <label className="form-label">Department Name</label>
-                <Select
-                  options={[
-                    { value: "", label: "All" },
-                    ...departmentData.map((option) => ({
-                      value: option.dept_id,
-                      label: option.dept_name,
-                    })),
-                  ]}
-                  value={
-                    departmentFilter === ""
-                      ? { value: "", label: "All" }
-                      : {
-                          value: departmentFilter,
-                          label:
-                            departmentData.find(
-                              (dept) => dept.dept_id === departmentFilter
-                            )?.dept_name || "Select...",
-                        }
-                  }
-                  onChange={(selectedOption) => {
-                    const selectedValue = selectedOption
-                      ? selectedOption.value
-                      : "";
-                    setDepartmentFilter(selectedValue);
-                    if (selectedValue === "") {
-                      getData();
-                    }
-                  }}
-                  required
-                />
-              </div>
-
-              <div className="form-group col-3">
-                <label className="form-label">Designation</label>
-                <Select
-                  options={[
-                    { value: "", label: "All" },
-                    ...designationData.map((option) => ({
-                      value: option.desi_id,
-                      label: option.desi_name,
-                    })),
-                  ]}
-                  value={
-                    designationFilter === ""
-                      ? { value: "", label: "All" }
-                      : {
-                          value: designationFilter,
-                          label:
-                            designationData.find(
-                              (option) => option.desi_id === designationFilter
-                            )?.desi_name || "Select...",
-                        }
-                  }
-                  onChange={(selectedOption) => {
-                    const newValue = selectedOption ? selectedOption.value : "";
-                    setDesignationFilter(newValue);
-                    if (newValue === "") {
-                      designationAPI();
-                    }
-                  }}
-                  required
-                />
-              </div>
-
-              <div className="form-group col-3">
-                <label className="form-label">Job Type</label>
-                <Select
-                  value={jobTypeOptions.find(
-                    (option) => option.value === jobType
-                  )}
-                  onChange={(selectedOption) => {
-                    setJobType(selectedOption.value);
-                  }}
-                  options={jobTypeOptions}
-                />
-              </div>
-              <div className="form-group col-3">
-                  <FieldContainer
-                    fieldGrid={12}
-                    label="Search"
-                    placeholder="Search Here"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                </div>
-            </div>
-          </div>
-        </div>
         <div className="">
           <div
           >

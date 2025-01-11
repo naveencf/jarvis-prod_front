@@ -42,6 +42,7 @@ const CustomTable = ({
   const [sortKey, setSortKey] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [ascFlag, setAscFlag] = useState(columns?.map(() => true));
+  
   const [visibleColumns, setVisibleColumns] = useState(
     columns.map((column) =>
       column.showCol === undefined ? true : column.showCol

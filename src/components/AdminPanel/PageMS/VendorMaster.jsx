@@ -28,6 +28,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PreviewModal from './Vendor/PreviewModal';
 import { useContext } from 'react';
 import { FormatName } from '../../../utils/FormatName';
+import { useAPIGlobalContext } from '../APIContext/APIContext';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
@@ -37,13 +38,14 @@ const VendorMaster = () => {
   const userID = decodedToken.id;
 
   const { _id } = useParams();
+
   const dispatch = useDispatch();
   const isVendorModalOpen = useSelector((state) => state.vendorMaster.showVendorInfoModal);
   const [forPhp, setForPhp] = useState([]);
   const [vendorData, setVendorData] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
-  const [isFormSubmitting2, setIsFormSubmitting2] = useState(false);
+  // const [isFormSubmitting2, setIsFormSubmitting2] = useState(false);
   const [vendorName, setVendorName] = useState('');
   const [countryCode, setCountryCode] = useState('91');
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -63,7 +65,7 @@ const VendorMaster = () => {
   const [otherCountry, setOtherCountry] = useState('');
   const [homeState, setHomeState] = useState('');
   const [typeId, setTypeId] = useState('');
-  const [platformId, setPlatformId] = useState('');
+  const [platformId, setPlatformId] = useState('666818824366007df1df1319');
   const [cycleId, setCycleId] = useState('');
   const [emailIsInvalid, setEmailIsInvalid] = useState(false);
   const [vendorCategory, setVendorCategory] = useState('Theme Page');
@@ -105,12 +107,11 @@ const VendorMaster = () => {
     cycleId: false,
     // type: false,
   });
-
+  console.log('platformId', platformId);
   const [mandatoryFieldsEmpty, setMandatoryFieldsEmpty] = useState({
     mobile: false,
     altMobile: false,
   });
-
   const [isContactTouched1, setisContactTouched1] = useState(false);
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
@@ -139,6 +140,9 @@ const VendorMaster = () => {
   const [existError, setExistError] = useState('');
   const [busiTypeData, setBusiTypeData] = useState([]);
   const { usersDataContext } = useContext(AppContext);
+  // const isAssets = [53].some((index) => ApiContextData[index]?.view_value === 1);
+
+  const { contextData } = useAPIGlobalContext();
 
   useEffect(() => {
     if (gst?.length === 15) {
@@ -224,9 +228,13 @@ const VendorMaster = () => {
   };
 
   const handleAccountNoChange = (e, i) => {
-    if (e.target.value?.length > 20) return;
+    const inputValue = e.target.value;
+    if (!/^\d*$/.test(inputValue)) return;
+
+    if (inputValue.length > 20) return;
+
     const updatedRows = [...bankRows];
-    updatedRows[i].account_number = e.target.value;
+    updatedRows[i].account_number = inputValue;
     setBankRows(updatedRows);
   };
 
@@ -1590,25 +1598,20 @@ const VendorMaster = () => {
                 {bankRows[i].payment_method == '666856874366007df1dfacde' && (
                   <>
                     <div className="form-group col-6">
-                      <label className="form-label">
-                        Bank Name
-                        {/* <sup style={{ color: "red" }}>*</sup> */}
-                      </label>
+                      <label className="form-label">Bank Name</label>
                       <Select
                         options={bankName?.map((option) => ({
                           value: option._id,
                           label: option.bank_name,
                         }))}
+                        isDisabled={!!_id}
                         required={true}
                         value={{
-                          // value: bankNameId,
                           value: bankRows[i]._id,
-                          label:
-                            // bankName?.find((role) => role._id == bankNameId)
-                            bankName?.find((role) => role.bank_name == bankRows[i].bank_name)?.bank_name || '',
+                          label: bankName?.find((role) => role.bank_name === bankRows[i].bank_name)?.bank_name || '',
                         }}
                         onChange={(e) => {
-                          // setBankNameId(e.value);
+                          if (!!_id) return;
                           bankRows[i].bank_name = e.label;
                           if (e.value) {
                             setValidator((prev) => ({
@@ -1617,8 +1620,7 @@ const VendorMaster = () => {
                             }));
                           }
                         }}
-                      ></Select>
-
+                      />
                       <IconButton onClick={handleAddBankNameClick} variant="contained" color="primary" aria-label="Add Bank Detail..">
                         <AddIcon />
                       </IconButton>
@@ -1626,6 +1628,7 @@ const VendorMaster = () => {
                         <RemoveRedEyeIcon />
                       </IconButton>
                     </div>
+
                     <div className="form-group col-6">
                       <label className="form-label">Account Type</label>
                       <Select
@@ -1633,18 +1636,21 @@ const VendorMaster = () => {
                           label: option,
                           value: option,
                         }))}
+                        isDisabled={!!_id}
                         required={true}
                         value={{
                           value: bankRows[i].account_type,
                           label: bankRows[i].account_type,
                         }}
                         onChange={(e) => {
+                          if (!!_id) return;
                           handleAccountTypeChange(e, i);
                         }}
                       />
                     </div>
-                    <FieldContainer label="Account Number " type="number" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
-                    <FieldContainer required={false} maxLength={11} label="IFSC " value={bankRows[i].ifcs} onChange={(e) => handleIFSCChange(e, i)} />
+
+                    <FieldContainer label="Account Number " disabled={_id ? true : false} type="text" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
+                    <FieldContainer required={false} maxLength={11} disabled={_id ? true : false} label="IFSC " value={bankRows[i].ifcs} onChange={(e) => handleIFSCChange(e, i)} />
                   </>
                 )}
                 {bankRows[i].payment_method == '666856754366007df1dfacd2' && <FieldContainer required={false} label="UPI ID " value={bankRows[i].upi_id} onChange={(e) => handleUPIidChange(e, i)} />}
@@ -1657,12 +1663,14 @@ const VendorMaster = () => {
                 )}
               </>
             ))}
-            <div className="row">
-              <IconButton onClick={handleAddBankInfoRow} variant="contained" color="primary">
-                {/* <AddCircleTwoToneIcon /> */}
-                <h5>Add Another Bank Details</h5>
-              </IconButton>
-            </div>
+            {(!_id || (contextData && contextData[65]?.view_value === 1)) && (
+              <div className="row">
+                <IconButton onClick={handleAddBankInfoRow} variant="contained" color="primary">
+                  {/* <AddCircleTwoToneIcon /> */}
+                  <h5>Add Another Bank Details</h5>
+                </IconButton>
+              </div>
+            )}
 
             <div className="form-group col-6">
               <label className="form-label">
@@ -1718,7 +1726,18 @@ const VendorMaster = () => {
             </div>
 
             <div className="col-md-6 threshold_style" style={{ display: 'flex' }}>
-              <FieldContainer label="Threshold Limit" value={limit} type="number" required={false} onChange={(e) => setLimit(e.target.value)} />
+              <FieldContainer
+                label="Threshold Limit"
+                value={limit}
+                type="text"
+                required={false}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (/^\d*$/.test(inputValue)) {
+                    setLimit(inputValue);
+                  }
+                }}
+              />
               <div style={{ display: 'flex' }}>
                 <p className="vendor_threshold" onClick={() => setLimit(50000)}>
                   50K

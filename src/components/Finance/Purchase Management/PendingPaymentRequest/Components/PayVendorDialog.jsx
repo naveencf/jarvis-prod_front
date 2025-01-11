@@ -40,13 +40,14 @@ function PayVendorDialog(props) {
     callApi,
     rowSelectionModel,
     filterData, GSTHoldAmount, setGSTHoldAmount,
-    //  TDSValue, setTDSValue
+
   } = props;
 
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
+  const userEmail = decodedToken.email;
   const [TDSDeduction, setTDSDeduction] = useState(false);
   const [TDSPercentage, setTDSPercentage] = useState(1);
   const [isTDSMandatory, setIsTDSMandatory] = useState(false);
@@ -61,6 +62,8 @@ function PayVendorDialog(props) {
   const [payRemark, setPayRemark] = useState("Creativefuel");
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [vendorDetail, setVendorDetail] = useState({});
+
   // const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
@@ -86,6 +89,12 @@ function PayVendorDialog(props) {
         })
         setPaymentMode(defaultOption?.payment_mode)
         // console.log(defaultOption, "paymentModeData", res.data)
+      }
+    });
+    axios.get(`${baseUrl}` + `v1/vendordata/${rowData?.vendor_id}`).then((res) => {
+      if (res.status == 200) {
+        setVendorDetail(res.data.data)
+        console.log(res.data.data, "res.data.data")
       }
     });
   }, []);
@@ -166,7 +175,7 @@ function PayVendorDialog(props) {
 
           const phpFormData = new FormData();
 
-          // phpFormData.append(clientReferenceId, `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
+          phpFormData.append(clientReferenceId, `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
           phpFormData.append("request_id", rowData.request_id);
           phpFormData.append("payment_amount", paymentAmout);
           phpFormData.append(
@@ -189,8 +198,8 @@ function PayVendorDialog(props) {
           phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
           phpFormData.append("tds_percentage", TDSPercentage);
           phpFormData.append("payment_getway_status", "SUCCESS");
-          phpFormData.append("getway_process_amt", paymentAmout);
-          phpFormData.append("proccessingAmount", 0);
+          // phpFormData.append("getway_process_amt", paymentAmout);
+
           // payment_getway_status,
           // getway_process_amt,
           axios
@@ -348,21 +357,33 @@ function PayVendorDialog(props) {
       toastError("Invalid IFSC Code")
       return;
     }
+    let mailTo = userEmail;
+    if (!userEmail || userEmail == "") {
+      mailTo = "naveen@creativefuel.io";
+    }
     setPayThroughVendor(true);
-    axios
-      .post(insightsBaseUrl + `v1/payment_otp_send`, {
-        "email": "naveen@creativefuel.io"
-        // headers: {
-        //   "Content-Type": "multipart/form-data",
-        // },
-      }).then((res) => {
-        if (res.status == 200) {
-          toastAlert("OTP sent to registered Id successfully")
-        }
-      })
+    try {
+
+      axios
+        .post(insightsBaseUrl + `v1/payment_otp_send`, {
+          "email": mailTo
+          // headers: {
+          //   "Content-Type": "multipart/form-data",
+          // },
+        }).then((res) => {
+
+          if (res.status == 200) {
+            toastAlert("OTP sent to registered Id successfully")
+          } else if (res.status == 401) {
+            toastAlert("You are not authorizied make this payment")
+          }
+        })
+    } catch (error) {
+      toastAlert(error)
+    }
 
   };
-  console.log(paymentAmout, "paymentAmout")
+  // console.log(rowData, "rowData")
   return (
     <div>
       {/*Dialog Box */}
@@ -789,6 +810,10 @@ function PayVendorDialog(props) {
         TDSDeduction={TDSDeduction}
         TDSPercentage={TDSPercentage}
         paymentDate={paymentDate}
+        vendorDetail={vendorDetail}
+        adjustAmount={adjustAmount}
+        callApi={callApi}
+
       />}
 
     </div>
