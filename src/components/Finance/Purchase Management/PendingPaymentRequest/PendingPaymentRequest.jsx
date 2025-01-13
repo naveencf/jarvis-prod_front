@@ -126,7 +126,7 @@ export default function PendingPaymentRequest() {
       )
       .then((res) => {
         let y = res?.data?.body;
-        const requestPayments = y.filter((res) => res.proccessingAmount == 0 && (res.status == 0 || res.status == 3));
+        const requestPayments = y.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
         console.log(requestPayments, "resf")
         setPhpData(requestPayments);
         setIsLoading(false);
