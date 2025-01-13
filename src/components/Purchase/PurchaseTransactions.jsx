@@ -14,11 +14,17 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import View from "../AdminPanel/Sales/Account/View/View";
 import { formatDate } from "../../utils/formatDate";
 import ImageIcon from '@mui/icons-material/Image';
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
+import PurchaseTransactionFilter from "./PurchaseTransactionFilter";
+
 const PurchaseTransactions = () => {
     const { toastAlert, toastError } = useGlobalContext();
     const [transactionData, setTransactionData] = useState([]);
-    const [startDate, setStartDate] = useState([]);
-    const [endDate, setEndDate] = useState([]);
+    // const [startDate, setStartDate] = useState([]);
+    // const [endDate, setEndDate] = useState([]);
+    const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day')); // Default to 7 days ago
+    const [endDate, setEndDate] = useState(dayjs()); // Default to today
     const [openImageDialog, setOpenImageDialog] = useState(false);
     const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
     const [viewImgSrc, setViewImgSrc] = useState("");
@@ -26,26 +32,26 @@ const PurchaseTransactions = () => {
 
 
     const handleSubmitTransactionData = () => {
-        // Get today's date
-        const today = new Date();
+        // // Get today's date
+        // const today = new Date();
 
-        // Get yesterday's date
-        const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 2);
+        // // Get yesterday's date
+        // const yesterday = new Date();
+        // yesterday.setDate(today.getDate() - 7);
 
-        // Get tomorrow's date
-        const tomorrow = new Date();
-        tomorrow.setDate(today.getDate() + 2);
+        // // Get tomorrow's date
+        // const tomorrow = new Date();
+        // tomorrow.setDate(today.getDate() + 2);
 
-        // Format the dates to YYYY-MM-DD
-        const formatDatehere = (date) => date.toISOString().split("T")[0];
+        // // Format the dates to YYYY-MM-DD
+        // const formatDatehere = (date) => date.toISOString().split("T")[0];
 
-        const startDate = formatDatehere(yesterday);
-        const endDate = formatDatehere(tomorrow);
+        // const startDate = formatDatehere(yesterday);
+        // const endDate = formatDatehere(tomorrow);
 
         const formData = new FormData();
-        formData.append("start_date", startDate);
-        formData.append("end_date", endDate);
+        formData.append("start_date", startDate.format("YYYY-MM-DD"));
+        formData.append("end_date", endDate.format("YYYY-MM-DD"));
 
         axios
             .post(
@@ -81,11 +87,14 @@ const PurchaseTransactions = () => {
     };
 
 
+    // useEffect(() => {
+    //     handleSubmitTransactionData();
+
+    // }, []);
+
     useEffect(() => {
-        handleSubmitTransactionData();
-
-    }, []);
-
+        handleSubmitTransactionData(startDate.format("YYYY-MM-DD"), endDate.format("YYYY-MM-DD"));
+    }, [startDate, endDate]);
 
 
     const handleStatusCheck = async (row) => {
@@ -351,6 +360,7 @@ const PurchaseTransactions = () => {
                 link="/admin/finance-pruchasemanagement-paymentdone-transactionlist/:request_id"
             /> */}
             <div className="card" style={{ height: "600px" }}>
+
                 <div className="card-body thm_table">
 
                     <View
@@ -362,6 +372,16 @@ const PurchaseTransactions = () => {
                         rowSelectable={true}
                         pagination={[100, 200]}
                         tableName={"purchase_transaction"}
+                        addHtml={
+                            <>
+                                <PurchaseTransactionFilter startDate={startDate} endDate={endDate}
+                                    setStartDate={setStartDate} setEndDate={setEndDate}
+                                    onFilterChange={handleSubmitTransactionData} />
+
+                            </>
+                        }
+
+
                     // selectedData={setSelectedRows}
 
                     />

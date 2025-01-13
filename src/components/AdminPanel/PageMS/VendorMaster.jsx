@@ -89,7 +89,7 @@ const VendorMaster = () => {
       payment_method: '666856874366007df1dfacde', // setting bank default to dropdown
       // payment_method: "",
       bank_name: '',
-      account_type: '',
+      account_type: 'Savings',
       account_number: '',
       ifcs: '',
       upi_id: '',
@@ -107,7 +107,6 @@ const VendorMaster = () => {
     cycleId: false,
     // type: false,
   });
-  console.log('platformId', platformId);
   const [mandatoryFieldsEmpty, setMandatoryFieldsEmpty] = useState({
     mobile: false,
     altMobile: false,
@@ -206,7 +205,7 @@ const VendorMaster = () => {
     dispatch(setShowAddVendorModal());
     dispatch(setModalType('PayCycle'));
   };
-
+  console.log('isFormSubmitting', isFormSubmitting);
   const handlePayCycleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
     dispatch(setModalType('PayCycle'));
@@ -637,8 +636,9 @@ const VendorMaster = () => {
   };
   const handleAlternateMobileNumSet = (e, setState) => {
     const newContact = e.target.value;
-    if (newContact?.length <= 10) {
-      if (newContact === '' || (newContact?.length === 1 && parseInt(newContact) < 6)) {
+
+    if (/^\d*$/.test(newContact) && newContact.length <= 10) {
+      if (newContact === '' || (newContact.length === 1 && parseInt(newContact, 10) < 6)) {
         setState('');
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
@@ -908,11 +908,14 @@ const VendorMaster = () => {
   //       });
   //   }
   // };
-
   const handleFinalSubmit = async () => {
     const cleanedMobile = mobile ? String(mobile).trim() : '';
     if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
       toastError('Please fill all the mandatory fields');
+      return;
+    }
+    if (bankRows.some((bank) => bank.ifcs === '')) {
+      toastError('IFCS code is mandatory');
       return;
     }
 
@@ -1145,22 +1148,25 @@ const VendorMaster = () => {
 
   const handleCompPincode = async (event) => {
     const newValue = event.target.value;
-    setCompPin(newValue);
-    if (newValue.length === 6) {
-      try {
-        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
-        const data = response.data;
+    if (/^\d*$/.test(newValue)) {
+      setCompPin(newValue);
 
-        if (data[0].Status === 'Success') {
-          const postOffice = data[0].PostOffice[0];
-          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
-          setCompState(abbreviatedState);
-          setCompCity(postOffice.District);
-        } else {
-          console.log('Invalid Pincode');
+      if (newValue.length === 6) {
+        try {
+          const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+          const data = response.data;
+
+          if (data[0].Status === 'Success') {
+            const postOffice = data[0].PostOffice[0];
+            const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+            setCompState(abbreviatedState);
+            setCompCity(postOffice.District);
+          } else {
+            console.log('Invalid Pincode');
+          }
+        } catch (error) {
+          console.log('Error fetching details.');
         }
-      } catch (error) {
-        console.log('Error fetching details.');
       }
     }
   };
@@ -1465,7 +1471,7 @@ const VendorMaster = () => {
               {<span style={{ color: 'red', fontSize: '12px' }}>{!validator.mobile && isContactTouched1 && !mobileValid && 'Please enter valid mobile number'}</span>}
             </div>
             <div className="col-6">
-              <FieldContainer label="Alternate Mobile" fieldGrid={12} value={altMobile} required={false} type="number" onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)} />
+              <FieldContainer label="Alternate Mobile" fieldGrid={12} value={altMobile} required={false} type="text" onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)} />
               {<span style={{ color: 'red', fontSize: '12px' }}>{mandatoryFieldsEmpty.altMobile && 'Please enter alternate mobile'}</span>}
             </div>
             <div className="col-6">
@@ -1832,7 +1838,17 @@ const VendorMaster = () => {
                 />
               </div>
 
-              <FieldContainer label="PinCode *" value={homePincode} maxLength={6} required={true} onChange={handlepincode} />
+              <FieldContainer
+                label={
+                  <span>
+                    PinCode <span style={{ color: 'red' }}>*</span>
+                  </span>
+                }
+                value={homePincode}
+                maxLength={6}
+                required={true}
+                onChange={handlepincode}
+              />
               {countryCode == '91' ? (
                 <div className=" row">
                   <div className="form-group col-6">
