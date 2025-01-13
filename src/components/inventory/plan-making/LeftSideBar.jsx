@@ -146,11 +146,13 @@ const LeftSideBar = ({
       });
     }
   };
+  const platformCategory = Object.keys(updatedCategories).length > 0 ? updatedCategories : category;
+
   const handleDownload = async () => {
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
+      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {

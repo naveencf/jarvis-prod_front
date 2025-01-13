@@ -4,9 +4,6 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import React from "react";
 
 const VendorAddress = ({ vendorDetails, tab1, pageVendordata }) => {
-  console.log(vendorDetails, " 1  vendorDetails");
-  console.log(pageVendordata, " 2  pageVendordata");
-
   return (
     <div>
       <div className="cardAccordion">

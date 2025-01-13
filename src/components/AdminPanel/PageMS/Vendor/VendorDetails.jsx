@@ -36,8 +36,6 @@ export default function VendorDetails({
   const token = sessionStorage.getItem("token");
 
   const [pageVendordata, setPageVendordata] = useState(null);
-  console.log(pageVendordata, "pageVendordata");
-
   const [open, setOpen] = React.useState(true);
   const [bankRows, setBankRows] = useState([]);
 

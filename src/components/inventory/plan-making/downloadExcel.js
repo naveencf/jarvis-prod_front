@@ -76,16 +76,8 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   proposalCell.font = { bold: true, size: 36 };
 
   // Add header row with styling, starting from the second column onward
-  overviewSheet.getRow(7).values = [
-    '',
-    'Sno.',
-    'Description',
-    'Platform',
-    'Count',
-    'Deliverables',
-    'Cost',
-  ];
-  const headerColor = ["F9CB9C", "92C47C", "FCE5CD", "D9CABD", "E06666", "FFE599"]
+  overviewSheet.getRow(7).values = ['', 'Sno.', 'Description', 'Platform', 'Count', 'Deliverables', 'Cost'];
+  const headerColor = ['F9CB9C', '92C47C', 'FCE5CD', 'D9CABD', 'E06666', 'FFE599'];
   const randomNumber = Math.floor(Math.random() * 9) + 1;
   // Apply border style
   const contentBorder = {
