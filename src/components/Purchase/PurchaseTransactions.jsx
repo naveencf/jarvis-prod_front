@@ -31,7 +31,7 @@ const PurchaseTransactions = () => {
 
         // Get yesterday's date
         const yesterday = new Date();
-        yesterday.setDate(today.getDate() - 2);
+        yesterday.setDate(today.getDate() - 7);
 
         // Get tomorrow's date
         const tomorrow = new Date();
