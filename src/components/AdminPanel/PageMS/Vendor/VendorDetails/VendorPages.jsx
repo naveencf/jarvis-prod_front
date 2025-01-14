@@ -31,9 +31,8 @@ function VendorPages({ vendorDetails, tab1 }) {
     axios
       .get(
         baseUrl +
-          `v1/vendor_wise_page_master_data/${
-            tab1 === "tab1" ? vendorDetails?.vendor_id : vendorDetails?._id
-          }`,
+        `v1/vendor_wise_page_master_data/${tab1 === "tab1" ? vendorDetails?.vendor_id : vendorDetails?._id
+        }`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -51,7 +50,7 @@ function VendorPages({ vendorDetails, tab1 }) {
       setUser(res.data.data);
     });
   }, []);
-
+  console.log("vendorpages called")
   const dataGridcolumns = [
     {
       field: "S.NO",
@@ -89,7 +88,7 @@ function VendorPages({ vendorDetails, tab1 }) {
       valueGetter: ({ row }) =>
         row.ownership_type
           ? ownership?.find((item) => item._id == row.ownership_type)
-              ?.company_type_name
+            ?.company_type_name
           : "",
     },
 

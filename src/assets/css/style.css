@@ -734,7 +734,7 @@ h3,
 
 h4,
 .h4 {
-  font-size: 1.25rem;
+  font-size: 1.10rem;
 }
 
 h5,
@@ -13702,7 +13702,7 @@ body.sidebar-toggled #wrapper #content-wrapper {
   top: 0;
   right: 0;
   left: auto;
-  z-index: 1030;
+  /* z-index: 1030; */
   width: calc(100%);
 }
 
@@ -17759,12 +17759,14 @@ col,
   border-radius: 20px;
   font-size: 14px;
 }
+
 .dragndrop {
   display: flex;
   justify-content: center;
   background-color: var(--body-bg);
   padding: 20px;
   align-items: center;
+
   .form-container {
     width: 100%;
     height: 100%;
@@ -17773,6 +17775,7 @@ col,
     justify-content: center;
     align-items: center;
   }
+
   .upload-files-container {
     background-color: #f7fff7;
     width: 420px;
@@ -17785,6 +17788,7 @@ col,
     box-shadow: rgba(0, 0, 0, 0.24) 0px 10px 20px,
       rgba(0, 0, 0, 0.28) 0px 6px 6px;
   }
+
   .drag-file-area {
     border: 2px dashed #7b2cbf;
     border-radius: 40px;
@@ -17793,28 +17797,35 @@ col,
     width: 350px;
     text-align: center;
   }
+
   .drag-file-area .upload-icon {
     font-size: 50px;
   }
+
   .drag-file-area h3 {
     font-size: 26px;
     margin: 15px 0;
   }
+
   .drag-file-area label {
     font-size: 19px;
   }
+
   .drag-file-area label .browse-files-text {
     color: #7b2cbf;
     font-weight: bolder;
     cursor: pointer;
   }
+
   .browse-files span {
     position: relative;
     top: -25px;
   }
+
   .default-file-input {
     opacity: 0;
   }
+
   .cannot-upload-message {
     background-color: #ffc6c4;
     font-size: 17px;
@@ -17826,22 +17837,27 @@ col,
     color: #bb0000;
     display: none;
   }
+
   @keyframes fadeIn {
     0% {
       opacity: 0;
     }
+
     100% {
       opacity: 1;
     }
   }
+
   .cannot-upload-message span,
   .upload-button-icon {
     padding-right: 10px;
   }
+
   .cannot-upload-message span:last-child {
     padding-left: 20px;
     cursor: pointer;
   }
+
   .file-block {
     color: #f7fff7;
     background-color: #7b2cbf;
@@ -17857,21 +17873,26 @@ col,
     border-radius: 25px;
     cursor: pointer;
   }
+
   .file-info {
     display: flex;
     align-items: center;
     font-size: 15px;
   }
+
   .file-icon {
     margin-right: 10px;
   }
+
   .file-name,
   .file-size {
     padding: 0 3px;
   }
+
   .remove-file-icon {
     cursor: pointer;
   }
+
   .progress-bar {
     display: flex;
     position: absolute;
@@ -17882,6 +17903,7 @@ col,
     border-radius: 25px;
     background-color: #4bb543;
   }
+
   .upload-button {
     font-family: "Montserrat";
     background-color: #7b2cbf;
@@ -17896,8 +17918,9 @@ col,
     cursor: pointer;
   }
 }
-.crop-container{
-  width:300px;
+
+.crop-container {
+  width: 300px;
   height: 300px;
 }
 
@@ -19769,6 +19792,7 @@ hr:not([size]) {
           border-radius: 100%;
           background: #ddd;
           border: 4px solid var(--white);
+
           .edit-btn {
             transform: scale(0.8);
             position: absolute;
@@ -21665,19 +21689,20 @@ hr:not([size]) {
   }
 }
 
-.roomTooltip{
+.roomTooltip {
   background-color: blue;
   display: flex;
   align-items: center;
 }
 
-
 .tabslide {
   position: relative;
 }
+
 .tabslide .navigation {
   position: relative;
 }
+
 .tabslide .arrow-btn {
   width: 24px;
   height: 24px;
@@ -21693,44 +21718,238 @@ hr:not([size]) {
   font-weight: 500;
   color: var(--dark);
 }
+
 .tabslide .arrow-btn.prev-arrow {
   position: absolute;
   top: 50%;
   left: 0%;
   transform: translate(-50%, -50%);
 }
+
 .tabslide .arrow-btn.next-arrow {
   position: absolute;
   top: 50%;
   right: 0%;
   transform: translate(50%, -50%);
 }
+
 .scrollRow {
   width: calc(100% - -15px);
 }
 
 .scrollRow .slick-slide {
   padding: 0 10px;
-
 }
+
 .scrollRow .slick-track {
   margin: 0px 0px 0px -10px;
 }
 
-.slick-prev, .slick-next {
+.slick-prev,
+.slick-next {
   width: 30px;
   height: 30px;
 }
 
-.slick-prev:before, .slick-next:before {
+.slick-prev:before,
+.slick-next:before {
   font-size: 30px !important;
   opacity: 1 !important;
   color: var(--light) !important;
 }
+
 .scrollRow .slick-prev {
   left: -15px;
   z-index: 99;
 }
-.scrollRow .slick-next{
+
+.scrollRow .slick-next {
   right: 10px;
+}
+
+.excelDataModalDialog {
+  max-width: 100%;
+
+  .modal-content {
+    width: 96%;
+    margin: 0px auto;
+    padding: 0px 0px;
+  }
+
+  .modal-body {
+    overflow-y: auto;
+
+    .card {
+      box-shadow: none;
+      margin: 0;
+
+      .excelTableHeading {
+        position: relative;
+        top: -58px;
+        margin-bottom: -38px;
+        text-transform: capitalize;
+      }
+
+      .card-header {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .card-body {
+        padding-left: 0;
+        padding-right: 0;
+      }
+
+      .card-body.p16 {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .card-body.p12 {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+    }
+  }
+
+  hr {
+    background: transparent;
+    opacity: 1;
+    border-top: 1px solid var(--border);
+    margin: 0px 0px;
+  }
+
+  .excelDataTable {
+    border: 1px solid var(--border);
+    border-radius: var(--radiusS);
+    max-height: 460px;
+    overflow-y: auto;
+
+    table {
+      min-width: max-content;
+    }
+
+    thead {
+      height: 50px;
+      max-height: 50px;
+      background-color: var(--theme-bg);
+      font-size: 14px;
+
+      th {
+        border-bottom: 1px solid var(--border);
+        color: var(--dark);
+        font-size: 14px;
+        font-weight: 400;
+        height: 50px;
+        padding: 6px 12px;
+      }
+    }
+
+    tbody {
+      tr {
+        border-bottom: 1px solid var(--border);
+        outline: none;
+
+        td {
+          color: var(--medium);
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: 400;
+          height: 50px;
+          padding: 6px 12px;
+        }
+      }
+    }
+  }
+}
+
+.excelDataModalDialog .modal-body::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 10px;
+}
+
+.excelDataModalDialog .modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.excelDataModalDialog .modal-body::-webkit-scrollbar-thumb {
+  background: #ddd;
+}
+
+.excelDataModalDialog .modal-body::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+.excelDataTable::-webkit-scrollbar {
+  width: 4px;
+  border-radius: 10px;
+}
+
+.excelDataTable::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.excelDataTable::-webkit-scrollbar-thumb {
+  background: #ddd;
+}
+
+.excelDataTable::-webkit-scrollbar-thumb:hover {
+  background: #bbb;
+}
+
+
+
+/* Style the entire transaction slip container */
+.transaction-slip {
+  width: 300px;
+  padding: 20px;
+  background-color: #000;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  border-radius: 8px; /* Slightly rounded corners for a cleaner look */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow to make it stand out */
+}
+
+/* Style the title */
+.transaction-title {
+  font-size: 22px;
+  margin-bottom: 15px;
+  font-weight: bold;
+  background-color: #00b74a;
+}
+
+/* Style for the amount text */
+.amount {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
+/* Style the amount span for better visibility */
+.amount span {
+  font-size: 22px;
+  color: #ff9800; /* Use a different color for the amount */
+}
+
+/* Style for the paragraph elements */
+.transaction-slip p {
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+/* Optional: Add hover effect for buttons or interactive elements */
+.transaction-slip button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.transaction-slip button:hover {
+  background-color: #e68900;
 }

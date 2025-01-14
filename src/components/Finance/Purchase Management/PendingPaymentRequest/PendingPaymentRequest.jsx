@@ -134,59 +134,6 @@ export default function PendingPaymentRequest() {
         setFilterData(requestPayments);
         setPendingRequestCount(requestPayments.length);
         // // console.log(y, "y", remindData)
-        // let c = res.data.body.filter((item) => {
-        //   return remindData.some(
-        //     (item2) => item.request_id === item2.request_id
-        //   );
-        // });
-
-        // y.push(...c);
-
-        // let mergedArray = [...y, ...c];
-
-        // // Creating a set of unique request_ids from the merged data
-        // let t = new Set(mergedArray.map((item) => item.request_id));
-        // mergedArray = Array.from(t).map((request_id) => {
-        //   return mergedArray.find((item) => item.request_id === request_id);
-        // });
-
-        // mergedArray = mergedArray.filter(
-        //   (item) => item.status == 0 || item.status == 3 || item.status == 2
-        // );
-        //0-pending,1-fullypaid,2-discard,3-partial,
-        // mergedArray = mergedArray.sort((a, b) => {
-        //   const aReminder = remindData.some(
-        //     (remind) => remind.request_id === a.request_id
-        //   );
-        //   const bReminder = remindData.some(
-        //     (remind) => remind.request_id === b.request_id
-        //   );
-
-        //   if (aReminder && !bReminder) return -1;
-        //   if (!aReminder && bReminder) return 1;
-
-        //   // Add aging sorting logic if required
-        //   return new Date(a.request_date) - new Date(b.request_date);
-        // });
-
-        // mergedArray = mergedArray.sort((a, b) => {
-        //   const aReminder = remindData.some(
-        //     (remind) => remind.request_id === a.request_id
-        //   );
-        //   const bReminder = remindData.some(
-        //     (remind) => remind.request_id === b.request_id
-        //   );
-
-        //   if (aReminder && !bReminder) return -1;
-        //   if (!aReminder && bReminder) return 1;
-
-        //   // Add aging sorting logic if required
-        //   return b.aging - a.aging;
-        // });
-        // console.log(mergedArray, "mergedArray")
-
-
-
 
       })
       .catch((error) => {

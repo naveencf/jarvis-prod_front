@@ -184,7 +184,8 @@ const Inhandmore = ({ UserDetails }) => {
                 </View> */}
                 <View style={styles.tableRow}>
                     <View style={styles.tableCol}>
-                        <Text style={styles.tableCell1}>TOTAL EARNING</Text>
+                        {/* <Text style={styles.tableCell1}>TOTAL EARNING</Text> */}
+                        <Text style={styles.tableCell1}>Net Pay Before Tax</Text>
                     </View>
                     <View style={styles.tableCol}>
                         <Text style={styles.tableCell}>INR {TotalEarnings}</Text>

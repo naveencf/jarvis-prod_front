@@ -29,6 +29,7 @@ import PreviewModal from './Vendor/PreviewModal';
 import { useContext } from 'react';
 import { FormatName } from '../../../utils/FormatName';
 import { useAPIGlobalContext } from '../APIContext/APIContext';
+import { stateAbbreviations } from '../../../utils/helper';
 
 const VendorMaster = () => {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ const VendorMaster = () => {
       bank_name: '',
       account_type: 'Savings',
       account_number: '',
-      ifcs: '',
+      ifsc: '',
       upi_id: '',
       registered_number: '',
     },
@@ -139,6 +140,7 @@ const VendorMaster = () => {
   const [existError, setExistError] = useState('');
   const [busiTypeData, setBusiTypeData] = useState([]);
   const { usersDataContext } = useContext(AppContext);
+
   // const isAssets = [53].some((index) => ApiContextData[index]?.view_value === 1);
 
   const { contextData } = useAPIGlobalContext();
@@ -240,7 +242,7 @@ const VendorMaster = () => {
   const handleIFSCChange = (e, i) => {
     if (e.target.value?.length > 11) return;
     const updatedRows = [...bankRows];
-    updatedRows[i].ifcs = e.target.value;
+    updatedRows[i].ifsc = e.target.value;
     setBankRows(updatedRows);
   };
 
@@ -586,7 +588,7 @@ const VendorMaster = () => {
         bank_name: '',
         account_type: '',
         account_number: '',
-        ifcs: '',
+        ifsc: '',
         upi_id: '',
         registered_number: '',
       },
@@ -680,15 +682,10 @@ const VendorMaster = () => {
     if (!vendorName || vendorName == '' || vendorName == null || String(homePincode).length !== 6) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
-    // if (!countryCode) {
-    //   setValidator((prev) => ({ ...prev, countryCode: true }));
-    // }
     if (!mobile) {
       setValidator((prev) => ({ ...prev, mobile: true }));
     }
-    // if (!email) {
-    //   setValidator((prev) => ({ ...prev, email: true }));
-    // }
+
 
     if (!typeId) {
       setValidator((prev) => ({ ...prev, typeId: true }));
@@ -700,10 +697,6 @@ const VendorMaster = () => {
       setValidator((prev) => ({ ...prev, cycleId: true }));
     }
 
-    // if (emailIsInvalid) {
-    //   toastError("Please enter a valid email");
-    //   return;
-    // }
 
     const cleanedMobile = mobile ? String(mobile).trim() : '';
     if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
@@ -712,7 +705,7 @@ const VendorMaster = () => {
     }
 
     const formData = {
-      vendor_name: vendorName.toLowerCase().trim(),
+      vendor_name: vendorName?.toLowerCase().trim(),
       country_code: countryCode,
       mobile: mobile,
       alternate_mobile: altMobile,
@@ -742,180 +735,15 @@ const VendorMaster = () => {
     setOpenPreviewModal(true);
   };
 
-  // const handleSubmitNew = async (e) => {
-  //   console.log('handlessubmitnew');
 
-  //   e.preventDefault();
-
-  //   if (!vendorName || vendorName == '' || vendorName == null) {
-  //     setValidator((prev) => ({ ...prev, vendorName: true }));
-  //   }
-  //   if (!mobile) {
-  //     setValidator((prev) => ({ ...prev, mobile: true }));
-  //   }
-  //   if (!typeId) {
-  //     setValidator((prev) => ({ ...prev, typeId: true }));
-  //   }
-  //   if (!platformId) {
-  //     setValidator((prev) => ({ ...prev, platformId: true }));
-  //   }
-  //   if (!cycleId) {
-  //     setValidator((prev) => ({ ...prev, cycleId: true }));
-  //   }
-  //   if (
-  //     !vendorName ||
-  //     // !countryCode ||
-  //     !mobile ||
-  //     // !email ||
-  //     !typeId ||
-  //     !platformId ||
-  //     !cycleId
-  //   ) {
-  //     toastError('Please fill all the mandatory fields');
-  //     return;
-  //   }
-  //   const formData = {
-  //     vendor_name: vendorName.toLowerCase().trim(),
-  //     country_code: countryCode,
-  //     mobile: mobile,
-  //     alternate_mobile: altMobile,
-  //     email: email,
-  //     vendor_type: typeId,
-  //     vendor_platform: platformId,
-  //     pay_cycle: cycleId,
-  //     company_name: compName,
-  //     company_address: compAddress,
-  //     company_city: compCity,
-  //     company_pincode: compPin,
-  //     company_state: compState,
-  //     threshold_limit: limit,
-  //     home_address: homeAddress,
-  //     home_city: homeCity,
-  //     home_state: homeState,
-  //     home_pincode: homePincode,
-  //     created_by: userID,
-  //     vendor_category: vendorCategory,
-  //     bank_details: bankRows,
-  //     vendorLinks: whatsappLink,
-  //     closed_by: userId,
-  //     dob: dob,
-  //     busi_type: busiType,
-  //   };
-
-  //   if (!_id) {
-  //     setIsFormSubmitting2(true);
-
-  //     addVendor(formData)
-  //       .then((res) => {
-  //         toastAlert('Data Submitted Successfully');
-  //         const resID = res.data.data._id;
-  //         redirectAfterVendor(resID);
-
-  //         addCompanyData({
-  //           vendor_id: resID,
-  //           company_name: compName,
-  //           address: compAddress,
-  //           city: compCity,
-  //           pincode: compPin,
-  //           state: compState,
-  //           threshold_limit: limit,
-  //           created_by: userID,
-  //         })
-  //           .then((res) => {
-  //             // console.log(res.data, "res");
-  //           })
-  //           .catch((err) => {
-  //             toastError(err.message);
-  //           });
-
-  //         for (let i = 0; i < docDetails?.length; i++) {
-  //           const formData = new FormData();
-  //           formData.append('vendor_id', resID);
-  //           formData.append('document_name', docDetails[i].docName);
-  //           formData.append('document_no', docDetails[i].docNumber);
-  //           formData.append('document_image_upload', docDetails[i].docImage);
-
-  //           addVendorDocument(formData)
-  //             .then((res) => {
-  //               // toastAlert("Document added successfully")
-  //             })
-  //             .catch((err) => {
-  //               toastError(err.message);
-  //             });
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         toastError(err.message);
-  //         setIsFormSubmitting2(false);
-  //       });
-  //   } else {
-  //     setIsFormSubmitting2(true);
-
-  //     formData._id = _id;
-  //     updateVendor(formData)
-  //       .unwrap()
-  //       .then(() => {
-  //         toastAlert('Data Updated Successfully');
-
-  //         for (let i = 0; i < docDetails?.length; i++) {
-  //           const formData = new FormData();
-
-  //           formData.append('document_name', docDetails[i].docName);
-  //           formData.append('document_no', docDetails[i].docNumber);
-  //           formData.append('document_image_upload', docDetails[i].docImage);
-  //           axios
-  //             .put(baseUrl + `v1/document_detail/${venodrDocuments[i]?._id}`, formData, {
-  //               headers: {
-  //                 'Content-Type': 'multipart/form-data',
-  //                 Authorization: `Bearer ${token}`,
-  //               },
-  //             })
-  //             .catch((err) => {
-  //               toastError(err.message);
-  //             });
-  //         }
-  //         if (company_id) {
-  //           axios
-  //             .put(
-  //               baseUrl + `v1/company_name/${company_id}`,
-  //               {
-  //                 company_name: compName,
-  //                 address: compAddress,
-  //                 city: compCity,
-  //                 pincode: compPin,
-  //                 state: compState,
-  //                 threshold_limit: limit,
-  //                 created_by: userID,
-  //               },
-  //               {
-  //                 headers: {
-  //                   Authorization: `Bearer ${token}`,
-  //                 },
-  //               }
-  //             )
-  //             .then((res) => {})
-  //             .catch((err) => {
-  //               toastError(err.message);
-  //             });
-  //         }
-  //         setIsFormSubmitted(true);
-  //         setIsFormSubmitting2(false);
-  //       })
-  //       .catch((err) => {
-  //         toastError(err.message);
-  //         setIsFormSubmitting2(false);
-  //         console.log(err, 'err');
-  //       });
-  //   }
-  // };
   const handleFinalSubmit = async () => {
     const cleanedMobile = mobile ? String(mobile).trim() : '';
     if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
       toastError('Please fill all the mandatory fields');
       return;
     }
-    if (bankRows.some((bank) => bank.ifcs === '')) {
-      toastError('IFCS code is mandatory');
+    if (bankRows.some((bank) => bank.ifsc === '')) {
+      toastError('IFSC code is mandatory');
       return;
     }
 
@@ -934,7 +762,6 @@ const VendorMaster = () => {
     };
 
     if (!_id) {
-      console.log('id is not');
 
       setIsFormSubmitting(true);
       try {
@@ -985,7 +812,8 @@ const VendorMaster = () => {
           toastError(res?.error?.data?.message);
         } else {
           handleSuccess('Vendor data added successfully!');
-          navigate('/admin/pms-vendor-overview');
+          // navigate('/admin/pms-vendor-overview');
+          setIsFormSubmitted(true)
         }
       } catch (err) {
         handleError(err);
@@ -1003,7 +831,8 @@ const VendorMaster = () => {
           alternate_mobile: altMobile,
           account_type: forPhp?.account_type || bankRows[0].account_type,
           account_no: forPhp?.account_number || bankRows[0].account_number,
-          ifcs: forPhp?.ifcs || bankRows[0].ifcs,
+          ifsc: forPhp?.ifsc || bankRows[0].ifsc,
+          // ifsc: forPhp?.ifsc || bankRows[0].ifsc,
           bank_name: forPhp?.bank_name || bankRows[0].bank_name,
           vendor_name: vendorName,
         };
@@ -1111,7 +940,7 @@ const VendorMaster = () => {
       }
     }
   };
-  // console.log('homeCity', homeCity);
+
   const stateAbbreviations = {
     'Andhra Pradesh': 'AP',
     'Arunachal Pradesh': 'AR',
@@ -1179,18 +1008,7 @@ const VendorMaster = () => {
     navigate(-1);
   };
 
-  // const setVendorNameFun = (e) => {
-  //   setVendorName(e);
-  //   // const checkVendorExist = allVendorData?.data?.find((item) => item.vendor_name.toLowerCase() == e.toLowerCase());
-  //   // console.log(checkVendorExist)
-  //   // if(checkVendorExist == undefined){
-  //   //   setExistError('Vendor Is Not Exist, You Can Use This')
-  //   //   setMessageColor('green');
-  //   // }else{
-  //   //   setExistError('Vendor Is Already Exist, Enter Another One Or ')
-  //   //   setMessageColor('red');
-  //   // }
-  // };
+
 
   return (
     <>
@@ -1377,10 +1195,10 @@ const VendorMaster = () => {
                     required={false}
                     maxLength={6}
                     onChange={handleCompPincode}
-                    // onChange={(e) => {
-                    //   if (isNaN(e.target.value)) return;
-                    //   setCompPin(e.target.value);
-                    // }}
+                  // onChange={(e) => {
+                  //   if (isNaN(e.target.value)) return;
+                  //   setCompPin(e.target.value);
+                  // }}
                   />
                 </div>
               </>
@@ -1656,7 +1474,7 @@ const VendorMaster = () => {
                     </div>
 
                     <FieldContainer label="Account Number " disabled={_id ? true : false} type="text" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
-                    <FieldContainer required={false} maxLength={11} disabled={_id ? true : false} label="IFSC " value={bankRows[i].ifcs} onChange={(e) => handleIFSCChange(e, i)} />
+                    <FieldContainer required={false} maxLength={11} disabled={_id ? true : false} label="IFSC " value={bankRows[i].ifsc} onChange={(e) => handleIFSCChange(e, i)} />
                   </>
                 )}
                 {bankRows[i].payment_method == '666856754366007df1dfacd2' && <FieldContainer required={false} label="UPI ID " value={bankRows[i].upi_id} onChange={(e) => handleUPIidChange(e, i)} />}
@@ -1817,8 +1635,8 @@ const VendorMaster = () => {
                           objectFit: 'cover',
                           marginRight: 1,
                         }}
-                        srcSet={`https://flagcdn.com/w40/${option.code.toLowerCase()}.png 2x`}
-                        src={`https://flagcdn.com/w20/${option.code.toLowerCase()}.png`}
+                        srcSet={`https://flagcdn.com/w40/${option.code?.toLowerCase()}.png 2x`}
+                        src={`https://flagcdn.com/w20/${option.code?.toLowerCase()}.png`}
                         alt=""
                       />
                       {option?.country_name} ({option?.code}) +{option?.phone}

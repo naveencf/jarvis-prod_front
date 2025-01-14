@@ -52,6 +52,7 @@ import IndianCitiesMui from '../../ReusableComponents/IndianCitiesMui';
 import dayjs from 'dayjs';
 import { FormatName } from '../../../utils/FormatName';
 import { Line, Circle } from 'rc-progress';
+import { stateAbbreviations } from '../../../utils/helper';
 
 const colourOptions = [
   { value: 'English', label: 'English' },
@@ -1078,6 +1079,31 @@ const UserMaster = () => {
       setCity('');
       setState('');
       setPincode('');
+    }
+  };
+
+  const handlepincode = async (event) => {
+    const newValue = event.target.value;
+    // setPincode(newValue);
+    setcurrentPincode(newValue)
+    if (newValue.length === 6) {
+      try {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+        const data = response.data;
+
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+          // setState(abbreviatedState);
+          // setCity(postOffice.District);
+          setcurrentState(abbreviatedState)
+          setcurrentCity(postOffice.District)
+        } else {
+          console.log('Invalid Pincode');
+        }
+      } catch (error) {
+        console.log('Error fetching details.');
+      }
     }
   };
 
@@ -2127,6 +2153,7 @@ const UserMaster = () => {
               fieldGrid={12}
               // astric={true}
               value={currentAddress}
+              
               onChange={(e) => {
                 setCurrentAddress(e.target.value);
 
@@ -2163,28 +2190,28 @@ const UserMaster = () => {
                 // astric={true}
                 fieldGrid={3}
                 maxLength={6}
-                // placeholder="123456"
                 value={currentPincode}
-                onChange={(e) => {
-                  const value = e.target.value;
+                onChange={handlepincode}
+                // onChange={(e) => {
+                //   const value = e.target.value;
 
-                  if (/^\d{0,6}$/.test(value)) {
-                    setcurrentPincode(value);
+                //   if (/^\d{0,6}$/.test(value)) {
+                //     setcurrentPincode(value);
 
-                    // onBlur functionality
-                    if (value === '') {
-                      setMandatoryFieldsEmpty((prevState) => ({
-                        ...prevState,
-                        currentPincode: true,
-                      }));
-                    } else {
-                      setMandatoryFieldsEmpty({
-                        ...mandatoryFieldsEmpty,
-                        currentPincode: false,
-                      });
-                    }
-                  }
-                }}
+                //     // onBlur functionality
+                //     if (value === '') {
+                //       setMandatoryFieldsEmpty((prevState) => ({
+                //         ...prevState,
+                //         currentPincode: true,
+                //       }));
+                //     } else {
+                //       setMandatoryFieldsEmpty({
+                //         ...mandatoryFieldsEmpty,
+                //         currentPincode: false,
+                //       });
+                //     }
+                //   }
+                // }}
                 required={false}
               />
             </div>

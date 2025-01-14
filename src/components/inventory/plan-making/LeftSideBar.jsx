@@ -97,31 +97,37 @@ const LeftSideBar = ({
   //   return platformMap[platformId] || 'Unknown';
   // };
 
-  const HandleSavePlan = async (planStatus) => {
-    const payload = {
-      id: id,
-      plan_status: 'open',
-      plan_saved: true,
-      post_count: totalPostCount,
-      story_count: totalStoryCount,
-      no_of_pages: selectedRows?.length,
-      cost_price: totalCost,
-      own_pages_cost_price: ownPagesCost,
-    };
-
-    if (planStatus === 'close') {
-      payload.plan_status = 'close';
-    }
-
+  const HandleSavePlan = async () => {
     try {
-      // Perform both the API call and sendPlanDetails in parallel
+      const result = await Swal.fire({
+        title: 'Do you want to close the plan?',
+        text: 'You can either save the plan or close it directly.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Save Plan',
+        cancelButtonText: 'Close Plan',
+        reverseButtons: true,
+      });
+
+      const planStatus = result.isConfirmed ? 'open' : 'close';
+
+      const payload = {
+        id: id,
+        plan_status: planStatus,
+        plan_saved: true,
+        post_count: totalPostCount,
+        story_count: totalStoryCount,
+        no_of_pages: selectedRows?.length,
+        cost_price: totalCost,
+        own_pages_cost_price: ownPagesCost,
+      };
+
       const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planData, planStatus)]);
 
-      // Check if the fetch request was successful
       if (fetchResponse.ok) {
         Swal.fire({
-          title: 'Success!',
-          text: 'Plan has been saved successfully.',
+          title: result.isConfirmed ? 'Plan Saved!' : 'Plan Closed!',
+          text: result.isConfirmed ? 'Plan has been saved successfully.' : 'Plan has been closed successfully.',
           icon: 'success',
           confirmButtonText: 'OK',
         }).then(() => {
@@ -130,7 +136,7 @@ const LeftSideBar = ({
       } else {
         Swal.fire({
           title: 'Error!',
-          text: 'Failed to save the plan. Please try again.',
+          text: 'Failed to save or close the plan. Please try again.',
           icon: 'error',
           confirmButtonText: 'OK',
         });
@@ -146,6 +152,7 @@ const LeftSideBar = ({
       });
     }
   };
+
   const platformCategory = Object.keys(updatedCategories).length > 0 ? updatedCategories : category;
 
   const handleDownload = async () => {
@@ -456,7 +463,7 @@ const LeftSideBar = ({
             <span>1</span>
           </h6> */}
           {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
-            const categoryName = category?.find((item) => item?._id === categoryId)?.page_category || 'Unknown'; // Get category name or default to 'Unknown'
+            const categoryName = category?.find((item) => item?._id === categoryId)?.page_category || 'Unknown';
             return (
               <h6 onClick={handleToggleBtn} key={categoryId}>
                 {formatString(categoryName)}
@@ -465,37 +472,11 @@ const LeftSideBar = ({
             );
           })}
         </div>
-        <ExcelPreviewModal
-          open={openPreviewModal} // Pass the modal open state
-          updatedCategories={updatedCategories}
-          setUpdatedCategories={setUpdatedCategories}
-          onClose={() => setOpenPreviewModal(false)} // Pass the close handler
-          previewData={previewData} // Pass the preview data
-          categories={category}
-          agencyFees={agencyFees}
-          setAgencyFees={setAgencyFees}
-          selectedRow={selectedRow}
-          category={category}
-          postCount={postCount}
-          storyPerPage={storyPerPage}
-          planDetails={planDetails}
-          checkedDescriptions={checkedDescriptions}
-          setDeliverableText={setDeliverableText}
-          deliverableText={deliverableText}
-          isDownloading={isDownloading}
-          downloadExcel={handleDownload}
-          handleGetSpreadSheet={handleGetSpreadSheet}
-        />
+        <ExcelPreviewModal open={openPreviewModal} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
         <div className="planSmall planLarge">
           {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
-              <h6
-                onClick={() =>
-                  handleOpenModal(
-                    type.charAt(0).toUpperCase() + type.slice(1) // Open modal for ownership type
-                  )
-                }
-              >
+              <h6 onClick={() => handleOpenModal(type.charAt(0).toUpperCase() + type.slice(1))}>
                 {type.charAt(0).toUpperCase() + type.slice(1)} Pages : {ownershipCounts[type].count} <br />
                 Total Post & Story Cost : ₹ {Math.round(ownershipCounts[type].totalCost)}
                 {/* <h6 className=""></h6> */}
@@ -578,7 +559,7 @@ const LeftSideBar = ({
           {/* Category Count */}
           <div className="nav-item nav-item-single">
             <div className="row pl16 pr16 border-bottom">
-              {Object.entries(pageCategoryCount).map(([categoryId, count]) => {
+              {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
                 const categoryName = category?.find((item) => item._id === categoryId)?.page_category || 'Unknown';
 
                 return (

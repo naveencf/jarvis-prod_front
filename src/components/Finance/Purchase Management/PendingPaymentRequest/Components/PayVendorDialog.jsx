@@ -63,7 +63,8 @@ function PayVendorDialog(props) {
   const [payMentProof, setPayMentProof] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [vendorDetail, setVendorDetail] = useState({});
-
+  const [vendorBankDetail, setVendorBankDetail] = useState([]);
+  const [selectedBankIndex, setSelectedBankIndex] = useState(0);
   // const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
@@ -91,19 +92,21 @@ function PayVendorDialog(props) {
         // console.log(defaultOption, "paymentModeData", res.data)
       }
     });
-    axios.get(`${baseUrl}` + `v1/vendordata/${rowData?.vendor_id}`).then((res) => {
+
+    axios.get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${rowData?.vendor_id}?isNumberId=true`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
       if (res.status == 200) {
-        setVendorDetail(res.data.data)
+        // setVendorDetail(res.data.data)
+        setVendorBankDetail(res.data.data)
         console.log(res.data.data, "res.data.data")
       }
     });
   }, []);
 
-  // useEffect(() => {
-  //   const initialAdjustmentAmt = netAmount - Math.floor(paymentAmout);
-  //   const formattedAdjustmentAmt = initialAdjustmentAmt.toFixed(1);
-  //   setAdjustAmount(formattedAdjustmentAmt);
-  // }, [rowData, paymentAmout]);
+
 
   useEffect(() => {
     const isTDSMandatory =
@@ -131,7 +134,7 @@ function PayVendorDialog(props) {
     setGstHold(e.target.checked);
     setGSTHoldAmount(rowData.gst_amount);
   };
-
+  console.log(rowData, "rowData")
   const handlePayVendorClick = (e) => {
     e.preventDefault();
     // displayRazorpay(paymentAmout);
@@ -240,7 +243,7 @@ function PayVendorDialog(props) {
         }
       });
   };
-
+  // console.log(vendorBankDetail, "vendorBankDetail")
   const handleTDSDeduction = (e) => {
     // console.log(e.target.checked, "e.target.checked", TDSPercentage, TDSValue);
     setTDSDeduction(e.target.checked);
@@ -294,20 +297,7 @@ function PayVendorDialog(props) {
     }
   };
 
-  const getPaymentStatus = (status) => {
-    switch (status) {
-      case "0":
-        return "Pending";
-      case "1":
-        return "Full-Paid";
-      case "2":
-        return "Discard";
-      case "3":
-        return "Partial";
-      default:
-        return "";
-    }
-  };
+
 
   const handleClosePayDialog = () => {
     setPayDialog(false);
@@ -383,7 +373,7 @@ function PayVendorDialog(props) {
     }
 
   };
-  // console.log(rowData, "rowData")
+
   return (
     <div>
       {/*Dialog Box */}
@@ -403,7 +393,8 @@ function PayVendorDialog(props) {
           <CloseIcon />
         </IconButton>
         <DialogContent>
-          <ReadableList rowData={rowData} />
+          <ReadableList rowData={rowData} vendorDetail={vendorDetail} vendorBankDetail={vendorBankDetail} selectedBankIndex={selectedBankIndex}
+            setSelectedBankIndex={setSelectedBankIndex} />
           <Divider />
 
           <div className="row gap-3">
@@ -562,25 +553,6 @@ function PayVendorDialog(props) {
                 views={["year", "month", "day"]}
               />
             </LocalizationProvider>
-            {/* <Autocomplete
-            onChange={(e, value) => setPaymentMode(value)}
-            disablePortal
-            className="col mt-1"
-            id="combo-box-demo"
-            options={
-              paymentModeData.length > 0
-                ? paymentModeData?.map((item) => item.payment_mode)
-                : []
-            }
-            fullWidth={true}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Payment Mode *"
-                placeholder="Payment Mode"
-              />
-            )}
-          /> */}
 
             <Autocomplete
               onChange={(e, value) => setPaymentMode(value || null)}
@@ -598,53 +570,7 @@ function PayVendorDialog(props) {
             />
           </div>
           <div className="row gap-3">
-            {/* <TextField
-              onChange={(e) => {
-                // rowData.balance_amount;
 
-                const currentValue = e.target.value;
-                // if (!e.target.value > 0) {
-                //   toastError("Payment Amount is not Correct");
-                //   return
-                // }
-                if (/^\d+$/.test(currentValue) || currentValue == "") {
-                  // setPaymentAmount(currentValue);
-
-                  if (currentValue <= +rowData.balance_amount) {
-                    setPaymentAmount(Number(currentValue));
-                    if (currentValue < 1000) {
-                      setGatewayPaymentMode("IMPS")
-                    }
-                    // setAdjustAmount( rowData.balance_amount  - currentValue - TDSValue)
-                    // setPaymentStatus;
-                  } else {
-                    toastError(
-                      "Payment Amount should be less than or equal to Requested Amount"
-                    );
-                  }
-                  if (currentValue < Math.floor(netAmount)) {
-                    setPaymentStatus("Partial");
-                  } else {
-                    setPaymentStatus("Full");
-                  }
-                }
-                else {
-                  setPaymentAmount(0);
-                }
-
-              }}
-              className="col"
-              autoFocus
-              type="number"
-              margin="dense"
-              id="name"
-              label="Paid Amount *"
-              variant="outlined"
-              fullWidth
-              value={
-                paymentAmout == 0 ? paymentAmout : Math.floor(paymentAmout)
-              }
-            /> */}
             <TextField
               onChange={(e) => {
                 const currentValue = e.target.value;
@@ -810,9 +736,11 @@ function PayVendorDialog(props) {
         TDSDeduction={TDSDeduction}
         TDSPercentage={TDSPercentage}
         paymentDate={paymentDate}
-        vendorDetail={vendorDetail}
+        vendorBankDetail={vendorBankDetail}
         adjustAmount={adjustAmount}
         callApi={callApi}
+        selectedBankIndex={selectedBankIndex}
+        setSelectedBankIndex={setSelectedBankIndex}
 
       />}
 

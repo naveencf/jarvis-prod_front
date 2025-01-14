@@ -1,4 +1,4 @@
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useParams, useLocation } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -34,7 +34,8 @@ const Navbar = () => {
   const deptId = decodedToken.dept_id;
   const loginUserId = decodedToken.id;
   const RoleID = decodedToken.role_id;
-
+  const { salesRoute } = useParams();
+  const location = useLocation();
   const [count, setCount] = useState(0);
   const [loginUserData, setLoginUserData] = useState([]);
   const [notificationData, setNotificationData] = useState([]);
@@ -93,13 +94,15 @@ const Navbar = () => {
   //   } catch (error) {}
   // };
 
+  // Check if the current route contains the word 'sales'
+  const isSalesRoute = location.pathname.includes("sales");
+
   const getUserBadge = async () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-          `sales/badges_sales_booking_data${
-            RoleID != 1 ? `?userId=${loginUserId}` : ""
-          }`,
+        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -196,12 +199,12 @@ const Navbar = () => {
           </li>
 
           {/* {deptId == 36 && ( */}
-          {(deptId == 36 || RoleID == 1 || loginUserId == 229) &&
+          {(deptId == 36 || RoleID == 1 || loginUserId == 229) && isSalesRoute &&
             data[52]?.view_value == 1 && (
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -236,7 +239,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedOutstandingAmount
+                                userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -249,7 +252,7 @@ const Navbar = () => {
                               Un-Billed Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalUnEarnedOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>

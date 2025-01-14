@@ -48,8 +48,8 @@ const RightDrawer = ({
   // selectAllRows,
   // deSelectAllRows,
   setSelectedCategory,
-  platformData,
-  activeTabPlatform,
+  // platformData,
+  // activeTabPlatform,
   handlePlatform,
   pageList,
 }) => {
@@ -309,7 +309,7 @@ const RightDrawer = ({
       <div className="filterWrapper" role="presentation">
         <div className="filterWrapperBody">
           <div className="row">
-            <div className="form-group col-12 mb16">
+            {/* <div className="form-group col-12 mb16">
               <CustomSelect
                 label="Select Platform"
                 fieldGrid="12"
@@ -321,9 +321,9 @@ const RightDrawer = ({
                 optionLabel="label"
                 selectedId={activeTabPlatform}
                 setSelectedId={handlePlatform}
-                multiple={true} // Enable multiselect
+                multiple={true}
               />
-            </div>
+            </div> */}
 
             {/* Follower Filter */}
             <div className="form-group col-12 mb8">
