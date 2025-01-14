@@ -22,12 +22,12 @@ const IndianCitiesMui = ({ selectedState, selectedCity, onChange }) => {
 
   const determineValue = () => {
     if (selectedCity !== '' && selectedCity !== null) {
-      return cities.find((city) => city.name.toLowerCase() === selectedCity.toLowerCase()) || selectedCity;
+      return cities.find((city) => city.name?.toLowerCase() === selectedCity?.toLowerCase()) || selectedCity;
     }
     return null;
   };
 
-  const options = [...cities.map((city) => city.name), ...(inputValue && !cities.some((city) => city.name.toLowerCase() === inputValue.toLowerCase()) ? [`Add "${inputValue}" manually`] : [])];
+  const options = [...cities.map((city) => city.name), ...(inputValue && !cities?.some((city) => city.name?.toLowerCase() === inputValue.toLowerCase()) ? [`Add "${inputValue}" manually`] : [])];
  
   return (
     <Autocomplete

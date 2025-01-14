@@ -64,7 +64,7 @@ export default function VendorBankDetailModal() {
       valueGetter: ({ row }) =>
         row.payment_method
           ? payData?.find((ele) => ele._id == row.payment_method)
-              ?.payMethod_name
+            ?.payMethod_name
           : 'NA',
     },
     {
@@ -92,10 +92,10 @@ export default function VendorBankDetailModal() {
       valueGetter: ({ row }) => (row.account_type ? row.account_type : 'NA'),
     },
     {
-      field: 'ifcs',
+      field: 'ifsc',
       headerName: 'IFSC ',
       width: 200,
-      valueGetter: ({ row }) => (row.ifcs ? row.ifcs : 'NA'),
+      valueGetter: ({ row }) => (row.ifsc ? row.ifsc : 'NA'),
     },
     {
       field: 'account_number',

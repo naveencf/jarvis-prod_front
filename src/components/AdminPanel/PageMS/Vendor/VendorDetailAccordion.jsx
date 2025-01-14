@@ -53,7 +53,7 @@ const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
   borderTop: '1px solid rgba(0, 0, 0, .125)',
 }));
 
-export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 }) {
+export default function VendorDetailAccordion({ vendorDetails, bankRows, tab1 }) {
   console.log('vendordetail', vendorDetails, 'bankRows', bankRows);
   const [expanded, setExpanded] = useState('panel1');
   const [open, setOpen] = useState(false);
@@ -68,8 +68,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
 
   const { data: documentData, isLoading: isDocumentDataLoading } =
     useGetVendorDocumentByVendorDetailQuery(vendorDetails?._id);
-    console.log(documentData,'documentData');
-    
+  console.log(documentData, 'documentData');
+
   // const panData =
   //   !isDocumentDataLoading &&
   //   documentData?.find((ele) => ele.document_name == "Pan card");
@@ -170,8 +170,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                     primary={
                       vendorDetails?.vendor_platform
                         ? platformData.find(
-                            (ele) => ele._id == vendorDetails.vendor_platform
-                          )?.platform_name
+                          (ele) => ele._id == vendorDetails.vendor_platform
+                        )?.platform_name
                         : 'NA'
                     }
                   />
@@ -181,8 +181,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                     primary={
                       vendorDetails?.vendor_type
                         ? vendorTypeData.find(
-                            (ele) => ele._id == vendorDetails?.vendor_type
-                          )?.type_name
+                          (ele) => ele._id == vendorDetails?.vendor_type
+                        )?.type_name
                         : 'NA'
                     }
                   />
@@ -252,8 +252,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                     primary={
                       vendorDetails?.home_state
                         ? states.find(
-                            (ele) => ele.isoCode == vendorDetails?.home_state
-                          )?.name
+                          (ele) => ele.isoCode == vendorDetails?.home_state
+                        )?.name
                         : 'NA'
                     }
                   />
@@ -311,8 +311,8 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                     primary={
                       companyData?.state
                         ? states.find(
-                            (ele) => ele.isoCode == companyData?.state
-                          )?.name
+                          (ele) => ele.isoCode == companyData?.state
+                        )?.name
                         : 'NA'
                     }
                   />
@@ -377,9 +377,9 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                           primary={
                             ele?.bank_name
                               ? bankName?.find(
-                                  (bank) =>
-                                    bank._id == bankData?.at(1)?.bank_name
-                                )?.bank_name
+                                (bank) =>
+                                  bank._id == bankData?.at(1)?.bank_name
+                              )?.bank_name
                               : 'NA'
                           }
                         />
@@ -391,7 +391,7 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                         <ListItemText primary={ele?.account_number} />
                       </ListItemButton>
                       <ListItemButton>
-                        <ListItemText primary={ele?.ifcs} />
+                        <ListItemText primary={ele?.ifsc} />
                       </ListItemButton>
                       <ListItemButton>
                         {/* <ListItemText primary={ele?.upi_id} /> */}
@@ -459,15 +459,15 @@ export default function VendorDetailAccordion({ vendorDetails, bankRows ,tab1 })
                         <ListItemText primary={ele?.account_number} />
                       </ListItemButton>
                       <ListItemButton>
-                        <ListItemText primary={ele?.ifcs} />
+                        <ListItemText primary={ele?.ifsc} />
                       </ListItemButton> */}
                       <ListItemButton>
                         <ListItemText
                           primary={
                             ele?.payment_method
                               ? payData?.find(
-                                  (bank) => bank._id === ele.payment_method
-                                )?.payMethod_name
+                                (bank) => bank._id === ele.payment_method
+                              )?.payMethod_name
                               : 'NA'
                           }
                         />

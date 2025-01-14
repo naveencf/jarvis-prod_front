@@ -32,7 +32,8 @@ const PayThroughVendorDialog = (props) => {
     setPayThroughVendor,
     rowSelectionModel,
     filterData, handlePayVendorClick, handleClosePayDialog, paymentStatus, gatewayPaymentMode, setGatewayPaymentMode, rowData, paymentAmout, userName, payRemark, TDSValue, GSTHoldAmount, gstHold, TDSDeduction,
-    TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi
+    TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi, selectedBankIndex, vendorBankDetail,
+    setSelectedBankIndex
   } = props;
 
 
@@ -40,11 +41,7 @@ const PayThroughVendorDialog = (props) => {
     setPayThroughVendor(false);
   };
 
-  // useEffect(() => {
-  //   const initialAdjustmentAmt = netAmount - paymentAmout;
-  //   const formattedAdjustmentAmt = initialAdjustmentAmt?.toFixed(1);
-  //   setAdjustAmount(formattedAdjustmentAmt);
-  // }, [rowData, paymentAmout]);
+
   function extractPayeeName(fullString) {
     // Use a regular expression to match the name before the parentheses
     const match = fullString.match(/^([^(]+)\s*\(/);
@@ -59,14 +56,8 @@ const PayThroughVendorDialog = (props) => {
         return;
       }
       const selectedRow = rowSelectionModel[0];
-      // return;
-      // if (vendorDetail?.mobile.length != 10) {
-      //   console.log(vendorDetail?.mobile, "mobile", vendorDetail?.mobile.length, "vendorDetail", vendorDetail)
-      //   toastError("Mobile number is not valid for this payment.");
-      //   return;
-      // }
-      // else 
-      if (vendorDetail?.ifsc == "") {
+
+      if (vendorBankDetail[selectedBankIndex]?.ifsc == "") {
         toastError("Branch Code is not valid.");
         return;
 
@@ -88,11 +79,11 @@ const PayThroughVendorDialog = (props) => {
       const paymentPayload = {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
-        payeeName: extractPayeeName(vendorDetail?.vendor_name),
-        accountNumber: vendorDetail?.account_no,
-        branchCode: vendorDetail?.ifsc,
-        email: vendorDetail?.email,
-        phone: vendorDetail?.mobile,
+        payeeName: extractPayeeName(selectedRow?.vendor_name,),
+        accountNumber: vendorBankDetail[selectedBankIndex]?.account_no,
+        branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
+        email: 'naveen@creativefuel.io',
+        phone: "9109102483",
         amount: {
           currency: "INR",
           value: paymentAmout * 100,
@@ -100,7 +91,7 @@ const PayThroughVendorDialog = (props) => {
         mode: gatewayPaymentMode || "NEFT",
         remarks: "Creativefuel",
         // vendorId: "67690a8250051ca0d5074dd6",
-        vendorName: vendorDetail?.vendor_name,
+        vendorName: selectedRow?.vendor_name,
         vendorPhpId: selectedRow?.vendor_id,
         requestId: selectedRow?.request_id,
         zohoVendorId: "1111",

@@ -17,6 +17,7 @@ import ImageIcon from '@mui/icons-material/Image';
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import PurchaseTransactionFilter from "./PurchaseTransactionFilter";
+import html2canvas from "html2canvas";
 
 const PurchaseTransactions = () => {
     const { toastAlert, toastError } = useGlobalContext();
@@ -30,6 +31,64 @@ const PurchaseTransactions = () => {
     const [viewImgSrc, setViewImgSrc] = useState("");
     // const { request_id } = useParams();
 
+   
+    const downloadSlipAsImage = (rowData) => {
+        // Create a container div for the content that will be captured
+        const slipElement = document.createElement('div');
+        slipElement.style.width = '300px';
+        slipElement.style.padding = '20px';
+        slipElement.style.backgroundColor = '#fff';
+        slipElement.style.color = '#000';
+        slipElement.style.fontFamily = 'Arial, sans-serif'; // Make sure the text is legible
+        slipElement.style.textAlign = 'center'; // Align the text to the left
+        slipElement.style.position = 'absolute'; // Prevent layout impact
+        slipElement.style.top = '0'; // Set it to a visible location
+        slipElement.style.left = '0'; // Ensure it's placed within viewable area
+        
+        // Add the dynamic content into the container
+        slipElement.innerHTML = `
+              <h3 class="transaction-title">Transaction Slip</h3>
+        <p class="amount">Paid Amount: <span>${rowData.paid_amount}</span></p>
+        <p><strong>Payment Date:</strong> ${rowData.payment_date}</p>
+        <p><strong>Bank Name:</strong> Yash Bank</p>
+        <p><strong>Payment Reference ID:</strong> ${rowData.paymentReferenceId}</p>
+        <p><strong>Vendor Name:</strong> ${rowData.vendor_name}</p>
+        `;
+        
+    
+        // Append the div to the body temporarily for rendering
+        document.body.appendChild(slipElement);
+        
+        // Ensure content is rendered before taking the screenshot
+        setTimeout(() => {
+            // Use html2canvas to take a screenshot of the slipElement
+            html2canvas(slipElement, {
+                useCORS: true,  // Enable CORS for external resources (images, fonts)
+                logging: true,  // Enable logging for debugging
+                allowTaint: true,  // Allow tainted content (e.g., third-party images)
+                letterRendering: true,  // Improve text rendering
+                foreignObjectRendering: true,  // Force better rendering of text
+            }).then((canvas) => {
+                // Convert canvas to a data URL (PNG image)
+                const image = canvas.toDataURL('image/png');
+            
+                // Create a temporary download link
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `Transaction_Slip_${rowData.key}.png`; // Download image with dynamic filename
+                link.click(); // Trigger the download
+            
+                // Clean up by removing the slipElement from the DOM
+                document.body.removeChild(slipElement);
+            }).catch((error) => {
+                console.error('Error while capturing the image:', error);
+            });
+        }, 100);  // Increase delay to 1000ms to allow for full rendering
+    };
+    
+    
+      
+      
 
     const handleSubmitTransactionData = () => {
         // // Get today's date
@@ -190,7 +249,18 @@ const PurchaseTransactions = () => {
             },
             width: 100,
         },
-
+        { 
+            key: "slip", 
+            name: "Slip", 
+            renderRowCell: (row) => (
+              <button 
+                onClick={() => downloadSlipAsImage(row)} 
+                style={{ cursor: "pointer" }}
+              >
+                Download Slip
+              </button>
+            ) 
+          },
 
         {
             key: "evidence",
@@ -330,9 +400,17 @@ const PurchaseTransactions = () => {
             renderRowCell: (row) => {
 
                 const handleCopy = () => {
-                    const { bankTransactionReferenceId, payment_amount } = row;
+                    const { bankTransactionReferenceId, payment_amount, payment_date, account_no } = row;
                     const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
-                    navigator.clipboard.writeText(textToCopy)
+                    // Create the message
+                    // no. ${account_no?.slice(-4)}
+                    const message = `
+    Amount of ₹${payment_amount}/- has been released from CreativeFuel to your bank account  on ${row.payment_date}.
+    The reference ID for this transaction is ${bankTransactionReferenceId}.
+
+    Thank you for doing business with us.
+`;
+                    navigator.clipboard.writeText(message)
                         .then(() => toastAlert("Copied to clipboard!"))
                         .catch((err) => console.error("Failed to copy text:", err));
                 };

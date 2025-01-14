@@ -28,6 +28,7 @@ import { constant } from "../../../utils/constants";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
 import {PDFDownloadLink } from "@react-pdf/renderer";
+import { stateAbbreviations } from "../../../utils/helper";
 
 const castOption = ["General", "OBC", "SC", "ST"];
 const colourOptions = [
@@ -1394,6 +1395,32 @@ const handleJoiningDate = (e) =>{
     }
   };
 
+
+  const handlepincode = async (event) => {
+    const newValue = event.target.value;
+    // setPincode(newValue);
+    setcurrentPincode(newValue)
+    if (newValue.length === 6) {
+      try {
+        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+        const data = response.data;
+
+        if (data[0].Status === 'Success') {
+          const postOffice = data[0].PostOffice[0];
+          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+          // setState(abbreviatedState);
+          // setCity(postOffice.District);
+          setcurrentState(abbreviatedState)
+          setcurrentCity(postOffice.District)
+        } else {
+          console.log('Invalid Pincode');
+        }
+      } catch (error) {
+        console.log('Error fetching details.');
+      }
+    }
+  };
+
   const handleFullNameChange = (event) => {
     let userName = event.target.value;
 
@@ -2037,12 +2064,13 @@ const EMPPF = isApplicable == "pf_and_esic"
               fieldGrid={3}
               maxLength={6}
               value={currentPincode}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (/^\d{0,6}$/.test(value)) {
-                  setcurrentPincode(value);
-                }
-              }}
+              onChange={handlepincode}
+              // onChange={(e) => {
+              //   const value = e.target.value;
+              //   if (/^\d{0,6}$/.test(value)) {
+              //     setcurrentPincode(value);
+              //   }
+              // }}
               required={false}
             />
           </div>
@@ -2096,6 +2124,7 @@ const EMPPF = isApplicable == "pf_and_esic"
               value={pincode}
               fieldGrid={3}
               maxLength={6}
+              // onChange={handlepincode}
               onChange={(e) => {
                 const value = e.target.value;
                 if (/^\d{0,6}$/.test(value)) {

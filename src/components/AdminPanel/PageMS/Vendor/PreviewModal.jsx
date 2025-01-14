@@ -18,9 +18,9 @@ const PreviewModal = ({
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
   const { data: cycle } = useGetPmsPayCycleQuery();
-  const cycleData = cycle?.data; 
+  const cycleData = cycle?.data;
   const { data: vendor } = useGetAllVendorTypeQuery();
-const typeData = vendor?.data; 
+  const typeData = vendor?.data;
 
   return (
     <Modal
@@ -66,11 +66,11 @@ const typeData = vendor?.data;
                 'Alternate Mobile': previewData.alternate_mobile,
                 'Email': previewData.email,
                 'Vendor Type': typeData?.find((item) => item?._id == previewData?.vendor_type)
-                ?.type_name,
-                'Vendor Platform':platformData?.find((item) => item?._id == previewData.vendor_platform)
-                ?.platform_name,
+                  ?.type_name,
+                'Vendor Platform': platformData?.find((item) => item?._id == previewData.vendor_platform)
+                  ?.platform_name,
                 'Pay Cycle': cycleData?.find((item) => item?._id == previewData?.pay_cycle)
-                ?.cycle_name,
+                  ?.cycle_name,
                 'Company Name': previewData.company_name,
                 'Company Address': previewData.company_address,
                 'Company City': previewData.company_city,
@@ -94,56 +94,56 @@ const typeData = vendor?.data;
 
         {/* Bank Details Section */}
         <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
-        Bank Details:
-      </Typography>
-      
-      {bankRows?.length > 0 ? (
-        bankRows.map((row, i) => (
-          <Card key={i} sx={{ mb: 3, p: 2, boxShadow: 3 }}>
-            <CardContent>
-              <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                <strong>Payment Method:</strong>{' '}
-                {payData?.find((option) => option._id === row.payment_method)?.payMethod_name || 'N/A'}
-              </Typography>
+          Bank Details:
+        </Typography>
 
-              {/* Payment method-specific details */}
-              <Grid container spacing={2}>
-                {row.payment_method === '666856874366007df1dfacde' && (
-                  <>
-                    <Grid item xs={6}>
-                      <Typography><strong>Bank Name:</strong> {row?.bank_name || 'N/A'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography><strong>Account Type:</strong> {row.account_type || 'N/A'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography><strong>Account Number:</strong> {row.account_number || 'N/A'}</Typography>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Typography><strong>IFSC Code:</strong> {row?.ifcs || 'N/A'}</Typography>
-                    </Grid>
-                  </>
-                )}
+        {bankRows?.length > 0 ? (
+          bankRows.map((row, i) => (
+            <Card key={i} sx={{ mb: 3, p: 2, boxShadow: 3 }}>
+              <CardContent>
+                <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                  <strong>Payment Method:</strong>{' '}
+                  {payData?.find((option) => option._id === row.payment_method)?.payMethod_name || 'N/A'}
+                </Typography>
 
-                {row.payment_method === '666856754366007df1dfacd2' && (
-                  <Grid item xs={12}>
-                    <Typography><strong>UPI ID:</strong> {row.upi_id || 'N/A'}</Typography>
-                  </Grid>
-                )}
+                {/* Payment method-specific details */}
+                <Grid container spacing={2}>
+                  {row.payment_method === '666856874366007df1dfacde' && (
+                    <>
+                      <Grid item xs={6}>
+                        <Typography><strong>Bank Name:</strong> {row?.bank_name || 'N/A'}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography><strong>Account Type:</strong> {row.account_type || 'N/A'}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography><strong>Account Number:</strong> {row.account_number || 'N/A'}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography><strong>IFSC Code:</strong> {row?.ifsc || 'N/A'}</Typography>
+                      </Grid>
+                    </>
+                  )}
 
-                {(row.payment_method === '66681c3c4366007df1df1481' ||
-                  row.payment_method === '666856624366007df1dfacc8') && (
-                  <Grid item xs={12}>
-                    <Typography><strong>Registered Mobile Number:</strong> {row.registered_number || 'N/A'}</Typography>
-                  </Grid>
-                )}
-              </Grid>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <Typography>No bank details provided.</Typography>
-      )}
+                  {row.payment_method === '666856754366007df1dfacd2' && (
+                    <Grid item xs={12}>
+                      <Typography><strong>UPI ID:</strong> {row.upi_id || 'N/A'}</Typography>
+                    </Grid>
+                  )}
+
+                  {(row.payment_method === '66681c3c4366007df1df1481' ||
+                    row.payment_method === '666856624366007df1dfacc8') && (
+                      <Grid item xs={12}>
+                        <Typography><strong>Registered Mobile Number:</strong> {row.registered_number || 'N/A'}</Typography>
+                      </Grid>
+                    )}
+                </Grid>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <Typography>No bank details provided.</Typography>
+        )}
 
         {/* Document Details Section */}
         <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2 }}>Document Details:</Typography>

@@ -3,6 +3,7 @@ import { Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, Ta
 import { useSendPlanDetails } from './apiServices';
 import { useParams } from 'react-router-dom';
 import formatString from '../../../utils/formatString';
+import { X } from '@phosphor-icons/react';
 
 const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -126,6 +127,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
     sendPlanDetails(finalPreviewData);
     setMergedCategories([]);
   };
+
   const handleClose = () => {
     onClose();
     if (updatedCategoryData) {
@@ -164,203 +166,306 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
     setOldCategoryName('');
     setNewCategoryName('');
   };
+
   return (
-    <Modal open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '90%',
-          bgcolor: 'background.paper',
-          boxShadow: 24,
-          p: 4,
-        }}
+    <Modal className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable" open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
+      <div
+        className="modal-content"
+        style={
+          {
+            // position: "absolute",
+            // top: "55%",
+            // left: "50%",
+            // transform: "translate(-50%, -50%)",
+            // backgroundColor: "white",
+            // boxShadow: "0px 4px 24px rgba(0, 0, 0, 0.2)",
+          }
+        }
       >
-        <Button
-          onClick={handleClose}
-          sx={{
-            position: 'absolute',
-            top: 8,
-            right: 8,
-          }}
-        >
-          Close
-        </Button>
-
-        <Typography id="preview-modal-title" variant="h6" component="h2">
-          Excel Data Preview
-        </Typography>
-        {/* Rename Category Section */}
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h6" component="h4">
-            Rename Category
-          </Typography>
-          <FormControl sx={{ mr: 2, mt: 1, width: '200px' }}>
-            <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} label="Old Category" variant="outlined" />} />
-          </FormControl>
-          <FormControl sx={{ mt: 1, width: '200px' }}>
-            <TextField value={newCategoryName} onChange={(event) => setNewCategoryName(event.target.value)} label="New Category Name" variant="outlined" />
-          </FormControl>
-          <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleRenameCategory} disabled={!oldCategoryName || !newCategoryName}>
-            Rename Category
+        <div className="modal-header">
+          <h4 id="preview-modal-title" className="modal-title">
+            Excel Data Preview
+          </h4>
+          <Button
+            className="icon sm"
+            onClick={handleClose}
+            sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
+            }}
+          >
+            <X />
           </Button>
-        </Box>
-        <div className="row">
-          <div className="col d-flex justify-content-center align-items-center">
-            <Typography variant="body1">Agency Fee Percentage</Typography>
-            <TextField
-              type="number"
-              value={agencyFees || ''}
-              onChange={handleAgencyFeeChange}
-              label="Enter Agency Fee %"
-              inputProps={{
-                min: 0,
-                max: 100,
-              }}
-              sx={{ mt: 1, width: '11rem' }}
-            />
-            <Typography variant="body1">Deliverable Text</Typography>
-            <TextField value={deliverableText || ''} onChange={handleDeliverableTextChange} label="Write Deliverable text" sx={{ mt: 1, width: '11rem' }} />
+        </div>
+        <div className="modal-body">
+          <div className="row">
+            <div className="col-12 mb12">
+              <h5>Rename Category</h5>
+            </div>
           </div>
-          {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
+          <div className="row">
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <label htmlFor="old-category">Old Category</label>
+                <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} label="Old Category" variant="outlined" />} />
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <label htmlFor="new-category">New Category Name</label>
+                <input className="form-control" id="new-category" type="text" value={newCategoryName} onChange={(event) => setNewCategoryName(event.target.value)} />
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <button
+                  className="cmnbtn w-100"
+                  onClick={handleRenameCategory}
+                  disabled={!oldCategoryName || !newCategoryName}
+                  style={{
+                    marginTop: '28px',
+                    padding: '10px 20px',
+                    backgroundColor: !oldCategoryName || !newCategoryName ? '#ccc' : '#007BFF',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: !oldCategoryName || !newCategoryName ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  Rename Category
+                </button>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div className="row mt16">
+            {/* Agency Fee Percentage */}
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <label htmlFor="agency-fee">Agency Fee Percentage</label>
+                <input className="form-control" id="agency-fee" type="number" value={agencyFees || ''} onChange={handleAgencyFeeChange} placeholder="Enter Agency Fee %" min="0" max="100" />
+              </div>
+            </div>
+            {/* Deliverable Text */}
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <label htmlFor="deliverable-text">Deliverable Text</label>
+                <input className="form-control" id="deliverable-text" type="text" value={deliverableText || ''} onChange={handleDeliverableTextChange} placeholder="Write Deliverable text" />
+              </div>
+            </div>
+            {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <button
+                className="btn cmnbtn btn-primary w-100"
+                disabled={isDownloading}
+                style={{
+                  marginTop: '28px',
+                }}
+                onClick={() => downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions)}
+              >
+                {isDownloading ? 'Downloading...' : 'Download Excel'}
+              </button>
+              {/* <button
+                style={{
+                  marginTop: "28px",
+                }}
+                className="btn cmnbtn btn-primary w-100"
+                onClick={() =>
+                  handleGetSpreadSheet(
+                    selectedRow,
+                    category,
+                    postCount,
+                    storyPerPage,
+                    planDetails,
+                    checkedDescriptions
+                  )
+                }
+              >
+                Get SpreadSheet
+              </button> */}
+            </div>
+          </div>
+          <hr />
+          <div className="row mt20">
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <Autocomplete
+                  // value={`${mainCategory}`}
+                  onChange={handleCategoryChange || []}
+                  // getOptionLabel={(option) => option.label}
+                  options={categories?.map((cat) => formatString(cat.page_category)) || []}
+                  renderInput={(params) => <TextField {...params} label="Main Category" variant="outlined" />}
+                />
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="form-group">
+                <Autocomplete
+                  // value={`${mergedCategories}`}
+                  // getOptionLabel={(option) => option.label}
+                  onChange={(event, newValue) => setMergedCategories([newValue] || [])}
+                  options={Object.keys(categoryData).filter((categoryName) => formatString(categoryName) !== formatString(mainCategory))}
+                  renderInput={(params) => <TextField {...params} label="Merge Categories" variant="outlined" />}
+                />
+              </div>
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div>
+                <Button className="btn cmnbtn btn-primary w-100" variant="contained" onClick={handleMergeCategories} disabled={!mainCategory || mergedCategories.length === 0}>
+                  Merge Categories
+                </Button>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div className="card">
+            <div className="card-header flexCenterBetween border-0">
+              <h4>&nbsp;</h4>
+              <Tabs className="pgTab tabSM" value={selectedTab} onChange={handleTabChange} centered>
+                <Tab label="Total" />
+                {Object.keys(categoryData).map((categoryName, index) => (
+                  <Tab key={index} label={categoryName} />
+                ))}
+              </Tabs>
+            </div>
+            <div className="card-body">
+              {selectedTab === 0 && (
+                <>
+                  <div className="excelTableHeading">
+                    <h4>Overall Totals</h4>
+                  </div>
+                  {/* Overall Totals Section */}
+                  <div className="row mb16">
+                    <div className="col-md-3 col-sm-12 col-12">
+                      <div className="card">
+                        <div className="card-body p12">
+                          <h6 class="fs_14 mb4 colorMedium">Total Post Count</h6>
+                          <h4>{overallTotals.totalPostCount}</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-12 col-12">
+                      <div className="card">
+                        <div className="card-body p12">
+                          <h6 class="fs_14 mb4 colorMedium">Total Story Count</h6>
+                          <h4>{overallTotals.totalStoryCount}</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-12 col-12">
+                      <div className="card">
+                        <div className="card-body p12">
+                          <h6 class="fs_14 mb4 colorMedium">Total Post Cost</h6>
+                          <h4>₹{overallTotals.totalPostCost.toFixed(2)}</h4>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-3 col-sm-12 col-12">
+                      <div className="card">
+                        <div className="card-body p12">
+                          <h6 class="fs_14 mb4 colorMedium">Total Story Cost</h6>
+                          <h4>₹{overallTotals.totalStoryCost.toFixed(2)}</h4>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Table Section */}
+                  <div className="excelDataTable">
+                    <table
+                      style={{
+                        width: '100%',
+                        borderCollapse: 'collapse',
+                        textAlign: 'left',
+                      }}
+                    >
+                      <thead>
+                        <tr>
+                          <th>Page Name</th>
+                          <th>Platform</th>
+                          <th>Followers</th>
+                          <th>Post Count</th>
+                          <th>Story Count</th>
+                          <th>Post Price</th>
+                          <th>Story Price</th>
+                          <th>Total Post Cost</th>
+                          <th>Total Story Cost</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {previewData?.map((item, id) => (
+                          <tr key={id}>
+                            <td>{item['Page Name']}</td>
+                            <td>{item.Platform}</td>
+                            <td>{item.Followers}</td>
+                            <td>{item['Post Count']}</td>
+                            <td>{item['Story Count']}</td>
+                            <td>{item['Post Price']}</td>
+                            <td>{item['Story Price']}</td>
+                            <td>{item['Total Post Cost']}</td>
+                            <td>{item['Total Story Cost']}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
 
-          <div className="col d-flex justify-content-center align-items-center">
-            <button className="btn cmnbtn btn-primary btn_sm" disabled={isDownloading} onClick={() => downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions)}>
-              {isDownloading ? 'Downloading...' : 'Download Excel'}
-            </button>
-            {/* <button className="btn cmnbtn btn-primary btn_sm" onClick={() => handleGetSpreadSheet(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions)}>
-              Get SpreadSheet
-            </button> */}
+              {Object.keys(categoryData).map((categoryName, index) => (
+                <div key={index}>
+                  {selectedTab === index + 1 && (
+                    <>
+                      <div className="excelTableHeading">
+                        <h4>{categoryName} Data</h4>
+                      </div>
+
+                      <div className="excelDataTable">
+                        <table
+                          style={{
+                            width: '100%',
+                            borderCollapse: 'collapse',
+                            textAlign: 'left',
+                          }}
+                        >
+                          <thead>
+                            <tr>
+                              <th>Page Name</th>
+                              <th>Platform</th>
+                              <th>Followers</th>
+                              <th>Post Count</th>
+                              <th>Story Count</th>
+                              <th>Post Price</th>
+                              <th>Story Price</th>
+                              <th>Total Post Cost</th>
+                              <th>Total Story Cost</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {categoryData[categoryName]?.map((item, idx) => (
+                              <tr key={idx}>
+                                <td>{item['Page Name']}</td>
+                                <td>{item.Platform}</td>
+                                <td>{item.Followers}</td>
+                                <td>{item['Post Count']}</td>
+                                <td>{item['Story Count']}</td>
+                                <td>{item['Post Price']}</td>
+                                <td>{item['Story Price']}</td>
+                                <td>{item['Total Post Cost']}</td>
+                                <td>{item['Total Story Cost']}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-
-        <FormControl sx={{ mt: 2, width: '200px' }}>
-          <Autocomplete
-            // value={`${mainCategory}`}
-            onChange={handleCategoryChange || []}
-            // getOptionLabel={(option) => option.label}
-            options={categories?.map((cat) => formatString(cat.page_category)) || []}
-            renderInput={(params) => <TextField {...params} label="Main Category" variant="outlined" />}
-          />
-        </FormControl>
-
-        <FormControl sx={{ mt: 2, width: '200px' }}>
-          <Autocomplete
-            // value={`${mergedCategories}`}
-            // getOptionLabel={(option) => option.label}
-            onChange={(event, newValue) => setMergedCategories([newValue] || [])}
-            options={Object.keys(categoryData).filter((categoryName) => formatString(categoryName) !== formatString(mainCategory))}
-            renderInput={(params) => <TextField {...params} label="Merge Categories" variant="outlined" />}
-          />
-        </FormControl>
-
-        <Button variant="contained" color="primary" sx={{ mt: 2 }} onClick={handleMergeCategories} disabled={!mainCategory || mergedCategories.length === 0}>
-          Merge Categories
-        </Button>
-
-        <Tabs value={selectedTab} onChange={handleTabChange} centered>
-          <Tab label="Total" />
-          {Object.keys(categoryData).map((categoryName, index) => (
-            <Tab key={index} label={categoryName} />
-          ))}
-        </Tabs>
-
-        {selectedTab === 0 && (
-          <Box>
-            <Typography variant="h6" component="h4" sx={{ mt: 2 }}>
-              Overall Totals
-            </Typography>
-            <Typography variant="body1">Total Post Count: {overallTotals.totalPostCount}</Typography>
-            <Typography variant="body1">Total Story Count: {overallTotals.totalStoryCount}</Typography>
-            <Typography variant="body1">Total Post Cost: ₹{overallTotals.totalPostCost.toFixed(2)}</Typography>
-            <Typography variant="body1">Total Story Cost: ₹{overallTotals.totalStoryCost.toFixed(2)}</Typography>
-
-            <TableContainer component={Paper} sx={{ maxHeight: 300, overflowY: 'auto', mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Page Name</TableCell>
-                    <TableCell>Platform</TableCell>
-                    <TableCell>Followers</TableCell>
-                    <TableCell>Post Count</TableCell>
-                    <TableCell>Story Count</TableCell>
-                    <TableCell>Post Price</TableCell>
-                    <TableCell>Story Price</TableCell>
-                    <TableCell>Total Post Cost</TableCell>
-                    <TableCell>Total Story Cost</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {previewData?.map((item, id) => (
-                    <TableRow key={id}>
-                      <TableCell>{item['Page Name']}</TableCell>
-                      <TableCell>{item.Platform}</TableCell>
-                      <TableCell>{item.Followers}</TableCell>
-                      <TableCell>{item['Post Count']}</TableCell>
-                      <TableCell>{item['Story Count']}</TableCell>
-                      <TableCell>{item['Post Price']}</TableCell>
-                      <TableCell>{item['Story Price']}</TableCell>
-                      <TableCell>{item['Total Post Cost']}</TableCell>
-                      <TableCell>{item['Total Story Cost']}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </Box>
-        )}
-
-        {Object.keys(categoryData).map((categoryName, index) => (
-          <div key={index}>
-            {selectedTab === index + 1 && (
-              <TableContainer
-                component={Paper}
-                sx={{
-                  maxHeight: '300px',
-                  overflowY: 'auto',
-                  mt: 2,
-                }}
-              >
-                <Typography variant="h6" component="h4">
-                  {categoryName} Data
-                </Typography>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Page Name</TableCell>
-                      <TableCell>Platform</TableCell>
-                      <TableCell>Followers</TableCell>
-                      <TableCell>Post Count</TableCell>
-                      <TableCell>Story Count</TableCell>
-                      <TableCell>Post Price</TableCell>
-                      <TableCell>Story Price</TableCell>
-                      <TableCell>Total Post Cost</TableCell>
-                      <TableCell>Total Story Cost</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {categoryData[categoryName]?.map((item, idx) => (
-                      <TableRow key={idx}>
-                        <TableCell>{item['Page Name']}</TableCell>
-                        <TableCell>{item.Platform}</TableCell>
-                        <TableCell>{item.Followers}</TableCell>
-                        <TableCell>{item['Post Count']}</TableCell>
-                        <TableCell>{item['Story Count']}</TableCell>
-                        <TableCell>{item['Post Price']}</TableCell>
-                        <TableCell>{item['Story Price']}</TableCell>
-                        <TableCell>{item['Total Post Cost']}</TableCell>
-                        <TableCell>{item['Total Story Cost']}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )}
-          </div>
-        ))}
-      </Box>
+      </div>
     </Modal>
   );
 };

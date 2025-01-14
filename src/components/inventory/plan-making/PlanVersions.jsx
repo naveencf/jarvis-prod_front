@@ -3,7 +3,6 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, List, ListIt
 const PlanVersions = ({ handleVersionClose, openVersionModal, versionDetails, onVersionSelect }) => {
   // Sort version details by version in ascending order
   const sortedDetails = versionDetails?.details?.length > 0 ? [...versionDetails.details].sort((a, b) => a.version - b.version) : [];
-
   return (
     <Dialog open={openVersionModal} onClose={handleVersionClose} maxWidth="sm" fullWidth>
       <DialogTitle

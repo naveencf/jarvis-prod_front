@@ -63,7 +63,8 @@ const LetterTabPdf2Max = ({ UserDetails }) => {
             </tr>
 
             <tr>
-              <td>Total Earning</td>
+              {/* <td>Total Earning</td> */}
+              <td>Net Pay Before Tax</td>
               <td>INR {TotalEarnings}</td>
               <td>INR {TotalEarnings * 12}</td>
             </tr>

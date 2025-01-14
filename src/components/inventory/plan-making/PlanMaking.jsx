@@ -32,7 +32,7 @@ import Swal from 'sweetalert2';
 
 const PlanMaking = () => {
   // const { id } = useParams();
-  const [activeTabPlatform, setActiveTabPlatform] = useState(['666818824366007df1df1319']);
+  const [activePlatform, setActivePlatform] = useState('instagram');
 
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
@@ -40,13 +40,12 @@ const PlanMaking = () => {
   const [pageStatsAuth, setPageStatsAuth] = useState(false);
   const [pageCategoryCount, setPageCategoryCount] = useState({});
   const [showOwnPage, setShowOwnPage] = useState(false);
-
+  const [pagequery, setPageQuery] = useState('');
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const dispatch = useDispatch();
 
-  const pagequery = '';
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   const { data: vendorTypeData, isLoading: typeLoading } = useGetAllVendorTypeQuery();
@@ -296,7 +295,7 @@ const PlanMaking = () => {
       setSelectedData([]);
     });
   };
-   const handleCheckboxChange = (row, shortcut, event, index) => {
+  const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
@@ -518,8 +517,12 @@ const PlanMaking = () => {
     setSearchInput('');
   };
 
-  const handlePlatform = (id) => {
-    setActiveTabPlatform(id);
+  const handlePlatform = (platform) => {
+    const platFormName = platform.description.toLowerCase();
+    setActivePlatform(platFormName);
+    setPageQuery(`platform_name=${platFormName}`);
+    console.log(platform);
+    localStorage.setItem('activeTab', platFormName);
   };
 
   const handleAutomaticSelection = (incomingData) => {
@@ -821,9 +824,9 @@ const PlanMaking = () => {
   }, [descriptions, setCheckedDescriptions]);
 
   useEffect(() => {
-    const updatePageData = (data, activeTabPlatform) => {
-      if (data && activeTabPlatform.length) {
-        const pageData = data?.filter((item) => item.followers_count > 0 && activeTabPlatform.includes(item.platform_id));
+    const updatePageData = (data) => {
+      if (data) {
+        const pageData = data?.filter((item) => item.followers_count > 0);
 
         const sarcasamNetworkPages = [];
         const advancedPostPages = [];
@@ -889,17 +892,17 @@ const PlanMaking = () => {
     };
 
     // Call your function to handle automatic selection
-    if (planSuccess.length > 0 || pageList?.length > 0 || pageDetail?.length > 0) {
-      const planData = planSuccess.length ? planSuccess : pageDetail;
-      const automaticCheckedData = handleAutomaticSelection(planData);
+    if (pageList?.length > 0 || pageDetail?.length > 0) {
+      // const planData = planSuccess.length ? planSuccess : pageDetail;
+      const automaticCheckedData = handleAutomaticSelection(pageDetail);
       if (automaticCheckedData) {
-        updatePageData(automaticCheckedData, activeTabPlatform);
+        updatePageData(automaticCheckedData);
       }
       setLayering(8);
     } else if (filterData?.length > 0 && pageDetail?.length == 0) {
       setLayering(1);
     }
-  }, [pageList, pageDetail, activeTabPlatform, planSuccess]);
+  }, [pageList, pageDetail]);
 
   useEffect(() => {
     if (selectedRows?.length === 0) {
@@ -918,6 +921,14 @@ const PlanMaking = () => {
     setStoryCountDefault(0);
     setPostCountDefault(0);
   }, [showRightSlidder]);
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem('activeTab');
+    if (storedTab) {
+      setActivePlatform(storedTab);
+      setPageQuery(`platform_name=${storedTab}`);
+    }
+  }, []);
 
   // console.log("planDetail", planDetails);
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
@@ -987,6 +998,14 @@ const PlanMaking = () => {
       <PageDialog open={openDialog} onClose={handleCloseDialog} notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages} />
       <ActiveDescriptionModal isOpen={isModalOpen} onClose={handleCloseModal} descriptions={activeDescriptions} onCheckedDescriptionsChange={handleCheckedDescriptionsChange} checkedDescriptions={checkedDescriptions} setCheckedDescriptions={setCheckedDescriptions} />
       <ScrollBlocker disableBack={disableBack} />
+      <div className="tabs">
+        {platformData?.map((platform, index) => (
+          <button key={platform._id} className={activePlatform === platform?.description?.toLowerCase() ? 'active btn btn-primary' : 'btn'} onClick={() => handlePlatform(platform)}>
+            {platform.platform_name.charAt(0).toUpperCase() + platform.platform_name.slice(1)}
+          </button>
+        ))}
+      </div>
+
       {/* {toggleLeftNavbar && ( */}
       <LeftSideBar totalFollowers={totalFollowers} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
@@ -1032,8 +1051,8 @@ const PlanMaking = () => {
               storyCountDefault={storyCountDefault}
               postCountDefault={postCountDefault}
               platformData={platformData}
-              activeTabPlatform={activeTabPlatform}
-              handlePlatform={handlePlatform}
+              // activeTabPlatform={activePlatform}
+              // handlePlatform={handlePlatform}
               pageList={pageList}
             />
           </div>

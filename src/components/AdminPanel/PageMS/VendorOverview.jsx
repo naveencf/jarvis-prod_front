@@ -48,7 +48,7 @@ const VendorOverview = () => {
   const [stateDataS, setStateDataS] = useState([]);
   const [cityDataS, setCityDataS] = useState([]);
   const [vendorDocsCountData, setVendorDocsCountData] = useState([]);
-  const { data: pageList } = useGetAllPageListQuery();
+  // const { data: pageList } = useGetAllPageListQuery();
   const [getRowData, setGetRowData] = useState([]);
 
   const { data: vendor } = useGetAllVendorTypeQuery();
@@ -86,14 +86,7 @@ const VendorOverview = () => {
     //   setTabFilterData(vendorData?.data);
     // }
     if (vendorData) {
-      // if (decodedToken.role_id !== 1) {
-      //   setFilterData(vendorData)
-      //   //   vendorData.filter((item) => item.created_by == decodedToken.id)
-      //   // );
-      //   setTabFilterData(vendorData)
-      //   //   vendorData.filter((item) => item.created_by == decodedToken.id)
-      //   // );
-      // } else {
+
       setFilterData(vendorData);
       setTabFilterData(vendorData);
       // }
@@ -119,7 +112,7 @@ const VendorOverview = () => {
 
     setVendorDetails(params);
   };
-
+  // console.log(filterData, "filterdata")
   const showPagesOfVendor = async (data) => {
     try {
       let result;
@@ -136,7 +129,7 @@ const VendorOverview = () => {
       console.error('Error fetching vendor pages:', error);
     }
   };
-
+  console.log("first")
   useEffect(() => {
     function getUniqueStatesWithCounts() {
       const stateData = {};
@@ -440,12 +433,7 @@ const VendorOverview = () => {
       renderRowCell: (row) => {
         return cycleData?.find((item) => item?._id == row?.pay_cycle)?.cycle_name;
       },
-      // renderRowCell: (params) => {
-      //   let name = cycleData?.find(
-      //     (item) => item?._id == params.row?.pay_cycle
-      //   )?.cycle_name;
-      //   return <div>{name}</div>;
-      // },
+
       editable: true,
     },
     {
@@ -591,9 +579,11 @@ const VendorOverview = () => {
       setActiveTab('Tab1');
     }
   }, [vendorDocsCountData]);
+
   const ExportData = () => {
     return decodedToken?.role_id == 1; // returns false if role_id is not 1, otherwise true
   };
+  console.log(decodedToken, "decodedToken")
   return (
     <>
       <VendorMPriceModal open={openUpdateVendorMPrice} onClose={handleCloseVendorMPriceModal} rowData={rowVendor} />
@@ -682,8 +672,9 @@ const VendorOverview = () => {
                       </Grid>
                     </Box>
                   ) : (
-                    <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} exportData={ExportData} />
+                    <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} />
                   )}
+                  {/* <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} exportData={ExportData} /> */}
                 </div>
                 <VendorBankDetailModal />
                 <VendorPageModal />
@@ -838,7 +829,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={state}
-                        // onClick={() => vendorWithCategories(state)}
+                      // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -869,7 +860,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={city}
-                        // onClick={() => vendorWithCategories(city)}
+                      // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
