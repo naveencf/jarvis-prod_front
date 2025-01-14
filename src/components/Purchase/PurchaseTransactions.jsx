@@ -24,14 +24,15 @@ const PurchaseTransactions = () => {
     const [transactionData, setTransactionData] = useState([]);
     // const [startDate, setStartDate] = useState([]);
     // const [endDate, setEndDate] = useState([]);
-    const [startDate, setStartDate] = useState(dayjs().subtract(7, 'day')); // Default to 7 days ago
-    const [endDate, setEndDate] = useState(dayjs()); // Default to today
+    const [startDate, setStartDate] = useState(dayjs()); // Default to 7 days ago
+    const [endDate, setEndDate] = useState(dayjs().add(1, "day").startOf("day")); // Default to today
     const [openImageDialog, setOpenImageDialog] = useState(false);
     const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
     const [viewImgSrc, setViewImgSrc] = useState("");
+    const [refetch, setRefetch] = useState(false);
     // const { request_id } = useParams();
 
-   
+
     const downloadSlipAsImage = (rowData) => {
         // Create a container div for the content that will be captured
         const slipElement = document.createElement('div');
@@ -44,7 +45,7 @@ const PurchaseTransactions = () => {
         slipElement.style.position = 'absolute'; // Prevent layout impact
         slipElement.style.top = '0'; // Set it to a visible location
         slipElement.style.left = '0'; // Ensure it's placed within viewable area
-        
+
         // Add the dynamic content into the container
         slipElement.innerHTML = `
               <h3 class="transaction-title">Transaction Slip</h3>
@@ -54,11 +55,11 @@ const PurchaseTransactions = () => {
         <p><strong>Payment Reference ID:</strong> ${rowData.paymentReferenceId}</p>
         <p><strong>Vendor Name:</strong> ${rowData.vendor_name}</p>
         `;
-        
-    
+
+
         // Append the div to the body temporarily for rendering
         document.body.appendChild(slipElement);
-        
+
         // Ensure content is rendered before taking the screenshot
         setTimeout(() => {
             // Use html2canvas to take a screenshot of the slipElement
@@ -71,13 +72,13 @@ const PurchaseTransactions = () => {
             }).then((canvas) => {
                 // Convert canvas to a data URL (PNG image)
                 const image = canvas.toDataURL('image/png');
-            
+
                 // Create a temporary download link
                 const link = document.createElement('a');
                 link.href = image;
                 link.download = `Transaction_Slip_${rowData.key}.png`; // Download image with dynamic filename
                 link.click(); // Trigger the download
-            
+
                 // Clean up by removing the slipElement from the DOM
                 document.body.removeChild(slipElement);
             }).catch((error) => {
@@ -85,10 +86,10 @@ const PurchaseTransactions = () => {
             });
         }, 100);  // Increase delay to 1000ms to allow for full rendering
     };
-    
-    
-      
-      
+
+
+
+
 
     const handleSubmitTransactionData = () => {
         // // Get today's date
@@ -153,7 +154,7 @@ const PurchaseTransactions = () => {
 
     useEffect(() => {
         handleSubmitTransactionData(startDate.format("YYYY-MM-DD"), endDate.format("YYYY-MM-DD"));
-    }, [startDate, endDate]);
+    }, [startDate, endDate, refetch]);
 
 
     const handleStatusCheck = async (row) => {
@@ -249,18 +250,18 @@ const PurchaseTransactions = () => {
             },
             width: 100,
         },
-        { 
-            key: "slip", 
-            name: "Slip", 
+        {
+            key: "slip",
+            name: "Slip",
             renderRowCell: (row) => (
-              <button 
-                onClick={() => downloadSlipAsImage(row)} 
-                style={{ cursor: "pointer" }}
-              >
-                Download Slip
-              </button>
-            ) 
-          },
+                <button
+                    onClick={() => downloadSlipAsImage(row)}
+                    style={{ cursor: "pointer" }}
+                >
+                    Download Slip
+                </button>
+            )
+        },
 
         {
             key: "evidence",
@@ -452,9 +453,16 @@ const PurchaseTransactions = () => {
                         tableName={"purchase_transaction"}
                         addHtml={
                             <>
+                                <button
+                                    className="btn cmnbtn btn_sm btn-primary ms-2"
+                                    onClick={() => setRefetch(!refetch)}
+                                >
+                                    Refetch
+                                </button>
                                 <PurchaseTransactionFilter startDate={startDate} endDate={endDate}
                                     setStartDate={setStartDate} setEndDate={setEndDate}
                                     onFilterChange={handleSubmitTransactionData} />
+
 
                             </>
                         }

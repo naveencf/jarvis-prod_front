@@ -2870,7 +2870,7 @@ export const pendingPaymentRequestColumns = ({
       key: "request_amount",
       name: "Requested Amount",
       width: 150,
-      getTotal: true,
+      // getTotal: true,
       renderCell: (row) => {
         return row?.request_amount;
       },
@@ -3025,7 +3025,7 @@ export const pendingPaymentRequestColumns = ({
       key: "paid_amount",
       name: "Paid Amount",
       width: 150,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => {
         return row?.paid_amount;
       },
@@ -3034,7 +3034,7 @@ export const pendingPaymentRequestColumns = ({
       key: "balance_amount",
       name: "Balance Amount",
       width: 150,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => {
         return row?.balance_amount;
       },
@@ -3043,7 +3043,7 @@ export const pendingPaymentRequestColumns = ({
       key: "base_amount",
       name: "Base Amount",
       width: 150,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => {
         return row?.base_amount ? row?.base_amount : "NA";
       },
@@ -3052,7 +3052,7 @@ export const pendingPaymentRequestColumns = ({
       key: "gst_amount",
       name: "GST Amount",
       width: 150,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => {
         return row?.gst_amount ? row?.gst_amount : "NA";
       },

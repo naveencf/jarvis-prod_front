@@ -134,7 +134,7 @@ function PayVendorDialog(props) {
     setGstHold(e.target.checked);
     setGSTHoldAmount(rowData.gst_amount);
   };
-  console.log(rowData, "rowData")
+  // console.log(rowData, "rowData")
   const handlePayVendorClick = (e) => {
     e.preventDefault();
     // displayRazorpay(paymentAmout);
@@ -335,11 +335,11 @@ function PayVendorDialog(props) {
       toastAlert("You are allow to pay below 10,000")
       return;
     }
-    else if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
-      console.log(rowSelectionModel, "rowSelectionModel")
-      toastError("Invalid Mobile Number")
-      return;
-    }
+    // else if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
+    //   console.log(rowSelectionModel, "rowSelectionModel")
+    //   toastError("Invalid Mobile Number")
+    //   return;
+    // }
     else if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
       toastError("Invalid Amount")
       return;
@@ -351,7 +351,7 @@ function PayVendorDialog(props) {
     if (!userEmail || userEmail == "") {
       mailTo = "naveen@creativefuel.io";
     }
-    setPayThroughVendor(true);
+
     try {
 
       axios
@@ -361,15 +361,16 @@ function PayVendorDialog(props) {
           //   "Content-Type": "multipart/form-data",
           // },
         }).then((res) => {
-
+          console.log(res)
           if (res.status == 200) {
             toastAlert("OTP sent to registered Id successfully")
-          } else if (res.status == 401) {
+            setPayThroughVendor(true);
+          } else {
             toastAlert("You are not authorizied make this payment")
           }
         })
     } catch (error) {
-      toastAlert(error)
+      toastAlert("There some issue")
     }
 
   };
