@@ -9,13 +9,14 @@ import { Autocomplete, TextField } from "@mui/material";
 import dayjs from "dayjs";
 
 const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStartDate, setEndDate }) => {
-    const [filterOption, setFilterOption] = useState("This Week");
+    const [filterOption, setFilterOption] = useState("Today");
     // const [startDate, setStartDate] = useState(dayjs().subtract(7, "day")); // Default to last week
     // const [endDate, setEndDate] = useState(dayjs());
 
     const predefinedFilters = [
-        { label: "Today", value: "today", startDate: dayjs().startOf("day"), endDate: dayjs().endOf("day") },
-        { label: "Yesterday", value: "yesterday", startDate: dayjs().subtract(1, "day").startOf("day"), endDate: dayjs().subtract(1, "day").endOf("day") },
+        // { label: "Today", value: "today", startDate: dayjs().startOf("day"), endDate: dayjs().endOf("day") },
+        { label: "Today", value: "today", startDate: dayjs().startOf("day"), endDate: dayjs().add(1, "day").startOf("day") },
+        { label: "Yesterday", value: "yesterday", startDate: dayjs().subtract(1, "day").startOf("day"), endDate: dayjs().endOf("day") },
         { label: "This Week", value: "thisWeek", startDate: dayjs().startOf("week"), endDate: dayjs().endOf("week") },
         { label: "Last Week", value: "lastWeek", startDate: dayjs().subtract(1, "week").startOf("week"), endDate: dayjs().subtract(1, "week").endOf("week") },
         { label: "This Month", value: "thisMonth", startDate: dayjs().startOf("month"), endDate: dayjs().endOf("month") },

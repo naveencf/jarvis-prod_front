@@ -80,7 +80,7 @@ const PayThroughVendorDialog = (props) => {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name,),
-        accountNumber: vendorBankDetail[selectedBankIndex]?.account_no,
+        accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
         branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
         email: 'naveen@creativefuel.io',
         phone: "9109102483",
