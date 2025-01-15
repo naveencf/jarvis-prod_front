@@ -26,7 +26,9 @@ const UnFetchedPages = () => {
   const fetchUnfetchedPages = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_not_available_pages`);
-      const data = res?.data?.data?.reverse()?.filter((item) => item?.page_exist === false);
+      const data = res?.data?.data
+        .reverse()
+        .filter((item) => item?.page_exist === false)
       setUnfatchedData(data);
     } catch (error) {
       console.error('Error fetching unfetched pages:', error);

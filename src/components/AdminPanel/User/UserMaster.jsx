@@ -31,9 +31,6 @@ import imageTest29 from '../../../assets/img/product/Avtar29.png';
 import imageTest30 from '../../../assets/img/product/Avtar30.png';
 import Select from 'react-select';
 import WhatsappAPI from '../../WhatsappAPI/WhatsappAPI';
-import IndianStates from '../../ReusableComponents/IndianStates';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Autocomplete, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { baseUrl } from '../../../utils/config';
@@ -42,35 +39,17 @@ import OccupationList from '../../../assets/js/OccupationList';
 import IndianBankList from '../../../assets/js/IndianBankList';
 import { ToastContainer } from 'react-toastify';
 import IndianStatesMui from '../../ReusableComponents/IndianStatesMui';
-import EducationList from '../../../assets/js/EducationList';
 import { constant } from '../../../utils/constants';
 import { User } from '@phosphor-icons/react';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { isAfter, subYears } from 'date-fns';
 import IndianCitiesMui from '../../ReusableComponents/IndianCitiesMui';
 import dayjs from 'dayjs';
 import { FormatName } from '../../../utils/FormatName';
 import { Line, Circle } from 'rc-progress';
-import { stateAbbreviations } from '../../../utils/helper';
+import { bankTypeData, bloodGroupData, castOption, genderData, nationalityData, spokenLanguageData, stateAbbreviations } from '../../../utils/helper';
 
-const colourOptions = [
-  { value: 'English', label: 'English' },
-  { value: 'Hindi', label: 'Hindi' },
-  { value: 'Spanish', label: 'Spanish' },
-  { value: 'French', label: 'French' },
-  { value: 'Arabic', label: 'Arabic' },
-  { value: 'Bengali', label: 'Bengali' },
-  { value: 'Russian', label: 'Russian' },
-  { value: 'Urdu', label: 'Urdu' },
-  { value: 'German', label: 'German' },
-  { value: 'Japanese', label: 'Japanese' },
-  { value: 'Marathi', label: 'Marathi' },
-  { value: 'Telugu', label: 'Telugu' },
-  { value: 'Tamil', label: 'Tamil' },
-  { value: 'Italian', label: 'Italian' },
-  { value: 'Other', label: 'Other' },
-];
+
 
 const initialFamilyDetailsGroup = {
   Relation: '',
@@ -89,17 +68,6 @@ const initialEducationDetailsGroup = {
   Percentage: '',
   Stream: '',
   Specialization: '',
-};
-const educationDispalyFields = ['title', 'institute_name', 'from_year', 'to_year', 'percentage', 'stream', 'specialization'];
-
-const educationFieldLabels = {
-  title: 'Title',
-  institute_name: 'Institute Name',
-  from_year: 'From Year',
-  to_year: 'To Year',
-  percentage: 'Percentage',
-  stream: 'Stream',
-  specialization: 'Specialization',
 };
 
 const UserMaster = () => {
@@ -272,13 +240,13 @@ const UserMaster = () => {
   const [loading, setLoading] = useState(false);
 
   const higestQualificationData = ['10th', '12th', 'Diploma', 'Graduation', 'Post Graduation', 'Other'];
-  const bankTypeData = ['Saving A/C', 'Current A/C', 'Salary A/C'];
+  
   const statusData = ['Active', 'Exit', 'PreOnboard'];
-  const genderData = ['Male', 'Female', 'Other'];
-  const nationalityData = ['Indian', 'USA', 'Uk'];
-  const bloodGroupData = ['A+ (A Positive)', 'A- (A Negetive)', 'B+ (B Positive)', 'B- (B Negetive)', 'AB+ (AB Positive)', 'AB- (AB Negetive)', 'O+ (O Positive)', 'O- (O Negetive)'];
+  
+  
+  
 
-  const castOption = ['General', 'OBC', 'SC', 'ST'];
+  
   const maritialStatusData = ['Unmarried', 'Married']; //,"Divorced","Widowed","Separated"
   const [dobError, setDobError] = useState('');
   const [dobValidate, setDobValidate] = useState(0);
@@ -584,28 +552,6 @@ const UserMaster = () => {
 
   const handleSubmitOtherDetails = async (e) => {
     e.preventDefault();
-    // if (currentAddress == "") {
-    //   setMandatoryFieldsEmpty((prev) => ({
-    //     ...prev,
-    //     currentAddress: true,
-    //   }));
-    // }
-    // if (currentPincode == "") {
-    //   setMandatoryFieldsEmpty((prev) => ({
-    //     ...prev,
-    //     currentPincode: true,
-    //   }));
-    // }
-
-    // if (!currentAddress || currentAddress == "") {
-    //   return toastError("Fill the Mandatory fields");
-    // } else if (!currentCity || currentCity == "") {
-    //   return toastError("Current city is required");
-    // } else if (!currentState || currentState == "") {
-    //   return toastError("Current state is required");
-    // } else if (!currentPincode || currentPincode == "") {
-    //   return toastError("Fill the Mandatory fields");
-    // }
     try {
       const response = await axios.put(baseUrl + `update_user_for_other_details/${userResID}`, {
         permanent_city: city?.value ? city.value : '',
@@ -870,17 +816,6 @@ const UserMaster = () => {
   const handleMonthlySalaryChange = (e) => {
     const monthlySalary = e.target.value;
 
-    // if (monthlySalary === "") {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: true,
-    //   }));
-    // } else {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: false,
-    //   }));
-    // }
 
     setMonthlyGrossSalary(monthlySalary);
     setLastUpdated('monthly');
@@ -890,41 +825,7 @@ const UserMaster = () => {
     const yearlySalaryValue = e.target.value;
     setCTC(yearlySalaryValue);
     setLastUpdated('yearly');
-
-    // if (yearlySalaryValue === "") {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: true,
-    //   }));
-    // } else {
-    //   setIsRequired((prev) => ({
-    //     ...prev,
-    //     salary: false,
-    //   }));
-    // }
   };
-
-  function handleAlternateBlur(e, type) {
-    if (type == 'alternateContact') {
-      if (alternateContact == '' || alternateContact == null) {
-        setMandatoryFieldsEmpty({
-          ...mandatoryFieldsEmpty,
-          alternateContact: true,
-        });
-      } else {
-        setMandatoryFieldsEmpty({
-          ...mandatoryFieldsEmpty,
-          alternateContact: false,
-        });
-      }
-    }
-    setisAlternateTouched(true);
-    setisAlternateTouched1(true);
-    if (contact.length < 10) {
-      setValidAlternateContact(false);
-      setValidAlternateContact1(false);
-    }
-  }
 
   // Password Auto Genrate
   const generatePassword = () => {
@@ -942,61 +843,6 @@ const UserMaster = () => {
     }
   };
 
-  function trimeUserName(userName) {
-    userName = userName.replace(/\s{2,}/g, ' ').trim();
-    const lettersOnly = /^[A-Za-z]+$/;
-    const correctedNameParts = userName.split(' ').map((part) => {
-      let filteredPart = part
-        .split('')
-        .filter((char) => char.match(lettersOnly))
-        .join('');
-      return filteredPart.charAt(0).toUpperCase() + filteredPart.slice(1).toLowerCase();
-    });
-    // Join the corrected parts back into a single string without spaces
-    const correctedUserName = correctedNameParts.join('');
-    return correctedUserName;
-  }
-
-  // const generateLoginId = async () => {
-  //   const userName = username.trim().toLowerCase().split(" ");
-
-  //   // Extracting last 4 and 6 digits from personal contact
-  //   const personalContactLast4 = personalContact.slice(-4);
-  //   const personalContactLast6 = personalContact.slice(-6);
-
-  //   // Define login ID options
-  //   let loginIdOptions = [
-  //     userName[0], // lalit
-  //     trimeUserName(username),
-  //     // userName.join("."), // lalit.gour
-  //     userName[0] + personalContactLast4, // lalit5413
-  //     userName[0] + personalContactLast6, // lalit815413
-  //   ];
-
-  //   if (userName.length > 1) {
-  //     loginIdOptions.push(
-  //       userName[0].charAt(0) + userName[1], // lgour
-  //       userName.join("") // lalitgour
-  //     );
-  //   }
-
-  //   const nextIndex = (lastIndexUsed + 1) % loginIdOptions.length;
-  //   setLastIndexUsed(nextIndex);
-  //   const generatedLoginId = loginIdOptions[nextIndex];
-  //   setLoginId(generatedLoginId);
-
-  //   await axios
-  //     .post(baseUrl + `check_login_exist`, {
-  //       user_login_id: loginId,
-  //     })
-  //     .then((res) => {
-  //       setLoginResponse(res.data.message);
-  //     });
-
-  //   if (generatedLoginId?.length > 0) {
-  //     setMandatoryFieldsEmpty({ ...mandatoryFieldsEmpty, loginId: false });
-  //   }
-  // };
   const generateLoginId = async () => {
     const userName = username.trim().toLowerCase().split(' ');
 
@@ -2279,7 +2125,7 @@ const UserMaster = () => {
             </div>
             <div className="form-group col-3">
               <label className="form-label">Spoken Languages</label>
-              <Select isMulti name="langauages" options={colourOptions} className="basic-multi-select" classNamePrefix="select" value={tempLanguage} onChange={handleLanguageSelect} />
+              <Select isMulti name="langauages" options={spokenLanguageData} className="basic-multi-select" classNamePrefix="select" value={tempLanguage} onChange={handleLanguageSelect} />
             </div>
 
             <div className="form-group col-3">

@@ -45,11 +45,17 @@ const WFHDRegister = ({ userUpdateID }) => {
   const [email, setEmail] = useState("");
   const [validEmail, setValidEmail] = useState(true);
 
-  const [address, setAddress] = useState("");
+  const [address, setPermanentAddress] = useState("");
   const [city, setCity] = useState("");
-  const [currentState, setcurrentState] = useState("");
+  const [permamentState, setPermanentState] = useState("");
   const [pincode, setPincode] = useState("");
   const [cityData, setCityData] = useState([]);
+  console.log(pincode , 'pincode dd')
+
+  const [currentAddress, setCurrentAddress] = useState("");
+  const [currentCity, setcurrentCity] = useState("");
+  const [currentState, setcurrentState] = useState("");
+  const [currentPincode, setcurrentPincode] = useState("");
 
   const [personalEmail, setPersonalEmail] = useState("");
   const [validPersonalEmail, setValidPersonalEmail] = useState(true);
@@ -111,6 +117,8 @@ const WFHDRegister = ({ userUpdateID }) => {
   const [subDepartmentData, setSubDepartmentData] = useState([]);
   const [subDepartment, setSubDeparment] = useState("");
 
+  const [sameAsCurrent, setSameAsCurrent] = useState(false);
+
   const [isRequired, setIsRequired] = useState({
     username: false,
     department: false,
@@ -127,9 +135,13 @@ const WFHDRegister = ({ userUpdateID }) => {
     gender: false,
     dateOfBirth: false,
     city: false,
-    currentState: false,
+    permamentState: false,
     address: false,
     pincode: false,
+    currentAddress: false,
+    currentCity: false,
+    currentState: false,
+    currentPincode: false,
   });
   const statusData = ["Active", "Exit", "PreOnboard"];
 
@@ -148,6 +160,12 @@ const WFHDRegister = ({ userUpdateID }) => {
             sitting_id,
             permanent_city,
             permanent_pin_code,
+
+            current_address,
+            current_city,
+            current_state,
+            current_pin_code,
+
             ctc,
             room_id,
             dept_id,
@@ -176,9 +194,15 @@ const WFHDRegister = ({ userUpdateID }) => {
           setSubDeparment(sub_dept_id);
           setDesignation(user_designation);
           setCity(permanent_city);
-          setAddress(permanent_address);
-          setcurrentState(permanent_state);
+          setPermanentAddress(permanent_address);
+          setPermanentState(permanent_state);
           setPincode(permanent_pin_code);
+
+          setCurrentAddress(current_address);
+      setcurrentCity(current_city);
+      setcurrentState(current_state);
+      setcurrentPincode(current_pin_code);
+
           setReportL1(Report_L1);
           setSalary(salary);
           setLoginId(user_login_id);
@@ -274,7 +298,7 @@ const WFHDRegister = ({ userUpdateID }) => {
   useEffect(() => {
     axios.get(baseUrl + "get_wfh_users_with_dept").then((res) => {
       getDepartmentData(res.data.data);
-      console.log(res.data.data , 'deparmetn data')
+      console.log(res.data.data, "deparmetn data");
     });
 
     axios.get(baseUrl + "get_all_users").then((res) => {
@@ -352,8 +376,8 @@ const WFHDRegister = ({ userUpdateID }) => {
     if (city == "") {
       setIsRequired((perv) => ({ ...perv, city: true }));
     }
-    if (currentState == "") {
-      setIsRequired((perv) => ({ ...perv, currentState: true }));
+    if (permamentState == "") {
+      setIsRequired((perv) => ({ ...perv, permamentState: true }));
     }
     if (salary == "") {
       setIsRequired((perv) => ({ ...perv, salary: true }));
@@ -394,6 +418,18 @@ const WFHDRegister = ({ userUpdateID }) => {
     if (pincode == "") {
       setIsRequired((perv) => ({ ...perv, pincode: true }));
     }
+    if (currentAddress == "") {
+      setIsRequired((perv) => ({ ...perv, currentAddress: true }));
+    }
+    if (currentCity == "") {
+      setIsRequired((perv) => ({ ...perv, currentCity: true }));
+    }
+    if (currentState == "") {
+      setIsRequired((perv) => ({ ...perv, currentState: true }));
+    }
+    if (currentPincode == "") {
+      setIsRequired((perv) => ({ ...perv, currentPincode: true }));
+    }
 
     if (!jobType) {
       return toastError("Fill Required Field");
@@ -429,7 +465,7 @@ const WFHDRegister = ({ userUpdateID }) => {
       return toastError("Fill Required Field");
     } else if (!city || city == "") {
       return toastError("Fill Required Field");
-    } else if (!currentState || currentState == "") {
+    } else if (!permamentState || permamentState == "") {
       return toastError("Fill Required Field");
     } else if (!pincode || pincode == "") {
       return toastError("Please fill all Required field");
@@ -443,47 +479,61 @@ const WFHDRegister = ({ userUpdateID }) => {
       return toastError(
         "Alternate Contact Is Required and should be equal to 10"
       );
+    } else if (!currentAddress || currentAddress == "") {
+      return toastError("Fill Required Field");
+    } else if (!currentCity || currentCity == "") {
+      return toastError("Fill Required Field");
+    } else if (!currentState || currentState == "") {
+      return toastError("Fill Required Field");
+    } else if (!currentPincode || currentPincode == "") {
+      return toastError("Please fill all Required field");
     }
 
-    const payload = {
-      dept_id: department,
-      sub_dept_id: subDepartment,
-      permanent_city: city,
-      permanent_state: currentState,
-      permanent_address: address,
-      permanent_pin_code: Number(pincode),
-      created_by: loginUserId,
-      user_name: validateAndCorrectUserName(username),
-      role_id: 4,
-      // image: selectedImage,
-      ctc: Number(yearlySalary),
-      salary: Number(salary),
-      offer_letter_send: sendLetter.value ? Boolean(sendLetter.value) : false,
-      tds_applicable: tdsApplicable,
-      tds_per: tdsPercentage,
-      user_login_id: loginId,
-      user_login_password: password,
-      user_status: status,
-      sitting_id: 183,
-      room_id: 1,
-      Gender: gender,
-      job_type: jobType,
-      DOB: dateOfBirth,
-      alternate_contact: contact,
-      personal_number: personalContact,
-      user_contact_no: personalContact,
-      user_email_id: personalEmail,
-      att_status: attStatus || "registered",
-      // year_salary: Number(yearlySalary),
-      report_L1: reportL1,
-      report_L2: reportL2 == null ? 0 : reportL2,
-      report_L3: reportL3 == null ? 0 : reportL3,
+    // const payload = {
+    //   dept_id: department,
+    //   sub_dept_id: subDepartment,
+    //   permanent_city: city,
+    //   permanent_state: permamentState,
+    //   permanent_address: address,
+    //   permanent_pin_code: Number(pincode),
 
-      user_designation: designation,
-      joining_date: joiningDate,
-      releaving_date: releavingDate,
-      onboard_status: onBoardStatus,
-    };
+    //   current_address: currentAddress,
+    //   current_city: currentCity,
+    //   current_pin_code: Number(currentPincode),
+    //   current_state: currentState,
+
+    //   created_by: loginUserId,
+    //   user_name: validateAndCorrectUserName(username),
+    //   role_id: 4,
+    //   // image: selectedImage,
+    //   ctc: Number(yearlySalary),
+    //   salary: Number(salary),
+    //   offer_letter_send: sendLetter.value ? Boolean(sendLetter.value) : false,
+    //   tds_applicable: tdsApplicable,
+    //   tds_per: tdsPercentage,
+    //   user_login_id: loginId,
+    //   user_login_password: password,
+    //   user_status: status,
+    //   sitting_id: 183,
+    //   room_id: 1,
+    //   Gender: gender,
+    //   job_type: jobType,
+    //   DOB: dateOfBirth,
+    //   alternate_contact: contact,
+    //   personal_number: personalContact,
+    //   user_contact_no: personalContact,
+    //   user_email_id: personalEmail,
+    //   att_status: attStatus || "registered",
+    //   // year_salary: Number(yearlySalary),
+    //   report_L1: reportL1,
+    //   report_L2: reportL2 == null ? 0 : reportL2,
+    //   report_L3: reportL3 == null ? 0 : reportL3,
+
+    //   user_designation: designation,
+    //   joining_date: joiningDate,
+    //   releaving_date: releavingDate,
+    //   onboard_status: onBoardStatus,
+    // };
 
     const formData = new FormData();
 
@@ -493,8 +543,16 @@ const WFHDRegister = ({ userUpdateID }) => {
     formData.append("dept_id", department);
     formData.append("sub_dept_id", subDepartment);
     formData.append("permanent_city", city);
-    formData.append("permanent_state", currentState);
+    formData.append("permanent_state", permamentState);
     formData.append("permanent_address", address);
+    formData.append("permanent_pin_code", Number(pincode));
+
+
+      formData.append("current_address", currentAddress);
+      formData.append("current_city", currentCity);
+      formData.append("current_pin_code", Number(currentPincode));
+      formData.append("current_state", currentState);
+
     formData.append("created_by", loginUserId);
     formData.append("user_name", validateAndCorrectUserName(username));
     formData.append("role_id", 4);
@@ -520,7 +578,6 @@ const WFHDRegister = ({ userUpdateID }) => {
     // formData.append("personal_number", personalContact);
     formData.append("alternate_contact", contact); //contact all replace to alternate contact
     formData.append("personal_number", personalContact);
-    formData.append("permanent_pin_code", pincode);
     formData.append("user_contact_no", personalContact);
     formData.append("user_status", status);
 
@@ -946,6 +1003,22 @@ const WFHDRegister = ({ userUpdateID }) => {
     setUserName(correctedNameParts.join(" "));
   };
 
+  const handleCheckboxChange = (e) => {
+    const { checked } = e.target;
+    setSameAsCurrent(checked);
+    if (checked) {
+      setCurrentAddress(address);
+      setcurrentCity(city);
+      setcurrentState(permamentState);
+      setcurrentPincode(pincode);
+    } else {
+      setCurrentAddress("");
+      setcurrentCity("");
+      setcurrentState("");
+      setcurrentPincode("");
+    }
+  };
+
   return (
     <div>
       <FormContainer
@@ -1228,59 +1301,6 @@ const WFHDRegister = ({ userUpdateID }) => {
                 <p className="form-error">Please select Personal Email</p>
               )}
             </div>
-            {/* <div className="col-md-3 p0">
-              <FieldContainer
-                label=" City"
-                type="text"
-                fieldGrid={12}
-                required={false}
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-              />
-            </div> */}
-
-            {/* <div className="col-md-3">
-              <div className="form-group">
-                <label className="form-label">
-                  City <sup className="form-error">*</sup>
-                </label>
-                <Select
-                  options={cityData.map((city) => ({
-                    value: city.city_name,
-                    label: city.city_name,
-                  }))}
-                  onChange={(e) => {
-                    setCity(e ? e.value : "");
-
-                    const selectCity = e.value;
-                    if (selectCity === "") {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        city: true,
-                      }));
-                    } else {
-                      setIsRequired((prev) => ({
-                        ...prev,
-                        city: false,
-                      }));
-                    }
-                  }}
-                  required={true}
-                  // value={city}
-                  value={{
-                    value: city,
-                    label:
-                      cityData.find((gotCity) => gotCity.city_name == city)
-                        ?.city_name || "",
-                  }}
-                  placeholder="Select a city..."
-                  isClearable
-                />
-                {isRequired.city && (
-                  <p className="form-error">Please select City</p>
-                )}
-              </div>
-            </div> */}
 
             {/* {jobType === "WFH" && ( */}
             <div className="col-md-3 p0">
@@ -1347,57 +1367,6 @@ const WFHDRegister = ({ userUpdateID }) => {
                 />
               </div>
             )}
-
-            {/* )} */}
-
-            {/* {jobType == "WFHD" && ( */}
-            {/* <div className="col-md-3 p0">
-              <FieldContainer
-                label=" CTC *"
-                type="number"
-                fieldGrid={12}
-                required={true}
-                value={userCtc}
-                onChange={(e) => setUserCtc(e.target.value)}
-              />
-            </div> */}
-            {/* )} */}
-
-            {/* {jobType == "WFO" && (
-              <div className="col-md-3">
-                <div className="form-group">
-                  <label className="form-label">
-                    Letter send <sup className="form-error">*</sup>
-                  </label>
-                  <Select
-                    options={offerLetter.map((option) => ({
-                      value: `${option.value}`,
-                      label: `${option.label}`,
-                    }))}
-                    value={{
-                      value: sendLetter.value,
-                      label: sendLetter.label || "", // Fallback to empty string if label is undefined
-                    }}
-                    onChange={(e) => {
-                      setSendLetter(e);
-                    }}
-                    required
-                  />
-                </div>
-              </div>
-            )} */}
-
-            {/* {sendLetter.label == "Yes" && (
-              <div className="col-md-3 p0">
-                <FieldContainer
-                  label="Annexure pdf"
-                  fieldGrid={12}
-                  type="file"
-                  onChange={(e) => setAnnexurePdf(e.target.files[0])}
-                  required={false}
-                />
-              </div>
-            )} */}
 
             <div className="col-md-3 p0">
               <FieldContainer
@@ -1654,13 +1623,13 @@ const WFHDRegister = ({ userUpdateID }) => {
 
             <div className="col-md-3">
               <FieldContainer
-                label="Address"
+                label="Permanent Address"
                 astric
                 fieldGrid={12}
                 value={address}
                 onChange={(e) => {
                   const value = e.target.value;
-                  setAddress(value);
+                  setPermanentAddress(value);
 
                   if (value === "") {
                     setIsRequired((prev) => ({
@@ -1683,21 +1652,20 @@ const WFHDRegister = ({ userUpdateID }) => {
             <div className="col-md-3">
               <div className="form-group m0">
                 <label htmlFor="">
-                  State <span style={{ color: "red" }}>*</span>
+                  Permanent State <span style={{ color: "red" }}>*</span>
                 </label>
                 <IndianStatesMui
-                  selectedState={currentState}
-                  // onChange={(option) => setcurrentState(option ? option : null)}
+                  selectedState={permamentState}
                   onChange={(option) => {
                     const value = option;
-                    setcurrentState(option ? option : null);
+                    setPermanentState(option ? option : null);
                     setIsRequired((prev) => ({
                       ...prev,
-                      currentState: value === null || value === "",
+                      permamentState: value === null || value === "",
                     }));
                   }}
                 />
-                {isRequired.currentState && (
+                {isRequired.permamentState && (
                   <p className="form-error">Please Enter State</p>
                 )}
               </div>
@@ -1706,13 +1674,12 @@ const WFHDRegister = ({ userUpdateID }) => {
             <div className="col-md-3">
               <div className="form-group m0">
                 <label htmlFor="">
-                  City <span style={{ color: "red" }}>*</span>
+                  Permanent City <span style={{ color: "red" }}>*</span>
                 </label>
 
                 <IndianCitiesMui
-                  selectedState={currentState}
+                  selectedState={permamentState}
                   selectedCity={city}
-                  // onChange={(option) => setCity(option ? option : null)}
                   onChange={(option) => {
                     const value = option;
                     setCity(option ? option : null);
@@ -1730,7 +1697,7 @@ const WFHDRegister = ({ userUpdateID }) => {
 
             <div className="col-md-3">
               <FieldContainer
-                label="Pincode"
+                label="Permanent Pincode"
                 type="number"
                 astric={true}
                 fieldGrid={12}
@@ -1756,6 +1723,123 @@ const WFHDRegister = ({ userUpdateID }) => {
               />
               {isRequired.pincode && (
                 <p className="form-error">Please Enter Pincode</p>
+              )}
+            </div>
+
+            <div className="form_checkbox">
+              <label className="cstm_check">
+                Same as Permanent Addresss
+                <input
+                  className="form-control"
+                  type="checkbox"
+                  checked={sameAsCurrent}
+                  onChange={handleCheckboxChange}
+                />
+                <span className="checkmark"></span>
+              </label>
+            </div>
+            <div className="col-md-3">
+              <FieldContainer
+                label="Current Address"
+                astric
+                fieldGrid={12}
+                value={currentAddress}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCurrentAddress(value);
+
+                  if (value === "") {
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentAddress: true,
+                    }));
+                  } else {
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentAddress: false,
+                    }));
+                  }
+                }}
+              />
+              {isRequired.currentAddress && (
+                <p className="form-error">Please Enter Current Address</p>
+              )}
+            </div>
+
+            <div className="col-md-3">
+              <div className="form-group m0">
+                <label htmlFor="">
+                  Current State <span style={{ color: "red" }}>*</span>
+                </label>
+                <IndianStatesMui
+                  selectedState={currentState}
+                  onChange={(option) => {
+                    const value = option;
+                    setcurrentState(option ? option : null);
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentState: value === null || value === "",
+                    }));
+                  }}
+                />
+                {isRequired.currentState && (
+                  <p className="form-error">Please Enter Current State</p>
+                )}
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <div className="form-group m0">
+                <label htmlFor="">
+                  Current City <span style={{ color: "red" }}>*</span>
+                </label>
+
+                <IndianCitiesMui
+                  selectedState={currentState}
+                  selectedCity={currentCity}
+                  onChange={(option) => {
+                    const value = option;
+                    setcurrentCity(option ? option : null);
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentCity: value === null || value === "",
+                    }));
+                  }}
+                />
+                {isRequired.currentCity && (
+                  <p className="form-error">Please Enter Current City</p>
+                )}
+              </div>
+            </div>
+
+            <div className="col-md-3">
+              <FieldContainer
+                label="Current Pincode"
+                type="number"
+                astric={true}
+                fieldGrid={12}
+                maxLength={6}
+                value={currentPincode}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d{0,6}$/.test(value)) {
+                    setcurrentPincode(value);
+                  }
+                  if (e.target.value === "") {
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentPincode: true,
+                    }));
+                  } else {
+                    setIsRequired((prev) => ({
+                      ...prev,
+                      currentPincode: false,
+                    }));
+                  }
+                }}
+              />
+              {isRequired.currentPincode && (
+                <p className="form-error">Please Enter Current Pincode</p>
               )}
             </div>
           </div>

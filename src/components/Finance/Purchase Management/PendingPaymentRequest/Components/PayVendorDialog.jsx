@@ -75,7 +75,7 @@ function PayVendorDialog(props) {
 
   useEffect(() => {
     handleCalculatePaymentAmount();
-    if (paymentAmout > 0 && paymentAmout <= 10000) {
+    if (paymentAmout > 0 && paymentAmout <= 1000) {
       setGatewayPaymentMode("IMPS")
     }
   }, [TDSPercentage, GSTHoldAmount, TDSDeduction, gstHold]);

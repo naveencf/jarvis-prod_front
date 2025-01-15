@@ -32,6 +32,8 @@ const CampaignExecutions = () => {
   const [pageDetails, setPageDetails] = useState([]);
   const [assignData, setAssignData] = useState([]);
   const [allCampData, setAllCampData] = useState([]);
+  console.log(allCampData,'allCampData');
+  
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [shiftPages, setShiftPages] = useState("");
   const [allPhaseData, setAllPhaseData] = useState([]);
@@ -508,7 +510,7 @@ const CampaignExecutions = () => {
 
   const options = allCampData.map((option) => ({
     value: option._id,
-    label: formatString(option.campaign_data.exeCmpName),
+    label: formatString(option.pre_campaign_id),
   }));
 
   useEffect(() => {
@@ -681,3 +683,7 @@ const CampaignExecutions = () => {
 };
 
 export default CampaignExecutions;
+
+
+
+

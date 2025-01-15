@@ -13702,7 +13702,7 @@ body.sidebar-toggled #wrapper #content-wrapper {
   top: 0;
   right: 0;
   left: auto;
-  /* z-index: 1030; */
+  z-index: 1030;
   width: calc(100%);
 }
 
@@ -21897,59 +21897,75 @@ hr:not([size]) {
   background: #bbb;
 }
 
-
-
 /* Style the entire transaction slip container */
 .transaction-slip {
-  width: 300px;
-  padding: 20px;
-  background-color: #000;
+  width: 440px;
+  padding: 40px;
+  background-color: #171F2A;
   color: #fff;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  border-radius: 8px; /* Slightly rounded corners for a cleaner look */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adds a shadow to make it stand out */
 }
 
-/* Style the title */
-.transaction-title {
-  font-size: 22px;
-  margin-bottom: 15px;
-  font-weight: bold;
-  background-color: #00b74a;
+.paymentHeader {
+  position: relative;
+  border-bottom: 2px solid #28384E;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
 }
 
-/* Style for the amount text */
-.amount {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 15px;
+.paymentHeader h1 {
+  color: #fff;
+  font-size: 36px;
+  line-height: 44px;
+  font-weight: 600;
+  margin: 0px 0px 4px;
 }
 
-/* Style the amount span for better visibility */
-.amount span {
-  font-size: 22px;
-  color: #ff9800; /* Use a different color for the amount */
+.paymentHeader h1 span {
+  color: #919BAB;
+  font-size: 26px;
+  line-height: 30px;
+  font-weight: 400;
+  margin-right: 5px;
 }
 
-/* Style for the paragraph elements */
-.transaction-slip p {
+.paymentHeader p {
+  color: #919BAB;
   font-size: 14px;
-  margin: 8px 0;
+  line-height: 22px;
+  font-weight: 400;
 }
 
-/* Optional: Add hover effect for buttons or interactive elements */
-.transaction-slip button {
-  padding: 10px 20px;
+.payDtlBox {
+  border-bottom: 2px solid #28384E;
+  padding-bottom: 25px;
+  margin-bottom: 25px;
+}
+
+.payDtlBox h2 {
+  color: #ffffff;
   font-size: 16px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-top: 15px;
+  line-height: 26px;
+  font-weight: 400;
+  margin: 0px 0px 10px;
 }
 
-.transaction-slip button:hover {
-  background-color: #e68900;
+.payDtlBox ul li {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  margin: 4px 0px;
+}
+
+.payDtlBox ul li span {
+  color: #919BAB;
+  min-width: 50%;
+}
+
+.vendorDetails.payDtlBox {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border: none;
 }

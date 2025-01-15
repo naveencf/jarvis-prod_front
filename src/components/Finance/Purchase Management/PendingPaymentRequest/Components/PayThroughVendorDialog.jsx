@@ -80,14 +80,19 @@ const PayThroughVendorDialog = (props) => {
         clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name,),
-        accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
-        branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
+        ...(gatewayPaymentMode !== "UPI" && {
+          accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
+          branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
+        }),
+        // gatewayPaymentMode == "UPI" && vpa: vendorBankDetail[selectedBankIndex]?.ifsc,
+
         email: 'naveen@creativefuel.io',
         phone: "9109102483",
         amount: {
           currency: "INR",
           value: paymentAmout * 100,
         },
+
         mode: gatewayPaymentMode || "NEFT",
         remarks: "Creativefuel",
         // vendorId: "67690a8250051ca0d5074dd6",
@@ -231,7 +236,7 @@ const PayThroughVendorDialog = (props) => {
             // className="col mt-1"
             sx={{ mb: 2 }}
             id="combo-box-demo"
-            options={["IMPS", "NEFT"]}
+            options={["IMPS", "NEFT", "UPI"]}
             value={gatewayPaymentMode}
             renderInput={(params) => (
               <TextField
