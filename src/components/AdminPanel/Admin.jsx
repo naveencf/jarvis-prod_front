@@ -21,6 +21,7 @@ import TagCategory from "./PageMS/InventoryDashboard/TagCategory";
 import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest";
 import CalenderCreation from "../Operation/Calender/CalenderCreation";
 import PurchaseTransactions from "../Purchase/PurchaseTransactions";
+import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -2187,6 +2188,10 @@ const Admin = () => {
                     <Route
                       path="/op-campaign-executions"
                       element={<CampaignExecutions />}
+                    />
+                     <Route
+                      path="/campaign_executions"
+                      element={<NewCampaignExecutions />}
                     />
 
                     {/* new pla over view  */}

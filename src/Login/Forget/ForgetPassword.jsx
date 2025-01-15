@@ -4,23 +4,23 @@ import { useState } from "react";
 import loginlogo from "../../assets/img/logo/logo_login1.png";
 import { Link } from "react-router-dom";
 import { baseUrl } from "../../utils/config";
-import { useGlobalContext } from "../../Context/Context";
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [errMessage, setErrMessage] = useState("");
-  const { toastAlert } = useGlobalContext();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (email.trim() === "") {
-      setErrMessage("Please enter Email !");
+      setErrMessage("Please enter your email!");
       return;
     }
+
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you want to proceed with password reset and cheqe mail?",
+      text: "Do you want to proceed with the password reset and check your email?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -28,23 +28,41 @@ export default function ForgetPassword() {
       confirmButtonText: "Yes, reset it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        // Proceed with API call
+        setLoading(true); // Start loading
         axios
-          .post(baseUrl + "forgot_pass", {
-            user_email_id: email,
-          })
+          .post(`${baseUrl}forgot_pass`, { PersonalEmail: email })
           .then((res) => {
-            setErrMessage("Successfully Sent email !");
-            setEmail("");
-            toastAlert("Mail Send Successfully");
-            if (res.data.message === "Successfully Sent email.") {
+            setLoading(false); // Stop loading
+            if (res.data?.message === "Successfully Sent email.") {
+              Swal.fire({
+                title: "Success!",
+                text: "An email has been sent successfully for password reset.",
+                icon: "success",
+                confirmButtonText: "OK",
+              });
+              setErrMessage("");
+              setEmail(""); // Clear email input
             } else {
-              setErrMessage("No such email found in database");
+              Swal.fire({
+                title: "Error!",
+                text: res.data?.message || "Something went wrong. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+              });
+              setErrMessage(res.data?.message || "Unexpected response. Please try again.");
             }
           })
           .catch((error) => {
+            setLoading(false); // Stop loading
+            const errorMessage = error.response?.data?.message || "Failed to reset password. Please try again later.";
             console.error("Error:", error);
-            setErrMessage("Failed to reset password. Please try again later.");
+            Swal.fire({
+              title: "Error!",
+              text: errorMessage,
+              icon: "error",
+              confirmButtonText: "OK",
+            });
+            setErrMessage(errorMessage);
           });
       }
     });
@@ -73,11 +91,7 @@ export default function ForgetPassword() {
               <p>Please fill associated email id to get your password</p>
             </div>
 
-            <form
-              onSubmit={(e) => {
-                handleSubmit(e);
-              }}
-            >
+            <form onSubmit={handleSubmit}>
               <div className="authform mb-5">
                 <div className="form-group">
                   <input
@@ -87,11 +101,24 @@ export default function ForgetPassword() {
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    disabled={loading} // Disable input when loading
                   />
                 </div>
                 <div className="form-group">
-                  <button className="btn btn-icon btn_primary" type="submit">
-                    <i className="fas fa-arrow-right" />
+                  <button
+                    className="btn btn-icon btn_primary"
+                    type="submit"
+                    disabled={loading} // Disable button when loading
+                  >
+                    {loading ? (
+                      <span
+                        className="spinner-border spinner-border-sm"
+                        role="status"
+                        aria-hidden="true"
+                      ></span>
+                    ) : (
+                      <i className="fas fa-arrow-right" />
+                    )}
                   </button>
                   <button
                     type="button"

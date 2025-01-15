@@ -242,7 +242,8 @@ const VendorMaster = () => {
   const handleIFSCChange = (e, i) => {
     if (e.target.value?.length > 11) return;
     const updatedRows = [...bankRows];
-    updatedRows[i].ifsc = e.target.value;
+    updatedRows[i].ifsc = e.target.value?.toUpperCase();
+    console.log(updatedRows, "updatedRows")
     setBankRows(updatedRows);
   };
 
@@ -1428,14 +1429,12 @@ const VendorMaster = () => {
                           value: option._id,
                           label: option.bank_name,
                         }))}
-                        isDisabled={!!_id}
                         required={true}
                         value={{
                           value: bankRows[i]._id,
                           label: bankName?.find((role) => role.bank_name === bankRows[i].bank_name)?.bank_name || '',
                         }}
                         onChange={(e) => {
-                          if (!!_id) return;
                           bankRows[i].bank_name = e.label;
                           if (e.value) {
                             setValidator((prev) => ({
@@ -1460,21 +1459,22 @@ const VendorMaster = () => {
                           label: option,
                           value: option,
                         }))}
-                        isDisabled={!!_id}
                         required={true}
                         value={{
                           value: bankRows[i].account_type,
                           label: bankRows[i].account_type,
                         }}
                         onChange={(e) => {
-                          if (!!_id) return;
+                          // if (!!_id) return;
                           handleAccountTypeChange(e, i);
                         }}
                       />
                     </div>
 
-                    <FieldContainer label="Account Number " disabled={_id ? true : false} type="text" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
-                    <FieldContainer required={false} maxLength={11} disabled={_id ? true : false} label="IFSC " value={bankRows[i].ifsc} onChange={(e) => handleIFSCChange(e, i)} />
+                    <FieldContainer label="Account Number "
+                      type="text" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
+                    <FieldContainer required={false} maxLength={11}
+                      label="IFSC " value={bankRows[i]?.ifsc} onChange={(e) => handleIFSCChange(e, i)} />
                   </>
                 )}
                 {bankRows[i].payment_method == '666856754366007df1dfacd2' && <FieldContainer required={false} label="UPI ID " value={bankRows[i].upi_id} onChange={(e) => handleUPIidChange(e, i)} />}
@@ -1487,6 +1487,7 @@ const VendorMaster = () => {
                 )}
               </>
             ))}
+
             {(!_id || (contextData && contextData[65]?.view_value === 1)) && (
               <div className="row">
                 <IconButton onClick={handleAddBankInfoRow} variant="contained" color="primary">

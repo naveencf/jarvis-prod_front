@@ -811,7 +811,7 @@ const SidebarLinks = () => {
                 contextData[34] &&
                 contextData[34].view_value === 1 && (
                   <>
-                    <NavLink
+                    {/* <NavLink
                       className="collapse-item"
                       to="/admin/exeoperation/master"
                     >
@@ -824,7 +824,7 @@ const SidebarLinks = () => {
                     >
                       <i className="bi bi-dot"></i>
                       Regsiter Campaign
-                    </NavLink>
+                    </NavLink> */}
                     {/* <NavLink
                       className="collapse-item"
                       to="/admin/op-plan-creation"
@@ -845,6 +845,13 @@ const SidebarLinks = () => {
                     >
                       <i className="bi bi-dot"></i>
                       Camp Execution
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/campaign_executions"
+                    >
+                      <i className="bi bi-dot"></i>
+                     New Camp Execution
                     </NavLink>
                   </>
                 )}

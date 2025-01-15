@@ -8,10 +8,7 @@ import { AiOutlineReload } from "react-icons/ai";
 import Select from "react-select";
 import jwtDecode from "jwt-decode";
 import WhatsappAPI from "../../WhatsappAPI/WhatsappAPI";
-import IndianStates from "../../ReusableComponents/IndianStates";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import ContactNumber from "../../ReusableComponents/ContactNumber";
 import ContactNumberReact from "../../ReusableComponents/ContactNumberReact";
 import { IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -28,38 +25,9 @@ import { constant } from "../../../utils/constants";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
 import {PDFDownloadLink } from "@react-pdf/renderer";
-import { stateAbbreviations } from "../../../utils/helper";
+import { bankTypeData, bloodGroupData, castOption, genderData, nationalityData, spokenLanguageData, stateAbbreviations } from "../../../utils/helper";
 
-const castOption = ["General", "OBC", "SC", "ST"];
-const colourOptions = [
-  { value: "English", label: "English" },
-  { value: "Hindi", label: "Hindi" },
-  { value: "Spanish", label: "Spanish" },
-  { value: "Mandarin", label: "Mandarin" },
-  { value: "French", label: "French" },
-  { value: "Arabic", label: "Arabic" },
-  { value: "Bengali", label: "Bengali" },
-  { value: "Russian", label: "Russian" },
-  { value: "Portuguese", label: "Portuguese" },
-  { value: "Indonesian", label: "Indonesian" },
-  { value: "Urdu", label: "Urdu" },
-  { value: "German", label: "German" },
-  { value: "Japanese", label: "Japanese" },
-  { value: "Swahili", label: "Swahili" },
-  { value: "Marathi", label: "Marathi" },
-  { value: "Telugu", label: "Telugu" },
-  { value: "Turkish", label: "Turkish" },
-  { value: "Tamil", label: "Tamil" },
-  { value: "Vietnamese", label: "Vietnamese" },
-  { value: "Italian", label: "Italian" },
-  { value: "Korean", label: "Korean" },
-  { value: "Persian", label: "Persian" },
-  { value: "Polish", label: "Polish" },
-  { value: "Dutch", label: "Dutch" },
-  { value: "Greek", label: "Greek" },
-  { value: "Thai", label: "Thai" },
-  { value: "Other", label: "Other" },
-];
+
 
 const initialFamilyDetailsGroup = {
   relation: "",
@@ -266,20 +234,7 @@ const UserUpdate = () => {
   const [otherDocuments, setOtherDocuments] = useState();
   const [defaultSeatData, setDefaultSeatData] = useState([]);
 
-  const bankTypeData = ["Saving A/C", "Current A/C", "Salary A/C"];
-  const genderData = ["Male", "Female", "Other"];
-  const nationalityData = ["India", "USA", "Uk"];
-
-  const bloodGroupData = [
-    "A+ (A Positive)",
-    "A- (A Negetive)",
-    "B+ (B Positive)",
-    "B- (B Negetive)",
-    "AB+ (AB Positive)",
-    "AB- (AB Negetive)",
-    "O+ (O Positive)",
-    "O- (O Negetive)",
-  ];
+ 
   const statusData = ["Active", "Exit", "PreOnboard"];
   const maritialStatusData = ["Married", "Unmarried"];
 
@@ -1441,7 +1396,6 @@ const handleJoiningDate = (e) =>{
 
 
   //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
-  console.log(monthlyGrossSalary , 'monthly gross salary')
   let salary = monthlyGrossSalary;
   let basicSalary = salary * 0.6;
   let basicsal = (basicSalary <= 12300 ? salary * 0.8 : basicSalary).toFixed(
@@ -2168,7 +2122,7 @@ const EMPPF = isApplicable == "pf_and_esic"
             <Select
               isMulti
               name="langauages"
-              options={colourOptions}
+              options={spokenLanguageData}
               className="basic-multi-select"
               classNamePrefix="select"
               value={tempLanguage}

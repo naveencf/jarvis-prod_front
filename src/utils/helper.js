@@ -32,4 +32,26 @@ export const stateAbbreviations = {
     Ladakh: 'LA',
   };
 
-  
+ export const spokenLanguageData = [
+    { value: 'English', label: 'English' },
+    { value: 'Hindi', label: 'Hindi' },
+    { value: 'Spanish', label: 'Spanish' },
+    { value: 'French', label: 'French' },
+    { value: 'Arabic', label: 'Arabic' },
+    { value: 'Bengali', label: 'Bengali' },
+    { value: 'Russian', label: 'Russian' },
+    { value: 'Urdu', label: 'Urdu' },
+    { value: 'German', label: 'German' },
+    { value: 'Japanese', label: 'Japanese' },
+    { value: 'Marathi', label: 'Marathi' },
+    { value: 'Telugu', label: 'Telugu' },
+    { value: 'Tamil', label: 'Tamil' },
+    { value: 'Italian', label: 'Italian' },
+    { value: 'Other', label: 'Other' },
+  ];
+
+ export const bloodGroupData = ['A+ (A Positive)', 'A- (A Negetive)', 'B+ (B Positive)', 'B- (B Negetive)', 'AB+ (AB Positive)', 'AB- (AB Negetive)', 'O+ (O Positive)', 'O- (O Negetive)'];
+ export const nationalityData = ['Indian', 'USA', 'Uk'];
+export const bankTypeData = ['Saving A/C', 'Current A/C', 'Salary A/C'];
+export const castOption = ['General', 'OBC', 'SC', 'ST'];
+export const genderData = ['Male', 'Female', 'Other'];
