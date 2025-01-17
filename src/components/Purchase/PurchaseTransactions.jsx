@@ -434,8 +434,8 @@ const PurchaseTransactions = () => {
     Amount of ₹${payment_amount}/- has been released from CreativeFuel to your bank account  on ${payment_date}.
     The reference ID for this transaction is ${bankTransactionReferenceId}.
 
-    Thank you for doing business with us.
     ${remark_audit}
+    Thank you for doing business with us.
 `;
                     navigator.clipboard
                         .writeText(message)

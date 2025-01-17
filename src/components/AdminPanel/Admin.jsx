@@ -22,6 +22,8 @@ import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest";
 import CalenderCreation from "../Operation/Calender/CalenderCreation";
 import PurchaseTransactions from "../Purchase/PurchaseTransactions";
 import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions";
+import OpCalender from "../AbOpreation/Calender/OpCalender";
+import VendorOutstandingOverview from "../Purchase/vendor/VendorOutstandingOverview";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -1505,6 +1507,11 @@ const Admin = () => {
                       element={<CalenderCreation />}
                     />
                     <Route
+                      path="/op-calender"
+                      element={<OpCalender />}
+                    />
+
+                    <Route
                       path="/register-campaign"
                       element={<RegisterCampaign />}
                     />
@@ -2189,7 +2196,7 @@ const Admin = () => {
                       path="/op-campaign-executions"
                       element={<CampaignExecutions />}
                     />
-                     <Route
+                    <Route
                       path="/campaign_executions"
                       element={<NewCampaignExecutions />}
                     />
@@ -2275,8 +2282,12 @@ const Admin = () => {
                       contextData[54].view_value === 1 && (
                         <Route path="/statics" element={<PostStats />} />
                       )}
+                    {/* Purchase Transaction */}
+                    <Route
+                      path="/vendor_outstanding"
+                      element={<VendorOutstandingOverview />}
+                    />
                   </Route>
-
                   <Route path="**" element={<ErrorPage />} />
                 </Routes>
               </div>

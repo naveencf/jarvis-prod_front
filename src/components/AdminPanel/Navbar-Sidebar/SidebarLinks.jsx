@@ -18,6 +18,7 @@ import {
 import { constant } from "../../../utils/constants";
 import ExenseManagement from "./ExenseManagementSidebarLinks";
 import { RiOrganizationChart } from "react-icons/ri";
+import OperationSidebarLinks from "./OperationSidebarLinks";
 
 const SidebarLinks = () => {
   const [contextData, setData] = useState([]);
@@ -831,14 +832,18 @@ const SidebarLinks = () => {
                     >
                       <i className="bi bi-dot"></i>
                       Plan Creation
-                    </NavLink> */}
-                    {/* <NavLink
+                    </NavLink> 
+                    <NavLink
                       className="collapse-item"
-                      to="/admin/op-phase-creation"
+                      to="/admin/calender"
                     >
                       <i className="bi bi-dot"></i>
                       Phase Creation
                     </NavLink> */}
+
+
+                    <OperationSidebarLinks />
+
                     <NavLink
                       className="collapse-item"
                       to="/admin/op-campaign-executions"
@@ -851,7 +856,7 @@ const SidebarLinks = () => {
                       to="/admin/campaign_executions"
                     >
                       <i className="bi bi-dot"></i>
-                     New Camp Execution
+                      New Camp Execution
                     </NavLink>
                   </>
                 )}
@@ -1593,12 +1598,12 @@ const SidebarLinks = () => {
                         {/* <i className="bi bi-dot"></i> */}
                         Payment Mode Master
                       </NavLink>
-                      {/* <NavLink
+                      <NavLink
                         className="collapse-item"
-                        to="/admin/payment-TDS_deduct"
+                        to="/admin/purchase-transaction"
                       >
-                        <i className="bi bi-dot"></i> TDS Deduction
-                      </NavLink> */}
+                        <i className="bi bi-dot"></i>Recent Transaction
+                      </NavLink>
                       {/* <NavLink
                         className="collapse-item"
                         to="/admin/payment-GST_hold"
@@ -2119,6 +2124,12 @@ const SidebarLinks = () => {
                   to="/admin/purchase-transaction"
                 >
                   <i className="bi bi-dot"></i>Recent Transaction
+                </NavLink>
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/vendor_outstanding"
+                >
+                  <i className="bi bi-dot"></i>Vendor Overview
                 </NavLink>
 
 

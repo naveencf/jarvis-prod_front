@@ -1,83 +1,114 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { AppContext, useGlobalContext } from '../../../Context/Context';
-import FieldContainer from '../FieldContainer';
-import FormContainer from '../FormContainer';
-import { baseUrl } from '../../../utils/config';
-import jwtDecode from 'jwt-decode';
-import { Navigate, useNavigate } from 'react-router';
-import { Link } from 'react-router-dom';
-import Select from 'react-select';
-import { Autocomplete, Box, Button, Checkbox, FormControlLabel, IconButton, Stack, TextField } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import { useDispatch, useSelector } from 'react-redux';
-import { handleChangeVendorInfoModal, setModalType, setShowAddVendorModal } from './../../Store/VendorMaster';
-import AddVendorModal from './AddVendorModal';
-import { useAddCompanyDataMutation, useAddVendorDocumentMutation, useAddVendorMutation, useGetAllVendorTypeQuery, useGetBankNameDetailQuery, useGetCountryCodeQuery, useGetPmsPayCycleQuery, useGetPmsPaymentMethodQuery, useGetPmsPlatformQuery, useGetVendorDocumentByVendorDetailQuery, useGetVendorWhatsappLinkTypeQuery, useUpdateVenodrMutation, useGetAllVendorQuery, useUpdateVendorDocumentMutation } from '../../Store/reduxBaseURL';
-import Swal from 'sweetalert2';
-import VendorTypeInfoModal from './VendorTypeInfoModal';
-import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
-import RemoveCircleTwoToneIcon from '@mui/icons-material/RemoveCircleTwoTone';
-import { useParams } from 'react-router';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import IndianStatesMui from '../../ReusableComponents/IndianStatesMui';
-import IndianCitiesMui from '../../ReusableComponents/IndianCitiesMui';
-import { useGstDetailsMutation } from '../../Store/API/Sales/GetGstDetailApi';
-import formatString from '../Operation/CampaignMaster/WordCapital';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PreviewModal from './Vendor/PreviewModal';
-import { useContext } from 'react';
-import { FormatName } from '../../../utils/FormatName';
-import { useAPIGlobalContext } from '../APIContext/APIContext';
-import { stateAbbreviations } from '../../../utils/helper';
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { AppContext, useGlobalContext } from "../../../Context/Context";
+import FieldContainer from "../FieldContainer";
+import FormContainer from "../FormContainer";
+import { baseUrl } from "../../../utils/config";
+import jwtDecode from "jwt-decode";
+import { Navigate, useNavigate } from "react-router";
+import { Link } from "react-router-dom";
+import Select from "react-select";
+import {
+  Autocomplete,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  Stack,
+  TextField,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  handleChangeVendorInfoModal,
+  setModalType,
+  setShowAddVendorModal,
+} from "./../../Store/VendorMaster";
+import AddVendorModal from "./AddVendorModal";
+import {
+  useAddCompanyDataMutation,
+  useAddVendorDocumentMutation,
+  useAddVendorMutation,
+  useGetAllVendorTypeQuery,
+  useGetBankNameDetailQuery,
+  useGetCountryCodeQuery,
+  useGetPmsPayCycleQuery,
+  useGetPmsPaymentMethodQuery,
+  useGetPmsPlatformQuery,
+  useGetVendorDocumentByVendorDetailQuery,
+  useGetVendorWhatsappLinkTypeQuery,
+  useUpdateVenodrMutation,
+  useGetAllVendorQuery,
+  useUpdateVendorDocumentMutation,
+} from "../../Store/reduxBaseURL";
+import Swal from "sweetalert2";
+import VendorTypeInfoModal from "./VendorTypeInfoModal";
+import AddCircleTwoToneIcon from "@mui/icons-material/AddCircleTwoTone";
+import RemoveCircleTwoToneIcon from "@mui/icons-material/RemoveCircleTwoTone";
+import { useParams } from "react-router";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
+import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
+import { useGstDetailsMutation } from "../../Store/API/Sales/GetGstDetailApi";
+import formatString from "../Operation/CampaignMaster/WordCapital";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PreviewModal from "./Vendor/PreviewModal";
+import { useContext } from "react";
+import { FormatName } from "../../../utils/FormatName";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
+import { stateAbbreviations } from "../../../utils/helper";
 
 const VendorMaster = () => {
   const navigate = useNavigate();
-  const { data: countries, isLoading: isCountriesLoading } = useGetCountryCodeQuery();
-  const token = sessionStorage.getItem('token');
+  const { data: countries, isLoading: isCountriesLoading } =
+    useGetCountryCodeQuery();
+  const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
   const { _id } = useParams();
 
   const dispatch = useDispatch();
-  const isVendorModalOpen = useSelector((state) => state.vendorMaster.showVendorInfoModal);
+  const isVendorModalOpen = useSelector(
+    (state) => state.vendorMaster.showVendorInfoModal
+  );
   const [forPhp, setForPhp] = useState([]);
   const [vendorData, setVendorData] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
   // const [isFormSubmitting2, setIsFormSubmitting2] = useState(false);
-  const [vendorName, setVendorName] = useState('');
-  const [countryCode, setCountryCode] = useState('91');
+  const [vendorName, setVendorName] = useState("");
+  const [countryCode, setCountryCode] = useState("91");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [mobile, setMobile] = useState('');
-  const [altMobile, setAltMobile] = useState('');
-  const [email, setEmail] = useState('');
-  const [gst, setGst] = useState('');
-  const [compName, setCompName] = useState('');
-  const [compAddress, setCompAddress] = useState('');
-  const [compCity, setCompCity] = useState('');
-  const [compPin, setCompPin] = useState('');
-  const [compState, setCompState] = useState('');
-  const [limit, setLimit] = useState('');
-  const [homeAddress, setHomeAddress] = useState('');
-  const [homeCity, setHomeCity] = useState('');
-  const [homePincode, setHomePincode] = useState('');
-  const [otherCountry, setOtherCountry] = useState('');
-  const [homeState, setHomeState] = useState('');
-  const [typeId, setTypeId] = useState('');
-  const [platformId, setPlatformId] = useState('666818824366007df1df1319');
-  const [cycleId, setCycleId] = useState('');
+  const [mobile, setMobile] = useState("");
+  const [altMobile, setAltMobile] = useState("");
+  const [email, setEmail] = useState("");
+  const [gst, setGst] = useState("");
+  const [compName, setCompName] = useState("");
+  const [compAddress, setCompAddress] = useState("");
+  const [compCity, setCompCity] = useState("");
+  const [compPin, setCompPin] = useState("");
+  const [compState, setCompState] = useState("");
+  const [limit, setLimit] = useState("");
+  const [homeAddress, setHomeAddress] = useState("");
+  const [homeCity, setHomeCity] = useState("");
+  const [homePincode, setHomePincode] = useState("");
+  const [otherCountry, setOtherCountry] = useState("");
+  const [homeState, setHomeState] = useState("");
+  const [typeId, setTypeId] = useState("");
+  const [platformId, setPlatformId] = useState("666818824366007df1df1319");
+  const [cycleId, setCycleId] = useState("");
   const [emailIsInvalid, setEmailIsInvalid] = useState(false);
-  const [vendorCategory, setVendorCategory] = useState('Theme Page');
+  const [vendorCategory, setVendorCategory] = useState("Theme Page");
   const [whatsappLink, setWhatsappLink] = useState([]);
   const [docDetails, setDocDetails] = useState([]);
   const [sameAsPrevious, setSameAsPrevious] = useState(false);
   const [mobileValid, setMobileValid] = useState(false);
   const [userData, setUserData] = useState([]);
   const [userId, setUserId] = useState(230);
-  const [company_id, setCompany_id] = useState('');
-  const [busiType, setBusiType] = useState('');
+  const [company_id, setCompany_id] = useState("");
+  const [busiType, setBusiType] = useState("");
   const [getGstDetails] = useGstDetailsMutation();
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [previewData, setPreviewData] = useState({});
@@ -85,16 +116,19 @@ const VendorMaster = () => {
   const [validationMessage, setValidationMessage] = useState(null);
   const [isNumberValid, setIsNumberValid] = useState(null);
 
+
   const [bankRows, setBankRows] = useState([
     {
-      payment_method: '666856874366007df1dfacde', // setting bank default to dropdown
+      payment_method: "666856874366007df1dfacde", // setting bank default to dropdown
       // payment_method: "",
-      bank_name: '',
-      account_type: 'Savings',
-      account_number: '',
-      ifsc: '',
-      upi_id: '',
-      registered_number: '',
+      bank_name: "",
+      account_type: "Savings",
+      account_number: "",
+      ifsc: "",
+      upi_id: "",
+      registered_number: "",
+      pan_card: "",
+      account_holder_name: "",
     },
   ]);
   const [validator, setValidator] = useState({
@@ -116,7 +150,11 @@ const VendorMaster = () => {
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
 
-  const { data: allVendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
+  const {
+    data: allVendorData,
+    isLoading: loading,
+    refetch: refetchVendor,
+  } = useGetAllVendorQuery();
 
   const { data: platformData } = useGetPmsPlatformQuery();
 
@@ -135,9 +173,9 @@ const VendorMaster = () => {
   const [addVendorDocument] = useAddVendorDocumentMutation();
   const [updateVendor] = useUpdateVenodrMutation();
   const [updateVendorDocument] = useUpdateVendorDocumentMutation();
-  const [dob, setDob] = useState('');
-  const [messageColor, setMessageColor] = useState('');
-  const [existError, setExistError] = useState('');
+  const [dob, setDob] = useState("");
+  const [messageColor, setMessageColor] = useState("");
+  const [existError, setExistError] = useState("");
   const [busiTypeData, setBusiTypeData] = useState([]);
   const { usersDataContext } = useContext(AppContext);
 
@@ -157,69 +195,69 @@ const VendorMaster = () => {
             // setCompCity(addressParts[2]);
             // setCompPin(addressParts[7]);
             // setCompState(addressParts[2]);
-            setLimit('');
+            setLimit("");
           } else {
-            setCompName('');
-            setCompAddress('');
-            setCompCity('');
-            setCompPin('');
-            setCompState('');
-            setLimit('');
+            setCompName("");
+            setCompAddress("");
+            setCompCity("");
+            setCompPin("");
+            setCompState("");
+            setLimit("");
           }
         })
         .catch((error) => {
-          console.error('Error fetching GST details:', error);
+          console.error("Error fetching GST details:", error);
         });
     }
   }, [gst, getGstDetails]);
 
   const handleAddVendorTypeClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('Vendor'));
+    dispatch(setModalType("Vendor"));
   };
 
   const handleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('Vendor'));
+    dispatch(setModalType("Vendor"));
   };
 
   const handleAddPlatformClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('Platform'));
+    dispatch(setModalType("Platform"));
   };
 
   const handlePlatformInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('Platform'));
+    dispatch(setModalType("Platform"));
   };
 
   const handleAddPaymentMethodClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('PaymentMethod'));
+    dispatch(setModalType("PaymentMethod"));
   };
 
   const handlePaymentMethodInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('PaymentMethod'));
+    dispatch(setModalType("PaymentMethod"));
   };
 
   const handleAddPayCycleClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('PayCycle'));
+    dispatch(setModalType("PayCycle"));
   };
-  console.log('isFormSubmitting', isFormSubmitting);
+  console.log("isFormSubmitting", isFormSubmitting);
   const handlePayCycleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('PayCycle'));
+    dispatch(setModalType("PayCycle"));
   };
   // Bank Name:-=> {
   const handleAddBankNameClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('BankName'));
+    dispatch(setModalType("BankName"));
   };
   const handleBankNameInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('BankName'));
+    dispatch(setModalType("BankName"));
   };
 
   const handleAccountTypeChange = (e, i) => {
@@ -240,13 +278,26 @@ const VendorMaster = () => {
   };
 
   const handleIFSCChange = (e, i) => {
-    if (e.target.value?.length > 11) return;
+    const ifscValue = e.target.value.toUpperCase();
     const updatedRows = [...bankRows];
-    updatedRows[i].ifsc = e.target.value?.toUpperCase();
-    console.log(updatedRows, "updatedRows")
+    updatedRows[i].ifsc = ifscValue;
     setBankRows(updatedRows);
   };
 
+  const handlePANChange = (e, i) => {
+    const panValue = e.target.value.toUpperCase();
+    if (panValue.length <= 10) {
+      const updatedRows = [...bankRows];
+      updatedRows[i].pan_card = panValue;
+      setBankRows(updatedRows);
+    }
+  };
+
+  const handleAccountHolderChange = (e, i) => {
+    const updatedRows = [...bankRows];
+    updatedRows[i].account_holder_name = e.target.value;
+    setBankRows(updatedRows);
+  };
   const handleUPIidChange = (e, i) => {
     const updatedRows = [...bankRows];
     updatedRows[i].upi_id = e.target.value;
@@ -270,15 +321,16 @@ const VendorMaster = () => {
 
   const handleAddWhatsappGroupLinkTypeClick = () => {
     dispatch(setShowAddVendorModal());
-    dispatch(setModalType('WhatsappLinkType'));
+    dispatch(setModalType("WhatsappLinkType"));
   };
 
   const handleWhatsappGroupLinkTypeInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
-    dispatch(setModalType('WhatsappLinkType'));
+    dispatch(setModalType("WhatsappLinkType"));
   };
 
-  const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } = useGetVendorDocumentByVendorDetailQuery(_id);
+  const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
+    useGetVendorDocumentByVendorDetailQuery(_id);
   // console.log(venodrDocuments, "venodrDocuments")
 
   useEffect(() => {
@@ -287,12 +339,12 @@ const VendorMaster = () => {
         .get(`${baseUrl}v1/check_vendor_number_unique/${mobile}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         })
         .then((res) => {
           const isNumberUnique = res.data?.data?.isNumberUnique;
-          const message = res.data?.message || 'Unexpected response.';
+          const message = res.data?.message || "Unexpected response.";
           setValidationMessage(message);
           setIsNumberValid(isNumberUnique);
 
@@ -303,9 +355,11 @@ const VendorMaster = () => {
           }
         })
         .catch((error) => {
-          console.error('Error during API call:', error);
+          console.error("Error during API call:", error);
           setIsNumberValid(false);
-          setValidationMessage('An error occurred while validating the mobile number.');
+          setValidationMessage(
+            "An error occurred while validating the mobile number."
+          );
         });
     } else {
       setValidationMessage(null);
@@ -322,7 +376,7 @@ const VendorMaster = () => {
       .get(baseUrl + `v1/vendor_business_type`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       })
       .then((res) => {
@@ -334,7 +388,7 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/vendor/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
         })
         .then((res) => {
@@ -360,7 +414,7 @@ const VendorMaster = () => {
           setPlatformId(data?.vendor_platform);
           setCycleId(data?.pay_cycle);
           setHomePincode(data?.home_pincode);
-          setVendorCategory(data?.vendor_category ?? 'Theme Page');
+          setVendorCategory(data?.vendor_category ?? "Theme Page");
           setDob(data?.dob);
           setBusiType(data?.busi_type);
         });
@@ -369,13 +423,15 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/bank_details_by_vendor_id/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', // Adjust content type as needed
+            "Content-Type": "application/json", // Adjust content type as needed
           },
         })
         .then((res) => {
           const data = res.data.data;
           setBankRows(data);
-          const extractForPhp = bankRows?.find((item) => item.payment_method === '666856874366007df1dfacde');
+          const extractForPhp = bankRows?.find(
+            (item) => item.payment_method === "666856874366007df1dfacde"
+          );
           setForPhp(extractForPhp);
         });
 
@@ -383,7 +439,7 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/vendor_group_link_vendor_id/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', // Adjust content type as needed
+            "Content-Type": "application/json", // Adjust content type as needed
           },
         })
         .then((res) => {
@@ -395,7 +451,7 @@ const VendorMaster = () => {
         .get(baseUrl + `v1/company_name_wise_vendor/${_id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json', // Adjust content type as needed
+            "Content-Type": "application/json", // Adjust content type as needed
           },
         })
         .then((res) => {
@@ -426,40 +482,49 @@ const VendorMaster = () => {
 
       const staticDocs = [
         {
-          docName: 'GST',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "GST",
+          docNumber: "",
+          document_image_upload: "",
         },
         {
-          docName: 'Pan Card',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Pan Card",
+          docNumber: "",
+          document_image_upload: "",
         },
         {
-          docName: 'Aadhar Card',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Aadhar Card",
+          docNumber: "",
+          document_image_upload: "",
         },
         {
-          docName: 'Driving License',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Driving License",
+          docNumber: "",
+          document_image_upload: "",
         },
       ];
 
       const existingDocNames = doc.map((d) => d.docName);
-      const filteredStaticDocs = staticDocs.filter((staticDoc) => !existingDocNames.includes(staticDoc.docName));
+      const filteredStaticDocs = staticDocs.filter(
+        (staticDoc) => !existingDocNames.includes(staticDoc.docName)
+      );
       const combinedDocs = doc.concat(filteredStaticDocs);
       setDocDetails(combinedDocs);
 
-      if (busiType !== '') {
+      if (busiType !== "") {
         let filteredDocs;
-        if (busiType === '670112aa579d1873b7ede523' || busiType === '670112bd579d1873b7ede524') {
+        if (
+          busiType === "670112aa579d1873b7ede523" ||
+          busiType === "670112bd579d1873b7ede524"
+        ) {
           filteredDocs = combinedDocs;
-        } else if (busiType === '670112d0579d1873b7ede526') {
-          filteredDocs = combinedDocs.filter((doc) => ['Pan Card', 'Driving License', 'Aadhar Card'].includes(doc.docName));
-        } else if (busiType === '670112e2579d1873b7ede528') {
-          filteredDocs = combinedDocs.filter((doc) => ['Driving License', 'Aadhar Card', 'Pan Card'].includes(doc.docName));
+        } else if (busiType === "670112d0579d1873b7ede526") {
+          filteredDocs = combinedDocs.filter((doc) =>
+            ["Pan Card", "Driving License", "Aadhar Card"].includes(doc.docName)
+          );
+        } else if (busiType === "670112e2579d1873b7ede528") {
+          filteredDocs = combinedDocs.filter((doc) =>
+            ["Driving License", "Aadhar Card", "Pan Card"].includes(doc.docName)
+          );
         }
         setDocDetails(filteredDocs);
       }
@@ -470,9 +535,9 @@ const VendorMaster = () => {
     setWhatsappLink([
       ...whatsappLink,
       {
-        link: '',
-        remark: '',
-        type: '',
+        link: "",
+        remark: "",
+        type: "",
       },
     ]);
   };
@@ -481,46 +546,49 @@ const VendorMaster = () => {
     setDocDetails([
       ...docDetails,
       {
-        _id: '',
-        docName: '',
-        docNumber: '',
-        document_image_upload: '',
+        _id: "",
+        docName: "",
+        docNumber: "",
+        document_image_upload: "",
       },
     ]);
   };
 
   const addDocDetails = () => {
     let newDocs = [];
-    if (busiType === '670112aa579d1873b7ede523' || busiType === '670112bd579d1873b7ede524') {
+    if (
+      busiType === "670112aa579d1873b7ede523" ||
+      busiType === "670112bd579d1873b7ede524"
+    ) {
       newDocs = [
-        { docName: 'GST', docNumber: '', document_image_upload: '' },
-        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
-        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
+        { docName: "GST", docNumber: "", document_image_upload: "" },
+        { docName: "Pan Card", docNumber: "", document_image_upload: "" },
+        { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
         {
-          docName: 'Driving License',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Driving License",
+          docNumber: "",
+          document_image_upload: "",
         },
       ];
-    } else if (busiType === '670112d0579d1873b7ede526') {
+    } else if (busiType === "670112d0579d1873b7ede526") {
       newDocs = [
-        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
+        { docName: "Pan Card", docNumber: "", document_image_upload: "" },
         {
-          docName: 'Driving License',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Driving License",
+          docNumber: "",
+          document_image_upload: "",
         },
-        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
+        { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
       ];
-    } else if (busiType === '670112e2579d1873b7ede528') {
+    } else if (busiType === "670112e2579d1873b7ede528") {
       newDocs = [
         {
-          docName: 'Driving License',
-          docNumber: '',
-          document_image_upload: '',
+          docName: "Driving License",
+          docNumber: "",
+          document_image_upload: "",
         },
-        { docName: 'Aadhar Card', docNumber: '', document_image_upload: '' },
-        { docName: 'Pan Card', docNumber: '', document_image_upload: '' },
+        { docName: "Aadhar Card", docNumber: "", document_image_upload: "" },
+        { docName: "Pan Card", docNumber: "", document_image_upload: "" },
       ];
     }
 
@@ -549,11 +617,11 @@ const VendorMaster = () => {
 
     let capitalizedValue = value.toUpperCase();
 
-    if (docName === 'Pan Card') {
+    if (docName === "Pan Card") {
       maxLength = 11;
-    } else if (docName === 'GST') {
+    } else if (docName === "GST") {
       maxLength = 15;
-    } else if (docName === 'Aadhar Card') {
+    } else if (docName === "Aadhar Card") {
       maxLength = 16;
     }
     if (capitalizedValue.length > maxLength) {
@@ -561,7 +629,7 @@ const VendorMaster = () => {
       return;
     }
     doc[i].docNumber = capitalizedValue;
-    if (docDetails[0].docName === 'GST') {
+    if (docDetails[0].docName === "GST") {
       setGst(doc[0].docNumber);
     }
     setDocDetails(doc);
@@ -585,13 +653,14 @@ const VendorMaster = () => {
     setBankRows([
       ...bankRows,
       {
-        payment_method: '',
-        bank_name: '',
-        account_type: '',
-        account_number: '',
-        ifsc: '',
-        upi_id: '',
-        registered_number: '',
+        payment_method: "",
+        bank_name: "",
+        account_type: "",
+        account_number: "",
+        ifsc: "",
+        upi_id: "",
+        registered_number: "",
+        pan_card: "",
       },
     ]);
   };
@@ -616,8 +685,11 @@ const VendorMaster = () => {
     }
 
     if (newContact?.length <= 10) {
-      if (newContact === '' || (newContact?.length === 1 && parseInt(newContact) < 6)) {
-        setMobile('');
+      if (
+        newContact === "" ||
+        (newContact?.length === 1 && parseInt(newContact) < 6)
+      ) {
+        setMobile("");
         setMobileValid(false);
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
@@ -625,7 +697,9 @@ const VendorMaster = () => {
         });
       } else {
         setMobile(newContact);
-        setMobileValid(/^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(newContact));
+        setMobileValid(
+          /^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(newContact)
+        );
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
           mobile: false,
@@ -641,8 +715,11 @@ const VendorMaster = () => {
     const newContact = e.target.value;
 
     if (/^\d*$/.test(newContact) && newContact.length <= 10) {
-      if (newContact === '' || (newContact.length === 1 && parseInt(newContact, 10) < 6)) {
-        setState('');
+      if (
+        newContact === "" ||
+        (newContact.length === 1 && parseInt(newContact, 10) < 6)
+      ) {
+        setState("");
         setMandatoryFieldsEmpty({
           ...mandatoryFieldsEmpty,
           altMobile: true,
@@ -663,7 +740,7 @@ const VendorMaster = () => {
       setValidator((prev) => ({ ...prev, email: false }));
     }
     setState(e.target.value);
-    if (re.test(e.target.value) || e.target.value === '') {
+    if (re.test(e.target.value) || e.target.value === "") {
       return setEmailIsInvalid(false);
     }
     return setEmailIsInvalid(true);
@@ -680,13 +757,17 @@ const VendorMaster = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!vendorName || vendorName == '' || vendorName == null || String(homePincode).length !== 6) {
+    if (
+      !vendorName ||
+      vendorName == "" ||
+      vendorName == null ||
+      String(homePincode).length !== 6
+    ) {
       setValidator((prev) => ({ ...prev, vendorName: true }));
     }
     if (!mobile) {
       setValidator((prev) => ({ ...prev, mobile: true }));
     }
-
 
     if (!typeId) {
       setValidator((prev) => ({ ...prev, typeId: true }));
@@ -698,10 +779,16 @@ const VendorMaster = () => {
       setValidator((prev) => ({ ...prev, cycleId: true }));
     }
 
-
-    const cleanedMobile = mobile ? String(mobile).trim() : '';
-    if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
-      toastError('Please fill all the mandatory fields');
+    const cleanedMobile = mobile ? String(mobile).trim() : "";
+    if (
+      !vendorName?.trim() ||
+      !cleanedMobile ||
+      cleanedMobile.length !== 10 ||
+      !typeId?.trim() ||
+      !platformId?.trim() ||
+      !cycleId?.trim()
+    ) {
+      toastError("Please fill all the mandatory fields");
       return;
     }
 
@@ -736,24 +823,30 @@ const VendorMaster = () => {
     setOpenPreviewModal(true);
   };
 
-
   const handleFinalSubmit = async () => {
-    const cleanedMobile = mobile ? String(mobile).trim() : '';
-    if (!vendorName?.trim() || !cleanedMobile || cleanedMobile.length !== 10 || !typeId?.trim() || !platformId?.trim() || !cycleId?.trim()) {
-      toastError('Please fill all the mandatory fields');
+    const cleanedMobile = mobile ? String(mobile).trim() : "";
+    if (
+      !vendorName?.trim() ||
+      !cleanedMobile ||
+      cleanedMobile.length !== 10 ||
+      !typeId?.trim() ||
+      !platformId?.trim() ||
+      !cycleId?.trim()
+    ) {
+      toastError("Please fill all the mandatory fields");
       return;
     }
-    if (bankRows.some((bank) => bank.ifsc === '')) {
-      toastError('IFSC code is mandatory');
+    if (bankRows.some((bank) => bank.ifsc === "")) {
+      toastError("IFSC code is mandatory");
       return;
     }
 
     if (String(homePincode).length !== 6) {
-      toastError('Please Enter valid pincode');
+      toastError("Please Enter valid pincode");
       return;
     }
     const handleError = (error) => {
-      toastError(error?.message || 'Something went wrong!');
+      toastError(error?.message || "Something went wrong!");
       setIsFormSubmitting(false);
     };
 
@@ -763,7 +856,6 @@ const VendorMaster = () => {
     };
 
     if (!_id) {
-
       setIsFormSubmitting(true);
       try {
         const res = await addVendor(previewData);
@@ -773,7 +865,7 @@ const VendorMaster = () => {
         if (res?.status === 200) {
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
-          toastAlert('Data Submitted Successfully');
+          toastAlert("Data Submitted Successfully");
 
           // Add company data
           try {
@@ -794,10 +886,10 @@ const VendorMaster = () => {
           // Add vendor documents in parallel
           const docPromises = docDetails?.map((doc) => {
             const formData = new FormData();
-            formData.append('vendor_id', resID);
-            formData.append('document_name', doc.docName);
-            formData.append('document_no', doc.docNumber);
-            formData.append('document_image_upload', doc.docImage);
+            formData.append("vendor_id", resID);
+            formData.append("document_name", doc.docName);
+            formData.append("document_no", doc.docNumber);
+            formData.append("document_image_upload", doc.docImage);
 
             return addVendorDocument(formData).catch((err) => {
               toastError(err.message);
@@ -807,14 +899,14 @@ const VendorMaster = () => {
           // Wait for all document upload promises to complete
           await Promise.all(docPromises);
 
-          handleSuccess('Vendor and documents added successfully!');
+          handleSuccess("Vendor and documents added successfully!");
         } else if (res?.status === 409) {
-          console.log('resss', res.error);
+          console.log("resss", res.error);
           toastError(res?.error?.data?.message);
         } else {
-          handleSuccess('Vendor data added successfully!');
+          handleSuccess("Vendor data added successfully!");
           // navigate('/admin/pms-vendor-overview');
-          setIsFormSubmitted(true)
+          setIsFormSubmitted(true);
         }
       } catch (err) {
         handleError(err);
@@ -841,20 +933,22 @@ const VendorMaster = () => {
         try {
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
-          console.log('Error updating vendor data in PHP:', err);
+          console.log("Error updating vendor data in PHP:", err);
         }
 
         for (let i = 0; i < docDetails?.length; i++) {
           const formData = new FormData();
-          formData.append('vendor_id', _id);
-          formData.append('_id', docDetails[i]._id || ''); // Add default values if undefined
-          formData.append('document_name', docDetails[i].docName || '');
-          formData.append('document_no', docDetails[i].docNumber || '');
+          formData.append("vendor_id", _id);
+          formData.append("_id", docDetails[i]._id || ""); // Add default values if undefined
+          formData.append("document_name", docDetails[i].docName || "");
+          formData.append("document_no", docDetails[i].docNumber || "");
 
           if (docDetails[i].docImage) {
-            formData.append('document_image_upload', docDetails[i].docImage); // Append only if defined
+            formData.append("document_image_upload", docDetails[i].docImage); // Append only if defined
           } else {
-            console.warn(`Skipping docImage for document ${docDetails[i].docName}`);
+            console.warn(
+              `Skipping docImage for document ${docDetails[i].docName}`
+            );
           }
 
           if (docDetails[i]._id) {
@@ -876,7 +970,7 @@ const VendorMaster = () => {
           }
         }
 
-        handleSuccess('Data Updated Successfully');
+        handleSuccess("Data Updated Successfully");
       } catch (err) {
         handleError(err);
       }
@@ -902,20 +996,22 @@ const VendorMaster = () => {
       // setCompCity('');
       // setCompPin('');
       // setCompState('');
-      setHomeAddress('');
-      setHomeCity('');
-      setHomeState('');
-      setHomePincode('');
+      setHomeAddress("");
+      setHomeCity("");
+      setHomeState("");
+      setHomePincode("");
     }
   };
 
-  const docOptions = ['Pan Card', 'GST', 'Aadhar Card', 'Driving License'];
+  const docOptions = ["Pan Card", "GST", "Aadhar Card", "Driving License"];
   // const copyOptions= docOptions;
   const [copyOptions, setCopyOptions] = useState(docOptions);
 
   useEffect(() => {
     const docNames = docDetails?.map((e) => e?.docName);
-    const filteredData = docOptions?.filter((option) => !docNames?.includes(option));
+    const filteredData = docOptions?.filter(
+      (option) => !docNames?.includes(option)
+    );
     setCopyOptions(filteredData);
   }, [docDetails]);
 
@@ -924,56 +1020,59 @@ const VendorMaster = () => {
     setHomePincode(newValue);
     if (newValue.length === 6) {
       try {
-        const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+        const response = await axios.get(
+          `https://api.postalpincode.in/pincode/${newValue}`
+        );
         const data = response.data;
 
-        if (data[0].Status === 'Success') {
+        if (data[0].Status === "Success") {
           const postOffice = data[0].PostOffice[0];
-          const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+          const abbreviatedState =
+            stateAbbreviations[postOffice.State] || postOffice.State;
           setHomeState(abbreviatedState);
           // console.log('postOffice', postOffice.District);
           setHomeCity(postOffice.District);
         } else {
-          console.log('Invalid Pincode');
+          console.log("Invalid Pincode");
         }
       } catch (error) {
-        console.log('Error fetching details.');
+        console.log("Error fetching details.");
       }
     }
   };
 
   const stateAbbreviations = {
-    'Andhra Pradesh': 'AP',
-    'Arunachal Pradesh': 'AR',
-    Assam: 'AS',
-    Bihar: 'BR',
-    Chhattisgarh: 'CG',
-    Goa: 'GA',
-    Gujarat: 'GJ',
-    Haryana: 'HR',
-    'Himachal Pradesh': 'HP',
-    Jharkhand: 'JH',
-    Karnataka: 'KA',
-    Kerala: 'KL',
-    'Madhya Pradesh': 'MP',
-    Maharashtra: 'MH',
-    Manipur: 'MN',
-    Meghalaya: 'ML',
-    Mizoram: 'MZ',
-    Nagaland: 'NL',
-    Odisha: 'OD',
-    Punjab: 'PB',
-    Rajasthan: 'RJ',
-    Sikkim: 'SK',
-    'Tamil Nadu': 'TN',
-    Telangana: 'TG',
-    Tripura: 'TR',
-    'Uttar Pradesh': 'UP',
-    Uttarakhand: 'UK',
-    'West Bengal': 'WB',
-    Delhi: 'DL',
-    'Jammu and Kashmir': 'JK',
-    Ladakh: 'LA',
+    "Andhra Pradesh": "AP",
+    "Arunachal Pradesh": "AR",
+    Assam: "AS",
+    Bihar: "BR",
+    Chhattisgarh: "CG",
+    Goa: "GA",
+    Gujarat: "GJ",
+    Haryana: "HR",
+    "Himachal Pradesh": "HP",
+    Jharkhand: "JH",
+    Karnataka: "KA",
+    Kerala: "KL",
+    "Madhya Pradesh": "MP",
+    Maharashtra: "MH",
+    Manipur: "MN",
+    Meghalaya: "ML",
+    Mizoram: "MZ",
+    Nagaland: "NL",
+    Odisha: "OD",
+    Punjab: "PB",
+    Rajasthan: "RJ",
+    Sikkim: "SK",
+    "Tamil Nadu": "TN",
+    Telangana: "TG",
+    Tripura: "TR",
+    "Uttar Pradesh": "UP",
+    Uttarakhand: "UK",
+    "West Bengal": "WB",
+    Delhi: "DL",
+    "Jammu and Kashmir": "JK",
+    Ladakh: "LA",
   };
 
   const handleCompPincode = async (event) => {
@@ -983,19 +1082,22 @@ const VendorMaster = () => {
 
       if (newValue.length === 6) {
         try {
-          const response = await axios.get(`https://api.postalpincode.in/pincode/${newValue}`);
+          const response = await axios.get(
+            `https://api.postalpincode.in/pincode/${newValue}`
+          );
           const data = response.data;
 
-          if (data[0].Status === 'Success') {
+          if (data[0].Status === "Success") {
             const postOffice = data[0].PostOffice[0];
-            const abbreviatedState = stateAbbreviations[postOffice.State] || postOffice.State;
+            const abbreviatedState =
+              stateAbbreviations[postOffice.State] || postOffice.State;
             setCompState(abbreviatedState);
             setCompCity(postOffice.District);
           } else {
-            console.log('Invalid Pincode');
+            console.log("Invalid Pincode");
           }
         } catch (error) {
-          console.log('Error fetching details.');
+          console.log("Error fetching details.");
         }
       }
     }
@@ -1009,29 +1111,36 @@ const VendorMaster = () => {
     navigate(-1);
   };
 
-
-
   return (
     <>
       <FormContainer
-        mainTitle={_id ? 'Edit Vendor Master' : 'Add Vendor Master'}
+        mainTitle={_id ? "Edit Vendor Master" : "Add Vendor Master"}
         link={true}
-        title={_id ? 'Edit Vendor Master' : 'Vendor Details'}
+        title={_id ? "Edit Vendor Master" : "Vendor Details"}
         // handleSubmit={handleSubmit}
         submitButton={false}
       ></FormContainer>
       <div
         style={{
-          backgroundColor: '#52b2d6',
-          width: '3%',
-          padding: '7px',
-          marginBottom: '10px',
-          cursor: 'pointer',
+          backgroundColor: "#52b2d6",
+          width: "3%",
+          padding: "7px",
+          marginBottom: "10px",
+          cursor: "pointer",
         }}
       >
         <ArrowBackIcon onClick={goBack} />
       </div>
-      <PreviewModal open={openPreviewModal} onClose={() => setOpenPreviewModal(false)} previewData={previewData} bankRows={bankRows} payData={payData} bankName={bankName} docDetails={docDetails} handleFinalSubmit={handleFinalSubmit} />
+      <PreviewModal
+        open={openPreviewModal}
+        onClose={() => setOpenPreviewModal(false)}
+        previewData={previewData}
+        bankRows={bankRows}
+        payData={payData}
+        bankName={bankName}
+        docDetails={docDetails}
+        handleFinalSubmit={handleFinalSubmit}
+      />
       <div className="card">
         <div className="card-header">
           <h5 className="card-title">Add Vendor Master</h5>
@@ -1042,7 +1151,7 @@ const VendorMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Business Type <sup style={{ color: 'red' }}>*</sup>
+                  Business Type <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <Select
                   options={busiTypeData?.map((option) => ({
@@ -1054,7 +1163,9 @@ const VendorMaster = () => {
                   // required={true}
                   value={{
                     value: busiType,
-                    label: busiTypeData?.find((role) => role._id == busiType)?.busi_type_name || '',
+                    label:
+                      busiTypeData?.find((role) => role._id == busiType)
+                        ?.busi_type_name || "",
                   }}
                   onChange={(e) => {
                     setBusiType(e.value);
@@ -1085,7 +1196,21 @@ const VendorMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">NOTE:</label>
-                {busiType === '670112aa579d1873b7ede523' ? <p>If Private Limited 2% TDS And If Not 1%.</p> : busiType === '670112bd579d1873b7ede524' ? <p>If Private Limited 2% TDS And If Not 1%.</p> : busiType === '670112d0579d1873b7ede526' ? <p>1% TDS.</p> : busiType === '670112e2579d1873b7ede528' ? <p>Max Limit is 25k Per Bill. Total Year Limit is 100k. Please Choose Unregistered Business & Upload Pan If You Believe Transaction will cross above 100k.</p> : <p>No TDS applicable for this business type.</p>}
+                {busiType === "670112aa579d1873b7ede523" ? (
+                  <p>If Private Limited 2% TDS And If Not 1%.</p>
+                ) : busiType === "670112bd579d1873b7ede524" ? (
+                  <p>If Private Limited 2% TDS And If Not 1%.</p>
+                ) : busiType === "670112d0579d1873b7ede526" ? (
+                  <p>1% TDS.</p>
+                ) : busiType === "670112e2579d1873b7ede528" ? (
+                  <p>
+                    Max Limit is 25k Per Bill. Total Year Limit is 100k. Please
+                    Choose Unregistered Business & Upload Pan If You Believe
+                    Transaction will cross above 100k.
+                  </p>
+                ) : (
+                  <p>No TDS applicable for this business type.</p>
+                )}
               </div>
             </div>
 
@@ -1094,7 +1219,15 @@ const VendorMaster = () => {
                 <div className="col-md-3">
                   <label className="form-label">Document Name</label>
                   {docDetails.length >= 5 ? (
-                    <input type="text" value={link.docName} onChange={(e) => handleDocNameChange(index, e.target.value)} className="form-control" required />
+                    <input
+                      type="text"
+                      value={link.docName}
+                      onChange={(e) =>
+                        handleDocNameChange(index, e.target.value)
+                      }
+                      className="form-control"
+                      required
+                    />
                   ) : (
                     <Select
                       className=""
@@ -1125,7 +1258,7 @@ const VendorMaster = () => {
                   key={index.docImage}
                   label={`Document Image`}
                   type="file"
-                  accept={'image/*'}
+                  accept={"image/*"}
                   fieldGrid={4}
                   // value={link.docImage}
                   onChange={(e) => handleDocImageChange(index, e)}
@@ -1158,15 +1291,25 @@ const VendorMaster = () => {
               </div>
             </div>
 
-            {busiType === '670112e2579d1873b7ede528' ? (
-              ''
+            {busiType === "670112e2579d1873b7ede528" ? (
+              ""
             ) : (
               <>
                 <div className="card-header">Company Details</div>
                 <div className="card-body row">
-                  <FieldContainer label="Company Name" value={compName} required={false} onChange={(e) => setCompName(e.target.value)} />
+                  <FieldContainer
+                    label="Company Name"
+                    value={compName}
+                    required={false}
+                    onChange={(e) => setCompName(e.target.value)}
+                  />
 
-                  <FieldContainer label="Company Address" value={compAddress} required={false} onChange={(e) => setCompAddress(e.target.value)} />
+                  <FieldContainer
+                    label="Company Address"
+                    value={compAddress}
+                    required={false}
+                    onChange={(e) => setCompAddress(e.target.value)}
+                  />
 
                   {/* <FieldContainer
                     label="Company City"
@@ -1176,7 +1319,12 @@ const VendorMaster = () => {
                   /> */}
                   <div className="form-group col-6 mt-3">
                     <label htmlFor="">Company State</label>
-                    <IndianStatesMui selectedState={compState} onChange={(option) => setCompState(option ? option : null)} />
+                    <IndianStatesMui
+                      selectedState={compState}
+                      onChange={(option) =>
+                        setCompState(option ? option : null)
+                      }
+                    />
                   </div>
                   <div className="form-group col-6">
                     <label className="form-label">Company City</label>
@@ -1220,17 +1368,21 @@ const VendorMaster = () => {
                   }
                 }}
               />
-              {validator.vendorName && <span style={{ color: 'red', fontSize: '12px' }}>Please enter vendor name</span>}
+              {validator.vendorName && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  Please enter vendor name
+                </span>
+              )}
               {existError && (
                 <>
                   <small style={{ color: messageColor }}>{existError}</small>
-                  {messageColor == 'red' ? (
-                    <Link to="/admin/pms-page-master" style={{ color: 'blue' }}>
-                      {' '}
+                  {messageColor == "red" ? (
+                    <Link to="/admin/pms-page-master" style={{ color: "blue" }}>
+                      {" "}
                       Add Page
                     </Link>
                   ) : (
-                    ''
+                    ""
                   )}
                 </>
               )}
@@ -1239,10 +1391,10 @@ const VendorMaster = () => {
               <div className="form-group m0">
                 <label className="form-label">
                   {/* Vendor Category <sup style={{ color: "red" }}>*</sup> */}
-                  Profile Type <sup style={{ color: 'red' }}>*</sup>
+                  Profile Type <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <Select
-                  options={['Theme Page', 'Influencer'].map((option) => ({
+                  options={["Theme Page", "Influencer"].map((option) => ({
                     label: option,
                     value: option,
                   }))}
@@ -1255,7 +1407,11 @@ const VendorMaster = () => {
                     setVendorCategory(e.value);
                   }}
                 ></Select>
-                {validator.vendorCategory && <span style={{ color: 'red', fontSize: '12px' }}>Please select vendor category</span>}
+                {validator.vendorCategory && (
+                  <span style={{ color: "red", fontSize: "12px" }}>
+                    Please select vendor category
+                  </span>
+                )}
               </div>
             </div>
             <div className="col-md-6 p0 mb16">
@@ -1277,21 +1433,44 @@ const VendorMaster = () => {
               {validationMessage && (
                 <div
                   style={{
-                    marginTop: '8px',
-                    color: isNumberValid ? 'green' : 'red', // Green for success, red for error
-                    fontSize: '14px',
+                    marginTop: "8px",
+                    color: isNumberValid ? "green" : "red", // Green for success, red for error
+                    fontSize: "14px",
                   }}
                 >
                   {validationMessage}
                 </div>
               )}
-              {validator.mobile && <span style={{ color: 'red', fontSize: '12px' }}>Please enter mobile number</span>}
+              {validator.mobile && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  Please enter mobile number
+                </span>
+              )}
 
-              {<span style={{ color: 'red', fontSize: '12px' }}>{!validator.mobile && isContactTouched1 && !mobileValid && 'Please enter valid mobile number'}</span>}
+              {
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  {!validator.mobile &&
+                    isContactTouched1 &&
+                    !mobileValid &&
+                    "Please enter valid mobile number"}
+                </span>
+              }
             </div>
             <div className="col-6">
-              <FieldContainer label="Alternate Mobile" fieldGrid={12} value={altMobile} required={false} type="text" onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)} />
-              {<span style={{ color: 'red', fontSize: '12px' }}>{mandatoryFieldsEmpty.altMobile && 'Please enter alternate mobile'}</span>}
+              <FieldContainer
+                label="Alternate Mobile"
+                fieldGrid={12}
+                value={altMobile}
+                required={false}
+                type="text"
+                onChange={(e) => handleAlternateMobileNumSet(e, setAltMobile)}
+              />
+              {
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  {mandatoryFieldsEmpty.altMobile &&
+                    "Please enter alternate mobile"}
+                </span>
+              }
             </div>
             <div className="col-6">
               <FieldContainer
@@ -1317,7 +1496,7 @@ const VendorMaster = () => {
 
             <div className="form-group col-6">
               <label className="form-label">
-                Vendor Type <sup style={{ color: 'red' }}>*</sup>
+                Vendor Type <sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
                 options={
@@ -1330,7 +1509,11 @@ const VendorMaster = () => {
                 required={true}
                 value={{
                   value: typeId,
-                  label: (!typeLoading && typeData.data?.find((role) => role._id == typeId)?.type_name) || '',
+                  label:
+                    (!typeLoading &&
+                      typeData.data?.find((role) => role._id == typeId)
+                        ?.type_name) ||
+                    "",
                 }}
                 onChange={(e) => {
                   setTypeId(e.value);
@@ -1339,18 +1522,32 @@ const VendorMaster = () => {
                   }
                 }}
               />
-              <IconButton onClick={handleAddVendorTypeClick} variant="contained" color="primary" aria-label="Add Vendor Type..">
+              <IconButton
+                onClick={handleAddVendorTypeClick}
+                variant="contained"
+                color="primary"
+                aria-label="Add Vendor Type.."
+              >
                 <AddIcon />
               </IconButton>
-              <IconButton onClick={handleInfoClick} variant="contained" color="primary" aria-label="Vendor Type Info..">
+              <IconButton
+                onClick={handleInfoClick}
+                variant="contained"
+                color="primary"
+                aria-label="Vendor Type Info.."
+              >
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.typeId && <span style={{ color: 'red', fontSize: '12px' }}>Please select vendor type</span>}
+              {validator.typeId && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  Please select vendor type
+                </span>
+              )}
             </div>
 
             <div className="form-group col-6">
               <label className="form-label">
-                Platform <sup style={{ color: 'red' }}>*</sup>
+                Platform <sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
                 options={platformData?.data?.map((option) => ({
@@ -1360,7 +1557,9 @@ const VendorMaster = () => {
                 required={true}
                 value={{
                   value: platformId,
-                  label: platformData?.data?.find((role) => role._id == platformId)?.platform_name || '',
+                  label:
+                    platformData?.data?.find((role) => role._id == platformId)
+                      ?.platform_name || "",
                 }}
                 onChange={(e) => {
                   setPlatformId(e.value);
@@ -1370,20 +1569,34 @@ const VendorMaster = () => {
                 }}
               ></Select>
 
-              <IconButton onClick={handleAddPlatformClick} variant="contained" color="primary" aria-label="Add Platform..">
+              <IconButton
+                onClick={handleAddPlatformClick}
+                variant="contained"
+                color="primary"
+                aria-label="Add Platform.."
+              >
                 <AddIcon />
               </IconButton>
-              <IconButton onClick={handlePlatformInfoClick} variant="contained" color="primary" aria-label="Platform Info..">
+              <IconButton
+                onClick={handlePlatformInfoClick}
+                variant="contained"
+                color="primary"
+                aria-label="Platform Info.."
+              >
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.platformId && <span style={{ color: 'red', fontSize: '12px' }}>Please select platform</span>}
+              {validator.platformId && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  Please select platform
+                </span>
+              )}
             </div>
 
             {bankRows?.map((row, i) => (
               <>
                 <div className="form-group col-6">
                   <label className="form-label">
-                    Payment Method <sup style={{ color: 'red' }}>*</sup>
+                    Payment Method <sup style={{ color: "red" }}>*</sup>
                   </label>
                   <Select
                     options={payData?.map((option) => ({
@@ -1397,7 +1610,10 @@ const VendorMaster = () => {
                       //   payData?.find((role) => role._id == payId)
                       //     ?.payMethod_name || "",
                       value: bankRows[i].payment_method,
-                      label: payData?.find((role) => role._id == bankRows[i].payment_method)?.payMethod_name || '',
+                      label:
+                        payData?.find(
+                          (role) => role._id == bankRows[i].payment_method
+                        )?.payMethod_name || "",
                     }}
                     onChange={(e) => {
                       // setPayId(e.value);
@@ -1411,16 +1627,30 @@ const VendorMaster = () => {
                       }
                     }}
                   ></Select>
-                  <IconButton onClick={handleAddPaymentMethodClick} variant="contained" color="primary" aria-label="Add Payment Method..">
+                  <IconButton
+                    onClick={handleAddPaymentMethodClick}
+                    variant="contained"
+                    color="primary"
+                    aria-label="Add Payment Method.."
+                  >
                     <AddIcon />
                   </IconButton>
-                  <IconButton onClick={handlePaymentMethodInfoClick} variant="contained" color="primary" aria-label="Payment Method Info..">
+                  <IconButton
+                    onClick={handlePaymentMethodInfoClick}
+                    variant="contained"
+                    color="primary"
+                    aria-label="Payment Method Info.."
+                  >
                     <RemoveRedEyeIcon />
                   </IconButton>
-                  {validator.payment_method && <span style={{ color: 'red', fontSize: '12px' }}>Please select payment method</span>}
+                  {validator.payment_method && (
+                    <span style={{ color: "red", fontSize: "12px" }}>
+                      Please select payment method
+                    </span>
+                  )}
                 </div>
 
-                {bankRows[i].payment_method == '666856874366007df1dfacde' && (
+                {bankRows[i].payment_method == "666856874366007df1dfacde" && (
                   <>
                     <div className="form-group col-6">
                       <label className="form-label">Bank Name</label>
@@ -1432,7 +1662,10 @@ const VendorMaster = () => {
                         required={true}
                         value={{
                           value: bankRows[i]._id,
-                          label: bankName?.find((role) => role.bank_name === bankRows[i].bank_name)?.bank_name || '',
+                          label:
+                            bankName?.find(
+                              (role) => role.bank_name === bankRows[i].bank_name
+                            )?.bank_name || "",
                         }}
                         onChange={(e) => {
                           bankRows[i].bank_name = e.label;
@@ -1444,10 +1677,20 @@ const VendorMaster = () => {
                           }
                         }}
                       />
-                      <IconButton onClick={handleAddBankNameClick} variant="contained" color="primary" aria-label="Add Bank Detail..">
+                      <IconButton
+                        onClick={handleAddBankNameClick}
+                        variant="contained"
+                        color="primary"
+                        aria-label="Add Bank Detail.."
+                      >
                         <AddIcon />
                       </IconButton>
-                      <IconButton onClick={handleBankNameInfoClick} variant="contained" color="primary" aria-label="Bank Detail Info..">
+                      <IconButton
+                        onClick={handleBankNameInfoClick}
+                        variant="contained"
+                        color="primary"
+                        aria-label="Bank Detail Info.."
+                      >
                         <RemoveRedEyeIcon />
                       </IconButton>
                     </div>
@@ -1455,7 +1698,7 @@ const VendorMaster = () => {
                     <div className="form-group col-6">
                       <label className="form-label">Account Type</label>
                       <Select
-                        options={['Savings', 'Current'].map((option) => ({
+                        options={["Savings", "Current"].map((option) => ({
                           label: option,
                           value: option,
                         }))}
@@ -1471,17 +1714,61 @@ const VendorMaster = () => {
                       />
                     </div>
 
-                    <FieldContainer label="Account Number "
-                      type="text" maxLength={20} max={20} required={false} value={bankRows[i].account_number} onChange={(e) => handleAccountNoChange(e, i)} />
-                    <FieldContainer required={false} maxLength={11}
-                      label="IFSC " value={bankRows[i]?.ifsc} onChange={(e) => handleIFSCChange(e, i)} />
+                    <FieldContainer
+                      label="Account Number "
+                      type="text"
+                      maxLength={20}
+                      max={20}
+                      required={false}
+                      value={bankRows[i].account_number}
+                      onChange={(e) => handleAccountNoChange(e, i)}
+                    />
+                    <FieldContainer
+                      required={false}
+                      maxLength={11}
+                      label="IFSC "
+                      value={bankRows[i].ifsc}
+                      onChange={(e) => handleIFSCChange(e, i)}
+                    />
+                    <FieldContainer
+                      label="PAN No"
+                      fieldGrid={3}
+                      value={bankRows[i].pan_card}
+                      onChange={(e) => handlePANChange(e, i)}
+                    />
+                    <FieldContainer
+                      label="Account Holder Name"
+                      fieldGrid={3}
+                      value={bankRows[i].account_holder_name}
+                      onChange={(e) => handleAccountHolderChange(e, i)}
+                    />
                   </>
                 )}
-                {bankRows[i].payment_method == '666856754366007df1dfacd2' && <FieldContainer required={false} label="UPI ID " value={bankRows[i].upi_id} onChange={(e) => handleUPIidChange(e, i)} />}
+                {bankRows[i].payment_method == "666856754366007df1dfacd2" && (
+                  <FieldContainer
+                    required={false}
+                    label="UPI ID "
+                    value={bankRows[i].upi_id}
+                    onChange={(e) => handleUPIidChange(e, i)}
+                  />
+                )}
 
-                {(bankRows[i].payment_method == '66681c3c4366007df1df1481' || bankRows[i].payment_method == '666856624366007df1dfacc8') && <FieldContainer label={'Registered Mobile Number'} value={bankRows[i].registered_number} required={false} type="number" onChange={(e) => handleRegisteredMobileChange(e, i)} />}
+                {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
+                  bankRows[i].payment_method == "666856624366007df1dfacc8") && (
+                    <FieldContainer
+                      label={"Registered Mobile Number"}
+                      value={bankRows[i].registered_number}
+                      required={false}
+                      type="number"
+                      onChange={(e) => handleRegisteredMobileChange(e, i)}
+                    />
+                  )}
                 {i > 0 && (
-                  <IconButton onClick={handleRemoveBankInfoRow(i)} variant="contained" color="error">
+                  <IconButton
+                    onClick={handleRemoveBankInfoRow(i)}
+                    variant="contained"
+                    color="error"
+                  >
                     <RemoveCircleTwoToneIcon />
                   </IconButton>
                 )}
@@ -1490,7 +1777,11 @@ const VendorMaster = () => {
 
             {(!_id || (contextData && contextData[65]?.view_value === 1)) && (
               <div className="row">
-                <IconButton onClick={handleAddBankInfoRow} variant="contained" color="primary">
+                <IconButton
+                  onClick={handleAddBankInfoRow}
+                  variant="contained"
+                  color="primary"
+                >
                   {/* <AddCircleTwoToneIcon /> */}
                   <h5>Add Another Bank Details</h5>
                 </IconButton>
@@ -1499,7 +1790,7 @@ const VendorMaster = () => {
 
             <div className="form-group col-6">
               <label className="form-label">
-                PayCycle <sup style={{ color: 'red' }}>*</sup>
+                PayCycle <sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
                 options={cycleData
@@ -1508,11 +1799,15 @@ const VendorMaster = () => {
                     label: option.cycle_name,
                     createdAt: option.createdAt,
                   }))
-                  .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))}
+                  .sort(
+                    (a, b) => new Date(a.createdAt) - new Date(b.createdAt)
+                  )}
                 required={true}
                 value={{
                   value: cycleId,
-                  label: cycleData?.find((role) => role._id === cycleId)?.cycle_name || '',
+                  label:
+                    cycleData?.find((role) => role._id === cycleId)
+                      ?.cycle_name || "",
                 }}
                 onChange={(e) => {
                   setCycleId(e.value);
@@ -1521,13 +1816,27 @@ const VendorMaster = () => {
                   }
                 }}
               ></Select>
-              <IconButton onClick={handleAddPayCycleClick} variant="contained" color="primary" aria-label="Add Pay Cycle..">
+              <IconButton
+                onClick={handleAddPayCycleClick}
+                variant="contained"
+                color="primary"
+                aria-label="Add Pay Cycle.."
+              >
                 <AddIcon />
               </IconButton>
-              <IconButton onClick={handlePayCycleInfoClick} variant="contained" color="primary" aria-label="Pay Cycle Info..">
+              <IconButton
+                onClick={handlePayCycleInfoClick}
+                variant="contained"
+                color="primary"
+                aria-label="Pay Cycle Info.."
+              >
                 <RemoveRedEyeIcon />
               </IconButton>
-              {validator.cycleId && <span style={{ color: 'red', fontSize: '12px' }}>Please select pay cycle</span>}
+              {validator.cycleId && (
+                <span style={{ color: "red", fontSize: "12px" }}>
+                  Please select pay cycle
+                </span>
+              )}
             </div>
 
             <div className="col-md-6">
@@ -1540,7 +1849,9 @@ const VendorMaster = () => {
                 }))}
                 value={{
                   value: userId,
-                  label: usersDataContext.find((user) => user.user_id === userId)?.user_name || '',
+                  label:
+                    usersDataContext.find((user) => user.user_id === userId)
+                      ?.user_name || "",
                 }}
                 onChange={(e) => {
                   setUserId(e.value);
@@ -1550,7 +1861,10 @@ const VendorMaster = () => {
               />
             </div>
 
-            <div className="col-md-6 threshold_style" style={{ display: 'flex' }}>
+            <div
+              className="col-md-6 threshold_style"
+              style={{ display: "flex" }}
+            >
               <FieldContainer
                 label="Threshold Limit"
                 value={limit}
@@ -1563,14 +1877,20 @@ const VendorMaster = () => {
                   }
                 }}
               />
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: "flex" }}>
                 <p className="vendor_threshold" onClick={() => setLimit(50000)}>
                   50K
                 </p>
-                <p className="vendor_threshold" onClick={() => setLimit(100000)}>
+                <p
+                  className="vendor_threshold"
+                  onClick={() => setLimit(100000)}
+                >
                   100K
                 </p>
-                <p className="vendor_threshold" onClick={() => setLimit(200000)}>
+                <p
+                  className="vendor_threshold"
+                  onClick={() => setLimit(200000)}
+                >
                   200K
                 </p>
               </div>
@@ -1579,18 +1899,28 @@ const VendorMaster = () => {
             <div className="col-md-6 mb16">
               <div className="form-group m0">
                 <label className="form-label">
-                  Is GST Available ? <sup style={{ color: 'red' }}>*</sup>
+                  Is GST Available ? <sup style={{ color: "red" }}>*</sup>
                 </label>
                 <div className="input-group inputAddGroup">
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
                       Yes
                     </label>
                   </div>
                   <div className="form-check-inline">
                     <label className="form-check-label">
-                      <input type="radio" className="form-check-input" name="verified" value="" />
+                      <input
+                        type="radio"
+                        className="form-check-input"
+                        name="verified"
+                        value=""
+                      />
                       No
                     </label>
                   </div>
@@ -1600,7 +1930,13 @@ const VendorMaster = () => {
 
             <div className="col-md-6">
               <label className="form-label"> DOB </label>
-              <input type="date" className="form-control" max={new Date().toISOString().split('T')[0]} required="false" onChange={(e) => setDob(e.target.value)} />
+              <input
+                type="date"
+                className="form-control"
+                max={new Date().toISOString().split("T")[0]}
+                required="false"
+                onChange={(e) => setDob(e.target.value)}
+              />
             </div>
 
             <div className="card-header">Personal Details</div>
@@ -1615,7 +1951,13 @@ const VendorMaster = () => {
                   sx={{ width: 300 }}
                   options={countries}
                   required={true}
-                  value={(!isCountriesLoading && countries?.find((option) => option?.phone == countryCode)) || null}
+                  value={
+                    (!isCountriesLoading &&
+                      countries?.find(
+                        (option) => option?.phone == countryCode
+                      )) ||
+                    null
+                  }
                   onChange={(e, val) => {
                     setCountryCode(val ? val.phone : null);
                     if (val ? val.phone : null) {
@@ -1623,17 +1965,23 @@ const VendorMaster = () => {
                     }
                   }}
                   autoHighlight
-                  getOptionLabel={(option) => `+${option.phone} ${option.country_name}`}
+                  getOptionLabel={(option) =>
+                    `+${option.phone} ${option.country_name}`
+                  }
                   // getOptionLabel={(option) => option.phone}
                   renderOption={(props, option) => (
-                    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+                    <Box
+                      component="li"
+                      sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                      {...props}
+                    >
                       <img
                         loading="lazy"
                         style={{
                           width: 20,
                           height: 20,
                           borderRadius: 1,
-                          objectFit: 'cover',
+                          objectFit: "cover",
                           marginRight: 1,
                         }}
                         srcSet={`https://flagcdn.com/w40/${option.code?.toLowerCase()}.png 2x`}
@@ -1650,7 +1998,7 @@ const VendorMaster = () => {
                       // label="Choose a country"
                       inputProps={{
                         ...params.inputProps,
-                        autoComplete: 'new-password', // disable autocomplete and autofill
+                        autoComplete: "new-password", // disable autocomplete and autofill
                       }}
                     />
                   )}
@@ -1660,7 +2008,7 @@ const VendorMaster = () => {
               <FieldContainer
                 label={
                   <span>
-                    PinCode <span style={{ color: 'red' }}>*</span>
+                    PinCode <span style={{ color: "red" }}>*</span>
                   </span>
                 }
                 value={homePincode}
@@ -1668,11 +2016,16 @@ const VendorMaster = () => {
                 required={true}
                 onChange={handlepincode}
               />
-              {countryCode == '91' ? (
+              {countryCode == "91" ? (
                 <div className=" row">
                   <div className="form-group col-6">
                     <label className="form-label">Home State</label>
-                    <IndianStatesMui selectedState={homeState} onChange={(option) => setHomeState(option ? option : null)} />
+                    <IndianStatesMui
+                      selectedState={homeState}
+                      onChange={(option) =>
+                        setHomeState(option ? option : null)
+                      }
+                    />
                   </div>
                   <div className="form-group col-6">
                     <label className="form-label">Home City</label>
@@ -1688,17 +2041,44 @@ const VendorMaster = () => {
                   </div>
                 </div>
               ) : (
-                <FieldContainer label="Country" value={otherCountry} required={false} onChange={(e) => setOtherCountry(e.target.value)} />
+                <FieldContainer
+                  label="Country"
+                  value={otherCountry}
+                  required={false}
+                  onChange={(e) => setOtherCountry(e.target.value)}
+                />
               )}
-              <FieldContainer label="Home Address" value={homeAddress} required={false} onChange={(e) => setHomeAddress(e.target.value)} />
+              <FieldContainer
+                label="Home Address"
+                value={homeAddress}
+                required={false}
+                onChange={(e) => setHomeAddress(e.target.value)}
+              />
 
-              <FormControlLabel control={<Checkbox checked={sameAsPrevious} onChange={(e) => handleCheckboxChange(e)} name="checked" color="primary" />} label="Same as Company Address" />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={sameAsPrevious}
+                    onChange={(e) => handleCheckboxChange(e)}
+                    name="checked"
+                    color="primary"
+                  />
+                }
+                label="Same as Company Address"
+              />
             </div>
 
             {whatsappLink?.map((link, index) => (
               <>
                 <div className="col-6">
-                  <FieldContainer key={index} fieldGrid={12} label={`Whatsapp Link ${index + 1}`} value={link.link} required={true} onChange={(e) => handleLinkChange(index, e.target.value)} />
+                  <FieldContainer
+                    key={index}
+                    fieldGrid={12}
+                    label={`Whatsapp Link ${index + 1}`}
+                    value={link.link}
+                    required={true}
+                    onChange={(e) => handleLinkChange(index, e.target.value)}
+                  />
                 </div>
                 <div className="col-md-4 mb16">
                   <div className="form-group m0">
@@ -1713,7 +2093,10 @@ const VendorMaster = () => {
                         required={true}
                         value={{
                           value: link.type,
-                          label: whatsappLinkType?.data?.find((role) => role._id === link.type)?.link_type || '',
+                          label:
+                            whatsappLinkType?.data?.find(
+                              (role) => role._id === link.type
+                            )?.link_type || "",
                         }}
                         onChange={(e) => {
                           let updatedLinks = [...whatsappLink];
@@ -1723,18 +2106,28 @@ const VendorMaster = () => {
                       />
                       {index == 0 && (
                         <>
-                          {' '}
-                          <IconButton onClick={handleAddWhatsappGroupLinkTypeClick} variant="contained" color="primary" aria-label="Add Pay Cycle..">
+                          {" "}
+                          <IconButton
+                            onClick={handleAddWhatsappGroupLinkTypeClick}
+                            variant="contained"
+                            color="primary"
+                            aria-label="Add Pay Cycle.."
+                          >
                             <AddIcon />
                           </IconButton>
-                          <IconButton onClick={handleWhatsappGroupLinkTypeInfoClick} variant="contained" color="primary" aria-label="Pay Cycle Info..">
+                          <IconButton
+                            onClick={handleWhatsappGroupLinkTypeInfoClick}
+                            variant="contained"
+                            color="primary"
+                            aria-label="Pay Cycle Info.."
+                          >
                             <RemoveRedEyeIcon />
                           </IconButton>
                         </>
                       )}
                     </div>
                   </div>
-                </div>{' '}
+                </div>{" "}
                 <div className="row">
                   <div className="col-12">
                     <div className="addBankRow">
@@ -1766,10 +2159,15 @@ const VendorMaster = () => {
           <div className="row thm_form"></div>
         </div>
         <div className="card-footer">
-          <div style={{ display: 'flex' }}>
+          <div style={{ display: "flex" }}>
             <Stack direction="row" spacing={2}>
-              <Button className="btn cmnbtn btn-primary" onClick={handleSubmit} variant="contained" disabled={isFormSubmitting}>
-                {isFormSubmitting ? 'Submitting...' : _id ? 'Update' : 'Submit'}
+              <Button
+                className="btn cmnbtn btn-primary"
+                onClick={handleSubmit}
+                variant="contained"
+                disabled={isFormSubmitting}
+              >
+                {isFormSubmitting ? "Submitting..." : _id ? "Update" : "Submit"}
               </Button>
             </Stack>
             {/* {_id ? (
