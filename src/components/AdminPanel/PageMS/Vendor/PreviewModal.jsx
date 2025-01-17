@@ -22,6 +22,8 @@ const PreviewModal = ({
   const { data: vendor } = useGetAllVendorTypeQuery();
   const typeData = vendor?.data;
 
+  console.log(bankRows , 'bank rows')
+
   return (
     <Modal
       open={open}
@@ -121,6 +123,12 @@ const PreviewModal = ({
                       </Grid>
                       <Grid item xs={6}>
                         <Typography><strong>IFSC Code:</strong> {row?.ifsc || 'N/A'}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography><strong>Pan No:</strong> {row?.pan_card || 'N/A'}</Typography>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Typography><strong>Account Holder Name:</strong> {row?.account_holder_name || 'N/A'}</Typography>
                       </Grid>
                     </>
                   )}

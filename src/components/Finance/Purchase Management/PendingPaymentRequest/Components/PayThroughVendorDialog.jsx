@@ -236,7 +236,7 @@ const PayThroughVendorDialog = (props) => {
             // className="col mt-1"
             sx={{ mb: 2 }}
             id="combo-box-demo"
-            options={["IMPS", "NEFT", "UPI"]}
+            options={["IMPS", "NEFT"]}
             value={gatewayPaymentMode}
             renderInput={(params) => (
               <TextField
