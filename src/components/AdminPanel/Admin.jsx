@@ -23,7 +23,7 @@ import CalenderCreation from "../Operation/Calender/CalenderCreation";
 import PurchaseTransactions from "../Purchase/PurchaseTransactions";
 import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions";
 import OpCalender from "../AbOpreation/Calender/OpCalender";
-import VendorOutstandingOverview from "../Purchase/vendor/VendorOutstandingOverview";
+import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstandingOverview";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")

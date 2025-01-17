@@ -3,7 +3,7 @@ import { Button, TextField } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import axios from "axios";
-import PaymentRequestFromPurchase from "./PaymentRequestfromPurchase";
+import PaymentRequestFromPurchase from "./PaymentRequestFromPurchase";
 
 
 const VendorOutstandingOverview = () => {
