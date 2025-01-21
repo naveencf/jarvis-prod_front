@@ -20,15 +20,11 @@ import LetterTabPreviewESIC from "./LetterTab/LetterTabPreviewESIC";
 import LetterTabPdf2Max from "./LetterTab/LetterTabPdf2Max";
 import LetterTabPdf3Min from "./LetterTab/LetterTabPdf3Min";
 import LetterTabPdf4ESIC from "./LetterTab/LetterTabPdf4ESIC";
-import PDFFooter from './PDFFooter.jsx';
-import PDFHeader from './PDFHeader.jsx';
-import { BlobProvider, PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
+import PDFFooter from "./PDFFooter.jsx";
+import PDFHeader from "./PDFHeader.jsx";
+import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import OfferLetter from "./OfferLetter.jsx";
 import AppointmentLetter from "./AppointmentLetter.jsx";
-
-
-
-
 
 const LetterTab = ({ allUserData, gettingData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -40,13 +36,12 @@ const LetterTab = ({ allUserData, gettingData }) => {
   const [previewOffer, setpreview] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
 
-
   const date = new Date();
   const day = date.getDate();
   const month = date.getMonth() + 1;
   const year = date.getFullYear();
   const todayDate = `${year}-${month}-${day}`;
-  console.log(todayDate , 'todya datte is not')
+  console.log(todayDate, "todya datte is not");
 
   const UserDetails = allUserData;
   const handleReject = () => {
@@ -68,21 +63,23 @@ const LetterTab = ({ allUserData, gettingData }) => {
 
   let salary = UserDetails?.salary;
   let basicSalary = salary * 0.6;
-  let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(
-      0
-  );
+  let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(0);
   let EmployeePF = parseFloat(
     (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
-);
+  );
 
-let EmployeerESIC = 0;
+  let EmployeerESIC = 0;
 
-if (salary <= 21000 && allUserData.emergency_contact_person_name2 === "pf_and_esic" ) {
-  EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
-}
-const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic" 
-  ? (EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0)) 
-  : 0;
+  if (
+    salary <= 21000 &&
+    allUserData.emergency_contact_person_name2 === "pf_and_esic"
+  ) {
+    EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
+  }
+  const EMPPF =
+    allUserData.emergency_contact_person_name2 === "pf_and_esic"
+      ? EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0)
+      : 0;
 
   const handelClose = () => {
     setpreview(!previewOffer);
@@ -227,28 +224,37 @@ const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic"
                 {allUserData.offer_later_reject_reason !== "" && (
                   <p>Reject Reason - {allUserData.offer_later_reject_reason}</p>
                 )}
-                {allUserData.offer_later_status && (<>
-                  <PDFDownloadLink
-
-                    className="btn onboardBtn btn_primary d-flex align-items-center gap-2"
-                    document={<OfferLetter allUserData={allUserData} image64={image64} EMPPF={EMPPF}/>} fileName="OfferLetter.pdf">
-
-
-                    <i className="bi bi-cloud-arrow-down"></i>
-
-                    Download Offer Letter
-                  </PDFDownloadLink>
-                  <PDFDownloadLink
-
-                    className="btn onboardBtn btn_primary d-flex align-items-center gap-2"
-                    document={<AppointmentLetter allUserData={allUserData} image64={image64} EMPPF={EMPPF}/>} fileName="AppointmentLetter.pdf">
-
-
-                    <i className="bi bi-cloud-arrow-down"></i>
-
-                    Download Appointment Letter
-                  </PDFDownloadLink>
-                </>
+                {allUserData.offer_later_status && (
+                  <>
+                    <PDFDownloadLink
+                      className="btn onboardBtn btn_primary d-flex align-items-center gap-2"
+                      document={
+                        <OfferLetter
+                          allUserData={allUserData}
+                          image64={image64}
+                          EMPPF={EMPPF}
+                        />
+                      }
+                      fileName="OfferLetter.pdf"
+                    >
+                      <i className="bi bi-cloud-arrow-down"></i>
+                      Download Offer Letter
+                    </PDFDownloadLink>
+                    <PDFDownloadLink
+                      className="btn onboardBtn btn_primary d-flex align-items-center gap-2"
+                      document={
+                        <AppointmentLetter
+                          allUserData={allUserData}
+                          image64={image64}
+                          EMPPF={EMPPF}
+                        />
+                      }
+                      fileName="AppointmentLetter.pdf"
+                    >
+                      <i className="bi bi-cloud-arrow-down"></i>
+                      Download Appointment Letter
+                    </PDFDownloadLink>
+                  </>
                 )}
 
                 {reasonField && (
@@ -301,8 +307,16 @@ const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic"
                     <i className="bi bi-x-lg"></i>
                   </button>
                 </div>
-                <embed src={`${pdfBlob}#toolbar=0`} width={"100%"} height={"100%"} />
-                <BlobProvider document={<OfferLetter allUserData={allUserData} image64={image64} />}>
+                <embed
+                  src={`${pdfBlob}#toolbar=0`}
+                  width={"100%"}
+                  height={"100%"}
+                />
+                <BlobProvider
+                  document={
+                    <OfferLetter allUserData={allUserData} image64={image64} />
+                  }
+                >
                   {({ blob, url, loading, error }) => {
                     useEffect(() => {
                       if (url && !loading && !error) {
@@ -311,7 +325,6 @@ const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic"
                     }, [url, loading, error]);
                   }}
                 </BlobProvider>
-
               </Modal>
               <Modal
                 className="signModal"
@@ -332,8 +345,7 @@ const EMPPF = allUserData.emergency_contact_person_name2 === "pf_and_esic"
           </div>
         </div>
       </div>
-      <div className="pdfPreviewWrapper">
-      </div >
+      <div className="pdfPreviewWrapper"></div>
     </>
   );
 };

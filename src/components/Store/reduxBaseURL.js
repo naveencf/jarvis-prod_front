@@ -163,32 +163,43 @@ export const reduxBaseURL = createApi({
     }),
 
     getAllVendor: builder.query({
-      queryFn: async (_arg, _queryApi, _extraOptions, baseQuery) => {
-        // Fetch the stored token from sessionStorage
+      queryFn: async ({ page, limit, search } = {}, _queryApi, _extraOptions, baseQuery) => {
         const storedToken = sessionStorage.getItem('token');
         if (!storedToken) {
           return { error: { status: 401, message: 'No token found' } };
         }
 
-        // Decode the token to get the user ID and role
         const decodedToken = jwtDecode(storedToken);
         const userID = decodedToken.id;
         const roleToken = decodedToken.role_id;
 
+        const queryParams = [];
+        if (page) queryParams.push(`page=${page}`);
+        if (limit) queryParams.push(`limit=${limit}`);
+        if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+        const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+
         let res;
         if (roleToken === 1) {
-          // If the user is an admin, fetch all vendor data
-          res = await baseQuery({ url: `v1/vendor`, method: 'GET' });
+          // If the user is an admin, fetch all vendor data with pagination and search
+          res = await baseQuery({
+            url: `v1/vendor${queryString}`,
+            method: 'GET',
+          });
         } else {
-          // If the user is not an admin, fetch vendors based on their user ID
+          // If the user is not an admin, fetch vendors based on their user ID with pagination and search
+          const body = { user_id: userID };
+          if (page) body.page = page;
+          if (limit) body.limit = limit;
+          if (search) body.search = search;
+
           res = await baseQuery({
             url: `v1/get_all_vendors_for_users`,
             method: 'POST',
-            body: { user_id: userID },
+            body,
           });
         }
 
-        // Return the response data
         if (res.error) {
           return { error: res.error };
         }

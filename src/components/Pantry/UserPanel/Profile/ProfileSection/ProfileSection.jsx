@@ -71,12 +71,12 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else if (field === "personalEmail") {
       setPersonalEmail(value);
     }
-  
+
     // Check if the email is valid and clear the error if valid
     if (emailRegex.test(value)) {
-      setContactErrors(prevErrors => ({
+      setContactErrors((prevErrors) => ({
         ...prevErrors,
-        [field]: ""
+        [field]: "",
       }));
     }
   };
@@ -90,19 +90,20 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else if (field === "alternateContact") {
       setAlternateContact(value);
     }
-  
+
     // Validate and clear the error message if valid
-    if (contactRegex.test(value) || value === "") { // If it's empty, don't set an error
-      setContactErrors(prevErrors => ({
+    if (contactRegex.test(value) || value === "") {
+      // If it's empty, don't set an error
+      setContactErrors((prevErrors) => ({
         ...prevErrors,
-        [field]: ""
+        [field]: "",
       }));
     }
   };
   const contactValidateForm = () => {
     let isValid = true;
     let errorMessages = { ...contactErrors };
-  
+
     // Validate work email
     if (!emailRegex.test(email)) {
       errorMessages.email = "Please enter a valid work email.";
@@ -110,7 +111,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else {
       errorMessages.email = "";
     }
-  
+
     // Validate personal email
     if (!emailRegex.test(personalEmail)) {
       errorMessages.personalEmail = "Please enter a valid personal email.";
@@ -118,7 +119,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else {
       errorMessages.personalEmail = "";
     }
-  
+
     // Validate personal contact number
     if (!contactRegex.test(personalContact)) {
       errorMessages.personalContact =
@@ -127,7 +128,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else {
       errorMessages.personalContact = "";
     }
-  
+
     // Validate official contact number
     if (!contactRegex.test(contact)) {
       errorMessages.contact =
@@ -136,7 +137,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else {
       errorMessages.contact = "";
     }
-  
+
     // Validate alternate contact number
     if (alternateContact && !contactRegex.test(alternateContact)) {
       errorMessages.alternateContact =
@@ -145,10 +146,10 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     } else {
       errorMessages.alternateContact = "";
     }
-  
+
     // Set the error messages
     setContactErrors(errorMessages);
-  
+
     return isValid;
   };
   const handleContactSubmit = () => {
@@ -160,10 +161,8 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
         formData.append("personal_number", personalContact);
         formData.append("alternate_contact", alternateContact);
         formData.append("user_contact_no", contact);
-        const response = axios.put(
-          baseUrl + `update_user`,formData
-        );
-        closeContactModel()
+        const response = axios.put(baseUrl + `update_user`, formData);
+        closeContactModel();
         toastAlert("Employee Personal Details are successfully updated.");
       } catch (error) {
         console.error(
@@ -173,7 +172,6 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
       }
     }
   };
-
 
   const bloodGroupData = [
     "A+ (A Positive)",
@@ -217,11 +215,10 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
         formData.append("spouse_name", spouseName);
         const response = axios.put(
           baseUrl + `update_user`,
-          
-           formData
-          
+
+          formData
         );
-        closePrimaryModel()
+        closePrimaryModel();
         toastAlert("Employee Personal Details are successfully updated.");
       } catch (error) {
         console.error(
@@ -234,224 +231,232 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
     }
   };
   return (
-    <div className="container">
+    <>
       <div className="row">
-        <div className="col-6">
-          <h4>Primary Details</h4>
-          <button
-            className="btn btn-outline-primary"
-            type="button"
-            onClick={(e) => {
-              setIsPrimaryModelOpen(true);
-            }}
-          >
-            Edit
-          </button>
-          <div className="profileInfo_area">
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Name</h3>
-                  <h4>{userData.user_name ? userData.user_name : "NA"}</h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Date of Birth</h3>
-                  <h4>
-                    <DateFormattingComponent
-                      date={userData.DOB?.split("T")[0]}
-                    />
-                  </h4>
-                </div>
-              </div>
+        <div className="col-md-6 col-12">
+          <div className="card">
+            <div className="card-header flexCenterBetween">
+              <h5 className="card-title">Primary Details</h5>
+              <button
+                className="btn cmnbtn btn_sm"
+                type="button"
+                onClick={(e) => {
+                  setIsPrimaryModelOpen(true);
+                }}
+              >
+                Edit
+              </button>
             </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Marital Status</h3>
-                  <h4>
-                    {userData.MartialStatus ? userData.MartialStatus : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Nick Name</h3>
-                  <h4>{userData.nick_name ? userData.nick_name : "NA"}</h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Nationality</h3>
-                  <h4>{userData.Nationality ? userData.Nationality : "NA"}</h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Blood Group</h3>
-                  <h4>{userData.BloodGroup ? userData.BloodGroup : "NA"}</h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Gender</h3>
-                  <h4>{userData.Gender ? userData.Gender : "NA"}</h4>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-6">
-          <h4>Contact Details</h4>
-          <button
-            className="btn btn-outline-primary"
-            type="button"
-            onClick={(e) => {
-              setIsContactModalOpen(true);
-            }}
-          >
-            Edit
-          </button>
-          <div className="profileInfo_area">
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Work Email</h3>
-                  <h4>
-                    {userData.user_email_id ? userData.user_email_id : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Personal Email</h3>
-                  <h4>
-                    {userData.PersonalEmail ? userData.PersonalEmail : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Mobile Number</h3>
-                  <h4>
-                    {userData.PersonalNumber ? userData.PersonalNumber : "NA"}
-                  </h4>
-                </div>
-              </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Work Number</h3>
-                  <h4>
-                    {userData.user_contact_no ? userData.user_contact_no : "NA"}
-                  </h4>
-                </div>
-              </div>
-            </div>
-            <div className="row profileInfo_row pt-0">
-              <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                <div className="profileInfo_box">
-                  <h3>Alternate Number</h3>
-                  <h4>
-                    {userData.alternate_contact
-                      ? userData.alternate_contact
-                      : "NA"}
-                  </h4>
+            <div className="card-body p0 profileTabBody">
+              <div className="profileTabInfo">
+                <div className="row profileTabRow">
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Name</h3>
+                      <h4>{userData.user_name ? userData.user_name : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Date of Birth</h3>
+                      <h4>
+                        <DateFormattingComponent
+                          date={userData.DOB?.split("T")[0]}
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Marital Status</h3>
+                      <h4>
+                        {userData.MartialStatus ? userData.MartialStatus : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Nick Name</h3>
+                      <h4>{userData.nick_name ? userData.nick_name : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Nationality</h3>
+                      <h4>
+                        {userData.Nationality ? userData.Nationality : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Blood Group</h3>
+                      <h4>
+                        {userData.BloodGroup ? userData.BloodGroup : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Gender</h3>
+                      <h4>{userData.Gender ? userData.Gender : "NA"}</h4>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+          <AddressSection userData={userData} />
         </div>
-        <AddressSection userData={userData}/>
-        <div className="col-6">
-          <AboutSection educationData={educationData} familyData={familyData} />
-        </div>
-
-        <div className="row">
-          <div className="col-6">
-            <h4>Identity Information</h4>
-            <div className="profileInfo_area">
-              <div className="row profileInfo_row pt-0">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Aadhar Name</h3>
-                    <h4>{userData.aadharName ? userData.aadharName : "NA"}</h4>
+        <div className="col-md-6 col-12">
+          <div className="card">
+            <div className="card-header flexCenterBetween">
+              <h5 className="card-title">Contact Details</h5>
+              <button
+                className="btn cmnbtn btn_sm"
+                type="button"
+                onClick={(e) => {
+                  setIsContactModalOpen(true);
+                }}
+              >
+                Edit
+              </button>
+            </div>
+            <div className="card-body p0 profileTabBody">
+              <div className="profileTabInfo">
+                <div className="row profileTabRow">
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Work Email</h3>
+                      <h4>
+                        {userData.user_email_id ? userData.user_email_id : "NA"}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Aadhar Number</h3>
-                    <h4>{userData.UID ? userData.UID : "NA"}</h4>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Personal Email</h3>
+                      <h4>
+                        {userData.PersonalEmail ? userData.PersonalEmail : "NA"}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="row profileInfo_row pt-0">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Pan Name</h3>
-                    <h4>{userData.panName ? userData.panName : "NA"}</h4>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Mobile Number</h3>
+                      <h4>
+                        {userData.PersonalNumber
+                          ? userData.PersonalNumber
+                          : "NA"}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Pan Number</h3>
-                    <h4>{userData.pan_no ? userData.pan_no : "NA"}</h4>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Work Number</h3>
+                      <h4>
+                        {userData.user_contact_no
+                          ? userData.user_contact_no
+                          : "NA"}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div className="row profileInfo_row pt-0">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Voter Name</h3>
-                    <h4>{userData.voterName ? userData.voterName : "NA"}</h4>
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Voter Number</h3>
-                    <h4>{userData.BloodGroup ? userData.BloodGroup : "NA"}</h4>
-                  </div>
-                </div>
-              </div>
-              <div className="row profileInfo_row pt-0">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>passportNumber</h3>
-                    <h4>
-                      {userData.passportNumber ? userData.passportNumber : "NA"}
-                    </h4>
-                  </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>passportValidUpto</h3>
-                    <DateFormattingComponent
-                      date={userData.passportValidUpto?.split("T")[0]}
-                    />
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Alternate Number</h3>
+                      <h4>
+                        {userData.alternate_contact
+                          ? userData.alternate_contact
+                          : "NA"}
+                      </h4>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div className="row profileInfo_row pt-0">
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Vehicle Name</h3>
-                    <h4>
-                      {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
-                    </h4>
+            </div>
+          </div>
+          <div className="card">
+            <div className="card-header flexCenterBetween">
+              <h5 className="card-title">Identity Information</h5>
+            </div>
+            <div className="card-body p0 profileTabBody">
+              <div className="profileTabInfo">
+                <div className="row profileTabRow">
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Aadhar Name</h3>
+                      <h4>
+                        {userData.aadharName ? userData.aadharName : "NA"}
+                      </h4>
+                    </div>
                   </div>
-                </div>
-                <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-                  <div className="profileInfo_box">
-                    <h3>Vehicle Number</h3>
-                    <h4>
-                      {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
-                    </h4>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Aadhar Number</h3>
+                      <h4>{userData.UID ? userData.UID : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Pan Name</h3>
+                      <h4>{userData.panName ? userData.panName : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Pan Number</h3>
+                      <h4>{userData.pan_no ? userData.pan_no : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Voter Name</h3>
+                      <h4>{userData.voterName ? userData.voterName : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Voter Number</h3>
+                      <h4>
+                        {userData.BloodGroup ? userData.BloodGroup : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Passport Number</h3>
+                      <h4>
+                        {userData.passportNumber
+                          ? userData.passportNumber
+                          : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Passport Valid Upto</h3>
+                      <h4>
+                        <DateFormattingComponent
+                          date={userData.passportValidUpto?.split("T")[0]}
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Vehicle Name</h3>
+                      <h4>
+                        {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Vehicle Number</h3>
+                      <h4>
+                        {userData.vehicleNumber ? userData.vehicleNumber : "NA"}
+                      </h4>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -459,6 +464,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
           </div>
         </div>
       </div>
+      <AboutSection educationData={educationData} familyData={familyData} />
 
       {/* Primary details modal is here  */}
       <div className="right-modal ">
@@ -655,69 +661,69 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
               <div className="modal-body">
                 <div className="col-sm-12 col-lg-12 p-2">
                   <div className="form-group">
-                  <TextField
-                  id="outlined-basic"
-                  label="Work Email"
-                  variant="outlined"
-                  type="email"
-                  name="name"
-                  disabled
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  value={email}
-                  onChange={(e) => handleEmailChange(e, "email")}
-                  error={Boolean(contactErrors.email)}
-                  helperText={contactErrors.email || ""}
-                />
+                    <TextField
+                      id="outlined-basic"
+                      label="Work Email"
+                      variant="outlined"
+                      type="email"
+                      name="name"
+                      disabled
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      value={email}
+                      onChange={(e) => handleEmailChange(e, "email")}
+                      error={Boolean(contactErrors.email)}
+                      helperText={contactErrors.email || ""}
+                    />
                   </div>
                   <div className="form-group">
-                  <TextField
-                  id="outlined-basic"
-                  label="Personal Email"
-                  variant="outlined"
-                  type="email"
-                  value={personalEmail}
-                  onChange={(e) => handleEmailChange(e, "personalEmail")}
-                  error={Boolean(contactErrors.personalEmail)}
-                  helperText={contactErrors.personalEmail || ""}
-                />
+                    <TextField
+                      id="outlined-basic"
+                      label="Personal Email"
+                      variant="outlined"
+                      type="email"
+                      value={personalEmail}
+                      onChange={(e) => handleEmailChange(e, "personalEmail")}
+                      error={Boolean(contactErrors.personalEmail)}
+                      helperText={contactErrors.personalEmail || ""}
+                    />
                   </div>
                   <div className="form-group">
-                  <TextField
-                  id="outlined-basic"
-                  label="Personal Number"
-                  variant="outlined"
-                  type="number"
-                  value={personalContact}
-                  onChange={(e) => handlePhoneChange(e, "personalContact")}
-                  error={Boolean(contactErrors.personalContact)}
-                  helperText={contactErrors.personalContact || ""}
-                />
+                    <TextField
+                      id="outlined-basic"
+                      label="Personal Number"
+                      variant="outlined"
+                      type="number"
+                      value={personalContact}
+                      onChange={(e) => handlePhoneChange(e, "personalContact")}
+                      error={Boolean(contactErrors.personalContact)}
+                      helperText={contactErrors.personalContact || ""}
+                    />
                   </div>
                   <div className="form-group">
-                  <TextField
-                  id="outlined-basic"
-                  label="Official Number"
-                  variant="outlined"
-                  type="number"
-                  value={contact}
-                  onChange={(e) => handlePhoneChange(e, "contact")}
-                  error={Boolean(contactErrors.contact)}
-                  helperText={contactErrors.contact || ""}
-                />
+                    <TextField
+                      id="outlined-basic"
+                      label="Official Number"
+                      variant="outlined"
+                      type="number"
+                      value={contact}
+                      onChange={(e) => handlePhoneChange(e, "contact")}
+                      error={Boolean(contactErrors.contact)}
+                      helperText={contactErrors.contact || ""}
+                    />
                   </div>
                   <div className="form-group">
-                  <TextField
-                  id="outlined-basic"
-                  label="Alternate Number"
-                  variant="outlined"
-                  type="number"
-                  value={alternateContact}
-                  onChange={(e) => handlePhoneChange(e, "alternateContact")}
-                  error={Boolean(contactErrors.alternateContact)}
-                  helperText={contactErrors.alternateContact || ""}
-                />
+                    <TextField
+                      id="outlined-basic"
+                      label="Alternate Number"
+                      variant="outlined"
+                      type="number"
+                      value={alternateContact}
+                      onChange={(e) => handlePhoneChange(e, "alternateContact")}
+                      error={Boolean(contactErrors.alternateContact)}
+                      helperText={contactErrors.alternateContact || ""}
+                    />
                   </div>
                 </div>
                 <button
@@ -739,9 +745,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
           </div>
         </div>
       </div>
-
-     
-    </div>
+    </>
   );
 };
 

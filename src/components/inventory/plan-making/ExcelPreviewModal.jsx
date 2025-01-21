@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import formatString from '../../../utils/formatString';
 import { X } from '@phosphor-icons/react';
 
-const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
+const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatList, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
@@ -15,7 +15,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
   const [oldCategoryName, setOldCategoryName] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
   const { id } = useParams();
-  const { sendPlanDetails } = useSendPlanDetails(id);
+  const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   useEffect(() => {
     const categorizedData = {};
@@ -130,10 +130,10 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
 
   const handleClose = () => {
     onClose();
-    if (updatedCategoryData) {
-      window.location.reload();
-    }
-    setUpdatedCategoryData(false);
+    // if (updatedCategoryData) {
+    //   window.location.reload();
+    // }
+    // setUpdatedCategoryData(false);
   };
   const handleCategoryChange = (event, newValue) => {
     setMainCategory(newValue.toLowerCase());
@@ -166,7 +166,11 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
     setOldCategoryName('');
     setNewCategoryName('');
   };
-
+  useEffect(() => {
+    if (planSuccess?.length) {
+      setMergeCatList(planSuccess);
+    }
+  }, [planSuccess]);
   return (
     <Modal className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable" open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
       <div
@@ -340,7 +344,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
                     <div className="col-md-3 col-sm-12 col-12">
                       <div className="card">
                         <div className="card-body p12">
-                          <h6 class="fs_14 mb4 colorMedium">Total Post Count</h6>
+                          <h6 className="fs_14 mb4 colorMedium">Total Post Count</h6>
                           <h4>{overallTotals.totalPostCount}</h4>
                         </div>
                       </div>
@@ -348,7 +352,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
                     <div className="col-md-3 col-sm-12 col-12">
                       <div className="card">
                         <div className="card-body p12">
-                          <h6 class="fs_14 mb4 colorMedium">Total Story Count</h6>
+                          <h6 className="fs_14 mb4 colorMedium">Total Story Count</h6>
                           <h4>{overallTotals.totalStoryCount}</h4>
                         </div>
                       </div>
@@ -356,7 +360,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
                     <div className="col-md-3 col-sm-12 col-12">
                       <div className="card">
                         <div className="card-body p12">
-                          <h6 class="fs_14 mb4 colorMedium">Total Post Cost</h6>
+                          <h6 className="fs_14 mb4 colorMedium">Total Post Cost</h6>
                           <h4>₹{overallTotals.totalPostCost.toFixed(2)}</h4>
                         </div>
                       </div>
@@ -364,7 +368,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, updatedCategor
                     <div className="col-md-3 col-sm-12 col-12">
                       <div className="card">
                         <div className="card-body p12">
-                          <h6 class="fs_14 mb4 colorMedium">Total Story Cost</h6>
+                          <h6 className="fs_14 mb4 colorMedium">Total Story Cost</h6>
                           <h4>₹{overallTotals.totalStoryCost.toFixed(2)}</h4>
                         </div>
                       </div>

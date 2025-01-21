@@ -13,7 +13,6 @@ const EducationFields = ({
 }) => {
   const canAddMoreEducation = educationDetails.length < 10;
 
-  console.log(educationDetails, "education details");
   return (
     <>
       {educationDetails?.map((detail, index) => (

@@ -2,56 +2,70 @@ import React, { useState, useEffect } from "react";
 import { Button, TextField } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import View from "../../AdminPanel/Sales/Account/View/View";
-import axios from "axios";
 import PaymentRequestFromPurchase from "./PaymentRequestFromPurchase";
-
+import { useGetAllVendorQuery } from "../../Store/reduxBaseURL";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import { useCallback } from "react";
+import jwtDecode from "jwt-decode";
 
 const VendorOutstandingOverview = () => {
     const location = useLocation();
     const navigate = useNavigate();
-
-    // State for the search input and table data
-    const [searchTerm, setSearchTerm] = useState(new URLSearchParams(location.search).get("vendor_name") || "");
-    const [filteredData, setFilteredData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const token = sessionStorage.getItem("token");
+    const decodedToken = jwtDecode(token);
+    const userName = decodedToken.name;
+    // State for the search input
+    const [searchTerm, setSearchTerm] = useState("");
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(20);
+    const [vendorData, setVendorData] = useState([]);
+    const [vendorDetail, setVendorDetail] = useState("");
     const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
 
-    useEffect(() => {
-        // Fetch data whenever the search term changes
-        const fetchData = async () => {
-            const query = new URLSearchParams(location.search).get("vendor_name") || "";
-            setIsLoading(true);
+    // // Fetch data from Redux query
+    // const { data: vendorData, isLoading, refetch } = useGetAllVendorQuery({
+    //     search: searchTerm,
+    //     page,
+    //     limit,
+    // });
 
+    // Debounced function to call the API
+    const fetchVendors = useCallback(
+        debounce(async (search) => {
             try {
-                // Replace with your API endpoint
-                const response = await axios.get("/api/vendors", {
-                    params: { vendor_name: query },
-                });
-
-                setFilteredData(response.data || []); // Assuming response data is the array of rows
+                if (search.length >= 3) {
+                    const res = await axios.get(`${baseUrl}v1/vendor?search=${search}&page=1&limit=10`);
+                    if (res.status === 200) {
+                        setVendorData(res.data.data);
+                        console.log(res.data.data, "res.data.data");
+                    }
+                }
             } catch (error) {
                 console.error("Error fetching vendor data:", error);
-                setFilteredData([]);
-            } finally {
-                setIsLoading(false);
             }
+        }, 500), // 300ms debounce delay
+        []
+    );
+    // Debounce function
+    function debounce(func, delay) {
+        let timer;
+        return (...args) => {
+            clearTimeout(timer);
+            timer = setTimeout(() => func(...args), delay);
         };
-
-        fetchData();
-    }, [location.search]);
-
+    }
+    // Handle search input changes
     const handleSearchChange = (e) => {
         const value = e.target.value;
         setSearchTerm(value);
+        fetchVendors(value);
+    };
 
-        // Update the query parameter in the URL
-        const params = new URLSearchParams(location.search);
-        if (value) {
-            params.set("vendor_name", value);
-        } else {
-            params.delete("vendor_name");
-        }
-        navigate(`?${params.toString()}`);
+    // Handle pagination changes
+    const handlePaginationChange = (newPage, newLimit) => {
+        setPage(newPage);
+        setLimit(newLimit);
     };
 
     const columns = [
@@ -59,32 +73,82 @@ const VendorOutstandingOverview = () => {
             key: "sno",
             name: "S.NO",
             width: 80,
-            renderRowCell: (row, index) => {
-                return index + 1;
-            },
+            renderRowCell: (row, index) => index + 1,
         },
         {
             key: "vendor_name",
             name: "Vendor Name",
             width: 200,
         },
+        {
+            key: "vendor_category",
+            name: "Category",
+            width: 200,
+        },
+        {
+            key: "primary_page_name",
+            name: "Primary Page",
+            width: 200,
+        },
+
+        {
+            key: "action",
+            name: "Action",
+            width: 200,
+            renderRowCell: (row) => {
+
+
+                return (
+                    <Button onClick={() => handlePaymentRequest(row)}>Request Payment</Button>
+
+
+                );
+            },
+        },
+        {
+            key: "mobile",
+            name: "Mobile",
+            width: 200,
+        },
+        {
+            key: "page_count",
+            name: "Page Count",
+            width: 200,
+        },
+        {
+            key: "Pincode",
+            name: "Pincode",
+            width: 200,
+        },
+
         // Add more columns as needed
     ];
-
+    const handlePaymentRequest = (row) => {
+        if (!row) { return; }
+        setReqestPaymentDialog(true)
+        setVendorDetail(row);
+    }
     return (
         <>
-            {reqestPaymentDialog && <PaymentRequestFromPurchase reqestPaymentDialog={reqestPaymentDialog} setReqestPaymentDialog={setReqestPaymentDialog} />}
+            {reqestPaymentDialog && (
+                <PaymentRequestFromPurchase
+                    reqestPaymentDialog={reqestPaymentDialog}
+                    setReqestPaymentDialog={setReqestPaymentDialog}
+                    vendorDetail={vendorDetail}
+                    setVendorDetail={setVendorDetail}
+                    userName={userName}
+                />
+            )}
             <div className="card">
-
-
                 <View
                     version={1}
                     columns={columns}
-                    data={filteredData}
-                    isLoading={isLoading}
+                    data={vendorData || []}
+                    // isLoading={isLoading}
                     title="Vendor Overview"
                     rowSelectable={true}
                     pagination={[100, 200, 1000]}
+                    onPaginationChange={handlePaginationChange}
                     tableName="Vendor Overview"
                     addHtml={
                         <>
@@ -95,9 +159,7 @@ const VendorOutstandingOverview = () => {
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
-                            <Button variant="contained" onClick={() => setReqestPaymentDialog(!reqestPaymentDialog)}>
-                                Open Payment Form
-                            </Button>
+
                         </>
                     }
                 />

@@ -51,7 +51,7 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
   const [disabledPagesData, setDisabledPagesData] = useState([]);
   const [openDisabledPages, setOpenDisabledPages] = useState(false);
   const [bulkVendorSum, setBulkVendorSum] = useState(0);
-  const [activeTab, setActiveTab] = useState('Tab0');
+  const [activeTab, setActiveTab] = useState('instagram');
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 5;
 
@@ -137,28 +137,8 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
     }
   };
   categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, '');
-
   useEffect(() => {
-    const getPlatformName = (tab) => {
-      switch (tab) {
-        case 'Tab0':
-          return 'Instagram';
-        case 'Tab1':
-          return 'Snapchat';
-        case 'Tab3':
-          return 'Twitter';
-        case 'Tab4':
-          return 'Youtube';
-        case 'Tab5':
-          return 'Facebook';
-        default:
-          return null;
-      }
-    };
-
-    const platformName = getPlatformName(activeTab)?.toLowerCase();
-
-    const queryParams = [platformName && `platform_name=${platformName}`, categoryFilter && `page_category_name=${categoryFilter?.toLowerCase()}`, subCategoryFilter && `page_sub_category_name=${subCategoryFilter.toLowerCase()}`, profileTypeFilter && `page_profile_type_name=${profileTypeFilter.toLowerCase()}`, ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`, filterFollowers && `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`, activenessFilter && `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}`, searchTerm && `search=${searchTerm.toLowerCase()}`, sortField && `sort_by=${sortField}&order=${sortOrder}`].filter(Boolean).join('&');
+    const queryParams = [activeTab && `platform_name=${activeTab}`, categoryFilter && `page_category_name=${categoryFilter?.toLowerCase()}`, subCategoryFilter && `page_sub_category_name=${subCategoryFilter.toLowerCase()}`, profileTypeFilter && `page_profile_type_name=${profileTypeFilter.toLowerCase()}`, ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`, filterFollowers && `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`, activenessFilter && `page_activeness=${activenessOptions.find((option) => option.value === activenessFilter.toLowerCase())?.value?.toLowerCase()}`, searchTerm && `search=${searchTerm.toLowerCase()}`, sortField && `sort_by=${sortField}&order=${sortOrder}`].filter(Boolean).join('&');
 
     if (queryParams) {
       onFilterChange(queryParams);
@@ -189,8 +169,8 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
   });
 
   const ownershipWithCount = ['Vendor', 'Own', 'Partnership'].map((res) => {
-    const count = getCount(pageList, 'ownership_type', res); // Pass the string directly
-    return `${formatString(res)} (${count})`; // Format the result with the count
+    const count = getCount(pageList, 'ownership_type', res);
+    return `${formatString(res)} (${count})`;
   });
   const profileDataOptionsWithCount = profileDataOptions.map((res) => {
     const count = getCount(pageList, 'page_profile_type_name', res.profile_type);
@@ -278,8 +258,8 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
   ];
 
   const handleTabClick = (tab) => {
-    setActiveTab(tab);
-    localStorage.setItem('activeTab', tab);
+    setActiveTab(tab.platform_name);
+    localStorage.setItem('activeTab', tab.platform_name);
   };
 
   // useEffect(() => {
@@ -405,7 +385,7 @@ function PageOverviewHeader({ setPlanFormName, onFilterChange, pagequery, catego
                 {/* Dynamic Tabs */}
                 <div className="tabs">
                   {visiblePlatforms.map((platform, index) => (
-                    <button key={platform._id} className={activeTab === `Tab${startIndex + index}` ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick(`Tab${startIndex + index}`)}>
+                    <button key={platform._id} className={activeTab === platform.platform_name.toLowerCase() ? 'active btn btn-primary' : 'btn'} onClick={() => handleTabClick(platform)}>
                       {platform.platform_name.charAt(0).toUpperCase() + platform.platform_name.slice(1)}
                     </button>
                   ))}

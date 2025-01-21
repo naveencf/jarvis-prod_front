@@ -4,39 +4,22 @@ import { baseUrl } from '../../../utils/config';
 import { Link, useParams } from 'react-router-dom';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Typography,
-} from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowPageHealthColumn } from '../../Store/PageOverview';
-import {
-  useGetAllVendorQuery,
-  useGetPmsPlatformQuery,
-  useGetAllVendorTypeQuery,
-} from '../../Store/reduxBaseURL';
-import {
-  useGetAllPageCategoryQuery,
-  useGetAllPageListQuery,
-} from '../../Store/PageBaseURL';
+import { useGetAllVendorQuery, useGetPmsPlatformQuery, useGetAllVendorTypeQuery } from '../../Store/reduxBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageListQuery } from '../../Store/PageBaseURL';
 import Checkbox from '@mui/material/Checkbox';
 import PlanStatics from './PlanStatics';
 import { Modal } from 'react-bootstrap';
 
 const PlanPricing = () => {
-  const { data: pageList, isLoading: isPageListLoading } =
-    useGetAllPageListQuery();
+  const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery();
 
   // const { id } = useParams();
-  const [activeTabPlatfrom, setActiveTabPlatform] = useState(
-    '666818824366007df1df1319'
-  );
+  const [activeTabPlatfrom, setActiveTabPlatform] = useState('666818824366007df1df1319');
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
   const [progress, setProgress] = useState(10);
@@ -66,9 +49,7 @@ const PlanPricing = () => {
   const [selectedCategory, setSelectedCategory] = useState([]);
   const [searchInput, setSearchInput] = useState('');
 
-  const showPageHealthColumn = useSelector(
-    (state) => state.PageOverview.showPageHelathColumn
-  );
+  const showPageHealthColumn = useSelector((state) => state.PageOverview.showPageHelathColumn);
 
   const [totalFollowers, setTotalFollowers] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
@@ -85,19 +66,17 @@ const PlanPricing = () => {
 
   useEffect(() => {
     if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            // setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
+      axios.get(`${baseUrl}get_single_user_auth_detail/${userID}`).then((res) => {
+        if (res.data[33].view_value === 1) {
+          setContextData(true);
+        }
+        if (res.data[57].view_value === 1) {
+          // setPageUpdateAuth(true);
+        }
+        if (res.data[56].view_value === 1) {
+          setPageStatsAuth(true);
+        }
+      });
     }
 
     getData();
@@ -133,15 +112,10 @@ const PlanPricing = () => {
       const followers = page?.followers_count;
 
       // Apply follower range filter if min and max are defined
-      const isFollowerInRange =
-        (minFollowers === null || followers >= minFollowers) &&
-        (maxFollowers === null || followers <= maxFollowers);
+      const isFollowerInRange = (minFollowers === null || followers >= minFollowers) && (maxFollowers === null || followers <= maxFollowers);
 
       // Apply both price and follower filters
-      return (
-        (!priceFilterType || (price >= minPrice && price <= maxPrice)) &&
-        isFollowerInRange
-      );
+      return (!priceFilterType || (price >= minPrice && price <= maxPrice)) && isFollowerInRange;
     });
 
     setFilterData(newFilteredData);
@@ -178,10 +152,7 @@ const PlanPricing = () => {
 
   let followerFilteredData = pageList?.data?.filter((page) => {
     const followers = page?.followers_count;
-    return (
-      (minFollowers === null || followers >= minFollowers) &&
-      (maxFollowers === null || followers <= maxFollowers)
-    );
+    return (minFollowers === null || followers >= minFollowers) && (maxFollowers === null || followers <= maxFollowers);
   });
 
   const handleFollowerRangeChange = (e) => {
@@ -234,9 +205,7 @@ const PlanPricing = () => {
     const isChecked = event.target.checked;
 
     // Update selected rows
-    const updatedSelectedRows = isChecked
-      ? [...selectedRows, row]
-      : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
+    const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
 
     setSelectedRows(updatedSelectedRows);
 
@@ -247,24 +216,14 @@ const PlanPricing = () => {
     }));
 
     // Handle post per page values
-    if (
-      isChecked &&
-      (!postPerPageValues[row._id] || postPerPageValues[row._id] === 0)
-    ) {
+    if (isChecked && (!postPerPageValues[row._id] || postPerPageValues[row._id] === 0)) {
       setPostPerPageValues((prevValues) => ({
         ...prevValues,
         [row._id]: 1,
       }));
 
       // Call cost calculation function
-      calculateTotalCost(
-        row._id,
-        1,
-        storyPerPageValues[row._id],
-        costPerPostValues[row._id],
-        costPerStoryValues[row._id],
-        costPerBothValues[row._id]
-      );
+      calculateTotalCost(row._id, 1, storyPerPageValues[row._id], costPerPostValues[row._id], costPerStoryValues[row._id], costPerBothValues[row._id]);
     }
 
     // Update the page category count
@@ -299,14 +258,7 @@ const PlanPricing = () => {
       [row._id]: value,
     };
     setPostPerPageValues(updatedPostValues);
-    calculateTotalCost(
-      row._id,
-      updatedPostValues[row._id],
-      storyPerPageValues[row._id],
-      costPerPostValues[row._id],
-      costPerStoryValues[row._id],
-      costPerBothValues[row._id]
-    );
+    calculateTotalCost(row._id, updatedPostValues[row._id], storyPerPageValues[row._id], costPerPostValues[row._id], costPerStoryValues[row._id], costPerBothValues[row._id]);
 
     updateStatistics(selectedRows);
   };
@@ -321,45 +273,28 @@ const PlanPricing = () => {
       [row._id]: event.target.value,
     };
     setStoryPerPageValues(updatedStoryValues);
-    calculateTotalCost(
-      row._id,
-      postPerPageValues[row._id],
-      updatedStoryValues[row._id],
-      costPerPostValues[row._id],
-      costPerStoryValues[row._id],
-      costPerBothValues[row._id]
-    );
+    calculateTotalCost(row._id, postPerPageValues[row._id], updatedStoryValues[row._id], costPerPostValues[row._id], costPerStoryValues[row._id], costPerBothValues[row._id]);
     // updateStatistics(selectedRows);
   };
 
   // Handler for dropdown change
   const handleCategoryChange = (event) => {
-    const selectedOptions = Array.from(event.target.selectedOptions)?.map(
-      (option) => option.value
-    );
+    const selectedOptions = Array.from(event.target.selectedOptions)?.map((option) => option.value);
 
     // Update selected categories state, ensuring categories accumulate
-    const updatedCategories = [
-      ...new Set([...selectedCategory, ...selectedOptions]),
-    ];
+    const updatedCategories = [...new Set([...selectedCategory, ...selectedOptions])];
     setSelectedCategory(updatedCategories);
 
     // Filter data based on the updated selected categories
-    const filtered = pageList?.data?.filter((item) =>
-      updatedCategories?.includes(item.page_category_id)
-    );
+    const filtered = pageList?.data?.filter((item) => updatedCategories?.includes(item.page_category_id));
     setFilterData(filtered);
   };
 
   const removeCategory = (categoryId) => {
-    const updatedCategories =
-      selectedCategory?.filter((id) => id !== categoryId) || [];
+    const updatedCategories = selectedCategory?.filter((id) => id !== categoryId) || [];
     setSelectedCategory(updatedCategories);
 
-    const filtered =
-      pageList?.data?.filter((item) =>
-        updatedCategories.includes(item.page_category_id)
-      ) || [];
+    const filtered = pageList?.data?.filter((item) => updatedCategories.includes(item.page_category_id)) || [];
 
     if (filtered?.length) {
       setFilterData(filtered);
@@ -397,14 +332,7 @@ const PlanPricing = () => {
     setTotalPagesSelected(rows?.length);
   };
 
-  const calculateTotalCost = (
-    id,
-    postPerPage,
-    storyPerPage,
-    costPerPost,
-    costPerStory,
-    costPerBoth
-  ) => {
+  const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
     let totalCost;
     if (postPerPage === storyPerPage) {
       totalCost = postPerPage * costPerBoth;
@@ -436,9 +364,7 @@ const PlanPricing = () => {
       headerName: 'Vendor',
       width: 200,
       renderCell: (params) => {
-        let name = vendorData?.find(
-          (item) => item?._id == params.row?.vendor_id
-        )?.vendor_name;
+        let name = vendorData?.find((item) => item?._id == params.row?.vendor_id)?.vendor_name;
         return <div>{name}</div>;
       },
       // editable: true
@@ -450,12 +376,7 @@ const PlanPricing = () => {
       editable: true,
       renderCell: (params) => {
         return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={params.row.page_link}
-            className="link-primary"
-          >
+          <a target="_blank" rel="noreferrer" href={params.row.page_link} className="link-primary">
             {params.row.page_link}
           </a>
         );
@@ -476,12 +397,7 @@ const PlanPricing = () => {
       headerName: 'Selection',
       width: 100,
       renderCell: (params) => {
-        return (
-          <Checkbox
-            checked={selectedRows?.some((row) => row?._id === params?.row?._id)}
-            onChange={handleCheckboxChange(params.row)}
-          />
-        );
+        return <Checkbox checked={selectedRows?.some((row) => row?._id === params?.row?._id)} onChange={handleCheckboxChange(params.row)} />;
       },
     },
     {
@@ -491,12 +407,7 @@ const PlanPricing = () => {
       renderCell: (params) => {
         return (
           <div>
-            <input
-              type="number"
-              style={{ width: '70%' }}
-              value={postPerPageValues[params.row._id] || ''}
-              onChange={handlePostPerPageChange(params.row)}
-            />
+            <input type="number" style={{ width: '70%' }} value={postPerPageValues[params.row._id] || ''} onChange={handlePostPerPageChange(params.row)} />
           </div>
         );
       },
@@ -506,14 +417,7 @@ const PlanPricing = () => {
       headerName: 'Story Per Page',
       width: 150,
       renderCell: (params) => {
-        return (
-          <input
-            type="number"
-            style={{ width: '70%' }}
-            value={storyPerPageValues[params.row._id] || ''}
-            onChange={handleStoryPerPageChange(params.row)}
-          />
-        );
+        return <input type="number" style={{ width: '70%' }} value={storyPerPageValues[params.row._id] || ''} onChange={handleStoryPerPageChange(params.row)} />;
       },
     },
     {
@@ -524,9 +428,7 @@ const PlanPricing = () => {
         return (
           <div style={{ border: '1px solid red', padding: '10px' }}>
             {'₹'}
-            {showTotalCost[params.row._id]
-              ? totalCostValues[params.row._id] || 0
-              : '-'}
+            {showTotalCost[params.row._id] ? totalCostValues[params.row._id] || 0 : '-'}
           </div>
         );
       },
@@ -543,9 +445,7 @@ const PlanPricing = () => {
       width: 200,
       // editable: true
       renderCell: (params) => {
-        let name = vendorData?.find(
-          (item) => item?._id == params.row?.vendor_id
-        )?.vendor_type;
+        let name = vendorData?.find((item) => item?._id == params.row?.vendor_id)?.vendor_type;
         let finalName = typeData?.find((item) => item?._id == name)?.type_name;
         return <div>{finalName}</div>;
       },
@@ -555,9 +455,7 @@ const PlanPricing = () => {
       headerName: 'Category',
       width: 200,
       renderCell: (params) => {
-        let name = cat?.find(
-          (item) => item?._id == params.row?.page_category_id
-        )?.page_category;
+        let name = cat?.find((item) => item?._id == params.row?.page_category_id)?.page_category;
         return <div>{name}</div>;
       },
     },
@@ -565,9 +463,7 @@ const PlanPricing = () => {
       field: 'platform_id',
       headerName: 'Platform',
       renderCell: (params) => {
-        let name = platformData?.find(
-          (item) => item?._id == params.row.platform_id
-        )?.platform_name;
+        let name = platformData?.find((item) => item?._id == params.row.platform_id)?.platform_name;
         return <div>{name}</div>;
       },
       width: 150,
@@ -610,8 +506,7 @@ const PlanPricing = () => {
   if (!pageStatsAuth || decodedToken?.role_id === 1) {
     dataGridcolumns.push(...pageDetailColumn);
   }
-  !decodedToken?.role_id === 1 &&
-    dispatch(setShowPageHealthColumn(pageStatsAuth));
+  !decodedToken?.role_id === 1 && dispatch(setShowPageHealthColumn(pageStatsAuth));
 
   if (showPageHealthColumn) {
     // dataGridcolumns.push(...pageHealthColumn);
@@ -643,11 +538,7 @@ const PlanPricing = () => {
 
     // Filter data based on search terms
     if (searchTerms.length > 0) {
-      const filtered = pageList?.data?.filter((item) =>
-        searchTerms.some((term) =>
-          item?.page_name?.toLowerCase().includes(term)
-        )
-      );
+      const filtered = pageList?.data?.filter((item) => searchTerms.some((term) => item?.page_name?.toLowerCase().includes(term)));
 
       setFilterData(filtered);
 
@@ -658,9 +549,7 @@ const PlanPricing = () => {
       // Loop through each filtered row
       filtered.forEach((row) => {
         // Check if the row is already selected
-        const isAlreadySelected = updatedSelectedRows.some(
-          (selectedRow) => selectedRow._id === row._id
-        );
+        const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
 
         // If not already selected, select the row and update checkbox
         if (!isAlreadySelected) {
@@ -689,12 +578,8 @@ const PlanPricing = () => {
       updateStatistics(updatedSelectedRows); // Update statistics after selection
 
       // Identify pages not found
-      const filteredPageNames = new Set(
-        filtered?.map((item) => item.page_name.toLowerCase())
-      );
-      const notFound = searchTerms.filter(
-        (term) => !filteredPageNames.has(term)
-      );
+      const filteredPageNames = new Set(filtered?.map((item) => item.page_name.toLowerCase()));
+      const notFound = searchTerms.filter((term) => !filteredPageNames.has(term));
 
       if (notFound.length > 0) {
         setNotFoundPages(notFound);
@@ -724,19 +609,17 @@ const PlanPricing = () => {
   useEffect(() => {
     // Fetch user-specific data and page data
     if (userID && !contextData) {
-      axios
-        .get(`${baseUrl}get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          if (res.data[33].view_value === 1) {
-            setContextData(true);
-          }
-          if (res.data[57].view_value === 1) {
-            // setPageUpdateAuth(true);
-          }
-          if (res.data[56].view_value === 1) {
-            setPageStatsAuth(true);
-          }
-        });
+      axios.get(`${baseUrl}get_single_user_auth_detail/${userID}`).then((res) => {
+        if (res.data[33].view_value === 1) {
+          setContextData(true);
+        }
+        if (res.data[57].view_value === 1) {
+          // setPageUpdateAuth(true);
+        }
+        if (res.data[56].view_value === 1) {
+          setPageStatsAuth(true);
+        }
+      });
     }
 
     // Fetch all necessary data
@@ -746,10 +629,7 @@ const PlanPricing = () => {
   const handleFollowersBlur = () => {
     const followerFilteredData = pageList?.data?.filter((page) => {
       const followers = page?.followers_count;
-      return (
-        (minFollowers === '' || followers >= parseInt(minFollowers)) &&
-        (maxFollowers === '' || followers <= parseInt(maxFollowers))
-      );
+      return (minFollowers === '' || followers >= parseInt(minFollowers)) && (maxFollowers === '' || followers <= parseInt(maxFollowers));
     });
 
     setFilterData(followerFilteredData);
@@ -786,9 +666,7 @@ const PlanPricing = () => {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Unfetched Pages</DialogTitle>
         <DialogContent>
-          <Typography sx={{ mt: 2 }}>
-            The following pages were not found:
-          </Typography>
+          <Typography sx={{ mt: 2 }}>The following pages were not found:</Typography>
           <ul>
             {notFoundPages.map((page, index) => (
               <li key={index}>{page}</li>
@@ -842,45 +720,18 @@ const PlanPricing = () => {
                         justifyContent: 'center',
                       }}
                     >
-                      <Typography
-                        variant="caption"
-                        component="div"
-                        color="text-primary"
-                      >
+                      <Typography variant="caption" component="div" color="text-primary">
                         {`${Math.round(progress)}%`}
                       </Typography>
                     </Box>
                   </Box>
                 ) : (
                   <>
-                    <PlanStatics
-                      totalFollowers={totalFollowers}
-                      totalCost={totalCost}
-                      totalPostsPerPage={totalPostsPerPage}
-                      totalPagesSelected={totalPagesSelected}
-                      totalDeliverables={totalDeliverables}
-                      totalStoriesPerPage={totalStoriesPerPage}
-                      pageCategoryCount={pageCategoryCount}
-                      handleToggleBtn={handleToggleBtn}
-                      selectedRow={selectedRows}
-                      allrows={filterData}
-                      totalRecord={pageList?.pagination_data}
-                      postCount={postPerPageValues}
-                      storyPerPage={storyPerPageValues}
-                      handleOwnPage={handleOwnPage}
-                      category={cat}
-                    />
+                    <PlanStatics totalFollowers={totalFollowers} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} allrows={filterData} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} />
                     <div className="parent_of_tab" style={{ display: 'flex' }}>
                       {platformData?.map((item) => (
                         <div key={item._id} className="tabs">
-                          <button
-                            className={
-                              activeTabPlatfrom === item._id
-                                ? 'active btn btn-info'
-                                : 'btn btn-link'
-                            }
-                            onClick={() => handlePlatform(item._id)}
-                          >
+                          <button className={activeTabPlatfrom === item._id ? 'active btn btn-info' : 'btn btn-link'} onClick={() => handlePlatform(item._id)}>
                             {item.platform_name}
                           </button>
                         </div>
@@ -893,13 +744,7 @@ const PlanPricing = () => {
                             <div className="card-body row">
                               <div className="form-group col-4">
                                 <label className="">Filter by:</label>
-                                <select
-                                  className="filter-dropdown"
-                                  value={priceFilterType}
-                                  onChange={(e) =>
-                                    setPriceFilterType(e.target.value)
-                                  }
-                                >
+                                <select className="filter-dropdown" value={priceFilterType} onChange={(e) => setPriceFilterType(e.target.value)}>
                                   <option value="post">Post Price</option>
                                   <option value="story">Story Price</option>
                                   <option value="both">Both Price</option>
@@ -908,86 +753,37 @@ const PlanPricing = () => {
                               {/* Range input for minimum and maximum price */}
 
                               <div className="form-group col-4">
-                                <label className="filter-label">
-                                  Min Price:
-                                </label>
-                                <input
-                                  type="number"
-                                  className="filter-input"
-                                  value={minPrice}
-                                  onChange={(e) => setMinPrice(e.target.value)}
-                                />
+                                <label className="filter-label">Min Price:</label>
+                                <input type="number" className="filter-input" value={minPrice} onChange={(e) => setMinPrice(e.target.value)} />
                               </div>
                               <div className="form-group col-4">
-                                <label className="filter-label">
-                                  Max Price:
-                                </label>
-                                <input
-                                  type="number"
-                                  className="filter-input"
-                                  value={maxPrice}
-                                  onChange={(e) => setMaxPrice(e.target.value)}
-                                />
+                                <label className="filter-label">Max Price:</label>
+                                <input type="number" className="filter-input" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} />
                               </div>
                               <div className="form-group col-4">
-                                <label className="filter-label">
-                                  Min Followers:
-                                </label>
-                                <input
-                                  type="number"
-                                  className="filter-input"
-                                  value={minFollowers || ''}
-                                  onChange={(e) =>
-                                    setMinFollowers(e.target.value)
-                                  }
-                                  onBlur={handleFollowersBlur}
-                                />
+                                <label className="filter-label">Min Followers:</label>
+                                <input type="number" className="filter-input" value={minFollowers || ''} onChange={(e) => setMinFollowers(e.target.value)} onBlur={handleFollowersBlur} />
                               </div>
                               <div className="form-group col-4">
-                                <label className="filter-label">
-                                  Max Followers:
-                                </label>
-                                <input
-                                  type="number"
-                                  className="filter-input"
-                                  value={maxFollowers || ''}
-                                  onChange={(e) =>
-                                    setMaxFollowers(e.target.value)
-                                  }
-                                  onBlur={handleFollowersBlur}
-                                />
+                                <label className="filter-label">Max Followers:</label>
+                                <input type="number" className="filter-input" value={maxFollowers || ''} onChange={(e) => setMaxFollowers(e.target.value)} onBlur={handleFollowersBlur} />
                               </div>
                               <div className="form-group col-4">
-                                <label htmlFor="follower-filter">
-                                  Follower Filter
-                                </label>
-                                <select
-                                  id="follower-filter"
-                                  className="filter-dropdown"
-                                  value={followerFilterType}
-                                  onChange={handleFollowerRangeChange}
-                                >
+                                <label htmlFor="follower-filter">Follower Filter</label>
+                                <select id="follower-filter" className="filter-dropdown" value={followerFilterType} onChange={handleFollowerRangeChange}>
                                   <option value="" disabled>
                                     Select Follower Range
                                   </option>
-                                  <option value="lessThan10K">
-                                    Less than 10k
-                                  </option>
+                                  <option value="lessThan10K">Less than 10k</option>
                                   <option value="10Kto20K">10k to 20k</option>
                                   <option value="20Kto50K">20k to 50k</option>
                                   <option value="50Kto100K">50k to 100k</option>
-                                  <option value="100Kto200K">
-                                    100k to 200k
-                                  </option>
-                                  <option value="moreThan200K">
-                                    More than 200k
-                                  </option>
+                                  <option value="100Kto200K">100k to 200k</option>
+                                  <option value="moreThan200K">More than 200k</option>
                                 </select>
                               </div>
                               <div className="form-group col-4">
-                                <label htmlFor="categoryFilter">
-                                  Filter by Category:
-                                </label>
+                                <label htmlFor="categoryFilter">Filter by Category:</label>
                                 <select
                                   id="categoryFilter"
                                   value={selectedCategory}
@@ -996,10 +792,7 @@ const PlanPricing = () => {
                                 >
                                   <option value="">Select a category</option>
                                   {cat?.map((category) => (
-                                    <option
-                                      key={category._id}
-                                      value={category._id}
-                                    >
+                                    <option key={category._id} value={category._id}>
                                       {category.page_category}
                                     </option>
                                   ))}
@@ -1009,9 +802,7 @@ const PlanPricing = () => {
                               <div style={{ marginTop: '10px' }}>
                                 {selectedCategory?.length > 0 &&
                                   selectedCategory?.map((categoryId) => {
-                                    const category = cat?.find(
-                                      (c) => c._id === categoryId
-                                    );
+                                    const category = cat?.find((c) => c._id === categoryId);
                                     return (
                                       <div
                                         key={categoryId}
@@ -1026,9 +817,7 @@ const PlanPricing = () => {
                                       >
                                         {category.page_category}
                                         <button
-                                          onClick={() =>
-                                            removeCategory(categoryId)
-                                          }
+                                          onClick={() => removeCategory(categoryId)}
                                           style={{
                                             background: 'none',
                                             border: 'none',
@@ -1047,17 +836,11 @@ const PlanPricing = () => {
                                   })}
                               </div>
                               <div className="form-group col-4">
-                                <button
-                                  className="remove-all-button"
-                                  onClick={handleRemoveFilter}
-                                >
+                                <button className="remove-all-button" onClick={handleRemoveFilter}>
                                   Remove All Filter
                                 </button>
                                 {/* Filter button */}
-                                <button
-                                  className="tab-button"
-                                  onClick={handleCombinedFilter}
-                                >
+                                <button className="tab-button" onClick={handleCombinedFilter}>
                                   Apply Filter
                                 </button>
                               </div>
@@ -1069,13 +852,7 @@ const PlanPricing = () => {
                     <Box sx={{ height: 700, width: '100%' }}>
                       <DataGrid
                         title="Page Overview"
-                        rows={
-                          showOwnPage
-                            ? ownPages
-                            : toggleShowBtn
-                            ? selectedRows
-                            : filterData
-                        }
+                        rows={showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterData}
                         columns={dataGridcolumns}
                         pageSize={5}
                         rowsPerPageOptions={[5]}

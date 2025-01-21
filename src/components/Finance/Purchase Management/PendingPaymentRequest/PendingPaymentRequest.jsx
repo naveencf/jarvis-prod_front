@@ -31,14 +31,17 @@ import View from "../../../AdminPanel/Sales/Account/View/View";
 import ZohoBillCreation from "./Components/ZohoBillCreation";
 import { Balance } from "@mui/icons-material";
 import { formatNumber } from "../../../../utils/formatNumber";
+import { useGetVendorPaymentRequestsQuery } from "../../../Store/API/Purchase/PurchaseRequestPaymentApi";
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
   const { toastAlert, toastError } = useGlobalContext();
+  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequerst } = useGetVendorPaymentRequestsQuery();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-  const [data, setData] = useState([]);
+  const userName = decodedToken.name;
+  // const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [payDialog, setPayDialog] = useState(false);
   const [rowData, setRowData] = useState({});
@@ -46,7 +49,7 @@ export default function PendingPaymentRequest() {
   const [paymentAmout, setPaymentAmount] = useState(0);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
-  const [userName, setUserName] = useState("");
+  // const [userName, setUserName] = useState("");
   const [uniqueVendorCount, setUniqueVendorCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
   const [uniqueVenderDialog, setUniqueVenderDialog] = useState(false);
@@ -101,201 +104,57 @@ export default function PendingPaymentRequest() {
 
   const callApi = async () => {
     //Reminder API
-    setIsLoading(true);
-    // let remindData = "";
+    // setIsLoading(true);
+
     // await axios
     //   .get(
-    //     phpBaseUrl + `?view=getpaymentrequestremind`
+    //     phpBaseUrl + `?view=getpaymentrequest`
     //   )
     //   .then((res) => {
-    //     setPhpRemainderData(res.data.body);
-    //     remindData = res.data.body;
+    //     let y = res?.data?.body;
+    //     const requestPayments = y.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
+    //     console.log(requestPayments, "resf")
+    //     setPhpData(requestPayments);
+    //     setIsLoading(false);
+    //     // setData(requestPayments);
+    //     setFilterData(requestPayments);
+    //     setPendingRequestCount(requestPayments.length);
+    //     // // console.log(y, "y", remindData)
+
     //   })
     //   .catch((error) => {
-    //     console.log("Error while getting reminder data");
+    //     console.log("Error while getting Node Data");
     //   });
-
-    // axios
-    //   .get(baseUrl + "phpvendorpaymentrequest")
-    //   .then((res) => {
-    //     const x = res.data.modifiedData;
-    //     setNodeData(x);
-    await axios
-      .get(
-        phpBaseUrl + `?view=getpaymentrequest`
-      )
-      .then((res) => {
-        let y = res?.data?.body;
-        const requestPayments = y.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
-        console.log(requestPayments, "resf")
-        setPhpData(requestPayments);
-        setIsLoading(false);
-        setData(requestPayments);
-        setFilterData(requestPayments);
-        setPendingRequestCount(requestPayments.length);
-        // // console.log(y, "y", remindData)
-
-      })
-      .catch((error) => {
-        console.log("Error while getting Node Data");
-      });
     // })
     // .catch((error) => {
     //   console.log("Error while getting php pending payment request data");
     // });
 
-    axios
-      .get(`${baseUrl}` + `get_single_user/${userID}`)
-      .then((res) => {
-        setUserName(res.data.user_name);
-      })
-      .catch((error) => {
-        console.log("Error while getting single user data");
-      });
+    // axios
+    //   .get(`${baseUrl}` + `get_single_user/${userID}`)
+    //   .then((res) => {
+    //     setUserName(res.data.user_name);
+    //   })
+    //   .catch((error) => {
+    //     console.log("Error while getting single user data");
+    //   });
+    refetchPaymentRequerst()
   };
-  const OldcallApi = async () => {
-    //Reminder API
-    setIsLoading(true);
-    let remindData = "";
-    await axios
-      .get(
-        phpBaseUrl + `?view=getpaymentrequestremind`
-      )
-      .then((res) => {
-        setPhpRemainderData(res.data.body);
-        remindData = res.data.body;
-      })
-      .catch((error) => {
-        console.log("Error while getting reminder data");
-      });
 
-    axios
-      .get(baseUrl + "phpvendorpaymentrequest")
-      .then((res) => {
-        const x = res.data.modifiedData;
-        setNodeData(x);
-        axios
-          .get(
-            phpBaseUrl + `?view=getpaymentrequest`
-          )
-          .then((res) => {
-            let y = res?.data?.body.filter((item) => {
-              return !x.some((item2) => item.request_id === item2.request_id);
-            });
-            setPhpData(y);
-            // console.log(y, "y", remindData)
-            let c = res.data.body.filter((item) => {
-              return remindData.some(
-                (item2) => item.request_id === item2.request_id
-              );
-            });
-
-            y.push(...c);
-
-            let mergedArray = [...y, ...c];
-
-            // Creating a set of unique request_ids from the merged data
-            let t = new Set(mergedArray.map((item) => item.request_id));
-            mergedArray = Array.from(t).map((request_id) => {
-              return mergedArray.find((item) => item.request_id === request_id);
-            });
-
-            mergedArray = mergedArray.filter(
-              (item) => item.status == 0 || item.status == 3 || item.status == 2
-            );
-
-            mergedArray = mergedArray.sort((a, b) => {
-              const aReminder = remindData.some(
-                (remind) => remind.request_id === a.request_id
-              );
-              const bReminder = remindData.some(
-                (remind) => remind.request_id === b.request_id
-              );
-
-              if (aReminder && !bReminder) return -1;
-              if (!aReminder && bReminder) return 1;
-
-              // Add aging sorting logic if required
-              return new Date(a.request_date) - new Date(b.request_date);
-            });
-
-            mergedArray = mergedArray.sort((a, b) => {
-              const aReminder = remindData.some(
-                (remind) => remind.request_id === a.request_id
-              );
-              const bReminder = remindData.some(
-                (remind) => remind.request_id === b.request_id
-              );
-
-              if (aReminder && !bReminder) return -1;
-              if (!aReminder && bReminder) return 1;
-
-              // Add aging sorting logic if required
-              return b.aging - a.aging;
-            });
-            // console.log(mergedArray, "mergedArray")
-            setIsLoading(false);
-            setData(mergedArray);
-            setFilterData(mergedArray);
-            setPendingRequestCount(mergedArray.length);
-
-            const uniqueVendors = new Set(
-              mergedArray.map((item) => item.vendor_name)
-            );
-            setUniqueVendorCount(uniqueVendors.size);
-            const uvData = [];
-            uniqueVendors.forEach((vendorName) => {
-              const vendorRows = mergedArray.filter(
-                (item) => item.vendor_name === vendorName
-              );
-              uvData.push(vendorRows[0]);
-            });
-            setUniqueVendorData(uvData);
-            const nonGstCount = mergedArray.filter(
-              (gst) => gst.gstHold === "0"
-            );
-            setNonGstCount(nonGstCount.length);
-
-            const withInvoiceImage = mergedArray.filter(
-              (item) => item.invc_img && item.invc_img.length > 0
-            );
-            const withoutInvoiceImage = mergedArray.filter(
-              (item) => !item.invc_img || item.invc_img.length === 0
-            );
-            setInvoiceCount(withInvoiceImage.length);
-            setNonInvoiceCount(withoutInvoiceImage.length);
-
-            // calculate Partial Data :-
-            const dateFilterData = filterDataBasedOnSelection(mergedArray);
-            setFilterData(dateFilterData);
-
-            const tdsCount = mergedArray?.filter(
-              (data) =>
-                data?.TDSDeduction === "1" || data?.TDSDeduction === null
-            );
-            setTdsDeductedCount(tdsCount);
-          })
-          .catch((error) => {
-            console.log("Error while getting Node Data");
-          });
-      })
-      .catch((error) => {
-        console.log("Error while getting php pending payment request data");
-      });
-
-    axios
-      .get(`${baseUrl}` + `get_single_user/${userID}`)
-      .then((res) => {
-        setUserName(res.data.user_name);
-      })
-      .catch((error) => {
-        console.log("Error while getting single user data");
-      });
-  };
 
   useEffect(() => {
-    callApi();
-  }, [dateFilter, refetch]);
+    // callApi();
+    if (data?.length > 0) {
+
+      const requestPayments = data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
+      console.log(requestPayments, "resf")
+      setPhpData(requestPayments);
+      setIsLoading(false);
+      // setData(requestPayments);
+      setFilterData(requestPayments);
+      setPendingRequestCount(requestPayments.length);
+    }
+  }, [dateFilter, refetch, data]);
 
   const handleRemainderModal = (reaminderData) => {
     setReminderData(reaminderData);
@@ -915,7 +774,7 @@ export default function PendingPaymentRequest() {
                         ? filterData?.filter((d) => d.status === "0")
                         : []
                 }
-                isLoading={isLoading}
+                isLoading={requestLoading}
                 showTotal={true}
                 title={"Pending Payment Request"}
                 rowSelectable={true}
@@ -936,7 +795,7 @@ export default function PendingPaymentRequest() {
                     </button>
                     <button
                       className="btn cmnbtn btn_sm btn-primary ms-2"
-                      onClick={() => setRefetch(!refetch)}
+                      onClick={() => refetchPaymentRequerst()}
                     >
                       Refetch
                     </button>
@@ -997,7 +856,7 @@ export default function PendingPaymentRequest() {
         )}
         {payDialog && (
           <PayVendorDialog
-            callApi={callApi}
+            callApi={refetchPaymentRequerst}
             userName={userName}
             loading={loading}
             setLoading={setLoading}
@@ -1016,7 +875,7 @@ export default function PendingPaymentRequest() {
             filterData={filterData}
             GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount}
             refetch={refetch}
-            setRefetch={setRefetch}
+            setRefetch={refetchPaymentRequerst}
           />
         )}
         {/* <ZohoBillCreation
@@ -1033,7 +892,7 @@ export default function PendingPaymentRequest() {
             rowData={rowData}
             setShowDiscardModal={setShowDiscardModal}
             userID={userID}
-            callApi={callApi}
+            callApi={refetchPaymentRequerst}
           />
         )}
 
@@ -1048,7 +907,7 @@ export default function PendingPaymentRequest() {
             aknowledgementDialog={aknowledgementDialog}
             setAknowledgementDialog={setAknowledgementDialog}
             userName={userName}
-            callApi={callApi}
+            callApi={refetchPaymentRequerst}
             setRemainderDialo={setRemainderDialog}
           />
         )}

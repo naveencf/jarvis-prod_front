@@ -8,15 +8,21 @@ import View from "../AdminPanel/Sales/Account/View/View";
 import OpreationLinkUpdateDirect from "./OpreationLinkUpdateDirect";
 import { useGetAllPlanXDataQuery } from "../Store/API/Opreation/OpreationApi";
 import OpreationColumns from "./OpreationColumns";
+import PhaseWisePages from "./PhaseWisePages";
+import OperationShortcodeUpdater from "./OperationShortcodeUpdater";
 const storedToken = sessionStorage.getItem("token");
 
 const NewCampaignExecutions = () => {
   const { data: PlanX } = useGetAllPlanXDataQuery();
   const [selectedCampaign, setSelectedCampaign] = useState(null);
-  const [palnWisePage, setPalnWisePage] = useState([]);
+  const [planWisePage, setPlanWisePage] = useState([]);
   const [shortcode, setShortcode] = useState("");
   const [pageId, setPageId] = useState("");
- 
+  const [phaseWisePages, setPhaseWiseData] = useState({});
+  const [filteredData, setFilteredData] = useState([]);
+  const [showAllPages, setShowAllPages] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+
   const getPlanWisePages = async () => {
     try {
       const res = await axios.get(
@@ -27,7 +33,20 @@ const NewCampaignExecutions = () => {
           },
         }
       );
-      setPalnWisePage(res?.data?.data);
+      const data = res?.data?.data || [];
+      const groupedPages = data.reduce((acc, item) => {
+        if (item.posted_on?.trim()) {
+          // const date = item.posted_on.split(" ")[0];
+          const date = item.phase.split(" ")[0];
+          if (!acc[date]) {
+            acc[date] = [];
+          }
+          acc[date].push(item);
+        }
+        return acc;
+      }, {});
+      setPhaseWiseData(groupedPages)
+      setPlanWisePage(data);
     } catch (error) {
       console.error("Error fetching plans:", error);
     }
@@ -37,30 +56,25 @@ const NewCampaignExecutions = () => {
     getPlanWisePages();
   }, [selectedCampaign]);
 
-  const handleSelectChange = (selectedOption) => {
-    setSelectedCampaign(selectedOption?.value);
-  };
-
   const handleUpdateRow = async (row) => {
     if (!storedToken) {
       console.error("Token not found in sessionStorage");
       return;
     }
-  
     try {
       const config = {
         headers: {
           Authorization: `Bearer ${storedToken}`,
         },
       };
-  
       const updatePayload = {
         all_comments: row?.all_comments,
-        all_like: row?.all_like, 
+        all_like: row?.all_like,
         all_view: row?.all_view,
         share: row?.share,
         impression: row?.impression,
         reach: row?.reach,
+        phase: "2025-01-15"
       };
       const res = await axios.put(
         `${baseUrl}operation/operation_execution_master/${row?._id}`,
@@ -72,69 +86,69 @@ const NewCampaignExecutions = () => {
       console.error("Error updating data:", error);
     }
   };
-  
+
   const handleChangeComment = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, all_comments: Number(value) } : row
       )
     );
   };
   const handleChangeViews = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, all_view: Number(value) } : row
       )
     );
   };
   const handleChangeLike = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, all_like: Number(value) } : row
       )
     );
   };
   const handleChangeShare = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, share: Number(value) } : row
       )
     );
   };
   const handleChangeImpression = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, impression: Number(value) } : row
       )
     );
   };
   const handleChangeReach = (rowId, value) => {
-    setPalnWisePage((prevData) =>
+    setPlanWisePage((prevData) =>
       prevData.map((row) =>
         row._id === rowId ? { ...row, reach: Number(value) } : row
       )
     );
   };
 
-     //  filter hashtags and tags -->
-    const extractTags = (title) => {
-      if (!title) return { tags: [], hashtags: [], tagCount: 0, hashtagCount: 0 };
-      const tagRegex = /@(\w+)/g;
-      const tagMatches = title.match(tagRegex);
-      const tags = tagMatches
-        ? tagMatches.map((match) => match.substring(1))
-        : [];
-      const tagCount = tags.length;
-      const hashtagRegex = /#(\w+)/g;
-      const hashtagMatches = title.match(hashtagRegex);
-      const hashtags = hashtagMatches
-        ? hashtagMatches.map((match) => match.substring(1))
-        : [];
-      const hashtagCount = hashtags.length;
-  
-      return { tags, hashtags, tagCount, hashtagCount };
-    };
-    //  Opreation columns 
+  //  filter hashtags and tags -->
+  const extractTags = (title) => {
+    if (!title) return { tags: [], hashtags: [], tagCount: 0, hashtagCount: 0 };
+    const tagRegex = /@(\w+)/g;
+    const tagMatches = title.match(tagRegex);
+    const tags = tagMatches
+      ? tagMatches.map((match) => match.substring(1))
+      : [];
+    const tagCount = tags.length;
+    const hashtagRegex = /#(\w+)/g;
+    const hashtagMatches = title.match(hashtagRegex);
+    const hashtags = hashtagMatches
+      ? hashtagMatches.map((match) => match.substring(1))
+      : [];
+    const hashtagCount = hashtags.length;
+
+    return { tags, hashtags, tagCount, hashtagCount };
+  };
+  //  Opreation columns 
   const columns = OpreationColumns({
     handleChangeLike,
     handleChangeComment,
@@ -167,7 +181,7 @@ const NewCampaignExecutions = () => {
               Authorization: `Bearer ${token}`,
             },
           };
-          
+
           const response = await axios.post(
             `https://insights.ist:8080/api/v1/getpostDetailFromInsta`,
             payload,
@@ -175,7 +189,7 @@ const NewCampaignExecutions = () => {
           );
           if (response.data.success === true) {
             console.log(response.data?.data?.owner_info?.username);
-            
+
             try {
               const config = {
                 headers: {
@@ -202,6 +216,7 @@ const NewCampaignExecutions = () => {
                 updatePayload,
                 config
               );
+              getPlanWisePages()
             } catch (error) {
               console.error("Error updating data:", error);
             }
@@ -216,6 +231,17 @@ const NewCampaignExecutions = () => {
     fetchPageDetails();
   }, [shortcode]);
 
+  const handleDateSelect = (pages, date) => {
+    setFilteredData(pages);
+    setShowAllPages(false); // Reset to phase-wise view
+    setSelectedDate(date); // Set the selected date
+  };
+  const handleShowAllPages = () => {
+    setShowAllPages(true);
+    setFilteredData([]); // Clear filters when showing all pages
+    setSelectedDate(null); // Reset selected date
+  };
+
   return (
     <>
       <FormContainer link={true} mainTitle={"Execution Campaign"} />
@@ -229,27 +255,60 @@ const NewCampaignExecutions = () => {
                 value: option._id,
                 label: `${formatString(option.plan_name)}`,
               }))}
-              onChange={handleSelectChange}
+              onChange={(selectedOption) =>
+                setSelectedCampaign(selectedOption?.value)
+              }
               placeholder="Select plan"
             />
           </div>
         </div>
         <div className="card-body">
-          <OpreationLinkUpdateDirect
-            setShortcode={setShortcode}
-            palnWisePage={palnWisePage}
-            setPalnWisePage={setPalnWisePage}
-          />
+          {planWisePage.length > 0 &&
+            <div className="d-flex">
+              {/* <OpreationLinkUpdateDirect
+                getPlanWisePages={getPlanWisePages}
+                planWisePage={planWisePage}
+                setShortcode={setShortcode}
+              /> */}
+              <OperationShortcodeUpdater
+                fetchPlanWiseData={getPlanWisePages}
+                planWiseData={planWisePage}
+
+              />
+              <button
+                className={`btn cmnbtn btn_sm ${showAllPages
+                  ? "btn-primary"
+                  : "btn-outline-primary"
+                  } mr-1`}
+                onClick={handleShowAllPages}
+              >
+                All Pages
+              </button>
+              <PhaseWisePages
+                phaseWisePages={phaseWisePages}
+                selectedDate={selectedDate}
+                onDateSelect={handleDateSelect}
+              />
+            </div>
+          }
           <View
             columns={columns}
-            data={palnWisePage}
+            data={
+              showAllPages
+                ? planWisePage
+                : filteredData.length > 0
+                  ? filteredData
+                  : planWisePage
+            }
             isLoading={false}
             Pagination={[100, 200, 1000]}
             tableName={"Op_executions"}
+            pagination={[100, 200, 1000]}
           />
         </div>
       </div>
     </>
+
   );
 };
 

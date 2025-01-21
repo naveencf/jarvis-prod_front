@@ -844,12 +844,13 @@ const SidebarLinks = () => {
 
                     <OperationSidebarLinks />
 
-                    <NavLink
+                    {/* <NavLink
                       className="collapse-item"
                       to="/admin/op-campaign-executions"
                     >
                       <i className="bi bi-dot"></i>
                       Camp Execution
+
                     </NavLink>
                     <NavLink
                       className="collapse-item"
@@ -858,6 +859,9 @@ const SidebarLinks = () => {
                       <i className="bi bi-dot"></i>
                       New Camp Execution
                     </NavLink>
+
+                    </NavLink> */}
+
                   </>
                 )}
             </div>

@@ -14,6 +14,16 @@ import JobSection from "./ProfileSection/JobSection";
 import { Link } from "react-router-dom";
 import AssetSingleUser from "../../../Sim/AssetSingeUser/AssetSingleUser";
 import DocumentTab from "../../../PreOnboarding/DocumentTab";
+import {
+  Briefcase,
+  Check,
+  DotsThree,
+  Download,
+  Envelope,
+  IdentificationBadge,
+  Pencil,
+  Phone,
+} from "@phosphor-icons/react";
 // import GoogleSheetDownloader from "./googlesheet";
 
 const Profile = () => {
@@ -24,14 +34,13 @@ const Profile = () => {
   const [profileUpdate, setProfileUpdate] = useState([]);
   const [userData, setUserData] = useState([]);
   const [responsbilityData, setResponsibility] = useState([]);
-  const [educationData,setEducationData] = useState([])
-  const [familyData , setFamilyData] = useState([])
+  const [educationData, setEducationData] = useState([]);
+  const [familyData, setFamilyData] = useState([]);
 
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
 
- 
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
@@ -39,46 +48,56 @@ const Profile = () => {
   const accordionButtons = ["About", "Profile", "Job", "Document", "Assets"];
 
   // Document Information Tab-------------------Start------------------------------------
- const [documentData, setDocumentData] = useState([]);
- async function getDocuments() {
-   const response = await axios.post(baseUrl + "get_user_doc", {
-     user_id: loginUserId,
-   });
-   setDocumentData(response.data.data);
- }
+  const [documentData, setDocumentData] = useState([]);
+  async function getDocuments() {
+    const response = await axios.post(baseUrl + "get_user_doc", {
+      user_id: loginUserId,
+    });
+    setDocumentData(response.data.data);
+  }
 
- useEffect(() => {
-   getDocuments();
- }, [loginUserId]);
+  useEffect(() => {
+    getDocuments();
+  }, [loginUserId]);
 
-  const tab1 = <AboutSection educationData={educationData} familyData={familyData}/>
-  const tab2 = <ProfileSection userData={userData} educationData={educationData} familyData={familyData}/>
-  const tab3 = <JobSection userData={userData}/>
-  const tab4 = <div className="table-wrap-user">
-  <DocumentTab
-    documentData={documentData}
-    setDocumentData={setDocumentData}
-    getDocuments={getDocuments}
-    submitButton={false}
-    normalUserLayout={true}
-  />
-</div>;
-  const tab5 = <AssetSingleUser/>
+  const tab1 = (
+    <AboutSection educationData={educationData} familyData={familyData} />
+  );
+  const tab2 = (
+    <ProfileSection
+      userData={userData}
+      educationData={educationData}
+      familyData={familyData}
+    />
+  );
+  const tab3 = <JobSection userData={userData} />;
+  const tab4 = (
+    <div className="table-wrap-user">
+      <DocumentTab
+        documentData={documentData}
+        setDocumentData={setDocumentData}
+        getDocuments={getDocuments}
+        submitButton={false}
+        normalUserLayout={true}
+      />
+    </div>
+  );
+  const tab5 = <AssetSingleUser />;
   function handleGetData() {
     axios.get(`${baseUrl}` + `get_single_user/${loginUserId}`).then((res) => {
       setUserData(res.data);
     });
   }
-  const EducationData=()=>{
+  const EducationData = () => {
     axios.get(baseUrl + `get_single_education/${loginUserId}`).then((res) => {
       setEducationData(res.data.data);
     });
-  }
-  const FamilyDatas=()=>{
+  };
+  const FamilyDatas = () => {
     axios.get(baseUrl + `get_single_family/${loginUserId}`).then((res) => {
       setFamilyData(res.data.data);
     });
-  }
+  };
 
   function responsibilityAPI() {
     axios
@@ -91,12 +110,12 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    FamilyDatas()
-    EducationData()
+    FamilyDatas();
+    EducationData();
     handleGetData();
     responsibilityAPI();
   }, [loginUserId]);
-console.log(("re-render"));
+  console.log("re-render");
 
   const handleProfileUpdate = () => {
     const formData = new FormData();
@@ -127,132 +146,124 @@ console.log(("re-render"));
 
   return (
     <>
-      {/* <div className="section product_section profile_section section_padding"> */}
-      <div className="container">
-        <div className="row">
-          <div className="col profile_data_col">
-            <div className="profile_data_box position-relative">
-              <div className="main_wave_box">
-                <div className="wave"></div>
-                <div className="wave"></div>
-                <div className="wave"></div>
-              </div>
+      <div className="card profileCard">
+        <div className="card-body">
+          <div className="profileCardRow">
+            <div className="profileCardImgCol">
+              <div className="profileCardImg">
+                {userData?.image_url == null ? (
+                  <img src={imageTest1} alt="user" />
+                ) : (
+                  <img src={userData.image_url} alt="user" />
+                )}
 
-              {/* photo start */}
-
-              <div className="col profile_img_col">
-                <div className="profile_img_box">
-                  <div className="profile_img">
-                    {/* {console.log(userData.downloadableUrl, "user data on jsx")} */}
-                    {userData?.image_url == null ? (
-                      <img
-                        src={imageTest1}
-                        style={{
-                          height: "70px",
-                          borderRadius: "50%",
-                          width: "70px",
-                        }}
-                      />
-                    ) : (
-                      <img
-                        className="img-profile ,w-25"
-                        src={userData.image_url}
-                        alt="user"
-                        style={{
-                          height: "70px",
-                          borderRadius: "50%",
-                          width: "70px",
-                        }}
-                      />
-                    )}
+                <div className="profileCardImgAction">
+                  <div className="profileCardImgEdit">
+                    <input
+                      type="file"
+                      className="custom_file_input"
+                      onChange={(e) => setProfileUpdate(e.target.files[0])}
+                    />
+                    <span>
+                      <Pencil />
+                    </span>
                   </div>
-                  <div className="profile_name">
-                    <h2>
-                      {userData.user_name} <span>{userData.role_name}</span>
-                    </h2>
-                    <div className="profile_img_action">
-                      <input
-                        type="file"
-                        className="custom_file_input"
-                        onChange={(e) => setProfileUpdate(e.target.files[0])}
-                      />
-                      <button
-                        className="btn btn-primary"
-                        title="save profile"
-                        type="file"
-                        onClick={() => handleProfileUpdate()}
-                      >
-                        <i className="fa-solid fa-check"></i>
-                      </button>
-                    </div>
+                  <div className="profileCardImgSave">
+                    <button
+                      className="btn"
+                      title="save profile"
+                      type="file"
+                      onClick={() => handleProfileUpdate()}
+                    >
+                      <Check />
+                    </button>
                   </div>
                 </div>
               </div>
-
-              {/* Photo End */}
-
-              <div className="d-flex">
-                {/* profile info start  */}
-                <div className="profile_info_main_box">
-                  <div className="profile_data_box_head">
-                    <h2>Profile info</h2>
-                  </div>
-                  <div className="profile_data_box_body">
-                    <ul>
-                      {/* <li>
-                        <span>Role</span>
-                        {userData.Role_name}
-                      </li> */}
-                      <li>
-                        <span>Email</span>
-                        {userData.user_email_id}
-                      </li>
-                      <li>
-                        <span>Contact</span>
-                        {userData.user_contact_no}
-                      </li>
-                      <li>
-                        <span>Login ID</span>
-                        {userData.user_login_id}
-                      </li>
-                      {/* <li>
-                        <span>Password</span>
-                        {userData.user_login_password?.slice(0, 30)}
-                      </li> */}
-                      {/* <li>
-                        <span>Department</span>
-                        {userData.department_name}
-                      </li> */}
-                      <li>
-                        <span>Designation</span>
-                        {userData.designation_name}
-                      </li>
-                      <li>
-                        <span>Report L1</span>
-                        {userData.Report_L1N}
-                      </li>
-                      <li>
-                        <span>Employee ID</span>
-                         {" "}{userData.user_id}
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-                {/* profile info End  */}
-                <div className="responsibility_main_box">
-                  <div className=" gap-2" style={{ marginTop: "130px" }}>
+            </div>
+            <div className="profileCardDtlCol">
+              <div className="profileCardDtlBox">
+                <h2>
+                  {userData.user_name} <span>{userData.role_name}</span>
+                </h2>
+              </div>
+              <div className="profileCardDtlRow">
+                <ul>
+                  <li>
+                    <h6>
+                      <span>
+                        <Briefcase />
+                      </span>
+                      {userData.designation_name}
+                    </h6>
+                  </li>
+                  <li>
+                    <h6>
+                      <span>
+                        <Phone />
+                      </span>
+                      {userData.user_contact_no}
+                    </h6>
+                  </li>
+                  <li>
+                    <h6>
+                      <span>
+                        <Envelope />
+                      </span>
+                      {userData.user_email_id}
+                    </h6>
+                  </li>
+                </ul>
+              </div>
+              <hr className="w-100 m0" />
+              <div className="profileCardDtlRow">
+                <ul>
+                  <li>
+                    <small>Login ID</small>
+                    <h6>{userData.user_login_id}</h6>
+                  </li>
+                  <li>
+                    <small>Report L1</small>
+                    <h6>{userData.Report_L1N}</h6>
+                  </li>
+                  <li>
+                    <small>Employee ID</small>
+                    <h6>{userData.user_id}</h6>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="profileCardDropdown">
+              <div className="dropdown">
+                <button
+                  className="icon btn dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton"
+                  data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                >
+                  <Download />
+                </button>
+                <ul
+                  className="dropdown-menu"
+                  aria-labelledby="dropdownMenuButton"
+                >
+                  <li className="dropdown-item">
                     <PDFDownloadLink
-                      className="btn onboardBtn btn_primary d-flex align-items-center justify-content-center gap-2 mb-3"
+                      className="btn"
                       document={
                         <OfferLetter allUserData={userData} image64={image64} />
                       }
                       fileName="OfferLetter.pdf"
                     >
-                      <i class="bi bi-cloud-arrow-down"></i>
+                      <Download />
                       Download Offer Letter
                     </PDFDownloadLink>
+                  </li>
+                  <li className="dropdown-item">
                     <PDFDownloadLink
-                      className="btn onboardBtn btn_primary d-flex align-items-center justify-content-center gap-2"
+                      className="btn"
                       document={
                         <AppointmentLetter
                           allUserData={userData}
@@ -261,119 +272,33 @@ console.log(("re-render"));
                       }
                       fileName="AppointmentLetter.pdf"
                     >
-                      <i class="bi bi-cloud-arrow-down"></i>
+                      <Download />
                       Download Appointment Letter
                     </PDFDownloadLink>
-                  </div>
-                </div>
-
-                {/* <div className="responsibility_main_box">
-                    <div className="">
-                      <div className="responsibility_s_box">
-                        <div className="profile_data_box_head">
-                          <h2 className="">Roles & Responsibility</h2>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="profile_data_box_body popup_box_design">
-                      <ul>
-                        {responsbilityData.map((data) => (
-                          <>
-                            <li>
-                              <button
-                                type="button"
-                                className="btn btn-primary responsibility_btn_custom"
-                                data-toggle="modal"
-                                data-target="#exampleModal"
-                                onClick={() =>
-                                  setSelectedResponsibilityId(data.Job_res_id)
-                                }
-                              >
-                                {data.sjob_responsibility}
-                              </button>
-                            </li>
-                          </>
-                        ))}
-                      </ul>
-                      <div
-                        className="modal fade"
-                        id="exampleModal"
-                        tabIndex="-1"
-                        role="dialog"
-                        aria-labelledby="exampleModalLabel"
-                        aria-hidden="true"
-                      >
-                        <div className="modal-dialog" role="document">
-                          <div className="modal-content">
-                            {responsbilityData.map((data) => {
-                              if (
-                                data.Job_res_id === selectedResponsibilityId
-                              ) {
-                                return (
-                                  <>
-                                    <div className="modal-header">
-                                      <h5
-                                        className="modal-title"
-                                        id="exampleModalLabel"
-                                      >
-                                        {data.sjob_responsibility}
-                                      </h5>
-                                      <button
-                                        type="button"
-                                        className="close"
-                                        data-dismiss="modal"
-                                        aria-label="Close"
-                                      >
-                                        <span aria-hidden="true">&times;</span>
-                                      </button>
-                                    </div>
-                                    <div className="modal-body">
-                                      <h5>Description</h5>
-                                      {data.description}
-                                    </div>
-                                  </>
-                                );
-                              }
-                              return null;
-                            })}
-                            <div className="modal-footer">
-                              <button
-                                type="button"
-                                className="btn btn-primary"
-                                data-dismiss="modal"
-                              >
-                                Close
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
-              </div>
-            </div>
-
-            <div className="action_heading">
-              <div className="action_title">
-                <FormContainer
-                  submitButton={false}
-                  title=""
-                  accordionButtons={accordionButtons}
-                  activeAccordionIndex={activeAccordionIndex}
-                  onAccordionButtonClick={handleAccordionButtonClick}
-                >
-                  {activeAccordionIndex === 0 && tab1}
-                  {activeAccordionIndex === 1 && tab2}
-                  {activeAccordionIndex === 2 && tab3}
-                  {activeAccordionIndex === 3 && tab4}
-                  {activeAccordionIndex === 4 && tab5}
-                </FormContainer>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
+        <hr className="m0" />
+        <div className="card-body profileTab">
+          <FormContainer
+            submitButton={false}
+            title=""
+            accordionButtons={accordionButtons}
+            activeAccordionIndex={activeAccordionIndex}
+            onAccordionButtonClick={handleAccordionButtonClick}
+          ></FormContainer>
+        </div>
       </div>
-      {/* </div> */}
+      <div className="profileTabContentArea">
+        {activeAccordionIndex === 0 && tab1}
+        {activeAccordionIndex === 1 && tab2}
+        {activeAccordionIndex === 2 && tab3}
+        {activeAccordionIndex === 3 && tab4}
+        {activeAccordionIndex === 4 && tab5}
+      </div>
     </>
   );
 };

@@ -48,6 +48,7 @@ const VendorOverview = () => {
   const [stateDataS, setStateDataS] = useState([]);
   const [cityDataS, setCityDataS] = useState([]);
   const [vendorDocsCountData, setVendorDocsCountData] = useState([]);
+  const [pageQuery, setPageQuery] = useState('');
   // const { data: pageList } = useGetAllPageListQuery();
   const [getRowData, setGetRowData] = useState([]);
 
@@ -63,7 +64,7 @@ const VendorOverview = () => {
 
   const cycleData = cycle?.data;
   const { data: vendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
-
+  // const { data: vendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery({ page: 2, limit: 20, search: '' });
   const handleUpdateVendorMPrice = (row) => {
     setOpenUpdateVendorMPrice(true);
     setRowVendor(row);
@@ -86,7 +87,6 @@ const VendorOverview = () => {
     //   setTabFilterData(vendorData?.data);
     // }
     if (vendorData) {
-
       setFilterData(vendorData);
       setTabFilterData(vendorData);
       // }
@@ -129,7 +129,7 @@ const VendorOverview = () => {
       console.error('Error fetching vendor pages:', error);
     }
   };
-  console.log("first")
+
   useEffect(() => {
     function getUniqueStatesWithCounts() {
       const stateData = {};
@@ -344,7 +344,7 @@ const VendorOverview = () => {
     },
     {
       key: 'vendor_category',
-      name: 'Vendor Category',
+      name: 'Vendor Category.',
       width: 150,
     },
     {
@@ -583,7 +583,6 @@ const VendorOverview = () => {
   const ExportData = () => {
     return decodedToken?.role_id == 1; // returns false if role_id is not 1, otherwise true
   };
-  console.log(decodedToken, "decodedToken")
   return (
     <>
       <VendorMPriceModal open={openUpdateVendorMPrice} onClose={handleCloseVendorMPriceModal} rowData={rowVendor} />
@@ -829,7 +828,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={state}
-                      // onClick={() => vendorWithCategories(state)}
+                        // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -860,7 +859,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={city}
-                      // onClick={() => vendorWithCategories(city)}
+                        // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">

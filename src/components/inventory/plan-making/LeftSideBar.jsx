@@ -11,7 +11,7 @@ import { baseUrl } from '../../../utils/config';
 import { downloadExcel, getPlatformName } from './downloadExcel';
 import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 import Swal from 'sweetalert2';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { calculatePrice } from './helper';
 import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
 
@@ -31,6 +31,7 @@ const LeftSideBar = ({
   totalCost,
   totalPostsPerPage,
   id,
+  setMergeCatList,
   totalPagesSelected,
   totalDeliverables,
   totalStoriesPerPage,
@@ -83,6 +84,8 @@ const LeftSideBar = ({
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
+  const location = useLocation();
+  const isPlanPrice = location?.pathname?.split('/')[2] === 'pms-plan-pricing' ? true : false;
 
   const planStatus = planDetails && planDetails[0]?.plan_status;
   // Function to get the platform name based on the platform ID
@@ -110,10 +113,10 @@ const LeftSideBar = ({
       });
 
       const planStatus = result.isConfirmed ? 'open' : 'close';
-
+      console.log('planStatus', planStatus);
       const payload = {
         id: id,
-        plan_status: planStatus,
+        plan_status: isPlanPrice ? 'open' : planStatus,
         plan_saved: true,
         post_count: totalPostCount,
         story_count: totalStoryCount,
@@ -121,7 +124,7 @@ const LeftSideBar = ({
         cost_price: totalCost,
         own_pages_cost_price: ownPagesCost,
       };
-
+      console.log('payload', payload);
       const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planData, planStatus)]);
 
       if (fetchResponse.ok) {
@@ -171,16 +174,11 @@ const LeftSideBar = ({
     setIsDownloading(true);
     setIsDownloadExcel(false);
     try {
-      // Attempt to download the Excel file
       const result = await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
-      console.log('Downloaded Excel result:', result);
-
-      // Assuming `result` contains the file or related details
       const formData = new FormData();
-      formData.append('file', result); // Ensure you're appending the correct file
+      formData.append('file', result);
 
       try {
-        // Attempt to upload the Excel file
         await uploadExcel(formData).unwrap();
         alert('File uploaded successfully!');
       } catch (uploadError) {
@@ -224,12 +222,12 @@ const LeftSideBar = ({
         'Story Price': getPriceDetail(page.page_price_list, 'platform_story'),
         'Total Post Cost': postCountForPage * getPriceDetail(page.page_price_list, 'platform_post'),
         'Total Story Cost': storyCountForPage * getPriceDetail(page.page_price_list, 'platform_story'),
-        category: page.page_category_id, // Add category ID for filtering
+        category: page.page_category_id,
       };
     });
 
     setPreviewData(preview);
-    setOpenPreviewModal(true); // Open the preview modal
+    setOpenPreviewModal(true);
   };
 
   // const calculatePrice = (rate_type, pageData, type) => {
@@ -320,7 +318,7 @@ const LeftSideBar = ({
       // cost_price: totalCost,
     };
     sendPlanxLogs('v1/planxlogs', payload);
-    setIsEditing(false); // Close the input fields after save
+    setIsEditing(false);
   };
   const ownPagesCost = ownershipCounts.own.totalCost;
   useEffect(() => {
@@ -331,6 +329,30 @@ const LeftSideBar = ({
     setIsEditing(!isEditing);
     setSellingPrice(planDetails?.[0]?.selling_price);
   };
+  console.log('selected', selectedRows);
+  const groupCategoriesByPlatform = (rows) => {
+    const platformWiseCategories = {};
+
+    rows.forEach((row) => {
+      const platform = row.platform_name || 'Unknown Platform';
+      const category = row.page_category_name || 'Unknown Category';
+
+      if (!platformWiseCategories[platform]) {
+        platformWiseCategories[platform] = {};
+      }
+
+      if (!platformWiseCategories[platform][category]) {
+        platformWiseCategories[platform][category] = 0;
+      }
+
+      platformWiseCategories[platform][category]++;
+    });
+
+    return platformWiseCategories;
+  };
+
+  const platformCategories = groupCategoriesByPlatform(selectedRows);
+
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
@@ -462,17 +484,34 @@ const LeftSideBar = ({
             Meme
             <span>1</span>
           </h6> */}
-          {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
-            const categoryName = category?.find((item) => item?._id === categoryId)?.page_category || 'Unknown';
-            return (
-              <h6 onClick={handleToggleBtn} key={categoryId}>
-                {formatString(categoryName)}
-                <span>{count}</span>
-              </h6>
-            );
-          })}
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', backgroundColor: '#111C42', borderRadius: '2px' }}>
+            {Object.entries(platformCategories).map(([platform, categories]) => (
+              <div key={platform} style={{ flex: '1 1 300px', padding: '0.4rem', backgroundColor: '#1D284C', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
+                <h6
+                  onClick={handleToggleBtn}
+                  style={{
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold',
+                    color: 'white',
+                    cursor: 'pointer',
+                    marginBottom: '0.8rem',
+                    borderBottom: '2px solid #666',
+                  }}
+                >
+                  {formatString(platform)}
+                </h6>
+                {Object.entries(categories).map(([category, count]) => (
+                  <div key={category} style={{ marginBottom: '0.6rem', paddingLeft: '0.5rem' }}>
+                    <p style={{ margin: 0, color: 'white', fontSize: '1rem', lineHeight: '1.4' }}>
+                      {formatString(category)}: <span style={{ fontWeight: 'bold', color: '#00d4ff' }}>{count}</span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
-        <ExcelPreviewModal open={openPreviewModal} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
+        <ExcelPreviewModal open={openPreviewModal} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
         <div className="planSmall planLarge">
           {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>

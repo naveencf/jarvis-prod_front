@@ -4,99 +4,122 @@ import DateFormattingComponent from "../../../../DateFormator/DateFormared";
 const JobSection = ({ userData }) => {
   return (
     <>
-      <div className="col-8" style={{ border: "1px solid " }}>
-        <h4>Job Details</h4>
-        <div className="profileInfo_area">
-          <div className="row profileInfo_row pt-0">
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>EMPLOYEE NUMBER</h3>
-                <h4>{userData.user_id ? userData.user_id : "NA"}</h4>
-              </div>
+      <div className="row">
+        <div className="col-md-6 col-12">
+          <div className="card">
+            <div className="card-header flexCenterBetween">
+              <h5 className="card-title">Job Details</h5>
             </div>
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>DATE OF JOINING</h3>
-                <h4>
-                  <DateFormattingComponent
-                    date={userData.joining_date?.split("T")[0]}
-                  />
-                </h4>
+            <div className="card-body p0 profileTabBody">
+              <div className="profileTabInfo">
+                <div className="row profileTabRow">
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Employee Number</h3>
+                      <h4>{userData.user_id ? userData.user_id : "NA"}</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Date of Joining</h3>
+                      <h4>
+                        <DateFormattingComponent
+                          date={userData.joining_date?.split("T")[0]}
+                        />
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Designation</h3>
+                      <h4>
+                        {userData.designation_name
+                          ? userData.designation_name
+                          : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>In Probation?</h3>
+                      <h4>6 Month</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Notice Period</h3>
+                      <h4>60 days</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Job Type</h3>
+                      <h4>{userData.job_type ? userData.job_type : "NA"}</h4>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="row profileInfo_row pt-0">
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>Designation</h3>
-                <h4>
-                  {userData.designation_name ? userData.designation_name : "NA"}
-                </h4>
-              </div>
+        </div>
+        <div className="col-md-6 col-12">
+          <div className="card">
+            <div className="card-header flexCenterBetween">
+              <h5 className="card-title">Organization</h5>
             </div>
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>In Probation?</h3>
-                <h4>6 Month</h4>
+            <div className="card-body p0 profileTabBody">
+              <div className="profileTabInfo">
+                <div className="row profileTabRow">
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Business Unit</h3>
+                      <h4>Creativefuel Private Limited</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Department</h3>
+                      <h4>
+                        {userData.department_name
+                          ? userData.department_name
+                          : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Location</h3>
+                      <h4>Indore</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Legal Entity</h3>
+                      <h4>Creativefuel Private Limited</h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Reports to</h3>
+                      <h4>
+                        {userData.Report_L1N ? userData.Report_L1N : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="col-md-6 col-12 profileTabCol">
+                    <div className="profileTabBox">
+                      <h3>Manager of Manager (L2 Manager)</h3>
+                      <h4>
+                        {userData.Report_L2N ? userData.Report_L2N : "NA"}
+                      </h4>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-          <div className="row profileInfo_row pt-0">
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>Notice Period</h3>
-                <h4>60 days</h4>
-              </div>
-            </div>
-            <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-              <div className="profileInfo_box">
-                <h3>Job Type</h3>
-                <h4>{userData.job_type ? userData.job_type : "NA"}</h4>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-      <div className="col-4" style={{ border: "1px solid " }}>
-        <h4>Organization</h4>
-        <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-          <div className="profileInfo_box">
-            <h3>Business Unit</h3>
-            <h4>Creativefuel Private Limited</h4>
-          </div>
-        </div>
-      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div className="profileInfo_box">
-          <h3>Department</h3>
-          <h4>{userData.department_name ? userData.department_name : "NA"}</h4>
-        </div>
-      </div>
-      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div className="profileInfo_box">
-          <h3>Location</h3>
-          <h4>Indore</h4>
-        </div>
-      </div>
-      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div className="profileInfo_box">
-          <h3>Legal Entity</h3>
-          <h4>Creativefuel Private Limited</h4>
-        </div>
-      </div>
-      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div className="profileInfo_box">
-          <h3>Reports to</h3>
-          <h4>{userData.Report_L1N ? userData.Report_L1N : "NA"}</h4>
-        </div>
-      </div>
-      <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12">
-        <div className="profileInfo_box">
-          <h3>Manager of Manager (L2 Manager)</h3>
-          <h4>{userData.Report_L2N ? userData.Report_L2N : "NA"}</h4>
-        </div>
-      </div>
-      </div>
-
     </>
   );
 };

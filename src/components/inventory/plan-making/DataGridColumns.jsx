@@ -25,6 +25,7 @@ const DataGridColumns = ({
   // tempIndex,
   decodedToken,
   activeIndex,
+  activePlatform,
 }) => {
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -51,9 +52,19 @@ const DataGridColumns = ({
       key: 'page_name',
       name: 'Page Name',
       renderRowCell: (row) => formatString(row?.page_name),
+      colorRow: (row) => {
+        if (row.page_layer === 6) {
+          return '##FF6347';
+        }
+        if (row.page_layer === 7) {
+          return '#FF6347';
+        }
+        return undefined;
+      },
       width: 200,
       showCol: true,
     },
+
     // {
     //   key: 'logo',
     //   name: 'Logo',
@@ -186,7 +197,7 @@ const DataGridColumns = ({
               handleCheckboxChange(row, 'column', event, index);
             }}
             onClick={() => setShortcutTriggered(false)}
-          // onClick={() => handleRowClick(row)}
+            // onClick={() => handleRowClick(row)}
           />
         </div>
       ),
@@ -348,6 +359,27 @@ const DataGridColumns = ({
         const isFixedRate = row.rate_type === 'Fixed';
 
         const finalPrice = isFixedRate ? postPrice : calculatePrice(row.rate_type, row, 'post');
+
+        return Math.floor(Number(finalPrice)) || 0;
+      },
+      width: 150,
+      showCol: true,
+      compare: true,
+    },
+    {
+      key: 'reel_price',
+      name: 'Cost Per Reel',
+      renderRowCell: (row) => {
+        const findPriceByKeyword = (priceList, keyword) => {
+          if (!priceList) return 0;
+          const detail = priceList.find((item) => Object.keys(item).some((key) => key.includes(keyword)));
+          return detail ? detail[Object.keys(detail).find((key) => key.includes(keyword))] : 0;
+        };
+
+        const reelPrice = findPriceByKeyword(row?.page_price_list, 'reel');
+        const isFixedRate = row.rate_type === 'Fixed';
+
+        const finalPrice = isFixedRate ? reelPrice : calculatePrice(row.rate_type, row, 'reel');
 
         return Math.floor(Number(finalPrice)) || 0;
       },
