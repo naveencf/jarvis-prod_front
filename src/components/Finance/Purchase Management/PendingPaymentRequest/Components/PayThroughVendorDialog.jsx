@@ -33,7 +33,7 @@ const PayThroughVendorDialog = (props) => {
     rowSelectionModel,
     filterData, handlePayVendorClick, handleClosePayDialog, paymentStatus, gatewayPaymentMode, setGatewayPaymentMode, rowData, paymentAmout, userName, payRemark, TDSValue, GSTHoldAmount, gstHold, TDSDeduction,
     TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi, selectedBankIndex, vendorBankDetail,
-    setSelectedBankIndex
+    setSelectedBankIndex, setRefetch, refetch
   } = props;
 
 
@@ -77,7 +77,7 @@ const PayThroughVendorDialog = (props) => {
         mailTo = "naveen@creativefuel.io";
       }
       const paymentPayload = {
-        clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.trans_count) + 1)}`,
+        clientReferenceId: `${selectedRow?.request_id}_${(Number(rowData?.transaction_count) + 1)}`,
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name,),
         ...(gatewayPaymentMode !== "UPI" && {
@@ -107,7 +107,7 @@ const PayThroughVendorDialog = (props) => {
         payment_date: new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " "),
         payment_by: userName,
         // evidence: payMentProof,
-        finance_remark: selectedRow?.remark_audit || "No Remark",
+        finance_remark: selectedRow?.remark_audit || "",
         status: 1,
         payment_mode: gatewayPaymentMode,
         gst_hold: rowData.gst_amount,
@@ -148,6 +148,7 @@ const PayThroughVendorDialog = (props) => {
 
           handleClosePayThroughVendor();
           handleClosePayDialog();
+          setRefetch(!refetch)
           callApi();
           return;
           // console.log("Payment successful:", payResponse);

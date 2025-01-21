@@ -18,7 +18,7 @@ const DocumentTab = ({
   submitButton = true,
   normalUserLayout = false,
 }) => {
-  const { toastAlert, toastError, } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const { user_id } = useParams();
   const [user, setUser] = useState({});
   const [diffDate, setDiffDate] = useState(null);
@@ -27,7 +27,7 @@ const DocumentTab = ({
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const RoleID = decodedToken.role_id
+  const RoleID = decodedToken.role_id;
 
   const getData = () => {
     axios.get(`${baseUrl}` + `get_single_user/${userID}`).then((res) => {
@@ -64,7 +64,7 @@ const DocumentTab = ({
     } catch (error) {
       console.error("Error white Submitting data", error);
     }
-  }
+  };
 
   useEffect(() => {
     getData();
@@ -237,79 +237,70 @@ const DocumentTab = ({
 
   return (
     <>
-      <div
-        // cardBoard
-        className={`documentarea  ${normalUserLayout && "documentareaLight"}`}
-      >
-        <div className="cardHeaderBoard">
-          <h5 className="cardTitle">Documents</h5>
-        </div>
-        <div className="cardBodyBoard p0">
-          <div className="document_box">
-            <div
-              className={`docTable ${normalUserLayout && "docTableLight"
-                } table-responsive`}
-            >
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Document Name</th>
-                    <th scope="col">Document Type</th>
-                    <th scope="col">Period (Days)</th>
-                    {/* <th scope="col">Time Left</th> */}
-                    <th scope="col">View</th>
-                    <th scope="col">Upload</th>
-                    <th scope="col" className="text-center">
-                      Status
-                    </th>
-                    <th scope="col" className="text-center">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {documentData
-                    ?.slice()
-                    .sort((a, b) => {
-                      if (a.document?.isRequired && !b.document?.isRequired) {
-                        return -1;
-                      } else if (
-                        !a.document?.isRequired &&
-                        b.document?.isRequired
-                      ) {
-                        return 1;
-                      } else {
-                        return (
-                          a.document?.order_number - b.document?.order_number
-                        );
-                      }
-                    })
-                    .map((item) => (
-                      <tr
-                        draggable="true"
-                        onDragStart={(e) => handleDragStart(e, item._id)}
-                        onDragOver={handleDragOver}
-                        onDrop={handleDrop}
-                        data-id={item._id}
-                        key={item._id}
-                      >
-                        <td style={{ width: "20%" }}>
-                          {item.document.doc_name}
-                          {item.document.isRequired && (
-                            <span style={{ color: "red" }}> *</span>
-                          )}
-                        </td>
-                        <td scope="row">{item.document.doc_type}</td>
-                        <td>{item.document.period} days</td>
-                        {/* <td>1 Day</td> */}
-                        {/* <td>
+      <div className="card">
+        <div className="card-body pl4 pr4 pt4">
+          <div className="thm_table table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">Document Name</th>
+                  <th scope="col">Document Type</th>
+                  <th scope="col">Period (Days)</th>
+                  {/* <th scope="col">Time Left</th> */}
+                  <th scope="col">View</th>
+                  <th scope="col">Upload</th>
+                  <th scope="col" className="text-center">
+                    Status
+                  </th>
+                  <th scope="col" className="text-center">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {documentData
+                  ?.slice()
+                  .sort((a, b) => {
+                    if (a.document?.isRequired && !b.document?.isRequired) {
+                      return -1;
+                    } else if (
+                      !a.document?.isRequired &&
+                      b.document?.isRequired
+                    ) {
+                      return 1;
+                    } else {
+                      return (
+                        a.document?.order_number - b.document?.order_number
+                      );
+                    }
+                  })
+                  .map((item) => (
+                    <tr
+                      draggable="true"
+                      onDragStart={(e) => handleDragStart(e, item._id)}
+                      onDragOver={handleDragOver}
+                      onDrop={handleDrop}
+                      data-id={item._id}
+                      key={item._id}
+                    >
+                      <td style={{ width: "20%" }}>
+                        {item.document.doc_name}
+                        {item.document.isRequired && (
+                          <span style={{ color: "red" }}> *</span>
+                        )}
+                      </td>
+                      <td scope="row">{item.document.doc_type}</td>
+                      <td>{item.document.period} days</td>
+                      {/* <td>1 Day</td> */}
+                      {/* <td>
                           {diffDate < 0 ? "Please Upload Docs" : diffDate}
                         </td> */}
-                        <td>
-                          {/* <a href={item?.doc_image_url} target="_blank">
+                      <td>
+                        {/* <a href={item?.doc_image_url} target="_blank">
                         <img style={{height:"70px"}} src={item?.doc_image_url} alt="Doc"/>
                         </a> */}
-                          {item?.doc_image ? (
+                        {item?.doc_image ? (
+                          <div className="documentView">
                             <a
                               href={item.doc_image_url}
                               target="_blank"
@@ -320,125 +311,110 @@ const DocumentTab = ({
                               ) : (
                                 <>
                                   <img
-                                    style={{ height: "80px" }}
+                                    className="documentViewImg"
                                     src={item.doc_image_url}
                                     alt="doc image"
                                   />
-                                  <i className="fa-solid fa-eye" />
+                                  <div className="documentViewAction">
+                                    <i className="fa-solid fa-eye" />
+                                  </div>
                                 </>
                               )}
                             </a>
-                          ) : (
-                            "N/A"
-                          )}
-                        </td>
-                        <td>
-                          <div className="uploadDocBtn">
-                            <span>
-                              <i style={{ fontSize: '35px' }} className="bi bi-cloud-arrow-up" />
-                            </span>
-                            <input
-                              type="file"
-                              onChange={(e) =>
-                                handleFileUpload(e.target.files[0], item._id)
-                              }
-                            />
                           </div>
-                        </td>
-                        <td>
-                          <div className="docStatus">
-                            <span
-                              className={`warning_badges 
+                        ) : (
+                          <div className="text-center">N/A</div>
+                        )}
+                      </td>
+                      <td>
+                        <div className="documentUpload">
+                          <input
+                            type="file"
+                            onChange={(e) =>
+                              handleFileUpload(e.target.files[0], item._id)
+                            }
+                          />
+                          <span>
+                            <i className="bi bi-cloud-arrow-up" />
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="docStatus documentStatus">
+                          <span
+                            className={`badge 
                         ${item.status == "" && "not_uploaded"}
-                        ${item.status == "Document Uploaded" &&
-                                "document_uploaded"
-                                }
+                        ${
+                          item.status == "Document Uploaded" &&
+                          "document_uploaded"
+                        }
                         ${item.status == "Verification Pending" && "pending"}
                         ${item.status == "Approved" && "approve"}
                         ${item.status == "Rejected" && "reject"}
                         `}
-                            >
-                              <h4>
-                                {item.status == "" && "Not Uploaded"}
-                                {item.status !== "" && item.status}
-                              </h4>
-                              {item.status == "Rejected" && (
-                                <i
-                                  className="bi bi-exclamation-circle-fill"
-                                  title={item.reject_reason}
-                                />
-                              )}
-                              {/* {item.status == "Approved" && (
+                          >
+                            {item.status == "" && "Not Uploaded"}
+                            {item.status !== "" && item.status}
+                            {item.status == "Rejected" && (
+                              <i
+                                className="bi bi-exclamation-circle-fill"
+                                title={item.reject_reason}
+                              />
+                            )}
+                            {/* {item.status == "Approved" && (
                                 <button
                                   type="button"
-                                  style={{ borderRadius: 17, padding: 7 }}
-                                  className="btn btn-danger btn-sm"
+                                  className="btn cmnbtn btn_sm btn-danger"
                                   onClick={() => handleDocDelete(item)}
                                 >
                                   Unapprove
                                 </button>
                               )} */}
-                            </span>
-                          </div>
-                        </td>
-                        <td>
-                          {" "}
-                          <div className="flex-row" style={{display:'flex'}}>
-                            {item.status !== "Approved" && "approve" &&(
+                          </span>
+                        </div>
+                      </td>
+                      <td>
+                        <div className="documentAction flex_center_center colGap8">
+                          {item.status !== "Approved" && "approve" && (
                             <button
-                            title="delete"
-                            type="button"
-                              className="btn icon-1  btn-danger btn-sm"
-                              onClick={() =>
-                                handleDocDelete(item._id)}
-                              style={{ borderRadius: 17, padding: 7 }}
+                              title="delete"
+                              type="button"
+                              className="icon btn btn_sm btn-outline-danger"
+                              onClick={() => handleDocDelete(item._id)}
                             >
-                              < IoTrashBin  color="white"/>
+                              <IoTrashBin />
                               {/* <i style={{ color: "white" }} className="bi bi-trash"></i> */}
                             </button>
-                            )}
-                            {item.status == "Verification Pending" && (RoleID === constant.CONST_ADMIN_ROLE || RoleID === constant.CONST_HR_ROLE) &&
+                          )}
+                          {item.status == "Verification Pending" &&
+                            (RoleID === constant.CONST_ADMIN_ROLE ||
+                              RoleID === constant.CONST_HR_ROLE) && (
                               <button
                                 type="button"
-
                                 onClick={() => handleApproveDocument(item._id)}
-                                className="btn btn-success btn-sm"
+                                className="btn cmnbtn btn_sm btn-success"
                               >
                                 Approve
                               </button>
-                            }
-                            {item?.status == "Not Available" ||
-                              item?.status !== "" ? (
-                              ""
-                            ) : (
-                              <button
-                                type="button"
-
-                                className=" icon-1 btn btn-danger btn-sm ml-2"
-                                onClick={() => handleNotAvail(item)}
-                              >
-                                <p>
-                                  N/A
-                                </p>
-                              </button>
                             )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
-            </div>
-            {/* {submitButton && (
-            <div className="ml-auto mr-auto text-center">
-              <button
-                className="btn onboardBtn btn_primary"
-                onClick={handleSubmit}
-              >
-                Submit
-              </button>
-            </div>
-          )} */}
+                          {item?.status == "Not Available" ||
+                          item?.status !== "" ? (
+                            ""
+                          ) : (
+                            <button
+                              type="button"
+                              className="icon btn btn_sm btn-outline-dark"
+                              onClick={() => handleNotAvail(item)}
+                            >
+                              <p>N/A</p>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

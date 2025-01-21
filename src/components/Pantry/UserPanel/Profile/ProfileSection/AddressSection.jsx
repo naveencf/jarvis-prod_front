@@ -7,19 +7,33 @@ import axios from "axios";
 import { useGlobalContext } from "../../../../../Context/Context";
 
 const AddressSection = ({ userData }) => {
-    console.log(userData , 'userdata')
-    const { toastAlert, toastError } = useGlobalContext();
+  console.log(userData, "userdata");
+  const { toastAlert, toastError } = useGlobalContext();
   //Permanent Address
-  const [permanentAddress, setPermanentAddress] = useState(userData.permanent_address || "");
-  const [permanentCity, setPermanentCity] = useState(userData.permanent_city || "");
-  const [permanentState, setPermanentState] = useState(userData.permanent_state || "");
-  const [permanentPincode, setPermanentPincode] = useState(userData.permanent_pin_code || "");
+  const [permanentAddress, setPermanentAddress] = useState(
+    userData.permanent_address || ""
+  );
+  const [permanentCity, setPermanentCity] = useState(
+    userData.permanent_city || ""
+  );
+  const [permanentState, setPermanentState] = useState(
+    userData.permanent_state || ""
+  );
+  const [permanentPincode, setPermanentPincode] = useState(
+    userData.permanent_pin_code || ""
+  );
 
   //Current Address
-  const [currentAddress, setCurrentAddress] = useState(userData.current_address || "");
+  const [currentAddress, setCurrentAddress] = useState(
+    userData.current_address || ""
+  );
   const [currentCity, setcurrentCity] = useState(userData.current_city || "");
-  const [currentState, setcurrentState] = useState(userData.current_state || "");
-  const [currentPincode, setcurrentPincode] = useState(userData.current_pin_code || "");
+  const [currentState, setcurrentState] = useState(
+    userData.current_state || ""
+  );
+  const [currentPincode, setcurrentPincode] = useState(
+    userData.current_pin_code || ""
+  );
 
   const [sameAsCurrent, setSameAsCurrent] = useState(false);
   const [isPrimaryModalOpen, setIsPrimaryModelOpen] = useState(false);
@@ -43,120 +57,126 @@ const AddressSection = ({ userData }) => {
       setPermanentPincode("");
     }
   };
- const handleSubmit = async(e)=>{
-  e.preventDefault();
-  try {
-    const response = await axios.put(
-      baseUrl + `update_user_for_other_details/${userData.user_id}`,
-      {
-        permanent_city: permanentCity,
-        permanent_address: permanentAddress,
-        permanent_state: permanentState,
-        permanent_pin_code: Number(permanentPincode),
-        current_address: currentAddress,
-        current_city: currentCity,
-        current_pin_code: Number(currentPincode),
-        current_state: currentState,
-      }
-    );
-    closePrimaryModel()
-    toastAlert("Employee Personal Details are successfully updated.");
-  } catch (error) {
-    console.error(
-      "Update failed",
-      error.response ? error.response.data : error
-    );
-  }
- }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        baseUrl + `update_user_for_other_details/${userData.user_id}`,
+        {
+          permanent_city: permanentCity,
+          permanent_address: permanentAddress,
+          permanent_state: permanentState,
+          permanent_pin_code: Number(permanentPincode),
+          current_address: currentAddress,
+          current_city: currentCity,
+          current_pin_code: Number(currentPincode),
+          current_state: currentState,
+        }
+      );
+      closePrimaryModel();
+      toastAlert("Employee Personal Details are successfully updated.");
+    } catch (error) {
+      console.error(
+        "Update failed",
+        error.response ? error.response.data : error
+      );
+    }
+  };
 
   return (
-    <div className="col-6" style={{ border: "1px solid " }}>
-      <h4>Address</h4>
-      <button
-        className="btn btn-outline-primary"
-        type="button"
-        onClick={(e) => {
-          setIsPrimaryModelOpen(true);
-        }}
-      >
-        Edit
-      </button>
-      <div className="profileInfo_area">
-        <div className="row profileInfo_row pt-0">
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Current Address</h3>
-              <h4>
-                {userData.current_address ? userData.current_address : "NA"}
-              </h4>
-            </div>
-          </div>
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Current City</h3>
-              <h4>{userData.current_city ? userData.current_city : "NA"}</h4>
-            </div>
-          </div>
+    <>
+      <div className="card">
+        <div className="card-header flexCenterBetween">
+          <h5 className="card-title">Address</h5>
+          <button
+            className="btn cmnbtn btn_sm"
+            type="button"
+            onClick={(e) => {
+              setIsPrimaryModelOpen(true);
+            }}
+          >
+            Edit
+          </button>
         </div>
-        <div className="row profileInfo_row pt-0">
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Current State</h3>
-              <h4>{userData.current_state ? userData.current_state : "NA"}</h4>
-            </div>
-          </div>
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Current Pin Code</h3>
-              <h4>
-                {userData.current_pin_code ? userData.current_pin_code : "NA"}
-              </h4>
-            </div>
-          </div>
-        </div>
-        <hr />
-        <div className="row profileInfo_row pt-0">
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Permanent Address</h3>
-              <h4>
-                {userData.permanent_address ? userData.permanent_address : "NA"}
-              </h4>
-            </div>
-          </div>
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Permanent City</h3>
-              <h4>
-                {userData.permanent_city ? userData.permanent_city : "NA"}
-              </h4>
-            </div>
-          </div>
-        </div>
-        <div className="row profileInfo_row pt-0">
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Permanent State</h3>
-              <h4>
-                {userData.permanent_state ? userData.permanent_state : "NA"}
-              </h4>
-            </div>
-          </div>
-          <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12">
-            <div className="profileInfo_box">
-              <h3>Permanent Pin Code</h3>
-              <h4>
-                {userData.permanent_pin_code
-                  ? userData.permanent_pin_code
-                  : "NA"}
-              </h4>
+        <div className="card-body p0 profileTabBody">
+          <div className="profileTabInfo">
+            <div className="row profileTabRow">
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Current Address</h3>
+                  <h4>
+                    {userData.current_address ? userData.current_address : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Current City</h3>
+                  <h4>
+                    {userData.current_city ? userData.current_city : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Current State</h3>
+                  <h4>
+                    {userData.current_state ? userData.current_state : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Current Pin Code</h3>
+                  <h4>
+                    {userData.current_pin_code
+                      ? userData.current_pin_code
+                      : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Permanent Address</h3>
+                  <h4>
+                    {userData.permanent_address
+                      ? userData.permanent_address
+                      : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Permanent City</h3>
+                  <h4>
+                    {userData.permanent_city ? userData.permanent_city : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Permanent State</h3>
+                  <h4>
+                    {userData.permanent_state ? userData.permanent_state : "NA"}
+                  </h4>
+                </div>
+              </div>
+              <div className="col-md-6 col-12 profileTabCol">
+                <div className="profileTabBox">
+                  <h3>Permanent Pin Code</h3>
+                  <h4>
+                    {userData.permanent_pin_code
+                      ? userData.permanent_pin_code
+                      : "NA"}
+                  </h4>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Address section modal is here  */}
-
       <div className="right-modal ">
         <div
           className={`modal fade right ${isPrimaryModalOpen ? "show" : ""}`}
@@ -307,7 +327,7 @@ const AddressSection = ({ userData }) => {
                 <button
                   type="button"
                   className="btn btn-primary ml-2"
-                    onClick={handleSubmit}
+                  onClick={handleSubmit}
                 >
                   Update
                 </button>
@@ -323,7 +343,7 @@ const AddressSection = ({ userData }) => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

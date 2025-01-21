@@ -10,8 +10,6 @@ import dayjs from "dayjs";
 
 const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStartDate, setEndDate }) => {
     const [filterOption, setFilterOption] = useState("Today");
-    // const [startDate, setStartDate] = useState(dayjs().subtract(7, "day")); // Default to last week
-    // const [endDate, setEndDate] = useState(dayjs());
 
     const predefinedFilters = [
         // { label: "Today", value: "today", startDate: dayjs().startOf("day"), endDate: dayjs().endOf("day") },
@@ -28,20 +26,27 @@ const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStar
         setFilterOption(option.label);
 
         if (option.value !== "custom") {
-            setStartDate(option.startDate);
-            setEndDate(option.endDate);
-            // onFilterChange({
-            //     startDate: option.startDate.format("YYYY-MM-DD"),
-            //     endDate: option.endDate.format("YYYY-MM-DD"),
-            // });
+            const formattedStartDate = option.startDate.format("YYYY-MM-DD");
+            const formattedEndDate = option.endDate.format("YYYY-MM-DD");
+            setStartDate(formattedStartDate);
+            setEndDate(formattedEndDate);
+
+            if (onFilterChange) {
+                onFilterChange({
+                    startDate: formattedStartDate,
+                    endDate: formattedEndDate,
+                });
+            }
         }
     };
 
     const handleCustomDateChange = () => {
-        // onFilterChange({
-        //     startDate: startDate?.format("YYYY-MM-DD"),
-        //     endDate: endDate?.format("YYYY-MM-DD"),
-        // });
+        if (onFilterChange) {
+            onFilterChange({
+                startDate: dayjs(startDate).format("YYYY-MM-DD"),
+                endDate: dayjs(endDate).format("YYYY-MM-DD"),
+            });
+        }
     };
 
     return (

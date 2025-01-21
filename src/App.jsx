@@ -312,10 +312,10 @@ function App() {
                   </div>
                 }
               >
-                 <AppProvider>
-                <APIContext>
-                  <Admin />
-                </APIContext>
+                <AppProvider>
+                  <APIContext>
+                    <Admin />
+                  </APIContext>
                 </AppProvider>
               </Suspense>
             }
@@ -388,7 +388,7 @@ function App() {
           {/* ------------------------------ case Study start----------------------------------------- */}
           <Route path="/case-study/brand" element={<AppProvider> <BrandCaseStudy /> </AppProvider>} />
           <Route path="/casestudy-dashboard" element={<AppProvider> <CaseStudyDashboard /></AppProvider>} />
-          <Route path="/case-platform" element={ <AppProvider><CaseStudyplateform /> </AppProvider>} />
+          <Route path="/case-platform" element={<AppProvider><CaseStudyplateform /> </AppProvider>} />
           <Route path="/casestudy-update/:id" element={<AppProvider><UpdateCaseStudy /> </AppProvider>} />
           <Route path="/caseStudy-view/:id" element={<AppProvider><CaseStudyView /> </AppProvider>} />
 
@@ -414,9 +414,9 @@ function App() {
             path="/sales-account-info/:id"
             element={
               <AppProvider>
-              <APIContext>
-                <AccountInfo />
-              </APIContext>
+                <APIContext>
+                  <AccountInfo />
+                </APIContext>
               </AppProvider>
             }
           />

@@ -1632,7 +1632,7 @@ const PreOnboardingUserMaster = () => {
             </div>
             <div className="page_area">
               <div className="dashboard_body">
-                <div className="dashboard_body_inner">
+                <div className="dashboard_body_inner profileTabContentArea" >
                   {activeTab == 0 && (
                     <div className="welcome_board">
                       <div className="welcome_board_heading">

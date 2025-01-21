@@ -1,29 +1,29 @@
-import { Button } from '@mui/material';
-import React from 'react';
+import { Button } from "@mui/material";
+import React from "react";
 
 function PlanXHeader({ planRows, onFilterChange }) {
   return (
     <>
       <Button
-        className="btn cmnbtn btn-outline-primary"
-        onClick={() => onFilterChange('RequestPlan')}
+        className="btn cmnbtn btn_sm btn-outline-primary"
+        onClick={() => onFilterChange("RequestPlan")}
         variant="outlined"
       >
-        <span className="badgeNum">{ planRows.filter(
-              (plan) =>
-                plan?.sales_executive_created
-            ).length}</span> Request Plans
+        <span className="badgeNum">
+          {planRows.filter((plan) => plan?.sales_executive_created).length}
+        </span>{" "}
+        Request Plans
       </Button>
       <Button
-        className="btn cmnbtn btn-outline-primary"
-        onClick={() => onFilterChange('all')}
+        className="btn cmnbtn btn_sm btn-outline-primary"
+        onClick={() => onFilterChange("all")}
         variant="outlined"
       >
         <span className="badgeNum">{planRows.length}</span> All
       </Button>
       <Button
-        className="btn cmnbtn btn-outline-warning"
-        onClick={() => onFilterChange('today')}
+        className="btn cmnbtn btn_sm btn-outline-warning"
+        onClick={() => onFilterChange("today")}
         variant="outlined"
       >
         <span className="badgeNum">
@@ -34,12 +34,12 @@ function PlanXHeader({ planRows, onFilterChange }) {
                 new Date(new Date().setHours(0, 0, 0, 0))
             ).length
           }
-        </span>{' '}
+        </span>{" "}
         Today
       </Button>
       <Button
-        className="btn cmnbtn btn-outline-success"
-        onClick={() => onFilterChange('thisMonth')}
+        className="btn cmnbtn btn_sm btn-outline-success"
+        onClick={() => onFilterChange("thisMonth")}
         variant="outlined"
       >
         <span className="badgeNum">
@@ -49,12 +49,12 @@ function PlanXHeader({ planRows, onFilterChange }) {
                 new Date(plan.createdAt) >= new Date(new Date().setDate(1))
             ).length
           }
-        </span>{' '}
+        </span>{" "}
         This Month
       </Button>
       <Button
-        className="btn cmnbtn btn-outline-primary"
-        onClick={() => onFilterChange('lastMonth')}
+        className="btn cmnbtn btn_sm btn-outline-primary"
+        onClick={() => onFilterChange("lastMonth")}
         variant="outlined"
       >
         <span className="badgeNum">

@@ -35,7 +35,6 @@ const RightDrawer = ({
   maxFollowers,
   setMaxFollowers,
   selectedFollowers,
-  setPageCategoryCount,
   setSelectedFollowers,
   selectedCategory,
   setTotalCostValues,
@@ -181,14 +180,34 @@ const RightDrawer = ({
   };
 
   const deSelectAllRows = () => {
-    setSelectedRows([]);
-    setPostPerPageValues({});
-    setStoryPerPageValues({});
-    setPageCategoryCount({});
-    setTotalCostValues({});
-    const payload = [];
-    sendPlanDetails(payload);
+    // Filter out rows that are part of the current table data
+    const filtered = selectedRows?.filter((row) => !getTableData.some((page) => page.page_name === row.page_name));
+
+    // Create updated state objects for resetting values
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    const updatedShowTotalCost = { ...showTotalCost };
+
+    // Iterate over the current table data to reset their values
+    getTableData.forEach((row) => {
+      // Remove post and story values for this row
+      delete updatedPostValues[row._id];
+      delete updatedStoryValues[row._id];
+
+      // Hide total cost for this row
+      updatedShowTotalCost[row._id] = false;
+    });
+
+    // Update the state with filtered rows and reset values
+    setSelectedRows(filtered);
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setShowTotalCost(updatedShowTotalCost);
+
+    // Send updated filtered data to the backend or relevant handler
+    sendPlanDetails(filtered);
   };
+
   const applyFollowerRangeFilter = (data) => {
     if (!selectedFollowers?.length) return data;
 
@@ -203,7 +222,7 @@ const RightDrawer = ({
   const applyCategoryFilter = (data) => {
     if (!selectedCategory?.length) return data;
 
-    return data.filter((item) => selectedCategory.includes(item.page_category_id));
+    return data?.filter((item) => selectedCategory?.includes(item.page_category_id));
   };
 
   const applyPriceFilter = (data) => {

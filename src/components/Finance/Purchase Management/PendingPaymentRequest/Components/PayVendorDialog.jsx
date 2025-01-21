@@ -39,7 +39,7 @@ function PayVendorDialog(props) {
     userName,
     callApi,
     rowSelectionModel,
-    filterData, GSTHoldAmount, setGSTHoldAmount,
+    filterData, GSTHoldAmount, setGSTHoldAmount, setRefetch, refetch
 
   } = props;
 
@@ -139,99 +139,87 @@ function PayVendorDialog(props) {
     e.preventDefault();
     // displayRazorpay(paymentAmout);
     // return;
-    const formData = new FormData();
-    formData.append("request_id", rowData.request_id);
-    formData.append("vendor_id", rowData.vendor_id);
-    formData.append("request_by", rowData.request_by);
-    formData.append("request_amount", rowData.request_amount);
-    formData.append("priority", rowData.priority);
-    formData.append("status", 1);
-    formData.append("evidence", payMentProof);
-    formData.append("payment_mode", paymentMode);
-    formData.append("payment_amount", paymentAmout);
-    formData.append("payment_by", userID);
-    formData.append("remark_finance", payRemark);
-    formData.append("invc_no", rowData.invc_no);
-    formData.append("invc_Date", rowData.invc_Date);
-    formData.append("invc_remark", rowData.invc_remark);
-    formData.append("remark_audit", rowData.remark_audit);
-    formData.append("outstandings", rowData.outstandings);
-    formData.append("vendor_name", rowData.vendor_name);
-    formData.append("name", rowData.name);
-    formData.append("request_date", rowData.request_date);
-    formData.append("payment_date", paymentDate);
-    formData.append("gst_hold", rowData.gst_amount);
-    formData.append("gst_hold_amount", GSTHoldAmount);
-    formData.append("tds_deduction", TDSValue);
-    formData.append("gst_Hold_Bool", gstHold);
-    formData.append("tds_Deduction_Bool", TDSDeduction);
-    formData.append("tds_percentage", TDSPercentage);
+    // const formData = new FormData();
+    // formData.append("request_id", rowData.request_id);
+    // formData.append("vendor_id", rowData.vendor_id);
+    // formData.append("request_by", rowData.request_by);
+    // formData.append("request_amount", rowData.request_amount);
+    // formData.append("priority", rowData.priority);
+    // formData.append("status", 1);
+    // formData.append("evidence", payMentProof);
+    // formData.append("payment_mode", paymentMode);
+    // formData.append("payment_amount", paymentAmout);
+    // formData.append("payment_by", userID);
+    // formData.append("remark_finance", payRemark);
+    // formData.append("invc_no", rowData.invc_no);
+    // formData.append("invc_Date", rowData.invc_Date);
+    // formData.append("invc_remark", rowData.invc_remark);
+    // formData.append("remark_audit", rowData.remark_audit);
+    // formData.append("outstandings", rowData.outstandings);
+    // formData.append("vendor_name", rowData.vendor_name);
+    // formData.append("name", rowData.name);
+    // formData.append("request_date", rowData.request_date);
+    // formData.append("payment_date", paymentDate);
+    // formData.append("gst_hold", rowData.gst_amount);
+    // formData.append("gst_hold_amount", GSTHoldAmount);
+    // formData.append("tds_deduction", TDSValue);
+    // formData.append("gst_Hold_Bool", gstHold);
+    // formData.append("tds_Deduction_Bool", TDSDeduction);
+    // formData.append("tds_percentage", TDSPercentage);
 
+    // axios
+    //   .post(baseUrl + "phpvendorpaymentrequest", formData, {
+    //     headers: {
+    //       "Content-Type": "multipart/form-data",
+    //     },
+    //   })
+    //   .then((res) => {
+    //     if (res.status == 200) {
+
+    const phpFormData = new FormData();
+
+    phpFormData.append("clientReferenceId", `${rowData?.request_id}_${(Number(rowData?.transaction_count) + 1)}`);
+    phpFormData.append("request_id", rowData.request_id);
+    phpFormData.append("payment_amount", paymentAmout);
+    formData.append("vendor_id", rowData.vendor_id);
+    phpFormData.append(
+      "payment_date",
+      new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " ")
+    );
+    phpFormData.append("payment_by", userName);
+    phpFormData.append("evidence", payMentProof);
+    phpFormData.append("finance_remark", payRemark);
+    phpFormData.append("status", 1);
+    phpFormData.append("payment_mode", paymentMode);
+    phpFormData.append("gst_hold", rowData.gst_amount);
+    phpFormData.append("adjust_amt", TDSValue ? adjustAmount : 0);
+    phpFormData.append("gst_hold_amount", GSTHoldAmount);
+    phpFormData.append("request_amount", rowData.request_amount);
+    phpFormData.append("proccessingAmount", 0);
+    phpFormData.append("getway_process_amt", paymentAmout);
+    phpFormData.append("tds_deduction", TDSValue);
+    phpFormData.append("gst_Hold_Bool", gstHold ? 1 : 0);
+    phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
+    phpFormData.append("tds_percentage", TDSPercentage);
+    phpFormData.append("payment_getway_status", "SUCCESS");
+
+    // phpFormData.append("getway_process_amt", paymentAmout);
+
+    // payment_getway_status,
+    // getway_process_amt,
     axios
-      .post(baseUrl + "phpvendorpaymentrequest", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
+      .put(
+        baseUrl + `v1/vendor_payment_transactions`,
+        phpFormData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      )
       .then((res) => {
         if (res.status == 200) {
-
-          const phpFormData = new FormData();
-
-          phpFormData.append("clientReferenceId", `${rowData?.request_id}_${(Number(rowData?.trans_count) + 1)}`);
-          phpFormData.append("request_id", rowData.request_id);
-          phpFormData.append("payment_amount", paymentAmout);
-          phpFormData.append(
-            "payment_date",
-            new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " ")
-          );
-          phpFormData.append("payment_by", userName);
-          phpFormData.append("evidence", payMentProof);
-          phpFormData.append("finance_remark", payRemark);
-          phpFormData.append("status", 1);
-          phpFormData.append("payment_mode", paymentMode);
-          phpFormData.append("gst_hold", rowData.gst_amount);
-          phpFormData.append("adjust_amt", TDSValue ? adjustAmount : 0);
-          phpFormData.append("gst_hold_amount", GSTHoldAmount);
-          phpFormData.append("request_amount", rowData.request_amount);
-          phpFormData.append("proccessingAmount", 0);
-          phpFormData.append("getway_process_amt", paymentAmout);
-          phpFormData.append("tds_deduction", TDSValue);
-          phpFormData.append("gst_Hold_Bool", gstHold ? 1 : 0);
-          phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
-          phpFormData.append("tds_percentage", TDSPercentage);
-          phpFormData.append("payment_getway_status", "SUCCESS");
-          // phpFormData.append("getway_process_amt", paymentAmout);
-
-          // payment_getway_status,
-          // getway_process_amt,
-          axios
-            .post(
-              "https://purchase.creativefuel.io/webservices/RestController.php?view=updatePaymentrequestNew",
-              phpFormData,
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
-            )
-            .then((res) => {
-              if (res.status == 200) {
-                toastAlert("Payment Done Successfully");
-              } else {
-
-                toastError("There is some error while uploading data on Php")
-              }
-
-              // whatsappApi.callWhatsAPI(
-              //   "Extend Date by User",
-              //   JSON.stringify(9109266387),
-              //   rowData.vendor_name,
-              //   [paymentAmout, rowData.vendor_name, rowData.mob1]
-              // );
-            });
-
-          // setPaymentMode("Razor Pay");
+          toastAlert("Payment Done Successfully");
           setPayRemark("");
           setPayMentProof("");
           handleClosePayDialog();
@@ -239,9 +227,24 @@ function PayVendorDialog(props) {
           setNetAmount("");
           callApi();
         } else {
-          toastError("There is some error while uploading data on Jarvis")
+
+          toastError("There is some error while uploading data on Php")
         }
+
+        // whatsappApi.callWhatsAPI(
+        //   "Extend Date by User",
+        //   JSON.stringify(9109266387),
+        //   rowData.vendor_name,
+        //   [paymentAmout, rowData.vendor_name, rowData.mob1]
+        // );
       });
+
+    // setPaymentMode("Razor Pay");
+
+    // } else {
+    //   toastError("There is some error while uploading data on Jarvis")
+    // }
+    // });
   };
   // console.log(vendorBankDetail, "vendorBankDetail")
   const handleTDSDeduction = (e) => {
@@ -267,7 +270,7 @@ function PayVendorDialog(props) {
       setPaymentStatus("Full");
     }
 
-    let paymentAmount = rowData.balance_amount;
+    let paymentAmount = rowData.outstandings;
     let baseamount = baseAmount;
     let tdsvalue = 0;
 
@@ -316,7 +319,7 @@ function PayVendorDialog(props) {
     const currentValue = e.target.value;
     if (/^\d+$/.test(currentValue) || currentValue === "") {
       // setPaymentAmount(currentValue);
-      if (currentValue <= +rowData.balance_amount) {
+      if (currentValue <= +rowData.outstandings) {
         setNetAmount(currentValue);
 
         // setAdjustAmount(currentValue - Math.floor(currentValue))
@@ -482,7 +485,7 @@ function PayVendorDialog(props) {
             />
             <TextField
               className="col"
-              value={`₹${rowData.balance_amount}`}
+              value={`₹${rowData.outstandings}`}
               autoFocus
               margin="dense"
               id="name"
@@ -586,8 +589,8 @@ function PayVendorDialog(props) {
                     const numericValue = Number(currentValue)
                     const paymentProcessingAmount = Number(rowData?.proccessingAmount)
                     // (Number(row?.outstandings) - Number(row?.proccessingAmount)) > 0
-                    if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
-                      // if (numericValue + paymentProcessingAmount <= +rowData.balance_amount) {
+                    if (numericValue + paymentProcessingAmount <= +rowData.outstandings) {
+                      // if (numericValue + paymentProcessingAmount <= +rowData.outstandings) {
                       setPaymentAmount(numericValue);
 
                       // Set Gateway Payment Mode
@@ -742,7 +745,8 @@ function PayVendorDialog(props) {
         callApi={callApi}
         selectedBankIndex={selectedBankIndex}
         setSelectedBankIndex={setSelectedBankIndex}
-
+        setRefetch={setRefetch}
+        refetch={refetch}
       />}
 
     </div>

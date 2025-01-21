@@ -19,18 +19,23 @@ import dayjs from "dayjs";
 import PurchaseTransactionFilter from "./PurchaseTransactionFilter";
 import html2canvas from "html2canvas";
 import formatString from "../../utils/formatString";
+import { useGetVendorPaymentTransactionsQuery } from "../Store/API/Purchase/PurchaseRequestPaymentApi";
 
 const PurchaseTransactions = () => {
     const { toastAlert, toastError } = useGlobalContext();
     const [transactionData, setTransactionData] = useState([]);
-    // const [startDate, setStartDate] = useState([]);
-    // const [endDate, setEndDate] = useState([]);
-    const [startDate, setStartDate] = useState(dayjs()); // Default to 7 days ago
-    const [endDate, setEndDate] = useState(dayjs().add(1, "day").startOf("day")); // Default to today
+    const [startDate, setStartDate] = useState(dayjs().startOf("day").format("YYYY-MM-DD")); // Default to today's date in yyyy-mm-dd format
+    const [endDate, setEndDate] = useState(dayjs().add(1, "day").startOf("day").format("YYYY-MM-DD")); // Default to tomorrow's date in yyyy-mm-dd format
     const [openImageDialog, setOpenImageDialog] = useState(false);
     const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
     const [viewImgSrc, setViewImgSrc] = useState("");
     const [refetch, setRefetch] = useState(false);
+    const { data, error, isLoading, refetch: refetchTransaction } = useGetVendorPaymentTransactionsQuery({
+        startDate: startDate,
+        endDate: endDate,
+
+    });
+
     // const { request_id } = useParams();
     const downloadSlipAsImage = (rowData) => {
         // Create a container div for the content that will be captured
@@ -110,44 +115,44 @@ const PurchaseTransactions = () => {
 
     const handleSubmitTransactionData = () => {
         const formData = new FormData();
-        formData.append("start_date", startDate.format("YYYY-MM-DD"));
-        formData.append("end_date", endDate.format("YYYY-MM-DD"));
+        // formData.append("start_date", startDate.format("YYYY-MM-DD"));
+        // formData.append("end_date", endDate.format("YYYY-MM-DD"));
+        refetchTransaction();
+        // axios
+        //     .post(phpBaseUrl + `?view=getpaymentrequesttransdate`, formData, {
+        //         headers: {
+        //             "Content-Type": "multipart/form-data",
+        //         },
+        //     })
+        //     .then((res) => {
+        //         try {
+        //             // console.log(res, "Full response");
+        //             const rawData = res?.data?.body || [];
 
-        axios
-            .post(phpBaseUrl + `?view=getpaymentrequesttransdate`, formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
-            .then((res) => {
-                try {
-                    // console.log(res, "Full response");
-                    const rawData = res?.data?.body || [];
-
-                    // Format the date for each record in the array
-                    const formattedData = rawData.map((item) => ({
-                        ...item,
-                        request_date: formatDate(item.request_date), // Replace 'request_date' with your date field
-                        payment_date: formatDate(item.payment_date), // Replace 'payment_date' with your date field
-                    }));
-                    const withoutFailedTransaction = formattedData.filter((res) => res.payment_getway_status != "FAILED")
-                    console.log(withoutFailedTransaction, "Formatted Data");
-                    // setTransactionData(withoutFailedTransaction);
-                    setTransactionData(formattedData);
-                } catch (error) {
-                    console.error("Error processing transaction data:", error);
-                    setTransactionData([]);
-                }
-            })
-            .catch((err) => console.error("Error fetching transaction data:", err));
+        //             // Format the date for each record in the array
+        //             const formattedData = rawData.map((item) => ({
+        //                 ...item,
+        //                 request_date: formatDate(item.request_date), // Replace 'request_date' with your date field
+        //                 payment_date: formatDate(item.payment_date), // Replace 'payment_date' with your date field
+        //             }));
+        //             const withoutFailedTransaction = formattedData.filter((res) => res.payment_getway_status != "FAILED")
+        //             console.log(withoutFailedTransaction, "Formatted Data");
+        //             // setTransactionData(withoutFailedTransaction);
+        //             setTransactionData(formattedData);
+        //         } catch (error) {
+        //             console.error("Error processing transaction data:", error);
+        //             setTransactionData([]);
+        //         }
+        //     })
+        //     .catch((err) => console.error("Error fetching transaction data:", err));
     };
 
-    useEffect(() => {
-        handleSubmitTransactionData(
-            startDate.format("YYYY-MM-DD"),
-            endDate.format("YYYY-MM-DD")
-        );
-    }, [startDate, endDate, refetch]);
+    // useEffect(() => {
+    //     handleSubmitTransactionData(
+    //         // startDate.format("YYYY-MM-DD"),
+    //         // endDate.format("YYYY-MM-DD")
+    //     );
+    // }, [startDate, endDate, refetch]);
 
     const handleStatusCheck = async (row) => {
         // Step 1: Get the JWT token
@@ -219,6 +224,57 @@ const PurchaseTransactions = () => {
             width: 90,
             renderRowCell: (row, index) => index + 1,
         },
+        // {
+        //     key: "invc_img",
+        //     name: "Invoice Image",
+        //     renderRowCell: (row) => {
+        //         if (!row.invc_img) {
+        //             return "No Image";
+        //         }
+
+        //         // Extract file extension and check if it's a PDF
+        //         const fileExtension = row.invc_img.split(".").pop().toLowerCase();
+        //         const isPdf = fileExtension === "pdf";
+        //         const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
+        //         console.log(imgUrl, isPdf, "Image URL and isPdf");
+
+        //         return isPdf ? (
+        //             <div
+        //                 style={{ position: "relative", overflow: "hidden", height: "80px" }}
+        //                 onClick={() => {
+        //                     setOpenImageDialog(true);
+        //                     setViewImgSrc(imgUrl);
+        //                 }}
+        //             >
+        //                 <embed
+        //                     src={imgUrl}
+        //                     type="application/pdf"
+        //                     title="PDF Viewer"
+        //                     style={{ width: "100px", height: "150px" }}
+        //                 />
+        //             </div>
+        //         ) : (
+        //             <img
+        //                 onClick={() => {
+        //                     setOpenImageDialog(true);
+        //                     setViewImgSrc(imgUrl);
+        //                 }}
+        //                 src={imgUrl}
+        //                 alt="Invoice"
+        //                 style={{
+        //                     width: "40px",
+        //                     height: "80px",
+        //                     objectFit: "cover",
+        //                     cursor: "pointer",
+        //                 }}
+        //                 onError={(e) => {
+        //                     e.target.src = "https://via.placeholder.com/80?text=No+Image"; // Fallback image
+        //                 }}
+        //             />
+        //         );
+        //     },
+        //     width: 100,
+        // },
         {
             key: "invc_img",
             name: "Invoice Image",
@@ -231,29 +287,43 @@ const PurchaseTransactions = () => {
                 const fileExtension = row.invc_img.split(".").pop().toLowerCase();
                 const isPdf = fileExtension === "pdf";
                 const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
-                // console.log(imgUrl, isPdf, "Image URL and isPdf");
+                console.log(imgUrl, isPdf, "Image URL and isPdf");
+
+                // Common click handler to open the dialog
+                const handleOpenDialog = () => {
+                    setOpenImageDialog(true);
+                    setViewImgSrc(imgUrl);
+                };
 
                 return isPdf ? (
                     <div
                         style={{ position: "relative", overflow: "hidden", height: "80px" }}
-                        onClick={() => {
-                            setOpenImageDialog(true);
-                            setViewImgSrc(imgUrl);
-                        }}
+                        onClick={handleOpenDialog}
                     >
+
                         <embed
                             src={imgUrl}
                             type="application/pdf"
                             title="PDF Viewer"
-                            style={{ width: "100px", height: "150px" }}
+                            style={{ width: "100px", height: "150px", cursor: "pointer" }}
+                            onError={(e) => {
+                                e.target.src = "https://via.placeholder.com/150?text=No+PDF";
+                            }}
                         />
+                        {/* Add a download link */}
+                        <a
+                            href={imgUrl}
+                            download
+                            target="_blank"
+
+                            style={{ position: "absolute", bottom: 0, left: 0, fontSize: "10px", }}
+                        >
+                            Download PDF
+                        </a>
                     </div>
                 ) : (
                     <img
-                        onClick={() => {
-                            setOpenImageDialog(true);
-                            setViewImgSrc(imgUrl);
-                        }}
+                        onClick={handleOpenDialog}
                         src={imgUrl}
                         alt="Invoice"
                         style={{
@@ -263,13 +333,14 @@ const PurchaseTransactions = () => {
                             cursor: "pointer",
                         }}
                         onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/80?text=No+Image"; // Fallback image
+                            e.target.src = "https://via.placeholder.com/80?text=No+Image";
                         }}
                     />
                 );
             },
             width: 100,
-        },
+        }
+        ,
         {
             key: "vendor_update",
             name: "Reported",
@@ -333,8 +404,8 @@ const PurchaseTransactions = () => {
             },
         },
         {
-            key: "request_date",
-            name: "Requested Date",
+            key: "payment_by",
+            name: "Payment by",
             width: 150,
         },
         {
@@ -376,11 +447,11 @@ const PurchaseTransactions = () => {
         },
 
         {
-            key: "remark_audit",
+            key: "finance_remark",
             name: "Remark",
             width: 150,
             renderRowCell: (row) => {
-                return row.remark_audit;
+                return row.finance_remark;
             },
         },
 
@@ -408,12 +479,12 @@ const PurchaseTransactions = () => {
             width: 150,
             getTotal: true,
         },
-        {
-            key: "name",
-            name: "Requested By",
-            width: 150,
-            // renderRowCell: (row) => <div>{row.payment_by}</div>,
-        },
+        // {
+        //     key: "name",
+        //     name: "Requested By",
+        //     width: 150,
+        //     // renderRowCell: (row) => <div>{row.payment_by}</div>,
+        // },
 
         {
             key: "ref",
@@ -425,7 +496,7 @@ const PurchaseTransactions = () => {
                         bankTransactionReferenceId,
                         payment_amount,
                         payment_date,
-                        account_no, remark_audit
+                        account_no, finance_remark
                     } = row;
                     const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
                     // Create the message
@@ -434,7 +505,7 @@ const PurchaseTransactions = () => {
     Amount of ₹${payment_amount}/- has been released from CreativeFuel to your bank account  on ${payment_date}.
     The reference ID for this transaction is ${bankTransactionReferenceId}.
 
-    ${remark_audit}
+    ${finance_remark}
     Thank you for doing business with us.
 `;
                     navigator.clipboard
@@ -469,8 +540,9 @@ const PurchaseTransactions = () => {
                 <div className="card-body thm_table">
                     <View
                         columns={columns}
-                        data={transactionData}
-                        // isLoading={isLoading}
+                        // data={transactionData}
+                        data={data}
+                        isLoading={isLoading}
                         showTotal={true}
                         title={"Recent Transaction"}
                         rowSelectable={true}
@@ -480,7 +552,7 @@ const PurchaseTransactions = () => {
                             <>
                                 <button
                                     className="btn cmnbtn btn_sm btn-primary ms-2"
-                                    onClick={() => setRefetch(!refetch)}
+                                    onClick={() => refetchTransaction()}
                                 >
                                     Refetch
                                 </button>

@@ -780,7 +780,7 @@ hr {
   margin-top: 1rem;
   margin-bottom: 1rem;
   border: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--border);
 }
 
 small,
@@ -2109,7 +2109,7 @@ pre code {
 .table {
   width: 100%;
   margin-bottom: 1rem;
-  color: #858796;
+  color: var(--medium);
 }
 
 .table th,
@@ -4117,6 +4117,33 @@ input[type="button"].btn-block {
   background-color: var(--body-sub-bg);
   color: var(--medium);
   box-shadow: var(--shadowOne);
+
+  i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: currentColor;
+  }
+
+  svg {
+    font-size: 18px;
+    color: currentColor;
+  }
+}
+
+.icon.btn_sm,
+.icon-1.btn_sm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  min-width: 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0px 0px !important;
 
   i {
     display: flex;
@@ -6507,10 +6534,19 @@ body.sidebar-toggled .topbarBrand {
 
 .card-header {
 
+  .MuiFormLabel-root.MuiInputLabel-root {
+    font-size: 14px;
+    top: -8px;
+  }
+
+  .MuiFormLabel-root.MuiInputLabel-root.Mui-focused {
+    top: 4px;
+  }
+
   .MuiInputBase-formControl,
   .css-13cymwt-control,
   .css-t3ipsp-control {
-    height: 30px !important;
+    height: 36px !important;
     border-radius: 7px !important;
     width: 100% !important;
 
@@ -21968,4 +22004,492 @@ hr:not([size]) {
   margin-bottom: 0;
   padding-bottom: 0;
   border: none;
+}
+
+.profileCard {
+
+  hr {
+    border-color: var(--border);
+  }
+
+  .profileCardRow {
+    display: flex;
+    align-items: center;
+    gap: 0px 20px;
+    margin: 0px 0px 20px;
+
+    .profileCardImgCol {
+
+      .profileCardImg {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border-radius: var(--radiusS);
+        background-color: var(--body-bg);
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: var(--radiusS);
+        }
+
+        .profileCardImgAction {
+          position: absolute;
+          bottom: 8px;
+          right: 8px;
+          display: flex;
+          align-items: center;
+          gap: 0px 6px;
+
+          .custom-file-upload {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+          }
+
+          .profileCardImgEdit {
+            background: var(--body-sub-bg);
+            border: 1px solid var(--border);
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%;
+            color: var(--medium);
+            font-size: 20px;
+            position: relative;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+              color: var(--primary);
+              cursor: pointer;
+            }
+
+            input[type="file"] {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 34px;
+              height: 34px;
+              opacity: 0;
+            }
+          }
+
+          .profileCardImgSave {
+            background: var(--primary);
+            border: 1px solid var(--primary);
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%;
+            color: var(--white-text);
+            font-size: 20px;
+            position: relative;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .btn {
+              box-shadow: none;
+              outline: none;
+              border: none;
+              padding: 0;
+              margin: 0;
+              color: var(--white-text);
+              font-size: 20px;
+            }
+          }
+        }
+      }
+    }
+
+    .profileCardDtlCol {
+      display: flex;
+      flex-direction: column;
+      gap: 20px 0px;
+      width: -webkit-fill-available;
+
+      .profileCardDtlBox {
+        h2 {
+          color: var(--dark);
+          font-size: 24px;
+          line-height: 30px;
+          font-weight: 500;
+
+          span {
+            color: var(--medium);
+            font-size: 14px;
+            line-height: 20px;
+            font-weight: 400;
+          }
+        }
+      }
+
+      .profileCardDtlRow {
+        ul {
+          display: flex;
+          align-items: center;
+
+          li {
+            display: flex;
+            flex-direction: column;
+            width: 26%;
+
+            small {
+              color: var(--light);
+              font-size: 13px;
+              line-height: 18px;
+              font-weight: 400;
+            }
+
+            h6 {
+              color: var(--dark);
+              font-size: 14px;
+              line-height: 20px;
+              font-weight: 400;
+              display: flex;
+              align-items: center;
+              gap: 0px 4px;
+
+              span {
+                color: var(--medium);
+                font-size: 20px;
+                line-height: 14px;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .profileCardDropdown {
+      .dropdown {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+
+        .icon,
+        .icon-1 {
+          svg {
+            font-size: 18px;
+          }
+        }
+
+        .btn.dropdown-toggle {
+          background-color: var(--body-bg);
+          min-width: 34px;
+          width: 34px;
+          height: 34px;
+
+          &::after {
+            display: none;
+          }
+        }
+
+        .dropdown-menu {
+          border-radius: var(--radiusS);
+          border: 1px solid var(--border);
+          transform: inherit !important;
+          right: 0;
+          top: 100% !important;
+          left: auto !important;
+          padding: 8px 8px;
+
+          .dropdown-item {
+            padding: 0;
+            margin: 2px 0px;
+
+            &:hover {
+              background-color: transparent;
+            }
+
+            .btn {
+              box-shadow: none;
+              font-size: 13px;
+              line-height: 18px;
+              color: var(--medium);
+              font-weight: 400;
+              padding: 10px 10px;
+              width: 100%;
+              border-radius: 6px;
+              text-align: left;
+
+              &:hover {
+                background-color: var(--primaryLight);
+                color: var(--primary);
+              }
+
+              svg {
+                width: 20px;
+                font-size: 18px;
+                margin-right: 6px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .profileTab {
+    padding: 0px 20px 0px !important;
+
+    .form-heading {
+      display: none;
+    }
+
+    .card.shadow.mb24 {
+      box-shadow: none !important;
+      margin: 0;
+      border: none;
+
+      .card-header {
+        padding: 0;
+        margin: 0;
+        min-height: auto;
+        border: 0;
+
+        .btn-group.w-100 {
+          width: auto !important;
+
+          .btn.cmnbtn {
+            background-color: transparent !important;
+            border: none !important;
+            color: var(--medium) !important;
+            padding: 0px 20px !important;
+            border-radius: 0px !important;
+
+            &:hover {
+              background-color: transparent !important;
+              color: var(--primary) !important;
+            }
+
+            &::after {
+              content: "";
+              width: 100%;
+              height: 1px;
+              background: var(--primary);
+              position: absolute;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              opacity: 0;
+              transition: var(--transition);
+            }
+          }
+
+          .btn.cmnbtn.btn-primary {
+            color: var(--primary) !important;
+
+            &::after {
+              opacity: 1;
+            }
+          }
+        }
+      }
+
+      .card-body {
+        display: none;
+      }
+    }
+  }
+}
+
+.profileTabContentArea {
+
+  .card-header {
+    min-height: 52px;
+  }
+
+  .profileTabBody {
+    .profileTabInfo {
+      padding: 20px 20px 20px;
+
+      .profileTabRow {
+        margin: 0;
+        gap: 16px 0px;
+
+        .profileTabCol {
+          padding: 0;
+        }
+      }
+
+      .profileTabBox {
+        h3 {
+          color: var(--light);
+          font-size: 13px;
+          line-height: 18px;
+          font-weight: 400;
+        }
+
+        h4 {
+          color: var(--dark);
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .profileTabInfo:not(:last-child) {
+      border-bottom: 1px solid var(--border);
+    }
+  }
+
+  .thm_table {
+    .table {
+      margin: 0;
+      border: 1px solid var(--border);
+
+      thead {
+        height: 50px;
+        max-height: 50px;
+        background-color: var(--theme-bg);
+        font-size: 14px;
+
+        th {
+          border-bottom: 1px solid var(--border);
+          color: var(--dark) !important;
+          font-size: 15px;
+          font-weight: 500;
+          height: 50px;
+          padding: 6px 12px;
+          vertical-align: middle;
+        }
+      }
+
+      tbody {
+        overflow-y: scroll;
+
+        td {
+          color: var(--medium);
+          font-size: 14px;
+          line-height: 20px;
+          font-weight: 400;
+          height: 50px;
+          padding: 6px 12px;
+          vertical-align: middle;
+
+          .documentView {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin: 0 auto;
+
+            a {
+              width: 100%;
+              height: 100%;
+              display: block;
+
+              i {
+                opacity: 0;
+                transition: var(--transition);
+              }
+
+              &:hover {
+                color: var(--white-text);
+
+                i {
+                  opacity: 1;
+                }
+              }
+            }
+
+            .documentViewImg {
+              width: 50px;
+              height: 50px;
+              object-fit: cover;
+              border-radius: 4px;
+            }
+
+            .documentViewAction {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+          }
+
+          .documentUpload {
+            background: var(--body-sub-bg);
+            border: 1px solid var(--border);
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%;
+            color: var(--medium);
+            font-size: 20px;
+            position: relative;
+            cursor: pointer;
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+
+            &:hover {
+              color: var(--primary);
+              cursor: pointer;
+            }
+
+            input[type="file"] {
+              position: absolute;
+              top: 0;
+              left: 0;
+              width: 34px;
+              height: 34px;
+              opacity: 0;
+            }
+          }
+
+          .documentStatus {
+            text-align: center;
+
+            .badge {
+              margin: 0 auto;
+              color: var(--medium);
+              border: 1px solid var(--border);
+              background-color: var(--body-bg);
+              padding: 6px 12px 6px;
+            }
+
+            .badge.pending {
+              color: var(--warning);
+              border: 1px solid var(--warning);
+              background-color: var(--warningLight);
+            }
+
+            .badge.approve {
+              color: var(--success);
+              border: 1px solid var(--success);
+              background-color: var(--successLight);
+            }
+
+            .badge.reject {
+              color: var(--danger);
+              border: 1px solid var(--danger);
+              background-color: var(--dangerLight);
+            }
+
+            .badge.not_uploaded {
+              color: var(--info);
+              border: 1px solid var(--info);
+              background-color: var(--infoLight);
+            }
+          }
+
+          .documentAction {}
+        }
+      }
+    }
+  }
+
+
 }

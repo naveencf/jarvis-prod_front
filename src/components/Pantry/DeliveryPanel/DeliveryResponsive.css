@@ -8,10 +8,6 @@
   .header .navbar-brand {
     margin: 0px 40px 0px 0px;
   }
-
-  .profile_img img.profileimg {
-    height: 258px;
-  }
 }
 
 @media only screen and (max-width: 1199px) {
@@ -31,16 +27,6 @@
   .prdct_card_col {
     flex: 0 0 25%;
     max-width: 25%;
-  }
-
-  .profile_img_col {
-    flex: 0 0 33%;
-    max-width: 33%;
-  }
-
-  .profile_data_col {
-    flex: 0 0 67%;
-    max-width: 67%;
   }
 }
 
@@ -157,49 +143,6 @@
   .sitting_filter {
     flex: 0 0 75%;
     max-width: 75%;
-  }
-
-  .profile_img_box {
-    padding: 10px;
-  }
-
-  .profile_img_col {
-    flex: 0 0 40%;
-    max-width: 40%;
-  }
-
-  .profile_img img.profileimg {
-    height: 235px;
-  }
-
-  .profile_name h2 {
-    font-size: 22px;
-    line-height: 24px;
-  }
-
-  .profile_data_col {
-    flex: 0 0 60%;
-    max-width: 60%;
-  }
-
-  .profile_data_box_head {
-    padding: 13px 15px;
-  }
-
-  .profile_data_box_head h2 {
-    font-size: 18px;
-    line-height: 22px;
-  }
-
-  .profile_data_box_body ul li span {
-    min-width: 130px;
-    margin-right: 40px;
-  }
-
-  .profile_data_box_body ul li {
-    font-size: 15px;
-    line-height: 22px;
-    padding: 9px 0px;
   }
 }
 
@@ -421,40 +364,5 @@
     line-height: 17px;
     padding: 4px 8px;
     min-height: 55px;
-  }
-
-  .profile_img_col {
-    flex: 0 0 100%;
-    max-width: 100%;
-    margin-bottom: 20px;
-  }
-
-  .profile_data_col {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
-
-  .profile_data_box_body ul li {
-    font-size: 16px;
-    line-height: 22px;
-    padding: 8px 0px;
-    flex-direction: column;
-    align-items: flex-start;
-    color: var(--u-gray-600);
-  }
-
-  .profile_data_box_body ul li span {
-    min-width: auto;
-    margin-right: auto;
-  }
-
-  .profile_data_box_body ul li span::after {
-    top: -1px;
-    right: -10px;
-  }
-
-  .profile_img img.profileimg {
-    height: auto;
-    max-height: 360px;
   }
 }

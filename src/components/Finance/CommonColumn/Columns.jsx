@@ -2791,18 +2791,18 @@ export const pendingPaymentRequestColumns = ({
       renderRowCell: (row) =>
         moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
     },
-    {
-      key: "name",
-      name: "Requested By",
-      width: 150,
-      renderRowCell: (row) => {
-        return (
-          <>
-            <span>{row?.name}</span> &nbsp;{" "}
-          </>
-        );
-      },
-    },
+    // {
+    //   key: "request_by",
+    //   name: "Requested By",
+    //   width: 150,
+    //   renderRowCell: (row) => {
+    //     return (
+    //       <>
+    //         <span>{row?.name}</span> &nbsp;{" "}
+    //       </>
+    //     );
+    //   },
+    // },
     // {
     //   key: "Reminder",
     //   name: "Reminder",
@@ -2856,13 +2856,23 @@ export const pendingPaymentRequestColumns = ({
       },
     },
 
+    // {
+    //   key: "account_no",
+    //   name: "Account No.",
+    //   width: 150,
+    // },
+    // {
+    //   key: "ifsc",
+    //   name: "IFSC",
+    //   width: 150,
+    // },
     {
-      key: "account_no",
+      key: "accountNumber",
       name: "Account No.",
       width: 150,
     },
     {
-      key: "ifsc",
+      key: "branchCode",
       name: "IFSC",
       width: 150,
     },
@@ -2889,11 +2899,11 @@ export const pendingPaymentRequestColumns = ({
       name: "Email",
       width: 150,
     },
-    {
-      key: "page_name",
-      name: "Page Name",
-      width: 150,
-    },
+    // {
+    //   key: "page_name",
+    //   name: "Page Name",
+    //   width: 150,
+    // },
     {
       key: "payment_cycle",
       name: "Payment Cycle",
@@ -3074,18 +3084,18 @@ export const pendingPaymentRequestColumns = ({
         return <p> &#8377; {row?.TDSDeduction === "1" ? "Yes" : "No"}</p>;
       },
     },
-    {
-      key: "aging",
-      name: "Aging",
-      width: 150,
-      // valueGetter: (params) => {
-      //   const hours = calculateHours(params.row.request_date, new Date());
-      //   const days = Math.round(hours / 24);
-      //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
-      //   return `${days} Days`;
-      // },
-      renderRowCell: (row) => row?.aging + " Days",
-    },
+    // {
+    //   key: "aging",
+    //   name: "Aging",
+    //   width: 150,
+    //   // valueGetter: (params) => {
+    //   //   const hours = calculateHours(params.row.request_date, new Date());
+    //   //   const days = Math.round(hours / 24);
+    //   //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
+    //   //   return `${days} Days`;
+    //   // },
+    //   renderRowCell: (row) => row?.aging + " Days",
+    // },
     // {
     //   field: "aging",
     //   headerName: "Aging",
@@ -3133,13 +3143,14 @@ export const pendingPaymentRequestColumns = ({
       renderRowCell: (row) => {
         return (
           <div className="flexCenter colGap8">
-            {(Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0 &&
-              < button
-                className="btn cmnbtn btn_sm btn-success"
-                onClick={(e) => handlePayClick(e, row)}
-              >
-                Pay
-              </button>}
+            {/* {(Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0 && */}
+            < button
+              className="btn cmnbtn btn_sm btn-success"
+              onClick={(e) => handlePayClick(e, row)}
+            >
+              Pay
+            </button>
+            {/* } */}
             < button
               className="btn cmnbtn btn_sm btn-danger"
               onClick={(e) => handleDiscardClick(e, row)}
@@ -3318,13 +3329,21 @@ export const pendingPaymentDetailColumns = ({ historyData = [], nodeData }) => [
     },
   },
   {
-    field: "name",
+    field: "request_by",
     headerName: "Requested By",
     width: 150,
     renderCell: (params) => {
       return params.row.name;
     },
   },
+  // {
+  //   field: "name",
+  //   headerName: "Requested By",
+  //   width: 150,
+  //   renderCell: (params) => {
+  //     return params.row.name;
+  //   },
+  // },
   {
     field: "vendor_name",
     headerName: "Vendor Name",

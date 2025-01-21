@@ -24,7 +24,24 @@ const OpreationColumns = ({
     key: "fetched",
     name: "Fetched Date",
     width: 100,
-  },
+    renderRowCell: (row) => {
+      const updatedAt = row?.updatedAt;
+      if (!updatedAt) return "N/A";
+  
+      const date = new Date(updatedAt);
+      const istDate = date.toLocaleString("en-IN", { 
+        timeZone: "Asia/Kolkata", 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+      });
+      return istDate;
+    },
+  }
+  ,
+  
   {
     key: "creator_name",
     name: "Page Name",
@@ -64,7 +81,27 @@ const OpreationColumns = ({
     key: "posted_on",
     name: "Post Date",
     width: 150,
+    renderRowCell: (row) => {
+      const postedOn = row?.posted_on || "";
+      const date = postedOn.split(" ")[0];
+      return (
+          <div>{date || "N/A"}</div>
+      );
+    },
   },
+  {
+    key: "posted_on",
+    name: "Post Time",
+    width: 150,
+    renderRowCell: (row) => {
+      const postedOn = row?.posted_on || "";
+      const time = postedOn.split(" ")[1];
+      return (
+          <div>{time || "N/A"}</div>
+      );
+    },
+  },
+  
   {
     key: "post_type",
     name: "Post Type",

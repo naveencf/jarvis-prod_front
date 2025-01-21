@@ -5,10 +5,19 @@ import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const OperationSidebarLinks = () => {
   return (
+    <>
     <NavLink className="collapse-item" to="/admin/op-calender">
       <i className="bi bi-dot"></i>
       Calender
     </NavLink>
+    <NavLink
+    className="collapse-item"
+    to="/admin/campaign_executions"
+  >
+    <i className="bi bi-dot"></i>
+   New Camp Execution
+  </NavLink>
+  </>
   );
 };
 

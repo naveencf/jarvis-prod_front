@@ -245,7 +245,6 @@ const VendorMaster = () => {
     dispatch(setShowAddVendorModal());
     dispatch(setModalType("PayCycle"));
   };
-  console.log("isFormSubmitting", isFormSubmitting);
   const handlePayCycleInfoClick = () => {
     dispatch(handleChangeVendorInfoModal());
     dispatch(setModalType("PayCycle"));
@@ -758,6 +757,19 @@ const VendorMaster = () => {
     e.preventDefault();
 
     if (
+      bankRows.length > 0 && 
+      bankRows[0].payment_method === "666856874366007df1dfacde"
+    ) {
+      const hasEmptyIFSC = bankRows.some((bank) => bank.ifsc === "");
+      
+      if (hasEmptyIFSC) {
+        toastError("IFSC code is mandatory");
+        return;
+      }
+    }
+    
+    
+    if (
       !vendorName ||
       vendorName == "" ||
       vendorName == null ||
@@ -836,10 +848,10 @@ const VendorMaster = () => {
       toastError("Please fill all the mandatory fields");
       return;
     }
-    if (bankRows.some((bank) => bank.ifsc === "")) {
-      toastError("IFSC code is mandatory");
-      return;
-    }
+    // if (bankRows.some((bank) => bank.ifsc === "")) {
+    //   toastError("IFSC code is mandatory");
+    //   return;
+    // }
 
     if (String(homePincode).length !== 6) {
       toastError("Please Enter valid pincode");
@@ -1106,7 +1118,7 @@ const VendorMaster = () => {
   if (isFormSubmitted) {
     return <Navigate to="/admin/pms-vendor-overview" />;
   }
-
+  console.log(contextData && contextData[65]?.view_value === 1, 'userAUth');
   const goBack = () => {
     navigate(-1);
   };

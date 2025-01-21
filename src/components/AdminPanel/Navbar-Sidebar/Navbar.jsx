@@ -101,8 +101,9 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
-        }`,
+          `sales/badges_sales_booking_data${
+            RoleID != 1 ? `?userId=${loginUserId}` : ""
+          }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -199,12 +200,13 @@ const Navbar = () => {
           </li>
 
           {/* {deptId == 36 && ( */}
-          {(deptId == 36 || RoleID == 1 || loginUserId == 229) && isSalesRoute &&
+          {(deptId == 36 || RoleID == 1 || loginUserId == 229) &&
+            isSalesRoute &&
             data[52]?.view_value == 1 && (
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -239,7 +241,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                userBadgeData?.totalUnEarnedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -252,7 +254,7 @@ const Navbar = () => {
                               Un-Billed Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalUnEarnedOutstandingAmount -
-                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -474,19 +476,19 @@ const Navbar = () => {
               className="dropdown-menu profilebar dropdown-menu-right shadow animated--grow-in mt16"
               aria-labelledby="userDropdown"
             >
-              <div className="profile-tab">
-                {/* <div className="profile-img">
+              {/* <div className="profile-tab">
+                <div className="profile-img">
                   <img
                     className="logo-img"
                     src={imageTest1}
                     alt=""
                     width={40}
                   />
-                </div> */}
-                {/* <div className="profile-name">
+                </div>
+                <div className="profile-name">
                   <p>{userName}</p>
-                </div> */}
-              </div>
+                </div>
+              </div> */}
               <div className="pack">
                 <Link to="/admin/user-profile">
                   <div className="pro-btn">
