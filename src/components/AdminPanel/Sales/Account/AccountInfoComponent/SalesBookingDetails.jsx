@@ -83,6 +83,7 @@ const SalesBookingDetails = ({ SingleAccount, setSalesLength }) => {
       showCol: true,
       width: 100,
       colorRow: (row) => {
+        
         if (row?.incentive_earning_status === "earned") {
           return "#c4fac4";
         } else {

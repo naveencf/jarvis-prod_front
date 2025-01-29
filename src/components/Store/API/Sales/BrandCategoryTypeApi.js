@@ -8,13 +8,13 @@ const BrandCategoryTypeApi = createApi({
     getAllBrandCategoryType: builder.query({
       query: () => "accounts/brand_category",
       transformResponse: (response) => response.data,
-      keepUnusedDataFor: 0,
+      keepUnusedDataFor: 60, // Cache data for 60 seconds
     }),
 
     getSingleBrandCategoryType: builder.query({
       query: (id) => `accounts/brand_category/${id}`,
       transformResponse: (response) => response.data,
-      keepUnusedDataFor: 0,
+      keepUnusedDataFor: 60, // Cache data for 60 seconds
     }),
 
     addBrandCategoryType: builder.mutation({
@@ -42,22 +42,6 @@ const BrandCategoryTypeApi = createApi({
         } catch (error) {
           console.error("Failed to add brand category type:", error);
         }
-
-        /*
-        // Optimistic update (commented out)
-        const patchResult = dispatch(
-          BrandCategoryTypeApi.util.updateQueryData('getAllBrandCategoryType', undefined, (draft) => {
-            draft.unshift(newBrandCategoryType);
-          })
-        );
-
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          patchResult.undo();
-          console.error('Failed to add brand category type:', error);
-        }
-        */
       },
     }),
 
@@ -91,25 +75,6 @@ const BrandCategoryTypeApi = createApi({
         } catch (error) {
           console.error("Failed to edit brand category type:", error);
         }
-
-        /*
-        // Optimistic update (commented out)
-        const patchResult = dispatch(
-          BrandCategoryTypeApi.util.updateQueryData('getAllBrandCategoryType', undefined, (draft) => {
-            const brandCategoryIndex = draft.findIndex(brandCategory => brandCategory.id === id);
-            if (brandCategoryIndex !== -1) {
-              draft[brandCategoryIndex] = { ...draft[brandCategoryIndex], ...updatedBrandCategoryType };
-            }
-          })
-        );
-
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          patchResult.undo();
-          console.error('Failed to edit brand category type:', error);
-        }
-        */
       },
     }),
 
@@ -134,22 +99,6 @@ const BrandCategoryTypeApi = createApi({
         } catch (error) {
           console.error("Failed to delete brand category type:", error);
         }
-
-        /*
-        // Optimistic update (commented out)
-        const patchResult = dispatch(
-          BrandCategoryTypeApi.util.updateQueryData('getAllBrandCategoryType', undefined, (draft) => {
-            return draft.filter(brandCategory => brandCategory.id !== id);
-          })
-        );
-
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          patchResult.undo();
-          console.error('Failed to delete brand category type:', error);
-        }
-        */
       },
     }),
   }),

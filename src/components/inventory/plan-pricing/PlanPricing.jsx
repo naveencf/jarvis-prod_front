@@ -759,16 +759,12 @@ const PlanPricing = () => {
       const sanitizedCsvPageName = sanitizePageName(csvRow.page_name);
       const csvPlatform = csvRow.profile_link ? getPlatformNameFromLink(csvRow.profile_link.toLowerCase()) : null;
       const matchingPages = pageMap[sanitizedCsvPageName] || [];
-      console.log('csvPlatform', csvPlatform);
-      console.log('matchingPages', matchingPages);
       const filteredPages = csvPlatform ? matchingPages.filter((page) => getPlatformNameFromLink(page.page_link) === csvPlatform) : matchingPages;
 
       if (filteredPages.length === 0) {
         notFoundPages.push(csvRow.page_name);
         return;
       }
-
-      console.log('filteredPages', filteredPages);
       filteredPages.forEach((page) => {
         totalFetchedPagesCount++;
 
@@ -1111,14 +1107,35 @@ const PlanPricing = () => {
   const tableData = showUnChecked ? unCheckedPages : layeringMapping[layering] ?? (showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows));
   return (
     <>
-      <input
-        type="file"
-        accept=".csv,.xlsx"
-        onChange={(e) => {
-          const file = e.target.files[0];
-          handleXLSXUpload(file);
-        }}
-      />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
+        <label
+          htmlFor="file-upload"
+          style={{
+            padding: '10px 20px',
+            backgroundColor: '#413792',
+            color: '#fff',
+            borderRadius: '5px',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+            textAlign: 'center',
+          }}
+        >
+          Upload XLSX File
+        </label>
+        <input
+          id="file-upload"
+          type="file"
+          accept=".csv,.xlsx"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            handleXLSXUpload(file);
+          }}
+          style={{
+            display: 'none',
+          }}
+        />
+      </div>
       <UnfetchedPages data={unfetchedData} onClose={handleCloseUnfetched} />
 
       <PageDialog open={openDialog} onClose={handleCloseDialog} notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages} />
@@ -1187,7 +1204,7 @@ const PlanPricing = () => {
           </div>
         </div>
         <div className="card-header flexCenterBetween">
-          <LayeringControls categoryData={categoryData} layering={layering} handleOptionChange={handleOptionChange} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
+          <LayeringControls getTableData={getTableData} categoryData={categoryData} layering={layering} handleOptionChange={handleOptionChange} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
         </div>
         <PlanVersions handleVersionClose={handleVersionClose} openVersionModal={openVersionModal} versionDetails={versionDetails} onVersionSelect={handleVersionSelect} />
         <div className="card-body p0" onKeyDown={(e) => handleKeyPress(e)}>

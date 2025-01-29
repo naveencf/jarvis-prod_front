@@ -16,7 +16,7 @@ import OutstandingPaymentReceiveReport from '../Finance/Sales Management/Payment
 import AllVendorWiseList from './PageMS/Vendor/BulkVendor/AllVendorWiseList';
 import ErrorPage from '../../ErrorPage';
 import MonthWiseSalesView from './Sales/SaleBooking/MonthWiseSalesView';
-import UnFatchedPages from './PageMS/InventoryDashboard/UnFatchedPages';
+import UnfetchedPages from './PageMS/InventoryDashboard/UnfetchedPages';
 import TagCategory from './PageMS/InventoryDashboard/TagCategory';
 import PlanRequest from '../Finance/Sales Management/PlanRequest/PlanRequest';
 import CalenderCreation from '../Operation/Calender/CalenderCreation';
@@ -835,7 +835,7 @@ const Admin = () => {
                     <Route path="/pms-vendor-type" element={<VendorType />} />
                     <Route path="/pms-page-category" element={<PageCategory />} />
                     <Route path="/pms-page-sub-category" element={<SubCategoryOverview />} />
-                    <Route path="/pms-unFatched-pages" element={<UnFatchedPages />} />
+                    <Route path="/pms-unfetch-pages" element={<UnfetchedPages />} />
                     <Route path="/pms-tag-Category" element={<TagCategory />} />
                     <Route path="/pms-profile-type" element={<ProfileType />} />
                     <Route path="/pms-page-ownership" element={<PageOwnership />} />

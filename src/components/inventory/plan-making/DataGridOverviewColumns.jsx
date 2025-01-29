@@ -168,6 +168,7 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
       width: 120,
       showCol: true,
     },
+
     {
       key: 'description',
       name: 'Description',

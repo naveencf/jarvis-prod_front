@@ -7,7 +7,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
 
 import UpdateIcon from "@mui/icons-material/Update";
-import { insightsBaseUrl, phpBaseUrl } from "../../utils/config";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../utils/config";
 import { useGlobalContext } from "../../Context/Context";
 import ImageView from "../Finance/ImageView";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -35,7 +35,7 @@ const PurchaseTransactions = () => {
         endDate: endDate,
 
     });
-
+    const token = sessionStorage.getItem("token");
     // const { request_id } = useParams();
     const downloadSlipAsImage = (rowData) => {
         // Create a container div for the content that will be captured
@@ -156,8 +156,7 @@ const PurchaseTransactions = () => {
 
     const handleStatusCheck = async (row) => {
         // Step 1: Get the JWT token
-        console.log(row, "row");
-        if (!row) return;
+         if (!row) return;
         const getTokenResponse = await axios.get(
             insightsBaseUrl + `v1/payment_gateway_access_token`
         );
@@ -180,6 +179,7 @@ const PurchaseTransactions = () => {
                 row?.payment_getway_status == payResponse?.data?.data?.message
             ) {
                 toastAlert("Status Remain Same");
+              
             } else if (payResponse.status == 200) {
                 toastAlert("Please wait while we are updating status");
                 setTransactionData([]);
@@ -189,41 +189,44 @@ const PurchaseTransactions = () => {
         } catch (error) {
             console.log(error);
         }
-    };
+    };  
     const handleVendorReportingStatus = async (row) => {
         // https://insights.ist:8080/api/v1/check_payment_status?clientReferenceId=2017_1
         try {
-            const payResponse = await axios.post(
-                phpBaseUrl +
-                `?view=vendorpaymentupdate`,
+            const payResponse = await axios.put(
+                baseUrl + `v1/vendor_payment_transactions_shared_SS/${row?.clientReferenceId}`,
                 {
-                    "clientReferenceId": row?.clientReferenceId,
-                    "vendor_update": row?.vendor_update ? 0 : 1
+                    is_shared_ss: true,  
                 },
-                // {
-                //     headers: {
-                //         "Content-Type": "application/json",
-                //         Authorization: `Bearer ${token}`,
-                //     },
-                // }
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
             );
-            if (
-                payResponse.status == 200
-            ) {
+            
+            if (payResponse.status === 200) {
                 toastAlert("Status Updated");
-                setRefetch(!refetch)
+                refetchTransaction()
+                setRefetch(!refetch);
             }
         } catch (error) {
             console.log(error);
         }
+        
     }
     const columns = [
         {
             key: "S.NO",
             name: "S.NO",
             width: 90,
-            renderRowCell: (row, index) => index + 1,
+            renderRowCell: (row, index) => {
+                 return index + 1;  
+            },
+           
         },
+        
         // {
         //     key: "invc_img",
         //     name: "Invoice Image",
@@ -315,7 +318,7 @@ const PurchaseTransactions = () => {
                             href={imgUrl}
                             download
                             target="_blank"
-
+                            rel="noreferrer"
                             style={{ position: "absolute", bottom: 0, left: 0, fontSize: "10px", }}
                         >
                             Download PDF
@@ -345,13 +348,7 @@ const PurchaseTransactions = () => {
             key: "vendor_update",
             name: "Reported",
             width: 150,
-            colorRow: (row) => {
-                if (row?.vendor_update) {
-                    return "#c4fac4";
-                } else {
-                    return "#ffff008c";
-                }
-            },
+          
             renderRowCell: (row) => {
                 return <button
                     className="btn cmnbtn btn-outline-secondary btn_sm"
@@ -377,6 +374,14 @@ const PurchaseTransactions = () => {
                     </button>
                 )
             ),
+            
+            colorRow: (row) => {
+                if (row?.is_shared_ss) {
+                    return "#ACE1AF";
+                } else {
+                    return "#ffff008c";
+                }
+            }
         },
 
 

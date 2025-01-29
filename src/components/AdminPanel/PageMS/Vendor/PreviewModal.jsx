@@ -22,8 +22,7 @@ const PreviewModal = ({
   const { data: vendor } = useGetAllVendorTypeQuery();
   const typeData = vendor?.data;
 
-  console.log(bankRows , 'bank rows')
-
+ 
   return (
     <Modal
       open={open}

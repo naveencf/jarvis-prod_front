@@ -75,12 +75,13 @@ const LeftSideBar = ({
   const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
+
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
     setPageDetails(selectedRow?.filter((page) => page?.ownership_type === type) || []);
     setOpenModal(true); // Open the modal
   };
-  // console.log(planDetails, "planDetails")
+
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
@@ -111,10 +112,8 @@ const LeftSideBar = ({
         cancelButtonText: 'Close Plan',
         reverseButtons: true,
       });
-
       const planStatus = result.isConfirmed ? 'open' : 'close';
-      console.log('planStatus', planStatus);
-      const payload = {
+       const payload = {
         id: id,
         plan_status: isPlanPrice ? 'open' : planStatus,
         plan_saved: true,
@@ -124,7 +123,6 @@ const LeftSideBar = ({
         cost_price: totalCost,
         own_pages_cost_price: ownPagesCost,
       };
-      console.log('payload', payload);
       const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planData, planStatus)]);
 
       if (fetchResponse.ok) {
@@ -215,7 +213,8 @@ const LeftSideBar = ({
         'Page Name': page.page_name,
         Platform: platformName,
         Followers: page.followers_count,
-        planxId: page._id,
+        page_id: page._id,
+        platform_id: page.platform_id,
         'Post Count': postCountForPage,
         'Story Count': storyCountForPage,
         'Post Price': getPriceDetail(page.page_price_list, 'platform_post'),
@@ -225,8 +224,7 @@ const LeftSideBar = ({
         category: page.page_category_id,
       };
     });
-
-    setPreviewData(preview);
+     setPreviewData(preview);
     setOpenPreviewModal(true);
   };
 
@@ -329,7 +327,6 @@ const LeftSideBar = ({
     setIsEditing(!isEditing);
     setSellingPrice(planDetails?.[0]?.selling_price);
   };
-  console.log('selected', selectedRows);
   const groupCategoriesByPlatform = (rows) => {
     const platformWiseCategories = {};
 

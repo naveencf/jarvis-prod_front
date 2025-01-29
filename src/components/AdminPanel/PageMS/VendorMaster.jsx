@@ -792,10 +792,10 @@ const VendorMaster = () => {
     }
 
     const cleanedMobile = mobile ? String(mobile).trim() : "";
+ 
     if (
       !vendorName?.trim() ||
       !cleanedMobile ||
-      cleanedMobile.length !== 10 ||
       !typeId?.trim() ||
       !platformId?.trim() ||
       !cycleId?.trim()
@@ -803,7 +803,10 @@ const VendorMaster = () => {
       toastError("Please fill all the mandatory fields");
       return;
     }
-
+    if( cleanedMobile.length !== 10 ){
+    toastError("Please Enter valid 10 digit Mobile Number");
+     return;
+    }
     const formData = {
       vendor_name: vendorName?.toLowerCase().trim(),
       country_code: countryCode,
@@ -840,7 +843,6 @@ const VendorMaster = () => {
     if (
       !vendorName?.trim() ||
       !cleanedMobile ||
-      cleanedMobile.length !== 10 ||
       !typeId?.trim() ||
       !platformId?.trim() ||
       !cycleId?.trim()
@@ -848,6 +850,10 @@ const VendorMaster = () => {
       toastError("Please fill all the mandatory fields");
       return;
     }
+    if( cleanedMobile.length !== 10 ){
+      toastError("Please Enter valid 10 digit Mobile Number");
+       return;
+      }
     // if (bankRows.some((bank) => bank.ifsc === "")) {
     //   toastError("IFSC code is mandatory");
     //   return;
@@ -912,11 +918,12 @@ const VendorMaster = () => {
           await Promise.all(docPromises);
 
           handleSuccess("Vendor and documents added successfully!");
-        } else if (res?.status === 409) {
-          console.log("resss", res.error);
-          toastError(res?.error?.data?.message);
-        } else {
-          handleSuccess("Vendor data added successfully!");
+
+          } else if (res?.status === 409) {
+            console.log("resss", res.error);
+            toastError(res?.error?.data?.message);
+          } else {
+            handleSuccess("Vendor data added successfully!");
           // navigate('/admin/pms-vendor-overview');
           setIsFormSubmitted(true);
         }
@@ -983,6 +990,7 @@ const VendorMaster = () => {
         }
 
         handleSuccess("Data Updated Successfully");
+        navigate('/admin/pms-vendor-overview');
       } catch (err) {
         handleError(err);
       }
@@ -1118,7 +1126,7 @@ const VendorMaster = () => {
   if (isFormSubmitted) {
     return <Navigate to="/admin/pms-vendor-overview" />;
   }
-  console.log(contextData && contextData[65]?.view_value === 1, 'userAUth');
+  
   const goBack = () => {
     navigate(-1);
   };
@@ -1446,7 +1454,7 @@ const VendorMaster = () => {
                 <div
                   style={{
                     marginTop: "8px",
-                    color: isNumberValid ? "green" : "red", // Green for success, red for error
+                    color: isNumberValid ? "green" : "red", 
                     fontSize: "14px",
                   }}
                 >

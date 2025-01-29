@@ -79,6 +79,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
+  const [tempVendorId, setTempVendorId] = useState();
   const [pagePriceList, setPagePriceList] = useState([]);
   const token = sessionStorage.getItem('token');
   const { usersDataContext } = useContext(AppContext);
@@ -95,7 +96,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     { value: 'semi_active', label: 'Semi Active' },
     { value: 'dead', label: 'Dead' },
   ];
-  
+
   const PageTypes = [
     { value: 'Non Adult', label: 'Non Adult' },
     { value: 'Adult', label: 'Adult' },
@@ -265,6 +266,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then((res) => {
         const data = [res.data.data];
+        console.log('data', data);
         setPagePriceList(res.data.data.page_price_list);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
@@ -296,6 +298,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setVendorId(data[0].vendor_id);
         setFollowCount(data[0].followers_count);
         setBio(data[0].bio);
+        setTempVendorId(data[0].temp_vendor_id);
         setProfileId(data[0].page_profile_type_id);
         setRate(data[0].engagment_rate);
         setRateType(data[0].rate_type);
@@ -322,7 +325,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     }
     getLanguage();
   }, []);
-   const getLanguage = async () => {
+  const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
       setLanguages(res?.data?.data);
@@ -408,6 +411,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       page_language_name: languageId.map((item) => item?.label),
       tags_page_category_name: tag.map((e) => e.label),
       page_price_list: pagePriceList,
+      temp_vendor_id: tempVendorId,
       // page_price_list: rowCount.map((item) => {
       //   return {
       //     [priceTypeList?.find((priceobject) => priceobject?._id == item.page_price_type_id)?.name]: item.price,
@@ -482,7 +486,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     };
   };
   const pageInfoModlaOpen = useSelector((state) => state.pageMaster.showInfoModal);
- 
+
   const calculateFollowerCount = (index) => {
     const val = variableType.value === 'Per Thousand' ? 1000 : 1000000;
     return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);

@@ -643,8 +643,8 @@ export default function FinanceWFHDashboard() {
         return <div>{params.row.net_salary?.toFixed(0)}</div>;
       },
       valueFormatter: (params) => {
-        const value = params.value; 
-        return Math.round(value); 
+        const value = params.value;
+        return Math.round(value);
       },
     },
     {
@@ -660,16 +660,15 @@ export default function FinanceWFHDashboard() {
       field: "toPay",
       width: 150,
       renderCell: (params) => {
-        const value = params.value; 
+        const value = params.value;
         const roundedValue = Math.round(value);
         return <div>{roundedValue}</div>;
       },
       valueFormatter: (params) => {
-        const value = params.value; 
-        return Math.round(value); 
+        const value = params.value;
+        return Math.round(value);
       },
-    }
-,    
+    },
     {
       headerName: "Status",
       field: "attendence_status_flow",
@@ -863,7 +862,7 @@ export default function FinanceWFHDashboard() {
             className="ml-3 mb-2"
             onClick={handleDownloadInvoices}
           >
-            Download Invoice 
+            Download Invoice
           </Button>
         )}
 
@@ -896,7 +895,7 @@ export default function FinanceWFHDashboard() {
       <div className="thm_table">
         <DataGrid
           rows={filterData?.filter((item) => item.status_ === 0)}
-          columns={pendingColumns} 
+          columns={pendingColumns}
           getRowId={(row) => row.id}
           initialState={{
             pagination: {
@@ -935,7 +934,7 @@ export default function FinanceWFHDashboard() {
             className="ml-3 mb-2"
             onClick={handleDownloadInvoices}
           >
-            Download Invoice 
+            Download Invoice
           </Button>
         )}
 
@@ -1008,7 +1007,7 @@ export default function FinanceWFHDashboard() {
               size="small"
               onClick={handleDownloadInvoices}
             >
-              Download Invoice 
+              Download Invoice
             </button>
             <button
               className="btn cmnbtn btn_sm btn-outline-primary ml-3 "
@@ -1124,31 +1123,31 @@ export default function FinanceWFHDashboard() {
       <div>
         {rowForPayment.length > 0 && (
           <>
-           <div className="card-header">
-            <button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{ width: "200px" }}
-              className="btn cmnbtn btn_sm btn-outline-primary ml-3"
-              // onClick={handleDownloadIPayoutReleased}
-              onClick={handleDownloadIPayoutReleased}
-            >
-              Download Invoice 
-            </button>
-            <button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{ width: "200px" }}
-              className=" btn cmnbtn btn_sm btn-outline-primary ml-3"
-              onClick={handleDownloadExcel}
-            >
-              Download Excel
-            </button>
+            <div className="card-header">
+              <button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ width: "200px" }}
+                className="btn cmnbtn btn_sm btn-outline-primary ml-3"
+                // onClick={handleDownloadIPayoutReleased}
+                onClick={handleDownloadIPayoutReleased}
+              >
+                Download Invoice
+              </button>
+              <button
+                variant="contained"
+                color="primary"
+                size="small"
+                sx={{ width: "200px" }}
+                className=" btn cmnbtn btn_sm btn-outline-primary ml-3"
+                onClick={handleDownloadExcel}
+              >
+                Download Excel
+              </button>
             </div>
           </>
-         )}
+        )}
         {/* <div style={{ height: "50px" }} className="d-flex">
           {rowForPayment.length > 0 && (
             <Button
@@ -1328,7 +1327,7 @@ export default function FinanceWFHDashboard() {
   //             className="ml-3 mb-2"
   //             onClick={handleDownloadInvoices}
   //           >
-  //             Download Invoice 
+  //             Download Invoice
   //           </Button>
   //         )}
   //       </div>

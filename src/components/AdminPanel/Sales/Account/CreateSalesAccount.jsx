@@ -983,6 +983,22 @@ const CreateSalesAccount = () => {
     loaderview = true;
   else loaderview = false;
 
+  console.log(
+    allAccountTypesLoading,
+    allCompanyTypeLoading,
+    allBrandCatTypeLoading,
+    allDocTypeLoading,
+    isCreateSalesLoading,
+    accountDataLoading,
+    editAccountLoading,
+    DocumentsLoading,
+    pocLoading,
+    editPocLoading,
+    editDocumentLoading,
+    allBrandsLoading,
+    allCompanyTypeLoading
+  );
+
   const handlePincode = (e, state) => {
     const { value } = e.target;
 

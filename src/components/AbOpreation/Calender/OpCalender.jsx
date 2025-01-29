@@ -7,6 +7,39 @@ import {
 import Calender from "./Calender";
 import CategoryWiseDistribution from "./CategoryWiseDistribution";
 
+const initialSteps = [
+  {
+    step: 1,
+    category: "Sarcasm",
+    posCount: 160,
+    pages: [
+      {
+        username: "SarcasmLol",
+        postCount: 15,
+        creator_follower_count: "2000000",
+      },
+      {
+        username: "Sarcastic_us",
+        postCount: 7,
+        creator_follower_count: "500000",
+      },
+      { username: "Sadcasm", postCount: 5, creator_follower_count: "1000" },
+      { username: "Sadcasm.og", postCount: 5, creator_follower_count: "70000" },
+    ],
+  },
+  {
+    step: 2,
+    category: "Meme",
+    posCount: 140,
+    pages: [
+      { username: "Rvcjinsta", postCount: 5 },
+      { username: "Comedyculture", postCount: 5 },
+      { username: "Trolls_Official", postCount: 3 },
+      { username: "Ghantaa", postCount: 10 },
+    ],
+  },
+];
+
 const OpCalender = () => {
   const [selectPlan, setSelectPlan] = useState(null);
   const { data: PlanX } = useGetAllPlanXDataQuery();
@@ -15,8 +48,10 @@ const OpCalender = () => {
     { skip: !selectPlan }
   );
 
-  const [steps, setSteps] = useState([]);
+  const [steps, setSteps] = useState(initialSteps);
   const [selectedStep, setSelectedStep] = useState(0);
+  console.log(steps, "steps");
+  console.log(selectedStep, "selectedsteps");
   const [dates, setDates] = useState([]);
   const [postCounts, setPostCounts] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -42,14 +77,20 @@ const OpCalender = () => {
   };
 
   const handleCategoryClick = (category, items) => {
-    // Group items by username and calculate the postCount
+    // Group items by username and calculate the postCount while keeping followerCount per user
     const groupedPages = items.reduce((acc, item) => {
       const username = item.creator_name || "Unknown";
+      const followerCount = item.creator_follower_count || 0; // Default to 0 if not available
 
       if (acc[username]) {
         acc[username].postCount += 1; // Increment the postCount
+        // Keep the follower count as is (do not add)
       } else {
-        acc[username] = { username, postCount: 1 }; // Add a new entry
+        acc[username] = {
+          username,
+          postCount: 1,
+          followerCount, // Store the follower count once
+        };
       }
 
       return acc;
@@ -67,7 +108,7 @@ const OpCalender = () => {
       {
         category,
         posCount: totalPostCount,
-        pages: groupedPagesArray,
+        pages: groupedPagesArray, // Contains username, postCount, and followerCount
       },
     ];
 
@@ -128,8 +169,6 @@ const OpCalender = () => {
     setPostCounts(updatedCounts);
     setOverviewData(updatedOverview);
   };
-  console.log(postCounts , 'post counts')
-  console.log(overviewData , 'overview data')
 
   const resetCalendar = () => {
     setDates([]);
