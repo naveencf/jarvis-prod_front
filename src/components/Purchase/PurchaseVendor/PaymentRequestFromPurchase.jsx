@@ -33,7 +33,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   });
 
   const [selectedFileName, setSelectedFileName] = useState('');
-  
+
   useEffect(() => {
     axios
       .post(phpBaseUrl + `?view=getvendorDataListvid`, {
@@ -65,25 +65,25 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       const updatedData = { ...prev, [name]: value };
 
 
-            if (name === "request_amount") {
-                const requestAmount = parseFloat(value) || 0;
-                if (updatedData.gst) {
-                    updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
-                    updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
-                    updatedData.request_amount = requestAmount;
-                    updatedData.outstandings = requestAmount;
-                } else {
-                    updatedData.gst_amount = "0";
-                    updatedData.base_amount = requestAmount.toFixed(2);
-                    updatedData.request_amount = requestAmount;
-                    updatedData.outstandings = requestAmount;
-                }
-            }
-            return updatedData;
-        });
-    };
-    // const handleChange = (e) => {
-    //     const { name, value } = e.target;
+      if (name === "request_amount") {
+        const requestAmount = parseFloat(value) || 0;
+        if (updatedData.gst) {
+          updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
+          updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
+          updatedData.request_amount = requestAmount;
+          updatedData.outstandings = requestAmount;
+        } else {
+          updatedData.gst_amount = "0";
+          updatedData.base_amount = requestAmount.toFixed(2);
+          updatedData.request_amount = requestAmount;
+          updatedData.outstandings = requestAmount;
+        }
+      }
+      return updatedData;
+    });
+  };
+  // const handleChange = (e) => {
+  //     const { name, value } = e.target;
 
   //     setFormData((prev) => {
   //         const updatedData = { ...prev, [name]: value };
@@ -136,6 +136,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setFormData({ ...formData, invc_img: file });
     }
   };
+  console.log(vendorBankDetail[selectedBankIndex], "selectedBank")
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -145,74 +146,73 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       toastError('Please select a valid bank.');
       return;
     }
-
     const payload = new FormData();
     Object.keys(formData).forEach((key) => {
       payload.append(key, formData[key]);
     });
 
-        // Append the selected bank details to the payload
-        payload.append("accountNumber", "581002010009163");
-        payload.append("branchCode", "UBIN0558095");
-        // payload.append("accountNumber", selectedBank?.account_number || "");
-        // payload.append("branchCode", selectedBank?.ifsc || "");
-        payload.append("vpa", selectedBank?.vpa || "");
-        payload.append("is_bank_verified", false);
+    // Append the selected bank details to the payload
+    payload.append("accountNumber", selectedBank?.account_number);
+    payload.append("branchCode", selectedBank?.ifsc);
+    // payload.append("accountNumber", selectedBank?.account_number || "");
+    // payload.append("branchCode", selectedBank?.ifsc || "");
+    payload.append("vpa", selectedBank?.upi_id || "");
+    payload.append("is_bank_verified", selectedBank?.is_verified);
 
 
-        try {
-            // console.log(vendorPhpDetail[0]?.outstanding, "vendorPhpDetail[0]?.outstanding")
-            // return;
-            // const tempOutstanding =parseInt(vendorPhpDetail[0]?.outstanding);
-            await addPurchase(payload).unwrap();
-            toastAlert("Purchase added successfully!");
-            setFormData({
-                gst: false,
-                outstandings: 0,
-                request_amount: "",
-                gst_amount: 0,
-                base_amount: 0,
-                priority: "",
-                invc_no: "",
-                invc_date: "",
-                remark_audit: "",
-                invc_img: "",
-            });
-            setSelectedFileName("");
-            setReqestPaymentDialog(false);
-        } catch (error) {
-            console.error("Failed to add purchase:", error);
-        }
-    };
-
-
-    const handleCloseDialog = () => {
-        setReqestPaymentDialog(false)
-        setVendorDetail("");
-        setVendorPhpDetail("")
-        setVendorBankDetail("");
-        setSelectedBankIndex(0);
+    try {
+      // console.log(vendorPhpDetail[0]?.outstanding, "vendorPhpDetail[0]?.outstanding")
+      // return;
+      // const tempOutstanding =parseInt(vendorPhpDetail[0]?.outstanding);
+      await addPurchase(payload).unwrap();
+      toastAlert("Purchase added successfully!");
+      setFormData({
+        gst: false,
+        outstandings: 0,
+        request_amount: "",
+        gst_amount: 0,
+        base_amount: 0,
+        priority: "",
+        invc_no: "",
+        invc_date: "",
+        remark_audit: "",
+        invc_img: "",
+      });
+      setSelectedFileName("");
+      setReqestPaymentDialog(false);
+    } catch (error) {
+      console.error("Failed to add purchase:", error);
     }
-    const handleBankChange = (event) => {
-        setSelectedBankIndex(event.target.value);
-    };
-    return (
-        <Dialog
-            open={reqestPaymentDialog}
-            onClose={() => setReqestPaymentDialog(false)}
-            fullWidth
-            maxWidth="sm"
-        >
-            <DialogTitle>Request Payment</DialogTitle>
-            <DialogContent>
-                <Stack direction="row" justifyContent="space-between">
-                    <List>
-                        <ListItem>
-                            <ListItemText primary="Vendor Name" secondary={formatString(vendorDetail?.vendor_name)} />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Mobile" secondary={vendorDetail?.vendor_category} />
-                        </ListItem>
+  };
+
+
+  const handleCloseDialog = () => {
+    setReqestPaymentDialog(false)
+    setVendorDetail("");
+    setVendorPhpDetail("")
+    setVendorBankDetail("");
+    setSelectedBankIndex(0);
+  }
+  const handleBankChange = (event) => {
+    setSelectedBankIndex(event.target.value);
+  };
+  return (
+    <Dialog
+      open={reqestPaymentDialog}
+      onClose={() => setReqestPaymentDialog(false)}
+      fullWidth
+      maxWidth="sm"
+    >
+      <DialogTitle>Request Payment</DialogTitle>
+      <DialogContent>
+        <Stack direction="row" justifyContent="space-between">
+          <List>
+            <ListItem>
+              <ListItemText primary="Vendor Name" secondary={formatString(vendorDetail?.vendor_name)} />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="Mobile" secondary={vendorDetail?.vendor_category} />
+            </ListItem>
 
             <ListItem>
               <ListItemText primary="Address" secondary={vendorDetail?.home_address} />

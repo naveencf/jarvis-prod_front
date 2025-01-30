@@ -42,12 +42,23 @@ const PayThroughVendorDialog = (props) => {
   };
 
 
+  // function extractPayeeName(fullString) {
+  //   // Use a regular expression to match the name before the parentheses
+  //   const match = fullString.match(/^([^(]+)\s*\(/);
+  //   return match ? match[1].trim() : fullString.trim();
+  // }
   function extractPayeeName(fullString) {
-    // Use a regular expression to match the name before the parentheses
+    // Extract name before parentheses (if present)
     const match = fullString.match(/^([^(]+)\s*\(/);
-    return match ? match[1].trim() : fullString.trim();
+    let name = match ? match[1].trim() : fullString.trim();
+
+    // Remove special characters except spaces and letters
+    name = name.replace(/[^a-zA-Z\s]/g, '');
+
+    return name;
   }
 
+  console.log(rowSelectionModel[0], "check")
   const doPayment = async (e) => {
     try {
 
@@ -84,8 +95,9 @@ const PayThroughVendorDialog = (props) => {
           accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
           branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
         }),
-        // gatewayPaymentMode == "UPI" && vpa: vendorBankDetail[selectedBankIndex]?.ifsc,
-
+        ...(gatewayPaymentMode === "UPI" && {
+          vpa: vendorBankDetail[selectedBankIndex]?.upi_id,
+        }),
         email: 'naveen@creativefuel.io',
         phone: "9109102483",
         amount: {
@@ -130,7 +142,8 @@ const PayThroughVendorDialog = (props) => {
 
       };
       try {
-
+        console.log(paymentPayload, "paymentPayload")
+        // return
         setPaymentInitiated(true);
         const payResponse = await axios.post(
           insightsBaseUrl + `v1/create_payout`,
@@ -237,7 +250,7 @@ const PayThroughVendorDialog = (props) => {
             // className="col mt-1"
             sx={{ mb: 2 }}
             id="combo-box-demo"
-            options={["IMPS", "NEFT"]}
+            options={["IMPS", "NEFT", "UPI"]}
             value={gatewayPaymentMode}
             renderInput={(params) => (
               <TextField

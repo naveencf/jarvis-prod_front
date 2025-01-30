@@ -40,7 +40,7 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
         >
           {vendorBankDetail?.map((bank, index) => (
             <MenuItem key={index} value={index}>
-              {`${bank.bank_name} : ${bank.account_number}`}
+              {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
             </MenuItem>
           ))}
         </Select>

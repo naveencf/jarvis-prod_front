@@ -2718,7 +2718,7 @@ export const pendingPaymentRequestColumns = ({
         const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
         const isPdf = fileExtension === "pdf";
 
-        const imgUrl =  row?.invoice_file_url;
+        const imgUrl = row?.invoice_file_url;
 
         return isPdf ? (
           <img
@@ -2877,10 +2877,15 @@ export const pendingPaymentRequestColumns = ({
       width: 150,
     },
     {
+      key: "vpa",
+      name: "UPI",
+      width: 150,
+    },
+    {
       key: "request_amount",
       name: "Requested Amount",
       width: 150,
-      // getTotal: true,
+      getTotal: true,
       renderCell: (row) => {
         return row?.request_amount;
       },
@@ -3013,19 +3018,19 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "pan",
       name: "Pan",
-      width: 150,
+      // width: 150,
     },
     {
       key: "gst",
       name: "GST Status",
       NearMeDisabledOutlined: "GST",
-      width: 200,
+      // width: 200,
     },
 
     {
       key: "priority",
       name: "Priority",
-      width: 150,
+      // width: 150,
       renderRowCell: (row) => {
         return row?.priority;
       },
@@ -3034,7 +3039,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "paid_amount",
       name: "Paid Amount",
-      width: 150,
+      // width: 150,
       // getTotal: true,
       renderRowCell: (row) => {
         return row?.paid_amount;
@@ -3043,7 +3048,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "balance_amount",
       name: "Balance Amount",
-      width: 150,
+      // width: 150,
       // getTotal: true,
       renderRowCell: (row) => {
         return row?.balance_amount;
@@ -3052,7 +3057,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "base_amount",
       name: "Base Amount",
-      width: 150,
+      // width: 150,
       // getTotal: true,
       renderRowCell: (row) => {
         return row?.base_amount ? row?.base_amount : "NA";
@@ -3061,7 +3066,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "gst_amount",
       name: "GST Amount",
-      width: 150,
+      // width: 150,
       // getTotal: true,
       renderRowCell: (row) => {
         return row?.gst_amount ? row?.gst_amount : "NA";
@@ -3070,7 +3075,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "outstandings",
       name: "OutStanding ",
-      width: 150,
+      // width: 150,
       getTotal: true,
       renderRowCell: (row) => {
         return row?.outstandings;
@@ -3079,7 +3084,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "TDSDeduction",
       name: "TDS Deducted ",
-      width: 150,
+      // width: 150,
       renderRowCell: (row) => {
         return <p> &#8377; {row?.TDSDeduction === "1" ? "Yes" : "No"}</p>;
       },
@@ -3121,7 +3126,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "status",
       name: "Status",
-      width: 150,
+      // width: 150,
       renderRowCell: (row) => (
         <div>
           {row?.status === "0"
@@ -3139,7 +3144,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "Action",
       name: "Action",
-      width: 400,
+      // width: 400,
       renderRowCell: (row) => {
         return (
           <div className="flexCenter colGap8">
