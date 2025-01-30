@@ -137,8 +137,9 @@ export default function PendingPaymentRequest() {
   useEffect(() => {
     // callApi();
     if (data?.length > 0) {
-      const requestPayments = data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
-      console.log(requestPayments, 'resf');
+      console.log(data, "filterdata")
+      // const requestPayments = data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
+      const requestPayments = data
       setPhpData(requestPayments);
       setIsLoading(false);
       // setData(requestPayments);
@@ -465,7 +466,7 @@ export default function PendingPaymentRequest() {
       console.error('Error while uploading Zoho status:', error);
     }
   };
- 
+
   const handleOpenPayThroughVendor = () => {
     setPayThroughVendor(true);
   };
