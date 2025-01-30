@@ -100,6 +100,7 @@ function PayVendorDialog(props) {
     }).then((res) => {
       if (res.status == 200) {
         // setVendorDetail(res.data.data)
+        // if(res.data.data)
         setVendorBankDetail(res.data.data)
         console.log(res.data.data, "res.data.data")
       }

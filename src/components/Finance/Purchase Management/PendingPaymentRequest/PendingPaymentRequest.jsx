@@ -164,7 +164,7 @@ export default function PendingPaymentRequest() {
       data?.reduce(
         (totals, item) => {
           const requestAmount = parseFloat(item?.request_amount) || 0;
-          const balanceAmount = parseFloat(item?.balance_amount) || 0;
+          const balanceAmount = parseFloat(item?.outstandings) || 0;
           return {
             totalPendingAmount: totals.totalPendingAmount + requestAmount,
             totalBalanceAmount: totals.totalBalanceAmount + balanceAmount,
@@ -203,11 +203,11 @@ export default function PendingPaymentRequest() {
     };
     setLoading(true);
     setRowData(enrichedRow);
-    console.log(Number(row.balance_amount) - Number(row?.getway_process_amt), 'bal-proc');
-    setPaymentAmount(Number(row.balance_amount) - Number(row?.proccessingAmount));
-    setNetAmount(row.balance_amount);
+    console.log(Number(row.outstandings) - Number(row?.getway_process_amt), 'bal-proc');
+    setPaymentAmount(Number(row.outstandings) - Number(row?.proccessingAmount));
+    setNetAmount(row.outstandings);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
-    console.log(row.balance_amount, row?.proccessingAmount);
+    console.log(row, row?.proccessingAmount, "row");
     setPayDialog(true);
   };
 
@@ -359,7 +359,7 @@ export default function PendingPaymentRequest() {
       // Aggregate other metrics
       const uniqueVendorCount = new Set(filteredData?.map((item) => item.vendor_name));
       const pendingAmount = filteredData?.reduce((total, item) => total + parseFloat(item.request_amount), 0);
-      const balanceAmount = filteredData?.reduce((total, item) => total + parseFloat(item.balance_amount), 0);
+      const balanceAmount = filteredData?.reduce((total, item) => total + parseFloat(item.outstandings), 0);
       const nonGstCount = filteredData?.filter((gst) => gst.gstHold === '0');
 
       const withInvcImage = filteredData?.filter((item) => item.invc_img && item.invc_img.length > 0);
