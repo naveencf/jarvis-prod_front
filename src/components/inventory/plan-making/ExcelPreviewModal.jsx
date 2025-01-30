@@ -16,7 +16,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatLis
   const [newCategoryName, setNewCategoryName] = useState('');
   const { id } = useParams();
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
-
+ 
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
@@ -71,8 +71,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatLis
   const handleMergedCategoriesChange = (event) => {
     setMergedCategories(event.target.value);
   };
-
-  const handleMergeCategories = () => {
+   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
     const categoryMap = categories?.reduce((acc, cat) => {
@@ -116,8 +115,10 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatLis
         page_name: item['Page Name'] || 'Unknown Page',
         post_count: item['Post Count'] || 0,
         story_count: item['Story Count'] || 0,
-        _id: item['planxId'] || 'Unknown ID',
+        _id: item['page_id'] || 'Unknown ID',
         category_name: categoryName,
+        platform_name:item['Platform']?.toLowerCase(),
+        platform_id:item['platform_id']
       };
     });
     setUpdatedCategoryData(true);
@@ -130,10 +131,10 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatLis
 
   const handleClose = () => {
     onClose();
-    // if (updatedCategoryData) {
-    //   window.location.reload();
-    // }
-    // setUpdatedCategoryData(false);
+    if (updatedCategoryData) {
+      window.location.reload();
+    }
+    setUpdatedCategoryData(false);
   };
   const handleCategoryChange = (event, newValue) => {
     setMainCategory(newValue.toLowerCase());

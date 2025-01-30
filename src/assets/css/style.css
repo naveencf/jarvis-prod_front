@@ -22484,12 +22484,324 @@ hr:not([size]) {
               background-color: var(--infoLight);
             }
           }
+        }
+      }
+    }
+  }
+}
 
-          .documentAction {}
+.shotWrapper {
+  position: relative;
+  width: 420px;
+
+  .shotHead {
+    position: relative;
+    z-index: 5;
+    width: 100%;
+    padding: 10px 12px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .shotHeadTitle {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      gap: 0px 8px;
+
+      .shotHeadImg {
+        position: relative;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img {
+          position: relative;
+          z-index: 3;
+          width: 35px;
+          height: 35px;
+          border-radius: 100%;
+          border: 1px solid #9f9f9f;
+        }
+      }
+
+      .shotHeadImg.double {
+        align-items: flex-end;
+        justify-content: flex-start;
+
+        img {
+          width: 29px;
+          height: 29px;
+          border: 2px solid #ffffff;
+        }
+      }
+
+      .shotHeadImg.double img:nth-last-child(1) {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+      }
+
+      .shotHeadName {
+        display: flex;
+        flex-direction: column;
+        gap: 0px 0px;
+
+        h3 {
+          color: #000;
+          font-size: 13px;
+          line-height: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0px 4px;
+
+          small {
+            font-size: 100%;
+            font-weight: 400;
+          }
+
+          .blueTick {
+            font-size: 16px;
+            color: #0890e8;
+
+            img {
+              width: 16px;
+              height: 16px;
+              object-fit: scale-down;
+            }
+          }
+        }
+
+        h4 {
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          color: #515151;
+          font-size: 12px;
+          line-height: 14px;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0px 5px;
+          position: relative;
+          top: 2px;
+
+          span {
+            color: #000;
+            font-size: 14px;
+          }
+        }
+      }
+    }
+
+    .shotHeadAction {
+      position: relative;
+      z-index: 5;
+
+      span {
+        color: #525252;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .shotImg {
+    position: relative;
+    z-index: 3;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    img {
+      width: 100%;
+    }
+
+    img.cover {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .muteIcon {
+      position: absolute;
+      bottom: 15px;
+      right: 15px;
+      width: 27px;
+      height: 27px;
+      min-width: 27px;
+      min-height: 27px;
+      background-color: rgb(0 0 0 / 54%);
+      border-radius: 100%;
+      padding: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: scale-down;
+      }
+    }
+
+    .userIcon {
+      position: absolute;
+      bottom: 15px;
+      left: 15px;
+      width: 27px;
+      height: 27px;
+      min-width: 27px;
+      min-height: 27px;
+      background-color: rgb(0 0 0 / 54%);
+      border-radius: 100%;
+      padding: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: scale-down;
+      }
+    }
+  }
+
+  .shotCarousel {
+    background-color: #ffffff;
+
+    ul {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0px 4px;
+      padding: 14px 0px 5px;
+
+      li {
+        min-width: 4px;
+        min-height: 4px;
+        width: 4px;
+        height: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+
+        span {
+          min-width: 4px;
+          min-height: 4px;
+          width: 4px;
+          height: 4px;
+          border-radius: 100%;
+          background: #d6d6d6;
+        }
+      }
+
+      li.active {
+        min-width: 5.5px;
+        min-height: 5px;
+        width: 5.5px;
+        height: 5px;
+
+        span {
+          min-width: 5.5px;
+          min-height: 5px;
+          width: 5.5px;
+          height: 5px;
+          background: #0890e8;
         }
       }
     }
   }
 
+  .shotStats {
+    background-color: #ffffff;
+    padding: 12px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 
+    ul {
+      display: flex;
+      align-items: center;
+      gap: 0px 14px;
+
+      li {
+        color: #373737;
+        font-size: 13px;
+        font-weight: 500;
+        line-height: 18px;
+        display: flex;
+        align-items: center;
+        gap: 0px 5px;
+
+        span {
+          img {
+            width: 26px;
+            height: 26px;
+            object-fit: scale-down;
+          }
+        }
+      }
+    }
+  }
+}
+
+.shotWrapper.shotReel {
+  .shotHead {
+    background-color: transparent;
+    position: absolute;
+    z-index: 4;
+    top: 0;
+    left: 0;
+    width: 100%;
+
+    .shotHeadTitle {
+      .shotHeadName {
+        h3 {
+          color: #ffffff;
+
+          .blueTick {
+            color: #ffffff;
+          }
+        }
+
+        h4 {
+          color: #ffffff;
+          font-weight: 400;
+
+          span {
+            color: #ffffff;
+          }
+        }
+      }
+    }
+
+    .shotHeadAction {
+      span {
+        color: #ffffff;
+      }
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 150%;
+      background-image: linear-gradient(to bottom, rgb(0 0 0 / 40%), rgb(0 0 0 / 0%));
+
+
+    }
+  }
 }

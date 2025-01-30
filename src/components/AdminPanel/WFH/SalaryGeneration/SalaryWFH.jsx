@@ -1244,6 +1244,7 @@ async function handleBulkSendToFinance() {
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December"
     ];
+    return months.indexOf(month);
     return months.indexOf(month) + 1;
   };
   

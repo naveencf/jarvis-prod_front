@@ -527,7 +527,8 @@ const Attendence = () => {
       "November",
       "December",
     ];
-    return months.indexOf(month) + 1;
+    return months.indexOf(month);
+    // return months.indexOf(month) + 1;
   };
 
   const currentYearForDis = new Date().getFullYear();

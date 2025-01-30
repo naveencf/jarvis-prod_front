@@ -123,6 +123,7 @@ const PlanMaking = () => {
   const { versionData } = useGetPlanPages(id, selectedVersion?.version);
 
   const { descriptions } = useFetchPlanDescription();
+
   const debounce = (func, delay) => {
     let timeoutId;
     return function (...args) {
@@ -134,12 +135,15 @@ const PlanMaking = () => {
       }, delay);
     };
   };
+
   // const handleToggleLeftNavbar = () => {
   //   setToggleLeftNavbar(!toggleLeftNavbar);
   // };
+
   const toggleUncheckdPages = () => {
     setShowUnCheked(!showUnChecked);
   };
+
   const showRightSlidder = useSelector((state) => state.pageMaster.showRightSlidder);
 
   const { data: platData } = useGetPmsPlatformQuery();
@@ -281,7 +285,6 @@ const PlanMaking = () => {
         .filter(Boolean); // Remove `null` entries caused by duplicates
 
       sendPlanDetails(finalPreviewData);
-      // console.log('result', result1);
 
       if (planSuccess.length) {
         window.location.reload();
@@ -300,76 +303,71 @@ const PlanMaking = () => {
 
   const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
+
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
-    setActiveIndex(index);
-    setSelectedRows(updatedSelectedRows);
-    setLastSelectedRow(row);
-    // 2. Update showTotalCost to reflect the change
-    setShowTotalCost((prevCost) => ({
-      ...prevCost,
-      [row._id]: isChecked,
-    }));
 
-    // 3. Handle postPerPage value change
+    // 2. Update showTotalCost and related state values
+    const updatedShowTotalCost = { ...showTotalCost, [row._id]: isChecked };
+
     const postPerPage = isChecked ? postCountDefault || 1 : 0;
     const storyPerPage = isChecked ? storyCountDefault || 0 : 0;
 
-    // 4. Update the storyPerPage values based on the checkbox selection
-    const updatedStoryValues = {
-      ...storyPerPageValues,
-      [row._id]: storyPerPage,
-    };
-    setStoryPerPageValues(updatedStoryValues);
+    const updatedStoryValues = { ...storyPerPageValues, [row._id]: storyPerPage };
 
-    // 5. Update postPerPage values and calculate costs
+    // 3. Update page category count
+    const categoryId = row.page_category_id;
+    const updatedCategoryCount = { ...pageCategoryCount };
+    updatedCategoryCount[categoryId] = (updatedCategoryCount[categoryId] || 0) + (isChecked ? 1 : -1);
+    if (updatedCategoryCount[categoryId] <= 0) {
+      delete updatedCategoryCount[categoryId];
+    }
+
+    // 4. Handle postPerPage and calculate costs
     handlePostPerValue(row, postPerPage, (updatedPostValues) => {
       const postCount = updatedPostValues[row._id] ?? 1;
       const storyCount = updatedStoryValues[row._id] ?? 0;
       const postCost = costPerPostValues[row._id] ?? 0;
       const storyCost = costPerStoryValues[row._id] ?? 0;
       const bothCost = costPerBothValues[row._id] ?? 0;
-      // total cost calculation
+
       calculateTotalCost(row._id, postCount, storyCount, postCost, storyCost, bothCost);
 
-      // Update plan data with the latest selections
       const planxData = updatedSelectedRows.map((row) => {
-        const { _id, page_price_list, page_name, rate_type, followers_count } = row;
-
+        const { _id, page_price_list, page_name, rate_type, followers_count, platform_name,platform_id } = row;
+        
         const isFixedRate = rate_type === 'fixed';
 
         const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { page_price_list, followers_count }, type));
 
         return {
-          _id,
+          // _id,
           page_name,
           post_price: getPrice('post'),
           story_price: getPrice('story'),
           post_count: Number(updatedPostValues[_id]) || 0,
           story_count: Number(updatedStoryValues[_id]) || 0,
+          platform_name:platform_name,
+          platform_id:platform_id,
+          page_id:_id
         };
       });
-      // console.log('planX', planxData);
-      setPlanData(planxData);
-      const planStatus = planDetails[0].plan_status;
-      // Debounce plan details to avoid rapid state updates
+
       if (!isAutomaticCheck) {
+        const planStatus = planDetails && planDetails[0]?.plan_status;
         debouncedSendPlanDetails(planxData, planStatus);
       }
+
+      setPlanData(planxData);
     });
 
-    // 6. Update page category count safely
-    const categoryId = row.page_category_id;
-    setPageCategoryCount((prevCount) => {
-      const newCount = { ...prevCount };
-      newCount[categoryId] = (newCount[categoryId] || 0) + (isChecked ? 1 : -1);
-      if (newCount[categoryId] <= 0) {
-        delete newCount[categoryId];
-      }
-      return newCount;
-    });
+    setSelectedRows(updatedSelectedRows);
+    setShowTotalCost(updatedShowTotalCost);
+    setStoryPerPageValues(updatedStoryValues);
+    setPageCategoryCount(updatedCategoryCount);
+    setLastSelectedRow(row);
 
-    // 7. Trigger any other required state updates or statistics
+    // Update statistics after state updates
     updateStatistics(updatedSelectedRows);
   };
 
@@ -442,7 +440,6 @@ const PlanMaking = () => {
   };
   const handleOpenModal = () => setIsModalOpen(true);
 
-  // Close the modal
   const handleCloseModal = () => setIsModalOpen(false);
 
   const handleCheckedDescriptionsChange = (newCheckedDescriptions) => {
@@ -544,47 +541,61 @@ const PlanMaking = () => {
         return acc;
       }, {});
 
-      // Process incoming data and update state
+      // incoming data and update state
       incomingData?.forEach((incomingPage) => {
-        const matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name);
-
+        let matchingPageIndex = -1;
+      
+         if (incomingPage.platform_name) {
+           matchingPageIndex = pageList?.findIndex(
+            (page) =>
+              page.page_name === incomingPage.page_name &&
+              page.platform_name === incomingPage.platform_name
+          );
+        } else {
+          matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name);
+        }
+      
         if (matchingPageIndex !== -1) {
           const matchingPage = { ...pageList[matchingPageIndex] };
-
+      
           // Override page_category_name with incoming category_name
           if (incomingPage.category_name !== '') {
             matchingPage.page_category_name = incomingPage.category_name;
-
-            // Find the corresponding page_category_id using the categoryMap
-            const matchingCategoryId = categoryMap[incomingPage.category_name];
+      
+             const matchingCategoryId = categoryMap[incomingPage.category_name];
             if (matchingCategoryId) {
               matchingPage.page_category_id = matchingCategoryId;
             }
           }
-
-          // Update post and story counts
+      
           updatedPostValues[matchingPage._id] = incomingPage.post_count;
           updatedStoryValues[matchingPage._id] = incomingPage.story_count;
-
-          // Get price for post and story
+      
           const postPrice = getPriceDetail(matchingPage.page_price_list, 'instagram_post');
           const storyPrice = getPriceDetail(matchingPage.page_price_list, 'instagram_story');
-
+      
           const rateType = matchingPage.rate_type === 'Fixed';
-
-          // Calculate costs based on rate type
+      
           const costPerPost = rateType ? postPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'post');
           const costPerStory = rateType ? storyPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'story');
           const costPerBoth = costPerPost + costPerStory;
-
-          // Update total cost calculations
-          calculateTotalCost(matchingPage._id, incomingPage.post_count, incomingPage.story_count, costPerPost, costPerStory, costPerBoth);
-
+      
+          calculateTotalCost(
+            matchingPage._id,
+            incomingPage.post_count,
+            incomingPage.story_count,
+            costPerPost,
+            costPerStory,
+            costPerBoth
+          );
+      
           updatedShowTotalCost[matchingPage._id] = true;
-
-          // Add to categoryUpdatedData
+      
           categoryUpdatedData.push(matchingPage);
-          if ((incomingPage.post_count > 0 || incomingPage.story_count > 0) && !updatedSelectedRows.some((row) => row._id === matchingPage._id)) {
+          if (
+            (incomingPage.post_count > 0 || incomingPage.story_count > 0) &&
+            !updatedSelectedRows.some((row) => row._id === matchingPage._id)
+          ) {
             updatedSelectedRows.push(matchingPage);
             const categoryId = matchingPage.page_category_id;
             if (categoryId) {
@@ -593,6 +604,7 @@ const PlanMaking = () => {
           }
         }
       });
+      
 
       pageList.forEach((page) => {
         const isMatched = incomingData.some((incomingPage) => incomingPage.page_name === page.page_name);
@@ -603,7 +615,7 @@ const PlanMaking = () => {
 
       // Prepare the final plan data
       const planxData = updatedSelectedRows.map((row) => {
-        const { _id, page_price_list, page_name, rate_type, followers_count } = row;
+        const { _id, page_price_list, page_name, rate_type, followers_count ,platform_name,platform_id} = row;
 
         const isFixedRate = rate_type === 'Fixed';
 
@@ -611,12 +623,14 @@ const PlanMaking = () => {
         const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { page_price_list, followers_count }, type));
 
         return {
-          _id,
           page_name,
           post_price: getPrice('post'),
           story_price: getPrice('story'),
           post_count: Number(updatedPostValues[_id]) || 0,
           story_count: Number(updatedStoryValues[_id]) || 0,
+          platform_name:platform_name,
+          platform_id:platform_id,
+          page_id:_id
         };
       });
 
@@ -645,7 +659,7 @@ const PlanMaking = () => {
     if (searchTerms?.length > 0) {
       // Filter data based on search terms
 
-      const filtered = pageList?.filter((item) => item.followers_count > 0 && searchTerms.some((term) => normalize(item?.page_name || '') === normalize(term)));
+      const filtered = getTableData?.filter((item) => item.followers_count > 0 && searchTerms.some((term) => normalize(item?.page_name || '') === normalize(term)));
 
       // Store filtered data
       setFilterData(filtered);
@@ -661,7 +675,6 @@ const PlanMaking = () => {
 
         // If not already selected, select the row and update checkbox
         if (!isAlreadySelected) {
-          // Manually invoke the necessary logic to simulate checkbox selection
           handleCheckboxChange(row, '', { target: { checked: true } }, activeIndex);
           updatedSelectedRows.push(row);
         }
@@ -692,7 +705,7 @@ const PlanMaking = () => {
 
       // Determine unselected rows (not checked)
       const selectedRowIds = new Set(updatedSelectedRows.map((row) => row._id));
-      const notCheckedRows = pageList?.filter((item) => !selectedRowIds.has(item._id));
+      const notCheckedRows = getTableData?.filter((item) => !selectedRowIds.has(item._id));
 
       // Update filterData with the unselected rows for display
       setFilterData(() => {
@@ -700,7 +713,7 @@ const PlanMaking = () => {
       });
     } else {
       // If no search terms, reset filterData and selectedRows
-      setFilterData(pageList);
+      setFilterData(getTableData);
       setSelectedRows([]);
       setNotFoundPages([]);
     }
@@ -747,7 +760,7 @@ const PlanMaking = () => {
     setPostPerPageValues({});
     setStoryPerPageValues({});
     setPageCategoryCount({});
-
+    setTotalDeliverables(0);
     setSearchInput('');
   };
   // Function to filter rows based on the visibility of selected rows
@@ -786,7 +799,6 @@ const PlanMaking = () => {
       setShortcutTriggered(true);
       const currentRow = getTableData[activeIndex];
       const isChecked = showTotalCost[currentRow._id] || false;
-
       // Toggle checkbox
       handleCheckboxChange(currentRow, 'shortcutkey', { target: { checked: !isChecked } }, activeIndex);
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
@@ -813,15 +825,15 @@ const PlanMaking = () => {
     setCheckedDescriptions(activeDescriptions || []);
   }, [descriptions, setCheckedDescriptions]);
 
-  const syncUpdatedData = (pageDetails) => {
-    // if (pageList.length) {
-    const automaticCheckedData = handleAutomaticSelection(pageDetails);
-    if (automaticCheckedData) {
-      updatePageData(automaticCheckedData);
-    }
+  // const syncUpdatedData = (pageDetails) => {
+  //   // if (pageList.length) {
+  //   const automaticCheckedData = handleAutomaticSelection(pageDetails);
+  //   if (automaticCheckedData) {
+  //     updatePageData(automaticCheckedData);
+  //   }
 
-    // }
-  };
+  //   // }
+  // };
 
   const updatePageData = (data) => {
     if (data) {
@@ -950,31 +962,31 @@ const PlanMaking = () => {
     }
   }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
-  useEffect(() => {
-    const currentRouteBase = '/admin/pms-plan-making';
-    const planStatus = planDetails && planDetails[0].plan_status;
-    const payload = {
-      id: id,
-      plan_status: planStatus,
-      plan_saved: true,
-      post_count: totalPostCount,
-      story_count: totalStoryCount,
-      no_of_pages: selectedRows?.length,
-      cost_price: totalCost,
-      own_pages_cost_price: ownPagesCost,
-    };
+  // useEffect(() => {
+  //   const currentRouteBase = '/admin/pms-plan-making';
+  //   const planStatus = planDetails && planDetails[0].plan_status;
+  //   const payload = {
+  //     id: id,
+  //     plan_status: planStatus,
+  //     plan_saved: true,
+  //     post_count: totalPostCount,
+  //     story_count: totalStoryCount,
+  //     no_of_pages: selectedRows?.length,
+  //     cost_price: totalCost,
+  //     own_pages_cost_price: ownPagesCost,
+  //   };
 
-    const handleRouteChange = async () => {
-      if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
-        // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
-        sendPlanxLogs('v1/planxlogs', payload);
-      }
-    };
+  //   const handleRouteChange = async () => {
+  //     if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
+  //       // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+  //       sendPlanxLogs('v1/planxlogs', payload);
+  //     }
+  //   };
 
-    return () => {
-      handleRouteChange();
-    };
-  }, [location, id, totalPostCount, totalStoryCount, selectedRows, totalCost]);
+  //   return () => {
+  //     handleRouteChange();
+  //   };
+  // }, [location, id, totalPostCount, totalStoryCount, selectedRows, totalCost]);
 
   useEffect(() => {
     if (layering == 2) {
@@ -1001,24 +1013,29 @@ const PlanMaking = () => {
   };
 
   const tableData = showUnChecked ? unCheckedPages : layeringMapping[layering] ?? (showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows));
+  
   return (
     <>
       <PageDialog open={openDialog} onClose={handleCloseDialog} notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages} />
       <ActiveDescriptionModal isOpen={isModalOpen} onClose={handleCloseModal} descriptions={activeDescriptions} onCheckedDescriptionsChange={handleCheckedDescriptionsChange} checkedDescriptions={checkedDescriptions} setCheckedDescriptions={setCheckedDescriptions} />
       <ScrollBlocker disableBack={disableBack} />
-      <div className="parent_of_tab" style={{ display: 'flex' }}>
-        {platformData?.map((item) => {
-          const pageCount = pageList?.filter((page) => page.followers_count > 0 && page.platform_name === item.platform_name.toLowerCase()).length;
+      <div className="tabs-container tabslide">
+        <div className="navigation">
+          {/* Dynamic Tabs */}
+          <div className="tabs">
+            {platformData?.map((item) => {
+              const pageCount = pageList?.filter((page) => page.followers_count > 0 && page.platform_name === item.platform_name.toLowerCase()).length;
 
-          return (
-            <div key={item._id} className="tabs">
-              <button className={activePlatform === item.platform_name ? 'active btn btn-info' : 'btn btn-link'} onClick={() => handlePlatform(item.platform_name)}>
-                {`${item.platform_name} ${pageCount ? pageCount : 0}`}
-              </button>
-            </div>
-          );
-        })}
+              return (
+                <button key={item._id} className={activePlatform === item.platform_name ? 'active btn btn-info' : 'btn btn-link'} style={{ border: 'none', borderRight: '1px solid lightGray' }} onClick={() => handlePlatform(item.platform_name)}>
+                  {`${item.platform_name.charAt(0).toUpperCase() + item.platform_name.slice(1)} ${pageCount || 0}`}
+                </button>
+              );
+            })}
+          </div>
+        </div>
       </div>
+
       {/* {toggleLeftNavbar && ( */}
       <LeftSideBar totalFollowers={totalFollowers} setMergeCatList={setMergeCatList} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
@@ -1057,6 +1074,7 @@ const PlanMaking = () => {
               selectedCategory={selectedCategory}
               cat={cat}
               setFilterData={setFilterData}
+              setTotalDeliverables={setTotalDeliverables}
               handleStoryCountChange={handleStoryCountChange}
               handlePostCountChange={handlePostCountChange}
               storyCountDefault={storyCountDefault}
@@ -1069,7 +1087,7 @@ const PlanMaking = () => {
           </div>
         </div>
         <div className="card-header flexCenterBetween">
-          <LayeringControls categoryData={categoryData} layering={layering} handleOptionChange={handleOptionChange} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
+          <LayeringControls categoryData={categoryData} getTableData={getTableData} layering={layering} handleOptionChange={handleOptionChange} setLayering={setLayering} ButtonTitle={ButtonTitle} toggleUncheckdPages={toggleUncheckdPages} handleDisableBack={handleDisableBack} disableBack={disableBack} handleOpenPlanVersion={handleOpenPlanVersion} />
         </div>
         <PlanVersions handleVersionClose={handleVersionClose} openVersionModal={openVersionModal} versionDetails={versionDetails} onVersionSelect={handleVersionSelect} />
         <div className="card-body p0" onKeyDown={(e) => handleKeyPress(e)}>

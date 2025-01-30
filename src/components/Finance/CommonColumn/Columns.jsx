@@ -2708,7 +2708,7 @@ export const pendingPaymentRequestColumns = ({
       // },
     },
     {
-      key: "invc_img",
+      key: "invoice_file_url",
       name: "Invoice Image",
       renderRowCell: (row) => {
         if (!row?.invc_img) {
@@ -2718,7 +2718,7 @@ export const pendingPaymentRequestColumns = ({
         const fileExtension = row?.invc_img.split(".").pop().toLowerCase();
         const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${row?.invc_img}`;
+        const imgUrl =  row?.invoice_file_url;
 
         return isPdf ? (
           <img

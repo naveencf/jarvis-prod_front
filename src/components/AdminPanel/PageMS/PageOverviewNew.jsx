@@ -620,7 +620,29 @@ const PageOverviewNew = () => {
         return formatString(row?.page_activeness);
       },
     },
-
+    {
+      key: 'createdAt',
+      name: 'Register Date',
+      renderRowCell: (row) => {
+        const date = new Date(row.createdAt).toLocaleDateString('en-CA');
+        return <div style={{ cursor: 'pointer' }}>{date}</div>;
+      },
+      width: 120,
+      showCol: true,
+    },
+    {
+      key: 'createdAt1',
+      name: 'Register Time',
+      renderRowCell: (row) => {
+        const time = new Date(row.createdAt).toLocaleTimeString('en-US', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        return <div style={{ cursor: 'pointer' }}>{time}</div>;
+      },
+      width: 120,
+      showCol: true,
+    },
     {
       key: 'followers_count',
       name: 'Followers',

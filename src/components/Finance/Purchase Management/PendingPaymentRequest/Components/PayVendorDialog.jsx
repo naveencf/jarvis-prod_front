@@ -181,7 +181,7 @@ function PayVendorDialog(props) {
     phpFormData.append("clientReferenceId", `${rowData?.request_id}_${(Number(rowData?.transaction_count) + 1)}`);
     phpFormData.append("request_id", rowData.request_id);
     phpFormData.append("payment_amount", paymentAmout);
-    formData.append("vendor_id", rowData.vendor_id);
+    phpFormData.append("vendor_id", rowData.vendor_id);
     phpFormData.append(
       "payment_date",
       new Date(paymentDate)?.toISOString().slice(0, 19).replace("T", " ")

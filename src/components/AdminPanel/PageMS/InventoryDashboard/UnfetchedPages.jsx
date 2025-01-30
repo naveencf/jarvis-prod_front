@@ -8,7 +8,7 @@ import jwtDecode from 'jwt-decode';
 import { TextField, Autocomplete, Dialog, DialogActions, DialogContent, DialogTitle, Button } from '@mui/material';
 import { useGlobalContext } from '../../../../Context/Context';
 
-const UnFetchedPages = () => {
+const UnfetchedPages = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
@@ -174,4 +174,4 @@ const UnFetchedPages = () => {
   );
 };
 
-export default UnFetchedPages;
+export default UnfetchedPages;

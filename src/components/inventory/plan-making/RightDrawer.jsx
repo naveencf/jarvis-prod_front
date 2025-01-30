@@ -18,6 +18,7 @@ const RightDrawer = ({
   storyPerPageValues,
   postCountDefault,
   storyCountDefault,
+  setTotalDeliverables,
   setFilterData,
   setPriceFilterType,
   setPostPerPageValues,
@@ -153,19 +154,21 @@ const RightDrawer = ({
 
     // Prepare the plan data to send
     const planxData = updatedSelectedRows.map((row) => {
-      const { _id, page_price_list, page_name, rate_type, m_story_price, m_post_price, followers_count } = row;
+      const { _id, page_price_list, page_name, rate_type, m_story_price, m_post_price, followers_count,platform_name ,platform_id} = row;
 
       const isFixedRate = rate_type === 'fixed';
 
       const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { m_story_price, m_post_price, followers_count }, type));
 
       return {
-        _id,
         page_name,
         post_price: getPrice('post'),
         story_price: getPrice('story'),
         post_count: Number(updatedPostValues[_id]) || 0,
         story_count: Number(updatedStoryValues[_id]) || 0,
+        platform_name:platform_name,
+        platform_id:platform_id,
+        page_id:_id
       };
     });
     // Send plan details and update the state
@@ -203,7 +206,7 @@ const RightDrawer = ({
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
     setShowTotalCost(updatedShowTotalCost);
-
+    setTotalDeliverables(0)
     // Send updated filtered data to the backend or relevant handler
     sendPlanDetails(filtered);
   };

@@ -57,7 +57,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       return `${formattedDay}-${formattedMonth}-${nextMonthYear}`;
@@ -242,7 +242,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -432,7 +432,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -628,7 +628,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -814,7 +814,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -1003,7 +1003,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -1184,7 +1184,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -1370,7 +1370,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -1558,7 +1558,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       
@@ -1744,7 +1744,7 @@ export const Template = {
       }
       const currentYear = new Date().getFullYear();
       const nextMonthNumber = monthNumber === 12 ? 1 : monthNumber + 1;
-      const nextMonthYear = monthNumber === 12 ? currentYear + 1 : currentYear;
+      const nextMonthYear = monthNumber === 12 ? currentYear  : currentYear;
       const formattedMonth = nextMonthNumber < 10 ? '0' + nextMonthNumber : nextMonthNumber;
       const formattedDay = '15';
       

@@ -10,6 +10,7 @@ import formatString from "../../../utils/formatString";
 const LayeringControls = ({
   categoryData,
   handleOptionChange,
+  getTableData,
   layering,
   toggleUncheckdPages,
   setLayering,
@@ -61,9 +62,11 @@ const LayeringControls = ({
         >
           {layering <= 7 && <ImNext />}
         </button>
+        <label>{ButtonTitle[layering]}</label>
+        <span style={{position:"relative", right:'0.65rem'}}>({getTableData?.length})</span>
       </div>
       <div className="flexCenter colGap12">
-        <label>{ButtonTitle[layering]}</label>
+      
         <div style={{ width: "12rem" }}>
           <Autocomplete
             options={categoryData}

@@ -17,14 +17,32 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useContext } from "react";
 import LoopIcon from "@mui/icons-material/Loop";
-import DownloadingIcon from '@mui/icons-material/Downloading';
+import DownloadingIcon from "@mui/icons-material/Downloading";
 import Loader from "../Finance/Loader/Loader";
 import { AppContext } from "../../Context/Context";
 import jwtDecode from "jwt-decode";
+import sarcasmLogo from "../../assets/imgs/screenshot/sarcasm.jpg";
+import naughtyworldLogo from "../../assets/imgs/screenshot/naughtyworld.jpg";
+import shotOne from "../../assets/imgs/screenshot/shot2.jpg";
+import postOne from "../../assets/imgs/screenshot/post2.jpeg";
+import reelOne from "../../assets/imgs/screenshot/reel1.jpg";
+// import blueTick from "../../assets/imgs/screenshot/icon/blue-tick.svg";
+import likeIcon from "../../assets/imgs/screenshot/icon/like1.png";
+import commentIcon from "../../assets/imgs/screenshot/icon/comment1.png";
+import shareIcon from "../../assets/imgs/screenshot/icon/share1.png";
+import saveIcon from "../../assets/imgs/screenshot/icon/save1.png";
+import muteIcon from "../../assets/imgs/screenshot/icon/mute.png";
+import userIcon from "../../assets/imgs/screenshot/icon/user.png";
+import {
+  DotsThreeOutlineVertical,
+  DotsThreeVertical,
+  MusicNotes,
+  SealCheck,
+} from "@phosphor-icons/react";
 
 function PostStats() {
-  const {  usersDataContext } = useContext(AppContext);
-    const storedToken = sessionStorage.getItem("token");
+  const { usersDataContext } = useContext(AppContext);
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const [upload, setUpload] = useState(false);
@@ -39,7 +57,42 @@ function PostStats() {
   const token =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
 
-  
+  function addTimeToPostedOn(postedOn) {
+    if (!postedOn || typeof postedOn !== "string") {
+      return "Invalid Date"; // Handle undefined or incorrect input gracefully
+    }
+
+    // Parse the input string (expected format: "YYYY-MM-DD HH:MM:SS")
+    const parts = postedOn.split(" ");
+    if (parts.length !== 2) return "Invalid Date"; // Handle incorrect format
+
+    const [datePart, timePart] = parts;
+    const dateParts = datePart.split("-").map(Number);
+    const timeParts = timePart.split(":").map(Number);
+
+    if (dateParts.length !== 3 || timeParts.length !== 3) return "Invalid Date";
+
+    const [year, month, day] = dateParts;
+    const [hour, minute, second] = timeParts;
+
+    // Create a Date object (month is 0-indexed in JS)
+    let date = new Date(year, month - 1, day, hour, minute, second);
+
+    // Add 5 hours and 30 minutes
+    date.setHours(date.getHours() + 5);
+    date.setMinutes(date.getMinutes() + 30);
+
+    // Format the updated date back to "YYYY-MM-DD HH:MM:SS"
+    const updatedDate = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    const updatedTime = `${String(date.getHours()).padStart(2, "0")}:${String(
+      date.getMinutes()
+    ).padStart(2, "0")}:${String(date.getSeconds()).padStart(2, "0")}`;
+
+    return `${updatedDate} ${updatedTime}`;
+  }
+
   const handleRequestedExcel = (value) => {
     if (value) {
       axios
@@ -69,9 +122,9 @@ function PostStats() {
               likes: item?.like_count,
               Views: item?.play_count,
               comments: item?.comment_count,
-              Time: item?.postedOn,
+              Time: addTimeToPostedOn(item?.postedOn),
             }));
-
+            console.log(extractedData, "extract data");
             // Rearranging the extractedData array based on the sequence of shortCodes
             const rearrangedData = [];
             value.shortCodes.forEach((shortCode) => {
@@ -80,7 +133,7 @@ function PostStats() {
               );
               if (post) {
                 rearrangedData.push(post);
-              }else {
+              } else {
                 rearrangedData.push({
                   sno: rearrangedData.length + 1,
                   pagename: "",
@@ -119,7 +172,9 @@ function PostStats() {
   const handlePartialRequest = (value) => {
     // console.log(value);
     let emailto = "naveen@creativefuel.io";
-    const tempemailIdobject = usersDataContext.find((ele) => ele.user_id == userID);
+    const tempemailIdobject = usersDataContext.find(
+      (ele) => ele.user_id == userID
+    );
     if (tempemailIdobject?.user_email_id) {
       emailto = tempemailIdobject?.user_email_id;
     }
@@ -157,8 +212,7 @@ function PostStats() {
               )
               .then((response) => {
                 // console.log(response);
-                setReload(!reload)
-               
+                setReload(!reload);
               });
           }
         });
@@ -189,40 +243,41 @@ function PostStats() {
 
   function separateDateAndTime(createdAt) {
     const dateObject = new Date(createdAt);
-  
+
     // Get UTC time in milliseconds
     const utcTime = dateObject.getTime();
-  
+
     // Get time zone offset in milliseconds for GMT (inverting sign to convert from UTC to GMT)
     const timeZoneOffset = dateObject.getTimezoneOffset() * 60000 * -1;
-  
+
     // Convert UTC time to GMT by adding time zone offset
     const gmtTime = utcTime + timeZoneOffset;
-  
+
     // Create new date object with GMT time
     const gmtDateObject = new Date(gmtTime);
-  
+
     // Extract date
     const date = gmtDateObject.toISOString().split("T")[0];
-  
+
     // Extract hour, minute, and second
     let hour = gmtDateObject.getUTCHours();
     const minute = gmtDateObject.getUTCMinutes();
     const second = gmtDateObject.getUTCSeconds();
-  
+
     // Determine AM/PM indicator
     const ampm = hour >= 12 ? "PM" : "AM";
-  
+
     // Convert hour to 12-hour format
     hour = hour % 12;
     hour = hour ? hour : 12; // "0" should be displayed as "12"
-  
+
     // Format time with seconds
-    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${second < 10 ? "0" + second : second} ${ampm}`;
-  
+    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${
+      second < 10 ? "0" + second : second
+    } ${ampm}`;
+
     return { date, time };
   }
-  
 
   const columns = [
     {
@@ -245,7 +300,7 @@ function PostStats() {
       type: "text",
       // editable: true,
     },
-   
+
     {
       field: "createdAt",
       headerName: "Upload Date",
@@ -253,7 +308,7 @@ function PostStats() {
       // type: "text",
       renderCell: (params) => {
         const { date, time } = separateDateAndTime(params?.row?.createdAt);
-      
+
         return (
           <div style={{ textAlign: "center", marginLeft: 10 }}>{date}</div>
         );
@@ -288,8 +343,7 @@ function PostStats() {
       },
       // editable: true,
     },
-   
-    
+
     {
       field: "userId",
       headerName: "User-Name",
@@ -325,7 +379,7 @@ function PostStats() {
         // console.log(tempstatus);
         if (tempstatus == 1) {
           return params.row?.shortCodesLength;
-        } 
+        }
       },
     },
     {
@@ -376,7 +430,7 @@ function PostStats() {
               color="inherit"
             />,
           ];
-        } 
+        }
       },
     },
     {
@@ -387,122 +441,276 @@ function PostStats() {
       renderCell: (params) => {
         const { time } = separateDateAndTime(params.row?.updatedAt);
         const requestIdResolvedStatus = params.row?.requestIdResolvedStatus; // Assuming this is part of the row data
-        
+
         // Directly return the condition
         return requestIdResolvedStatus === 1 ? time : "";
       },
       // editable: true,
-    }
-    
-    
-   ,
-   {
-    field: "resolved_time",
-    headerName: "Time-Taken",
-    width: 200,
-    type: "text",
-    valueGetter: (params) => {
-      // Extract upload_time and resolved_time (updatedAt)
-      const uploadDateTime = new Date(params.row?.createdAt);
-      const resolvedDateTime = new Date(params.row?.updatedAt);
-  
-      // Calculate the difference in milliseconds
-      const timeDifference = resolvedDateTime - uploadDateTime;
-  
-      // Convert the difference to seconds
-      const timeDifferenceInSeconds = Math.floor(timeDifference / 1000);
-  
-      // Calculate minutes and remaining seconds
-      const minutes = Math.floor(timeDifferenceInSeconds / 60);
-      const seconds = timeDifferenceInSeconds % 60;
-  
-      // Format the time as "X min Y sec" or just "Y sec"
-      const formattedTime =
-        minutes > 0 ? `${minutes} min ${seconds} sec` : `${seconds} sec`;
-  
-      // Return the formatted time difference
-      return formattedTime;
     },
-    // editable: true,
-  }
-  
-  
-,    
+
+    {
+      field: "resolved_time",
+      headerName: "Time-Taken",
+      width: 200,
+      type: "text",
+      valueGetter: (params) => {
+        // Extract upload_time and resolved_time (updatedAt)
+        const uploadDateTime = new Date(params.row?.createdAt);
+        const resolvedDateTime = new Date(params.row?.updatedAt);
+
+        // Calculate the difference in milliseconds
+        const timeDifference = resolvedDateTime - uploadDateTime;
+
+        // Convert the difference to seconds
+        const timeDifferenceInSeconds = Math.floor(timeDifference / 1000);
+
+        // Calculate minutes and remaining seconds
+        const minutes = Math.floor(timeDifferenceInSeconds / 60);
+        const seconds = timeDifferenceInSeconds % 60;
+
+        // Format the time as "X min Y sec" or just "Y sec"
+        const formattedTime =
+          minutes > 0 ? `${minutes} min ${seconds} sec` : `${seconds} sec`;
+
+        // Return the formatted time difference
+        return formattedTime;
+      },
+      // editable: true,
+    },
   ];
 
   return (
-    <div className="workWrapper">
-      <div className="card">
-        <div className="card-header flex_center_between">
-          <div>
-            <Button
-              className="btn cmnBtnSmall btn-outline-primary"
-              onClick={() => {
-                setUpload(!upload);
-              }}
-            >
-              Upload..
-            </Button>
+    <>
+      <div className="d-block">
+        <div className="flexCenter colGap20">
+          <div className="shotWrapper">
+            <div className="shotHead">
+              <div className="shotHeadTitle">
+                <div className="shotHeadImg">
+                  <img src={sarcasmLogo} />
+                </div>
+                <div className="shotHeadName">
+                  <h3>
+                    sarcastic_us
+                    <span className="blueTick">
+                      <SealCheck weight="fill" />
+                    </span>
+                  </h3>
+                  <h4>
+                    <span>
+                      <MusicNotes weight="fill" />
+                    </span>
+                    Coldplay . A Sky Full of Stars
+                  </h4>
+                </div>
+              </div>
+              <div className="shotHeadAction">
+                <span>
+                  <i class="bi bi-three-dots-vertical"></i>
+                </span>
+              </div>
+            </div>
+            <div className="shotImg">
+              <img src={postOne} />
+              <span className="muteIcon">
+                <img src={muteIcon} />
+              </span>
+            </div>
+            {/* <div className="shotCarousel">
+              <ul>
+                <li className="active">
+                  <span></span>
+                </li>
+                <li>
+                  <span></span>
+                </li>
+              </ul>
+            </div> */}
+            <div className="shotStats">
+              <ul>
+                <li>
+                  <span>
+                    <img src={likeIcon} />
+                  </span>
+                  97.8K
+                </li>
+                <li>
+                  <span>
+                    <img src={commentIcon} />
+                  </span>
+                  83
+                </li>
+                <li>
+                  <span>
+                    <img src={shareIcon} />
+                  </span>
+                </li>
+              </ul>
+              <ul>
+                <li>
+                  <span>
+                    <img src={saveIcon} />
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          {/*  */}
+          <div className="shotWrapper shotReel">
+            <div className="shotHead">
+              <div className="shotHeadTitle">
+                <div className="shotHeadImg double">
+                  <img src={sarcasmLogo} />
+                  <img src={naughtyworldLogo} />
+                </div>
+                <div className="shotHeadName">
+                  {/* <h3>
+                    sarcastic_us
+                    <span className="blueTick">
+                      <SealCheck weight="fill" />
+                    </span>
+                  </h3> */}
+                  <h3>
+                    sarcastic_us
+                    <small>and</small>
+                    naughtyworld
+                  </h3>
+                  <h4>
+                    <span>
+                      <MusicNotes weight="fill" />
+                    </span>
+                    Coldplay . A Sky Full of Stars
+                  </h4>
+                </div>
+              </div>
+              <div className="shotHeadAction">
+                <span>
+                  <i class="bi bi-three-dots-vertical"></i>
+                </span>
+              </div>
+            </div>
+            <div className="shotImg">
+              <img src={reelOne} />
+              <span className="userIcon">
+                <img src={userIcon} />
+              </span>
+              <span className="muteIcon">
+                <img src={muteIcon} />
+              </span>
+            </div>
+            {/* <div className="shotCarousel">
+              <ul>
+                <li className="active">
+                  <span></span>
+                </li>
+                <li>
+                  <span></span>
+                </li>
+              </ul>
+            </div> */}
+            <div className="shotStats">
+              <ul>
+                <li>
+                  <span>
+                    <img src={likeIcon} />
+                  </span>
+                  97.8K
+                </li>
+                <li>
+                  <span>
+                    <img src={commentIcon} />
+                  </span>
+                  83
+                </li>
+                <li>
+                  <span>
+                    <img src={shareIcon} />
+                  </span>
+                </li>
+              </ul>
+              <ul>
+                <li>
+                  <span>
+                    <img src={saveIcon} />
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="workWrapper">
+        <div className="card">
+          <div className="card-header flex_center_between">
+            <div>
+              <Button
+                className="btn cmnBtnSmall btn-outline-primary"
+                onClick={() => {
+                  setUpload(!upload);
+                }}
+              >
+                Upload..
+              </Button>
 
-
-            {upload && (
-              <BulkPostsUpload
-                userID={userID}
-                usersDataContext={usersDataContext}
-                setUpload={setUpload}
-                setOpen={setOpen}
-                reload={reload}
-                setReload={setReload}
+              {upload && (
+                <BulkPostsUpload
+                  userID={userID}
+                  usersDataContext={usersDataContext}
+                  setUpload={setUpload}
+                  setOpen={setOpen}
+                  reload={reload}
+                  setReload={setReload}
+                />
+              )}
+            </div>
+            <div>
+              <PostStatsTemplate />
+            </div>
+          </div>
+          <div className="card-body thmTable p0">
+            {rowsloading ? (
+              <DataGrid
+                rows={rows}
+                columns={columns}
+                getRowId={(row) => row._id}
+                initialState={{
+                  pagination: {
+                    paginationModel: {
+                      pageSize: 25,
+                    },
+                  },
+                }}
+                pageSizeOptions={[5, 25, 100]}
               />
+            ) : (
+              <Loader />
             )}
           </div>
-          <div>
-            <PostStatsTemplate />
-          </div>
+          {/* <InstagramEmbed/> */}
         </div>
-        <div className="card-body thmTable p0">
-          {rowsloading ? (
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              getRowId={(row) => row._id}
-              initialState={{
-                pagination: {
-                  paginationModel: {
-                    pageSize: 25,
-                  },
-                },
-              }}
-              pageSizeOptions={[5, 25, 100]}
-            />
-          ) : (
-            <Loader />
-          )}
-        </div>
-        {/* <InstagramEmbed/> */}
+
+        <Dialog maxWidth="xs" open={open}>
+          <DialogTitle>
+            <div className="stationModalContent">
+              <>
+                <span className="actionIcon yes">
+                  <i className="bi bi-check"></i>
+                </span>
+                <h2 className="yes">Successfully Saved</h2>
+              </>
+
+              <h4>We have received your request.Please wait for few min.</h4>
+            </div>
+          </DialogTitle>
+
+          <DialogActions className="stationModalFooter">
+            <Button className="cmnBtn btn-success" onClick={handleClose}>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
-
-      <Dialog maxWidth="xs" open={open}>
-        <DialogTitle>
-          <div className="stationModalContent">
-            <>
-              <span className="actionIcon yes">
-                <i className="bi bi-check"></i>
-              </span>
-              <h2 className="yes">Successfully Saved</h2>
-            </>
-
-            <h4>We have received your request.Please wait for few min.</h4>
-          </div>
-        </DialogTitle>
-
-        <DialogActions className="stationModalFooter">
-          <Button className="cmnBtn btn-success" onClick={handleClose}>
-            OK
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    </>
   );
 }
 

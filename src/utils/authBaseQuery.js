@@ -1,6 +1,5 @@
 import { fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { baseUrl } from "./config";
-import { Navigate } from "react-router-dom";
 
 const getToken = () => {
   return sessionStorage.getItem("token");

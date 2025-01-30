@@ -41,7 +41,7 @@ const InventoryDashboard = () => {
           </div>
 
           <div className="col">
-            <NavLink to="/admin/pms-unFatched-pages">
+            <NavLink to="/admin/pms-unfetch-pages">
               <div className="card shadow-none bgTertiaryLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgTertiaryLight">
@@ -49,8 +49,7 @@ const InventoryDashboard = () => {
                       <Files weight="duotone" />
                     </span>
                   </div>
-                  <h6 className="fs_16">UnFatched Pages</h6>
-                  <h6 className="mt8 fs_16">{/* {"saimyual"} */}</h6>
+                  <h6 className="fs_16">Unfetch Pages</h6>
                 </div>
               </div>
             </NavLink>
