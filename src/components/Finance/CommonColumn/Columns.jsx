@@ -13,6 +13,7 @@ import {
 } from "@mui/icons-material";
 import { formatDate } from "../../../utils/formatDate";
 import { type } from "jquery";
+import { formatUTCDate } from "../../../utils/formatUTCDate";
 
 export const saleBookingCloseColumns = ({
   handleOpenVerifyDialog,
@@ -2778,18 +2779,18 @@ export const pendingPaymentRequestColumns = ({
       },
     },
     {
-      key: "invc_Date",
+      key: "invc_date",
       name: "Invoice Date",
       width: 150,
-      renderRowCell: (row) => moment(row?.invc_Date).format("DD/MM/YYYY hh:mm"),
+      renderRowCell: (row) => formatUTCDate(row?.invc_date),
     },
 
     {
-      key: "request_date",
+      key: "createdAt",
       name: "Requested Date",
       width: 150,
-      renderRowCell: (row) =>
-        moment(row?.request_date).format("DD/MM/YYYY hh:mm"),
+      renderRowCell: (row) => formatUTCDate(row?.createdAt),
+
     },
     // {
     //   key: "request_by",
@@ -2886,9 +2887,9 @@ export const pendingPaymentRequestColumns = ({
       name: "Requested Amount",
       width: 150,
       getTotal: true,
-      renderCell: (row) => {
-        return row?.request_amount;
-      },
+      // renderCell: (row) => {
+      //   return row?.request_amount;
+      // },
     },
     {
       key: "remark_audit",
