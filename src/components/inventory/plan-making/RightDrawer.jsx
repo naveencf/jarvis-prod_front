@@ -116,7 +116,7 @@ const RightDrawer = ({
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
     // Iterate over the table data and update counts and selections
-    getTableData.forEach((row) => {
+    getTableData?.forEach((row) => {
       const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
 
       // If not already selected, add this row to selected rows

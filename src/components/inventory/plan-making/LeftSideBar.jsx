@@ -48,6 +48,7 @@ const LeftSideBar = ({
   totalPostCount,
   planData,
   sendPlanDetails,
+  setLeftSideBarDataUpdate,
   // searchInputValue,
   // allrows,
   // handleSearchChange,
@@ -302,7 +303,8 @@ const LeftSideBar = ({
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
 
-  const handleSave = () => {
+  const handleSave = async() => {
+    setLeftSideBarDataUpdate(true)
     const payload = {
       id: planDetails && planDetails[0]._id,
       plan_status: 'open',
@@ -315,10 +317,19 @@ const LeftSideBar = ({
       // no_of_pages: selectedRows?.length,
       // cost_price: totalCost,
     };
-    sendPlanxLogs('v1/planxlogs', payload);
+   const response =await sendPlanxLogs('v1/planxlogs', payload);
+   if (response.status === 400) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Duplicate Entry',
+      text: 'Plan with the same name already exists',
+      confirmButtonText: 'OK',
+    });
+    setPlanName(planDetails?.[0]?.plan_name)
+  }
     setIsEditing(false);
   };
-  const ownPagesCost = ownershipCounts.own.totalCost;
+   const ownPagesCost = ownershipCounts.own.totalCost;
   useEffect(() => {
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
@@ -347,8 +358,7 @@ const LeftSideBar = ({
 
     return platformWiseCategories;
   };
-
-  const platformCategories = groupCategoriesByPlatform(selectedRows);
+   const platformCategories = groupCategoriesByPlatform(selectedRows);
 
   return (
     <div className="planLeftSideWrapper">

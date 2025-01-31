@@ -236,7 +236,8 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             <Select labelId="bank-select-label" value={selectedBankIndex} onChange={handleBankChange} label="Select Bank">
               {vendorBankDetail?.map((bank, index) => (
                 <MenuItem key={index} value={index}>
-                  {`${bank?.bank_name} : ${bank?.account_number}`}
+                  {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
+                  {/* {`${bank?.bank_name} : ${bank?.account_number}`} */}
                 </MenuItem>
               ))}
             </Select>
