@@ -156,7 +156,7 @@ const PurchaseTransactions = () => {
 
     const handleStatusCheck = async (row) => {
         // Step 1: Get the JWT token
-         if (!row) return;
+        if (!row) return;
         const getTokenResponse = await axios.get(
             insightsBaseUrl + `v1/payment_gateway_access_token`
         );
@@ -179,7 +179,7 @@ const PurchaseTransactions = () => {
                 row?.payment_getway_status == payResponse?.data?.data?.message
             ) {
                 toastAlert("Status Remain Same");
-              
+
             } else if (payResponse.status == 200) {
                 toastAlert("Please wait while we are updating status");
                 setTransactionData([]);
@@ -189,14 +189,14 @@ const PurchaseTransactions = () => {
         } catch (error) {
             console.log(error);
         }
-    };  
+    };
     const handleVendorReportingStatus = async (row) => {
         // https://insights.ist:8080/api/v1/check_payment_status?clientReferenceId=2017_1
         try {
             const payResponse = await axios.put(
                 baseUrl + `v1/vendor_payment_transactions_shared_SS/${row?.clientReferenceId}`,
                 {
-                    is_shared_ss: true,  
+                    is_shared_ss: true,
                 },
                 {
                     headers: {
@@ -205,7 +205,7 @@ const PurchaseTransactions = () => {
                     },
                 }
             );
-            
+
             if (payResponse.status === 200) {
                 toastAlert("Status Updated");
                 refetchTransaction()
@@ -214,7 +214,7 @@ const PurchaseTransactions = () => {
         } catch (error) {
             console.log(error);
         }
-        
+
     }
     const columns = [
         {
@@ -222,11 +222,11 @@ const PurchaseTransactions = () => {
             name: "S.NO",
             width: 90,
             renderRowCell: (row, index) => {
-                 return index + 1;  
+                return index + 1;
             },
-           
+
         },
-        
+
         // {
         //     key: "invc_img",
         //     name: "Invoice Image",
@@ -348,7 +348,7 @@ const PurchaseTransactions = () => {
             key: "vendor_update",
             name: "Reported",
             width: 150,
-          
+
             renderRowCell: (row) => {
                 return <button
                     className="btn cmnbtn btn-outline-secondary btn_sm"
@@ -374,7 +374,7 @@ const PurchaseTransactions = () => {
                     </button>
                 )
             ),
-            
+
             colorRow: (row) => {
                 if (row?.is_shared_ss) {
                     return "#ACE1AF";
@@ -386,14 +386,14 @@ const PurchaseTransactions = () => {
 
 
         {
-            key: "evidence",
+            key: "evidence_url",
             name: "SS",
             width: 150,
             conpare: true,
             renderRowCell: (row) => {
-                const imgUrl = `https://purchase.creativefuel.io/${row.evidence}`;
+                const imgUrl = row.evidence_url;
 
-                return row.evidence ? (
+                return row.evidence_url ? (
                     <img
                         onClick={() => {
                             setOpenImageDialog(true);
