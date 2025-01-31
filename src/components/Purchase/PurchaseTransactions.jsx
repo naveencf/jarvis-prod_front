@@ -115,44 +115,8 @@ const PurchaseTransactions = () => {
 
     const handleSubmitTransactionData = () => {
         const formData = new FormData();
-        // formData.append("start_date", startDate.format("YYYY-MM-DD"));
-        // formData.append("end_date", endDate.format("YYYY-MM-DD"));
         refetchTransaction();
-        // axios
-        //     .post(phpBaseUrl + `?view=getpaymentrequesttransdate`, formData, {
-        //         headers: {
-        //             "Content-Type": "multipart/form-data",
-        //         },
-        //     })
-        //     .then((res) => {
-        //         try {
-        //             // console.log(res, "Full response");
-        //             const rawData = res?.data?.body || [];
-
-        //             // Format the date for each record in the array
-        //             const formattedData = rawData.map((item) => ({
-        //                 ...item,
-        //                 request_date: formatDate(item.request_date), // Replace 'request_date' with your date field
-        //                 payment_date: formatDate(item.payment_date), // Replace 'payment_date' with your date field
-        //             }));
-        //             const withoutFailedTransaction = formattedData.filter((res) => res.payment_getway_status != "FAILED")
-        //             console.log(withoutFailedTransaction, "Formatted Data");
-        //             // setTransactionData(withoutFailedTransaction);
-        //             setTransactionData(formattedData);
-        //         } catch (error) {
-        //             console.error("Error processing transaction data:", error);
-        //             setTransactionData([]);
-        //         }
-        //     })
-        //     .catch((err) => console.error("Error fetching transaction data:", err));
     };
-
-    // useEffect(() => {
-    //     handleSubmitTransactionData(
-    //         // startDate.format("YYYY-MM-DD"),
-    //         // endDate.format("YYYY-MM-DD")
-    //     );
-    // }, [startDate, endDate, refetch]);
 
     const handleStatusCheck = async (row) => {
         // Step 1: Get the JWT token
@@ -226,58 +190,6 @@ const PurchaseTransactions = () => {
             },
 
         },
-
-        // {
-        //     key: "invc_img",
-        //     name: "Invoice Image",
-        //     renderRowCell: (row) => {
-        //         if (!row.invc_img) {
-        //             return "No Image";
-        //         }
-
-        //         // Extract file extension and check if it's a PDF
-        //         const fileExtension = row.invc_img.split(".").pop().toLowerCase();
-        //         const isPdf = fileExtension === "pdf";
-        //         const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
-        //         console.log(imgUrl, isPdf, "Image URL and isPdf");
-
-        //         return isPdf ? (
-        //             <div
-        //                 style={{ position: "relative", overflow: "hidden", height: "80px" }}
-        //                 onClick={() => {
-        //                     setOpenImageDialog(true);
-        //                     setViewImgSrc(imgUrl);
-        //                 }}
-        //             >
-        //                 <embed
-        //                     src={imgUrl}
-        //                     type="application/pdf"
-        //                     title="PDF Viewer"
-        //                     style={{ width: "100px", height: "150px" }}
-        //                 />
-        //             </div>
-        //         ) : (
-        //             <img
-        //                 onClick={() => {
-        //                     setOpenImageDialog(true);
-        //                     setViewImgSrc(imgUrl);
-        //                 }}
-        //                 src={imgUrl}
-        //                 alt="Invoice"
-        //                 style={{
-        //                     width: "40px",
-        //                     height: "80px",
-        //                     objectFit: "cover",
-        //                     cursor: "pointer",
-        //                 }}
-        //                 onError={(e) => {
-        //                     e.target.src = "https://via.placeholder.com/80?text=No+Image"; // Fallback image
-        //                 }}
-        //             />
-        //         );
-        //     },
-        //     width: 100,
-        // },
         {
             key: "invc_img",
             name: "Invoice Image",
@@ -342,8 +254,7 @@ const PurchaseTransactions = () => {
                 );
             },
             width: 100,
-        }
-        ,
+        },
         {
             key: "vendor_update",
             name: "Reported",
@@ -431,6 +342,11 @@ const PurchaseTransactions = () => {
             width: 150,
         },
         {
+            key: "payment_mode",
+            name: "Payment Mode",
+            width: 150,
+        },
+        {
             key: "payment_getway_status",
             name: "Payment Status",
             width: 150,
@@ -484,12 +400,7 @@ const PurchaseTransactions = () => {
             width: 150,
             getTotal: true,
         },
-        // {
-        //     key: "name",
-        //     name: "Requested By",
-        //     width: 150,
-        //     // renderRowCell: (row) => <div>{row.payment_by}</div>,
-        // },
+
 
         {
             key: "ref",

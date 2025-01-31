@@ -225,6 +225,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             <ListItem>
               <ListItemText primary="Outstanding" secondary={vendorPhpDetail[0]?.outstanding} />
             </ListItem>
+            <ListItem>
+              <ListItemText primary="Account Verified" secondary={vendorBankDetail[selectedBankIndex]?.is_verified ? "Yes" : "No"} />
+            </ListItem>
             {/* <ListItem>
                             <ListItemText primary="outstanding" secondary={formData.address} />
                         </ListItem> */}
@@ -243,6 +246,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             </Select>
           </FormControl>
         )}
+        {/* <Button sx={{ ml: 1 }} variant="contained" color='success'>
+          Penny Drop
+        </Button> */}
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
           <TextField label="Request Amount (With GST)" name="request_amount" value={formData.request_amount} onChange={handleChange} fullWidth />
           <FormControlLabel control={<Checkbox checked={formData.gst} onChange={handleGSTChange} />} label="Add GST (18%)" />
