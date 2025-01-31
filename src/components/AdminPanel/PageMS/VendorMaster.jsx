@@ -663,6 +663,7 @@ const VendorMaster = () => {
       },
     ]);
   };
+  console.log(bankRows, "bankRows")
   const handleRemoveBankInfoRow = (index) => {
     return () => {
       const updatedRows = bankRows.filter((row, i) => i !== index);
@@ -756,19 +757,31 @@ const VendorMaster = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      bankRows.length > 0 && 
-      bankRows[0].payment_method === "666856874366007df1dfacde"
-    ) {
-      const hasEmptyIFSC = bankRows.some((bank) => bank.ifsc === "");
-      
-      if (hasEmptyIFSC) {
-        toastError("IFSC code is mandatory");
+    // if (
+    //   bankRows.length > 0 &&
+    //   bankRows[0].payment_method === "666856874366007df1dfacde"
+    // ) {
+    //   const hasEmptyIFSC = bankRows.some((bank) => bank.ifsc === "");
+
+    //   if (hasEmptyIFSC) {
+    //     toastError("IFSC code is mandatory");
+    //     return;
+    //   }
+    // }
+    if (bankRows.length > 0) {
+      const hasInvalidBankDetails = bankRows.some(
+        (bank) =>
+          bank.payment_method === "666856874366007df1dfacde" &&
+          (!bank.ifsc || !bank.account_number)
+      );
+
+      if (hasInvalidBankDetails) {
+        toastError("IFSC code and Account Number are mandatory");
         return;
       }
     }
-    
-    
+
+
     if (
       !vendorName ||
       vendorName == "" ||
@@ -792,7 +805,7 @@ const VendorMaster = () => {
     }
 
     const cleanedMobile = mobile ? String(mobile).trim() : "";
- 
+
     if (
       !vendorName?.trim() ||
       !cleanedMobile ||
@@ -803,9 +816,9 @@ const VendorMaster = () => {
       toastError("Please fill all the mandatory fields");
       return;
     }
-    if( cleanedMobile.length !== 10 ){
-    toastError("Please Enter valid 10 digit Mobile Number");
-     return;
+    if (cleanedMobile.length !== 10) {
+      toastError("Please Enter valid 10 digit Mobile Number");
+      return;
     }
     const formData = {
       vendor_name: vendorName?.toLowerCase().trim(),
@@ -850,10 +863,10 @@ const VendorMaster = () => {
       toastError("Please fill all the mandatory fields");
       return;
     }
-    if( cleanedMobile.length !== 10 ){
+    if (cleanedMobile.length !== 10) {
       toastError("Please Enter valid 10 digit Mobile Number");
-       return;
-      }
+      return;
+    }
     // if (bankRows.some((bank) => bank.ifsc === "")) {
     //   toastError("IFSC code is mandatory");
     //   return;
@@ -919,11 +932,11 @@ const VendorMaster = () => {
 
           handleSuccess("Vendor and documents added successfully!");
 
-          } else if (res?.status === 409) {
-            console.log("resss", res.error);
-            toastError(res?.error?.data?.message);
-          } else {
-            handleSuccess("Vendor data added successfully!");
+        } else if (res?.status === 409) {
+          console.log("resss", res.error);
+          toastError(res?.error?.data?.message);
+        } else {
+          handleSuccess("Vendor data added successfully!");
           // navigate('/admin/pms-vendor-overview');
           setIsFormSubmitted(true);
         }
@@ -1126,7 +1139,7 @@ const VendorMaster = () => {
   if (isFormSubmitted) {
     return <Navigate to="/admin/pms-vendor-overview" />;
   }
-  
+
   const goBack = () => {
     navigate(-1);
   };
@@ -1454,7 +1467,7 @@ const VendorMaster = () => {
                 <div
                   style={{
                     marginTop: "8px",
-                    color: isNumberValid ? "green" : "red", 
+                    color: isNumberValid ? "green" : "red",
                     fontSize: "14px",
                   }}
                 >

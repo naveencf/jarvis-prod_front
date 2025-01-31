@@ -80,7 +80,7 @@ const ExcelPreviewModal = ({ open, onClose, setUpdatedCategories, setMergeCatLis
     }, {});
 
     const mainCategoryId = categoryMap[mainCategory];
-    if (!mainCategoryId) {
+     if (!mainCategoryId) {
       console.error('Main category ID not found');
       return;
     }

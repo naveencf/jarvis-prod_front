@@ -108,13 +108,14 @@ const PlanMaking = () => {
   const [showUnChecked, setShowUnCheked] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [mergeCatList, setMergeCatList] = useState([]);
+  const [leftSideDataUpdate, setLeftSideBarDataUpdate] = useState(false);
 
   const { id } = useParams();
   // const renderCount = useRef(0);
   // renderCount.current++;
   // console.log(`Component re-rendered: ${renderCount.current} times`);
   const { pageDetail } = usePageDetail(id);
-  const { planDetails } = useFetchPlanDetails(id);
+  const { planDetails,fetchPlanDetails } = useFetchPlanDetails(id);
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   const { versionDetails, loading, error } = usePlanPagesVersionDetails(id);
@@ -303,7 +304,9 @@ const PlanMaking = () => {
 
   const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
-
+    if(index){
+      setActiveIndex(index)
+    }
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
 
@@ -334,8 +337,8 @@ const PlanMaking = () => {
       calculateTotalCost(row._id, postCount, storyCount, postCost, storyCost, bothCost);
 
       const planxData = updatedSelectedRows.map((row) => {
-        const { _id, page_price_list, page_name, rate_type, followers_count, platform_name,platform_id } = row;
-        
+        const { _id, page_price_list, page_name, rate_type, followers_count, platform_name, platform_id } = row;
+
         const isFixedRate = rate_type === 'fixed';
 
         const getPrice = (type) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${type}`) : calculatePrice(rate_type, { page_price_list, followers_count }, type));
@@ -347,9 +350,9 @@ const PlanMaking = () => {
           story_price: getPrice('story'),
           post_count: Number(updatedPostValues[_id]) || 0,
           story_count: Number(updatedStoryValues[_id]) || 0,
-          platform_name:platform_name,
-          platform_id:platform_id,
-          page_id:_id
+          platform_name: platform_name,
+          platform_id: platform_id,
+          page_id: _id,
         };
       });
 
@@ -544,58 +547,44 @@ const PlanMaking = () => {
       // incoming data and update state
       incomingData?.forEach((incomingPage) => {
         let matchingPageIndex = -1;
-      
-         if (incomingPage.platform_name) {
-           matchingPageIndex = pageList?.findIndex(
-            (page) =>
-              page.page_name === incomingPage.page_name &&
-              page.platform_name === incomingPage.platform_name
-          );
+
+        if (incomingPage.platform_name) {
+          matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name && page.platform_name === incomingPage.platform_name);
         } else {
           matchingPageIndex = pageList?.findIndex((page) => page.page_name === incomingPage.page_name);
         }
-      
+
         if (matchingPageIndex !== -1) {
           const matchingPage = { ...pageList[matchingPageIndex] };
-      
+
           // Override page_category_name with incoming category_name
           if (incomingPage.category_name !== '') {
             matchingPage.page_category_name = incomingPage.category_name;
-      
-             const matchingCategoryId = categoryMap[incomingPage.category_name];
+
+            const matchingCategoryId = categoryMap[incomingPage.category_name];
             if (matchingCategoryId) {
               matchingPage.page_category_id = matchingCategoryId;
             }
           }
-      
+
           updatedPostValues[matchingPage._id] = incomingPage.post_count;
           updatedStoryValues[matchingPage._id] = incomingPage.story_count;
-      
+
           const postPrice = getPriceDetail(matchingPage.page_price_list, 'instagram_post');
           const storyPrice = getPriceDetail(matchingPage.page_price_list, 'instagram_story');
-      
+
           const rateType = matchingPage.rate_type === 'Fixed';
-      
+
           const costPerPost = rateType ? postPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'post');
           const costPerStory = rateType ? storyPrice : calculatePrice(matchingPage.rate_type, matchingPage, 'story');
           const costPerBoth = costPerPost + costPerStory;
-      
-          calculateTotalCost(
-            matchingPage._id,
-            incomingPage.post_count,
-            incomingPage.story_count,
-            costPerPost,
-            costPerStory,
-            costPerBoth
-          );
-      
+
+          calculateTotalCost(matchingPage._id, incomingPage.post_count, incomingPage.story_count, costPerPost, costPerStory, costPerBoth);
+
           updatedShowTotalCost[matchingPage._id] = true;
-      
+
           categoryUpdatedData.push(matchingPage);
-          if (
-            (incomingPage.post_count > 0 || incomingPage.story_count > 0) &&
-            !updatedSelectedRows.some((row) => row._id === matchingPage._id)
-          ) {
+          if ((incomingPage.post_count > 0 || incomingPage.story_count > 0) && !updatedSelectedRows.some((row) => row._id === matchingPage._id)) {
             updatedSelectedRows.push(matchingPage);
             const categoryId = matchingPage.page_category_id;
             if (categoryId) {
@@ -604,7 +593,6 @@ const PlanMaking = () => {
           }
         }
       });
-      
 
       pageList.forEach((page) => {
         const isMatched = incomingData.some((incomingPage) => incomingPage.page_name === page.page_name);
@@ -615,7 +603,7 @@ const PlanMaking = () => {
 
       // Prepare the final plan data
       const planxData = updatedSelectedRows.map((row) => {
-        const { _id, page_price_list, page_name, rate_type, followers_count ,platform_name,platform_id} = row;
+        const { _id, page_price_list, page_name, rate_type, followers_count, platform_name, platform_id } = row;
 
         const isFixedRate = rate_type === 'Fixed';
 
@@ -628,9 +616,9 @@ const PlanMaking = () => {
           story_price: getPrice('story'),
           post_count: Number(updatedPostValues[_id]) || 0,
           story_count: Number(updatedStoryValues[_id]) || 0,
-          platform_name:platform_name,
-          platform_id:platform_id,
-          page_id:_id
+          platform_name: platform_name,
+          platform_id: platform_id,
+          page_id: _id,
         };
       });
 
@@ -804,11 +792,17 @@ const PlanMaking = () => {
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
       setShortcutTriggered(true);
       setActiveIndex(activeIndex + 1);
+  
+       if (event.shiftKey) {
+        const nextRow = getTableData[activeIndex + 1]; 
+        handleCheckboxChange(nextRow, 'shiftArrow', { target: { checked: true } }, activeIndex + 1);
+      }
     } else if (event.code === 'ArrowUp' && activeIndex > 0) {
       setShortcutTriggered(true);
       setActiveIndex(activeIndex - 1);
     }
   };
+  
 
   const displayPercentage = Math.floor(percentage);
 
@@ -924,9 +918,16 @@ const PlanMaking = () => {
     }
   }, [selectedRows]);
 
+ 
   useEffect(() => {
     updateStatistics(selectedRows);
-  }, [storyPerPageValues, postPerPageValues]);
+    if(leftSideDataUpdate){
+      setTimeout(() => {
+        fetchPlanDetails()
+        setLeftSideBarDataUpdate(false)
+      }, 2000);
+    }
+  }, [storyPerPageValues, postPerPageValues, leftSideDataUpdate]);
 
   useEffect(() => {
     setStoryCountDefault(0);
@@ -1013,7 +1014,7 @@ const PlanMaking = () => {
   };
 
   const tableData = showUnChecked ? unCheckedPages : layeringMapping[layering] ?? (showOwnPage ? ownPages : toggleShowBtn ? selectedRows : filterRowsBySelection(filterData, selectedRows));
-  
+
   return (
     <>
       <PageDialog open={openDialog} onClose={handleCloseDialog} notFoundPages={notFoundPages.length ? notFoundPages : unfetechedPages} />
@@ -1037,7 +1038,7 @@ const PlanMaking = () => {
       </div>
 
       {/* {toggleLeftNavbar && ( */}
-      <LeftSideBar totalFollowers={totalFollowers} setMergeCatList={setMergeCatList} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
+      <LeftSideBar totalFollowers={totalFollowers} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate} setMergeCatList={setMergeCatList} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
       <div className="card">
         <div className="card-header flexCenterBetween">

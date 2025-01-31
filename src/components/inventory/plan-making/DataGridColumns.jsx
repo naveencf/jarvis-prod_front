@@ -216,7 +216,19 @@ const DataGridColumns = ({
     {
       key: 'post_per_page',
       name: 'Post Per Page',
-      renderRowCell: (row) => <input type="number" style={{ width: '70%' }} value={postPerPageValues[row?._id] || ''} onChange={handlePostPerPageChange(row)} />,
+      renderRowCell: (row) => (
+        <input
+          type="text"
+          style={{ width: '70%' }}
+          value={postPerPageValues[row?._id] || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d*$/.test(value)) {
+              handlePostPerPageChange(row)(e);
+            }
+          }}
+        />
+      ),
       width: 50,
       showCol: true,
       compare: true,
@@ -263,10 +275,23 @@ const DataGridColumns = ({
     {
       key: 'story_per_page',
       name: 'Story Per Page',
-      renderRowCell: (row) => <input type="number" style={{ width: '70%' }} value={storyPerPageValues[row?._id] || ''} onChange={handleStoryPerPageChange(row)} />,
+      renderRowCell: (row) => (
+        <input
+          type="text"
+          style={{ width: '70%' }}
+          value={storyPerPageValues[row?._id] || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d*$/.test(value)) {
+              handleStoryPerPageChange(row)(e);
+            }
+          }}
+        />
+      ),
       width: 50,
       showCol: true,
     },
+    
     {
       key: 'total_cost',
       name: 'Total Cost',

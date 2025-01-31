@@ -90,11 +90,11 @@ export const useFetchPlanDetails = (id) => {
     }
   }, [id]);
 
-  return { planDetails };
+  return { planDetails,fetchPlanDetails };
 };
 
 export const useFetchPlanDescription = () => {
-  const [descriptions, setDescriptions] = useState(['Sssss']);
+  const [descriptions, setDescriptions] = useState(['descriptions']);
 
   const fetchDescriptions = async () => {
     try {
