@@ -10,6 +10,8 @@ import dayjs from "dayjs";
 
 const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStartDate, setEndDate }) => {
     const [filterOption, setFilterOption] = useState("Today");
+    const [isEndDateOpen, setIsEndDateOpen] = useState(false);
+    const [isStartDateOpen, setIsStartDateOpen] = useState(false);
 
     const predefinedFilters = [
         // { label: "Today", value: "today", startDate: dayjs().startOf("day"), endDate: dayjs().endOf("day") },
@@ -19,7 +21,7 @@ const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStar
         { label: "Last Week", value: "lastWeek", startDate: dayjs().subtract(1, "week").startOf("week"), endDate: dayjs().subtract(1, "week").endOf("week") },
         { label: "This Month", value: "thisMonth", startDate: dayjs().startOf("month"), endDate: dayjs().endOf("month") },
         { label: "Last Month", value: "lastMonth", startDate: dayjs().subtract(1, "month").startOf("month"), endDate: dayjs().subtract(1, "month").endOf("month") },
-        // { label: "Custom", value: "custom" },
+        { label: "Custom", value: "custom" },
     ];
 
     const handleFilterOptionChange = (option) => {
@@ -43,8 +45,8 @@ const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStar
     const handleCustomDateChange = () => {
         if (onFilterChange) {
             onFilterChange({
-                startDate: dayjs(startDate).format("YYYY-MM-DD"),
-                endDate: dayjs(endDate).format("YYYY-MM-DD"),
+                startDate: (startDate).format("YYYY-MM-DD"),
+                endDate: (endDate).format("YYYY-MM-DD"),
             });
         }
     };
@@ -70,18 +72,31 @@ const PurchaseTransactionFilter = ({ onFilterChange, startDate, endDate, setStar
                     <div style={{ display: "flex", gap: "16px" }}>
                         <DatePicker
                             label="Start Date"
-                            value={startDate}
+                            value={startDate ? dayjs(startDate) : null}
+                            open={isStartDateOpen}
+                            onOpen={() => setIsStartDateOpen(true)}
+                            onClose={() => setIsStartDateOpen(false)}
                             onChange={(date) => {
-                                setStartDate(date);
-                                // handleCustomDateChange();
+                                if (date) {
+                                    setStartDate(date.format("YYYY-MM-DD"));
+                                    setIsStartDateOpen(false); // Close Start Date Picker
+                                    setIsEndDateOpen(true); // Open End Date Picker
+                                    handleCustomDateChange();
+                                }
                             }}
                         />
                         <DatePicker
                             label="End Date"
-                            value={endDate}
+                            value={endDate ? dayjs(endDate) : null}
+                            open={isEndDateOpen}
+                            onOpen={() => setIsEndDateOpen(true)}
+                            onClose={() => setIsEndDateOpen(false)}
                             onChange={(date) => {
-                                setEndDate(date);
-                                // handleCustomDateChange();
+                                if (date) {
+                                    setEndDate(date.format("YYYY-MM-DD"));
+                                    setIsEndDateOpen(false); // Close End Date Picker
+                                    handleCustomDateChange();
+                                }
                             }}
                         />
                     </div>
