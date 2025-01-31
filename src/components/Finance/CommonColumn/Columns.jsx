@@ -2871,6 +2871,14 @@ export const pendingPaymentRequestColumns = ({
       key: "accountNumber",
       name: "Account No.",
       width: 150,
+      colorRow: (row) => {
+        if (row?.is_bank_verified) {
+          return "#ACE1AF";
+        }
+        // else {
+        //   return "#ffff008c";
+        // }
+      }
     },
     {
       key: "branchCode",
