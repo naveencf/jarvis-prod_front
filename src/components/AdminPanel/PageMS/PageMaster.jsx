@@ -194,7 +194,7 @@ const PageMaster = () => {
       setPriceTypeList(platformPriceData);
       setFilterPriceTypeList(platformPriceData);
     } else {
-      console.log("Condition not met");
+      // console.log("Condition not met");
     }
   }, [platformPriceData, isPriceLoading]);
 
@@ -527,9 +527,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-          value: initialVendor._id,
-          label: formatString(initialVendor.vendor_name),
-        }
+        value: initialVendor._id,
+        label: formatString(initialVendor.vendor_name),
+      }
       : null;
   };
 
@@ -619,7 +619,7 @@ const PageMaster = () => {
   };
 
   const checkPageExistence = async (name) => {
-    if (!name) return; 
+    if (!name) return;
     try {
       const res = await axios.get(
         `${baseUrl}v1/check_page_exist_or_not/${name}`

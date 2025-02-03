@@ -8,8 +8,27 @@ import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import PersonIcon from "@mui/icons-material/Person";
 import { Stack, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import { useEffect } from "react";
+import { useGlobalContext } from "../../../../../Context/Context";
 
 export default function ReadableList({ rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex }) {
+  const { toastAlert, toastError } = useGlobalContext();
+  useEffect(() => {
+    if (vendorBankDetail.length > 0) {
+      let index = vendorBankDetail.findIndex(bank => bank.account_number == rowData.accountNumber);
+
+      if (index === -1 && rowData.vpa) {
+        index = vendorBankDetail.findIndex(bank => bank.upi_id == rowData.vpa);
+      }
+
+      if (index === -1) {
+        index = 0; // Default to first option if no match
+        toastError("Bank Details does not matched with requested detail")
+      }
+
+      setSelectedBankIndex(index);
+    }
+  }, [rowData, vendorBankDetail, setSelectedBankIndex]);
 
 
   const handleBankChange = (event) => {
@@ -26,7 +45,7 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
   };
 
   const selectedBankDetail = vendorBankDetail[selectedBankIndex];
-  // console.log(vendorBankDetail, "vendorBankDetail", selectedBankIndex)
+  // console.log(rowData, "rowData")
   return (
     <>
       {/* Bank selection dropdown */}

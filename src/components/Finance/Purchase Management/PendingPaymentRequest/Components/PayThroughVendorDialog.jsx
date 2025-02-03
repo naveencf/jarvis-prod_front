@@ -68,7 +68,7 @@ const PayThroughVendorDialog = (props) => {
       }
       const selectedRow = rowSelectionModel[0];
 
-      if (vendorBankDetail[selectedBankIndex]?.ifsc == "") {
+      if (vendorBankDetail[selectedBankIndex]?.ifsc == "" && vendorBankDetail[selectedBankIndex]?.upi_id == "") {
         toastError("Branch Code is not valid.");
         return;
 

@@ -7,9 +7,13 @@ import { baseUrl, phpBaseUrl } from '../../../utils/config';
 import axios from 'axios';
 import formatString from '../../../utils/formatString';
 import { useGlobalContext } from '../../../Context/Context';
+import jwtDecode from 'jwt-decode';
 
 const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialog, vendorDetail, setVendorDetail, userName }) => {
   const token = sessionStorage.getItem('token');
+
+  const decodedToken = jwtDecode(token);
+  const userID = decodedToken.id;
   const [addPurchase, { isLoading, isSuccess, isError }] = useAddPurchaseMutation();
   const [vendorPhpDetail, setVendorPhpDetail] = useState('');
   const [vendorBankDetail, setVendorBankDetail] = useState('');
@@ -58,6 +62,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         }
       });
   }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -82,34 +87,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       return updatedData;
     });
   };
-  // const handleChange = (e) => {
-  //     const { name, value } = e.target;
 
-  //     setFormData((prev) => {
-  //         const updatedData = { ...prev, [name]: value };
-
-  //         if (name === "request_amount") {
-  //             const requestAmount = parseFloat(value) || 0;
-  //             const outstandingAmount = parseFloat(vendorPhpDetail[0]?.outstanding) || 0;
-
-  //             if (requestAmount > outstandingAmount) {
-  //                 toastError("Request Amount cannot exceed Outstanding Amount.");
-
-  //                 updatedData.request_amount = vendorPhpDetail[0]?.outstanding; // Reset to previous valid amount
-  //             } else {
-  //                 if (updatedData.gst) {
-  //                     updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
-  //                     updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
-  //                 } else {
-  //                     updatedData.gst_amount = "0";
-  //                     updatedData.base_amount = requestAmount.toFixed(2);
-  //                 }
-  //                 updatedData.request_amount = requestAmount;
-  //             }
-  //         }
-  //         return updatedData;
-  //     });
-  // };
 
   const handleGSTChange = (e) => {
     const isChecked = e.target.checked;
@@ -136,7 +114,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setFormData({ ...formData, invc_img: file });
     }
   };
-  console.log(vendorBankDetail[selectedBankIndex], "selectedBank")
+  // console.log(vendorBankDetail[selectedBankIndex], "selectedBank", vendorDetail)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -196,6 +174,41 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const handleBankChange = (event) => {
     setSelectedBankIndex(event.target.value);
   };
+  const handlePennyDropforVendor = () => {
+    if (vendorBankDetail[selectedBankIndex]?.account_number == "") {
+      toastAlert("Penny drop is only for Bank Account and Account Number is missing");
+      return;
+    }
+    const payload = {
+      "accountNumber": vendorBankDetail[selectedBankIndex]?.account_number,
+      "branchCode": vendorBankDetail[selectedBankIndex]?.ifsc,
+      "createdBy": userID,
+      "vendorId": vendorBankDetail[selectedBankIndex]?.vendor_id,
+      "vendorName": vendorBankDetail[selectedBankIndex]?.account_holder_name,
+      "vendorPhpId": vendorBankDetail[selectedBankIndex]?.php_vendor_id,
+      "zohoVendorId": "1111",
+      "isTestingData": false,
+      "vendorBankDetailId": vendorBankDetail[selectedBankIndex]?._id
+    }
+    try {
+
+      axios
+        .post(`${insightsBaseUrl}` + `v1/create_penny_drope`, payload, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          if (res.status == 200) {
+
+            toastAlert("Penny Drop Successfully initiated")
+          }
+
+        });
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <Dialog
       open={reqestPaymentDialog}
@@ -246,9 +259,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             </Select>
           </FormControl>
         )}
-        {/* <Button sx={{ ml: 1 }} variant="contained" color='success'>
+        <Button onClick={handlePennyDropforVendor} sx={{ ml: 1 }} variant="contained" color='success'>
           Penny Drop
-        </Button> */}
+        </Button>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
           <TextField label="Request Amount (With GST)" name="request_amount" value={formData.request_amount} onChange={handleChange} fullWidth />
           <FormControlLabel control={<Checkbox checked={formData.gst} onChange={handleGSTChange} />} label="Add GST (18%)" />

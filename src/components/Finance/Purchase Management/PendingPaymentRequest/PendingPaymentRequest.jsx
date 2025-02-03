@@ -137,7 +137,7 @@ export default function PendingPaymentRequest() {
   useEffect(() => {
     // callApi();
     if (data?.length > 0) {
-      console.log(data, "filterdata")
+      // console.log(data, "filterdata")
       // const requestPayments = data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
       const requestPayments = data
       setPhpData(requestPayments);
@@ -146,7 +146,7 @@ export default function PendingPaymentRequest() {
       setFilterData(requestPayments);
       setPendingRequestCount(requestPayments.length);
     }
-    console.log("dataFilter", dateFilter);
+    // console.log("dataFilter", dateFilter);
   }, [dateFilter, refetch, data]);
 
   const handleRemainderModal = (reaminderData) => {
@@ -203,7 +203,7 @@ export default function PendingPaymentRequest() {
     };
     setLoading(true);
     setRowData(enrichedRow);
-    console.log(Number(row.outstandings) - Number(row?.getway_process_amt), 'bal-proc');
+    // console.log(Number(row.outstandings) - Number(row?.getway_process_amt), 'bal-proc');
     setPaymentAmount(Number(row.outstandings) - Number(row?.proccessingAmount));
     setNetAmount(row.outstandings);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
