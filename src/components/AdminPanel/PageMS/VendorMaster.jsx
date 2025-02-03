@@ -13,6 +13,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Divider,
   FormControlLabel,
   IconButton,
   Stack,
@@ -663,7 +664,7 @@ const VendorMaster = () => {
       },
     ]);
   };
-  console.log(bankRows, "bankRows")
+  // console.log(bankRows, "bankRows")
   const handleRemoveBankInfoRow = (index) => {
     return () => {
       const updatedRows = bankRows.filter((row, i) => i !== index);
@@ -1176,7 +1177,7 @@ const VendorMaster = () => {
       />
       <div className="card">
         <div className="card-header">
-          <h5 className="card-title">Add Vendor Master</h5>
+          <h5 className="card-title">Add Vendor Details</h5>
         </div>
 
         <div className="card-body pb4">
@@ -1624,7 +1625,7 @@ const VendorMaster = () => {
                 </span>
               )}
             </div>
-
+            <Divider sx={{ mb: 2 }} />
             {bankRows?.map((row, i) => (
               <>
                 <div className="form-group col-6">
@@ -1659,6 +1660,7 @@ const VendorMaster = () => {
                         setValidator((prev) => ({ ...prev, payId: false }));
                       }
                     }}
+                    isDisabled={row.is_verified} // Disable if _id exists
                   ></Select>
                   <IconButton
                     onClick={handleAddPaymentMethodClick}
@@ -1709,6 +1711,7 @@ const VendorMaster = () => {
                             }));
                           }
                         }}
+                        isDisabled={row.is_verified} // Disable if _id exists
                       />
                       <IconButton
                         onClick={handleAddBankNameClick}
@@ -1744,6 +1747,7 @@ const VendorMaster = () => {
                           // if (!!_id) return;
                           handleAccountTypeChange(e, i);
                         }}
+                        isDisabled={row.is_verified} // Disable if _id exists
                       />
                     </div>
 
@@ -1755,6 +1759,7 @@ const VendorMaster = () => {
                       required={false}
                       value={bankRows[i].account_number}
                       onChange={(e) => handleAccountNoChange(e, i)}
+                      disabled={row.is_verified} // Disable if _id exists
                     />
                     <FieldContainer
                       required={false}
@@ -1762,18 +1767,21 @@ const VendorMaster = () => {
                       label="IFSC "
                       value={bankRows[i].ifsc}
                       onChange={(e) => handleIFSCChange(e, i)}
+                      disabled={row.is_verified} // Disable if _id exists
                     />
                     <FieldContainer
                       label="PAN No"
                       fieldGrid={3}
                       value={bankRows[i].pan_card}
                       onChange={(e) => handlePANChange(e, i)}
+                      disabled={row.is_verified && bankRows[i].pan_card != ""} // Disable if _id exists
                     />
                     <FieldContainer
                       label="Account Holder Name"
                       fieldGrid={3}
                       value={bankRows[i].account_holder_name}
                       onChange={(e) => handleAccountHolderChange(e, i)}
+                      disabled={row.is_verified && bankRows[i].account_holder_name != ""} // Disable if _id exists
                     />
                   </>
                 )}
@@ -1783,6 +1791,7 @@ const VendorMaster = () => {
                     label="UPI ID "
                     value={bankRows[i].upi_id}
                     onChange={(e) => handleUPIidChange(e, i)}
+                    disabled={row.is_verified} // Disable if _id exists
                   />
                 )}
 
@@ -1794,8 +1803,10 @@ const VendorMaster = () => {
                       required={false}
                       type="number"
                       onChange={(e) => handleRegisteredMobileChange(e, i)}
+                      disabled={row.is_verified} // Disable if _id exists
                     />
                   )}
+                <Divider sx={{ mb: 2 }} />
                 {i > 0 && (
                   <IconButton
                     onClick={handleRemoveBankInfoRow(i)}

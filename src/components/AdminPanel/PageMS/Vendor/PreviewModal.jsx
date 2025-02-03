@@ -22,7 +22,7 @@ const PreviewModal = ({
   const { data: vendor } = useGetAllVendorTypeQuery();
   const typeData = vendor?.data;
 
- 
+
   return (
     <Modal
       open={open}

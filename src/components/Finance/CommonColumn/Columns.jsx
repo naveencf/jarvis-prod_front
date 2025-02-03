@@ -2754,6 +2754,12 @@ export const pendingPaymentRequestColumns = ({
       },
     },
     {
+      key: "request_id",
+      name: "Request  ID",
+      width: 130,
+
+    },
+    {
       key: "Zoho Uploaded",
       name: "Zoho Uploaded",
       width: 130,
