@@ -2798,44 +2798,7 @@ export const pendingPaymentRequestColumns = ({
       renderRowCell: (row) => formatUTCDate(row?.createdAt),
 
     },
-    // {
-    //   key: "request_by",
-    //   name: "Requested By",
-    //   width: 150,
-    //   renderRowCell: (row) => {
-    //     return (
-    //       <>
-    //         <span>{row?.name}</span> &nbsp;{" "}
-    //       </>
-    //     );
-    //   },
-    // },
-    // {
-    //   key: "Reminder",
-    //   name: "Reminder",
-    //   width: 150,
-    //   renderRowCell: (row) => {
-    //     const reminder = phpRemainderData?.filter(
-    //       (item) => item.request_id == row?.request_id
-    //     );
 
-    //     return (
-    //       <>
-    //         <span>
-    //           {reminder?.length > 0 ? (
-    //             <Badge badgeContent={reminder?.length} color="primary">
-    //               <NotificationsActiveTwoToneIcon
-    //                 onClick={() => handleRemainderModal(reminder)}
-    //               />
-    //             </Badge>
-    //           ) : (
-    //             0
-    //           )}
-    //         </span>
-    //       </>
-    //     );
-    //   },
-    // },
     {
       key: "vendor_name",
       name: "Vendor Name",
@@ -3164,6 +3127,12 @@ export const pendingPaymentRequestColumns = ({
         return (
           <div className="flexCenter colGap8">
             {/* {(Number(row?.outstandings) - Number(row?.getway_process_amt)) > 0 && */}
+            {/* < button
+                className="btn cmnbtn btn_sm btn-danger"
+                onClick={(e) => handleDiscardClick(e, row)}
+              >
+                Discard
+              </button > */}
             < button
               className="btn cmnbtn btn_sm btn-success"
               onClick={(e) => handlePayClick(e, row)}
@@ -3171,13 +3140,7 @@ export const pendingPaymentRequestColumns = ({
               Pay
             </button>
             {/* } */}
-            < button
-              className="btn cmnbtn btn_sm btn-danger"
-              onClick={(e) => handleDiscardClick(e, row)}
-            >
-              Discard
-            </button >
-            <button className="btn cmnbtn btn_sm btn-success">
+            <button className="btn cmnbtn btn_sm btn-danger">
               <Link
                 to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
               >

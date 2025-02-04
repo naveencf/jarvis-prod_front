@@ -36,6 +36,7 @@ const OpCalenderOverview = ({ steps, overviewData, dates }) => {
               ))}
             </TableRow>
           </TableHead>
+          ;
           <TableBody>
             {steps.map((step, stepIndex) => (
               <TableRow key={step.step}>

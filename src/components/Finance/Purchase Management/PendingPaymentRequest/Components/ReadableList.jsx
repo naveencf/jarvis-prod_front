@@ -10,9 +10,15 @@ import { Stack, MenuItem, Select, FormControl, InputLabel } from "@mui/material"
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useEffect } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
+import pdfImg from "../../../pdf-file.png";
+import ImageView from "../../../ImageView";
 
 export default function ReadableList({ rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex }) {
   const { toastAlert, toastError } = useGlobalContext();
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openImageDialog, setOpenImageDialog] = useState(false);
+  const [viewImgSrc, setViewImgSrc] = useState('');
+
   useEffect(() => {
     if (vendorBankDetail.length > 0) {
       let index = vendorBankDetail.findIndex(bank => bank.account_number == rowData.accountNumber);
@@ -30,7 +36,9 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
     }
   }, [rowData, vendorBankDetail, setSelectedBankIndex]);
 
-
+  const openImgDialog = () => {
+    setOpenDialog(true);
+  };
   const handleBankChange = (event) => {
     setSelectedBankIndex(event.target.value);
   };
@@ -49,21 +57,53 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
   return (
     <>
       {/* Bank selection dropdown */}
-      <FormControl fullWidth sx={{ maxWidth: 360 }}>
-        <InputLabel id="bank-select-label">Select Bank</InputLabel>
-        <Select
-          labelId="bank-select-label"
-          value={selectedBankIndex}
-          onChange={handleBankChange}
-          label="Select Bank"
-        >
-          {vendorBankDetail?.map((bank, index) => (
-            <MenuItem key={index} value={index}>
-              {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Stack direction="row" spacing={2}>
+
+        <FormControl fullWidth sx={{ maxWidth: 360 }}>
+          <InputLabel id="bank-select-label">Select Bank</InputLabel>
+          <Select
+            labelId="bank-select-label"
+            value={selectedBankIndex}
+            onChange={handleBankChange}
+            label="Select Bank"
+          >
+            {vendorBankDetail?.map((bank, index) => (
+              <MenuItem key={index} value={index}>
+                {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {/* Invoice Image Section */}
+        <div style={{}}>
+          {rowData?.invoice_file_url ? (
+            rowData?.invoice_file_url.split(".").pop().toLowerCase() === "pdf" ? (
+              <img
+                onClick={() => {
+                  setOpenImageDialog(true);
+                  setViewImgSrc(rowData.invoice_file_url);
+                }}
+                src={pdfImg}
+                style={{ width: "40px", height: "40px", cursor: "pointer" }}
+                title="PDF Preview"
+              />
+            ) : (
+              <img
+                onClick={() => {
+                  setOpenImageDialog(true);
+                  setViewImgSrc(rowData.invoice_file_url);
+                }}
+                src={rowData.invoice_file_url}
+                alt="Invoice"
+                style={{ width: "100px", height: "100px", cursor: "pointer" }}
+              />
+            )
+          ) : (
+            "No Image"
+          )}
+        </div>
+      </Stack>
+      {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />}
       <Stack direction="row" spacing={2}>
 
 

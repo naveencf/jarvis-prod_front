@@ -295,6 +295,47 @@ const PurchaseTransactions = () => {
             }
         },
 
+        // {
+        //     key: "evidence_url",
+        //     name: "SS",
+        //     width: 150,
+        //     compare: true,
+        //     renderRowCell: (row) => {
+        //         const imgUrl = row.evidence_url;
+
+        //         return row.evidence_url ? (
+        //             <div>
+        //                 {/* Image with an onClick handler */}
+        //                 <img
+        //                     onClick={(e) => {
+        //                         // Prevent default behavior of the event
+        //                         e.preventDefault();
+
+        //                         // Open image dialog to view it
+        //                         // setOpenImageDialog(true);
+        //                         // setViewImgSrc(imgUrl);
+
+        //                         // Trigger download by creating an anchor tag dynamically
+        //                         const link = document.createElement("a");
+        //                         link.href = imgUrl;  // URL of the image
+        //                         link.target = "_blank";  // Open in a new tab if needed
+        //                         link.download = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);  // Extract filename from URL
+        //                         document.body.appendChild(link);
+        //                         link.click();  // Simulate a click on the anchor link to start the download
+        //                         document.body.removeChild(link);  // Remove the link after clicking
+        //                     }}
+        //                     src={imgUrl}
+        //                     alt="payment screenshot"
+        //                     style={{ width: "50px", height: "50px" }}
+        //                 />
+        //             </div>
+        //         ) : (
+        //             ""
+        //         );
+        //     },
+        // }
+
+
 
         {
             key: "evidence_url",
@@ -306,10 +347,11 @@ const PurchaseTransactions = () => {
 
                 return row.evidence_url ? (
                     <img
-                        onClick={() => {
-                            setOpenImageDialog(true);
-                            setViewImgSrc(imgUrl);
-                        }}
+                        // onClick={() => {
+                        //     setOpenImageDialog(true);
+                        //     setViewImgSrc(imgUrl);
+                        // }}
+                        onClick={() => downloadSlipAsImage(row)}
                         src={imgUrl}
                         alt="payment screenshot"
                         style={{ width: "50px", height: "50px" }}
@@ -446,6 +488,7 @@ const PurchaseTransactions = () => {
             },
         },
     ];
+    console.log(data, "data")
     return (
         <div>
             {/* <FormContainer

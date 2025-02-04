@@ -138,44 +138,7 @@ function PayVendorDialog(props) {
   // console.log(rowData, "rowData")
   const handlePayVendorClick = (e) => {
     e.preventDefault();
-    // displayRazorpay(paymentAmout);
-    // return;
-    // const formData = new FormData();
-    // formData.append("request_id", rowData.request_id);
-    // formData.append("vendor_id", rowData.vendor_id);
-    // formData.append("request_by", rowData.request_by);
-    // formData.append("request_amount", rowData.request_amount);
-    // formData.append("priority", rowData.priority);
-    // formData.append("status", 1);
-    // formData.append("evidence", payMentProof);
-    // formData.append("payment_mode", paymentMode);
-    // formData.append("payment_amount", paymentAmout);
-    // formData.append("payment_by", userID);
-    // formData.append("remark_finance", payRemark);
-    // formData.append("invc_no", rowData.invc_no);
-    // formData.append("invc_Date", rowData.invc_Date);
-    // formData.append("invc_remark", rowData.invc_remark);
-    // formData.append("remark_audit", rowData.remark_audit);
-    // formData.append("outstandings", rowData.outstandings);
-    // formData.append("vendor_name", rowData.vendor_name);
-    // formData.append("name", rowData.name);
-    // formData.append("request_date", rowData.request_date);
-    // formData.append("payment_date", paymentDate);
-    // formData.append("gst_hold", rowData.gst_amount);
-    // formData.append("gst_hold_amount", GSTHoldAmount);
-    // formData.append("tds_deduction", TDSValue);
-    // formData.append("gst_Hold_Bool", gstHold);
-    // formData.append("tds_Deduction_Bool", TDSDeduction);
-    // formData.append("tds_percentage", TDSPercentage);
 
-    // axios
-    //   .post(baseUrl + "phpvendorpaymentrequest", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   })
-    //   .then((res) => {
-    //     if (res.status == 200) {
 
     const phpFormData = new FormData();
 
@@ -189,7 +152,7 @@ function PayVendorDialog(props) {
     );
     phpFormData.append("payment_by", userName);
     phpFormData.append("evidence", payMentProof);
-    phpFormData.append("finance_remark", payRemark);
+    phpFormData.append("finance_remark", rowData.remark_audit);
     phpFormData.append("status", 1);
     phpFormData.append("payment_mode", paymentMode);
     phpFormData.append("gst_hold", rowData.gst_amount);
@@ -255,15 +218,7 @@ function PayVendorDialog(props) {
   };
 
   const handleCalculatePaymentAmount = () => {
-    // if (gstHold && TDSDeduction) {
-    //   setPaymentStatus("Fully Paid GST Hold and TDS Deduction");
-    // } else if (gstHold) {
-    //   setPaymentStatus("Fully Paid GST Hold");
-    // } else if (TDSDeduction) {
-    //   setPaymentStatus("Fully Paid TDS Deduction");
-    // } else {
-    //   setPaymentStatus("Fully-Paid");
-    // }
+
 
     if (paymentAmout < Math.floor(netAmount)) {
       setPaymentStatus("Partial");

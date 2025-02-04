@@ -5,6 +5,7 @@ import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { baseUrl } from "../../../../../utils/config";
 import FamilyFields from "../../../../PreOnboarding/FamilyFields";
+import { useGlobalContext } from "../../../../../Context/Context";
 
 //Family
 const initialFamilyDetailsGroup = {
@@ -66,6 +67,7 @@ const educationFieldLabels = {
 };
 
 const AboutSection = ({ educationData, familyData }) => {
+  const { toastAlert, toastError } = useGlobalContext();
   const [isEducationModalOpen, setIsEducationModalOpen] = useState(false);
   const [isFamilyModalOpen, setIsFamilyModalOpen] = useState(false);
   const token = sessionStorage.getItem("token");
@@ -90,17 +92,17 @@ const AboutSection = ({ educationData, familyData }) => {
     setIsFamilyModalOpen(false);
   };
 
+  async function getDetails() {
+    const familyDataResponse = await axios.get(
+      `${baseUrl}` + `get_single_family/${id}`
+    );
+    const educationDataResponse = await axios.get(
+      `${baseUrl}` + `get_single_education/${id}`
+    );
+    setFamilyDetails(familyDataResponse.data.data);
+    setEducationDetails(educationDataResponse.data.data);
+  }
   useEffect(() => {
-    async function getDetails() {
-      const familyDataResponse = await axios.get(
-        `${baseUrl}` + `get_single_family/${id}`
-      );
-      const educationDataResponse = await axios.get(
-        `${baseUrl}` + `get_single_education/${id}`
-      );
-      setFamilyDetails(familyDataResponse.data.data);
-      setEducationDetails(educationDataResponse.data.data);
-    }
     getDetails();
   }, [id]);
 
@@ -123,6 +125,8 @@ const AboutSection = ({ educationData, familyData }) => {
       }
       try {
         await axios.put(baseUrl + "update_education", payload);
+        toastAlert("Details Updated Successfully");
+        closeEducationModal();
       } catch (error) {
         console.error("Error Updating Education details:", error);
       }
@@ -147,6 +151,8 @@ const AboutSection = ({ educationData, familyData }) => {
       }
       try {
         const response = await axios.put(baseUrl + "update_family", payload);
+        toastAlert("Details Updated Successfully");
+        closeFamilyModal();
       } catch (error) {
         console.error("Error updating family details:", error);
       }

@@ -3,15 +3,17 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox,
 import { Select, FormControl, InputLabel } from '@mui/material';
 import { useAddPurchaseMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import { useEffect } from 'react';
-import { baseUrl, phpBaseUrl } from '../../../utils/config';
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../utils/config';
 import axios from 'axios';
 import formatString from '../../../utils/formatString';
 import { useGlobalContext } from '../../../Context/Context';
 import jwtDecode from 'jwt-decode';
+import { useGetVendorDocumentByVendorDetailQuery } from '../../Store/reduxBaseURL';
 
 const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialog, vendorDetail, setVendorDetail, userName }) => {
   const token = sessionStorage.getItem('token');
-
+  const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
+    useGetVendorDocumentByVendorDetailQuery(vendorDetail._id);
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   const [addPurchase, { isLoading, isSuccess, isError }] = useAddPurchaseMutation();
@@ -35,9 +37,12 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     // branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
     // vpa: vendorBankDetail[selectedBankIndex]?.vpa,
   });
-
+  const [isGSTAvailable, setIsGSTAvailable] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
 
+
+
+  // console.log(venodrDocuments, "venodrDocuments")
   useEffect(() => {
     axios
       .post(phpBaseUrl + `?view=getvendorDataListvid`, {
@@ -46,7 +51,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       .then((res) => {
         if (res.status == 200) {
           setVendorPhpDetail(res.data.body);
-          console.log(res.data.body, 'vendorDetail', vendorDetail);
+          // console.log(res.data.body, 'vendorDetail', vendorDetail);
         }
       });
     axios
@@ -58,7 +63,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       .then((res) => {
         if (res.status == 200) {
           setVendorBankDetail(res.data.data);
-          console.log(res.data.data, 'res.data.data');
+          // console.log(res.data.data, 'res.data.data');
         }
       });
   }, []);
@@ -89,9 +94,21 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   };
 
 
-  const handleGSTChange = (e) => {
-    const isChecked = e.target.checked;
+  useEffect(() => {
+    if (venodrDocuments && venodrDocuments.length > 0) {
+      const hasGST = venodrDocuments.some(
+        (doc) => doc.document_name === "GST" && doc.document_no != ""
+      );
 
+      setIsGSTAvailable(hasGST);
+
+      // Call handleGSTChange when GST is available
+      handleGSTChange(hasGST);
+    }
+  }, [vendorDetail]);
+
+  const handleGSTChange = (isChecked) => {
+    // console.log(isChecked, "hasGST")
     setFormData((prev) => {
       const requestAmount = parseFloat(prev.request_amount) || 0;
       const updatedData = { ...prev, gst: isChecked };
@@ -100,13 +117,13 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
         updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
       } else {
-        updatedData.gst_amount = '0.00';
+        updatedData.gst_amount = "0.00";
         updatedData.base_amount = requestAmount.toFixed(2);
       }
+
       return updatedData;
     });
   };
-
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -174,7 +191,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const handleBankChange = (event) => {
     setSelectedBankIndex(event.target.value);
   };
-  const handlePennyDropforVendor = () => {
+  const handlePennyDropforVendor = async () => {
     if (vendorBankDetail[selectedBankIndex]?.account_number == "") {
       toastAlert("Penny drop is only for Bank Account and Account Number is missing");
       return;
@@ -188,14 +205,20 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       "vendorPhpId": vendorBankDetail[selectedBankIndex]?.php_vendor_id,
       "zohoVendorId": "1111",
       "isTestingData": false,
-      "vendorBankDetailId": vendorBankDetail[selectedBankIndex]?._id
+      "vendorBankDetailId": vendorBankDetail[selectedBankIndex]?._id,
+      // "remarks": "Penny Drop"
     }
+    // Step 1: Get the JWT token
+    const getTokenResponse = await axios.get(
+      insightsBaseUrl + `v1/payment_gateway_access_token`
+    );
+    const getWayToken = getTokenResponse?.data?.data;
     try {
 
       axios
         .post(`${insightsBaseUrl}` + `v1/create_penny_drope`, payload, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${getWayToken}`,
           },
         })
         .then((res) => {
@@ -230,6 +253,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             <ListItem>
               <ListItemText primary="Address" secondary={vendorDetail?.home_address} />
             </ListItem>
+            <ListItem>
+              <ListItemText primary="Account Number" secondary={vendorBankDetail[selectedBankIndex]?.account_number} />
+            </ListItem>
           </List>
           <List>
             <ListItem>
@@ -240,6 +266,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             </ListItem>
             <ListItem>
               <ListItemText primary="Account Verified" secondary={vendorBankDetail[selectedBankIndex]?.is_verified ? "Yes" : "No"} />
+            </ListItem>
+            <ListItem>
+              <ListItemText primary="IFSC" secondary={vendorBankDetail[selectedBankIndex]?.ifsc} />
             </ListItem>
             {/* <ListItem>
                             <ListItemText primary="outstanding" secondary={formData.address} />
@@ -253,7 +282,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
               {vendorBankDetail?.map((bank, index) => (
                 <MenuItem key={index} value={index}>
                   {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
-                  {/* {`${bank?.bank_name} : ${bank?.account_number}`} */}
+                  {/* {bank?.ifsc != "" ? ` IFSC : ${bank?.ifsc}` : ""} */}
                 </MenuItem>
               ))}
             </Select>
@@ -264,22 +293,11 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         </Button>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
           <TextField label="Request Amount (With GST)" name="request_amount" value={formData.request_amount} onChange={handleChange} fullWidth />
-          <FormControlLabel control={<Checkbox checked={formData.gst} onChange={handleGSTChange} />} label="Add GST (18%)" />
+          <FormControlLabel control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />
           <Stack direction="row" spacing={2}>
             <TextField label="GST Amount" value={formData.gst_amount} InputProps={{ readOnly: true }} />
             <TextField label="Base Amount (Excl. GST)" value={formData.base_amount} InputProps={{ readOnly: true }} />
-            {/* <TextField
-                            select
-                            label="Priority"
-                            name="priority"
-                            value={formData.priority}
-                            onChange={handleChange}
-                            sx={{ width: "30%" }}
-                        >
-                            <MenuItem value="High">High</MenuItem>
-                            <MenuItem value="Medium">Medium</MenuItem>
-                            <MenuItem value="Low">Low</MenuItem>
-                        </TextField> */}
+
           </Stack>
           <Stack direction="row" spacing={2}>
             <TextField label="Invoice No#" name="invc_no" value={formData.invc_no} onChange={handleChange} fullWidth />
