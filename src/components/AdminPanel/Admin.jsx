@@ -348,9 +348,11 @@ const SalesAccountOverview = lazy(() => import('./Sales/Account/SalesAccountOver
 const PaymentDoneTransactionList = lazy(() => import('../Finance/Purchase Management/PaymentDone/Components/PaymentDoneTransactionList'));
 const PageStats = lazy(() => import('./PageMS/PageStats'));
 const PlanMaking = lazy(() => import('../inventory/plan-making/index'));
+const PlanMakingBeta = lazy(() => import('../inventory/plan-making-beta/index'));
 const PlanMakingPricing = lazy(() => import('../inventory/plan-pricing/PlanPricing'));
 const PlanPricing = lazy(() => import('../inventory/plan-pricing/index'));
 const PlanMakingTable = lazy(() => import('../inventory/plan-making/PlanMaking'));
+const PlanMakingTableBeta = lazy(() => import('../inventory/plan-making-beta/PlanMakingBeta'));
 const PlanUpload = lazy(() => import('../AdminPanel/Inventory/Plan-upload/index'));
 const CreateDocumentType = lazy(() => import('./Sales/Account/CreateDocumentType'));
 const DocumentTypeOverview = lazy(() => import('./Sales/Account/DocumentTypeOverview'));
@@ -849,9 +851,11 @@ const Admin = () => {
                   /> */}
                     <Route path="/pms-vendor-master" element={<VendorMaster />} />
                     <Route path="/pms-plan-making" element={<PlanMaking />} />
+                    <Route path="/pms-plan-making-beta" element={<PlanMakingBeta />} />
                     <Route path="/pms-plan-pricing" element={<PlanPricing />} />
                     <Route path="/pms-plan-pricing/:id" element={<PlanMakingPricing />} />
                     <Route path="/pms-plan-making/:id" element={<PlanMakingTable />} />
+                    <Route path="/pms-plan-making-beta/:id" element={<PlanMakingTableBeta />} />
                     <Route path="/pms-plan-upload" element={<PlanUpload />} />
                     <Route path="/pms-vendor-master/:_id" element={<VendorMaster />} />
                     <Route path="/pms-vendor-overview" element={<VendorOverview />} />

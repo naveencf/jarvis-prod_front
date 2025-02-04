@@ -112,7 +112,7 @@ export default function PageDateWiseStatus({
                 </div>
                 {creatorProgress.length > 0 && (
                   <div className="divTableBody">
-                    {creatorProgress.slice(0, 5).map((row, rowIndex) => (
+                    {creatorProgress.map((row, rowIndex) => (
                       <div className="divTableRow" key={rowIndex}>
                         <div className="divTableCell" data-label="Date">
                           <h6 className="divTableTH">
@@ -210,16 +210,16 @@ export default function PageDateWiseStatus({
       ) : (
         <>
 
-        <PageGrowthViewAll
-          startDate={startDate}
-          endDate={endDate}
-          creatorDetail={creatorDetail}
-          creatorProgress={creatorProgress}
-          setCreatorProgress={setCreatorProgress}
-        />
-         <Button sx={{ ml: "80%" }} onClick={handleChangeView}>
-                {`View Less >>`}{" "}
-              </Button>
+          <PageGrowthViewAll
+            startDate={startDate}
+            endDate={endDate}
+            creatorDetail={creatorDetail}
+            creatorProgress={creatorProgress}
+            setCreatorProgress={setCreatorProgress}
+          />
+          <Button sx={{ ml: "80%" }} onClick={handleChangeView}>
+            {`View Less >>`}{" "}
+          </Button>
         </>
       )}
     </>

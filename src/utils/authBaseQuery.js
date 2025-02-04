@@ -4,7 +4,7 @@ import { baseUrl } from "./config";
 const getToken = () => {
   return sessionStorage.getItem("token");
 };
-
+const token = sessionStorage.getItem("token")
 const authBaseQuery = async (args, api, extraOptions) => {
   const baseQuery = fetchBaseQuery({
     baseUrl,
@@ -25,9 +25,21 @@ const authBaseQuery = async (args, api, extraOptions) => {
 
     // Handle specific status codes
     if (statusCode === 401) {
-      sessionStorage.clear("token");
-      alert("Session expired. Please login again.");
+      const isTokenExpired = () => {
+        try {
+          const tokenData = JSON.parse(atob(token.split(".")[1]));
+          return tokenData.exp * 1000 < Date.now();  
+        } catch {
+          return true; 
+        }
+      };
+      
+      if (!token || isTokenExpired()) {
+        sessionStorage.clear();
+        window.location.href = "/login";
+      }
     }
+
 
     // Example: Extract a custom header
     // const customHeader = headers.get("X-Custom-Header");

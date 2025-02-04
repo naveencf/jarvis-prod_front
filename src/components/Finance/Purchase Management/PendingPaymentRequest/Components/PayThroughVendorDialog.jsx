@@ -58,7 +58,7 @@ const PayThroughVendorDialog = (props) => {
     return name;
   }
 
-  console.log(rowSelectionModel[0], "check")
+  // console.log(rowSelectionModel[0], "check")
   const doPayment = async (e) => {
     try {
 
@@ -142,7 +142,7 @@ const PayThroughVendorDialog = (props) => {
 
       };
       try {
-        console.log(paymentPayload, "paymentPayload")
+        // console.log(paymentPayload, "paymentPayload")
         // return
         setPaymentInitiated(true);
         const payResponse = await axios.post(
