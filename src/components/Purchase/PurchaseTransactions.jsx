@@ -20,6 +20,7 @@ import PurchaseTransactionFilter from "./PurchaseTransactionFilter";
 import html2canvas from "html2canvas";
 import formatString from "../../utils/formatString";
 import { useGetVendorPaymentTransactionsQuery } from "../Store/API/Purchase/PurchaseRequestPaymentApi";
+import pdfImg from "../Finance/pdf-file.png";
 
 const PurchaseTransactions = () => {
     const { toastAlert, toastError } = useGlobalContext();
@@ -190,71 +191,71 @@ const PurchaseTransactions = () => {
             },
 
         },
-        {
-            key: "invc_img",
-            name: "Invoice Image",
-            renderRowCell: (row) => {
-                if (!row.invc_img) {
-                    return "No Image";
-                }
+        // {
+        //     key: "invc_img",
+        //     name: "Invoice Image",
+        //     renderRowCell: (row) => {
+        //         if (!row.invc_img) {
+        //             return "No Image";
+        //         }
 
-                // Extract file extension and check if it's a PDF
-                const fileExtension = row.invc_img.split(".").pop().toLowerCase();
-                const isPdf = fileExtension === "pdf";
-                const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
-                console.log(imgUrl, isPdf, "Image URL and isPdf");
+        //         // Extract file extension and check if it's a PDF
+        //         const fileExtension = row.invc_img.split(".").pop().toLowerCase();
+        //         const isPdf = fileExtension === "pdf";
+        //         const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
+        //         console.log(imgUrl, isPdf, "Image URL and isPdf");
 
-                // Common click handler to open the dialog
-                const handleOpenDialog = () => {
-                    setOpenImageDialog(true);
-                    setViewImgSrc(imgUrl);
-                };
+        //         // Common click handler to open the dialog
+        //         const handleOpenDialog = () => {
+        //             setOpenImageDialog(true);
+        //             setViewImgSrc(imgUrl);
+        //         };
 
-                return isPdf ? (
-                    <div
-                        style={{ position: "relative", overflow: "hidden", height: "80px" }}
-                        onClick={handleOpenDialog}
-                    >
+        //         return isPdf ? (
+        //             <div
+        //                 style={{ position: "relative", overflow: "hidden", height: "80px" }}
+        //                 onClick={handleOpenDialog}
+        //             >
 
-                        <embed
-                            src={imgUrl}
-                            type="application/pdf"
-                            title="PDF Viewer"
-                            style={{ width: "100px", height: "150px", cursor: "pointer" }}
-                            onError={(e) => {
-                                e.target.src = "https://via.placeholder.com/150?text=No+PDF";
-                            }}
-                        />
-                        {/* Add a download link */}
-                        <a
-                            href={imgUrl}
-                            download
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{ position: "absolute", bottom: 0, left: 0, fontSize: "10px", }}
-                        >
-                            Download PDF
-                        </a>
-                    </div>
-                ) : (
-                    <img
-                        onClick={handleOpenDialog}
-                        src={imgUrl}
-                        alt="Invoice"
-                        style={{
-                            width: "40px",
-                            height: "80px",
-                            objectFit: "cover",
-                            cursor: "pointer",
-                        }}
-                        onError={(e) => {
-                            e.target.src = "https://via.placeholder.com/80?text=No+Image";
-                        }}
-                    />
-                );
-            },
-            width: 100,
-        },
+        //                 <embed
+        //                     src={imgUrl}
+        //                     type="application/pdf"
+        //                     title="PDF Viewer"
+        //                     style={{ width: "100px", height: "150px", cursor: "pointer" }}
+        //                     onError={(e) => {
+        //                         e.target.src = "https://via.placeholder.com/150?text=No+PDF";
+        //                     }}
+        //                 />
+        //                 {/* Add a download link */}
+        //                 <a
+        //                     href={imgUrl}
+        //                     download
+        //                     target="_blank"
+        //                     rel="noreferrer"
+        //                     style={{ position: "absolute", bottom: 0, left: 0, fontSize: "10px", }}
+        //                 >
+        //                     Download PDF
+        //                 </a>
+        //             </div>
+        //         ) : (
+        //             <img
+        //                 onClick={handleOpenDialog}
+        //                 src={imgUrl}
+        //                 alt="Invoice"
+        //                 style={{
+        //                     width: "40px",
+        //                     height: "80px",
+        //                     objectFit: "cover",
+        //                     cursor: "pointer",
+        //                 }}
+        //                 onError={(e) => {
+        //                     e.target.src = "https://via.placeholder.com/80?text=No+Image";
+        //                 }}
+        //             />
+        //         );
+        //     },
+        //     width: 100,
+        // },
         {
             key: "vendor_update",
             name: "Reported",
@@ -293,6 +294,43 @@ const PurchaseTransactions = () => {
                     return "#ffff008c";
                 }
             }
+        },
+        {
+            key: "invoice_url",
+            name: "Invoice Image",
+            renderRowCell: (row) => {
+                if (!row?.invoice_url) {
+                    return "No Image";
+                }
+                // Extract file extension and check if it's a PDF
+                const fileExtension = row?.invoice_url.split(".").pop().toLowerCase();
+                const isPdf = fileExtension === "pdf";
+
+                const imgUrl = row?.invoice_url;
+
+                return isPdf ? (
+                    <img
+                        onClick={() => {
+                            setOpenImageDialog(true);
+                            setViewImgSrc(imgUrl);
+                        }}
+                        src={pdfImg}
+                        style={{ width: "40px", height: "40px" }}
+                        title="PDF Preview"
+                    />
+                ) : (
+                    <img
+                        onClick={() => {
+                            setOpenImageDialog(true);
+                            setViewImgSrc(imgUrl);
+                        }}
+                        src={imgUrl}
+                        alt="Invoice"
+                        style={{ width: "100px", height: "100px" }}
+                    />
+                );
+            },
+            width: 130,
         },
 
         // {

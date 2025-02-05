@@ -113,6 +113,7 @@ const LeftSideBarBeta = ({
         cancelButtonText: 'Close Plan',
         reverseButtons: true,
       });
+      
       const planStatus = result.isConfirmed ? 'open' : 'close';
        const payload = {
         id: id,

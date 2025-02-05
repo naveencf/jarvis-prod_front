@@ -199,12 +199,19 @@ const PlanMaking = () => {
 
     // Trigger other updates or calculations dynamically based on type
     getTableData.forEach((row) => {
-      const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
-      const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
-
-      // Calculate total cost based on type
-      calculateTotalCost(row._id, isPost ? count : 0, isPost ? 0 : count, isPost ? cost : 0, isPost ? 0 : cost, 0);
-    });
+      const count = updatedValues[row._id] 
+      // const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
+      // const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
+ 
+      calculateTotalCost(
+        row._id,
+        isPost ? count : postPerPageValues[row._id] || 0, 
+        isPost ? storyPerPageValues[row._id] || 0 : count, 
+        costPerPostValues[row._id] || 0,  
+        costPerStoryValues[row._id] || 0, 
+        costPerBothValues?.[row._id] || 0  
+      );
+          });
     // Update the plan data dynamically for post or story
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count } = row;
@@ -357,8 +364,8 @@ const PlanMaking = () => {
       });
 
       if (!isAutomaticCheck) {
-        const planStatus = planDetails && planDetails[0]?.plan_status;
-        debouncedSendPlanDetails(planxData, planStatus);
+        // const planStatus = planDetails && planDetails[0]?.plan_status;
+        debouncedSendPlanDetails(planxData, "");
       }
 
       setPlanData(planxData);
@@ -476,15 +483,20 @@ const PlanMaking = () => {
     setTotalStoriesPerPage(stories);
     setTotalPagesSelected(rows?.length);
   };
-
-  const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
+   const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
     let totalCost;
-    if (postPerPage === storyPerPage) {
-      totalCost = postPerPage * costPerBoth;
-    } else {
+    
+           console.log("postPerPage", postPerPage);
+           console.log("storyPerPage", storyPerPage);
+           console.log("costPerBoth", costPerBoth);
+    // if (postPerPage == storyPerPage) {
+      
+    //   // totalCost = postPerPage + costPerBoth;
+    //   totalCost = postPerPage + storyPerPage;
+    // } else {
       totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
-    }
-
+    // }
+    console.log("totalCost", totalCost);
     setTotalCostValues((prevValues) => ({
       ...prevValues,
       [id]: totalCost,
@@ -655,7 +667,7 @@ const PlanMaking = () => {
       // Create a copy of the currently selected rows
       const updatedSelectedRows = [...selectedRows];
       const updatedPostValues = { ...postPerPageValues };
-
+     const updatedShowTotalCost = {...showTotalCost}
       // Loop through each filtered row
       filtered?.forEach((row) => {
         // Check if the row is already selected
@@ -664,6 +676,7 @@ const PlanMaking = () => {
         // If not already selected, select the row and update checkbox
         if (!isAlreadySelected) {
           handleCheckboxChange(row, '', { target: { checked: true } }, activeIndex);
+          updatedShowTotalCost[row._id] = true;
           updatedSelectedRows.push(row);
         }
 
@@ -674,7 +687,7 @@ const PlanMaking = () => {
       // Set post per page values for all rows at once
       setPostPerPageValues(updatedPostValues);
       setSelectedRows(updatedSelectedRows);
-
+      setShowTotalCost(updatedShowTotalCost)
       // Update statistics based on the selected rows
       updateStatistics(updatedSelectedRows);
 

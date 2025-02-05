@@ -37,7 +37,7 @@ const NewCampaignExecutions = () => {
       const groupedPages = data.reduce((acc, item) => {
         if (item.posted_on?.trim()) {
           // const date = item.posted_on.split(" ")[0];
-          const date = item.phase.split(" ")[0];
+          const date = item?.phase?.split(" ")[0];
           if (!acc[date]) {
             acc[date] = [];
           }
@@ -231,15 +231,16 @@ const NewCampaignExecutions = () => {
     fetchPageDetails();
   }, [shortcode]);
 
-  const handleDateSelect = (pages, date) => {
-    setFilteredData(pages);
-    setShowAllPages(false); // Reset to phase-wise view
-    setSelectedDate(date); // Set the selected date
-  };
   const handleShowAllPages = () => {
     setShowAllPages(true);
-    setFilteredData([]); // Clear filters when showing all pages
-    setSelectedDate(null); // Reset selected date
+    setFilteredData([]); 
+    setSelectedDate(null); 
+  };
+
+  const handleDateSelect = (pages, date) => {
+    setFilteredData(pages);
+    setShowAllPages(false); 
+    setSelectedDate(date); 
   };
 
   return (
@@ -264,7 +265,7 @@ const NewCampaignExecutions = () => {
         </div>
         <div className="card-body">
           {planWisePage.length > 0 &&
-            <div className="d-flex">
+            <div >
               {/* <OpreationLinkUpdateDirect
                 getPlanWisePages={getPlanWisePages}
                 planWisePage={planWisePage}
@@ -275,7 +276,7 @@ const NewCampaignExecutions = () => {
                 planWiseData={planWisePage}
 
               />
-              <button
+              {/* <button
                 className={`btn cmnbtn btn_sm ${showAllPages
                   ? "btn-primary"
                   : "btn-outline-primary"
@@ -283,11 +284,12 @@ const NewCampaignExecutions = () => {
                 onClick={handleShowAllPages}
               >
                 All Pages
-              </button>
+              </button> */}
               <PhaseWisePages
                 phaseWisePages={phaseWisePages}
                 selectedDate={selectedDate}
                 onDateSelect={handleDateSelect}
+                onShowAllPages={handleShowAllPages}
               />
             </div>
           }
@@ -301,7 +303,6 @@ const NewCampaignExecutions = () => {
                   : planWisePage
             }
             isLoading={false}
-            Pagination={[100, 200, 1000]}
             tableName={"Op_executions"}
             pagination={[100, 200, 1000]}
           />
