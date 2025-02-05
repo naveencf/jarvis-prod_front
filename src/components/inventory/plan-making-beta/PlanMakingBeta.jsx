@@ -711,7 +711,7 @@ const PlanMakingBeta = () => {
       setNotFoundPages([]);
     }
   };
-
+//   console.log("searchInput", searchIn);
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -755,6 +755,7 @@ const PlanMakingBeta = () => {
     setPageCategoryCount({});
     setTotalDeliverables(0);
     setSearchInput('');
+ 
   };
   // Function to filter rows based on the visibility of selected rows
   const filterRowsBySelection = (rows, selectedRows) => {

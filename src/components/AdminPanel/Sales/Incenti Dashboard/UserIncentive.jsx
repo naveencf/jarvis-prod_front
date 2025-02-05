@@ -384,25 +384,25 @@ const UserIncentive = () => {
             </div>
           )}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            {/* <Link to="/admin/incentive-statement"> */}
-            <div className="card">
-              <div className="card-body pb20 flexCenter colGap14">
-                <div className="iconBadge bgInfoLight m-0">
-                  <span>
-                    <Invoice weight="duotone" />
-                  </span>
-                </div>
-                <div>
-                  <h6 className="colorMedium">Total Release Request Pending</h6>
-                  <h6 className="mt8 fs_16">
-                    {userIncentiveData?.totalIncentiveRequestPendingAmount.toFixed(
-                      2
-                    )}
-                  </h6>
+            <Link to="/admin/incentive-statement">
+              <div className="card">
+                <div className="card-body pb20 flexCenter colGap14">
+                  <div className="iconBadge bgInfoLight m-0">
+                    <span>
+                      <Invoice weight="duotone" />
+                    </span>
+                  </div>
+                  <div>
+                    <h6 className="colorMedium">Total Release Request Pending</h6>
+                    <h6 className="mt8 fs_16">
+                      {userIncentiveData?.totalIncentiveRequestPendingAmount.toFixed(
+                        2
+                      )}
+                    </h6>
+                  </div>
                 </div>
               </div>
-            </div>
-            {/* </Link> */}
+            </Link>
           </div>
           {loginUserRole === 1 && (
             <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">

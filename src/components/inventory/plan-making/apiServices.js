@@ -39,7 +39,7 @@ export const useSendPlanDetails = (id) => {
     const payload = {
       planx_id: id,
       plan_pages: updatedPlanDetails,
-      plan_status: planStatus === 'close' ? 'saved' : '',
+      plan_status: planStatus === 'close' || planStatus === 'open' ? 'saved' : '',
     };
     try {
       setLoading(true);
@@ -90,7 +90,7 @@ export const useFetchPlanDetails = (id) => {
     }
   }, [id]);
 
-  return { planDetails,fetchPlanDetails };
+  return { planDetails, fetchPlanDetails };
 };
 
 export const useFetchPlanDescription = () => {

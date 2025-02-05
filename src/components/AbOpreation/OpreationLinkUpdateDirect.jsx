@@ -15,6 +15,9 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
     const [instaLink, setInstaLink] = useState("");
     const [openModal, setOpenModal] = useState(false);
     const [notMatchPhaseData, setNotMatchPhaseData] = useState([]);
+    const [phaseWiseUpdateData, setPhaseWiseUpdateData] = useState(null);
+    console.log(phaseWiseUpdateData, 'phaseWiseUpdateData');
+
 
     // const handleClick = async () => {
     //     if (shortcode) {
@@ -186,7 +189,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
                         post_type: postData?.postType,
                         posted_on: postData?.postedOn,
                         short_code: postData?.shortCode,
-                        phase: "2025-01-15",
+                        phase: "2025-01-18",
                     };
 
                     const PhaseDateMatch = planWisePage.find((dt) => {
@@ -243,10 +246,12 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
 
                         if (!updated) {
                             alert("No matching or available field found to update.");
-                            // setNotMatchPhaseData(sortCodesMatch);
-                            setOpenModal(true); // Open modal for no matching/available field
+                            const notMatchPostOnWiseDate_link = planWisePage.filter(
+                                (item) => item?.creator_name === postData?.owner_info?.username
+                            );
+                            setNotMatchPhaseData(notMatchPostOnWiseDate_link);
+                            setOpenModal(true);
                         }
-
                         setInstaLink("");
                         getPlanWisePages();
                     } else {
@@ -254,9 +259,8 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
                         const notMatchPostOnWiseDate_link = planWisePage.filter(
                             (item) => item?.creator_name === postData?.owner_info?.username
                         );
-                        console.log(notMatchPostOnWiseDate_link, "notmatchpostdate_Data");
                         setNotMatchPhaseData(notMatchPostOnWiseDate_link);
-                        setOpenModal(true); 
+                        setOpenModal(true);
                     }
                 } else {
                     console.error("Error in API response:", response.data.message);
@@ -282,6 +286,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
             <button
                 className="btn cmnbtn btn_sm btn-outline-danger"
                 onClick={handleClick}
+                disabled={!instaLink}
             >
                 Update
             </button>
@@ -296,25 +301,9 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
                 <DialogTitle id="no-phase-found-title">
                     No Matching Phase Date,
                 </DialogTitle>
-                <DialogContent>
-                    <DialogContent>
-                        <Autocomplete
-                            options={notMatchPhaseData}
-                            getOptionLabel={(option) =>
-                                `${option.creator_name || ""}  ${option?.phase
-                                    ? new Date(option.phase).toISOString().split("T")[0]
-                                    : "No Phase"
-                                }`
-                            }
-                            sx={{ width: 300 }}
-                            renderInput={(params) => (
-                                <TextField {...params} label=" Pages By Phases" />
-                            )}
-                        />
-                    </DialogContent>
-
+                <DialogContent className="d-flex p-2">
                     <Autocomplete
-                        options={notMatchPhaseData} // Pass the data as options
+                        options={notMatchPhaseData}
                         getOptionLabel={(option) =>
                             `${option?.phase
                                 ? new Date(option.phase).toISOString().split("T")[0]
@@ -322,8 +311,26 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
                             }`
                         }
                         sx={{ width: 300 }}
-                        renderInput={(params) => <TextField {...params} label="Phase " />}
+                        onChange={(event, value) => setPhaseWiseUpdateData(value)}
+                        renderInput={(params) => <TextField {...params} label="Phase Wise Update Link Data" />}
                     />
+                    <Autocomplete
+                        options={notMatchPhaseData}
+                        getOptionLabel={(option) =>
+                            `${option.creator_name || ""}  ${option?.phase
+                                ? new Date(option.phase).toISOString().split("T")[0]
+                                : "No Phase"
+                            }`
+                        }
+                        sx={{ width: 300 }}
+
+                        renderInput={(params) => (
+                            <TextField {...params} label=" Pages By Phases" />
+                        )}
+                    />
+
+
+
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenModal(false)} color="primary">
