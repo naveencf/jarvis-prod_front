@@ -27,9 +27,11 @@ import ZohoBillCreation from './Components/ZohoBillCreation';
 import { Balance } from '@mui/icons-material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import { useGetVendorPaymentRequestsQuery } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
+import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
+  const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
   const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequerst } = useGetVendorPaymentRequestsQuery();
   const token = sessionStorage.getItem('token');
@@ -89,7 +91,7 @@ export default function PendingPaymentRequest() {
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
-
+  console.log(contextData, "contextData")
   const getValidationCSSForRemainder = (params) => {
     const reminder = phpRemainderData?.filter((item) => item.request_id == params.row.request_id);
     return reminder?.length > 2 ? 'bg-danger' : '';
@@ -615,6 +617,7 @@ export default function PendingPaymentRequest() {
                 handleDiscardClick,
                 handleZohoStatusUpload,
                 nodeData,
+                contextData
               })}
               data={activeAccordionIndex === 0 ? filterData : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === '3') : activeAccordionIndex === 2 ? filterData?.filter((d) => d.status === '0') : []}
               isLoading={requestLoading}
