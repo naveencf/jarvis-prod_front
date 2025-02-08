@@ -85,7 +85,7 @@ const PendingPaymentReqFilters = (props) => {
     setPriorityFilter("");
     setRequestAmountFilter("");
     setRequestedAmountField("");
-    setPendingRequestCount(data?.length);
+    // setPendingRequestCount(data?.length);
   };
 
   return (

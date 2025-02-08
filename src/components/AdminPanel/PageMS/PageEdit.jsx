@@ -66,6 +66,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [rate, setRate] = useState('');
   const [description, setDescription] = useState('');
   const [bio, setBio] = useState('');
+  const [pageBehaviour, setPageBehaviour] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [singlePage, setSinglePage] = useState({});
 
   const [priceDataNew, setPriceDataNew] = useState([]);
@@ -298,6 +300,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         setVendorId(data[0].vendor_id);
         setFollowCount(data[0].followers_count);
         setBio(data[0].bio);
+        setDisplayName(data[0].display_name);
+        setPageBehaviour(data[0].page_behaviour)
         setTempVendorId(data[0].temp_vendor_id);
         setProfileId(data[0].page_profile_type_id);
         setRate(data[0].engagment_rate);
@@ -393,6 +397,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       vendor_id: vendorId,
       followers_count: followCount,
       bio: bio,
+      page_behaviour: pageBehaviour,
+      display_name: displayName,
       page_profile_type_id: profileId,
       rate_type: rateType || '',
       updated_by: userID,
@@ -827,8 +833,31 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         )}
       </div>
 
+
+      <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Page Behaviour"
+                fieldGrid={12}
+                value={pageBehaviour}
+                required={false}
+                onChange={(e) => setPageBehaviour(e.target.value)}
+              />
+            </div>
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Display Name"
+                fieldGrid={12}
+                value={displayName}
+                required={false}
+                onChange={(e) => setDisplayName(e.target.value)}
+              />
+            </div>
+
       <FieldContainer label="Description" value={description} required={false} onChange={(e) => setDescription(e.target.value)} />
       <FieldContainer label="Bio" value={bio} required={false} onChange={(e) => setBio(e.target.value)} />
+
+
+
 
       <div className="col-md-6 p0 mb16">
         <FieldContainer

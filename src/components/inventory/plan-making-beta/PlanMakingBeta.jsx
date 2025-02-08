@@ -52,6 +52,9 @@ const PlanMakingBeta = () => {
   const { data: vendorTypeData, isLoading: typeLoading } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
 
+
+
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [postPerPageValues, setPostPerPageValues] = useState({});
   const [storyPerPageValues, setStoryPerPageValues] = useState({});
@@ -124,7 +127,7 @@ const PlanMakingBeta = () => {
   const { versionData } = useGetPlanPages(id, selectedVersion?.version);
 
   const { descriptions } = useFetchPlanDescription();
-
+ 
   const debounce = (func, delay) => {
     let timeoutId;
     return function (...args) {
@@ -183,32 +186,35 @@ const PlanMakingBeta = () => {
     const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
 
     getTableData.forEach((row) => {
-        console.log("showToalCost", showTotalCost);
       const isChecked = showTotalCost[row._id];
-      console.log("isChecked", isChecked);
-        console.log("storyCountDefault",storyCountDefault);
+
       if (isChecked) {
         const newValue = isPost ? postCountDefault || 1 : storyCountDefault || 0;
         updatedValues[row._id] = newValue;
-        console.log("updatedValues--------",updatedValues[row._id])
-        console.log("row._id]---",row._id);
       }
     });
-    console.log("updatedValues",updatedValues);
+
     if (isPost) {
       setPostPerPageValues(updatedValues);
-    } else if(type==="story") {
+    } else {
       setStoryPerPageValues(updatedValues);
     }
 
     // Trigger other updates or calculations dynamically based on type
     getTableData.forEach((row) => {
-      const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
-      const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
-
-      // Calculate total cost based on type
-      calculateTotalCost(row._id, isPost ? count : 0, isPost ? 0 : count, isPost ? cost : 0, isPost ? 0 : cost, 0);
-    });
+      const count = updatedValues[row._id] 
+      // const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
+      // const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
+ 
+      calculateTotalCost(
+        row._id,
+        isPost ? count : postPerPageValues[row._id] || 0, 
+        isPost ? storyPerPageValues[row._id] || 0 : count, 
+        costPerPostValues[row._id] || 0,  
+        costPerStoryValues[row._id] || 0, 
+        costPerBothValues?.[row._id] || 0  
+      );
+          });
     // Update the plan data dynamically for post or story
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count } = row;

@@ -485,10 +485,6 @@ const PlanMaking = () => {
   };
    const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
     let totalCost;
-    
-           console.log("postPerPage", postPerPage);
-           console.log("storyPerPage", storyPerPage);
-           console.log("costPerBoth", costPerBoth);
     // if (postPerPage == storyPerPage) {
       
     //   // totalCost = postPerPage + costPerBoth;
@@ -496,7 +492,6 @@ const PlanMaking = () => {
     // } else {
       totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
     // }
-    console.log("totalCost", totalCost);
     setTotalCostValues((prevValues) => ({
       ...prevValues,
       [id]: totalCost,

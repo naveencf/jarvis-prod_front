@@ -16,7 +16,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
   const [newCategoryName, setNewCategoryName] = useState('');
   const { id } = useParams();
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
- 
+
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
@@ -71,7 +71,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
   const handleMergedCategoriesChange = (event) => {
     setMergedCategories(event.target.value);
   };
-   const handleMergeCategories = () => {
+  const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
     const categoryMap = categories?.reduce((acc, cat) => {
@@ -80,7 +80,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
     }, {});
 
     const mainCategoryId = categoryMap[mainCategory];
-     if (!mainCategoryId) {
+    if (!mainCategoryId) {
       console.error('Main category ID not found');
       return;
     }
@@ -117,8 +117,8 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
         story_count: item['Story Count'] || 0,
         _id: item['page_id'] || 'Unknown ID',
         category_name: categoryName,
-        platform_name:item['Platform']?.toLowerCase(),
-        platform_id:item['platform_id']
+        platform_name: item['Platform']?.toLowerCase(),
+        platform_id: item['platform_id'],
       };
     });
     setUpdatedCategoryData(true);
