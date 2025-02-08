@@ -2690,6 +2690,7 @@ export const pendingPaymentRequestColumns = ({
   handleDiscardClick,
   handleZohoStatusUpload,
   nodeData,
+  contextData
 }) => [
     {
       key: "s_no",
@@ -3133,12 +3134,18 @@ export const pendingPaymentRequestColumns = ({
               >
                 Discard
               </button > */}
-            < button
+            {contextData && contextData[67].view_value == 1 && < button
               className="btn cmnbtn btn_sm btn-success"
               onClick={(e) => handlePayClick(e, row)}
             >
               Pay
-            </button>
+            </button>}
+            {contextData && contextData[66].view_value == 1 && < button
+              className="btn cmnbtn btn_sm btn-success"
+            //onClick={(e) => handleEditRequest(e, row)}
+            >
+              Edit
+            </button>}
             {/* } */}
             <button className="btn cmnbtn btn_sm btn-danger">
               <Link
