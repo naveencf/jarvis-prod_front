@@ -285,7 +285,26 @@ export const PageBaseURL = createApi({
         return response.data.sort((a, b) => b.totalPageCount - a.totalPageCount); // Ascending order
       },
     }),
+
+    getOperationContentCost: builder.query({
+      query: () => `v1/operation_content_cost`,
+      transformResponse: (response) => response?.data[0],
+    }),
+
+    updateOperationContentCost: builder.mutation({
+      query: (data) => ({
+        url: `v1/operation_content_cost`,
+        method: 'PUT',
+        body: {
+          id: data._id, 
+          operation_cost: Number(data.operation_cost),
+          content_cost: Number(data.content_cost),
+          twitter_trend_cost: Number(data.twitter_trend_cost),
+          ugc_video_cost: Number(data.ugc_video_cost),
+        },
+      }),
+     }),
   }),
 });
 
-export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery, useGetCountDocumentsQuery } = PageBaseURL;
+export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery, useGetCountDocumentsQuery, useGetOperationContentCostQuery,useUpdateOperationContentCostMutation } = PageBaseURL;

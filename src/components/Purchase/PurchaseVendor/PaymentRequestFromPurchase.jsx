@@ -109,6 +109,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
   const handleGSTChange = (isChecked) => {
     // console.log(isChecked, "hasGST")
+    setIsGSTAvailable(isChecked);
     setFormData((prev) => {
       const requestAmount = parseFloat(prev.request_amount) || 0;
       const updatedData = { ...prev, gst: isChecked };

@@ -19,7 +19,7 @@ import {
   import AddIcon from "@mui/icons-material/Add";
   // import FormContainer from '../../AdminPanel/FormContainer';
   import jwtDecode from "jwt-decode";
-  import { useGetAllPageListQuery } from "../../Store/PageBaseURL";
+  import { useGetAllPageListQuery, useGetOperationContentCostQuery, useUpdateOperationContentCostMutation } from "../../Store/PageBaseURL";
   import PlanXStatusDialog from "../plan-making/StatusDialog";
 //   import PlanXHeader from "./PlanXHeader";
   import PageDialog from "../plan-making/PageDialog";
@@ -27,9 +27,12 @@ import {
   import PlanXNoteModal from "../plan-making/PlanXNoteModal";
   import DataGridOverviewColumns from "../plan-making/DataGridOverviewColumns";
   import numberToWords from "../../../utils/convertNumberToIndianString";
+import CostUpdateModal from "../plan-making/CostUpdateModa";
   
   function PlanHomeBeta() {
     const navigate = useNavigate();
+    const { data: getOperationContentCost, isLoading } = useGetOperationContentCostQuery();
+    const [updateOperationContentCost] = useUpdateOperationContentCostMutation();
     const [activeTab, setActiveTab] = useState("Tab1");
     const [openDialog, setOpenDialog] = useState(false);
     const [openPageDialog, setPageDialog] = useState(false);
@@ -44,6 +47,8 @@ import {
     const [filteredPlans, setFilteredPlans] = useState([]);
     const [selectedPages, setSelectedPages] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isCostModalOpen, setIsCostModalOpen] = useState(false)
+    const [priceFormData, setPriceFormData] = useState();
     const [descriptions, setDescriptions] = useState([]);
     const [file, setFile] = useState(null);
     const { toastError } = useGlobalContext();
@@ -105,8 +110,11 @@ import {
         setSuggestions(generateSuggestions(value));
       }
     };
-  
-    const handleSuggestionClick = (suggestion) => {
+    const handleCostInputChange = (e) => {
+      setPriceFormData({ ...priceFormData, [e.target.name]: e.target.value });
+    };
+    
+     const handleSuggestionClick = (suggestion) => {
       setInputValue(suggestion.value);
       handleInputChange({
         target: { name: "sellingPrice", value: suggestion.value },
@@ -142,8 +150,7 @@ import {
       setIsModalOpen(true);
       fetchDescriptions();
     };
-  
-    const handleCloseModal = () => {
+     const handleCloseModal = () => {
       setIsModalOpen(false);
     };
     const handleAddDescription = async (newDescription) => {
@@ -418,9 +425,11 @@ import {
     useEffect(() => {
       fetchAccounts();
       fetchPlans();
-    }, []);
-  
-    const handlePlanMaking = () => {
+      if(getOperationContentCost){
+        setPriceFormData(getOperationContentCost)
+      }
+    }, [getOperationContentCost]);
+     const handlePlanMaking = () => {
       setOpenDialog(true);
     };
   
@@ -507,6 +516,16 @@ import {
       if (planDetails.brandId || planDetails.brand_id) {
         formData.append("brand_id", planDetails.brandId || planDetails.brand_id);
       }
+      // content_cost,
+      // twitter_trend_cost,
+      // ugc_video_cost,
+      // twitter_trend_count,
+      // ugc_video_count,
+      // twitter_trend_serviceName,
+      // net_profit,
+      formData.append("ugc_video_cost", Number(priceFormData.ugc_video_cost));
+      formData.append("content_cost", Number(priceFormData.content_cost));
+      formData.append("twitter_trend_cost", Number(priceFormData.twitter_trend_cost));
       formData.append("brief", planDetails.brief);
       formData.append("plan_status", planDetails.planStatus);
       formData.append("plan_saved", planDetails.planSaved);
@@ -629,6 +648,17 @@ import {
         setSuggestions(generateSuggestions(inputValue));
       }
     }, [inputValue]);
+
+    const handleCostUpdate = async() => {
+      try {
+        await updateOperationContentCost(priceFormData);
+        alert("Updated successfully!");
+        setIsModalOpen(false);
+      } catch (error) {
+        console.error("Update failed", error);
+      }
+    }
+ 
     return (
       <div>
         <PageDialog
@@ -857,7 +887,7 @@ import {
             </Button>
           </DialogActions>
         </Dialog>
-  
+    
         {statusDialog && (
           <PlanXStatusDialog
             setPlanDetails={setPlanDetails}
@@ -880,6 +910,9 @@ import {
           <div className="card-header flexCenterBetween">
             <h5 className="card-title">Plan X Overview </h5>
             <div className="flexCenter colGap8">
+              <button className="btn cmnbtn btn-primary btn_sm" onClick={() => setIsCostModalOpen(true)}>
+                  Update Operation & content cost
+                </button>
               <Link onClick={handlePlanMaking}>
                 <button className="btn cmnbtn btn-primary btn_sm">
                   Create Plan <AddIcon />
@@ -890,6 +923,16 @@ import {
               </Link>
             </div>
           </div>
+ 
+          <CostUpdateModal
+          isOpen={isCostModalOpen}
+          onClose={() => setIsCostModalOpen(false)}
+          formData={priceFormData}
+          onChange={handleCostInputChange}
+          onUpdate={handleCostUpdate}
+          isLoading={isLoading}
+          />
+          
           <div className="card-body p0 noCardHeader">
             <div className="data_tbl thm_table table-responsive">
               {activeTab === "Tab1" && (

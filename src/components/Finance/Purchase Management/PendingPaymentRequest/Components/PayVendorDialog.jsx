@@ -315,7 +315,8 @@ function PayVendorDialog(props) {
 
       axios
         .post(insightsBaseUrl + `v1/payment_otp_send`, {
-          "email": mailTo
+          "email": mailTo,
+          "amount": paymentAmout
           // headers: {
           //   "Content-Type": "multipart/form-data",
           // },

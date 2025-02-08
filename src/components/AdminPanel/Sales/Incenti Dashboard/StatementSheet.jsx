@@ -27,7 +27,7 @@ const StatementSheet = () => {
             .filter((ob) => ob?.incentive_earning_status === "earned")
             .map((item) => ({
                 date: new Date(item?.incentive_earned_date).toLocaleDateString(),
-                description: "Finance Released Amount",
+                description: "Earned Incentive",
                 debit: 0,
                 credit: item?.earned_incentive_amount || 0,
             })),
@@ -36,7 +36,7 @@ const StatementSheet = () => {
             .filter((ob) => ob?.finance_status === "approved")
             .map((item) => ({
                 date: new Date(item.payment_date).toLocaleDateString(),
-                description: "Incentive Requested",
+                description: "Incentive Released",
                 debit: item?.finance_released_amount || 0,
                 credit: 0,
             })),

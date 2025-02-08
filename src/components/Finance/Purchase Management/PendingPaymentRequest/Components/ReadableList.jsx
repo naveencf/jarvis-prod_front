@@ -53,7 +53,7 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
   };
 
   const selectedBankDetail = vendorBankDetail[selectedBankIndex];
-  // console.log(rowData, "rowData")
+  console.log(rowData, "rowData")
   return (
     <>
       {/* Bank selection dropdown */}

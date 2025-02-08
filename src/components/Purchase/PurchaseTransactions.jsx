@@ -5,7 +5,6 @@ import { Badge, Button, Chip, Stack } from "@mui/material";
 import { useParams } from "react-router-dom";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsActiveTwoTone";
-
 import UpdateIcon from "@mui/icons-material/Update";
 import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../utils/config";
 import { useGlobalContext } from "../../Context/Context";
@@ -34,10 +33,9 @@ const PurchaseTransactions = () => {
     const { data, error, isLoading, refetch: refetchTransaction } = useGetVendorPaymentTransactionsQuery({
         startDate: startDate,
         endDate: endDate,
-
     });
     const token = sessionStorage.getItem("token");
-    // const { request_id } = useParams();
+
     const downloadSlipAsImage = (rowData) => {
         // Create a container div for the content that will be captured
         const slipElement = document.createElement("div");
@@ -155,6 +153,7 @@ const PurchaseTransactions = () => {
             console.log(error);
         }
     };
+
     const handleVendorReportingStatus = async (row) => {
         // https://insights.ist:8080/api/v1/check_payment_status?clientReferenceId=2017_1
         try {
@@ -180,7 +179,8 @@ const PurchaseTransactions = () => {
             console.log(error);
         }
 
-    }
+    };
+
     const columns = [
         {
             key: "S.NO",
@@ -189,6 +189,15 @@ const PurchaseTransactions = () => {
             renderRowCell: (row, index) => {
                 return index + 1;
             },
+
+        },
+        {
+            key: "clientReferenceId",
+            name: "Ref ID",
+            width: 90,
+            // renderRowCell: (row, index) => {
+            //     return index + 1;
+            // },
 
         },
         // {
@@ -526,7 +535,7 @@ const PurchaseTransactions = () => {
             },
         },
     ];
-    console.log(data, "data")
+
     return (
         <div>
             {/* <FormContainer

@@ -11,7 +11,7 @@ import { downloadExcel, getPlatformName } from '../plan-making/downloadExcel';
 import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 import Swal from 'sweetalert2';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
- import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
+import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
 import ExcelPreviewModal from '../plan-making/ExcelPreviewModal';
 import { calculatePrice } from '../plan-making/helper';
 
@@ -82,7 +82,7 @@ const LeftSideBarBeta = ({
     setPageDetails(selectedRow?.filter((page) => page?.ownership_type === type) || []);
     setOpenModal(true); // Open the modal
   };
-
+  console.log('plan Detail', planDetails && planDetails[0]);
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
@@ -113,9 +113,9 @@ const LeftSideBarBeta = ({
         cancelButtonText: 'Close Plan',
         reverseButtons: true,
       });
-      
+
       const planStatus = result.isConfirmed ? 'open' : 'close';
-       const payload = {
+      const payload = {
         id: id,
         plan_status: isPlanPrice ? 'open' : planStatus,
         plan_saved: true,
@@ -226,7 +226,7 @@ const LeftSideBarBeta = ({
         category: page.page_category_id,
       };
     });
-     setPreviewData(preview);
+    setPreviewData(preview);
     setOpenPreviewModal(true);
   };
 
@@ -304,8 +304,8 @@ const LeftSideBarBeta = ({
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
 
-  const handleSave = async() => {
-    setLeftSideBarDataUpdate(true)
+  const handleSave = async () => {
+    setLeftSideBarDataUpdate(true);
     const payload = {
       id: planDetails && planDetails[0]._id,
       plan_status: 'open',
@@ -318,19 +318,19 @@ const LeftSideBarBeta = ({
       // no_of_pages: selectedRows?.length,
       // cost_price: totalCost,
     };
-   const response =await sendPlanxLogs('v1/planxlogs', payload);
-   if (response.status === 400) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Duplicate Entry',
-      text: 'Plan with the same name already exists',
-      confirmButtonText: 'OK',
-    });
-    setPlanName(planDetails?.[0]?.plan_name)
-  }
+    const response = await sendPlanxLogs('v1/planxlogs', payload);
+    if (response.status === 400) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Duplicate Entry',
+        text: 'Plan with the same name already exists',
+        confirmButtonText: 'OK',
+      });
+      setPlanName(planDetails?.[0]?.plan_name);
+    }
     setIsEditing(false);
   };
-   const ownPagesCost = ownershipCounts.own.totalCost;
+  const ownPagesCost = ownershipCounts.own.totalCost;
   useEffect(() => {
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
@@ -359,7 +359,7 @@ const LeftSideBarBeta = ({
 
     return platformWiseCategories;
   };
-   const platformCategories = groupCategoriesByPlatform(selectedRows);
+  const platformCategories = groupCategoriesByPlatform(selectedRows);
 
   return (
     <div className="planLeftSideWrapper">
@@ -443,6 +443,10 @@ const LeftSideBarBeta = ({
           <h6>
             Total Profit
             <span>{planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost))}</span>
+          </h6>
+          <h6>
+            Net Profit
+            <span>{planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost - planDetails?.[0]?.content_cost * totalDeliverables - planDetails?.[0]?.operation_cost * totalDeliverables))}</span>
           </h6>
           <h6>
             Total Followers

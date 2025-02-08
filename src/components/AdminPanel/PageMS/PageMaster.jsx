@@ -98,6 +98,8 @@ const PageMaster = () => {
   const [filterPriceTypeList, setFilterPriceTypeList] = useState([]);
   const [activeTab, setActiveTab] = useState("666818824366007df1df1319");
   const [singleVendor, setSingleVendor] = useState({});
+  const [pageBehaviour, setPageBehaviour] = useState("");
+  const [displayName, setDisplayName] = useState("");
 
   const [rateType, setRateType] = useState({ value: "Fixed", label: "Fixed" });
   const [variableType, setVariableType] = useState({
@@ -123,6 +125,8 @@ const PageMaster = () => {
     platformActive: false,
     description: false,
     bio: false,
+    page_behaviour: pageBehaviour,
+    display_name: displayName,
     rateType: false,
     variableType: false,
     primary: false,
@@ -208,6 +212,7 @@ const PageMaster = () => {
     // { value: 'super_active', label: 'Super Active' },
     { value: "active", label: "Active" },
     { value: "semi_active", label: "Semi Active" },
+    { value: "maintained_dead", label: "Maintained Dead" },
     { value: "dead", label: "Dead" },
   ];
 
@@ -315,6 +320,13 @@ const PageMaster = () => {
     if (bio === "") {
       setValidateFields((prev) => ({ ...prev, bio: true }));
     }
+    if (displayName === "") {
+      setValidateFields((prev) => ({ ...prev, displayName: true }));
+    }
+    if (pageBehaviour === "") {
+      setValidateFields((prev) => ({ ...prev, pageBehaviour: true }));
+    }
+
     if (rateType === "") {
       setValidateFields((prev) => ({ ...prev, rateType: true }));
     }
@@ -349,11 +361,11 @@ const PageMaster = () => {
       return toastError("Please Fill All Required Fields");
     }
     const postWithZeroAmount = rowCount.some((e) => {
-      const isPostType = e.page_price_type_name.split('_').includes('post');
-      return isPostType && e.price === '0';
+      const isPostType = e.page_price_type_name.split("_").includes("post");
+      return isPostType && e.price === "0";
     });
     if (postWithZeroAmount) {
-      return toastError('Price Sould not be zero');
+      return toastError("Price Sould not be zero");
     }
 
     const payload = {
@@ -395,6 +407,8 @@ const PageMaster = () => {
       engagment_rate: rate,
       description: description,
       bio: bio,
+      page_behaviour: pageBehaviour,
+      display_name: displayName,
       created_by: userID,
       rate_type: rateType.value,
       variable_type: rateType.value == "Variable" ? variableType.value : null,
@@ -527,9 +541,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-        value: initialVendor._id,
-        label: formatString(initialVendor.vendor_name),
-      }
+          value: initialVendor._id,
+          label: formatString(initialVendor.vendor_name),
+        }
       : null;
   };
 
@@ -626,7 +640,7 @@ const PageMaster = () => {
       );
       if (res.data?.message == "This Page already exists") {
         alert(res.data.message);
-        setPageName('')
+        setPageName("");
       }
     } catch (error) {
       console.error("Error fetching page existence:", error);
@@ -1403,6 +1417,24 @@ const PageMaster = () => {
                 value={bio}
                 required={false}
                 onChange={(e) => setBio(e.target.value)}
+              />
+            </div>
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Page Behaviour"
+                fieldGrid={12}
+                value={pageBehaviour}
+                required={false}
+                onChange={(e) => setPageBehaviour(e.target.value)}
+              />
+            </div>
+            <div className="col-md-6 p0 mb16">
+              <FieldContainer
+                label="Display Name"
+                fieldGrid={12}
+                value={displayName}
+                required={false}
+                onChange={(e) => setDisplayName(e.target.value)}
               />
             </div>
             <div className="col-md-6 mb16">

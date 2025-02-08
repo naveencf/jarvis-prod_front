@@ -170,7 +170,7 @@ const PayThroughVendorDialog = (props) => {
         }
         setPaymentInitiated(false);
       } catch (error) {
-        // console.log(error?.response?.data?.error?.code, "error")
+        console.log(error?.response?.data?.error, "error")
         if (error?.response?.data?.error?.code == '4108') {
           handleClosePayThroughVendor()
           toastError("This Payment request is already in process")
