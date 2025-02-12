@@ -42,7 +42,7 @@ const CustomTable = ({
   const [sortKey, setSortKey] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [ascFlag, setAscFlag] = useState(columns?.map(() => true));
-  
+
   const [visibleColumns, setVisibleColumns] = useState(
     columns.map((column) =>
       column.showCol === undefined ? true : column.showCol
@@ -508,6 +508,7 @@ const CustomTable = ({
           return val1?.localeCompare(val2);
         });
       } else return sorted;
+      console.log("sorted", sorted);
     } else sorted.reverse();
 
     setSortedData(sorted);

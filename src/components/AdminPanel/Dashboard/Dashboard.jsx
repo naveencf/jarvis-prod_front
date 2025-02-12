@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../utils/config";
-import { Box, Button } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import ChatApplication from "../../Common/ChatApplication";
 import { useLocation } from "react-router-dom";
 import titleimg from "/bg-img.png";
@@ -19,6 +19,8 @@ import { useAPIGlobalContext } from "../APIContext/APIContext";
 import { constant } from "../../../utils/constants";
 import OrgTree from "../WFH/OrgTree/OrgTree";
 import imageTest1 from "../../../assets/img/product/Avtrar1.png";
+import successIcon from "../../../assets/img/icon/success.png";
+import errorIcon from "../../../assets/img/icon/error.png";
 
 function Dashboard() {
   const { RoleIDContext } = useAPIGlobalContext();
@@ -294,6 +296,145 @@ function Dashboard() {
         {/* {contextData && contextData[55] && contextData[55].view_value === 1 && (
           <WFHDDahboard />
         )} */}
+
+        {/* <div className="statementDoc">
+          <div className="statementDocHeader">
+            <div className="vendorBox">
+              <div className="vendorImg">
+                <Avatar alt="Vendor" src="vendor.jpg" ></Avatar>
+              </div>
+              <div className="vendorTitle">
+                <h2>Vendor Name</h2>
+                <h4>Info</h4>
+              </div>
+            </div>
+            <div className="stats">
+              <div className="statsBox">
+                <h4 className="colorSuccess" data-toggle="modal" data-target="#successModal">Credit :</h4>
+                <h2>292928.20</h2>
+              </div>
+              <div className="statsBox">
+                <h4 className="colorDanger" data-toggle="modal" data-target="#errorModal">Debit :</h4>
+                <h2>188928.00</h2>
+              </div>
+              <div className="statsBox">
+                <h4 className="colorInfo">Balance :</h4>
+                <h2>104000.20</h2>
+              </div>
+            </div>
+          </div>
+          <div className="statementDocBody table-responsive">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th scope="col">S. No.</th>
+                  <th>Date & Time</th>
+                  <th>Description</th>
+                  <th>Debit</th>
+                  <th>Credit</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td scope="row">1</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+                <tr>
+                  <td scope="row">2</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+                <tr className="statementDocInfo paid">
+                  <td colspan="6">27 Jan 2025 : Paid Advance amount of Rs. 5,00,000 (for campaign) Transaction ID : 4168466364</td>
+                </tr>
+                <tr>
+                  <td scope="row">3</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+                <tr>
+                  <td scope="row">4</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+                <tr className="statementDocInfo receive">
+                  <td colspan="6">29 Jan 2025 : Receive amount of Rs. 4,00,000 (for campaign) Transaction ID : 4168466364</td>
+                </tr>
+                <tr>
+                  <td scope="row">5</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+                <tr>
+                  <td scope="row">6</td>
+                  <td>27 Jan 2025</td>
+                  <td>Finance Released Amount</td>
+                  <td>188928.00</td>
+                  <td>292928.20</td>
+                  <td>104000.20</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> */}
+
+        {/* Success Modal */}
+        <div className="modal fade statusModal" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="statusModalImg">
+                  <img src={successIcon} />
+                </div>
+                <div className="statusModalText">
+                  <h2>Success</h2>
+                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                </div>
+              </div>
+              <div className="modal-footer text-center">
+                <button type="button" className="btn cmnbtn btn-success" data-dismiss="modal">Done</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Error Modal */}
+        <div className="modal fade statusModal" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-body">
+                <div className="statusModalImg">
+                  <img src={errorIcon} />
+                </div>
+                <div className="statusModalText">
+                  <h2>Error !</h2>
+                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                </div>
+              </div>
+              <div className="modal-footer text-center">
+                <button type="button" className="btn cmnbtn btn-danger" data-dismiss="modal">Try again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
       {/* <ChatApplication /> */}
     </>

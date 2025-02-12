@@ -1,26 +1,84 @@
-import { useState, useEffect } from 'react';
-import { Modal, Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tabs, Tab, TextField, MenuItem, Select, FormControl, InputLabel, Autocomplete } from '@mui/material';
-import { useSendPlanDetails } from './apiServices';
-import { useParams } from 'react-router-dom';
-import formatString from '../../../utils/formatString';
-import { X } from '@phosphor-icons/react';
+import { useState, useEffect } from "react";
+import {
+  Modal,
+  Box,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Tabs,
+  Tab,
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Autocomplete,
+} from "@mui/material";
+// import { useSendPlanDetails } from './apiServices';
+import { useParams } from "react-router-dom";
+import formatString from "../../../utils/formatString";
+import { Faders, X } from "@phosphor-icons/react";
+import { useSendPlanDetails } from "../plan-making/apiServices";
+import { useGetOperationContentCostQuery } from "../../Store/PageBaseURL";
 
-const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCatList, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
+const ExcelPreviewModalBeta = ({
+  open,
+  onClose,
+  handleSave,
+  ugcVideoCost,
+  twitterTrendCost,
+  setVideoUgcCost,
+  setTwitterTrendCost,
+  ugcVideoCount,
+  setUgcVideoCount,
+  setTwitterTrendCount,
+  twitterTrendCount,
+  setUpdatedCategories,
+  setMergeCatList,
+  updatedCategories,
+  previewData,
+  categories,
+  setAgencyFees,
+  agencyFees,
+  selectedRow,
+  handleAutomaticSelection,
+  category,
+  postCount,
+  storyPerPage,
+  planDetails,
+  checkedDescriptions,
+  downloadExcel,
+  isDownloading,
+  deliverableText,
+  setDeliverableText,
+  handleGetSpreadSheet,
+}) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
-  const [mainCategory, setMainCategory] = useState('');
+  const [mainCategory, setMainCategory] = useState("");
+  const { data: getOperationContentCost, isLoading } =
+    useGetOperationContentCostQuery();
+
   const [mergedCategories, setMergedCategories] = useState([]);
   // const [previewDataMerge, setPreviewDataMerge] = useState([]);
   const [updatedCategoryData, setUpdatedCategoryData] = useState(false);
-  const [oldCategoryName, setOldCategoryName] = useState('');
-  const [newCategoryName, setNewCategoryName] = useState('');
+  const [oldCategoryName, setOldCategoryName] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
   const { id } = useParams();
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   useEffect(() => {
     const categorizedData = {};
     previewData?.forEach((item) => {
-      const categoryName = categories?.find((cat) => cat._id === item.category)?.page_category || 'Unknown';
+      const categoryName =
+        categories?.find((cat) => cat._id === item.category)?.page_category ||
+        "Unknown";
 
       if (!categorizedData[categoryName]) {
         categorizedData[categoryName] = [];
@@ -34,7 +92,6 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
     const validTabValue = Math.min(newValue, Object.keys(categoryData).length);
     setSelectedTab(validTabValue);
   };
-
   const calculateTotals = (data) => {
     let totalPostCost = 0;
     let totalStoryCost = 0;
@@ -42,10 +99,10 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
     let totalStoryCount = 0;
 
     data.forEach((item) => {
-      totalPostCount += parseInt(item['Post Count'], 10) || 0;
-      totalStoryCount += parseInt(item['Story Count'], 10) || 0;
-      totalPostCost += parseFloat(item['Total Post Cost']) || 0;
-      totalStoryCost += parseFloat(item['Total Story Cost']) || 0;
+      totalPostCount += parseInt(item["Post Count"], 10) || 0;
+      totalStoryCount += parseInt(item["Story Count"], 10) || 0;
+      totalPostCost += parseFloat(item["Total Post Cost"]) || 0;
+      totalStoryCost += parseFloat(item["Total Story Cost"]) || 0;
     });
 
     return { totalPostCount, totalStoryCount, totalPostCost, totalStoryCost };
@@ -81,7 +138,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
 
     const mainCategoryId = categoryMap[mainCategory];
     if (!mainCategoryId) {
-      console.error('Main category ID not found');
+      console.error("Main category ID not found");
       return;
     }
 
@@ -101,7 +158,10 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
         });
 
         // Merge the category data into the main category
-        updatedCategoryData[mainCategory] = [...(updatedCategoryData[mainCategory] || []), ...updatedCategoryData[categoryName]];
+        updatedCategoryData[mainCategory] = [
+          ...(updatedCategoryData[mainCategory] || []),
+          ...updatedCategoryData[categoryName],
+        ];
 
         // Delete the merged category
         delete updatedCategoryData[categoryName];
@@ -110,15 +170,17 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
 
     // Transform updatedPreviewData to include dynamic fields
     const finalPreviewData = updatedPreviewData.map((item) => {
-      const categoryName = categories?.find((cat) => cat._id === item.category)?.page_category || 'Unknown';
+      const categoryName =
+        categories?.find((cat) => cat._id === item.category)?.page_category ||
+        "Unknown";
       return {
-        page_name: item['Page Name'] || 'Unknown Page',
-        post_count: item['Post Count'] || 0,
-        story_count: item['Story Count'] || 0,
-        _id: item['page_id'] || 'Unknown ID',
+        page_name: item["Page Name"] || "Unknown Page",
+        post_count: item["Post Count"] || 0,
+        story_count: item["Story Count"] || 0,
+        _id: item["page_id"] || "Unknown ID",
         category_name: categoryName,
-        platform_name: item['Platform']?.toLowerCase(),
-        platform_id: item['platform_id'],
+        platform_name: item["Platform"]?.toLowerCase(),
+        platform_id: item["platform_id"],
       };
     });
     setUpdatedCategoryData(true);
@@ -154,7 +216,8 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
     const updatedCategoryData = { ...categoryData };
     Object.keys(updatedCategoryData).forEach((categoryName) => {
       if (categoryName === oldCategoryName) {
-        updatedCategoryData[newCategoryName] = updatedCategoryData[categoryName];
+        updatedCategoryData[newCategoryName] =
+          updatedCategoryData[categoryName];
         delete updatedCategoryData[categoryName];
       }
     });
@@ -164,16 +227,54 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
 
   const handleRenameCategory = () => {
     renameCategory(oldCategoryName, newCategoryName);
-    setOldCategoryName('');
-    setNewCategoryName('');
+    setOldCategoryName("");
+    setNewCategoryName("");
   };
+
+  const handleTwitterMultiplierChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setTwitterTrendCount(value);
+  };
+  const handleUgcMultiplierChange = (e) => {
+    const value = parseFloat(e.target.value);
+    setUgcVideoCount(value);
+  };
+  const handleUgcCostChange = (e) => {
+    setVideoUgcCost(parseFloat(e.target.value) || 0);
+  };
+
+  const handleTwitterTrendCostChange = (e) => {
+    setTwitterTrendCost(parseFloat(e.target.value) || 0);
+  };
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    handleSave();
+  };
+  const totalTwitterTrendCost =
+    planDetails && planDetails[0]?.twitter_trend_cost
+      ? planDetails[0]?.twitter_trend_cost / planDetails[0]?.twitter_trend_count
+      : getOperationContentCost?.twitter_trend_cost || 1;
+  const multipliedCostTwitter = totalTwitterTrendCost * twitterTrendCount;
+
+  const totalUgcVideoCost =
+    planDetails && planDetails[0]?.ugc_video_cost
+      ? planDetails[0]?.ugc_video_cost / planDetails[0]?.ugc_video_count
+      : getOperationContentCost?.ugc_video_cost || 1;
+  const multipliedCostUgc = totalUgcVideoCost * ugcVideoCount;
+
   useEffect(() => {
     if (planSuccess?.length) {
       setMergeCatList(planSuccess);
     }
   }, [planSuccess]);
   return (
-    <Modal className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable" open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
+    <Modal
+      className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable"
+      open={open}
+      onClose={onClose}
+      aria-labelledby="preview-modal-title"
+      aria-describedby="preview-modal-description"
+    >
       <div
         className="modal-content"
         style={
@@ -187,93 +288,233 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
           }
         }
       >
-        <div className="modal-header">
+        <div className="modal-header flexCenterBetween">
           <h4 id="preview-modal-title" className="modal-title">
             Excel Data Preview
           </h4>
-          <Button
-            className="icon sm"
-            onClick={handleClose}
-            sx={{
-              position: 'absolute',
-              top: 8,
-              right: 8,
-            }}
-          >
-            <X />
-          </Button>
+          <div className="flexCenter colGap8">
+            <button
+              class="icon"
+              type="button"
+              data-toggle="collapse"
+              data-target="#collapseExample"
+              aria-expanded="false"
+              aria-controls="collapseExample"
+            >
+              <Faders />
+            </button>
+
+            <Button
+              className="icon sm"
+              onClick={handleClose}
+              sx={{
+                position: "absolute",
+                top: 8,
+                right: 8,
+              }}
+            >
+              <X />
+            </Button>
+          </div>
         </div>
         <div className="modal-body">
-          <div className="row">
-            <div className="col-12 mb12">
-              <h5>Rename Category</h5>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <label htmlFor="old-category">Old Category</label>
-                <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} label="Old Category" variant="outlined" />} />
+          <div class="collapse show" id="collapseExample">
+            <form onSubmit={handleSubmit}>
+              <div className="row form_small">
+                <div className="col">
+                  <div className="form-group">
+                    <label>
+                      Twitter Trend Cost (per post): {totalTwitterTrendCost}
+                    </label>
+                    <input
+                      type="number"
+                      value={twitterTrendCount}
+                      onChange={handleTwitterMultiplierChange}
+                      className="form-control"
+                      placeholder="Enter Twitter Trend Count"
+                    />{" "}
+                    <span style={{ color: "green", fontSize: "12px" }}>
+                      Total Post Cost :{" "}
+                      {isNaN(multipliedCostTwitter)
+                        ? totalTwitterTrendCost
+                        : multipliedCostTwitter}{" "}
+                    </span>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="form-group">
+                    <label>Total Twitter Trend Cost:</label>
+                    <input
+                      type="number"
+                      value={twitterTrendCost}
+                      onChange={handleTwitterTrendCostChange}
+                      className="form-control"
+                      placeholder="Enter Total Twitter Trend Cost"
+                    />
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="form-group">
+                    <label>
+                      UGC Video Cost (per video): {totalUgcVideoCost}
+                    </label>
+                    <input
+                      type="number"
+                      value={ugcVideoCount}
+                      onChange={handleUgcMultiplierChange}
+                      className="form-control"
+                      placeholder="Enter UGC Video Count"
+                    />{" "}
+                    <span style={{ color: "green", fontSize: "12px" }}>
+                      Total Video Cost :{" "}
+                      {isNaN(multipliedCostUgc)
+                        ? totalUgcVideoCost
+                        : multipliedCostUgc}{" "}
+                    </span>
+                  </div>
+                </div>
+                <div className="col">
+                  <div className="form-group">
+                    <label>Total UGC Video Cost:</label>
+                    <input
+                      type="number"
+                      value={ugcVideoCost}
+                      onChange={handleUgcCostChange}
+                      className="form-control"
+                      placeholder="Enter Total Operation Cost"
+                    />
+                  </div>
+                </div>
+                <div className="col">
+                  <button
+                    style={{
+                      marginTop: "26px",
+                    }}
+                    type="submit"
+                    className="btn cmnbtn w-100 btn-primary"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div className="row">
+              <div className="col-12 mb4">
+                <h6>Rename Category</h6>
               </div>
             </div>
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <label htmlFor="new-category">New Category Name</label>
-                <input className="form-control" id="new-category" type="text" value={newCategoryName} onChange={(event) => setNewCategoryName(event.target.value)} />
+            <div className="row form_small">
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label htmlFor="old-category">Old Category</label>
+                  <Autocomplete
+                    value={oldCategoryName}
+                    onChange={(event, newValue) =>
+                      setOldCategoryName(newValue || "")
+                    }
+                    options={Object.keys(categoryData)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Old Category"
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </div>
               </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label htmlFor="new-category">New Category Name</label>
+                  <input
+                    className="form-control"
+                    id="new-category"
+                    type="text"
+                    value={newCategoryName}
+                    onChange={(event) => setNewCategoryName(event.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <button
+                    className="cmnbtn w-100"
+                    onClick={handleRenameCategory}
+                    disabled={!oldCategoryName || !newCategoryName}
+                    style={{
+                      marginTop: "26px",
+                      padding: "10px 20px",
+                      backgroundColor:
+                        !oldCategoryName || !newCategoryName
+                          ? "#ccc"
+                          : "#007BFF",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor:
+                        !oldCategoryName || !newCategoryName
+                          ? "not-allowed"
+                          : "pointer",
+                    }}
+                  >
+                    Rename Category
+                  </button>
+                </div>
+              </div>
+              {/* Agency Fee Percentage */}
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label htmlFor="agency-fee">Agency Fee Percentage</label>
+                  <input
+                    className="form-control"
+                    id="agency-fee"
+                    type="number"
+                    value={agencyFees || ""}
+                    onChange={handleAgencyFeeChange}
+                    placeholder="Enter Agency Fee %"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+              </div>
+              {/* Deliverable Text */}
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <label htmlFor="deliverable-text">Deliverable Text</label>
+                  <input
+                    className="form-control"
+                    id="deliverable-text"
+                    type="text"
+                    value={deliverableText || ""}
+                    onChange={handleDeliverableTextChange}
+                    placeholder="Write Deliverable text"
+                  />
+                </div>
+              </div>
+              {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <button
-                  className="cmnbtn w-100"
-                  onClick={handleRenameCategory}
-                  disabled={!oldCategoryName || !newCategoryName}
+                  className="btn cmnbtn btn-primary w-100"
+                  disabled={isDownloading}
                   style={{
-                    marginTop: '28px',
-                    padding: '10px 20px',
-                    backgroundColor: !oldCategoryName || !newCategoryName ? '#ccc' : '#007BFF',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: !oldCategoryName || !newCategoryName ? 'not-allowed' : 'pointer',
+                    marginTop: "26px",
                   }}
+                  onClick={() =>
+                    downloadExcel(
+                      selectedRow,
+                      updatedCategories,
+                      postCount,
+                      storyPerPage,
+                      planDetails,
+                      checkedDescriptions
+                    )
+                  }
                 >
-                  Rename Category
+                  {isDownloading ? "Downloading..." : "Download Excel"}
                 </button>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div className="row mt16">
-            {/* Agency Fee Percentage */}
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <label htmlFor="agency-fee">Agency Fee Percentage</label>
-                <input className="form-control" id="agency-fee" type="number" value={agencyFees || ''} onChange={handleAgencyFeeChange} placeholder="Enter Agency Fee %" min="0" max="100" />
-              </div>
-            </div>
-            {/* Deliverable Text */}
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <label htmlFor="deliverable-text">Deliverable Text</label>
-                <input className="form-control" id="deliverable-text" type="text" value={deliverableText || ''} onChange={handleDeliverableTextChange} placeholder="Write Deliverable text" />
-              </div>
-            </div>
-            {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <button
-                className="btn cmnbtn btn-primary w-100"
-                disabled={isDownloading}
+                {/* <button
                 style={{
-                  marginTop: '28px',
-                }}
-                onClick={() => downloadExcel(selectedRow, updatedCategories, postCount, storyPerPage, planDetails, checkedDescriptions)}
-              >
-                {isDownloading ? 'Downloading...' : 'Download Excel'}
-              </button>
-              {/* <button
-                style={{
-                  marginTop: "28px",
+                  marginTop: "26px",
                 }}
                 className="btn cmnbtn btn-primary w-100"
                 onClick={() =>
@@ -289,45 +530,76 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
               >
                 Get SpreadSheet
               </button> */}
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <Autocomplete
+                    // value={`${mainCategory}`}
+                    onChange={handleCategoryChange || []}
+                    // getOptionLabel={(option) => option.label}
+                    options={
+                      categories?.map((cat) =>
+                        formatString(cat.page_category)
+                      ) || []
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Main Category"
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div className="form-group">
+                  <Autocomplete
+                    // value={`${mergedCategories}`}
+                    // getOptionLabel={(option) => option.label}
+                    onChange={(event, newValue) =>
+                      setMergedCategories([newValue] || [])
+                    }
+                    options={Object.keys(categoryData).filter(
+                      (categoryName) =>
+                        formatString(categoryName) !==
+                        formatString(mainCategory)
+                    )}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Merge Categories"
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <div>
+                  <Button
+                    className="btn cmnbtn btn-primary w-100"
+                    variant="contained"
+                    onClick={handleMergeCategories}
+                    disabled={!mainCategory || mergedCategories.length === 0}
+                  >
+                    Merge Categories
+                  </Button>
+                </div>
+              </div>
             </div>
+            <hr />
           </div>
-          <hr />
-          <div className="row mt20">
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <Autocomplete
-                  // value={`${mainCategory}`}
-                  onChange={handleCategoryChange || []}
-                  // getOptionLabel={(option) => option.label}
-                  options={categories?.map((cat) => formatString(cat.page_category)) || []}
-                  renderInput={(params) => <TextField {...params} label="Main Category" variant="outlined" />}
-                />
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div className="form-group">
-                <Autocomplete
-                  // value={`${mergedCategories}`}
-                  // getOptionLabel={(option) => option.label}
-                  onChange={(event, newValue) => setMergedCategories([newValue] || [])}
-                  options={Object.keys(categoryData).filter((categoryName) => formatString(categoryName) !== formatString(mainCategory))}
-                  renderInput={(params) => <TextField {...params} label="Merge Categories" variant="outlined" />}
-                />
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-12 col-12">
-              <div>
-                <Button className="btn cmnbtn btn-primary w-100" variant="contained" onClick={handleMergeCategories} disabled={!mainCategory || mergedCategories.length === 0}>
-                  Merge Categories
-                </Button>
-              </div>
-            </div>
-          </div>
-          <hr />
-          <div className="card">
+
+          <div className="card excelDataTab">
             <div className="card-header flexCenterBetween border-0">
               <h4>&nbsp;</h4>
-              <Tabs className="pgTab tabSM" value={selectedTab} onChange={handleTabChange} centered>
+              <Tabs
+                className="pgTab tabSM"
+                value={selectedTab}
+                onChange={handleTabChange}
+                centered
+              >
                 <Tab label="Total" />
                 {Object.keys(categoryData).map((categoryName, index) => (
                   <Tab key={index} label={categoryName} />
@@ -341,35 +613,43 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
                     <h4>Overall Totals</h4>
                   </div>
                   {/* Overall Totals Section */}
-                  <div className="row mb16">
+                  <div className="row">
                     <div className="col-md-3 col-sm-12 col-12">
-                      <div className="card">
+                      <div className="card mb12">
                         <div className="card-body p12">
-                          <h6 className="fs_14 mb4 colorMedium">Total Post Count</h6>
+                          <h6 className="fs_14 mb4 colorMedium">
+                            Total Post Count
+                          </h6>
                           <h4>{overallTotals.totalPostCount}</h4>
                         </div>
                       </div>
                     </div>
                     <div className="col-md-3 col-sm-12 col-12">
-                      <div className="card">
+                      <div className="card mb12">
                         <div className="card-body p12">
-                          <h6 className="fs_14 mb4 colorMedium">Total Story Count</h6>
+                          <h6 className="fs_14 mb4 colorMedium">
+                            Total Story Count
+                          </h6>
                           <h4>{overallTotals.totalStoryCount}</h4>
                         </div>
                       </div>
                     </div>
                     <div className="col-md-3 col-sm-12 col-12">
-                      <div className="card">
+                      <div className="card mb12">
                         <div className="card-body p12">
-                          <h6 className="fs_14 mb4 colorMedium">Total Post Cost</h6>
+                          <h6 className="fs_14 mb4 colorMedium">
+                            Total Post Cost
+                          </h6>
                           <h4>₹{overallTotals.totalPostCost.toFixed(2)}</h4>
                         </div>
                       </div>
                     </div>
                     <div className="col-md-3 col-sm-12 col-12">
-                      <div className="card">
+                      <div className="card mb12">
                         <div className="card-body p12">
-                          <h6 className="fs_14 mb4 colorMedium">Total Story Cost</h6>
+                          <h6 className="fs_14 mb4 colorMedium">
+                            Total Story Cost
+                          </h6>
                           <h4>₹{overallTotals.totalStoryCost.toFixed(2)}</h4>
                         </div>
                       </div>
@@ -379,9 +659,9 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
                   <div className="excelDataTable">
                     <table
                       style={{
-                        width: '100%',
-                        borderCollapse: 'collapse',
-                        textAlign: 'left',
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        textAlign: "left",
                       }}
                     >
                       <thead>
@@ -400,15 +680,15 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
                       <tbody>
                         {previewData?.map((item, id) => (
                           <tr key={id}>
-                            <td>{item['Page Name']}</td>
+                            <td>{item["Page Name"]}</td>
                             <td>{item.Platform}</td>
                             <td>{item.Followers}</td>
-                            <td>{item['Post Count']}</td>
-                            <td>{item['Story Count']}</td>
-                            <td>{item['Post Price']}</td>
-                            <td>{item['Story Price']}</td>
-                            <td>{item['Total Post Cost']}</td>
-                            <td>{item['Total Story Cost']}</td>
+                            <td>{item["Post Count"]}</td>
+                            <td>{item["Story Count"]}</td>
+                            <td>{item["Post Price"]}</td>
+                            <td>{item["Story Price"]}</td>
+                            <td>{item["Total Post Cost"]}</td>
+                            <td>{item["Total Story Cost"]}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -428,9 +708,9 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
                       <div className="excelDataTable">
                         <table
                           style={{
-                            width: '100%',
-                            borderCollapse: 'collapse',
-                            textAlign: 'left',
+                            width: "100%",
+                            borderCollapse: "collapse",
+                            textAlign: "left",
                           }}
                         >
                           <thead>
@@ -449,15 +729,15 @@ const ExcelPreviewModalBeta = ({ open, onClose, setUpdatedCategories, setMergeCa
                           <tbody>
                             {categoryData[categoryName]?.map((item, idx) => (
                               <tr key={idx}>
-                                <td>{item['Page Name']}</td>
+                                <td>{item["Page Name"]}</td>
                                 <td>{item.Platform}</td>
                                 <td>{item.Followers}</td>
-                                <td>{item['Post Count']}</td>
-                                <td>{item['Story Count']}</td>
-                                <td>{item['Post Price']}</td>
-                                <td>{item['Story Price']}</td>
-                                <td>{item['Total Post Cost']}</td>
-                                <td>{item['Total Story Cost']}</td>
+                                <td>{item["Post Count"]}</td>
+                                <td>{item["Story Count"]}</td>
+                                <td>{item["Post Price"]}</td>
+                                <td>{item["Story Price"]}</td>
+                                <td>{item["Total Post Cost"]}</td>
+                                <td>{item["Total Story Cost"]}</td>
                               </tr>
                             ))}
                           </tbody>

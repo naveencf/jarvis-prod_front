@@ -3,7 +3,7 @@ import { format, differenceInDays, addDays } from "date-fns";
 import {
   useGetAllPlanXDataQuery,
   useGetPlanWiseDataQuery,
-} from "../../Store/API/Opreation/OpreationApi";
+} from "../../Store/API/Operation/OperationApi";
 import Calender from "./Calender";
 import CategoryWiseDistribution from "./CategoryWiseDistribution";
 

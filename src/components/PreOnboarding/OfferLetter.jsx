@@ -20,6 +20,7 @@ import EsicTable from "./table/EsicTable";
 import Inhandless from "./table/Inhandless";
 import Inhandmore from "./table/Inhandmore";
 import { formatNumber } from "../../utils/formatNumber";
+import OnlyEsic from "./table/OnlyEsic";
 
 const styles = StyleSheet.create({
   logoBold: {
@@ -570,8 +571,11 @@ const OfferLetter = ({ allUserData, image64, EMPPF }) => {
             <PfTable UserDetails={UserDetails} />
           )}
 
-          {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
+          {/* {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
             <EsicTable UserDetails={UserDetails} />
+          )} */}
+          {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
+            <OnlyEsic UserDetails={UserDetails} />
           )}
           {allUserData.emergency_contact_person_name2 == "in_hand" &&
             allUserData.salary <= 19199 && (

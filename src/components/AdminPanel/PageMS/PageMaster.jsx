@@ -198,7 +198,7 @@ const PageMaster = () => {
       setPriceTypeList(platformPriceData);
       setFilterPriceTypeList(platformPriceData);
     } else {
-      // console.log("Condition not met");
+      // console.log("Condition not met");                                                                                  
     }
   }, [platformPriceData, isPriceLoading]);
 
@@ -541,9 +541,9 @@ const PageMaster = () => {
     const initialVendor = vendorData.find((vendor) => vendor._id === initialId);
     return initialVendor
       ? {
-          value: initialVendor._id,
-          label: formatString(initialVendor.vendor_name),
-        }
+        value: initialVendor._id,
+        label: formatString(initialVendor.vendor_name),
+      }
       : null;
   };
 

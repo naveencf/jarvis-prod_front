@@ -14,6 +14,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
 import ExcelPreviewModal from '../plan-making/ExcelPreviewModal';
 import { calculatePrice } from '../plan-making/helper';
+import ExcelPreviewModalBeta from './ExcelPreviewModalBeta';
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -71,8 +72,16 @@ const LeftSideBarBeta = ({
   const [planBrief, setPlanBrief] = useState(planDetails?.[0]?.brief);
   const [sellingPrice, setSellingPrice] = useState(0);
   const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
+  const [operationCost, setOperationCost] = useState(planDetails?.[0]?.operation_cost);
+  const [contentCost, setContentCost] = useState(planDetails?.[0]?.content_cost);
   const [isdownloadExcel, setIsDownloadExcel] = useState(false);
   const [updatedCategories, setUpdatedCategories] = useState({});
+  const [twitterTrendCount, setTwitterTrendCount] = useState(0);
+  const [twitterTrendCost, setTwitterTrendCost] = useState();
+  const [ugcVideoCost, setVideoUgcCost] = useState();
+  const [ugcVideoCount, setUgcVideoCount] = useState(0);
+
+  
   const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
@@ -82,14 +91,16 @@ const LeftSideBarBeta = ({
     setPageDetails(selectedRow?.filter((page) => page?.ownership_type === type) || []);
     setOpenModal(true); // Open the modal
   };
-  console.log('plan Detail', planDetails && planDetails[0]);
+
+  const finalOperationCost = planDetails && (planDetails[0]?.selling_price * planDetails[0]?.operation_cost) / 100;
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
+ 
   const location = useLocation();
   const isPlanPrice = location?.pathname?.split('/')[2] === 'pms-plan-pricing' ? true : false;
-
   const planStatus = planDetails && planDetails[0]?.plan_status;
+  const netProfit = planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost - planDetails?.[0]?.content_cost * totalDeliverables - finalOperationCost));
   // Function to get the platform name based on the platform ID
   // const getPlatformName = (platformId) => {
   //   const platformMap = {
@@ -162,7 +173,7 @@ const LeftSideBarBeta = ({
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
+      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel, ugcVideoCost, twitterTrendCost);
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {
@@ -303,8 +314,7 @@ const LeftSideBarBeta = ({
   function truncateString(inputString, maxLength = 10) {
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
-
-  const handleSave = async () => {
+   const handleSave = async () => {
     setLeftSideBarDataUpdate(true);
     const payload = {
       id: planDetails && planDetails[0]._id,
@@ -312,6 +322,12 @@ const LeftSideBarBeta = ({
       plan_name: planName,
       selling_price: sellingPrice,
       brief: planBrief,
+      ugc_video_count:ugcVideoCount,
+      twitter_trend_count:twitterTrendCount,
+      ugc_video_cost:ugcVideoCost,
+      twitter_trend_cost:twitterTrendCost,
+      content_cost:contentCost,
+      operation_cost:operationCost
       // plan_saved: true,
       // post_count: totalPostCount,
       // story_count: totalStoryCount,
@@ -334,10 +350,20 @@ const LeftSideBarBeta = ({
   useEffect(() => {
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
+ 
+   useEffect(()=> {
+    if(planDetails){
+      setUgcVideoCount(planDetails?.[0]?.ugc_video_count)
+      setTwitterTrendCount(planDetails?.[0]?.twitter_trend_count)
+      setVideoUgcCost(planDetails?.[0]?.ugc_video_cost)
+      setTwitterTrendCost(planDetails?.[0]?.twitter_trend_cost)
+    }
+  },[planDetails])
 
   const handleEditing = () => {
     setIsEditing(!isEditing);
     setSellingPrice(planDetails?.[0]?.selling_price);
+    setOperationCost(planDetails?.[0]?.operation_cost)
   };
   const groupCategoriesByPlatform = (rows) => {
     const platformWiseCategories = {};
@@ -433,6 +459,86 @@ const LeftSideBarBeta = ({
                 </Tooltip>
               )}
             </h6>
+            <h6>
+              Operation Cost:
+              {isEditing ? (
+                <TextField
+                  value={operationCost}
+                  onChange={(e) => setOperationCost(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                    color: 'white',
+                  }}
+                />
+              ) : (
+                <Tooltip title={operationCost || planDetails?.[0]?.operation_cost}>
+                  <p style={{ cursor: 'pointer', color: 'white' }}>{operationCost || planDetails?.[0]?.operation_cost}%</p>
+                </Tooltip>
+              )}
+            </h6>
+            <h6>
+              Content Cost:
+              {isEditing ? (
+                <TextField
+                  value={contentCost || planDetails?.[0]?.content_cost || ''}
+                  onChange={(e) => setContentCost(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                    color: 'white',
+                  }}
+                />
+              ) : (
+                <Tooltip title={contentCost || planDetails?.[0]?.content_cost}>
+                  <p style={{ cursor: 'pointer', color: 'white' }}>{contentCost || planDetails?.[0]?.content_cost}</p>
+                </Tooltip>
+              )}
+            </h6>
+            <h6>
+              Twitter Trend Cost:
+              {isEditing ? (
+                <TextField
+                  value={twitterTrendCost || planDetails?.[0]?.twitter_trend_cost || ''}
+                  onChange={(e) => setTwitterTrendCost(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                    color: 'white',
+                  }}
+                />
+              ) : (
+                <Tooltip title={twitterTrendCost || planDetails?.[0]?.twitter_trend_cost}>
+                  <p style={{ cursor: 'pointer', color: 'white' }}>{twitterTrendCost || planDetails?.[0]?.twitter_trend_cost}</p>
+                </Tooltip>
+              )}
+            </h6>
+            <h6>
+              UGC Video Cost:
+              {isEditing ? (
+                <TextField
+                  value={ugcVideoCost || planDetails?.[0]?.ugc_video_cost || ''}
+                  onChange={(e) => setVideoUgcCost(e.target.value)}
+                  variant="outlined"
+                  size="small"
+                  sx={{
+                    backgroundColor: 'white',
+                    borderRadius: '6px',
+                    color: 'white',
+                  }}
+                />
+              ) : (
+                <Tooltip title={ugcVideoCost || planDetails?.[0]?.ugc_video_cost}>
+                  <p style={{ cursor: 'pointer', color: 'white' }}>{ugcVideoCost || planDetails?.[0]?.ugc_video_cost}</p>
+                </Tooltip>
+              )}
+            </h6>
           </div>
           <h6>
             Account Name
@@ -446,7 +552,7 @@ const LeftSideBarBeta = ({
           </h6>
           <h6>
             Net Profit
-            <span>{planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost - planDetails?.[0]?.content_cost * totalDeliverables - planDetails?.[0]?.operation_cost * totalDeliverables))}</span>
+            <span>{netProfit}</span>
           </h6>
           <h6>
             Total Followers
@@ -523,7 +629,7 @@ const LeftSideBarBeta = ({
             ))}
           </div>
         </div>
-        <ExcelPreviewModal open={openPreviewModal} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
+        <ExcelPreviewModalBeta open={openPreviewModal} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost}  twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
         <div className="planSmall planLarge">
           {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>

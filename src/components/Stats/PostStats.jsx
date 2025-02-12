@@ -6,7 +6,16 @@ import {
   DialogTitle,
   Paper,
 } from "@mui/material";
-import React from "react";
+import React, { useCallback, useRef } from "react";
+import {
+  Stage,
+  Layer,
+  Image as KonvaImage,
+  Rect,
+  Text,
+  Circle,
+  Path,
+} from "react-konva";
 import { useState } from "react";
 import BulkPostsUpload from "./BulkPostsUpload";
 import PostStatsTemplate from "./PostStatsTemplate";
@@ -40,7 +49,13 @@ import {
   SealCheck,
 } from "@phosphor-icons/react";
 
+import PostGenerator from "../InstaPostGenerator/PostGenerator";
+
 function PostStats() {
+  const screenshotRef = useRef(null);
+  const accNameRef = useRef(null);
+  const likesRef = useRef(null);
+  const commentRef = useRef(null);
   const { usersDataContext } = useContext(AppContext);
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -50,6 +65,33 @@ function PostStats() {
   const [rowsloading, setRowsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [reload, setReload] = useState(false);
+  const [image, setImage] = React.useState(null);
+  const [postImage, setPostImage] = useState(null);
+  const stageRef = useRef(null); // Ref for the Konva stage
+  const [postText, setPostText] = useState("Your Caption Here");
+  useEffect(() => {
+    const img = new window.Image();
+    img.src = sarcasmLogo; // Replace with your image URL
+    img.onload = () => {
+      setImage(img); // Set the image once loaded
+    };
+    const img1 = new window.Image();
+
+    img1.src = postOne;
+    img1.onload = () => {
+      setPostImage(img1);
+    };
+  }, []);
+
+  // Function to download canvas as an image
+  const downloadImage = () => {
+    const uri = stageRef.current.toDataURL();
+    const link = document.createElement("a");
+    link.download = "instagram_post.png";
+    link.href = uri;
+    link.click();
+  };
+
   // const handleRequestedExcel =(value)=>{
   // console.log(usersDataContext);
   // }
@@ -272,9 +314,8 @@ function PostStats() {
     hour = hour ? hour : 12; // "0" should be displayed as "12"
 
     // Format time with seconds
-    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${
-      second < 10 ? "0" + second : second
-    } ${ampm}`;
+    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${second < 10 ? "0" + second : second
+      } ${ampm}`;
 
     return { date, time };
   }
@@ -479,166 +520,12 @@ function PostStats() {
     },
   ];
 
+
+
   return (
     <>
-      <div className="d-block">
-        <div className="flexCenter colGap20">
-          <div className="shotWrapper">
-            <div className="shotHead">
-              <div className="shotHeadTitle">
-                <div className="shotHeadImg">
-                  <img src={sarcasmLogo} />
-                </div>
-                <div className="shotHeadName">
-                  <h3>
-                    sarcastic_us
-                    <span className="blueTick">
-                      <SealCheck weight="fill" />
-                    </span>
-                  </h3>
-                  <h4>
-                    <span>
-                      <MusicNotes weight="fill" />
-                    </span>
-                    Coldplay . A Sky Full of Stars
-                  </h4>
-                </div>
-              </div>
-              <div className="shotHeadAction">
-                <span>
-                  <i class="bi bi-three-dots-vertical"></i>
-                </span>
-              </div>
-            </div>
-            <div className="shotImg">
-              <img src={postOne} />
-              <span className="muteIcon">
-                <img src={muteIcon} />
-              </span>
-            </div>
-            {/* <div className="shotCarousel">
-              <ul>
-                <li className="active">
-                  <span></span>
-                </li>
-                <li>
-                  <span></span>
-                </li>
-              </ul>
-            </div> */}
-            <div className="shotStats">
-              <ul>
-                <li>
-                  <span>
-                    <img src={likeIcon} />
-                  </span>
-                  97.8K
-                </li>
-                <li>
-                  <span>
-                    <img src={commentIcon} />
-                  </span>
-                  83
-                </li>
-                <li>
-                  <span>
-                    <img src={shareIcon} />
-                  </span>
-                </li>
-              </ul>
-              <ul>
-                <li>
-                  <span>
-                    <img src={saveIcon} />
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          {/*  */}
-          <div className="shotWrapper shotReel">
-            <div className="shotHead">
-              <div className="shotHeadTitle">
-                <div className="shotHeadImg double">
-                  <img src={sarcasmLogo} />
-                  <img src={naughtyworldLogo} />
-                </div>
-                <div className="shotHeadName">
-                  {/* <h3>
-                    sarcastic_us
-                    <span className="blueTick">
-                      <SealCheck weight="fill" />
-                    </span>
-                  </h3> */}
-                  <h3>
-                    sarcastic_us
-                    <small>and</small>
-                    naughtyworld
-                  </h3>
-                  <h4>
-                    <span>
-                      <MusicNotes weight="fill" />
-                    </span>
-                    Coldplay . A Sky Full of Stars
-                  </h4>
-                </div>
-              </div>
-              <div className="shotHeadAction">
-                <span>
-                  <i class="bi bi-three-dots-vertical"></i>
-                </span>
-              </div>
-            </div>
-            <div className="shotImg">
-              <img src={reelOne} />
-              <span className="userIcon">
-                <img src={userIcon} />
-              </span>
-              <span className="muteIcon">
-                <img src={muteIcon} />
-              </span>
-            </div>
-            {/* <div className="shotCarousel">
-              <ul>
-                <li className="active">
-                  <span></span>
-                </li>
-                <li>
-                  <span></span>
-                </li>
-              </ul>
-            </div> */}
-            <div className="shotStats">
-              <ul>
-                <li>
-                  <span>
-                    <img src={likeIcon} />
-                  </span>
-                  97.8K
-                </li>
-                <li>
-                  <span>
-                    <img src={commentIcon} />
-                  </span>
-                  83
-                </li>
-                <li>
-                  <span>
-                    <img src={shareIcon} />
-                  </span>
-                </li>
-              </ul>
-              <ul>
-                <li>
-                  <span>
-                    <img src={saveIcon} />
-                  </span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+      <PostGenerator />
+
       <div className="workWrapper">
         <div className="card">
           <div className="card-header flex_center_between">

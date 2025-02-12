@@ -28,6 +28,7 @@ import { Balance } from '@mui/icons-material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import { useGetVendorPaymentRequestsQuery } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
+import PaymentRequestFromPurchase from '../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase';
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
@@ -88,6 +89,9 @@ export default function PendingPaymentRequest() {
   const [refetch, setRefetch] = useState(false);
   const [yesBankBalance, setYesBankBalance] = useState(0);
   const [yesBankBalanceProcessing, setYesBankBalanceProcessing] = useState(false);
+  const [vendorDetail, setVendorDetail] = useState("");
+  const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
+
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
@@ -503,6 +507,11 @@ export default function PendingPaymentRequest() {
     }
   };
 
+  const handlePaymentRequest = (row) => {
+    if (!row) { return; }
+    setReqestPaymentDialog(true)
+    setVendorDetail(row);
+  }
   return (
     <div>
       {/* <FormContainer
@@ -537,7 +546,15 @@ export default function PendingPaymentRequest() {
         partialTDSDeduction={partialTDSDeduction}
         instantTDSDeduction={instantTDSDeduction}
       /> */}
-
+      {reqestPaymentDialog && (
+        <PaymentRequestFromPurchase
+          reqestPaymentDialog={reqestPaymentDialog}
+          setReqestPaymentDialog={setReqestPaymentDialog}
+          vendorDetail={vendorDetail}
+          setVendorDetail={setVendorDetail}
+          userName={userName}
+        />
+      )}
       {/* Bank Details 14 */}
 
       <BankDetailPendingPaymentDialog bankDetail={bankDetail} handleCloseBankDetail={handleCloseBankDetail} bankDetailRowData={bankDetailRowData} />
@@ -586,6 +603,8 @@ export default function PendingPaymentRequest() {
           handleDiscardClick,
           handleZohoStatusUpload,
           nodeData,
+          contextData,
+          handlePaymentRequest
         })}
       />
 
@@ -617,7 +636,7 @@ export default function PendingPaymentRequest() {
                 handleDiscardClick,
                 handleZohoStatusUpload,
                 nodeData,
-                contextData
+                contextData, handlePaymentRequest
               })}
               data={activeAccordionIndex === 0 ? filterData : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === '3') : activeAccordionIndex === 2 ? filterData?.filter((d) => d.status === '0') : []}
               isLoading={requestLoading}
@@ -629,10 +648,13 @@ export default function PendingPaymentRequest() {
               selectedData={setSelectedRows}
               addHtml={
                 <>
-                  <p className="btn cmnbtn btn_sm ms-2">{yesBankBalance}</p>
-                  <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={(e) => handleCheckBalance(e)} disabled={yesBankBalanceProcessing}>
-                    Check Balance
-                  </button>
+                  {contextData && contextData[67]?.view_value && <>
+                    <p className="btn cmnbtn btn_sm ms-2">{yesBankBalance}</p>
+
+                    <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={(e) => handleCheckBalance(e)} disabled={yesBankBalanceProcessing}>
+                      Check Balance
+                    </button>
+                  </>}
                   <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={() => refetchPaymentRequerst()}>
                     Refetch
                   </button>

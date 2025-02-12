@@ -5,6 +5,8 @@ import Modal from "react-modal";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import ReJoinReusable from "../../User/ReJoinReusable";
+import View from "../../Sales/Account/View/View";
+import { convertDateToDDMMYYYY } from "../../../../utils/lengthFuntion";
 
 const NewJoineeAndExitUsers = () => {
   const [newJoineeData, setNewJoineeData] = useState([]);
@@ -75,65 +77,70 @@ const NewJoineeAndExitUsers = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
+  // const formatDate = (dateString) => {
+  //   const date = new Date(dateString);
+  //   const day = String(date.getDate()).padStart(2, "0");
+  //   const month = String(date.getMonth() + 1).padStart(2, "0");
+  //   const year = date.getFullYear();
 
-    return `${day}-${month}-${year}`;
-  };
+  //   return `${day}-${month}-${year}`;
+  // };
 
   // MODAL
   const ExitUserColumns = [
     {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 120,
-      renderCell: (params) => {
-        const rowIndex = allExitUserData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      key: "Serial_no",
+      name: "S.NO",
+      renderRowCell: (row, index) => index + 1,
+      width: 20,
     },
     {
-      field: "user_name",
-      headerName: "User Name",
-      width: 250,
-    },
-    {
-      field: "dept_name",
-      headerName: "Department Name",
-      width: 250,
-    },
-    {
-      field: "Gender",
-      headerName: "Gender",
-      width: 120,
-    },
-    {
-      field: "DOB",
-      headerName: "DOB",
-      width: 150,
-      valueGetter: (params) => {
-        return formatDate(params.value);
-      },
-    },
-    {
-      field: "releaving_date",
-      headerName: "Releaving Date",
-      width: 150,
-      valueGetter: (params) => {
-        return formatDate(params.value);
-      },
-    },
-    {
-      field: "Re-Join",
-      headerName: "Re-Join",
+      key: "user_id",
+      name: "Employee ID",
       width: 100,
-      renderCell: (params) => (
+    },
+    {
+      key: "user_name",
+      name: "User Name",
+      width: 250,
+    },
+    {
+      key: "dept_name",
+      name: "Department Name",
+      width: 250,
+    },
+    {
+      key: "Gender",
+      name: "Gender",
+      width: 120,
+    },
+    {
+      key: "DOB",
+      name: "DOB",
+      width: 150,
+      renderRowCell: (row) => <div>{convertDateToDDMMYYYY(row.DOB)} </div>,
+    },
+    {
+      key: "releaving_date",
+      name: "Relieving Date",
+      width: 150,
+      renderRowCell: (row) => (
+        <div>{convertDateToDDMMYYYY(row.releaving_date)} </div>
+      ),
+    },
+    {
+      key: "monthName",
+      name: "Month",
+      width: 150,
+    },
+    {
+      key: "Re-Join",
+      name: "Re-Join",
+      width: 100,
+      renderRowCell: (params) => (
         <button
           className="btn cmnbtn btn_sm btn-outline-danger"
-          onClick={() => handleReJoin(params.row.user_id)}
+          onClick={() => handleReJoin(params.user_id)}
         >
           Re-Join
         </button>
@@ -143,44 +150,44 @@ const NewJoineeAndExitUsers = () => {
 
   const AllUsers = [
     {
-      field: "S.NO",
-      headerName: "S.NO",
-      width: 120,
-      renderCell: (params) => {
-        const rowIndex = allWFHDUsersData.indexOf(params.row);
-        return <div>{rowIndex + 1}</div>;
-      },
+      key: "Serial_no",
+      name: "S.NO",
+      renderRowCell: (row, index) => index + 1,
+      width: 20,
     },
     {
-      field: "user_name",
-      headerName: "User Name",
+      key: "user_name",
+      name: "User Name",
       width: 250,
     },
     {
-      field: "dept_name",
-      headerName: "Department Name",
+      key: "dept_name",
+      name: "Department Name",
       width: 250,
     },
     {
-      field: "Gender",
-      headerName: "Gender",
+      key: "Gender",
+      name: "Gender",
       width: 120,
     },
     {
-      field: "DOB",
-      headerName: "DOB",
+      key: "DOB",
+      name: "DOB",
       width: 150,
-      valueGetter: (params) => {
-        return formatDate(params.value);
-      },
+      renderRowCell: (row) => <div>{convertDateToDDMMYYYY(row.DOB)} </div>,
     },
     {
-      field: "joining_date",
-      headerName: "Joining Date",
+      key: "joining_date",
+      name: "Joining Date",
       width: 150,
-      valueGetter: (params) => {
-        return formatDate(params.value);
-      },
+      renderRowCell: (row) => (
+        <div>{convertDateToDDMMYYYY(row.joining_date)} </div>
+      ),
+    },
+    {
+      key: "monthName",
+      name: "Month",
+      width: 150,
     },
   ];
 
@@ -289,22 +296,20 @@ const NewJoineeAndExitUsers = () => {
           x
         </button>
         {modalType === "exitUsers" ? (
-          <DataGrid
-            rows={allExitUserData}
+          <View
             columns={ExitUserColumns}
-            getRowId={(row) => row?.user_id}
-            slots={{
-              toolbar: GridToolbar,
-            }}
+            data={allExitUserData}
+            isLoading={false}
+            tableName={"Op_executions"}
+            pagination={[100, 200, 1000]}
           />
         ) : (
-          <DataGrid
-            rows={allWFHDUsersData}
+          <View
             columns={AllUsers}
-            getRowId={(row) => row?.user_id}
-            slots={{
-              toolbar: GridToolbar,
-            }}
+            data={allWFHDUsersData}
+            isLoading={false}
+            tableName={"Op_executions"}
+            pagination={[100, 200, 1000]}
           />
         )}
       </Modal>

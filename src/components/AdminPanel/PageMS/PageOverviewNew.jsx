@@ -589,7 +589,10 @@ const PageOverviewNew = () => {
 
     return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
-
+  function capitalizeFirstLetter(str) {
+    if (!str) return '';  
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
   const dataGridcolumns = [
     {
       key: 'S.NO',
@@ -607,7 +610,7 @@ const PageOverviewNew = () => {
         let name = row.page_name;
         return (
           <a target="_blank" rel="noreferrer" href={row.page_link} className="link-primary">
-            {formatString(name)}
+            {capitalizeFirstLetter(name)}
           </a>
         );
       },
