@@ -6,7 +6,7 @@ import axios from "axios";
 import formatString from "../../utils/formatString";
 import View from "../AdminPanel/Sales/Account/View/View";
 import OpreationLinkUpdateDirect from "./OpreationLinkUpdateDirect";
-import { useGetAllPlanXDataQuery } from "../Store/API/Opreation/OpreationApi";
+import { useGetAllPlanXDataQuery } from "../Store/API/Operation/OperationApi";
 import OpreationColumns from "./OpreationColumns";
 import PhaseWisePages from "./PhaseWisePages";
 import OperationShortcodeUpdater from "./OperationShortcodeUpdater";
@@ -45,7 +45,7 @@ const NewCampaignExecutions = () => {
         }
         return acc;
       }, {});
-      setPhaseWiseData(groupedPages)
+      setPhaseWiseData(groupedPages);
       setPlanWisePage(data);
     } catch (error) {
       console.error("Error fetching plans:", error);
@@ -74,7 +74,7 @@ const NewCampaignExecutions = () => {
         share: row?.share,
         impression: row?.impression,
         reach: row?.reach,
-        phase: "2025-01-15"
+        phase: "2025-01-15",
       };
       const res = await axios.put(
         `${baseUrl}operation/operation_execution_master/${row?._id}`,
@@ -148,7 +148,7 @@ const NewCampaignExecutions = () => {
 
     return { tags, hashtags, tagCount, hashtagCount };
   };
-  //  Opreation columns 
+  //  Opreation columns
   const columns = OpreationColumns({
     handleChangeLike,
     handleChangeComment,
@@ -216,7 +216,7 @@ const NewCampaignExecutions = () => {
                 updatePayload,
                 config
               );
-              getPlanWisePages()
+              getPlanWisePages();
             } catch (error) {
               console.error("Error updating data:", error);
             }
@@ -233,14 +233,14 @@ const NewCampaignExecutions = () => {
 
   const handleShowAllPages = () => {
     setShowAllPages(true);
-    setFilteredData([]); 
-    setSelectedDate(null); 
+    setFilteredData([]);
+    setSelectedDate(null);
   };
 
   const handleDateSelect = (pages, date) => {
     setFilteredData(pages);
-    setShowAllPages(false); 
-    setSelectedDate(date); 
+    setShowAllPages(false);
+    setSelectedDate(date);
   };
 
   return (
@@ -264,8 +264,8 @@ const NewCampaignExecutions = () => {
           </div>
         </div>
         <div className="card-body">
-          {planWisePage.length > 0 &&
-            <div >
+          {planWisePage.length > 0 && (
+            <div>
               {/* <OpreationLinkUpdateDirect
                 getPlanWisePages={getPlanWisePages}
                 planWisePage={planWisePage}
@@ -274,7 +274,6 @@ const NewCampaignExecutions = () => {
               <OperationShortcodeUpdater
                 fetchPlanWiseData={getPlanWisePages}
                 planWiseData={planWisePage}
-
               />
               {/* <button
                 className={`btn cmnbtn btn_sm ${showAllPages
@@ -292,15 +291,15 @@ const NewCampaignExecutions = () => {
                 onShowAllPages={handleShowAllPages}
               />
             </div>
-          }
+          )}
           <View
             columns={columns}
             data={
               showAllPages
                 ? planWisePage
                 : filteredData.length > 0
-                  ? filteredData
-                  : planWisePage
+                ? filteredData
+                : planWisePage
             }
             isLoading={false}
             tableName={"Op_executions"}
@@ -309,7 +308,6 @@ const NewCampaignExecutions = () => {
         </div>
       </div>
     </>
-
   );
 };
 

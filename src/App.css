@@ -173,7 +173,7 @@ i.bi {
   width: 60%;
 }
 
-.additional-titles > * {
+.additional-titles>* {
   flex-shrink: 0;
   width: 100%;
   max-width: 100%;
@@ -390,10 +390,6 @@ body[theme="dark"] .summary_cardtitle {
 
 .summaryList ul li:nth-last-child(1) {
   border-bottom: none;
-}
-
-.modal-content {
-  margin-top: 30%;
 }
 
 /* Modal Styling */
@@ -1430,8 +1426,7 @@ label.checkbox-inline.propscss {
   line-height: 1.1rem;
 }
 
-.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root.Mui-error
-  .MuiOutlinedInput-notchedOutline {
+.css-o9k5xi-MuiInputBase-root-MuiOutlinedInput-root.Mui-error .MuiOutlinedInput-notchedOutline {
   border-color: rgb(225, 225, 225) !important;
 }
 
@@ -1455,6 +1450,7 @@ label.checkbox-inline.propscss {
 .total_count {
   margin: 0 0 0 10px;
 }
+
 .w_80 {
   width: 80px;
   text-align: left !important;

@@ -634,7 +634,7 @@ const ViewSaleBooking = () => {
       key: "incentive_percent",
       name: "Incentive Percent",
       renderRowCell: (row) =>
-        ((row.incentive_amount / row?.base_amount) * 100).toFixed(0),
+        ((row.incentive_amount / row?.base_amount) * 100).toFixed(1),
       showCol: true,
       width: 100,
       compare: true,
@@ -829,14 +829,14 @@ const ViewSaleBooking = () => {
           {!row?.is_dummy_sale_booking && (
             <div className="flex-row">
               {/* {row.incentive_earning_status === "un-earned" &&  */}
-              {/* <Link
+              {row.sale_booking_id > 2370 && <Link
                 title="Edit sale booking"
                 to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
               >
                 <div className="icon-1">
                   <i className="bi bi-pencil" />
                 </div>
-              </Link> */}
+              </Link>}
               {/* } */}
 
               {loginUserRole == 1 && (

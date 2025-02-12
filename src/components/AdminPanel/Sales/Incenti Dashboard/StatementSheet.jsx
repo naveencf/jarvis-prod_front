@@ -41,7 +41,8 @@ const StatementSheet = () => {
                 credit: 0,
             })),
     ];
-
+    // Sort the mergedData based on the date
+    mergedData.sort((a, b) => new Date(a.date) - new Date(b.date));
     const totalDebit = mergedData.reduce((acc, curr) => acc + (curr?.debit || 0), 0);
     const totalCredit = mergedData.reduce((acc, curr) => acc + (curr?.credit || 0), 0);
     const balance = totalCredit - totalDebit;

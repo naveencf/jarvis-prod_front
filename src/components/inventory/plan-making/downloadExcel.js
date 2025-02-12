@@ -31,7 +31,7 @@ export const getPriceDetail = (priceDetails, key) => {
 //   return parseInt(indianNumber.replace(/,/g, ''), 10);
 // }
 
-export const downloadExcel = async (selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isGetSheet) => {
+export const downloadExcel = async (selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isGetSheet,ugcVideoCost, twitterTrendCost) => {
   const workbook = new ExcelJS.Workbook();
   // selling_price
   // Overview Data
@@ -496,6 +496,32 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
       cell.alignment = { horizontal: 'center', vertical: 'middle' };
     }
   });
+  // const twitterTrendCost = Number(((planDetails[0]?.selling_price * twitterTrendPercentage) / 100).toFixed(2)) || 0; // Default to 0 if undefined
+
+//   console.log("twitterTrendCost", twitterTrendCost); 
+  
+//   let twitterTrendRow = overviewSheet.addRow(['', 'Twitter Trend Cost', '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
+  
+//   // Apply styles like `agencyRow`
+//   twitterTrendRow.eachCell((cell, colNumber) => {
+//     if (colNumber > 1) { // Skip first empty column
+//       cell.border = contentBorder;
+//       cell.font = { name: 'Comic Sans MS', bold: true };
+//       cell.alignment = { horizontal: 'center', vertical: 'middle' };
+//     }
+//   });
+// console.log("twitterTrendCost", twitterTrendCost);
+
+  // const twitterTrend = Number(((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2));
+  // let twitterTrendRow = overviewSheet.addRow(['', `Twitter Trends Fees (${twitterTrendCost}%)`, '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
+  // twitterTrendRow.eachCell((cell, colNumber) => {
+  //   if (colNumber > 1) {
+  //     // Start from the second column to avoid the first empty cell
+  //     cell.border = contentBorder;
+  //     cell.font = { name: 'Comic Sans MS', bold: true };
+  //     cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  //   }
+  // });
 
   const gstPrice = Number(((agencyFee + planDetails[0]?.selling_price) * 0.18).toFixed(2));
 
@@ -524,6 +550,9 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   });
   // Merge cells B to E for each of the total rows
   overviewSheet.mergeCells(`B${agencyRow.number}:F${agencyRow.number}`);
+  // overviewSheet.mergeCells(`B${twitterTrendRow.number}:F${twitterTrendRow.number}`);
+
+  // overviewSheet.mergeCells(`B${twitterTrendRow.number}:F${twitterTrendRow.number}`);
   overviewSheet.mergeCells(`B${gstRow.number}:F${gstRow.number}`);
   overviewSheet.mergeCells(`B${totalWithGstRow.number}:F${totalWithGstRow.number}`);
 
@@ -533,6 +562,8 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
     row.getCell(2).font = { bold: true, name: 'Comic Sans MS' };
     // row.getCell(6).border = contentBorder; // Apply border only to 'Cost' column in these rows
   });
+  // twitterTrendRow.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };
+  // twitterTrendRow.getCell(2).font = { name: 'Comic Sans MS', bold: true };
   // right-align and add styling to the merged cells
   [totalWithGstRow].forEach((row) => {
     row.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };

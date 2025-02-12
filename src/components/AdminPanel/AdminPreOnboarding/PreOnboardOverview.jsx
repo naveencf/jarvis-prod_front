@@ -19,7 +19,9 @@ const PreOnboardOverview = () => {
     try {
       const response = await axios.get(baseUrl + "get_all_users");
       const data = response.data.data;
-      const onboarddata = data.filter((d) => d.onboard_status === 2);
+      const onboarddata = data.filter(
+        (d) => d.onboard_status === 2 && d.user_status === "Active"
+      );
       setDatas(onboarddata);
       setFilterData(onboarddata);
     } catch (error) {
@@ -56,6 +58,25 @@ const PreOnboardOverview = () => {
     });
     setFilterData(result);
   }, [search]);
+
+  const handleExitStatusUpdate = async (userID) => {
+    try {
+      const formData = new FormData();
+      formData.append("user_id", userID);
+      formData.append("onboard_status", 1);
+      formData.append("user_status", "Exit");
+
+      await axios.put(`${baseUrl}/update_user`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      toastAlert("Status Updated Successfully.");
+      await getData();
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
 
   const columns = [
     {
@@ -137,12 +158,6 @@ const PreOnboardOverview = () => {
       width: "16%",
       reorder: true,
     },
-    // {
-    //   name: "City",
-    //   selector: (row) => row.permanent_city,
-    //   width: "16%",
-    //   reorder: true,
-    // },
     {
       name: "Status",
       selector: (row) => row.user_status,
@@ -153,15 +168,31 @@ const PreOnboardOverview = () => {
             sx={{ marginRight: "10px" }}
             className=" cmnbtn btn_sm"
             size="small"
-            // disabled={
-            //   row.document_percentage_mandatory < 100 ||
-            //   row.document_percentage_mandatory === undefined
-            // }
             onClick={() => handleStatusChange(row.user_id, row.onboard_status)}
             variant="outlined"
             color="secondary"
           >
             Onboard
+          </Button>
+        </>
+      ),
+      reorder: true,
+    },
+    {
+      name: "Exit",
+      selector: (row) => row.user_status,
+      width: "4%",
+      cell: (row) => (
+        <>
+          <Button
+            sx={{ marginRight: "10px" }}
+            className=" cmnbtn btn_sm"
+            size="small"
+            onClick={() => handleExitStatusUpdate(row.user_id)}
+            variant="outlined"
+            color="error"
+          >
+            Exit
           </Button>
         </>
       ),

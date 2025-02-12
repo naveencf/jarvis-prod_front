@@ -2138,6 +2138,9 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
+              <NavLink className="collapse-item" to="/admin/record-purchase">
+                <i className="bi bi-dot"></i>Record Purchase
+              </NavLink>
               <NavLink
                 className="collapse-item"
                 to="/admin/purchase-transaction"

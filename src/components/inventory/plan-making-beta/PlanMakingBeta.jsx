@@ -17,7 +17,7 @@ import RightDrawer from './RightDrawerBeta';
 import ActiveDescriptionModal from '../plan-making/ActiveDescriptionModal';
 // import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
 import PlanVersions from '../plan-making/PlanVersions';
- import ScrollBlocker from '../plan-making/ScrollBlocker';
+import ScrollBlocker from '../plan-making/ScrollBlocker';
 import ActionButtons from '../plan-making/ActionButtons';
 import CountInputs from '../plan-making/CountInputs';
 import SearchAndClear from '../plan-making/SearchAndClear';
@@ -28,7 +28,7 @@ import { ImCross } from 'react-icons/im';
 import PageAddMasterModal from '../../AdminPanel/PageMS/PageAddMasterModal';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
-import { calculatePrice,ButtonTitle } from '../plan-making/helper';
+import { calculatePrice, ButtonTitle } from '../plan-making/helper';
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMakingBeta = () => {
@@ -51,9 +51,6 @@ const PlanMakingBeta = () => {
 
   const { data: vendorTypeData, isLoading: typeLoading } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
-
-
-
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [postPerPageValues, setPostPerPageValues] = useState({});
@@ -118,7 +115,7 @@ const PlanMakingBeta = () => {
   // renderCount.current++;
   // console.log(`Component re-rendered: ${renderCount.current} times`);
   const { pageDetail } = usePageDetail(id);
-  const { planDetails,fetchPlanDetails } = useFetchPlanDetails(id);
+  const { planDetails, fetchPlanDetails } = useFetchPlanDetails(id);
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   const { versionDetails, loading, error } = usePlanPagesVersionDetails(id);
@@ -127,7 +124,7 @@ const PlanMakingBeta = () => {
   const { versionData } = useGetPlanPages(id, selectedVersion?.version);
 
   const { descriptions } = useFetchPlanDescription();
- 
+
   const debounce = (func, delay) => {
     let timeoutId;
     return function (...args) {
@@ -202,19 +199,12 @@ const PlanMakingBeta = () => {
 
     // Trigger other updates or calculations dynamically based on type
     getTableData.forEach((row) => {
-      const count = updatedValues[row._id] 
+      const count = updatedValues[row._id];
       // const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
       // const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
- 
-      calculateTotalCost(
-        row._id,
-        isPost ? count : postPerPageValues[row._id] || 0, 
-        isPost ? storyPerPageValues[row._id] || 0 : count, 
-        costPerPostValues[row._id] || 0,  
-        costPerStoryValues[row._id] || 0, 
-        costPerBothValues?.[row._id] || 0  
-      );
-          });
+
+      calculateTotalCost(row._id, isPost ? count : postPerPageValues[row._id] || 0, isPost ? storyPerPageValues[row._id] || 0 : count, costPerPostValues[row._id] || 0, costPerStoryValues[row._id] || 0, costPerBothValues?.[row._id] || 0);
+    });
     // Update the plan data dynamically for post or story
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count } = row;
@@ -314,8 +304,8 @@ const PlanMakingBeta = () => {
 
   const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
-    if(index){
-      setActiveIndex(index)
+    if (index) {
+      setActiveIndex(index);
     }
     // 1. Manage selected rows state
     const updatedSelectedRows = isChecked ? [...selectedRows, row] : selectedRows.filter((selectedRow) => selectedRow._id !== row._id);
@@ -465,7 +455,6 @@ const PlanMakingBeta = () => {
     let posts = 0;
     let stories = 0;
     let totalDeliverables = 0;
-
     rows?.forEach((row) => {
       const postPerPage = Number(postPerPageValues[row._id]) || 0;
       const storyPerPage = Number(storyPerPageValues[row._id]) || 0;
@@ -477,9 +466,11 @@ const PlanMakingBeta = () => {
       posts += postPerPage;
       stories += storyPerPage;
       totalDeliverables += postStoryCountSum;
-
       setTotalDeliverables(totalDeliverables);
     });
+    if (rows.length === 0) {
+      setTotalDeliverables(0);
+    }
     setTotalFollowers(followers);
     setTotalCost(cost);
     setTotalPostsPerPage(posts);
@@ -665,7 +656,7 @@ const PlanMakingBeta = () => {
       // Create a copy of the currently selected rows
       const updatedSelectedRows = [...selectedRows];
       const updatedPostValues = { ...postPerPageValues };
-     const updatedShowTotalCost = {...showTotalCost}
+      const updatedShowTotalCost = { ...showTotalCost };
       // Loop through each filtered row
       filtered?.forEach((row) => {
         // Check if the row is already selected
@@ -685,7 +676,7 @@ const PlanMakingBeta = () => {
       // Set post per page values for all rows at once
       setPostPerPageValues(updatedPostValues);
       setSelectedRows(updatedSelectedRows);
-      setShowTotalCost(updatedShowTotalCost)
+      setShowTotalCost(updatedShowTotalCost);
       // Update statistics based on the selected rows
       updateStatistics(updatedSelectedRows);
 
@@ -717,7 +708,7 @@ const PlanMakingBeta = () => {
       setNotFoundPages([]);
     }
   };
-//   console.log("searchInput", searchIn);
+  //   console.log("searchInput", searchIn);
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -761,7 +752,6 @@ const PlanMakingBeta = () => {
     setPageCategoryCount({});
     setTotalDeliverables(0);
     setSearchInput('');
- 
   };
   // Function to filter rows based on the visibility of selected rows
   const filterRowsBySelection = (rows, selectedRows) => {
@@ -804,9 +794,9 @@ const PlanMakingBeta = () => {
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
       setShortcutTriggered(true);
       setActiveIndex(activeIndex + 1);
-  
-       if (event.shiftKey) {
-        const nextRow = getTableData[activeIndex + 1]; 
+
+      if (event.shiftKey) {
+        const nextRow = getTableData[activeIndex + 1];
         handleCheckboxChange(nextRow, 'shiftArrow', { target: { checked: true } }, activeIndex + 1);
       }
     } else if (event.code === 'ArrowUp' && activeIndex > 0) {
@@ -814,7 +804,6 @@ const PlanMakingBeta = () => {
       setActiveIndex(activeIndex - 1);
     }
   };
-  
 
   const displayPercentage = Math.floor(percentage);
 
@@ -930,13 +919,12 @@ const PlanMakingBeta = () => {
     }
   }, [selectedRows]);
 
- 
   useEffect(() => {
     updateStatistics(selectedRows);
-    if(leftSideDataUpdate){
+    if (leftSideDataUpdate) {
       setTimeout(() => {
-        fetchPlanDetails()
-        setLeftSideBarDataUpdate(false)
+        fetchPlanDetails();
+        setLeftSideBarDataUpdate(false);
       }, 2000);
     }
   }, [storyPerPageValues, postPerPageValues, leftSideDataUpdate]);

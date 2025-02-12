@@ -24,7 +24,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const [formData, setFormData] = useState({
     vendor_id: vendorDetail?.vendor_id,
     outstanding: vendorPhpDetail[0]?.outstanding,
-    request_amount: '',
+    request_amount: 0,
     gst_amount: 0,
     base_amount: 0,
     priority: 'high',
@@ -33,6 +33,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     remark_audit: '',
     invc_img: '',
     request_by: userName,
+    outstandings: 0
     // accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
     // branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
     // vpa: vendorBankDetail[selectedBankIndex]?.vpa,
@@ -42,30 +43,33 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
 
 
-  // console.log(venodrDocuments, "venodrDocuments")
+  console.log(vendorDetail, "venodrDocuments", venodrDocuments)
   useEffect(() => {
-    axios
-      .post(phpBaseUrl + `?view=getvendorDataListvid`, {
-        vendor_id: vendorDetail?.vendor_id,
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setVendorPhpDetail(res.data.body);
-          // console.log(res.data.body, 'vendorDetail', vendorDetail);
-        }
-      });
-    axios
-      .get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setVendorBankDetail(res.data.data);
-          // console.log(res.data.data, 'res.data.data');
-        }
-      });
+    if (vendorDetail) {
+
+      axios
+        .post(phpBaseUrl + `?view=getvendorDataListvid`, {
+          vendor_id: vendorDetail?.vendor_id,
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            setVendorPhpDetail(res.data.body);
+            // console.log(res.data.body, 'vendorDetail', vendorDetail);
+          }
+        });
+      axios
+        .get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            setVendorBankDetail(res.data.data);
+            // console.log(res.data.data, 'res.data.data');
+          }
+        });
+    }
   }, []);
 
   const handleChange = (e) => {
@@ -93,6 +97,40 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     });
   };
 
+  useEffect(() => {
+    if (vendorDetail && vendorDetail.request_id && vendorBankDetail) {
+      console.log("Editing Request");
+
+      // Find matching bank index
+      const bankIndex = vendorBankDetail.findIndex((bank) =>
+        vendorDetail.account_number
+          ? bank.account_number === vendorDetail.account_number
+          : bank.upi_id === vendorDetail.vpa
+      );
+
+      // If a matching bank is found, set the selected index
+      if (bankIndex !== -1) {
+        setSelectedBankIndex(bankIndex);
+      }
+      setFormData((prev) => ({
+        ...prev,
+        base_amount: vendorDetail.base_amount,
+        gst_amount: vendorDetail.gst_amount,
+        request_amount: vendorDetail.request_amount,
+        invc_date: vendorDetail.invc_date || "",
+        remark_audit: vendorDetail.remark_audit,
+        invc_img: vendorDetail.invc_img,
+
+      }));
+      setSelectedFileName(vendorDetail.invc_img)
+      if (vendorDetail.gst_amount > 0) {
+        setIsGSTAvailable(true);
+      }
+    } else {
+      console.log("Adding Request");
+      // setSelectedBankIndex(""); // Reset when adding a new request
+    }
+  }, [vendorDetail, vendorBankDetail]);
 
   useEffect(() => {
     if (venodrDocuments && venodrDocuments.length > 0) {
@@ -125,6 +163,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       return updatedData;
     });
   };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -144,7 +183,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     }
     const payload = new FormData();
     Object.keys(formData).forEach((key) => {
-      payload.append(key, formData[key]);
+      if (key !== "outstanding") { // Exclude 'outstanding' key
+        payload.append(key, formData[key]);
+      }
     });
 
     // Append the selected bank details to the payload
@@ -165,7 +206,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setFormData({
         gst: false,
         outstandings: 0,
-        request_amount: "",
+        request_amount: 0,
         gst_amount: 0,
         base_amount: 0,
         priority: "",
@@ -293,16 +334,16 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
           Penny Drop
         </Button>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
-          <TextField label="Request Amount (With GST)" name="request_amount" value={formData.request_amount} onChange={handleChange} fullWidth />
+          <TextField label="Request Amount (With GST)" name="request_amount" value={formData?.request_amount} onChange={handleChange} fullWidth />
           <FormControlLabel control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />
           <Stack direction="row" spacing={2}>
-            <TextField label="GST Amount" value={formData.gst_amount} InputProps={{ readOnly: true }} />
-            <TextField label="Base Amount (Excl. GST)" value={formData.base_amount} InputProps={{ readOnly: true }} />
+            <TextField label="GST Amount" value={formData?.gst_amount} InputProps={{ readOnly: true }} />
+            <TextField label="Base Amount (Excl. GST)" value={formData?.base_amount} InputProps={{ readOnly: true }} />
 
           </Stack>
           <Stack direction="row" spacing={2}>
-            <TextField label="Invoice No#" name="invc_no" value={formData.invc_no} onChange={handleChange} fullWidth />
-            <TextField type="date" label="Invoice Date" name="invc_date" value={formData.invc_date} onChange={handleChange} InputLabelProps={{ shrink: true }} fullWidth />
+            <TextField label="Invoice No#" name="invc_no" value={formData?.invc_no} onChange={handleChange} fullWidth />
+            <TextField type="date" label="Invoice Date" name="invc_date" value={formData?.invc_date} onChange={handleChange} InputLabelProps={{ shrink: true }} fullWidth />
           </Stack>
           <Stack direction="row" spacing={2}>
             <Button variant="outlined" component="label">
@@ -311,7 +352,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             </Button>
             {selectedFileName && <div style={{ color: 'green', marginTop: '8px' }}>Selected File: {selectedFileName}</div>}
           </Stack>
-          <TextField label="Remark" name="remark_audit" value={formData.remark_audit} onChange={handleChange} fullWidth />
+          <TextField label="Remark" name="remark_audit" value={formData?.remark_audit} onChange={handleChange} fullWidth />
         </div>
       </DialogContent>
       <DialogActions>

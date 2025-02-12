@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-const EsicTable = ({ UserDetails }) => {
+const OnlyEsic = ({ UserDetails }) => {
   let salary = UserDetails?.salary;
 
   let basicSalary = salary * 0.6;
@@ -332,4 +332,4 @@ const EsicTable = ({ UserDetails }) => {
   );
 };
 
-export default EsicTable;
+export default OnlyEsic;

@@ -288,16 +288,27 @@ const RenderedTable = ({
       });
   };
 
-  const handelchange = (e, index, column) => {
+  const handelchange = (e, index, column, multi) => {
     let newData = [...sortedData];
-    newData[index] = { ...newData[index], [column?.key]: e.target.value };
+    if (multi) {
+      newData[index - (currentPage - 1) * itemsPerPage] = {
+        ...newData[index - (currentPage - 1) * itemsPerPage],
+        ...e,
+      };
+    } else {
+      newData[index] = {
+        ...newData[index],
+        [column?.key]: e.target.value,
+      };
+    }
     setSortedData(newData);
 
     if (e.target.value === "" || editflag === false) {
       let prevData = [...sortedData];
-      prevData[index] = {
+      prevData[index - (currentPage - 1) * itemsPerPage] = {
         ...prevData[index],
-        [column?.key]: data[index][column?.key],
+        [column?.key]:
+          data[index - (currentPage - 1) * itemsPerPage][column?.key],
       };
       setSortedData(prevData);
     }
@@ -748,4 +759,4 @@ function DropdownElement({
   );
 }
 
-export default RenderedTable;
+export default React.memo(RenderedTable);

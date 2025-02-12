@@ -18,6 +18,8 @@ import { BlobProvider, PDFDownloadLink } from "@react-pdf/renderer";
 import Modal from "react-modal";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import NDA from "../../PreOnboarding/NDA";
+import UserSingleSummaryTab from "./UserSingleSummaryTab";
+import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
 const UserSingle = () => {
   const whatsappApi = WhatsappAPI();
   const [KRIData, setKRIData] = useState([]);
@@ -26,12 +28,16 @@ const UserSingle = () => {
   const [defaultSeatData, setDefaultSeatData] = useState([]);
   const [roomId, setRoomId] = useState();
   const [educationData, setEducationData] = useState([]);
+  const [summaryData, setSummaryData] = useState([]);
+
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [user, setUser] = useState([]);
   const [hobbiesData, setHobbiesData] = useState([]);
   const [familyData, seFamilyData] = useState([]);
   const [previewOffer, setpreview] = useState(false);
   const [pdfBlob, setPdfBlob] = useState(null);
+  const [image64, setImage64] = useState("");
+
   const handelClose = () => {
     setpreview(!previewOffer);
   };
@@ -40,6 +46,19 @@ const UserSingle = () => {
       setKRIData(res.data);
     });
   };
+  useEffect(() => {
+    axios
+      .post(baseUrl + "image_to_base64", {
+        imageUrl: user.digital_signature_image_url,
+      })
+      .then((response) => {
+        setImage64(response.data.base64String);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
   useEffect(() => {
     axios.get(baseUrl + "get_all_sittings").then((res) => {
       setDefaultSeatData(res.data.data);
@@ -53,6 +72,10 @@ const UserSingle = () => {
     KRAAPI(id);
     axios.get(baseUrl + "get_all_hobbies").then((res) => {
       setHobbiesData(res.data.data);
+    });
+
+    axios.get(baseUrl + `user_wfhd_joining_summary/${id}`).then((res) => {
+      setSummaryData(res.data.data);
     });
   }, []);
   let fetchedData;
@@ -83,31 +106,84 @@ const UserSingle = () => {
     user.job_type === "WFO" ? "Family" : "",
     user.job_type === "WFO" ? "Education" : "",
     // "Salary",
+    "Summary",
     user.job_type === "WFHD" ? "Salary" : null,
   ].filter(Boolean);
+
+  //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
+  let salary = user.salary;
+  let basicSalary = salary * 0.6;
+  let basicsal = (basicSalary <= 12300 ? salary * 0.8 : basicSalary).toFixed(0);
+  let EmployeePF = parseFloat(
+    (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
+  );
+
+  let EmployeerESIC = 0;
+
+  if (salary <= 21000) {
+    EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
+  }
+  const EMPPF = EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0);
+
   return (
     <>
       <div className="box">
         <div id="content">
-          <div style={{display:"flex" , justifyContent:'end'}}>
-          <button
-            className="btn-warning btn cmnbtn btn_sm mr-2"
-            onClick={() => {
-              setpreview(true);
-            }}
-          >
-            NDA Preview
-            <i className="fa fa-eye" aria-hidden="true"></i>
-          </button>
-          <PDFDownloadLink
-            document={<NDA allUserData={user} />}
-            fileName="NDA.pdf"
-          >
-            <button className="btn-primary btn cmnbtn btn_sm">
-              NDA Download
-              <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
-            </button>
-          </PDFDownloadLink>
+          <div style={{ display: "flex", justifyContent: "end" }}>
+            <PDFDownloadLink
+              document={
+                <OfferLetter
+                  allUserData={user}
+                  image64={image64}
+                  EMPPF={EMPPF}
+                />
+              }
+              fileName="OfferLetter.pdf"
+            >
+              <button className="btn-primary btn cmnbtn btn_sm">
+                Offer Letter
+                <i
+                  title="Download Offer Letter"
+                  class="bi bi-cloud-arrow-down"
+                ></i>
+              </button>
+            </PDFDownloadLink>
+            <PDFDownloadLink
+              document={
+                <AppointmentLetter
+                  allUserData={user}
+                  image64={image64}
+                  EMPPF={EMPPF}
+                />
+              }
+              fileName="AppointmentLetter.pdf"
+            >
+              <button className="btn-primary btn cmnbtn btn_sm">
+                Appointment Letter
+                <i
+                  title="Download Offer Letter"
+                  class="bi bi-cloud-arrow-down"
+                ></i>
+              </button>
+            </PDFDownloadLink>
+            {/* <button
+              className="btn-warning btn cmnbtn btn_sm mr-2"
+              onClick={() => {
+                setpreview(true);
+              }}
+            >
+              NDA Preview
+              <i className="fa fa-eye" aria-hidden="true"></i>
+            </button> */}
+            <PDFDownloadLink
+              document={<NDA allUserData={user} />}
+              fileName="NDA.pdf"
+            >
+              <button className="btn-primary btn cmnbtn btn_sm">
+                NDA Download
+                <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
+              </button>
+            </PDFDownloadLink>
           </div>
           <FormContainer
             submitButton={false}
@@ -132,7 +208,13 @@ const UserSingle = () => {
             {activeAccordionIndex == 4 && (
               <UserSingleTab6 educationData={educationData} />
             )}
+            {activeAccordionIndex == 5 && (
+              <UserSingleSummaryTab summaryData={summaryData} />
+            )}
             {user.job_type === "WFHD" && activeAccordionIndex == 3 && (
+              <UserSingleSummaryTab summaryData={summaryData} />
+            )}
+            {user.job_type === "WFHD" && activeAccordionIndex == 4 && (
               <UserSingleWFHDSalaryTab id={id} />
             )}
           </FormContainer>
