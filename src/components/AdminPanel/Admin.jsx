@@ -16,7 +16,6 @@ import OutstandingPaymentReceiveReport from "../Finance/Sales Management/Payment
 import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList";
 import ErrorPage from "../../ErrorPage";
 import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView";
-import UnFetchedPages from "./PageMS/InventoryDashboard/UnFetchedPages";
 import TagCategory from "./PageMS/InventoryDashboard/TagCategory";
 import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest";
 import CalenderCreation from "../Operation/Calender/CalenderCreation";
@@ -27,6 +26,7 @@ import OpCalender from "../AbOpreation/Calender/OpCalender";
 import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstandingOverview";
 import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater";
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
+import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -872,8 +872,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1854,7 +1854,7 @@ const Admin = () => {
                     />
                     <Route
                       path="/pms-unFatched-pages"
-                      element={<UnFetchedPages />}
+                      element={<UnfetchedPages />}
                     />
                     <Route path="/pms-tag-Category" element={<TagCategory />} />
                     <Route path="/pms-profile-type" element={<ProfileType />} />
