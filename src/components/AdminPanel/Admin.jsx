@@ -685,6 +685,8 @@ const PaymentDoneTransactionList = lazy(() =>
 );
 const PageStats = lazy(() => import("./PageMS/PageStats"));
 const PlanMaking = lazy(() => import("../inventory/plan-making/index"));
+const PlanMakingBeta = lazy(() => import("../inventory/plan-making-beta/index"));
+const PlanMakingTableBeta = lazy(() => import('../inventory/plan-making-beta/PlanMakingBeta'));
 const PlanMakingPricing = lazy(() =>
   import("../inventory/plan-pricing/PlanPricing")
 );
@@ -1878,6 +1880,9 @@ const Admin = () => {
                       element={<VendorMaster />}
                     />
                     <Route path="/pms-plan-making" element={<PlanMaking />} />
+                    <Route path="/pms-plan-making-beta" element={<PlanMakingBeta />} />
+                    <Route path="/pms-plan-making-beta/:id" element={<PlanMakingTableBeta />} />
+
                     <Route path="/pms-plan-pricing" element={<PlanPricing />} />
                     <Route
                       path="/pms-plan-pricing/:id"

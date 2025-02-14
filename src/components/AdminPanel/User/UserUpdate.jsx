@@ -30,6 +30,7 @@ import {
   bloodGroupData,
   castOption,
   genderData,
+  IsApplicableData,
   nationalityData,
   spokenLanguageData,
   stateAbbreviations,
@@ -165,12 +166,6 @@ const UserUpdate = () => {
 
   const [joiningDateHistory, setJoiningDateHistory] = useState("");
   const [dateOfBirthHistory, setDateOfBirthHistory] = useState("");
-
-  const IsApplicableData = [
-    // { label: "PF", value: "pf" },
-    { label: "PF & ESIC", value: "pf_and_esic" },
-    { label: "IN Hand", value: "in_hand" },
-  ];
 
   //--------------------Official Info State End
   // Genral Information Tab-------------------End------------------------------------
@@ -793,39 +788,40 @@ const UserUpdate = () => {
         });
 
       // new api ------------------------------------------------------
-      await axios
-        .post(baseUrl + "update_user_history", formData)
-        .then((res) => {
-          console.log("History sent successfully:", res);
-        })
-        .catch((error) => {
-          console.log("Failed to send History:", error);
-        });
+      // await axios
+      //   .post(baseUrl + "update_user_history", formData)
+      //   .then((res) => {
+      //     console.log("History sent successfully:", res);
+      //   })
+      //   .catch((error) => {
+      //     console.log("Failed to send History:", error);
+      //   });
 
-      if (reportL1 !== "") {
-        axios
-          .post(baseUrl + "add_send_user_mail", {
-            email: email,
-            subject: "User Registration",
-            text: "A new user has been registered.",
-            login_id: loginId,
-            name: username,
-            password: password,
-          })
-          .then((res) => {
-            // console.log("Email sent successfully:", res.data);
-          })
-          .catch((error) => {
-            // console.log("Failed to send email:", error);
-          });
+      // if (reportL1 !== "") {
+      //   axios
+      //     .post(baseUrl + "add_send_user_mail", {
+      //       email: email,
+      //       subject: "User Registration",
+      //       text: "A new user has been registered.",
+      //       login_id: loginId,
+      //       name: username,
+      //       password: password,
+      //     })
+      //     .then((res) => {
+      //       // console.log("Email sent successfully:", res.data);
+      //     })
+      //     .catch((error) => {
+      //       // console.log("Failed to send email:", error);
+      //     });
 
-        whatsappApi.callWhatsAPI(
-          "Extend Date by User",
-          JSON.stringify(personalContact),
-          username,
-          ["You have assinge Report L1", "ok"]
-        );
-      }
+      //   whatsappApi.callWhatsAPI(
+      //     "Extend Date by User",
+      //     JSON.stringify(personalContact),
+      //     username,
+      //     ["You have assinge Report L1", "ok"]
+      //   );
+      // }
+      //
 
       const mandatoryDocTypes = ["10th", "12th", "Graduation"];
 

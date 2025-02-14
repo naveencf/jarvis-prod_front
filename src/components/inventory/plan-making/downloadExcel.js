@@ -10,8 +10,10 @@ export const getPlatformName = (platformId) => {
     '666856d34366007df1dfacf6': 'YouTube',
     '666818c34366007df1df1328': 'Twitter',
     '666856e04366007df1dfacfc': 'Snapchat',
+    // '67472a28fc48d70fbf1c2ddb': 'Thread',
     '67472a28fc48d70fbf1c2ddb': 'Thread',
   };
+   console.log(platformMap[platformId] || 'Unknown');
   return platformMap[platformId] || 'Unknown';
 };
 

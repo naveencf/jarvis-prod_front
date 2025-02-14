@@ -98,9 +98,11 @@ const OnlyEsic = ({ UserDetails }) => {
       : Number(basicsal) + Number(AdvanceBonus) + Number(monthEncash);
 
   let TotalCTC =
-    salary >= 20500
-      ? Number(salary) + Number(EmployeePF)
-      : Number(salary) + Number(EmployeePF) + Number(EmployeerESIC);
+    salary >= 21001 ? Number(salary) : Number(salary) + Number(EmployeerESIC);
+  //   let TotalCTC =
+  //     salary >= 20500
+  //       ? Number(salary) + Number(EmployeePF)
+  //       : Number(salary) + Number(EmployeePF) + Number(EmployeerESIC);
 
   basicSalary = basicSalary.toFixed(2);
   HRA = HRA.toFixed(2);
@@ -220,7 +222,7 @@ const OnlyEsic = ({ UserDetails }) => {
           </View>
         </View>
         {/* Table Rows */}
-        <View style={styles.tableRow}>
+        {/* <View style={styles.tableRow}>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell1}>PF Employee</Text>
           </View>
@@ -232,8 +234,8 @@ const OnlyEsic = ({ UserDetails }) => {
               INR {(EmployeePF * 12).toFixed(2)}
             </Text>
           </View>
-        </View>
-        {salary < 21000 && (
+        </View> */}
+        {salary <= 21000 && (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell1}>ESIC Employee</Text>
@@ -255,17 +257,18 @@ const OnlyEsic = ({ UserDetails }) => {
           <View style={styles.tableCol}>
             <Text style={styles.tableCell}>
               INR{" "}
-              {salary >= 20500
+              {salary >= 21001 ? TotalEarnings : TotalEarnings - EmployeESIC}
+              {/* {salary >= 20500
                 ? (TotalEarnings - EmployeePF).toFixed(2)
-                : (TotalEarnings - EmployeePF - EmployeESIC).toFixed(2)}
+                : (TotalEarnings - EmployeePF - EmployeESIC).toFixed(2)} */}
             </Text>
           </View>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell}>
               INR{" "}
-              {salary >= 20500
-                ? TotalEarnings * 12 - EmployeePF * 12
-                : TotalEarnings * 12 - EmployeePF * 12 - EmployeESIC * 12}
+              {salary >= 21001
+                ? TotalEarnings * 12
+                : TotalEarnings * 12 - EmployeESIC * 12}
             </Text>
           </View>
         </View>
@@ -284,7 +287,7 @@ const OnlyEsic = ({ UserDetails }) => {
           </View>
         </View>
         {/* Table Rows */}
-        <View style={styles.tableRow}>
+        {/* <View style={styles.tableRow}>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell1}>PF Employer</Text>
           </View>
@@ -296,8 +299,8 @@ const OnlyEsic = ({ UserDetails }) => {
               INR {(EmployeePF * 12).toFixed(2)}
             </Text>
           </View>
-        </View>
-        {salary < 21000 && (
+        </View> */}
+        {salary <= 21000 && (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell1}>ESIC Employer</Text>

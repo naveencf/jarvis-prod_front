@@ -21,14 +21,14 @@ import dayjs from "dayjs";
 import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
 import { useContext } from "react";
+import { IsApplicableData } from "../../../utils/helper";
 
 const onBoardStatus = 2;
 
 const AdminPreOnboarding = () => {
-  const {  usersDataContext } = useContext(AppContext);
-  const [loading, setLoading] = useState(false);   
-  const navigate = useNavigate()
-
+  const { usersDataContext } = useContext(AppContext);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const jobTypeData = ["WFO", "WFH"];
   // const tdsApplicableData = ["Yes", "No"];
@@ -114,19 +114,12 @@ const AdminPreOnboarding = () => {
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
 
-
-
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [currentState, setcurrentState] = useState("");
   const [pincode, setPincode] = useState("");
 
   const [isApplicable, setIsApplicable] = useState("");
-  const IsApplicableData = [
-    // { label: "PF", value: "pf" },
-    { label: "PF & ESIC", value: "pf_and_esic" },
-    { label: "IN Hand", value: "in_hand" },
-  ];
 
   const [subDepartmentData, setSubDepartmentData] = useState([]);
   const [subDepartment, setSubDeparment] = useState([]);
@@ -170,7 +163,6 @@ const AdminPreOnboarding = () => {
     }
   }, [department]);
 
-  
   useEffect(() => {
     if (subDepartment) {
       axios
@@ -263,7 +255,6 @@ const AdminPreOnboarding = () => {
     if (currentState == "") {
       setIsRequired((perv) => ({ ...perv, currentState: true }));
     }
-
 
     if (!username) {
       return toastError("Fill the Mandatory fields");
@@ -559,7 +550,7 @@ const AdminPreOnboarding = () => {
 
   if (isFormSubmitted) {
     // return <Navigate to="/admin/pre-onboarding-overview" />;
-    return navigate('/admin/pre-onboarding-overview')
+    return navigate("/admin/pre-onboarding-overview");
   }
 
   // Password Auto Genrate
@@ -668,13 +659,13 @@ const AdminPreOnboarding = () => {
     const validateAge = dayjs().diff(dayjs(selectedDate), "year"); // Use selectedDate for age calculation
     const age = calculateAge(selectedDate); // Assuming calculateAge is correct
     setDobValidate(validateAge);
-  
+
     if (selectedDate === "") {
       setIsRequired((prev) => ({ ...prev, dateOfBirth: true }));
       setDobError("Please select a DOB."); // Set error if date is empty
     } else {
       setIsRequired((prev) => ({ ...prev, dateOfBirth: false }));
-      
+
       // Only set dobError if age is invalid; clear it otherwise
       if (validateAge < 15 || validateAge > 100) {
         setDobError("Age can't be less than 15 or greater than 100 years.");
@@ -686,7 +677,6 @@ const AdminPreOnboarding = () => {
       }
     }
   };
-  
 
   const handleFullNameChange = (event) => {
     let userName = event.target.value;
@@ -957,7 +947,7 @@ const AdminPreOnboarding = () => {
             value={{
               value: reportL1,
               label:
-              usersDataContext.find((user) => user.user_id === reportL1)
+                usersDataContext.find((user) => user.user_id === reportL1)
                   ?.user_name || "",
             }}
             onChange={(e) => {
@@ -1109,9 +1099,9 @@ const AdminPreOnboarding = () => {
             //       return { ...prev, userCtc: false };
             //     });
             // }}
-            />
-            
-            {isRequired.userCtc && <p className="form-error">Please Enter CTC</p>}
+          />
+
+          {isRequired.userCtc && <p className="form-error">Please Enter CTC</p>}
         </div>
 
         {/* )} */}
@@ -1121,7 +1111,7 @@ const AdminPreOnboarding = () => {
             Custom Range <sup className="form-error">*</sup>
           </label>
           <Select
-            options={IsApplicableData.map((option) => ({
+            options={IsApplicableData?.map((option) => ({
               value: `${option.value}`,
               label: `${option.label}`,
             }))}
@@ -1325,20 +1315,20 @@ const AdminPreOnboarding = () => {
           </LocalizationProvider>
           */}
           <FieldContainer
-          type="date"
-          astric
-          label="Joining Date"
-          required={false}
-          fieldGrid={3}
-          value={joiningDate}
-          onChange={(e) => {
-            setJoiningDate(e.target.value);
-            if (e.target.value === "") {
-              setIsRequired((prev) => ({ ...prev, joiningDate: true }));
-            } else {
-              setIsRequired((prev) => ({ ...prev, joiningDate: false }));
-            }
-          }}
+            type="date"
+            astric
+            label="Joining Date"
+            required={false}
+            fieldGrid={3}
+            value={joiningDate}
+            onChange={(e) => {
+              setJoiningDate(e.target.value);
+              if (e.target.value === "") {
+                setIsRequired((prev) => ({ ...prev, joiningDate: true }));
+              } else {
+                setIsRequired((prev) => ({ ...prev, joiningDate: false }));
+              }
+            }}
           />
           {isRequired.joiningDate && (
             <p className="form-error">Please select a Joining Date</p>
@@ -1366,14 +1356,14 @@ const AdminPreOnboarding = () => {
             />
           </LocalizationProvider> */}
           <FieldContainer
-          type="date"
-          astric
-          label="DOB"
-          required={false}
-          fieldGrid={3}
-          value={dateOfBirth}
-          // disabled={disableFutureDates}
-          onChange={handleDateChange}
+            type="date"
+            astric
+            label="DOB"
+            required={false}
+            fieldGrid={3}
+            value={dateOfBirth}
+            // disabled={disableFutureDates}
+            onChange={handleDateChange}
           />
           {isRequired.dateOfBirth && (
             <p className="form-error">Please select a DOB</p>
@@ -1416,114 +1406,110 @@ const AdminPreOnboarding = () => {
           )}
         </div>
 
+        <div className="col-md-3">
+          <FieldContainer
+            label="Address"
+            astric
+            fieldGrid={12}
+            value={address}
+            onChange={(e) => {
+              const value = e.target.value;
+              setAddress(value);
+
+              if (value === "") {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  address: true,
+                }));
+              } else {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  address: false,
+                }));
+              }
+            }}
+          />
+          {isRequired.address && (
+            <p className="form-error">Please Enter Address</p>
+          )}
+        </div>
 
         <div className="col-md-3">
-              <FieldContainer
-                label="Address"
-                astric
-                fieldGrid={12}
-                value={address}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  setAddress(value);
+          <div className="form-group m0">
+            <label htmlFor="">
+              State <span style={{ color: "red" }}>*</span>
+            </label>
+            <IndianStatesMui
+              selectedState={currentState}
+              // onChange={(option) => setcurrentState(option ? option : null)}
+              onChange={(option) => {
+                const value = option;
+                setcurrentState(option ? option : null);
+                setIsRequired((prev) => ({
+                  ...prev,
+                  currentState: value === null || value === "",
+                }));
+              }}
+            />
+            {isRequired.currentState && (
+              <p className="form-error">Please Enter State</p>
+            )}
+          </div>
+        </div>
 
-                  if (value === "") {
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      address: true,
-                    }));
-                  } else {
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      address: false,
-                    }));
-                  }
-                }}
-              />
-              {isRequired.address && (
-                <p className="form-error">Please Enter Address</p>
-              )}
-            </div>
+        <div className="col-md-3">
+          <div className="form-group m0">
+            <label htmlFor="">
+              City <span style={{ color: "red" }}>*</span>
+            </label>
 
-            <div className="col-md-3">
-              <div className="form-group m0">
-                <label htmlFor="">
-                  State <span style={{ color: "red" }}>*</span>
-                </label>
-                <IndianStatesMui
-                  selectedState={currentState}
-                  // onChange={(option) => setcurrentState(option ? option : null)}
-                  onChange={(option) => {
-                    const value = option;
-                    setcurrentState(option ? option : null);
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      currentState: value === null || value === "",
-                    }));
-                  }}
-                />
-                {isRequired.currentState && (
-                  <p className="form-error">Please Enter State</p>
-                )}
-              </div>
-            </div>
+            <IndianCitiesMui
+              selectedState={currentState}
+              selectedCity={city}
+              // onChange={(option) => setCity(option ? option : null)}
+              onChange={(option) => {
+                const value = option;
+                setCity(option ? option : null);
+                setIsRequired((prev) => ({
+                  ...prev,
+                  city: value === null || value === "",
+                }));
+              }}
+            />
+            {isRequired.city && <p className="form-error">Please Enter City</p>}
+          </div>
+        </div>
 
-            <div className="col-md-3">
-              <div className="form-group m0">
-                <label htmlFor="">
-                  City <span style={{ color: "red" }}>*</span>
-                </label>
-
-                <IndianCitiesMui
-                  selectedState={currentState}
-                  selectedCity={city}
-                  // onChange={(option) => setCity(option ? option : null)}
-                  onChange={(option) => {
-                    const value = option;
-                    setCity(option ? option : null);
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      city: value === null || value === "",
-                    }));
-                  }}
-                />
-                {isRequired.city && (
-                  <p className="form-error">Please Enter City</p>
-                )}
-              </div>
-            </div>
-
-            <div className="col-md-3">
-              <FieldContainer
-                label="Pincode"
-                type="number"
-                astric={true}
-                fieldGrid={12}
-                maxLength={6}
-                value={pincode}
-                onChange={(e) => {
-                  const value = e.target.value;
-                  if (/^\d{0,6}$/.test(value)) {
-                    setPincode(value);
-                  }
-                  if (e.target.value === "") {
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      pincode: true,
-                    }));
-                  } else {
-                    setIsRequired((prev) => ({
-                      ...prev,
-                      pincode: false,
-                    }));
-                  }
-                }}
-              />
-              {isRequired.pincode && (
-                <p className="form-error">Please Enter Pincode</p>
-              )}
-            </div>
-
+        <div className="col-md-3">
+          <FieldContainer
+            label="Pincode"
+            type="number"
+            astric={true}
+            fieldGrid={12}
+            maxLength={6}
+            value={pincode}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d{0,6}$/.test(value)) {
+                setPincode(value);
+              }
+              if (e.target.value === "") {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  pincode: true,
+                }));
+              } else {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  pincode: false,
+                }));
+              }
+            }}
+          />
+          {isRequired.pincode && (
+            <p className="form-error">Please Enter Pincode</p>
+          )}
+        </div>
       </FormContainer>
       <div className="form-group">
         <button

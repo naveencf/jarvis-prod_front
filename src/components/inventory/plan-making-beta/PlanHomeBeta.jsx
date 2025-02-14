@@ -93,12 +93,12 @@ import CostUpdateModal from "../plan-making/CostUpdateModa";
         const multipliedValue = baseValue * unit.multiplier;
         const labelValue =
           multipliedValue >= unit.multiplier
-            ? multipliedValue / unit.multiplier // Format properly like `1k` instead of `1000k`
+            ? multipliedValue / unit.multiplier  
             : baseValue;
   
         return {
           value: multipliedValue,
-          label: `${labelValue} ${unit.label}`, // Display the formatted label
+          label: `${labelValue} ${unit.label}`, 
         };
       });
     };

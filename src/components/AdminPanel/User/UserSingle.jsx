@@ -140,7 +140,7 @@ const UserSingle = () => {
               }
               fileName="OfferLetter.pdf"
             >
-              <button className="btn-primary btn cmnbtn btn_sm">
+              <button className="btn-primary btn cmnbtn btn_sm mr-2">
                 Offer Letter
                 <i
                   title="Download Offer Letter"
@@ -158,7 +158,7 @@ const UserSingle = () => {
               }
               fileName="AppointmentLetter.pdf"
             >
-              <button className="btn-primary btn cmnbtn btn_sm">
+              <button className="btn-primary btn cmnbtn btn_sm mr-2">
                 Appointment Letter
                 <i
                   title="Download Offer Letter"

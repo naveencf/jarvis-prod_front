@@ -166,7 +166,7 @@ const LeftSideBarBeta = ({
       });
     }
   };
-
+ 
   const platformCategory = Object.keys(updatedCategories).length > 0 ? updatedCategories : category;
 
   const handleDownload = async () => {
@@ -216,8 +216,7 @@ const LeftSideBarBeta = ({
 
     return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
-
-  const handlePreviewExcel = () => {
+   const handlePreviewExcel = () => {
     const preview = selectedRow?.map((page) => {
       const platformName = getPlatformName(page.platform_id);
       const postCountForPage = postCount[page._id] || 0;
@@ -629,7 +628,7 @@ const LeftSideBarBeta = ({
             ))}
           </div>
         </div>
-        <ExcelPreviewModalBeta open={openPreviewModal} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost}  twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
+        <ExcelPreviewModalBeta open={openPreviewModal} sellingPrice={planDetails&& planDetails?.[0]?.selling_price} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost}  twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
         <div className="planSmall planLarge">
           {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
