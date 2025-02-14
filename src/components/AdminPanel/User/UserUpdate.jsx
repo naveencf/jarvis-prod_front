@@ -1492,6 +1492,18 @@ const UserUpdate = () => {
             parentComponentContact={alternateContact}
             setParentComponentContact={setAlternateContact}
           />
+
+          <FieldContainer
+            label="Profile"
+            astric={true}
+            type="file"
+            accept="image/*"
+            fieldGrid={3}
+            required={false}
+            // value={personalEmail}
+            onChange={(e) => setProfile(e.target.files[0])}
+          />
+
           <div className="form-group col-3">
             <label className="form-label">
               Gender <sup style={{ color: "red" }}>*</sup>

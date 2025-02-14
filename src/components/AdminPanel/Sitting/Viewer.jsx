@@ -18,8 +18,6 @@ import notassignedChair from "../../../../public/icon/chair/not-assign.png";
 
 import * as XLSX from "xlsx";
 
-
-
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
 
@@ -51,12 +49,15 @@ const Viewer = ({
   const { userContextData } = useAPIGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [elements, setElements] = useState([]);
+  console.log(elements, "elelelel");
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [hoveredElement, setHoveredElement] = useState(null);
   const [chairSVG, setChairSVG] = useState(null);
   const [layouts, setLayouts] = useState({});
   const [id, setID] = useState("");
+
+  const [showChairsWithNames, setShowChairsWithNames] = useState(false);
 
   const [matchData, setMatchData] = useState("");
 
@@ -70,36 +71,34 @@ const Viewer = ({
     (d) => d.user_status === "Active" && d.job_type === "WFO"
   );
 
-
   function SittingExcelRoomWise(element) {
     // Map the element's data to include tooltip details
     const formattedData = element?.elements?.map((row, index) => {
       const matchedUser = userContextData?.find(
         (user) => user?.user_id === row.user_id
       );
-  
+
       return {
         "S.No": index + 1,
         "Employee Name": matchedUser?.user_name || "Not Assigned",
-        "Department": matchedUser?.department_name || "N/A",
-        "Designation": matchedUser?.designation_name || "N/A",
+        Department: matchedUser?.department_name || "N/A",
+        Designation: matchedUser?.designation_name || "N/A",
       };
     });
-  
+
     // Define the file name
     const fileName = `${element.roomName}.xlsx`;
-  
+
     // Convert JSON data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
-  
+
     // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-  
+
     // Write the workbook to a file
     XLSX.writeFile(workbook, fileName);
   }
-  
 
   useEffect(() => {
     // Load chair SVG
@@ -279,6 +278,26 @@ const Viewer = ({
                 Not Assigned
               </li>
             </ul>
+
+            <button
+              onClick={() => setShowChairsWithNames(!showChairsWithNames)}
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 10,
+                padding: "10px 15px",
+                backgroundColor: "blue",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              {showChairsWithNames
+                ? "Hide Employee Names"
+                : "Show Employee Names"}
+            </button>
+
             <div className="floor">
               {selectedRoom ? (
                 <Stage
@@ -320,6 +339,29 @@ const Viewer = ({
                         />
                       ))}
 
+                    {showChairsWithNames &&
+                      elements?.map((el, index) => {
+                        const matchedUser = userContextData?.find(
+                          (user) => user?.user_id === el.user_id
+                        );
+
+                        if (!matchedUser) return null; // Skip if no user found
+
+                        return (
+                          <Text
+                            key={el.id}
+                            text={matchedUser.user_name || "N/A"}
+                            fontSize={12} // Reduced font size to prevent overlap
+                            fontStyle="bold"
+                            x={el.x} // Center text properly
+                            y={el.y - 5 - index * 1} // Move text up, adding spacing for better visibility
+                            fill="blue"
+                            align="center"
+                            width={60} // Set a fixed width to wrap long names
+                          />
+                        );
+                      })}
+
                     {hoveredElement?.user_id ? (
                       (() => {
                         const matchedUser = userContextData?.find(
@@ -359,22 +401,22 @@ const Viewer = ({
                               />
                             ) : (
                               <>
-                              {/* Circle for the background */}
-                              <Circle
-                                x={945} // Center position for the fallback icon
-                                y={45}
-                                radius={25} // Circle radius
-                                fill="light-grey"
-                              />
-                              {/* Text inside the circle */}
-                              <Text
-                                text="👤" 
-                                fontSize={30} 
-                                fill="white"
-                                x={940 - 10} 
-                                y={45 - 10}  
-                              />
-                            </>
+                                {/* Circle for the background */}
+                                <Circle
+                                  x={945} // Center position for the fallback icon
+                                  y={45}
+                                  radius={25} // Circle radius
+                                  fill="light-grey"
+                                />
+                                {/* Text inside the circle */}
+                                <Text
+                                  text="👤"
+                                  fontSize={30}
+                                  fill="white"
+                                  x={940 - 10}
+                                  y={45 - 10}
+                                />
+                              </>
                             )}
                             <Text
                               text={`Employee: ${
@@ -391,7 +433,7 @@ const Viewer = ({
                                 matchedUser.designation_name || "N/A"
                               }`}
                               fontSize={12}
-                              fontStyle="bold" 
+                              fontStyle="bold"
                               x={860}
                               y={95}
                               fill="black"
@@ -401,7 +443,7 @@ const Viewer = ({
                                 matchedUser.department_name || "N/A"
                               }`}
                               fontSize={12}
-                              fontStyle="bold" 
+                              fontStyle="bold"
                               x={860}
                               y={110}
                               fill="black"
