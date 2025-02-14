@@ -64,3 +64,9 @@ export const nationalityData = ["Indian", "USA", "Uk"];
 export const bankTypeData = ["Saving A/C", "Current A/C", "Salary A/C"];
 export const castOption = ["General", "OBC", "SC", "ST"];
 export const genderData = ["Male", "Female", "Other"];
+
+export const IsApplicableData = [
+  { label: "PF & ESIC", value: "pf_and_esic" },
+  { label: "IN Hand", value: "in_hand" },
+  { label: "ESIC", value: "esic" },
+];

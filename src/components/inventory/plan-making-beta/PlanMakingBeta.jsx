@@ -157,7 +157,6 @@ const PlanMakingBeta = () => {
 
   const getPriceDetail = (priceDetails, key) => {
     const keyType = key?.split('_')[1];
-
     const detail = priceDetails?.find((item) => {
       return Object?.keys(item)?.some((priceKey) => priceKey?.includes(keyType));
     });

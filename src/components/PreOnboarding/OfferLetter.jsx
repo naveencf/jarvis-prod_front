@@ -571,12 +571,14 @@ const OfferLetter = ({ allUserData, image64, EMPPF }) => {
             <PfTable UserDetails={UserDetails} />
           )}
 
-          {/* {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
-            <EsicTable UserDetails={UserDetails} />
-          )} */}
           {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
+            <EsicTable UserDetails={UserDetails} />
+          )}
+
+          {allUserData.emergency_contact_person_name2 == "esic" && (
             <OnlyEsic UserDetails={UserDetails} />
           )}
+
           {allUserData.emergency_contact_person_name2 == "in_hand" &&
             allUserData.salary <= 19199 && (
               <Inhandless UserDetails={UserDetails} />

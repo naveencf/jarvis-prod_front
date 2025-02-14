@@ -30,6 +30,7 @@ import { useGetOperationContentCostQuery } from "../../Store/PageBaseURL";
 const ExcelPreviewModalBeta = ({
   open,
   onClose,
+  sellingPrice,
   handleSave,
   ugcVideoCost,
   twitterTrendCost,
@@ -87,7 +88,7 @@ const ExcelPreviewModalBeta = ({
     });
     setCategoryData(categorizedData);
   }, [previewData, categories]);
-
+ 
   const handleTabChange = (event, newValue) => {
     const validTabValue = Math.min(newValue, Object.keys(categoryData).length);
     setSelectedTab(validTabValue);
@@ -115,6 +116,38 @@ const ExcelPreviewModalBeta = ({
     if (value >= 0 && value <= 100) {
       setAgencyFees(value);
     }
+  };
+   const handleDownloadSheet = async () => {
+    try {
+    
+      // const response = await fetch('https://script.google.com/macros/s/AKfycby2DIbzReLGVTh_aaY-Fnv7rJofDz6D9urlsc1T2OFsQAMVdrWr0lISur3fGy5XadjF/exec', {
+      const response = await fetch('http://34.68.164.73:8080/api/get_google_sheet_url', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          pages:previewData,
+          categories:categories,
+          deliverables:deliverableText,
+          agencyFees:agencyFees,
+          notes:checkedDescriptions,
+          sellingPrice:sellingPrice
+
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      if(data.data.url){
+        window.open(data.data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Error during the API request:', error);
+    } 
   };
 
   const handleDeliverableTextChange = (event) => {
@@ -512,6 +545,19 @@ const ExcelPreviewModalBeta = ({
                 >
                   {isDownloading ? "Downloading..." : "Download Excel"}
                 </button>
+                <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                <button
+                  className="btn cmnbtn btn-primary w-100"
+                  // disabled={isDownloading}
+                  style={{
+                    marginTop: "26px",
+                  }}
+                  onClick={handleDownloadSheet}
+                >
+                  Get SpreadSheet
+                </button>
+                </div>
+                </div>
                 {/* <button
                 style={{
                   marginTop: "26px",
@@ -530,7 +576,7 @@ const ExcelPreviewModalBeta = ({
               >
                 Get SpreadSheet
               </button> */}
-              </div>
+            
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
                   <Autocomplete
