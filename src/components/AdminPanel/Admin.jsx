@@ -27,6 +27,7 @@ import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstand
 import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater";
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
+import SittingRoomWise from "./Sitting/SittingRoomWise";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -685,8 +686,12 @@ const PaymentDoneTransactionList = lazy(() =>
 );
 const PageStats = lazy(() => import("./PageMS/PageStats"));
 const PlanMaking = lazy(() => import("../inventory/plan-making/index"));
-const PlanMakingBeta = lazy(() => import("../inventory/plan-making-beta/index"));
-const PlanMakingTableBeta = lazy(() => import('../inventory/plan-making-beta/PlanMakingBeta'));
+const PlanMakingBeta = lazy(() =>
+  import("../inventory/plan-making-beta/index")
+);
+const PlanMakingTableBeta = lazy(() =>
+  import("../inventory/plan-making-beta/PlanMakingBeta")
+);
 const PlanMakingPricing = lazy(() =>
   import("../inventory/plan-pricing/PlanPricing")
 );
@@ -874,8 +879,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1202,6 +1207,10 @@ const Admin = () => {
                           <Route
                             path="/office-mast-update/:id"
                             element={<OfficeMastUpdate />}
+                          />
+                          <Route
+                            path="/office-sitting-room-wise/:selectedRoom"
+                            element={<SittingRoomWise />}
                           />
                         </>
                       )}
@@ -1880,8 +1889,14 @@ const Admin = () => {
                       element={<VendorMaster />}
                     />
                     <Route path="/pms-plan-making" element={<PlanMaking />} />
-                    <Route path="/pms-plan-making-beta" element={<PlanMakingBeta />} />
-                    <Route path="/pms-plan-making-beta/:id" element={<PlanMakingTableBeta />} />
+                    <Route
+                      path="/pms-plan-making-beta"
+                      element={<PlanMakingBeta />}
+                    />
+                    <Route
+                      path="/pms-plan-making-beta/:id"
+                      element={<PlanMakingTableBeta />}
+                    />
 
                     <Route path="/pms-plan-pricing" element={<PlanPricing />} />
                     <Route
