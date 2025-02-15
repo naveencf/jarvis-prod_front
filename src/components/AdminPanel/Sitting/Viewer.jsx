@@ -17,6 +17,7 @@ import assignedChair from "../../../../public/icon/chair/assigned.png";
 import notassignedChair from "../../../../public/icon/chair/not-assign.png";
 
 import * as XLSX from "xlsx";
+import { Link } from "react-router-dom";
 
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
@@ -88,14 +89,11 @@ const Viewer = ({
 
     // Define the file name
     const fileName = `${element.roomName}.xlsx`;
-
     // Convert JSON data to a worksheet
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
-
     // Create a new workbook and append the worksheet
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-
     // Write the workbook to a file
     XLSX.writeFile(workbook, fileName);
   }
@@ -206,7 +204,30 @@ const Viewer = ({
     <>
       <div className="card roomCard">
         <div className="card-header flexCenterBetween">
-          <h4 class="card-title">{selectedRoom}</h4>
+          <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
+            <button className="btn btn-warning btn-sm">{selectedRoom}</button>
+          </Link>
+          {selectedRoom && (
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => setShowChairsWithNames(!showChairsWithNames)}
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 130,
+                padding: "8px 10px",
+                backgroundColor: "blue",
+                color: "white",
+                border: "none",
+                borderRadius: "5px",
+                cursor: "pointer",
+              }}
+            >
+              {showChairsWithNames
+                ? "Hide Employee Names"
+                : "Show Employee Names"}
+            </button>
+          )}
           <div className="d-flex">
             <div
               style={{
@@ -279,25 +300,6 @@ const Viewer = ({
               </li>
             </ul>
 
-            <button
-              onClick={() => setShowChairsWithNames(!showChairsWithNames)}
-              style={{
-                position: "absolute",
-                top: 10,
-                left: 10,
-                padding: "10px 15px",
-                backgroundColor: "blue",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              {showChairsWithNames
-                ? "Hide Employee Names"
-                : "Show Employee Names"}
-            </button>
-
             <div className="floor">
               {selectedRoom ? (
                 <Stage
@@ -340,25 +342,79 @@ const Viewer = ({
                       ))}
 
                     {showChairsWithNames &&
-                      elements?.map((el, index) => {
+                      elements?.map((el) => {
                         const matchedUser = userContextData?.find(
                           (user) => user?.user_id === el.user_id
                         );
 
                         if (!matchedUser) return null; // Skip if no user found
 
+                        // Treat 180° as 0°
+                        const correctedRotation =
+                          el.rotation === 180 ? 0 : el.rotation;
+
+                        // Default text position
+                        let textX = el.x;
+                        let textY = el.y;
+                        let textRotation = correctedRotation; // Use corrected rotation value
+
+                        switch (el.rotation) {
+                          case 0: // Normal position (above chair)
+                            textY = el.y + 55;
+                            break;
+                          case 90: // Rotated right (text to the right)
+                            textX = el.x - 55;
+                            textY = el.y;
+                            break;
+                          case 180: // Rotated right (text to the right)
+                            textX = el.x - 40;
+                            textY = el.y - 55;
+                            break;
+                          case 270: // Rotated left (text to the left)
+                            textX = el.x + 60;
+                            textY = el.y;
+                            break;
+                          case 450: // Rotated left (text to the left)
+                            textX = el.x - 55;
+                            textY = el.y;
+                            break;
+                          default:
+                            textY = el.y - 15; // Fallback
+                        }
+
                         return (
-                          <Text
-                            key={el.id}
-                            text={matchedUser.user_name || "N/A"}
-                            fontSize={12} // Reduced font size to prevent overlap
-                            fontStyle="bold"
-                            x={el.x} // Center text properly
-                            y={el.y - 5 - index * 1} // Move text up, adding spacing for better visibility
-                            fill="blue"
-                            align="center"
-                            width={60} // Set a fixed width to wrap long names
-                          />
+                          <>
+                            {/* {matchedUser.image_url &&
+                            matchedUser.image_url !==
+                              "https://storage.googleapis.com/node-prod-bucket/" ? (
+                              <AvatarImage
+                                url={matchedUser.image_url}
+                                x={textX - 15}
+                                y={textY + 5}
+                                width={30}
+                                height={30}
+                                style={{
+                                  border: "2px solid orange",
+                                  borderRadius: "50%",
+                                }}
+                              />
+                            ) : null} */}
+
+                            <Text
+                              key={el.id}
+                              text={matchedUser.user_name || "N/A"}
+                              fontSize={10}
+                              fontStyle="bold"
+                              x={textX}
+                              y={textY}
+                              fill="black"
+                              align="center"
+                              width={60}
+                              rotation={textRotation} // Apply corrected rotation
+                              offsetX={10} // Center adjustment
+                              offsetY={10}
+                            />
+                          </>
                         );
                       })}
 
@@ -453,7 +509,7 @@ const Viewer = ({
                       })()
                     ) : (
                       <Text
-                        text="Not Allocated"
+                        text=""
                         fontSize={14}
                         x={(hoveredElement?.x ?? 100) - 20}
                         y={(hoveredElement?.y ?? 100) - 25}
