@@ -39,6 +39,24 @@ const PurchaseRequestPaymentApi = createApi({
             }),
             transformResponse: (response) => response.data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3)), // Optional: transform the response
         }),
+        // Update a vendor payment request
+        updatePurchaseRequest: builder.mutation({
+            query: ({ _id, formData }) => ({
+                url: `v1/vendor_payment_request/${_id}`,
+                method: "PUT",
+                body: formData,
+            }),
+            onQueryStarted: async ({ id, formData }, { dispatch, queryFulfilled }) => {
+                try {
+                    const { data: updatedPurchase } = await queryFulfilled;
+                    if (updatedPurchase && updatedPurchase.data) {
+                        console.log("Purchase updated successfully:", updatedPurchase.data);
+                    }
+                } catch (error) {
+                    console.error("Failed to update purchase:", error);
+                }
+            },
+        }),
     }),
 });
 // ?vendorId=${vendorId}&page=${page}&limit=${limit}
@@ -46,6 +64,7 @@ export const {
     useAddPurchaseMutation,
     useGetVendorPaymentTransactionsQuery,
     useGetVendorPaymentRequestsQuery,
+    useUpdatePurchaseRequestMutation
 } = PurchaseRequestPaymentApi;
 
 export default PurchaseRequestPaymentApi;
