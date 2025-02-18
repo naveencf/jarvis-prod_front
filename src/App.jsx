@@ -1,9 +1,10 @@
 import "./App.css";
 import "./assets/css/style.css";
 import "./assets/css/responsive.css";
-import   { Suspense, lazy } from "react";
-import {  Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Suspense, lazy } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+// import Login from "./Login/Login"; // Load immediately instead of lazy-loading
 
 const Login = lazy(() => import("./Login/Login"));
 import SimUpdate from "./components/Sim/SimUpdate";
@@ -12,15 +13,51 @@ import {
   APIContext,
   ApiContextData,
 } from "./components/AdminPanel/APIContext/APIContext";
-import ForgetPassword from "./Login/Forget/ForgetPassword";
-import AccountInfo from "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo";
+// import ForgetPassword from "./Login/Forget/ForgetPassword";
+// import AccountInfo from "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo";
+// import Profile from "./components/Pantry/UserPanel/Profile/Profile";
+// import User from "./components/Pantry/UserPanel/User";
+// import Delivery from "./components/Pantry/DeliveryPanel/Delivery";
+// import OrderHistory from "./components/Pantry/UserPanel/OrderHistory";
+// import PendingOrderSingleUser from "./components/Pantry/UserPanel/PendingOrderSingleUser";
+// import Loader from "./components/Finance/Loader/Loader";
+// import Learning from "./components/SuperTracker/CommunityManagement/Learning/Learning";
+// import ErrorPage from "./ErrorPage";
+// import { AppProvider } from "./Context/Context";
+
+// const SimUpdate = lazy(() => import("./components/Sim/SimUpdate"));
+// const PreOnboardingUserMaster = lazy(() =>
+//   import("./components/PreOnboarding/PreOnboardingUserMaster")
+// );
+// const APIContext = lazy(() =>
+//   import("./components/AdminPanel/APIContext/APIContext")
+// );
+const ForgetPassword = lazy(() => import("./Login/Forget/ForgetPassword"));
+const AccountInfo = lazy(() =>
+  import("./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo")
+);
+const Profile = lazy(() => import("./components/Pantry/UserPanel/Profile/Profile"));
+const User = lazy(() => import("./components/Pantry/UserPanel/User"));
+const Delivery = lazy(() => import("./components/Pantry/DeliveryPanel/Delivery"));
+const OrderHistory = lazy(() => import("./components/Pantry/UserPanel/OrderHistory"));
+const PendingOrderSingleUser = lazy(() =>
+  import("./components/Pantry/UserPanel/PendingOrderSingleUser")
+);
+const Loader = lazy(() => import("./components/Finance/Loader/Loader"));
+const Learning = lazy(() =>
+  import("./components/SuperTracker/CommunityManagement/Learning/Learning")
+);
+const ErrorPage = lazy(() => import("./ErrorPage"));
+import { AppProvider } from "./Context/Context";
+
+
+
+
+
 
 // import Protected from "./Login/Protected";
 // import Admin from "./components/AdminPanel/Admin";
 // import Home from "./components/Home";
-import Profile from "./components/Pantry/UserPanel/Profile/Profile";
-import User from "./components/Pantry/UserPanel/User";
-import Delivery from "./components/Pantry/DeliveryPanel/Delivery";
 // import SimOverview from "./components/Sim/SimOverview";
 // import SimMaster from "./components/Sim/SimMaster";
 // import SimAllocationOverview from "./components/Sim/SimAllocationOverview";
@@ -36,18 +73,12 @@ import Delivery from "./components/Pantry/DeliveryPanel/Delivery";
 // import BrandOverview from "./components/Brand/BrandOverview";
 // import BrandUpdate from "./components/Brand/BrandUpdate";
 // import IpHistory from "./components/IntellectualProperty/IpHistory";
-import OrderHistory from "./components/Pantry/UserPanel/OrderHistory";
 // import BrandView from "./components/Brand/BrandView";
 // import SimDashboard from "./components/Sim/SimDashboard";
 // import IpGraph from "./components/IntellectualProperty/IpGraph";
 
 // import Notification from "./Notification";
 
-import PendingOrderSingleUser from "./components/Pantry/UserPanel/PendingOrderSingleUser";
-import Loader from "./components/Finance/Loader/Loader";
-import Learning from "./components/SuperTracker/CommunityManagement/Learning/Learning";
-import ErrorPage from "./ErrorPage";
-import { AppProvider } from "./Context/Context";
 // import AssetCategoryMaster from "./components/Sim/AssetCategory/AssetCategoryMaster";
 // import AssetCategoryOverview from "./components/Sim/AssetCategory/AssetCategoryOverview";
 // import AssetCategoryUpdate from "./components/Sim/AssetCategory/AssetCategoryUpdate";
@@ -211,7 +242,7 @@ const CaseStudyView = lazy(() =>
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  
+
   useEffect(() => {
     console.log("errorcought");
     const handleGlobalError = (event) => {
@@ -224,7 +255,7 @@ function App() {
     return () => {
       window.removeEventListener("globalApiError", handleGlobalError);
     };
-  
+
   });
 
   useEffect(() => {
@@ -293,517 +324,520 @@ function App() {
   //     navigate("/login");
   //   }
   // }, [navigate, pathName]);
-  
+
   return (
     <>
       <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div>
 
       {/* <Notification /> */}
- 
-        <Routes>
-          <Route
-            path="/login"
-            element={
-              <Suspense
-                fallback={
-                  <div>
-                    <Loader />
-                  </div>
-                }
-              >
-                <Login />
-              </Suspense>
-            }
-          />
-          <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/" element={<Protected />}>
-            <Route
-              path="/"
-              element={
-                <AppProvider>
-                  <Home />{" "}
-                </AppProvider>
+
+      <Routes>
+        <Route
+          path="/login"
+          element={
+            <Suspense
+              fallback={
+                <div>
+                  <Loader />
+                </div>
               }
-            />
-            <Route
-              path="/pre-onboard-user-from"
-              element={
-                <AppProvider>
-                  <PreOnboardingUserMaster />{" "}
-                </AppProvider>
+            >
+              <Login />
+            </Suspense>
+          }
+        />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+        {/* sim */}
+
+
+        <Route path="/" element={<Protected />}>
+          <Route
+            path="/"
+            element={
+              <AppProvider>
+                <Home />{" "}
+              </AppProvider>
+            }
+          />
+          <Route
+            path="/pre-onboard-user-from"
+            element={
+              <AppProvider>
+                <PreOnboardingUserMaster />
+              </AppProvider>
+            }
+          />
+
+          <Route
+            path="/pantry-user"
+            element={
+              <AppProvider>
+                <User />{" "}
+              </AppProvider>
+            }
+          />
+          <Route
+            path="/pantry-delivery"
+            element={
+              <AppProvider>
+                <Delivery />{" "}
+              </AppProvider>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <AppProvider>
+                <Profile />{" "}
+              </AppProvider>
+            }
+          />
+          <Route
+            path="/order-history"
+            element={
+              <AppProvider>
+                <OrderHistory />{" "}
+              </AppProvider>
+            }
+          />
+          <Route
+            path="/pending-order-single-user"
+            element={
+              <AppProvider>
+                <PendingOrderSingleUser />{" "}
+              </AppProvider>
+            }
+          />
+        </Route>
+        <Route
+          path="/admin/*"
+          element={
+            <Suspense
+              fallback={
+                <div>
+                  <Loader />
+                </div>
               }
-            />
-
-            <Route
-              path="/pantry-user"
-              element={
-                <AppProvider>
-                  <User />{" "}
-                </AppProvider>
-              }
-            />
-            <Route
-              path="/pantry-delivery"
-              element={
-                <AppProvider>
-                  <Delivery />{" "}
-                </AppProvider>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <AppProvider>
-                  <Profile />{" "}
-                </AppProvider>
-              }
-            />
-            <Route
-              path="/order-history"
-              element={
-                <AppProvider>
-                  <OrderHistory />{" "}
-                </AppProvider>
-              }
-            />
-            <Route
-              path="/pending-order-single-user"
-              element={
-                <AppProvider>
-                  <PendingOrderSingleUser />{" "}
-                </AppProvider>
-              }
-            />
-          </Route>
-          <Route
-            path="/admin/*"
-            element={
-              <Suspense
-                fallback={
-                  <div>
-                    <Loader />
-                  </div>
-                }
-              >
-                <AppProvider>
-                  <APIContext>
-                    <Admin />
-                  </APIContext>
-                </AppProvider>
-              </Suspense>
-            }
-          />
-
-          {/* sim */}
-          <Route
-            path="/sim-overview/:id"
-            element={
-              <AppProvider>
-                <SimOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/singleAssetDetails/:id"
-            element={
-              <AppProvider>
-                <SingleAssetUserDetails />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/sim-master"
-            element={
-              <AppProvider>
-                <SimMaster />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/sim-update/:id"
-            element={
-              <AppProvider>
-                <SimUpdate />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/sim-dashboard"
-            element={
-              <AppProvider>
-                <SimDashboard />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/sim-allocation-overview"
-            element={
-              <AppProvider>
-                <SimAllocationOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/sim-summary/:id"
-            element={
-              <AppProvider>
-                <SimSummary />{" "}
-              </AppProvider>
-            }
-          />
-
-          <Route
-            path="/asset-category-master"
-            element={
-              <AppProvider>
-                <AssetCategoryMaster />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/asset-category-overview"
-            element={
-              <AppProvider>
-                <AssetCategoryOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/asset-category-update/:id"
-            element={
-              <AppProvider>
-                <AssetCategoryUpdate />{" "}
-              </AppProvider>
-            }
-          />
-          {/* Asset sub cat */}
-          <Route
-            path="/asset/subCategory"
-            element={
-              <AppProvider>
-                <AssetSubCategoryMaster />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/brand-mast"
-            element={
-              <AppProvider>
-                <BrandMast />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/modal-mast"
-            element={
-              <AppProvider>
-                <ModalMast />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/repair-reason"
-            element={
-              <AppProvider>
-                <RepairReason />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/repair-request"
-            element={
-              <AppProvider>
-                <RepairRequest />{" "}
-              </AppProvider>
-            }
-          />
-
-          <Route
-            path="/asset/subCategory/overview"
-            element={
-              <AppProvider>
-                <AssetSubCategoryOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/asset/subcategory-update/:id"
-            element={
-              <AppProvider>
-                <AssetSubCategoryUpdate />{" "}
-              </AppProvider>
-            }
-          />
-          {/* vender pages */}
-
-          <Route
-            path="/venderOverView"
-            element={
-              <AppProvider>
-                <VenderOverView />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/vendorMaster"
-            element={
-              <AppProvider>
-                <VenderMaster />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/vendorUpdate/:id"
-            element={
-              <AppProvider>
-                <VendorUpdate />{" "}
-              </AppProvider>
-            }
-          />
-
-          <Route
-            path="/ip-overview"
-            element={
-              <AppProvider>
-                <IpOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/ip-master"
-            element={
-              <AppProvider>
-                <IpMaster />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/ip-update/:id"
-            element={
-              <AppProvider>
-                <IpUpdate />{" "}
-              </AppProvider>
-            }
-          />
-
-          <Route
-            path="/ip-history/:id"
-            element={
-              <AppProvider>
-                <IpHistory />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/ip-countupdate/:id"
-            element={
-              <AppProvider>
-                <IpCountUpdate />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/ip-graph/:id"
-            element={
-              <AppProvider>
-                <IpGraph />
-              </AppProvider>
-            }
-          />
-
-          <Route
-            path="/brand-master"
-            element={
-              <AppProvider>
-                {" "}
-                <BrandMaster />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/brand-overview"
-            element={
-              <AppProvider>
-                <BrandOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/brand-update/:id"
-            element={
-              <AppProvider>
-                {" "}
-                <BrandUpdate />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/brand-view/:id"
-            element={
-              <AppProvider>
-                <BrandView />{" "}
-              </AppProvider>
-            }
-          />
-
-          {/* ------------------------------ case Study start----------------------------------------- */}
-          <Route
-            path="/case-study/brand"
-            element={
-              <AppProvider>
-                {" "}
-                <BrandCaseStudy />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/casestudy-dashboard"
-            element={
-              <AppProvider>
-                {" "}
-                <CaseStudyDashboard />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/case-platform"
-            element={
-              <AppProvider>
-                <CaseStudyplateform />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/casestudy-update/:id"
-            element={
-              <AppProvider>
-                <UpdateCaseStudy />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/caseStudy-view/:id"
-            element={
-              <AppProvider>
-                <CaseStudyView />{" "}
-              </AppProvider>
-            }
-          />
-
-          {/* ------------------------------ case Study end----------------------------------------- */}
-
-          <Route
-            path="/data-brand-dashboard"
-            element={
-              <AppProvider>
-                <Dashboard />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-master"
-            element={
-              <AppProvider>
-                <DataBrandMaster />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-overview"
-            element={
-              <AppProvider>
-                <DataBrandOverview />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-update/:id"
-            element={
-              <AppProvider>
-                <DataBrandUpdate />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-view/:id"
-            element={
-              <AppProvider>
-                <DataBrandView />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-category"
-            element={
-              <AppProvider>
-                <DataCategory />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand-sub-category"
-            element={
-              <AppProvider>
-                <DataSubCategory />
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-platform"
-            element={
-              <AppProvider>
-                <Platform />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-content-type"
-            element={
-              <AppProvider>
-                <ContentType />{" "}
-              </AppProvider>
-            }
-          />
-          <Route
-            path="/data-brand"
-            element={
-              <AppProvider>
-                <DataBrand />{" "}
-              </AppProvider>
-            }
-          />
-
-          {/* Execution history */}
-          {/* sales Account Info Page route */}
-          <Route
-            path="/sales-account-info/:id"
-            element={
+            >
               <AppProvider>
                 <APIContext>
-                  <AccountInfo />
+                  <Admin />
                 </APIContext>
               </AppProvider>
-            }
-          />
-          <Route
-            path="/instaapi/community/learning"
-            element={
-              <AppProvider>
-                <Learning />{" "}
-              </AppProvider>
-            }
-          />
+            </Suspense>
+          }
+        />
 
-          <Route
-            path="*"
-            element={
-              <AppProvider>
-                <ErrorPage />{" "}
-              </AppProvider>
-            }
-          />
-        </Routes>
-   
+
+        <Route
+          path="/sim-overview/:id"
+          element={
+            <AppProvider>
+              <SimOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/singleAssetDetails/:id"
+          element={
+            <AppProvider>
+              <SingleAssetUserDetails />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/sim-master"
+          element={
+            <AppProvider>
+              <SimMaster />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/sim-update/:id"
+          element={
+            <AppProvider>
+              <SimUpdate />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/sim-dashboard"
+          element={
+            <AppProvider>
+              <SimDashboard />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/sim-allocation-overview"
+          element={
+            <AppProvider>
+              <SimAllocationOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/sim-summary/:id"
+          element={
+            <AppProvider>
+              <SimSummary />{" "}
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="/asset-category-master"
+          element={
+            <AppProvider>
+              <AssetCategoryMaster />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/asset-category-overview"
+          element={
+            <AppProvider>
+              <AssetCategoryOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/asset-category-update/:id"
+          element={
+            <AppProvider>
+              <AssetCategoryUpdate />{" "}
+            </AppProvider>
+          }
+        />
+        {/* Asset sub cat  */}
+        <Route
+          path="/asset/subCategory"
+          element={
+            <AppProvider>
+              <AssetSubCategoryMaster />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/brand-mast"
+          element={
+            <AppProvider>
+              <BrandMast />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/modal-mast"
+          element={
+            <AppProvider>
+              <ModalMast />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/repair-reason"
+          element={
+            <AppProvider>
+              <RepairReason />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/repair-request"
+          element={
+            <AppProvider>
+              <RepairRequest />{" "}
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="/asset/subCategory/overview"
+          element={
+            <AppProvider>
+              <AssetSubCategoryOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/asset/subcategory-update/:id"
+          element={
+            <AppProvider>
+              <AssetSubCategoryUpdate />{" "}
+            </AppProvider>
+          }
+        />
+        {/* vender pages  */}
+
+        <Route
+          path="/venderOverView"
+          element={
+            <AppProvider>
+              <VenderOverView />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/vendorMaster"
+          element={
+            <AppProvider>
+              <VenderMaster />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/vendorUpdate/:id"
+          element={
+            <AppProvider>
+              <VendorUpdate />{" "}
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="/ip-overview"
+          element={
+            <AppProvider>
+              <IpOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/ip-master"
+          element={
+            <AppProvider>
+              <IpMaster />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/ip-update/:id"
+          element={
+            <AppProvider>
+              <IpUpdate />{" "}
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="/ip-history/:id"
+          element={
+            <AppProvider>
+              <IpHistory />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/ip-countupdate/:id"
+          element={
+            <AppProvider>
+              <IpCountUpdate />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/ip-graph/:id"
+          element={
+            <AppProvider>
+              <IpGraph />
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="/brand-master"
+          element={
+            <AppProvider>
+              {" "}
+              <BrandMaster />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/brand-overview"
+          element={
+            <AppProvider>
+              <BrandOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/brand-update/:id"
+          element={
+            <AppProvider>
+              {" "}
+              <BrandUpdate />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/brand-view/:id"
+          element={
+            <AppProvider>
+              <BrandView />{" "}
+            </AppProvider>
+          }
+        />
+
+        {/* ------------------------------ case Study start-----------------------------------------  */}
+        <Route
+          path="/case-study/brand"
+          element={
+            <AppProvider>
+              {" "}
+              <BrandCaseStudy />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/casestudy-dashboard"
+          element={
+            <AppProvider>
+              {" "}
+              <CaseStudyDashboard />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/case-platform"
+          element={
+            <AppProvider>
+              <CaseStudyplateform />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/casestudy-update/:id"
+          element={
+            <AppProvider>
+              <UpdateCaseStudy />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/caseStudy-view/:id"
+          element={
+            <AppProvider>
+              <CaseStudyView />{" "}
+            </AppProvider>
+          }
+        />
+
+        {/* ------------------------------ case Study end-----------------------------------------  */}
+
+        <Route
+          path="/data-brand-dashboard"
+          element={
+            <AppProvider>
+              <Dashboard />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-master"
+          element={
+            <AppProvider>
+              <DataBrandMaster />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-overview"
+          element={
+            <AppProvider>
+              <DataBrandOverview />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-update/:id"
+          element={
+            <AppProvider>
+              <DataBrandUpdate />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-view/:id"
+          element={
+            <AppProvider>
+              <DataBrandView />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-category"
+          element={
+            <AppProvider>
+              <DataCategory />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand-sub-category"
+          element={
+            <AppProvider>
+              <DataSubCategory />
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-platform"
+          element={
+            <AppProvider>
+              <Platform />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-content-type"
+          element={
+            <AppProvider>
+              <ContentType />{" "}
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/data-brand"
+          element={
+            <AppProvider>
+              <DataBrand />{" "}
+            </AppProvider>
+          }
+        />
+
+        {/* Execution history */}
+        {/* sales Account Info Page route  */}
+        <Route
+          path="/sales-account-info/:id"
+          element={
+            <AppProvider>
+              <APIContext>
+                <AccountInfo />
+              </APIContext>
+            </AppProvider>
+          }
+        />
+        <Route
+          path="/instaapi/community/learning"
+          element={
+            <AppProvider>
+              <Learning />{" "}
+            </AppProvider>
+          }
+        />
+
+        <Route
+          path="*"
+          element={
+            <AppProvider>
+              <ErrorPage />{" "}
+            </AppProvider>
+          }
+        />
+      </Routes >
+
     </>
   );
 }

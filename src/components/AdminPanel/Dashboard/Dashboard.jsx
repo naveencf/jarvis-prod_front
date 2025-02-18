@@ -81,7 +81,7 @@ function Dashboard() {
       setAllData(res.data.distinctDataNamesCount);
     });
     axios.get(baseUrl + "get_all_instapages").then((res) => {
-      getIntellectualProperty(res.data);
+      getIntellectualProperty(res?.data);
     });
     axios.get(baseUrl + "get_finances").then((res) => {
       const response = res?.data;

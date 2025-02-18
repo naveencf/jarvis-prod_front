@@ -174,7 +174,7 @@ const educationFieldLabels = {
 };
 
 const PreOnboardingUserMaster = () => {
-  const [workExperiences , setWorkExperiences] = useState('')
+  const [workExperiences, setWorkExperiences] = useState('')
   const [isShowRocket, setIsShowRocket] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const whatsappApi = WhatsappAPI();
@@ -328,7 +328,7 @@ const PreOnboardingUserMaster = () => {
 
   const [showMandotaryPer, setShowMandotaryPer] = useState(0);
   const [showNonMandotaryPer, setShowNonMandotaryPer] = useState(0);
-  const [alternateContact , setAlternateContact] = useState(0)
+  const [alternateContact, setAlternateContact] = useState(0)
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -713,7 +713,7 @@ const PreOnboardingUserMaster = () => {
     } else if (!emergencyContact2 || emergencyContact2 == "") {
       return toastError("Emergency Number 2 is Required");
     }
-     else if (!currentAddress || currentAddress == "") {
+    else if (!currentAddress || currentAddress == "") {
       return toastError("Current address is Required");
     } else if (!currentState || currentState == "") {
       return toastError("Current State is Required");
@@ -733,7 +733,7 @@ const PreOnboardingUserMaster = () => {
     // formData.append("user_login_password", password);
     formData.append("user_contact_no", Number(contact));
     formData.append("personal_number", personalContact);
-    formData.append("alternate_contact", alternateContact); 
+    formData.append("alternate_contact", alternateContact);
     formData.append("Personal_email", personalEmail);
     formData.append("cast_type", cast);
     formData.append("MartialStatus", maritalStatus);
@@ -1349,9 +1349,8 @@ const PreOnboardingUserMaster = () => {
               <div className="sidebar_wrapper_in">
                 <div className="sidebar_items sidebar_items_desktop">
                   <div
-                    className={`sidebar_itembox ${
-                      activeTab == 1 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarFormBox"
                     onClick={() => setActiveTab(1)}
                   >
@@ -1372,9 +1371,8 @@ const PreOnboardingUserMaster = () => {
                     </div>
                   </div>
                   <div
-                    className={`sidebar_itembox sidebar_itemboxCol ${
-                      activeTab == 2 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarDocumentBox"
                     onClick={() => setActiveTab(2)}
                   >
@@ -1410,9 +1408,8 @@ const PreOnboardingUserMaster = () => {
                   </div>
                   {/* {allUserData.offer_letter_send && ( */}
                   <div
-                    className={`sidebar_itembox ${
-                      activeTab === 5 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarLetterBox"
                     onClick={() => setActiveTab(5)}
                   >
@@ -1450,11 +1447,10 @@ const PreOnboardingUserMaster = () => {
                     // className={`sidebar_itembox  ${
                     //   activeTab == 3 ? "sidebar_item_active" : ""
                     // }`}
-                    className={`sidebar_itembox ${
-                      activeTab === 3 && documentPercentage < 90
+                    className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
                         ? "sidebar_item_active"
                         : ""
-                    }`}
+                      }`}
                     id="sidebarPolicyBox"
                     // style={{
                     //   pointerEvents: documentPercentage < 90 ? "none" : "auto",
@@ -1481,9 +1477,8 @@ const PreOnboardingUserMaster = () => {
                     </h2>
                   </div>
                   <div
-                    className={`sidebar_itembox ${
-                      activeTab == 4 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarFaqBox"
                     onClick={() => setActiveTab(4)}
                   >
@@ -1502,9 +1497,8 @@ const PreOnboardingUserMaster = () => {
                 <div className="sidebar_items_mobile">
                   <Slider {...settings}>
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab == 1 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarFormBox"
                       onClick={() => setActiveTab(1)}
                     >
@@ -1526,9 +1520,8 @@ const PreOnboardingUserMaster = () => {
                       </div>
                     </div>
                     <div
-                      className={`sidebar_itembox sidebar_itemboxCol ${
-                        activeTab == 2 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarDocumentBox"
                       onClick={() => setActiveTab(2)}
                     >
@@ -1563,9 +1556,8 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* {allUserData.offer_letter_send && ( */}
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab === 5 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarLetterBox"
                       onClick={() => setActiveTab(5)}
                     >
@@ -1582,11 +1574,10 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* )} */}
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab === 3 && documentPercentage < 90
+                      className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
                           ? "sidebar_item_active"
                           : ""
-                      }`}
+                        }`}
                       id="sidebarPolicyBox"
                       onClick={() => setActiveTab(3)}
                     >
@@ -1609,9 +1600,8 @@ const PreOnboardingUserMaster = () => {
                       </h2>
                     </div>
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab == 4 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarFaqBox"
                       onClick={() => setActiveTab(4)}
                     >
@@ -1654,14 +1644,14 @@ const PreOnboardingUserMaster = () => {
                       <div className="formarea">
                         <div className="row spacing_lg">
                           <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-                          <div className="board_form board_form_flex">
-                            <JobSection
-                              employeeID={employeeID}
-                              joiningDate={joiningDate}
-                              designationName={designationName}
-                              departmentName={departmentName}
-                              reportL1={reportL1}
-                            />
+                            <div className="board_form board_form_flex">
+                              <JobSection
+                                employeeID={employeeID}
+                                joiningDate={joiningDate}
+                                designationName={designationName}
+                                departmentName={departmentName}
+                                reportL1={reportL1}
+                              />
                             </div>
                             <div className="board_form board_form_flex">
                               <h2>Personal Details</h2>
@@ -1990,7 +1980,7 @@ const PreOnboardingUserMaster = () => {
                                 )}
                               </div>
 
-                              
+
                             </div>
                             <IdentityDetails />
                             <div className="board_form board_form_flex">
@@ -2144,25 +2134,25 @@ const PreOnboardingUserMaster = () => {
                                 />
                               </div>
                             </div>
-                            
+
                             <OnboardingBankDetails />
                             <OtherDetails />
                             <div className="board_form board_form_flex">
-                            <div className="form-group">
-                              <TextField
-                                select
-                                label="Work Experience"
-                                variant="outlined"
-                                fullWidth
-                                value={workExperiences}
-                                onChange={(e) => setWorkExperiences(e.target.value)}
-                              >
-                                <MenuItem value="Fresher">Fresher</MenuItem>
-                                <MenuItem value="Experience">Experience</MenuItem>
-                              </TextField>
+                              <div className="form-group">
+                                <TextField
+                                  select
+                                  label="Work Experience"
+                                  variant="outlined"
+                                  fullWidth
+                                  value={workExperiences}
+                                  onChange={(e) => setWorkExperiences(e.target.value)}
+                                >
+                                  <MenuItem value="Fresher">Fresher</MenuItem>
+                                  <MenuItem value="Experience">Experience</MenuItem>
+                                </TextField>
+                              </div>
                             </div>
-                            </div>
-                            {workExperiences == "Experience" &&(<WorkExperience userID={id} />)}
+                            {workExperiences == "Experience" && (<WorkExperience userID={id} />)}
                             <div className="board_form board_form_flex">
                               <h2>Family Details</h2>
                               <FamilyFields
@@ -2179,7 +2169,7 @@ const PreOnboardingUserMaster = () => {
                                 }
                               />
                             </div>
-                            
+
                           </div>
                           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div className="form-group ml-auto mr-auto text-center">

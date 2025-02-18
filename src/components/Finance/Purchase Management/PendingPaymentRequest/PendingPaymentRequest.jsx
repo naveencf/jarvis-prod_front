@@ -26,7 +26,7 @@ import View from '../../../AdminPanel/Sales/Account/View/View';
 import ZohoBillCreation from './Components/ZohoBillCreation';
 import { Balance } from '@mui/icons-material';
 import { formatNumber } from '../../../../utils/formatNumber';
-import { useGetVendorPaymentRequestsQuery } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
+import { useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 import PaymentRequestFromPurchase from '../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase';
 
@@ -35,6 +35,7 @@ export default function PendingPaymentRequest() {
   const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
   const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequerst } = useGetVendorPaymentRequestsQuery();
+  const [updatePurchaseRequest, { isLoading: updateLoading, error: updateError }] = useUpdatePurchaseRequestMutation();
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
@@ -457,21 +458,21 @@ export default function PendingPaymentRequest() {
   };
 
   // Zoho Status
-  const handleZohoStatusUpload = async (row) => {
-    try {
-      const response = await axios.post('https://purchase.creativefuel.io/webservices/RestController.php?view=updatezohostatus', {
-        request_id: row?.request_id,
-        zoho_status: '1',
-      });
+  // const handleZohoStatusUploadphp = async (row) => {
+  //   try {
+  //     const response = await axios.post('https://purchase.creativefuel.io/webservices/RestController.php?view=updatezohostatus', {
+  //       request_id: row?.request_id,
+  //       zoho_status: '1',
+  //     });
 
-      if (response) {
-        toastAlert('Invoice File Uploaded On Zoho Successfully');
-        callApi();
-      }
-    } catch (error) {
-      console.error('Error while uploading Zoho status:', error);
-    }
-  };
+  //     if (response) {
+  //       toastAlert('Invoice File Uploaded On Zoho Successfully');
+  //       callApi();
+  //     }
+  //   } catch (error) {
+  //     console.error('Error while uploading Zoho status:', error);
+  //   }
+  // };
 
   const handleOpenPayThroughVendor = () => {
     setPayThroughVendor(true);
@@ -512,6 +513,21 @@ export default function PendingPaymentRequest() {
     setReqestPaymentDialog(true)
     setVendorDetail(row);
   }
+
+  const handleZohoStatusUpload = async (row) => {
+    // e.preventDefault();
+    // Toggle zoho_status: If it's 0, change to 1, otherwise change to 0
+    const updatedStatus = row.zoho_status == "0" ? "1" : "0";
+    // zoho_status
+    console.log(updatedStatus, "updatedStatus")
+    try {
+      await updatePurchaseRequest({ _id: row._id, formData: { ...row, zoho_status: updatedStatus } }).unwrap();
+      toastAlert("Purchase request updated successfully!");
+    } catch (err) {
+      console.error("Failed to update request:", err);
+    }
+  };
+
   return (
     <div>
       {/* <FormContainer

@@ -879,8 +879,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -2241,7 +2241,7 @@ const Admin = () => {
 
                     {contextData &&
                       contextData[25] &&
-                      contextData[25].view_value === 1 && (
+                      contextData[25]?.view_value == 1 && (
                         <>
                           <Route
                             path="/instaapi/community"
@@ -2285,7 +2285,7 @@ const Admin = () => {
                     {/* Sarcasm Start*/}
                     {contextData &&
                       contextData[29] &&
-                      contextData[29].view_value === 1 && (
+                      contextData[29]?.view_value === 1 && (
                         <>
                           <Route
                             path="/sarcasm/post-content"
@@ -2309,7 +2309,7 @@ const Admin = () => {
                     {/* Post stats from Insights */}
                     {contextData &&
                       contextData[54] &&
-                      contextData[54].view_value === 1 && (
+                      contextData[54]?.view_value === 1 && (
                         <Route path="/statics" element={<PostStats />} />
                       )}
                     {/* Purchase Transaction */}

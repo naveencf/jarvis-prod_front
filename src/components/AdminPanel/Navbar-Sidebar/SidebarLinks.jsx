@@ -2028,8 +2028,8 @@ const SidebarLinks = () => {
             <div className="internal collapse-inner">
               {contextData &&
                 contextData[0] &&
-                (contextData[0].view_value === 1 ||
-                  contextData[61].view_value === 1) && (
+                (contextData[0]?.view_value === 1 ||
+                  contextData[61]?.view_value === 1) && (
                   <>
                     <NavLink
                       className="collapse-item"
