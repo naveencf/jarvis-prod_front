@@ -107,7 +107,9 @@ const PlanMakingBeta = () => {
   const [unCheckedPages, setUnCheckedPages] = useState([]);
   const [showUnChecked, setShowUnCheked] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
+  const [searchPages, setSearchPages] = useState([]);
   const [mergeCatList, setMergeCatList] = useState([]);
+  const [showSearchColorRow, setShowSearchColorRow] = useState(false);
   const [leftSideDataUpdate, setLeftSideBarDataUpdate] = useState(false);
 
   const { id } = useParams();
@@ -177,6 +179,34 @@ const PlanMakingBeta = () => {
   const handleSelection = (newSelectedData) => {
     setSelectedData(newSelectedData);
   };
+
+  const handleUnselectPagesWithColor = () => {
+    setShowSearchColorRow(true);
+
+    const { filteredPages, selectedPages } = selectedRows.reduce(
+      (acc, page) => {
+        searchPages.includes(page.page_name) ? acc.selectedPages.push(page) : acc.filteredPages.push(page);
+        return acc;
+      },
+      { filteredPages: [], selectedPages: [] }
+    );
+
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    const updatedShowTotalCost = { ...showTotalCost };
+
+    selectedPages.forEach(({ _id }) => {
+      delete updatedPostValues[_id];
+      delete updatedStoryValues[_id];
+      updatedShowTotalCost[_id] = false;
+    });
+
+    setSelectedRows(filteredPages);
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setShowTotalCost(updatedShowTotalCost);
+  };
+
   const handleUpdateValues = (type) => {
     const isPost = type === 'post';
     const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
@@ -512,12 +542,15 @@ const PlanMakingBeta = () => {
     tempIndex,
     activeIndex,
     activePlatform,
+    searchPages,
+    showSearchColorRow,
   });
 
   !decodedToken?.role_id === 1 && dispatch(setShowPageHealthColumn(pageStatsAuth));
 
   const clearSearch = () => {
     setSearchInput('');
+    setShowSearchColorRow(false);
   };
 
   const handlePlatform = (platformName) => {
@@ -717,6 +750,8 @@ const PlanMakingBeta = () => {
       .split(' ')
       .map((term) => term.trim().toLowerCase())
       .filter(Boolean);
+
+    setSearchPages(searchTerms);
     filterAndSelectRows(searchTerms);
   };
 
@@ -1044,7 +1079,7 @@ const PlanMakingBeta = () => {
           <ActionButtons handleUnselectPages={handleUnselectPages} handleOpenDialog={handleOpenDialog} handleOpenModal={handleOpenModal} toggleCheckedRows={toggleCheckedRows} showCheckedRows={showCheckedRows} />
           <ProgressDisplay pageList={pageList} displayPercentage={displayPercentage} />
           <CountInputs postCountDefault={postCountDefault} storyCountDefault={storyCountDefault} handlePostCountChange={handlePostCountChange} handleStoryCountChange={handleStoryCountChange} handleUpdateValues={handleUpdateValues} />
-          <SearchAndClear searchInput={searchInput} handleSearchChange={handleSearchChange} clearSearch={clearSearch} clearRecentlySelected={clearRecentlySelected} />
+          <SearchAndClear searchInput={searchInput} setShowSearchColorRow={setShowSearchColorRow} handleUnselectPagesWithColor={handleUnselectPagesWithColor} showSearchColorRow={showSearchColorRow} handleSearchChange={handleSearchChange} clearSearch={clearSearch} clearRecentlySelected={clearRecentlySelected} />
           <PageAddMasterModal />
           <div>
             <RightDrawer

@@ -28,6 +28,7 @@ import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater"
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
 import SittingRoomWise from "./Sitting/SittingRoomWise";
+import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -699,6 +700,7 @@ const PlanPricing = lazy(() => import("../inventory/plan-pricing/index"));
 const PlanMakingTable = lazy(() =>
   import("../inventory/plan-making/PlanMaking")
 );
+ 
 const PlanUpload = lazy(() =>
   import("../AdminPanel/Inventory/Plan-upload/index")
 );
@@ -890,6 +892,10 @@ const Admin = () => {
                         contextData[0] &&
                         contextData[0].view_value === 1 && (
                           <>
+                            <Route
+                              path="/user-login-history"
+                              element={<UserLoginHistory />}
+                            />
                             <Route
                               path="/user-overview/:id"
                               element={<UserOverview />}

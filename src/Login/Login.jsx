@@ -7,9 +7,10 @@ import { useGlobalContext } from "../Context/Context";
 import { baseUrl } from "../utils/config";
 import "./Login.css"; // Add relevant CSS
 import "./LoginResponsive.css";
-import { de } from "date-fns/locale";
+import useIPAddress from "../components/AdminPanel/User/UserDashboard/LoginHistory/UseIPAddress";
 
 const Login = () => {
+  const ip = useIPAddress();
   // const { toastError } = useGlobalContext();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,6 +24,7 @@ const Login = () => {
       .post(baseUrl + "login_user", {
         user_login_id: email,
         user_login_password: password,
+        ip_address: ip,
       })
       .then((res) => {
         if (!res.data.token) {

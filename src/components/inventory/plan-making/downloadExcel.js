@@ -10,10 +10,8 @@ export const getPlatformName = (platformId) => {
     '666856d34366007df1dfacf6': 'YouTube',
     '666818c34366007df1df1328': 'Twitter',
     '666856e04366007df1dfacfc': 'Snapchat',
-    // '67472a28fc48d70fbf1c2ddb': 'Thread',
     '67472a28fc48d70fbf1c2ddb': 'Thread',
   };
-   console.log(platformMap[platformId] || 'Unknown');
   return platformMap[platformId] || 'Unknown';
 };
 
@@ -33,7 +31,7 @@ export const getPriceDetail = (priceDetails, key) => {
 //   return parseInt(indianNumber.replace(/,/g, ''), 10);
 // }
 
-export const downloadExcel = async (selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isGetSheet,ugcVideoCost, twitterTrendCost) => {
+export const downloadExcel = async (selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isGetSheet, ugcVideoCost, twitterTrendCost) => {
   const workbook = new ExcelJS.Workbook();
   // selling_price
   // Overview Data
@@ -472,9 +470,10 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
           serialNumber++, // Serial number
           `Posts and Stories on (${platformName})`,
           platformName, // Platform
-          totalPostsAndStories, // Total posts and stories
+          totalPostsAndStories, // Total posts and stories,
           deliverableText, // Deliverables
           `₹${platformTotalCost.toFixed(2)}`, // Total cost
+          1234,
         ]);
 
         // Apply styles to overview row
@@ -500,19 +499,19 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   });
   // const twitterTrendCost = Number(((planDetails[0]?.selling_price * twitterTrendPercentage) / 100).toFixed(2)) || 0; // Default to 0 if undefined
 
-//   console.log("twitterTrendCost", twitterTrendCost); 
-  
-//   let twitterTrendRow = overviewSheet.addRow(['', 'Twitter Trend Cost', '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
-  
-//   // Apply styles like `agencyRow`
-//   twitterTrendRow.eachCell((cell, colNumber) => {
-//     if (colNumber > 1) { // Skip first empty column
-//       cell.border = contentBorder;
-//       cell.font = { name: 'Comic Sans MS', bold: true };
-//       cell.alignment = { horizontal: 'center', vertical: 'middle' };
-//     }
-//   });
-// console.log("twitterTrendCost", twitterTrendCost);
+  //   console.log("twitterTrendCost", twitterTrendCost);
+
+  //   let twitterTrendRow = overviewSheet.addRow(['', 'Twitter Trend Cost', '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
+
+  //   // Apply styles like `agencyRow`
+  //   twitterTrendRow.eachCell((cell, colNumber) => {
+  //     if (colNumber > 1) { // Skip first empty column
+  //       cell.border = contentBorder;
+  //       cell.font = { name: 'Comic Sans MS', bold: true };
+  //       cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  //     }
+  //   });
+  // console.log("twitterTrendCost", twitterTrendCost);
 
   // const twitterTrend = Number(((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2));
   // let twitterTrendRow = overviewSheet.addRow(['', `Twitter Trends Fees (${twitterTrendCost}%)`, '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
@@ -541,7 +540,16 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
 
   const totalCostWithGst = planDetails[0]?.selling_price + agencyFee + gstPrice;
   let totalWithGstRow = overviewSheet.addRow(['', 'Total with GST', '', '', '', '', `₹${formatIndianNumber(totalCostWithGst)}`]);
+  // let totalFollowers = overviewSheet.addRow(['', '','', '', '', '', '', '',1000]);
 
+  // totalFollowers.eachCell((cell, colNumber) => {
+  //   if (colNumber > 1) {
+  //     // Start from the second column to avoid the first empty cell
+  //     cell.border = contentBorder;
+  //     cell.font = { name: 'Comic Sans MS', bold: true };
+  //     cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  //   }
+  // });
   totalWithGstRow.eachCell((cell, colNumber) => {
     if (colNumber > 1) {
       // Start from the second column to avoid the first empty cell
@@ -600,7 +608,6 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
 
   const firstNoteRow = endRow + 2; // The row where notes start
   const lastNoteRow = firstNoteRow + notes.length - 1; // The last row of the notes
-
   overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
   overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
   const sellingPriceforsheet = overviewSheet.getCell('G8');
@@ -656,6 +663,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   overviewSheet.getColumn(5).width = 20; // Count
   overviewSheet.getColumn(6).width = 30; // Deliverables
   overviewSheet.getColumn(7).width = 15; // Cost
+  overviewSheet.getColumn(7).width = 30; // follower
 
   // Define the range for the content area
   const contentStartRow = 3; // Row where content starts

@@ -7,6 +7,7 @@ import jwtDecode from "jwt-decode";
 import { FaRegFilePdf } from "react-icons/fa";
 import { constant } from "../../utils/constants";
 import { IoTrashBin } from "react-icons/io5";
+import "../../assets/css/style.css";
 
 const DocumentTab = ({
   documentData,

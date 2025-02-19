@@ -1,14 +1,20 @@
 import "./App.css";
 import "./assets/css/style.css";
 import "./assets/css/responsive.css";
+import "../src/components/PreOnboarding/onboardcss/onboard_style.css";
+import "../src/components/PreOnboarding/onboardcss/onboard_responsive.css";
+import "../src/components/PreOnboarding/onboardcss/onboard_animate.min.css";
 import { Suspense, lazy } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-// import Login from "./Login/Login"; // Load immediately instead of lazy-loading
-
 const Login = lazy(() => import("./Login/Login"));
-import SimUpdate from "./components/Sim/SimUpdate";
-import PreOnboardingUserMaster from "./components/PreOnboarding/PreOnboardingUserMaster";
+// import SimUpdate from "./components/Sim/SimUpdate";
+const SimUpdate = lazy(() => import("./components/Sim/SimUpdate"));
+// import PreOnboardingUserMaster from "./components/PreOnboarding/PreOnboardingUserMaster";
+const PreOnboardingUserMaster = lazy(() =>
+  import("./components/PreOnboarding/PreOnboardingUserMaster")
+);
+
 import {
   APIContext,
   ApiContextData,
@@ -34,12 +40,20 @@ import {
 // );
 const ForgetPassword = lazy(() => import("./Login/Forget/ForgetPassword"));
 const AccountInfo = lazy(() =>
-  import("./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo")
+  import(
+    "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo"
+  )
 );
-const Profile = lazy(() => import("./components/Pantry/UserPanel/Profile/Profile"));
+const Profile = lazy(() =>
+  import("./components/Pantry/UserPanel/Profile/Profile")
+);
 const User = lazy(() => import("./components/Pantry/UserPanel/User"));
-const Delivery = lazy(() => import("./components/Pantry/DeliveryPanel/Delivery"));
-const OrderHistory = lazy(() => import("./components/Pantry/UserPanel/OrderHistory"));
+const Delivery = lazy(() =>
+  import("./components/Pantry/DeliveryPanel/Delivery")
+);
+const OrderHistory = lazy(() =>
+  import("./components/Pantry/UserPanel/OrderHistory")
+);
 const PendingOrderSingleUser = lazy(() =>
   import("./components/Pantry/UserPanel/PendingOrderSingleUser")
 );
@@ -49,11 +63,6 @@ const Learning = lazy(() =>
 );
 const ErrorPage = lazy(() => import("./ErrorPage"));
 import { AppProvider } from "./Context/Context";
-
-
-
-
-
 
 // import Protected from "./Login/Protected";
 // import Admin from "./components/AdminPanel/Admin";
@@ -242,7 +251,6 @@ const CaseStudyView = lazy(() =>
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-
   useEffect(() => {
     console.log("errorcought");
     const handleGlobalError = (event) => {
@@ -255,7 +263,6 @@ function App() {
     return () => {
       window.removeEventListener("globalApiError", handleGlobalError);
     };
-
   });
 
   useEffect(() => {
@@ -313,9 +320,9 @@ function App() {
   //   const isTokenExpired = () => {
   //     try {
   //       const tokenData = JSON.parse(atob(token.split(".")[1]));
-  //       return tokenData.exp * 1000 < Date.now();  
+  //       return tokenData.exp * 1000 < Date.now();
   //     } catch {
-  //       return true; 
+  //       return true;
   //     }
   //   };
   //   console.log("isToken Expired:", isTokenExpired());
@@ -348,7 +355,6 @@ function App() {
         />
         <Route path="/forget-password" element={<ForgetPassword />} />
         {/* sim */}
-
 
         <Route path="/" element={<Protected />}>
           <Route
@@ -427,7 +433,6 @@ function App() {
             </Suspense>
           }
         />
-
 
         <Route
           path="/sim-overview/:id"
@@ -836,8 +841,7 @@ function App() {
             </AppProvider>
           }
         />
-      </Routes >
-
+      </Routes>
     </>
   );
 }

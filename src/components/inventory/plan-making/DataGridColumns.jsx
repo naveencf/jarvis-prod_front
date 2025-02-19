@@ -26,12 +26,15 @@ const DataGridColumns = ({
   decodedToken,
   activeIndex,
   activePlatform,
+  searchPages,
+  showSearchColorRow,
 }) => {
   const formatNumber = (num) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
+  
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');
 
@@ -58,6 +61,9 @@ const DataGridColumns = ({
         }
         if (row.page_layer === 7) {
           return '#FF6347';
+        }
+        if (searchPages?.some((item) => item.toLowerCase() === row?.page_name?.toLowerCase() && showSearchColorRow)) {
+          return '#9fd387';  
         }
         return undefined;
       },

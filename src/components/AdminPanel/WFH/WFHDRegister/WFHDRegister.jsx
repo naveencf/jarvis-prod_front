@@ -50,7 +50,7 @@ const WFHDRegister = ({ userUpdateID }) => {
   const [permamentState, setPermanentState] = useState("");
   const [pincode, setPincode] = useState("");
   const [cityData, setCityData] = useState([]);
-  console.log(pincode , 'pincode dd')
+  console.log(pincode, "pincode dd");
 
   const [currentAddress, setCurrentAddress] = useState("");
   const [currentCity, setcurrentCity] = useState("");
@@ -199,9 +199,9 @@ const WFHDRegister = ({ userUpdateID }) => {
           setPincode(permanent_pin_code);
 
           setCurrentAddress(current_address);
-      setcurrentCity(current_city);
-      setcurrentState(current_state);
-      setcurrentPincode(current_pin_code);
+          setcurrentCity(current_city);
+          setcurrentState(current_state);
+          setcurrentPincode(current_pin_code);
 
           setReportL1(Report_L1);
           setSalary(salary);
@@ -489,52 +489,6 @@ const WFHDRegister = ({ userUpdateID }) => {
       return toastError("Please fill all Required field");
     }
 
-    // const payload = {
-    //   dept_id: department,
-    //   sub_dept_id: subDepartment,
-    //   permanent_city: city,
-    //   permanent_state: permamentState,
-    //   permanent_address: address,
-    //   permanent_pin_code: Number(pincode),
-
-    //   current_address: currentAddress,
-    //   current_city: currentCity,
-    //   current_pin_code: Number(currentPincode),
-    //   current_state: currentState,
-
-    //   created_by: loginUserId,
-    //   user_name: validateAndCorrectUserName(username),
-    //   role_id: 4,
-    //   // image: selectedImage,
-    //   ctc: Number(yearlySalary),
-    //   salary: Number(salary),
-    //   offer_letter_send: sendLetter.value ? Boolean(sendLetter.value) : false,
-    //   tds_applicable: tdsApplicable,
-    //   tds_per: tdsPercentage,
-    //   user_login_id: loginId,
-    //   user_login_password: password,
-    //   user_status: status,
-    //   sitting_id: 183,
-    //   room_id: 1,
-    //   Gender: gender,
-    //   job_type: jobType,
-    //   DOB: dateOfBirth,
-    //   alternate_contact: contact,
-    //   personal_number: personalContact,
-    //   user_contact_no: personalContact,
-    //   user_email_id: personalEmail,
-    //   att_status: attStatus || "registered",
-    //   // year_salary: Number(yearlySalary),
-    //   report_L1: reportL1,
-    //   report_L2: reportL2 == null ? 0 : reportL2,
-    //   report_L3: reportL3 == null ? 0 : reportL3,
-
-    //   user_designation: designation,
-    //   joining_date: joiningDate,
-    //   releaving_date: releavingDate,
-    //   onboard_status: onBoardStatus,
-    // };
-
     const formData = new FormData();
 
     if (userUpdateID) {
@@ -547,11 +501,10 @@ const WFHDRegister = ({ userUpdateID }) => {
     formData.append("permanent_address", address);
     formData.append("permanent_pin_code", Number(pincode));
 
-
-      formData.append("current_address", currentAddress);
-      formData.append("current_city", currentCity);
-      formData.append("current_pin_code", Number(currentPincode));
-      formData.append("current_state", currentState);
+    formData.append("current_address", currentAddress);
+    formData.append("current_city", currentCity);
+    formData.append("current_pin_code", Number(currentPincode));
+    formData.append("current_state", currentState);
 
     formData.append("created_by", loginUserId);
     formData.append("user_name", validateAndCorrectUserName(username));

@@ -70,9 +70,8 @@ const WFHDOverview = () => {
   const [deptData, setDeptData] = useState("");
   // const id = useParams()
 
-
   //Here in house functinality -----------------------------
-  const [modalOpenINHand , setModalOpenInHouse] = useState(false)
+  const [modalOpenINHand, setModalOpenInHouse] = useState(false);
   const [isApplicable, setIsApplicable] = useState("");
   const [joiningDate, setJoiningDate] = useState("");
   const [userOnboardingID, setUserIDOnboarding] = useState(0);
@@ -91,39 +90,37 @@ const WFHDOverview = () => {
   ];
   const handleOpenOnboardInHouseModal = (row) => {
     setModalOpenInHouse(true);
-    setUserIDOnboarding(row.user_id)
-    setCurrentadd(row.permanent_address)
-    setCurrentState(row.permanent_state)
-    setCurrentcity(row.permanent_city)
-    setCurrentpin(row.permanent_pin_code)
-    setEmail(row.user_email_id)
-    setUserNames(row.user_name)
-    setLoginID(row.user_login_id)
-
+    setUserIDOnboarding(row.user_id);
+    setCurrentadd(row.permanent_address);
+    setCurrentState(row.permanent_state);
+    setCurrentcity(row.permanent_city);
+    setCurrentpin(row.permanent_pin_code);
+    setEmail(row.user_email_id);
+    setUserNames(row.user_name);
+    setLoginID(row.user_login_id);
   };
   const handleCloseModalInHouse = () => {
     setModalOpenInHouse(false);
   };
 
-  const handleOnbaordingInHouse = async() =>{
-    const password = email?.split('@')[0];
+  const handleOnbaordingInHouse = async () => {
+    const password = email?.split("@")[0];
     await axios.put(baseUrl + "update_user", {
-      user_id:userOnboardingID,
-      onboard_status:2,
+      user_id: userOnboardingID,
+      onboard_status: 2,
       offer_letter_send: true,
-      joining_date:joiningDate,
+      joining_date: joiningDate,
       emergency_contact_person_name2: isApplicable.value,
-      current_address:currentadd,
-      current_city:currentcity,
-      current_state:currentState,
-      current_pin_code:currentpin,
-      job_type:"WFO",
-      user_login_password:password
+      current_address: currentadd,
+      current_city: currentcity,
+      current_state: currentState,
+      current_pin_code: currentpin,
+      job_type: "WFO",
+      user_login_password: password,
     });
-    axios
-    .post(baseUrl + "add_send_user_mail", {
+    axios.post(baseUrl + "add_send_user_mail", {
       // email:'lalit@creativefuel.io',
-      email:email,
+      email: email,
       subject: "Welcome To Creativefuel",
       text: "",
       // attachment: selectedImage,
@@ -131,17 +128,16 @@ const WFHDOverview = () => {
       name: usernames,
       password: password,
       status: "onboarded",
-    })
-    toastAlert("User Onboarded Successfully")
-    getData()
-    setJoiningDate("")
-    setIsApplicable("")
-    handleCloseModalInHouse()
-  }
-  console.log(email , 'email is here')
-  
-  
-// ----------------------------------------------------------------
+    });
+    toastAlert("User Onboarded Successfully");
+    getData();
+    setJoiningDate("");
+    setIsApplicable("");
+    handleCloseModalInHouse();
+  };
+  console.log(email, "email is here");
+
+  // ----------------------------------------------------------------
   //Scrap Asset section Start
   const handleScrap = (row) => {
     setCurrentRow(row);
@@ -428,8 +424,6 @@ const WFHDOverview = () => {
     return name.charAt(0).toUpperCase();
   };
 
-  
-
   const columns = [
     {
       name: "S.No",
@@ -658,14 +652,17 @@ const WFHDOverview = () => {
                 <div className="icon-1" title="Edit User">
                   <i className="bi bi-pencil"></i>
                 </div>
-              </Link> 
-              
+              </Link>
+
               {/* wfhd to wfo onboarding  */}
-                
-                <div className="icon-1" title="Onboard IN House" onClick={()=>handleOpenOnboardInHouseModal(row)}>
-                <GrUserNew/>
-                </div>
-              
+
+              <div
+                className="icon-1"
+                title="Switch to WFO"
+                onClick={() => handleOpenOnboardInHouseModal(row)}
+              >
+                <GrUserNew />
+              </div>
 
               {/* <button className="icon-1" title="Switch user to inhouse onboard" onClick={()=>handleOnbaordingInHouse(row.user_id)}>InHouse</button> */}
             </>
@@ -676,7 +673,6 @@ const WFHDOverview = () => {
     },
   ];
 
-  
   useEffect(() => {
     const deptWiseDesi = allWFHDData.filter((d) => d.dept_id == deptData);
     setFilteredDatas(deptWiseDesi);
@@ -693,7 +689,7 @@ const WFHDOverview = () => {
   const handleExportClick = () => {
     WFHDExcelConverter(filterDataS, "WFHD Users");
   };
-console.log(filterDataS , 'overview')
+  console.log(filterDataS, "overview");
   return (
     <>
       <>
@@ -1095,61 +1091,66 @@ console.log(filterDataS , 'overview')
           rowData={currentRow}
         />
 
-<Modal
-        isOpen={modalOpenINHand}
-        onRequestClose={handleCloseModalInHouse}
-        contentLabel="Example Modal"
-        appElement={document.getElementById("root")}
-        style={{
-          content: {
-            width: "40%",
-            height: "40%",
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            marginRight: "-50%",
-            transform: "translate(-50%, -50%)",
-          },
-        }}
-      >
-        <button
-          className="btn btn-danger mb-3 float-right"
-          onClick={handleCloseModalInHouse}
+        <Modal
+          isOpen={modalOpenINHand}
+          onRequestClose={handleCloseModalInHouse}
+          contentLabel="Example Modal"
+          appElement={document.getElementById("root")}
+          style={{
+            content: {
+              width: "40%",
+              height: "40%",
+              top: "50%",
+              left: "50%",
+              right: "auto",
+              bottom: "auto",
+              marginRight: "-50%",
+              transform: "translate(-50%, -50%)",
+            },
+          }}
         >
-          x
-        </button>
-        <h1 className="mb-2">In House Onboarding</h1>
+          <button
+            className="btn btn-danger mb-3 float-right"
+            onClick={handleCloseModalInHouse}
+          >
+            x
+          </button>
+          <h1 className="mb-2">Switch To In House</h1>
 
-        <div className="form-group col-12">
-          <label className="form-label">
-            Custom Range <sup className="form-error">*</sup>
-          </label>
-          <Select
-            options={IsApplicableData.map((option) => ({
-              value: `${option.value}`,
-              label: `${option.label}`,
-            }))}
-            value={{
-              value: isApplicable.value,
-              label: isApplicable.label || "",
-            }}
-            onChange={(e)=>setIsApplicable(e)}
-              
-          />
-        </div>
-        <div className="col-md-12 p0">
-              <FieldContainer
-                type="date"
-                label="Joining Date "
-                astric
-                fieldGrid={12}
-                value={joiningDate}
-                onChange={(e)=>setJoiningDate(e.target.value)}
-              />
-            </div>
-            <button disabled={!isApplicable || !joiningDate} className="btn btn-primary ml-2" onClick={handleOnbaordingInHouse}>Submit</button>
-      </Modal>
+          <div className="form-group col-12">
+            <label className="form-label">
+              Custom Range <sup className="form-error">*</sup>
+            </label>
+            <Select
+              options={IsApplicableData.map((option) => ({
+                value: `${option.value}`,
+                label: `${option.label}`,
+              }))}
+              value={{
+                value: isApplicable.value,
+                label: isApplicable.label || "",
+              }}
+              onChange={(e) => setIsApplicable(e)}
+            />
+          </div>
+          <div className="col-md-12 p0">
+            <FieldContainer
+              type="date"
+              label="Joining Date "
+              astric
+              fieldGrid={12}
+              value={joiningDate}
+              onChange={(e) => setJoiningDate(e.target.value)}
+            />
+          </div>
+          <button
+            disabled={!isApplicable || !joiningDate}
+            className="btn btn-primary ml-2"
+            onClick={handleOnbaordingInHouse}
+          >
+            Submit
+          </button>
+        </Modal>
       </>
       {/* ) */}
       {/* } */}

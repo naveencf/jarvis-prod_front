@@ -140,26 +140,25 @@ const UserDashboard = () => {
   // Helper function to render cards
   const renderCard = (title, count, link, icon) => (
     <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-12">
-  <motion.div  
-     className="box"
-     whileHover={{ scale: 1.1 }}
-     whileTap={{ scale: 0.8 }}
-     transition={{ type: "spring", stiffness: 400, damping: 17 }}
-  >
-    <div className="card text-center">
-      <Link to={`/admin/user-overview/${link}`}>
-        <div className="card-body pb20">
-          <div className={`iconBadge bg${title}Light`}>
-            <span>{icon}</span>
-          </div>
-          <h6 className="colorMedium">{title}</h6>
-          <h3 className="mt8">{count}</h3>
+      <motion.div
+        className="box"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.8 }}
+        transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      >
+        <div className="card text-center">
+          <Link to={`/admin/user-overview/${link}`}>
+            <div className="card-body pb20">
+              <div className={`iconBadge bg${title}Light`}>
+                <span>{icon}</span>
+              </div>
+              <h6 className="colorMedium">{title}</h6>
+              <h3 className="mt8">{count}</h3>
+            </div>
+          </Link>
         </div>
-      </Link>
+      </motion.div>
     </div>
-  </motion.div>
-</div>
-
   );
 
   return (
@@ -168,14 +167,37 @@ const UserDashboard = () => {
         <div className="action_title">
           <FormContainer mainTitle="User Dashboard" link="/" />
         </div>
+        <Link to="/admin/user-login-history">
+          <button className="btn btn-primary btn-sm">Login History</button>
+        </Link>
       </div>
 
       {/* User Cards */}
       <div className="row">
-        {renderCard("All Users", userData.length, "Active", <UsersThree weight="duotone" />)}
-        {renderCard("WFO", wFOCount.length, "WFO", <BuildingOffice color="var(--secondary)" />)}
-        {renderCard("WFH", wFhCount.length, "WFH", <HouseLine className="bgTertiaryLight" />)}
-        {renderCard("WFHD", wfhdCount.length, "WFHD", <BuildingOffice className="bgSuccessLight" color="var(--success)" />)}
+        {renderCard(
+          "All Users",
+          userData.length,
+          "Active",
+          <UsersThree weight="duotone" />
+        )}
+        {renderCard(
+          "WFO",
+          wFOCount.length,
+          "WFO",
+          <BuildingOffice color="var(--secondary)" />
+        )}
+        {renderCard(
+          "WFH",
+          wFhCount.length,
+          "WFH",
+          <HouseLine className="bgTertiaryLight" />
+        )}
+        {renderCard(
+          "WFHD",
+          wfhdCount.length,
+          "WFHD",
+          <BuildingOffice className="bgSuccessLight" color="var(--success)" />
+        )}
       </div>
 
       {/* Birthday & Work-Anniversary, New Joinees and Exits */}
@@ -203,7 +225,6 @@ const UserDashboard = () => {
           <AgeGrafWFO />
         </div>
       </div>
-        
 
       {/* Bar and Pie Charts */}
       <div className="row">

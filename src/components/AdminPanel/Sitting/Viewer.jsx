@@ -204,9 +204,13 @@ const Viewer = ({
     <>
       <div className="card roomCard">
         <div className="card-header flexCenterBetween">
-          <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
-            <button className="btn btn-warning btn-sm">{selectedRoom}</button>
-          </Link>
+          {selectedRoom && (
+            <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
+              <button className="btn btn-warning btn-sm">
+                {selectedRoom} (Department wise Data)
+              </button>
+            </Link>
+          )}
           {selectedRoom && (
             <button
               className="btn btn-primary btn-sm"
@@ -214,7 +218,7 @@ const Viewer = ({
               style={{
                 position: "absolute",
                 top: 10,
-                left: 130,
+                left: 270,
                 padding: "8px 10px",
                 backgroundColor: "blue",
                 color: "white",
