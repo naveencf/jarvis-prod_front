@@ -174,6 +174,7 @@ const LeftSideBarBeta = ({
     setIsDownloadExcel(true);
     try {
       await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel, ugcVideoCost, twitterTrendCost);
+      handleSave()
     } catch (error) {
       console.error('Error downloading Excel:', error);
     } finally {

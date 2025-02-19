@@ -25,6 +25,7 @@ import { constant } from "../../../utils/constants";
 import OfferLetter from "../../PreOnboarding/OfferLetter";
 import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
 import { PDFDownloadLink } from "@react-pdf/renderer";
+import "../../../assets/css/style.css";
 import {
   bankTypeData,
   bloodGroupData,

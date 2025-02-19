@@ -20,7 +20,10 @@ import OfferLetter from "../../PreOnboarding/OfferLetter";
 import NDA from "../../PreOnboarding/NDA";
 import UserSingleSummaryTab from "./UserSingleSummaryTab";
 import AppointmentLetter from "../../PreOnboarding/AppointmentLetter";
+import { useGlobalContext } from "../../../Context/Context";
 const UserSingle = () => {
+  const [loading, setLoading] = useState(false);
+  const { toastAlert, toastError } = useGlobalContext();
   const whatsappApi = WhatsappAPI();
   const [KRIData, setKRIData] = useState([]);
   const { JobType } = useAPIGlobalContext();
@@ -110,6 +113,34 @@ const UserSingle = () => {
     user.job_type === "WFHD" ? "Salary" : null,
   ].filter(Boolean);
 
+  const handleSwitchWFHD = async () => {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("user_id", id);
+    formData.append("att_status", "onboarded");
+    formData.append("job_type", "WFHD");
+    formData.append("onboard_status", 1);
+
+    try {
+      const response = await axios.put(`${baseUrl}update_user`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.status === 200) {
+        toastAlert("User successfully switched to WFHD!");
+        getData();
+      } else {
+        toastError("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toastError("Error switching to WFHD. Please check your connection.");
+    } finally {
+      setLoading(false); // Stop loading
+    }
+  };
+
   //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
   let salary = user.salary;
   let basicSalary = salary * 0.6;
@@ -179,11 +210,22 @@ const UserSingle = () => {
               document={<NDA allUserData={user} />}
               fileName="NDA.pdf"
             >
-              <button className="btn-primary btn cmnbtn btn_sm">
+              <button className="btn-primary btn cmnbtn btn_sm mr-2">
                 NDA Download
                 <i title="Download NDA" class="bi bi-cloud-arrow-down"></i>
               </button>
             </PDFDownloadLink>
+
+            {user.job_type === "WFO" && (
+              <button
+                onClick={handleSwitchWFHD}
+                disabled={loading}
+                className="btn-danger btn cmnbtn btn_sm"
+              >
+                {loading ? "Processing..." : "Switch TO WFHD"}{" "}
+                <i title="Download NDA" className="bi bi-cloud-arrow-down"></i>
+              </button>
+            )}
           </div>
           <FormContainer
             submitButton={false}
