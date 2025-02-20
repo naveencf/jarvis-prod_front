@@ -29,6 +29,9 @@ import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
 import SittingRoomWise from "./Sitting/SittingRoomWise";
 import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
+import CommonRoom from "./Sitting/CommonRoom";
+import { useAPIGlobalContext } from "./APIContext/APIContext";
+
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -38,7 +41,6 @@ const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
 const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
-const SittingMaster = lazy(() => import("./Sitting/SittingMaster"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./User/UserMaster"));
 const UserView = lazy(() => import("./User/UserView"));
@@ -56,10 +58,7 @@ const ProductMaster = lazy(() => import("./Product/ProductMaster"));
 const ProductOverview = lazy(() => import("./Product/ProductOverview"));
 const ProductUpdate = lazy(() => import("./Product/ProductUpdate"));
 const SittingOverview = lazy(() => import("./Sitting/SittingOverview"));
-const SittingUpdate = lazy(() => import("./Sitting/SittingUpdate"));
-const OfficeMast = lazy(() => import("./Office/OfficeMaster"));
-const OfficeMastOverview = lazy(() => import("./Office/OfficeMastOverview"));
-const OfficeMastUpdate = lazy(() => import("./Office/OfficeMastUpdate"));
+const OfficeMastOverview = lazy(() => import("./Sitting/OfficeMastOverview"));
 const UserResposOverview = lazy(() =>
   import("./UserResponsbility/UserResposOverview")
 );
@@ -700,7 +699,7 @@ const PlanPricing = lazy(() => import("../inventory/plan-pricing/index"));
 const PlanMakingTable = lazy(() =>
   import("../inventory/plan-making/PlanMaking")
 );
- 
+
 const PlanUpload = lazy(() =>
   import("../AdminPanel/Inventory/Plan-upload/index")
 );
@@ -794,20 +793,20 @@ const AllAssignedCategory = lazy(() =>
 const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
 
 const Admin = () => {
-  const [contextData, setData] = useState([]);
-
+  // const [contextData, setData] = useState([]);
+  const { contextData } = useAPIGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  useEffect(() => {
-    if (userID && contextData.length === 0) {
-      axios
-        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
-        .then((res) => {
-          setData(res.data);
-        });
-    }
-  }, [userID]);
+  // useEffect(() => {
+  //   if (userID && contextData.length === 0) {
+  //     axios
+  //       .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
+  //       .then((res) => {
+  //         setData(res.data);
+  //       });
+  //   }
+  // }, [userID]);
 
   return (
     <>
@@ -1205,15 +1204,11 @@ const Admin = () => {
                       contextData[6] &&
                       contextData[6].view_value === 1 && (
                         <>
-                          <Route path="/office-mast" element={<OfficeMast />} />
                           <Route
-                            path="/office-mast-overview"
+                            path="/office-mast-overview/:room"
                             element={<OfficeMastOverview />}
                           />
-                          <Route
-                            path="/office-mast-update/:id"
-                            element={<OfficeMastUpdate />}
-                          />
+                          <Route path="/common-room" element={<CommonRoom />} />
                           <Route
                             path="/office-sitting-room-wise/:selectedRoom"
                             element={<SittingRoomWise />}
@@ -1225,16 +1220,8 @@ const Admin = () => {
                       contextData[7].view_value === 1 && (
                         <>
                           <Route
-                            path="/sitting-master"
-                            element={<SittingMaster />}
-                          />
-                          <Route
                             path="/sitting-overview"
                             element={<SittingOverview />}
-                          />
-                          <Route
-                            path="/sitting-update/:id"
-                            element={<SittingUpdate />}
                           />
                         </>
                       )}

@@ -1,30 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import loginlogo from "../assets/img/logo/logo_login1.png";
 import jwtDecode from "jwt-decode";
-import { useGlobalContext } from "../Context/Context";
 import { baseUrl } from "../utils/config";
-import "./Login.css"; // Add relevant CSS
-import "./LoginResponsive.css";
 import useIPAddress from "../components/AdminPanel/User/UserDashboard/LoginHistory/UseIPAddress";
+
+const GOOGLE_MAPS_API_KEY = "AIzaSyCk0q-yHS182mYMIc_IH9oOn3Tii-4UVeg";
 
 const Login = () => {
   const ip = useIPAddress();
-  // const { toastError } = useGlobalContext();
+  const navigate = useNavigate();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
   const [isError, setIsError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [location, setLocation] = useState({
+    latitude: "",
+    longitude: "",
+    address: "",
+  });
+  const [isLoading, setIsLoading] = useState(false);
 
+  // 🔹 Function to get the user's current location
+  const fetchLocation = async () => {
+    if (!navigator.geolocation) {
+      // setIsError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocation((prev) => ({ ...prev, latitude, longitude }));
+
+        try {
+          const response = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${GOOGLE_MAPS_API_KEY}`
+          );
+          if (response.data.results.length > 0) {
+            const address = response.data.results[0].formatted_address;
+            setLocation((prev) => ({ ...prev, address }));
+          } else {
+            // setIsError("Address not found.");
+          }
+        } catch (error) {
+          // setIsError("Failed to fetch address.");
+        }
+      },
+      (error) => {
+        setIsError("");
+      }
+    );
+  };
+
+  useEffect(() => {
+    fetchLocation();
+  }, []);
+
+  // 🔹 Login API call
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsLoading(true);
+
     axios
       .post(baseUrl + "login_user", {
         user_login_id: email,
         user_login_password: password,
         ip_address: ip,
+        current_location: location.address, // ✅ Sending Address in Payload
       })
       .then((res) => {
         if (!res.data.token) {
@@ -49,12 +94,14 @@ const Login = () => {
             }, 1000 * 60 * 60 * 10); // 10 hours
           } else {
             navigate("/login");
-            // toastError("You are an inactive user");
           }
         }
       })
       .catch((error) => {
-        setIsError(error);
+        setIsError(error?.response?.data?.error || "Login failed");
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -80,9 +127,11 @@ const Login = () => {
                     placeholder="Username"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    required
                   />
                 </div>
 
+                {/* Password input */}
                 <div className="form-group">
                   <div className="password-input-container">
                     <input
@@ -92,6 +141,7 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       type={showPassword ? "text" : "password"}
+                      required
                     />
                     <span
                       className="password-toggle-icon"
@@ -107,17 +157,25 @@ const Login = () => {
                   </div>
                 </div>
 
-                {/* Display error message */}
-                {isError !== "" && (
+                {/* Error message */}
+                {isError && (
                   <div className="form-group errorMessage">
-                    <span>{isError?.response?.data?.error}</span>
+                    <span>{isError}</span>
                   </div>
                 )}
 
                 {/* Submit button */}
                 <div className="form-group">
-                  <button className="btn btn-icon btn_primary" type="submit">
-                    <i className="fas fa-arrow-right" />
+                  <button
+                    className="btn btn-icon btn_primary"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <i className="fas fa-spinner fa-spin" />
+                    ) : (
+                      <i className="fas fa-arrow-right" />
+                    )}
                   </button>
                 </div>
 
@@ -127,9 +185,7 @@ const Login = () => {
                     style={{ color: "blue" }}
                     className="btn link_btn"
                     type="button"
-                    onClick={() => {
-                      navigate("/forget-password");
-                    }}
+                    onClick={() => navigate("/forget-password")}
                   >
                     Forget Password?
                   </button>

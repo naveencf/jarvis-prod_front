@@ -2,23 +2,29 @@ import React from "react";
 import ReactApexChart from "react-apexcharts";
 
 const LoginHistoryChart = ({ loginChartData }) => {
-  const groupedData = loginChartData?.reduce((acc, curr) => {
-    const date = curr.login_time.split(" ")[0];
+  if (!loginChartData || loginChartData.length === 0) {
+    return <p>No login data available</p>;
+  }
+
+  // Group login count by date
+  const groupedData = loginChartData.reduce((acc, user) => {
+    const date = user.login_time.split(" ")[0]; // Extract date part
     acc[date] = (acc[date] || 0) + 1;
     return acc;
   }, {});
 
-  const categories = Object.keys(groupedData).sort(); // Sort dates for correct order
-  const seriesData = Object.values(groupedData); // Login counts per date
+  // Prepare chart data
+  const categories = Object.keys(groupedData).sort(); // Sorted dates
+  const seriesData = categories.map((date) => groupedData[date]); // Login counts per date
 
   const chartOptions = {
     chart: {
       type: "area",
       height: 350,
-      toolbar: { show: false }, // Hide toolbar for a cleaner look
+      toolbar: { show: false },
     },
     stroke: {
-      curve: "smooth", // Smooth curve for better visualization
+      curve: "smooth",
       width: 2,
     },
     fill: {
@@ -31,30 +37,23 @@ const LoginHistoryChart = ({ loginChartData }) => {
       },
     },
     xaxis: {
-      categories, // X-axis labels (dates)
-      title: {
-        text: "Date", // X-axis label
-      },
+      categories, // Dates
+      title: { text: "Date" },
       labels: {
-        rotate: -45, // Rotate labels for better readability
+        rotate: -45,
+        format: "yyyy-MM-dd",
       },
     },
     yaxis: {
-      title: {
-        text: "Login Count", // Y-axis label
-      },
-      min: 0, // Ensure Y-axis starts at 0
+      title: { text: "Login Count" },
+      min: 0,
     },
-    markers: {
-      size: 5, // Show dots on data points
-    },
+    markers: { size: 5 },
     tooltip: {
       x: { format: "yyyy-MM-dd" },
       y: { formatter: (val) => `${val} logins` },
     },
-    grid: {
-      borderColor: "#f1f1f1", // Light grid lines
-    },
+    grid: { borderColor: "#f1f1f1" },
   };
 
   return (

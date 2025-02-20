@@ -54,7 +54,7 @@ import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
 import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
 import StatsOfOverview from "./PageOverview/StatsOfOverview";
 const PageOverview = () => {
-  const { toastAlert, toastError } = useGlobalContext();
+  const { toastAlert, toastError, usersDataContext } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -63,7 +63,7 @@ const PageOverview = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { usersDataContext } = useContext(AppContext);
+  // const {  } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
   const [vendorTypes, setVendorTypes] = useState([]);
   const [activeTab, setActiveTab] = useState("Tab0");
@@ -82,7 +82,7 @@ const PageOverview = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
-  console.log(newFilterData,"new data");
+  console.log(newFilterData, "new data");
   const [waData, setWaData] = useState(null);
   const [individualData, setIndividualData] = useState([]);
   const [individualDataDup, setIndividualDataDup] = useState([]);
@@ -92,8 +92,8 @@ const PageOverview = () => {
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
-  const [pagequery,setpagequery] = useState("")
-  
+  const [pagequery, setpagequery] = useState("")
+
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
   const { data: platData } = useGetPmsPlatformQuery();
   const platformData = platData?.data;
@@ -118,7 +118,7 @@ const PageOverview = () => {
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID ,pagequery});
+  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
@@ -161,7 +161,7 @@ const PageOverview = () => {
 
     setNewFilterData(filteredData);
   };
-// console.log(allVendorWhats,platformData,"test")
+  // console.log(allVendorWhats,platformData,"test")
   const handleVendorClick = async (_id) => {
     const res = await axios.get(baseUrl + `v1/vendor/${_id}`, {
       headers: {
@@ -477,7 +477,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "history",
       width: 150,
       name: "History",
@@ -493,7 +493,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "statsUpdate",
       width: 150,
       name: "Stats Update",
@@ -518,7 +518,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "Age_13_17_percent",
       width: 150,
       name: "Age 13-17 %",
@@ -527,7 +527,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_18_24_percent",
       width: 150,
       name: "Age 18-24 %",
@@ -536,7 +536,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_25_34_percent",
       width: 150,
       name: "Age 25-34 %",
@@ -545,7 +545,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_35_44_percent",
       width: 150,
       name: "Age 35-44 %",
@@ -554,7 +554,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_45_54_percent",
       width: 150,
       name: "Age 45-54 %",
@@ -563,7 +563,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_55_64_percent",
       width: 150,
       name: "Age 55-64 %",
@@ -572,7 +572,7 @@ const PageOverview = () => {
         return +data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "Age_65_plus_percent",
       width: 150,
       name: "Age 65+ %",
@@ -582,7 +582,7 @@ const PageOverview = () => {
       },
     },
 
-   {
+    {
       key: "city1_name",
       width: 150,
       name: "City 1 and %",
@@ -592,7 +592,7 @@ const PageOverview = () => {
         return data ? data + ` (${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city2_name",
       width: 150,
       name: "City 2 and %",
@@ -602,7 +602,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city3_name",
       width: 150,
       name: "City 3 and %",
@@ -612,7 +612,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city4_name",
       width: 150,
       name: "City 4 and %",
@@ -622,7 +622,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city5_name",
       width: 150,
       name: "City 5 and %",
@@ -632,7 +632,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "city_image_url",
       width: 150,
       name: "City Image",
@@ -647,7 +647,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "country1_name",
       width: 150,
       name: "Country 1  and %",
@@ -657,7 +657,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country2_name",
       width: 150,
       name: "Country 2 and %",
@@ -667,7 +667,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country3_name",
       width: 150,
       name: "Country 3 and %",
@@ -677,7 +677,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country4_name",
       width: 150,
       name: "Country 4 and %",
@@ -687,7 +687,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country5_name",
       width: 150,
       name: "Country 5 and %",
@@ -697,7 +697,7 @@ const PageOverview = () => {
         return data ? data + `(${percentage}%)` : "NA";
       },
     },
-   {
+    {
       key: "country_image_url",
       width: 150,
       name: "Country Image",
@@ -712,7 +712,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "createdAt",
       width: 150,
       name: "Creation Date",
@@ -724,7 +724,7 @@ const PageOverview = () => {
       },
     },
 
-   {
+    {
       key: "engagement",
       width: 150,
       name: "Engagement",
@@ -740,7 +740,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "impression",
       width: 150,
       name: "Impression",
@@ -757,7 +757,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "female_percent",
       width: 150,
       name: "Female Percentage",
@@ -766,7 +766,7 @@ const PageOverview = () => {
         return data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "male_percent",
       width: 150,
       name: "Male Percentage",
@@ -775,7 +775,7 @@ const PageOverview = () => {
         return data ? data + "%" : "NA";
       },
     },
-   {
+    {
       key: "profile_visit",
       width: 150,
       name: "Profile Visit",
@@ -800,7 +800,7 @@ const PageOverview = () => {
       //   );
       // }
     },
-   {
+    {
       key: "reach",
       width: 150,
       name: "Reach",
@@ -816,7 +816,7 @@ const PageOverview = () => {
         );
       },
     },
-   {
+    {
       key: "start_date",
       width: 150,
       name: "Start Date",
@@ -825,7 +825,7 @@ const PageOverview = () => {
         return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
-   {
+    {
       key: "endDate",
       width: 150,
       name: "End Date",
@@ -834,7 +834,7 @@ const PageOverview = () => {
         return data ? <DateFormattingComponent date={data} /> : "NA";
       },
     },
-   {
+    {
       key: "story_view",
       width: 150,
       name: "Story View",
@@ -843,7 +843,7 @@ const PageOverview = () => {
         return data ? data : "NA";
       },
     },
-   {
+    {
       key: "story_view_image_url",
       width: 150,
       name: "Story View Image",
@@ -897,7 +897,7 @@ const PageOverview = () => {
       key: "page_activeness",
       name: "Activeness",
       width: 80,
-      renderRowCell: (row) => {return formatString(row?.page_activeness)},
+      renderRowCell: (row) => { return formatString(row?.page_activeness) },
     },
     {
       key: "page_name",
@@ -926,15 +926,15 @@ const PageOverview = () => {
         const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
         return (
           <div className="profile-sec sb">
-          <div className="profile-img">
+            <div className="profile-img">
 
-          <img
-          
-          src={name}
-          alt={row.page_name}
-          width={40}
-          />
-          </div>
+              <img
+
+                src={name}
+                alt={row.page_name}
+                width={40}
+              />
+            </div>
           </div>
         );
       },
@@ -943,7 +943,7 @@ const PageOverview = () => {
       key: "preference_level",
       name: "Level",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.preference_level)} 
+      renderRowCell: (row) => { return formatString(row.preference_level) }
       // // editable: true,
       // customEditElement: (
       //   row,
@@ -986,15 +986,15 @@ const PageOverview = () => {
     {
       key: "platform_name",
       name: "Platform",
-      renderRowCell: (row) => {return formatString(row.platform_name)} ,
-   
+      renderRowCell: (row) => { return formatString(row.platform_name) },
+
       width: 200,
     },
     {
       key: "page_category_name",
       name: "Category",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.page_category_name)} 
+      renderRowCell: (row) => { return formatString(row.page_category_name) }
 
       // compare: true,
       // renderRowCell: (row) => {
@@ -1037,16 +1037,16 @@ const PageOverview = () => {
       key: "page_sub_category_name",
       name: "Sub Category",
       width: 200,
-      renderRowCell: (row) => {return formatString(row.page_sub_category_name)} ,
-    
+      renderRowCell: (row) => { return formatString(row.page_sub_category_name) },
+
       // compare: true,
     },
     {
       key: "followers_count",
       name: "Followers",
       width: 200,
-      renderRowCell: (row) => { return formatNumber(row.followers_count)}
-      
+      renderRowCell: (row) => { return formatNumber(row.followers_count) }
+
     },
     {
       key: "vendor_id",
@@ -1230,7 +1230,7 @@ const PageOverview = () => {
       ),
     },
 
-   
+
   ];
 
   const handleLevelChange = async (event, setEditFlag, row) => {
@@ -1370,7 +1370,7 @@ const PageOverview = () => {
           className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab5")}
         >
-            Statistics
+          Statistics
         </button>
         {/* <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
@@ -1390,7 +1390,7 @@ const PageOverview = () => {
         >
           Page Added Details
         </button>
-      
+
         <button
           className={activeTab === "Tab5" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab1")}
@@ -1403,15 +1403,15 @@ const PageOverview = () => {
         {activeTab === "Tab0" && (
           <>
 
-          <PageOverviewWithoutHealth columns={dataGridcolumns} />
-        
+            <PageOverviewWithoutHealth columns={dataGridcolumns} />
+
           </>
         )}
         {activeTab === "Tab1" && (
           <div className="">
             <div className="card">
               <div className="card-header flexCenterBetween">
-                <h5 className="card-title flexCenterBetween">                 
+                <h5 className="card-title flexCenterBetween">
                   <Typography>Profile Health</Typography>
                   <Typography>: {filterData?.length}</Typography>
                 </h5>
@@ -1550,7 +1550,7 @@ const PageOverview = () => {
                     </Box>
                   ) : (
                     <View
-                     columns={[...dataGridcolumns, ...dataSecondGridColumns]}
+                      columns={[...dataGridcolumns, ...dataSecondGridColumns]}
                       data={newFilterData}
                       isLoading={false}
                       title={"Page Overview"}

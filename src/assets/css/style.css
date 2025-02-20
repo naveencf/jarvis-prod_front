@@ -24,6 +24,7 @@
   --white: #ffffff;
   --color-white: #ffffff;
   --bg-white: #ffffff;
+  --radiusXS: 4px;
   --radiusS: 8px;
   --radiusM: 12px;
   --radiusL: 24px;
@@ -3206,11 +3207,12 @@ textarea.form-control.is-invalid {
 }
 
 .btn_sm {
-  font-size: 12px !important;
+  font-size: 13px !important;
   line-height: 16px !important;
   padding: 6px 12px !important;
   height: 36px !important;
   min-width: max-content !important;
+  border-radius: var(--radiusXS) !important;
 
   i {
     font-size: 14px;
@@ -4112,7 +4114,7 @@ input[type="button"].btn-block {
   min-width: 40px;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 50% !important;
   padding: 0px 0px;
   background-color: var(--body-sub-bg);
   color: var(--medium);
@@ -4122,16 +4124,17 @@ input[type="button"].btn-block {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 16px;
+    font-size: 18px;
     color: currentColor;
   }
 
   svg {
-    font-size: 18px;
+    font-size: 22px;
     color: currentColor;
   }
 }
 
+.icon.sm,
 .icon.btn_sm,
 .icon-1.btn_sm {
   display: flex;
@@ -4154,7 +4157,7 @@ input[type="button"].btn-block {
   }
 
   svg {
-    font-size: 18px;
+    font-size: 20px;
     color: currentColor;
   }
 }
@@ -6546,7 +6549,8 @@ body.sidebar-toggled .topbarBrand {
   .css-13cymwt-control,
   .css-t3ipsp-control {
     height: 36px !important;
-    border-radius: 7px !important;
+    min-height: 36px !important;
+    border-radius: var(--radiusXS) !important;
     width: 100% !important;
 
     input {
@@ -17958,6 +17962,7 @@ col,
   width: 300px;
   height: 300px;
 }
+
 .text-area {
   width: 100%;
   height: 60px;
@@ -17975,6 +17980,7 @@ col,
   transition: height 0.4s ease-in-out;
   margin-top: 10px;
 }
+
 .text-area:focus {
   height: 200px;
 }
@@ -17982,20 +17988,25 @@ col,
 button:disabled {
   cursor: not-allowed;
 }
+
 .animate_rotate {
   animation: rotate 2s linear infinite;
 }
+
 @keyframes rotate {
   100% {
     transform: rotate(360deg);
   }
 }
+
 .pr {
   padding-right: 50px;
 }
+
 .header-active {
   background-color: var(--border);
 }
+
 .header-tab {
   width: 100%;
   height: 100%;
@@ -18005,6 +18016,7 @@ button:disabled {
   justify-content: center;
   align-items: center;
 }
+
 .card-header:has(.header-tab) {
   padding: 0px;
 }
@@ -20565,10 +20577,10 @@ hr:not([size]) {
   display: flex;
   align-items: center;
   gap: 0px 4px;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 15px;
   font-weight: 500;
-  padding: 4px 4px 3px;
+  padding: 4px 6px;
   border-radius: 4px;
 
   span {
@@ -21828,26 +21840,33 @@ hr:not([size]) {
   margin: 0px 0px 0px -10px;
 }
 
+.scrollRow .slick-arrow {}
+
 .slick-prev,
 .slick-next {
-  width: 30px;
-  height: 30px;
+  width: 24px !important;
+  height: 24px !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .slick-prev:before,
 .slick-next:before {
-  font-size: 30px !important;
+  font-size: 24px !important;
   opacity: 1 !important;
   color: var(--light) !important;
 }
 
 .scrollRow .slick-prev {
-  left: -15px;
+  left: -10px;
   z-index: 99;
+  top: 41%;
 }
 
 .scrollRow .slick-next {
-  right: 10px;
+  right: 5px;
+  top: 41%;
 }
 
 .excelDataModalDialog {
@@ -23134,4 +23153,391 @@ hr:not([size]) {
 
 .form_small .MuiInputBase-root {
   height: 38px !important;
+}
+
+.announcementWrapper {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  height: 100%;
+
+  .announcementInfoWrapper {
+    width: 100%;
+    flex: 0 0 40%;
+    max-width: 40%;
+    padding-right: 20px;
+  }
+
+  .announcementTimelineWrapper {
+    width: 100%;
+    flex: 0 0 60%;
+    max-width: 60%;
+  }
+
+  .ancHeading {
+    margin-bottom: 12px;
+
+    h2 {
+      color: var(--dark);
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 500;
+    }
+  }
+
+  .card.ancCard {
+    margin-bottom: 20px;
+
+    .card-header {
+      border: none;
+      padding: 14px 16px 0px;
+      min-height: 38px;
+
+      .card-title {
+        font-size: 15px;
+        line-height: 18px;
+        font-weight: 500;
+        color: var(--dark);
+        margin: 0;
+      }
+
+      h6 {
+        font-weight: 400;
+        font-size: 12px;
+        color: var(--dark);
+      }
+    }
+
+    .card-body {
+      padding: 14px 16px 14px;
+    }
+
+    .card-footer {
+      padding: 14px 16px 14px;
+    }
+
+    .ancCardUser {
+      display: flex;
+      align-items: center;
+      gap: 0px 8px;
+
+      .ancCardUserImg {
+        img {
+          width: 40px;
+          height: 40px;
+          object-fit: cover;
+          border-radius: 100%;
+        }
+      }
+
+      .ancCardUserTxt {
+        h4 {
+          font-size: 14px;
+          line-height: 18px;
+          font-weight: 500;
+          color: var(--dark);
+          margin: 0;
+
+          small {
+            color: var(--medium);
+            font-size: 90%;
+          }
+        }
+
+        p {
+          font-size: 12px;
+          line-height: 16px;
+          font-weight: 400;
+          color: var(--light);
+          margin: 0;
+        }
+      }
+    }
+
+    .ancPostBody {
+      display: flex;
+      flex-direction: column;
+      gap: 8px 0px;
+
+      .ancPostBodyText {
+        display: flex;
+        flex-direction: column;
+        gap: 8px 0px;
+
+        p {
+          font-size: 13.5px;
+          line-height: 18px;
+          font-weight: 400;
+          color: var(--medium);
+
+          a {
+            color: var(--dark);
+            font-weight: 500;
+          }
+        }
+      }
+
+    }
+  }
+
+  .blankInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .blankInfoText {
+      h4 {
+        font-size: 14px;
+        line-height: 18px;
+        font-weight: 400;
+        color: var(--medium);
+        margin: 0px 0px 2px;
+      }
+
+      p {
+        font-size: 13px;
+        line-height: 17px;
+        font-weight: 400;
+        color: var(--light);
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    .blankInfoImg {
+      img {
+        max-width: 140px;
+        max-height: 80px;
+        min-height: 60px;
+        object-fit: scale-down;
+      }
+    }
+  }
+
+  .holidaySlider {
+    height: 160px;
+
+    .card-header {
+      background: transparent;
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .card-body {
+      padding: 0px 0px !important;
+      position: relative;
+      z-index: 2;
+    }
+
+    .holidaySlide {
+      height: 160px;
+      position: relative;
+      color: var(--white-text);
+
+      .holidaySlideImg {
+        height: 100%;
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: var(--radiusS);
+        }
+      }
+
+      .holidaySlideText {
+        position: absolute;
+        bottom: 15%;
+        left: 0;
+        width: 100%;
+        padding: 16px 60px;
+
+        h4 {
+          color: currentColor;
+          font-size: 26px;
+          line-height: 30px;
+          font-weight: 500;
+          margin: 0px 0px 4px;
+        }
+
+        p {
+          color: currentColor;
+          font-size: 14px;
+          line-height: 18px;
+          font-weight: 400;
+        }
+      }
+    }
+
+    .holidaySlide.dark {
+      color: var(--dark) !important;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+      color: var(--primary) !important;
+    }
+
+    .slick-prev {
+      top: 57%;
+      left: 16px;
+      z-index: 99;
+    }
+
+    .slick-next {
+      top: 57%;
+      right: 16px;
+    }
+  }
+
+  .avatarCircles {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    height: 100%;
+    margin-right: -0.50rem;
+    margin-left: -0.50rem;
+    gap: 16px 0px;
+
+    .avatarCircle {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px 6px;
+      width: 100%;
+      padding-right: 0.50rem;
+      padding-left: 0.50rem;
+      flex: 0 0 25%;
+      max-width: 25%;
+
+      .avatarCircleImg {
+        img {
+          width: 40px;
+          height: 40px;
+          object-fit: cover;
+          border-radius: 100%;
+        }
+      }
+
+      .avatarCircleText {
+        text-align: center;
+
+        h4 {
+          font-size: 12px;
+          line-height: 14px;
+          font-weight: 400;
+          color: var(--dark);
+        }
+
+        p {
+          font-size: 12px;
+          line-height: 14px;
+          font-weight: 400;
+          color: var(--light);
+        }
+      }
+    }
+  }
+
+  .shiftTimer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .shiftTimerText {
+      p {
+        font-size: 13px;
+        line-height: 17px;
+        font-weight: 400;
+        color: var(--light);
+        margin: 0;
+        padding: 0;
+      }
+
+      h2 {
+        font-size: 26px;
+        line-height: 34px;
+        font-weight: 500;
+        color: var(--dark);
+      }
+    }
+  }
+
+}
+
+.floorPlanWrapper {
+  .floorPlan {
+    position: relative;
+    max-width: 1160px;
+    margin: 0 auto;
+    border: 2px solid var(--dark);
+    margin-bottom: 20px;
+
+    .floorPlanBg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    .floorPlanUp {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+
+    .floorPlanDown {
+      position: relative;
+      z-index: 4;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding-top: 100px;
+    }
+
+    .room {
+      position: relative;
+    }
+
+    .roomEnable {
+      position: relative;
+
+      &::after {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgb(66 56 146 / 20%);
+        content: "";
+        opacity: 0;
+      }
+
+      &:hover::after {
+        opacity: 1;
+      }
+    }
+
+    .confrenceRoom {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 162px;
+    }
+  }
 }

@@ -14,7 +14,6 @@ import { baseUrl } from "../../../utils/config";
 
 export default function SittingOverview() {
   const [layouts, setLayouts] = useState({});
-  console.log(layouts, "layouts");
 
   const saveLayout = (roomName, elements, backgroundImage) => {
     const layoutData = {
@@ -135,7 +134,6 @@ const Editor = ({ onSave }) => {
     node.scaleY(1);
   };
 
-  console.log("elem", elements, selectedIds);
   const saveLayout = () => {
     if (!roomName.trim()) {
       alert("Please enter a room name.");
@@ -150,7 +148,6 @@ const Editor = ({ onSave }) => {
   };
 
   const alignChairsHorizontally = () => {
-    console.log("aligning horizontally");
     let xOffset = posSpacing.x;
     setElements((prevElements) =>
       prevElements.map((el) =>
@@ -249,7 +246,7 @@ const Editor = ({ onSave }) => {
             />
           </div>
           <div>
-            <label >y position</label>
+            <label>y position</label>
             <input
               type="number"
               value={posSpacing.y}
@@ -262,7 +259,7 @@ const Editor = ({ onSave }) => {
             />
           </div>
           <div>
-            <label >spacing</label>
+            <label>spacing</label>
             <input
               type="number"
               value={posSpacing.spacing}
@@ -274,30 +271,29 @@ const Editor = ({ onSave }) => {
               }
             />
           </div>
-     
-        <button
-          className="btn cmnbtn btn_sm btn-outline-primary ml-2 mr-2"
-          onClick={alignChairsHorizontally}
-        >
-          Align Selected Chairs Horizontally
-        </button>
-        <button
-          className="btn cmnbtn btn_sm btn-outline-primary"
-          onClick={alignChairsVertically}
-        >
-          Align Selected Chairs Vertically
-        </button>
-        </div>
 
+          <button
+            className="btn cmnbtn btn_sm btn-outline-primary ml-2 mr-2"
+            onClick={alignChairsHorizontally}
+          >
+            Align Selected Chairs Horizontally
+          </button>
+          <button
+            className="btn cmnbtn btn_sm btn-outline-primary"
+            onClick={alignChairsVertically}
+          >
+            Align Selected Chairs Vertically
+          </button>
+        </div>
       </div>
       <div className="d-flex mb-2">
         <div>
-        <label >Rotation (degrees): </label>
-        <input
-          type="number"
-          value={rotationDegree}
-          onChange={(e) => setRotationDegree(Number(e.target.value))}
-        />
+          <label>Rotation (degrees): </label>
+          <input
+            type="number"
+            value={rotationDegree}
+            onChange={(e) => setRotationDegree(Number(e.target.value))}
+          />
         </div>
         <button
           className="btn cmnbtn btn_sm btn-outline-primary ml-2"
@@ -321,7 +317,7 @@ const Editor = ({ onSave }) => {
           Save Layout
         </button>
       </div>
-      
+
       <Stage
         width={1100}
         height={600}

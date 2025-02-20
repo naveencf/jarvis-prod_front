@@ -17,6 +17,7 @@ import InternetSpeedChecker from "../User/UserDashboard/InternetSpeedChecker";
 import rupee from "../../../assets/img/icon/badge/rupee.png";
 import { useGlobalContext } from "../../../Context/Context";
 import { useGetAdjustmentQuery } from "../../Store/API/Sales/IncentivePlanApi";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const badgeImageMap = {
   Diamond: Diamond,
@@ -37,13 +38,14 @@ const Navbar = () => {
   const { salesRoute } = useParams();
   const location = useLocation();
   const [count, setCount] = useState(0);
-  const [loginUserData, setLoginUserData] = useState([]);
+  // const [loginUserData, setLoginUserData] = useState([]);
   const [notificationData, setNotificationData] = useState([]);
   const [userBadgeData, setUserBadgeData] = useState();
   const [badgeData, setBadgeData] = useState([]);
   const [badge, setBadge] = useState("");
   const [isActive, setIsActive] = useState(0);
   const { data } = useGlobalContext();
+  const { loginUserData } = useAPIGlobalContext();
   const {
     data: adjustmentData,
     error: adjustmentError,
@@ -101,9 +103,8 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-          `sales/badges_sales_booking_data${
-            RoleID != 1 ? `?userId=${loginUserId}` : ""
-          }`,
+        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -135,17 +136,23 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    getUserBadge();
-    // getAdjustment();
-  }, []);
+    if (
+      isSalesRoute &&
+      data[52]?.view_value == 1) {
 
-  useEffect(() => {
-    axios
-      .post(baseUrl + "login_user_data", {
-        user_id: loginUserId,
-      })
-      .then((res) => setLoginUserData(res.data));
-  }, []);
+      getUserBadge();
+    }
+    // getAdjustment();
+  }, [data]);
+
+  // useEffect(() => {
+  //   axios
+  //     .post(baseUrl + "login_user_data", {
+  //       user_id: loginUserId,
+  //     })
+  //     .then((res) => setLoginUserData(res.data));
+  // }, []);
+
   const fetchData = async () => {
     await axios.get(baseUrl + "get_all_unreden_notifications").then((res) => {
       setNotificationData(res.data.data);
@@ -153,14 +160,14 @@ const Navbar = () => {
     });
   };
 
-  useEffect(() => {
-    fetchData();
+  // useEffect(() => {
+  //   fetchData();
 
-    const intervalId = setInterval(() => {
-      fetchData();
-    }, 60000);
-    return () => clearInterval(intervalId);
-  }, []);
+  //   const intervalId = setInterval(() => {
+  //     fetchData();
+  //   }, 60000);
+  //   return () => clearInterval(intervalId);
+  // }, []);
 
   const NotificationsOff = async (_id) => {
     // e.preventDefault();
@@ -206,7 +213,7 @@ const Navbar = () => {
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -241,7 +248,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedOutstandingAmount
+                                userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -254,7 +261,7 @@ const Navbar = () => {
                               Un-Billed Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalUnEarnedOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -305,7 +312,7 @@ const Navbar = () => {
               </label>
             </div>
           </li>
-          <li>
+          {/* <li>
             {(RoleID == 1 || RoleID == 5) && (
               <div className="nav-item dropdown">
                 <a
@@ -329,9 +336,9 @@ const Navbar = () => {
                     <i className="bi bi-bell"></i>
                   </div>
                   {/* <NotificationsActiveIcon /> */}
-                  {/* <span>{count}</span> */}
+          {/* <span>{count}</span> 
                 </a>
-                <div className="dropdown-menu notification  dropdown-menu-right shadow animated--grow-in mt1">
+                {/* <div className="dropdown-menu notification  dropdown-menu-right shadow animated--grow-in mt1">
                   <div className="pack">
                     <div className="head-label">
                       Notification
@@ -372,17 +379,17 @@ const Navbar = () => {
                         />
                       </div>
                     </div>
-                  ))} */}
+                  ))} 
 
-                  {/* <button type="button" className="btn btn-success btn-xs">
+                {/* <button type="button" className="btn btn-success btn-xs">
                     <Link to={`/admin/pre-onboard-all-notifications/`}>
                       See All
                     </Link>
-                  </button> */}
-                </div>
+                  </button> 
+              </div> 
               </div>
             )}
-          </li>
+          </li> */}
           {/* <li className="nav-item dropdown no-arrow user_dropdown">
             <a
               className="nav-link dropdown-toggle"
@@ -514,7 +521,7 @@ const Navbar = () => {
             </div>
           </li>
         </ul>
-      </nav>
+      </nav >
       {/* Topbar End */}
     </>
   );

@@ -44,19 +44,19 @@ const AccountInfo = lazy(() =>
     "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo"
   )
 );
-const Profile = lazy(() =>
-  import("./components/Pantry/UserPanel/Profile/Profile")
-);
-const User = lazy(() => import("./components/Pantry/UserPanel/User"));
-const Delivery = lazy(() =>
-  import("./components/Pantry/DeliveryPanel/Delivery")
-);
-const OrderHistory = lazy(() =>
-  import("./components/Pantry/UserPanel/OrderHistory")
-);
-const PendingOrderSingleUser = lazy(() =>
-  import("./components/Pantry/UserPanel/PendingOrderSingleUser")
-);
+// const Profile = lazy(() =>
+//   import("./components/Pantry/UserPanel/Profile/Profile")
+// );
+// const User = lazy(() => import("./components/Pantry/UserPanel/User"));
+// const Delivery = lazy(() =>
+//   import("./components/Pantry/DeliveryPanel/Delivery")
+// );
+// const OrderHistory = lazy(() =>
+//   import("./components/Pantry/UserPanel/OrderHistory")
+// );
+// const PendingOrderSingleUser = lazy(() =>
+//   import("./components/Pantry/UserPanel/PendingOrderSingleUser")
+// );
 const Loader = lazy(() => import("./components/Finance/Loader/Loader"));
 const Learning = lazy(() =>
   import("./components/SuperTracker/CommunityManagement/Learning/Learning")
@@ -130,64 +130,64 @@ const Admin = lazy(() => import("./components/AdminPanel/Admin"));
 // const Delivery = lazy(() =>
 //   import("./components/Pantry/DeliveryPanel/Delivery")
 // );
-const SimOverview = lazy(() => import("./components/Sim/SimOverview"));
-const SimMaster = lazy(() => import("./components/Sim/SimMaster"));
+// const SimOverview = lazy(() => import("./components/Sim/SimOverview"));
+// const SimMaster = lazy(() => import("./components/Sim/SimMaster"));
 
-const SimAllocationOverview = lazy(() =>
-  import("./components/Sim/SimAllocationOverview")
-);
-const UpdateCaseStudy = lazy(() =>
-  import("./components/AdminPanel/RegisterCampaign/CaseStudies/UpdateCaseStudy")
-);
+// const SimAllocationOverview = lazy(() =>
+//   import("./components/Sim/SimAllocationOverview")
+// );
+// const UpdateCaseStudy = lazy(() =>
+//   import("./components/AdminPanel/RegisterCampaign/CaseStudies/UpdateCaseStudy")
+// );
 
-const SimSummary = lazy(() => import("./components/Sim/SimSummary"));
-const IpMaster = lazy(() =>
-  import("./components/IntellectualProperty/IpMaster")
-);
-const IpOverview = lazy(() =>
-  import("./components/IntellectualProperty/IpOverview")
-);
-const IpUpdate = lazy(() =>
-  import("./components/IntellectualProperty/IpUpdate")
-);
-const IpCountUpdate = lazy(() =>
-  import("./components/IntellectualProperty/IpCountUpdate")
-);
+// const SimSummary = lazy(() => import("./components/Sim/SimSummary"));
+// const IpMaster = lazy(() =>
+//   import("./components/IntellectualProperty/IpMaster")
+// );
+// const IpOverview = lazy(() =>
+//   import("./components/IntellectualProperty/IpOverview")
+// );
+// const IpUpdate = lazy(() =>
+//   import("./components/IntellectualProperty/IpUpdate")
+// );
+// const IpCountUpdate = lazy(() =>
+//   import("./components/IntellectualProperty/IpCountUpdate")
+// );
 
-const BrandMaster = lazy(() => import("./components/Brand/BrandMaster"));
-const BrandOverview = lazy(() => import("./components/Brand/BrandOverview"));
-const BrandUpdate = lazy(() => import("./components/Brand/BrandUpdate"));
-const IpHistory = lazy(() =>
-  import("./components/IntellectualProperty/IpHistory")
-);
+// const BrandMaster = lazy(() => import("./components/Brand/BrandMaster"));
+// const BrandOverview = lazy(() => import("./components/Brand/BrandOverview"));
+// const BrandUpdate = lazy(() => import("./components/Brand/BrandUpdate"));
+// const IpHistory = lazy(() =>
+//   import("./components/IntellectualProperty/IpHistory")
+// );
 // const OrderHistory = lazy(() =>
 //   import("./components/Pantry/UserPanel/OrderHistory")
 // );
-const BrandView = lazy(() => import("./components/Brand/BrandView"));
-const SimDashboard = lazy(() => import("./components/Sim/SimDashboard"));
-const IpGraph = lazy(() => import("./components/IntellectualProperty/IpGraph"));
+// const BrandView = lazy(() => import("./components/Brand/BrandView"));
+// const SimDashboard = lazy(() => import("./components/Sim/SimDashboard"));
+// const IpGraph = lazy(() => import("./components/IntellectualProperty/IpGraph"));
 
 // const PendingOrderSingleUser = lazy(() =>
 //   import("./components/Pantry/UserPanel/PendingOrderSingleUser")
 // );
 
-const AssetCategoryMaster = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetCategoryMaster")
-);
-const AssetCategoryOverview = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetCategoryOverview")
-);
-const AssetCategoryUpdate = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetCategoryUpdate")
-);
-const BrandMast = lazy(() => import("./components/Sim/Brand/BrandMast"));
-const ModalMast = lazy(() => import("./components/Sim/ModalName/ModalMast"));
-const RepairReason = lazy(() =>
-  import("./components/Sim/RepairReasonMast/RepairReason")
-);
-const RepairRequest = lazy(() =>
-  import("./components/Sim/RepairRequest/RepairRequest")
-);
+// const AssetCategoryMaster = lazy(() =>
+//   import("./components/Sim/AssetCategory/AssetCategoryMaster")
+// );
+// const AssetCategoryOverview = lazy(() =>
+//   import("./components/Sim/AssetCategory/AssetCategoryOverview")
+// );
+// const AssetCategoryUpdate = lazy(() =>
+//   import("./components/Sim/AssetCategory/AssetCategoryUpdate")
+// );
+// const BrandMast = lazy(() => import("./components/Sim/Brand/BrandMast"));
+// const ModalMast = lazy(() => import("./components/Sim/ModalName/ModalMast"));
+// const RepairReason = lazy(() =>
+//   import("./components/Sim/RepairReasonMast/RepairReason")
+// );
+// const RepairRequest = lazy(() =>
+//   import("./components/Sim/RepairRequest/RepairRequest")
+// );
 
 // const ForgetPassword = lazy(() => import("./Login/Forget/ForgetPassword"));
 const AssetSubCategoryMaster = lazy(() =>
@@ -354,7 +354,7 @@ function App() {
           }
         />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        {/* sim */}
+
 
         <Route path="/" element={<Protected />}>
           <Route
@@ -374,7 +374,7 @@ function App() {
             }
           />
 
-          <Route
+          {/* <Route
             path="/pantry-user"
             element={
               <AppProvider>
@@ -389,8 +389,8 @@ function App() {
                 <Delivery />{" "}
               </AppProvider>
             }
-          />
-          <Route
+          /> */}
+          {/* <Route
             path="/profile"
             element={
               <AppProvider>
@@ -413,7 +413,7 @@ function App() {
                 <PendingOrderSingleUser />{" "}
               </AppProvider>
             }
-          />
+          /> */}
         </Route>
         <Route
           path="/admin/*"
@@ -433,8 +433,8 @@ function App() {
             </Suspense>
           }
         />
-
-        <Route
+        {/* sim */}
+        {/* <Route
           path="/sim-overview/:id"
           element={
             <AppProvider>
@@ -514,9 +514,9 @@ function App() {
               <AssetCategoryUpdate />{" "}
             </AppProvider>
           }
-        />
+        /> */}
         {/* Asset sub cat  */}
-        <Route
+        {/*  <Route
           path="/asset/subCategory"
           element={
             <AppProvider>
@@ -572,10 +572,11 @@ function App() {
               <AssetSubCategoryUpdate />{" "}
             </AppProvider>
           }
-        />
+        /> */}
+
         {/* vender pages  */}
 
-        <Route
+        {/* <Route
           path="/venderOverView"
           element={
             <AppProvider>
@@ -598,8 +599,8 @@ function App() {
               <VendorUpdate />{" "}
             </AppProvider>
           }
-        />
-
+        /> */}
+        {/* 
         <Route
           path="/ip-overview"
           element={
@@ -623,9 +624,9 @@ function App() {
               <IpUpdate />{" "}
             </AppProvider>
           }
-        />
+        /> */}
 
-        <Route
+        {/* <Route
           path="/ip-history/:id"
           element={
             <AppProvider>
@@ -648,9 +649,9 @@ function App() {
               <IpGraph />
             </AppProvider>
           }
-        />
+        /> */}
 
-        <Route
+        {/* <Route
           path="/brand-master"
           element={
             <AppProvider>
@@ -658,16 +659,16 @@ function App() {
               <BrandMaster />
             </AppProvider>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/brand-overview"
           element={
             <AppProvider>
               <BrandOverview />{" "}
             </AppProvider>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/brand-update/:id"
           element={
             <AppProvider>
@@ -675,18 +676,18 @@ function App() {
               <BrandUpdate />{" "}
             </AppProvider>
           }
-        />
-        <Route
+        /> */}
+        {/* <Route
           path="/brand-view/:id"
           element={
             <AppProvider>
               <BrandView />{" "}
             </AppProvider>
           }
-        />
+        /> */}
 
         {/* ------------------------------ case Study start-----------------------------------------  */}
-        <Route
+        {/* <Route
           path="/case-study/brand"
           element={
             <AppProvider>
@@ -727,7 +728,7 @@ function App() {
               <CaseStudyView />{" "}
             </AppProvider>
           }
-        />
+        /> */}
 
         {/* ------------------------------ case Study end-----------------------------------------  */}
 

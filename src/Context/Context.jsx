@@ -44,7 +44,7 @@ const AppProvider = ({ children }) => {
     setAssetDataContext(res?.data.data);
   }
   async function getUserAPIData() {
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
       setUsersContextData(res?.data.data);
     });
   }
@@ -58,11 +58,11 @@ const AppProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    getAllCategoryContextFunction();
-    getBrandData();
-    getAssetData();
+    // getAllCategoryContextFunction();
+    // getBrandData();
+    // getAssetData();
     getUserAPIData();
-    getauth();
+    // getauth();
   }, []);
   return (
     <AppContext.Provider

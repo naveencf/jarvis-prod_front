@@ -5,7 +5,6 @@ import { Copy } from "@phosphor-icons/react";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
-import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useGlobalContext } from "../../../Context/Context";
 
@@ -159,7 +158,7 @@ const PurchasePagesStats = ({ PlanData }) => {
                     </div>
                     <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-3 col-sm-12 col-12">
                         <div className="card p16 hov-pointer">
-                            <h6 className="colorMedium">Total Likes</h6>
+                            <h6 className="colorMedium">Total Likes </h6>
                             <h6 className="mt8 fs_16">{totalLikes}</h6>
                         </div>
                     </div>
@@ -200,7 +199,7 @@ const PurchasePagesStats = ({ PlanData }) => {
                         >
                         </AccordionSummary>
                         <AccordionDetails>
-                            <div className="card-body p0 m0 table table-responsive">
+                            <div className="card-body p0 m0 table table-responsive ml-2">
                                 {activeTab === 0 && (
                                     <div className="thmTable">
                                         <DataGrid

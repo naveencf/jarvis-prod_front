@@ -27,14 +27,14 @@ const APIContext = ({ children }) => {
         });
     }
 
-    axios.get(baseUrl + "get_all_users").then((res) => {
+    axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
       setUserContextData(res?.data.data);
       setLoading(true);
     });
 
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      setDepartmentContext(res?.data);
-    });
+    // axios.get(baseUrl + "get_all_departments").then((res) => {
+    //   setDepartmentContext(res?.data);
+    // });
 
     axios.get(`${baseUrl}get_single_user/${userID}`).then((res) => {
       setLoginUserData(res.data);
