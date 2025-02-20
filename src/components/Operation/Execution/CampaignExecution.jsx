@@ -863,12 +863,12 @@ const CampaignExecution = () => {
       <FormContainer mainTitle={"Record Purchase"} link={"true"} />
       {selectedPlan && (
         <>
-          {/* <PurchasePagesStats
+          <PurchasePagesStats
             // phaseList={phaseList}
             PlanData={PlanData?.filter((data) =>
               activeTab === "all" ? data : data.phaseDate === activeTab
             )}
-          /> */}
+          /> 
 
           <LinkUpload
             phaseList={phaseList}
@@ -899,6 +899,7 @@ const CampaignExecution = () => {
           visibleTabs={visibleTabs}
           setVisibleTabs={setVisibleTabs}
           selectedPlan={selectedPlan}
+          PlanData={PlanData}
         />
       )}
 

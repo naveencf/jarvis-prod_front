@@ -23,13 +23,15 @@ import successIcon from "../../../assets/img/icon/success.png";
 import errorIcon from "../../../assets/img/icon/error.png";
 
 function Dashboard() {
-  const { RoleIDContext } = useAPIGlobalContext();
+  const { RoleIDContext, loginUserData, contextData } = useAPIGlobalContext();
+
+
   const [renderCount, setRenderCount] = useState(0);
   const [allsimData, getAllSimData] = useState([]);
   const [logoBrandData, getLogoBrandData] = useState([]);
   const [IntellectualProperty, getIntellectualProperty] = useState([]);
-  const [contextData, setDatas] = useState([]);
-  const [loginUserData, setLoginUserData] = useState([]);
+  // const [contextData, setDatas] = useState([]);
+  // const [loginUserData, setLoginUserData] = useState([]);
   const [allData, setAllData] = useState([]);
   const [accountsPendingPaymentsCount, setAccountsPendingPaymentsCount] =
     useState([]);
@@ -40,7 +42,7 @@ function Dashboard() {
     navigate();
   }
   function handleBrand() {
-    navigate("/brand-overview");
+    // navigate("/brand-overview");
   }
   function handleDataBrand() {
     navigate("/data-brand-overview");
@@ -54,42 +56,42 @@ function Dashboard() {
   const userId = decodedToken.id;
   const roleId = decodedToken.role_id;
 
-  useEffect(() => {
-    if (userId && contextData.length === 0) {
-      axios
-        .get(`${baseUrl}` + `get_single_user_auth_detail/${userId}`)
-        .then((res) => {
-          setDatas(res.data);
-        });
-    }
-    if (userId) {
-      axios.get(`${baseUrl}` + `get_single_user/${userId}`).then((res) => {
-        setLoginUserData(res.data);
-      });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (userId && contextData.length === 0) {
+  //     axios
+  //       .get(`${baseUrl}` + `get_single_user_auth_detail/${userId}`)
+  //       .then((res) => {
+  //         setDatas(res.data);
+  //       });
+  //   }
+  //   if (userId) {
+  //     axios.get(`${baseUrl}` + `get_single_user/${userId}`).then((res) => {
+  //       setLoginUserData(res.data);
+  //     });
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    setRenderCount(renderCount + 1);
-    axios.get(baseUrl + "get_all_sims").then((res) => {
-      getAllSimData(res.data.data);
-    });
-    axios.get(baseUrl + "get_logo_data").then((res) => {
-      getLogoBrandData(res.data);
-    });
-    axios.get(baseUrl + "total_count_data").then((res) => {
-      setAllData(res.data.distinctDataNamesCount);
-    });
-    axios.get(baseUrl + "get_all_instapages").then((res) => {
-      getIntellectualProperty(res?.data);
-    });
-    axios.get(baseUrl + "get_finances").then((res) => {
-      const response = res?.data;
-      setAccountsPendingPaymentsCount(
-        response?.filter((item) => item?.status_ == 0)
-      );
-    });
-  }, []);
+  // useEffect(() => {
+  //   setRenderCount(renderCount + 1);
+  //   // axios.get(baseUrl + "get_all_sims").then((res) => {
+  //   //   getAllSimData(res.data.data);
+  //   // });
+  //   axios.get(baseUrl + "get_logo_data").then((res) => {
+  //     getLogoBrandData(res.data);
+  //   });
+  //   // axios.get(baseUrl + "total_count_data").then((res) => {
+  //   //   setAllData(res.data.distinctDataNamesCount);
+  //   // });
+  //   // axios.get(baseUrl + "get_all_instapages").then((res) => {
+  //   //   getIntellectualProperty(res?.data);
+  //   // });
+  //   // axios.get(baseUrl + "get_finances").then((res) => {
+  //   //   const response = res?.data;
+  //   //   setAccountsPendingPaymentsCount(
+  //   //     response?.filter((item) => item?.status_ == 0)
+  //   //   );
+  //   // });
+  // }, []);
 
   if (loginUserData.job_type == "WFHD" && roleId == 4) {
     navigate("/admin/wfh-single-user");
@@ -133,38 +135,38 @@ function Dashboard() {
           {contextData && contextData[8] && contextData[8].view_value === 1 && (
             <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
               <div className="d_infocard card shadow">
-                <Link to="/pantry-user">
-                  <div className="card-body">
-                    <div className="d_infocard_txt">
-                      <h3>Pantry</h3>
-                      <h2>Order</h2>
-                    </div>
-                    <div className="d_infocard_icon">
-                      <span>
-                        <MdOutlineCategory />
-                      </span>
-                    </div>
+                {/* <Link to="/pantry-user"> */}
+                <div className="card-body">
+                  <div className="d_infocard_txt">
+                    <h3>Pantry</h3>
+                    <h2>Order</h2>
                   </div>
-                </Link>
+                  <div className="d_infocard_icon">
+                    <span>
+                      <MdOutlineCategory />
+                    </span>
+                  </div>
+                </div>
+                {/* </Link> */}
               </div>
             </div>
           )}
           {contextData && contextData[9] && contextData[9].view_value === 1 && (
             <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
               <div className="d_infocard card shadow">
-                <Link to="/pantry-delivery">
-                  <div className="card-body">
-                    <div className="d_infocard_txt">
-                      <h3>Pantry</h3>
-                      <h2>Delivery</h2>
-                    </div>
-                    <div className="d_infocard_icon">
-                      <span>
-                        <MdOutlineCategory />
-                      </span>
-                    </div>
+                {/* <Link to="/pantry-delivery"> */}
+                <div className="card-body">
+                  <div className="d_infocard_txt">
+                    <h3>Pantry</h3>
+                    <h2>Delivery</h2>
                   </div>
-                </Link>
+                  <div className="d_infocard_icon">
+                    <span>
+                      <MdOutlineCategory />
+                    </span>
+                  </div>
+                </div>
+                {/* </Link> */}
               </div>
             </div>
           )}
@@ -173,24 +175,24 @@ function Dashboard() {
             contextData[15].view_value === 1 && (
               <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
                 <div className="d_infocard card shadow">
-                  <Link to="/admin/pantry-home">
-                    <div className="card-body">
-                      <div className="d_infocard_txt">
-                        <h3>Pantry</h3>
-                        <h2>Manager</h2>
-                      </div>
-                      <div className="d_infocard_icon">
-                        <span>
-                          <MdOutlineCategory />
-                        </span>
-                      </div>
+                  {/* <Link to="/admin/pantry-home"> */}
+                  <div className="card-body">
+                    <div className="d_infocard_txt">
+                      <h3>Pantry</h3>
+                      <h2>Manager</h2>
                     </div>
-                  </Link>
+                    <div className="d_infocard_icon">
+                      <span>
+                        <MdOutlineCategory />
+                      </span>
+                    </div>
+                  </div>
+                  {/* </Link> */}
                 </div>
               </div>
             )}
 
-          {contextData &&
+          {/* {contextData &&
             contextData[12] &&
             contextData[12].view_value === 1 && (
               <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
@@ -208,8 +210,8 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-            )}
-          {contextData &&
+            )} */}
+          {/* {contextData &&
             contextData[39] &&
             contextData[39].view_value === 1 && (
               <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
@@ -227,8 +229,8 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-            )}
-          {contextData &&
+            )} */}
+          {/* {contextData &&
             contextData[13] &&
             contextData[13].view_value === 1 && (
               <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
@@ -246,9 +248,9 @@ function Dashboard() {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
 
-          {loginUserData.department_name == "Accounts" && (
+          {/* {loginUserData.department_name == "Accounts" && (
             <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
               <div className="d_infocard card shadow">
                 <div
@@ -267,7 +269,7 @@ function Dashboard() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
 
           {loginUserData.department_name == "Accounts" &&
             // <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">

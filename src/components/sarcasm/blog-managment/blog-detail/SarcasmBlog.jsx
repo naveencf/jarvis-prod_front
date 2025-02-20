@@ -1,35 +1,35 @@
-import { useEffect, useState, useRef } from "react";
-import { constant } from "../../../../utils/constants";
-import { useParams } from "react-router-dom";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
-import { Spinner } from "react-bootstrap";
-import { Button, FormControl, Input, InputLabel } from "@mui/material";
-import { baseUrl } from "../../../../utils/config";
+import { useEffect, useState, useRef } from 'react';
+import { constant } from '../../../../utils/constants';
+import { useParams } from 'react-router-dom';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import { Spinner } from 'react-bootstrap';
+import { Button, FormControl, Input, InputLabel } from '@mui/material';
+import { baseUrl } from '../../../../utils/config';
 
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import axios from "axios";
-import { useGlobalContext } from "../../../../Context/Context";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
+import axios from 'axios';
+import { useGlobalContext } from '../../../../Context/Context';
 
 const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
   boxShadow: 24,
-  borderRadius: "8px",
+  borderRadius: '8px',
   p: 4,
 };
 const formStyle = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "16px", // Add space between elements
-  alignItems: "stretch",
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px', // Add space between elements
+  alignItems: 'stretch',
 };
 
 const SarcasmBlog = () => {
@@ -40,11 +40,14 @@ const SarcasmBlog = () => {
 
   const { id } = useParams();
   const [blogData, setBlogData] = useState(null);
-  const [rawContent, setRawContent] = useState("");
+  const [rawContent, setRawContent] = useState('');
   const [error, setError] = useState(null);
   const [bannerImage, setBannerImage] = useState(null);
 
-  const [updateTitle, setUpdateTitle] = useState("");
+  const [updateTitle, setUpdateTitle] = useState('');
+  const [metaDescription, setMetaDescription] = useState('');
+  const [metaTitle, setMetaTitle] = useState('');
+
   const quillRef = useRef(null);
   const bannerImageRef = useRef();
 
@@ -56,36 +59,22 @@ const SarcasmBlog = () => {
   const appendClassToSpecificTags = (htmlString) => {
     try {
       const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlString, "text/html");
+      const doc = parser.parseFromString(htmlString, 'text/html');
 
-      doc.body
-        .querySelectorAll("h1")
-        .forEach((element) => element.classList.add("heading-main"));
-      doc.body
-        .querySelectorAll("blockquote")
-        .forEach((element) => element.classList.add("single-blog-content"));
-      doc.body
-        .querySelectorAll("h2")
-        .forEach((element) => element.classList.add("heading-secondary"));
-      doc.body
-        .querySelectorAll("h3")
-        .forEach((element) => element.classList.add("heading-tertiary"));
-      doc.body
-        .querySelectorAll("p")
-        .forEach((element) => element.classList.add("paragraph-content"));
-      doc.body
-        .querySelectorAll("ul")
-        .forEach((element) => element.classList.add("unordered-list"));
-      doc.body
-        .querySelectorAll("li")
-        .forEach((element) => element.classList.add("list-item"));
+      doc.body.querySelectorAll('h1').forEach((element) => element.classList.add('heading-main'));
+      doc.body.querySelectorAll('blockquote').forEach((element) => element.classList.add('single-blog-content'));
+      doc.body.querySelectorAll('h2').forEach((element) => element.classList.add('heading-secondary'));
+      doc.body.querySelectorAll('h3').forEach((element) => element.classList.add('heading-tertiary'));
+      doc.body.querySelectorAll('p').forEach((element) => element.classList.add('paragraph-content'));
+      doc.body.querySelectorAll('ul').forEach((element) => element.classList.add('unordered-list'));
+      doc.body.querySelectorAll('li').forEach((element) => element.classList.add('list-item'));
       return doc.body.innerHTML;
     } catch (error) {
-      console.error("Error parsing HTML:", error);
+      console.error('Error parsing HTML:', error);
       return htmlString;
     }
   };
-
+  console.log('blogData', blogData);
   // Fetch blog by ID
   const fetchBlogByID = async () => {
     try {
@@ -93,13 +82,15 @@ const SarcasmBlog = () => {
       const json = await response.json();
       if (json.success) {
         setBlogData(json.data);
+        setMetaTitle(json.data.metaTitle);
+        setMetaDescription(json.data.metaDescription);
         setRawContent(json.data.body);
       } else {
-        setError("Failed to fetch blog data");
+        setError('Failed to fetch blog data');
       }
     } catch (error) {
       console.error(error);
-      setError("An error occurred while fetching blog data");
+      setError('An error occurred while fetching blog data');
     }
   };
 
@@ -113,63 +104,60 @@ const SarcasmBlog = () => {
     try {
       // Transform content only on save
       const bannerImgTag = `<img src="" alt="" id="banner" class="banner-img"/>`;
-      const transformedContent =
-        bannerImgTag + appendClassToSpecificTags(rawContent);
-      console.log("transformedContent", transformedContent);
+      const transformedContent = bannerImgTag + appendClassToSpecificTags(rawContent);
+      console.log('transformedContent', transformedContent);
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("body", transformedContent);
+      formData.append('id', id);
+      formData.append('body', transformedContent);
       if (bannerImage) {
-        formData.append("bannerImage", bannerImage);
+        formData.append('bannerImage', bannerImage);
       }
-      ("");
+      formData.append('metaDescription', metaDescription)
+      formData.append('metaTitle', metaTitle)
       const response = await fetch(`${constant.CONST_SARCASM_BLOG_POST}`, {
-        method: "PUT",
+        method: 'PUT',
         body: formData,
       });
 
       const json = await response.json();
       if (json.success) {
-        alert("Blog content updated successfully!");
+        alert('Blog content updated successfully!');
       } else {
-        setError("Failed to update blog content");
+        setError('Failed to update blog content');
       }
     } catch (error) {
       console.error(error);
-      setError("An error occurred while updating blog data");
+      setError('An error occurred while updating blog data');
     }
   };
 
   // Handle image upload
   const handleImageUpload = () => {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
     input.click();
     input.onchange = async () => {
       const file = input.files[0];
       if (file) {
         const formData = new FormData();
-        formData.append("image", file);
+        formData.append('image', file);
         try {
-          const response = await fetch(
-            `${baseUrl}v1/sarcasm/gcp/upload-image`,
-            {
-              method: "POST",
-              body: formData,
-            }
-          );
+          const response = await fetch(`${baseUrl}v1/sarcasm/gcp/upload-image`, {
+            method: 'POST',
+            body: formData,
+          });
 
           const result = await response.json();
           if (result.success) {
             const quill = quillRef.current.getEditor();
             const range = quill.getSelection();
-            quill.insertEmbed(range.index, "image", result.data.url);
+            quill.insertEmbed(range.index, 'image', result.data.url);
           } else {
-            console.error("Image upload failed:", result.message);
+            console.error('Image upload failed:', result.message);
           }
         } catch (error) {
-          console.error("Error uploading image:", error);
+          console.error('Error uploading image:', error);
         }
       }
     };
@@ -184,15 +172,15 @@ const SarcasmBlog = () => {
 
   const removeBannerImage = () => {
     setBannerImage(null);
-    bannerImageRef.current.value = "";
+    bannerImageRef.current.value = '';
   };
 
   // Set up custom image handler for Quill
   useEffect(() => {
     if (quillRef && quillRef.current) {
       const quill = quillRef.current.getEditor();
-      const toolbar = quill.getModule("toolbar");
-      toolbar.addHandler("image", handleImageUpload);
+      const toolbar = quill.getModule('toolbar');
+      toolbar.addHandler('image', handleImageUpload);
     }
   }, []);
 
@@ -207,10 +195,10 @@ const SarcasmBlog = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("id", id);
-      formData.append("title", updateTitle);
-      const res = await axios.put(baseUrl + "v1/sarcasm/blog", formData);
-      toastAlert("Title Updated");
+      formData.append('id', id);
+      formData.append('title', updateTitle);
+      const res = await axios.put(baseUrl + 'v1/sarcasm/blog', formData);
+      toastAlert('Title Updated');
       handleClose();
       fetchBlogByID();
     } catch (error) {
@@ -219,19 +207,7 @@ const SarcasmBlog = () => {
   };
 
   const modules = {
-    toolbar: [
-      [{ header: "1" }, { header: "2" }, { font: [] }],
-      [{ size: [] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image"],
-      ["clean"],
-    ],
+    toolbar: [[{ header: '1' }, { header: '2' }, { font: [] }], [{ size: [] }], ['bold', 'italic', 'underline', 'strike', 'blockquote'], [{ list: 'ordered' }, { list: 'bullet' }, { indent: '-1' }, { indent: '+1' }], ['link', 'image'], ['clean']],
   };
 
   return (
@@ -247,50 +223,29 @@ const SarcasmBlog = () => {
             </div>
           </div>
           <InputLabel>Upload Banner Image</InputLabel>
-          <input
-            type="file"
-            name="bannerImage"
-            ref={bannerImageRef}
-            className="banner-img-conent-update"
-            onChange={handleBannerImageChange}
-          />
+          <input type="file" name="bannerImage" ref={bannerImageRef} className="banner-img-conent-update" onChange={handleBannerImageChange} />
           {bannerImage ? (
             <div>
-              <img
-                src={URL.createObjectURL(bannerImage)}
-                alt="Banner Preview"
-                className="blog-img-preview-sarcasm"
-              />
-              <button
-                type="button"
-                className="remove-image-btn"
-                onClick={removeBannerImage}
-              >
+              <img src={URL.createObjectURL(bannerImage)} alt="Banner Preview" className="blog-img-preview-sarcasm" />
+              <button type="button" className="remove-image-btn" onClick={removeBannerImage}>
                 Remove Banner
               </button>
             </div>
           ) : (
             <div>
-              <img
-                src={blogData.bannerImageUrl}
-                alt="Banner"
-                className="blog-img-preview-sarcasm"
-              />
+              <img src={blogData.bannerImageUrl} alt="Banner" className="blog-img-preview-sarcasm" />
             </div>
           )}
+          <div className="meta-form">
+            <label>Meta Title</label>
+            <input type="text" value={metaTitle} placeholder="Enter Meta Title" onChange={(e) => setMetaTitle(e.target.value)} className="input-field" />
 
-          <ReactQuill
-            ref={quillRef}
-            value={rawContent}
-            onChange={handleRawContentChange}
-            theme="snow"
-            modules={modules}
-          />
+            <label>Meta Description</label>
+            <textarea value={metaDescription} placeholder="Enter Meta Description" onChange={(e) => setMetaDescription(e.target.value)} rows="4" className="textarea-field"></textarea>
+          </div>
+          <ReactQuill ref={quillRef} value={rawContent} onChange={handleRawContentChange} theme="snow" modules={modules} />
           <div className="sarcasm-blog-save-container">
-            <button
-              className="sarcasm-blog-save-btn"
-              onClick={updateBlogContent}
-            >
+            <button className="sarcasm-blog-save-btn" onClick={updateBlogContent}>
               Save
             </button>
           </div>
@@ -301,12 +256,7 @@ const SarcasmBlog = () => {
         </p>
       )}
 
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
+      <Modal open={open} onClose={handleClose} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
         <Box sx={style}>
           <FormControl sx={formStyle}>
             <InputLabel htmlFor="my-input">Title</InputLabel>
@@ -316,23 +266,23 @@ const SarcasmBlog = () => {
               onChange={(e) => setUpdateTitle(e.target.value)}
               aria-describedby="my-helper-text"
               sx={{
-                padding: "8px",
-                border: "1px solid #ccc",
-                borderRadius: "4px",
-                fontSize: "16px",
+                padding: '8px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                fontSize: '16px',
               }}
             />
             <Button
               variant="contained"
               onClick={handleSubmitTitle}
               sx={{
-                backgroundColor: "#1976d2",
-                color: "#fff",
-                padding: "8px 16px",
-                textTransform: "none", // Avoid uppercase
-                borderRadius: "4px",
-                "&:hover": {
-                  backgroundColor: "#1565c0", // Darker shade on hover
+                backgroundColor: '#1976d2',
+                color: '#fff',
+                padding: '8px 16px',
+                textTransform: 'none', // Avoid uppercase
+                borderRadius: '4px',
+                '&:hover': {
+                  backgroundColor: '#1565c0', // Darker shade on hover
                 },
               }}
             >

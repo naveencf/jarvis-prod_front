@@ -15,6 +15,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { DataGrid } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material/styles";
 import axios from "axios";
+import { insightsBaseUrl } from "../../utils/config";
 
 export default function BulkPostsUpload({
   setUpload,
@@ -170,7 +171,7 @@ export default function BulkPostsUpload({
 
     axios
       .post(
-        "https://insights.ist:8080/api/v1/getpostDetailFromInstaForMultiplePost",
+        `${insightsBaseUrl}v1/getpostDetailFromInstaForMultiplePost`,
         {
           shortCodes: shortcodes,
           department: "65c1cf4129f505657c16da47",

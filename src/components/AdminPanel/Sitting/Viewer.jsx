@@ -43,6 +43,7 @@ const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
 };
 
 const Viewer = ({
+  counts,
   roomNameCard,
   totalSittingDataCount,
   fetchAllocationCounts,
@@ -50,7 +51,6 @@ const Viewer = ({
   const { userContextData } = useAPIGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [elements, setElements] = useState([]);
-  console.log(elements, "elelelel");
   const [backgroundImage, setBackgroundImage] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [hoveredElement, setHoveredElement] = useState(null);
@@ -204,35 +204,29 @@ const Viewer = ({
     <>
       <div className="card roomCard">
         <div className="card-header flexCenterBetween">
-          {selectedRoom && (
-            <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
-              <button className="btn btn-warning btn-sm">
-                {selectedRoom} (Department wise Data)
+          <div className="flexCenter colGap8">
+            {selectedRoom && (
+              <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
+                <button className="btn cmnbtn btn-warning btn_sm">
+                  {selectedRoom}
+                </button>
+              </Link>
+            )}
+            {selectedRoom && (
+              <button
+                className="btn cmnbtn btn-primary btn_sm"
+                onClick={() => setShowChairsWithNames(!showChairsWithNames)}
+                style={{
+                  cursor: "pointer",
+                }}
+              >
+                {showChairsWithNames
+                  ? "Hide Employee Names"
+                  : "Show Employee Names"}
               </button>
-            </Link>
-          )}
-          {selectedRoom && (
-            <button
-              className="btn btn-primary btn-sm"
-              onClick={() => setShowChairsWithNames(!showChairsWithNames)}
-              style={{
-                position: "absolute",
-                top: 10,
-                left: 270,
-                padding: "8px 10px",
-                backgroundColor: "blue",
-                color: "white",
-                border: "none",
-                borderRadius: "5px",
-                cursor: "pointer",
-              }}
-            >
-              {showChairsWithNames
-                ? "Hide Employee Names"
-                : "Show Employee Names"}
-            </button>
-          )}
-          <div className="d-flex">
+            )}
+          </div>
+          <div className="flexCenter colGap8">
             <div
               style={{
                 width: "300px",
@@ -266,14 +260,14 @@ const Viewer = ({
               />
             </div>
             <button
-              className="btn cmnbtn btn_sm btn-success ml-2"
+              className="btn cmnbtn btn_sm btn-success"
               onClick={updateAssignment}
             >
               Save
             </button>
             {roomNameCard && (
               <button
-                className="btn cmnbtn btn_sm btn-primary ml-2"
+                className="btn cmnbtn btn_sm btn-primary"
                 onClick={() => SittingExcelRoomWise(matchData)}
               >
                 Excel
@@ -283,6 +277,7 @@ const Viewer = ({
         </div>
         <div className="card-body">
           <div className="roomInner">
+            Total Seats : {counts[0]?.totalNumberOfSeats}
             <ul className="seatInfo">
               <li>
                 <span>
@@ -291,19 +286,20 @@ const Viewer = ({
                 Selected
               </li>
               <li>
+                <span>{counts[0]?.allocated}</span>
                 <span>
                   <img src={assignedChair} />
                 </span>
                 Assigned
               </li>
               <li>
+                {counts[0]?.not_allocated}
                 <span>
                   <img src={notassignedChair} />
                 </span>
                 Not Assigned
               </li>
             </ul>
-
             <div className="floor">
               {selectedRoom ? (
                 <Stage

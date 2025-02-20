@@ -50,6 +50,7 @@ import {
 } from "@phosphor-icons/react";
 
 import PostGenerator from "../InstaPostGenerator/PostGenerator";
+import { insightsBaseUrl } from "../../utils/config";
 
 function PostStats() {
   const screenshotRef = useRef(null);
@@ -139,7 +140,7 @@ function PostStats() {
     if (value) {
       axios
         .post(
-          "https://insights.ist:8080/api/v1/getAllPostDetailsOnTheBasisOfReqId",
+          `${insightsBaseUrl}v1/getAllPostDetailsOnTheBasisOfReqId`,
           {
             requestId: value._id,
           },
@@ -224,7 +225,8 @@ function PostStats() {
       setRowsLoading(false);
       axios
         .post(
-          "https://insights.ist:8080/api/v1/getPartialPostDetailsOnTheBasisOfReqId",
+          // "https://insights.ist:8080/api/v1/getPartialPostDetailsOnTheBasisOfReqId",
+          `${insightsBaseUrl}v1/getPartialPostDetailsOnTheBasisOfReqId`,
           {
             requestId: value._id,
           },
@@ -238,7 +240,8 @@ function PostStats() {
           if (res.status == 200) {
             axios
               .post(
-                "https://insights.ist:8080/api/v1/getpostDetailFromInstaForMultiplePost",
+                // "https://insights.ist:8080/api/v1/getpostDetailFromInstaForMultiplePost",
+                `${insightsBaseUrl}v1/getpostDetailFromInstaForMultiplePost`,
                 {
                   shortCodes: res.data.data[0].shortCodes,
                   department: "65c1cf4129f505657c16da47",
@@ -265,10 +268,10 @@ function PostStats() {
     setOpen(false);
     // setUpload(false);
   };
-
+  // 135066469
   useEffect(() => {
     axios
-      .get("https://insights.ist:8080/api/v1/getAllRequestIdDetails", {
+      .get(`${insightsBaseUrl}v1/getAllRequestIdDetails`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
