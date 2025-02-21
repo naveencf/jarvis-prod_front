@@ -27,7 +27,7 @@ const APIContext = ({ children }) => {
         });
     }
 
-    axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
+    axios.get(baseUrl + "get_all_users").then((res) => {
       setUserContextData(res?.data.data);
       setLoading(true);
     });
