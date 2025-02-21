@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import { FcDownload } from "react-icons/fc";
 import DateFormattingComponent from "../../DateFormator/DateFormared";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const PreOnboardUserDetailsProfile = () => {
   const { id } = useParams();
@@ -13,25 +13,21 @@ const PreOnboardUserDetailsProfile = () => {
   const [roomId, setRoomId] = useState();
 
   function userOtherDocuments() {
-    axios
-      .get(`${baseUrl}`+`get_user_other_fields/${id}`)
-      .then((res) => {
-        setOtherDocuments(res.data.data);
-      });
+    axios.get(`${baseUrl}` + `get_user_other_fields/${id}`).then((res) => {
+      setOtherDocuments(res.data.data);
+    });
   }
 
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [user, setUser] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}`+`get_single_user/${id}`)
-      .then((res) => {
-        const fetchedData = res.data;
-        setUser(fetchedData);
-        const { dept_id } = fetchedData;
-        setSubDeptId(dept_id);
-      });
+    axios.get(`${baseUrl}` + `get_single_user/${id}`).then((res) => {
+      const fetchedData = res.data;
+      setUser(fetchedData);
+      const { dept_id } = fetchedData;
+      setSubDeptId(dept_id);
+    });
 
     subDep(subDeptId);
     userOtherDocuments();
@@ -321,7 +317,7 @@ const PreOnboardUserDetailsProfile = () => {
             </div>
           </div>
         )}
-        {user.highest_upload_url && (
+        {user?.highest_upload_url && (
           <div className="col-4 mt-4">
             <div className="card  ">
               <div className="card-body">

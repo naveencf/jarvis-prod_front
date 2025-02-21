@@ -5,7 +5,7 @@ import { debounce } from "lodash"; // Import lodash debounce
 const TextEditor = ({ value, onChange }) => {
   const editor = useRef(null);
 
-  // Configuration for the toolbar in JoditEditor
+  // Configuration for the JoditEditor toolbar and settings
   const config = {
     buttons: [
       "bold",
@@ -48,35 +48,34 @@ const TextEditor = ({ value, onChange }) => {
     placeholder: "Start typing your content here...",
   };
 
-  // Debounce function for updating the state without affecting the editor's behavior
+  // Debounce function to prevent excessive state updates
   const debouncedOnChange = useCallback(
     debounce((content) => {
-      console.log("Updating content:", content); // Debugging line
+      console.log("Updating content:", content);
       onChange(content);
-    }, 1500), // Reduced debounce time
+    }, 1500),
     [onChange]
   );
 
   const handleEditorChange = (newContent) => {
-    debouncedOnChange(newContent); // Use debounced function to update state
+    debouncedOnChange(newContent);
   };
 
   return (
-    <div>
+    <div className="editor-container">
       <JoditEditor
         ref={editor}
-        value={value} // Set the editor content
-        config={config} // Pass configuration
-        tabIndex={1} // TabIndex for accessibility
-        onChange={handleEditorChange} // Use the custom handler
+        value={value}
+        config={config}
+        tabIndex={1}
+        onChange={handleEditorChange}
+        className="custom-editor"
       />
     </div>
   );
 };
 
 export default TextEditor;
-
-
 
 // import React from "react";
 // import ReactQuill from "react-quill";

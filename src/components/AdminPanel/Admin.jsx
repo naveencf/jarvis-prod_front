@@ -27,11 +27,10 @@ import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstand
 import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater";
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
-import SittingRoomWise from "./Sitting/SittingRoomWise";
+import SittingRoomWise from "./HRMS/Sitting/SittingRoomWise";
 import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
-import CommonRoom from "./Sitting/CommonRoom";
+import CommonRoom from "./HRMS/Sitting/CommonRoom";
 import { useAPIGlobalContext } from "./APIContext/APIContext";
-
 
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -46,19 +45,25 @@ const UserMaster = lazy(() => import("./User/UserMaster"));
 const UserView = lazy(() => import("./User/UserView"));
 const UserUpdate = lazy(() => import("./User/UserUpdate"));
 const UserOverview = lazy(() => import("./User/UserOverview"));
-const RoleMaster = lazy(() => import("./Role/RoleMaster"));
-const RoleOverView = lazy(() => import("./Role/RoleOverview"));
-const RoleMastUpdate = lazy(() => import("./Role/RoleMastUpdate"));
+const RoleMaster = lazy(() => import("./HRMS/Role/RoleMaster"));
+const RoleOverView = lazy(() => import("./HRMS/Role/RoleOverview"));
+const RoleMastUpdate = lazy(() => import("./HRMS/Role/RoleMastUpdate"));
 const DepartmentOverview = lazy(() =>
-  import("./Department/DepartmentOverview")
+  import("./HRMS/Department/DepartmentOverview")
 );
-const DepartmentMaster = lazy(() => import("./Department/DepartmentMaster"));
-const DepartmentUpdate = lazy(() => import("./Department/DepartmentUpdate"));
+const DepartmentMaster = lazy(() =>
+  import("./HRMS/Department/DepartmentMaster")
+);
+const DepartmentUpdate = lazy(() =>
+  import("./HRMS/Department/DepartmentUpdate")
+);
 const ProductMaster = lazy(() => import("./Product/ProductMaster"));
 const ProductOverview = lazy(() => import("./Product/ProductOverview"));
 const ProductUpdate = lazy(() => import("./Product/ProductUpdate"));
-const SittingOverview = lazy(() => import("./Sitting/SittingOverview"));
-const OfficeMastOverview = lazy(() => import("./Sitting/OfficeMastOverview"));
+const SittingOverview = lazy(() => import("./HRMS/Sitting/SittingOverview"));
+const OfficeMastOverview = lazy(() =>
+  import("./HRMS/Sitting/OfficeMastOverview")
+);
 const UserResposOverview = lazy(() =>
   import("./UserResponsbility/UserResposOverview")
 );
@@ -69,9 +74,11 @@ const UserResponsbilityUpdate = lazy(() =>
   import("./UserResponsbility/userResponsbilityUpdate")
 );
 const UserAuthDetail = lazy(() => import("./UserAuthDetail/UserAuthDetail"));
+
 const ObjectMaster = lazy(() => import("./Object/ObjectMaster"));
 const ObjectOverview = lazy(() => import("./Object/ObjectOverview"));
 const ObjectUpdate = lazy(() => import("./Object/ObjectUpdate"));
+
 const DeliverdOrder = lazy(() =>
   import("../Pantry/DeliverdOrder/DeliverdOrder")
 );
@@ -80,10 +87,12 @@ const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
 const TransferReq = lazy(() => import("../Pantry/TransferReq/TransferReq"));
 const AllOrder = lazy(() => import("../Pantry/AllOrders/AllOrders"));
 const DesignationOverview = lazy(() =>
-  import("./Designation/DesignationOverview")
+  import("./HRMS/Designation/DesignationOverview")
 );
-const Designation = lazy(() => import("./Designation/Designation"));
-const DesignationUpdate = lazy(() => import("./Designation/DesignationUpdate"));
+const Designation = lazy(() => import("./HRMS/Designation/Designation"));
+const DesignationUpdate = lazy(() =>
+  import("./HRMS/Designation/DesignationUpdate")
+);
 const LogoCategoryMaster = lazy(() =>
   import("./LogoCategory/LogoCategoryMaster")
 );
@@ -119,7 +128,7 @@ const AdminPreOnboarding = lazy(() =>
 const Attendence = lazy(() => import("./WFH/Attendence"));
 const AttendanceOverview = lazy(() => import("./WFH/AttendanceOverview"));
 const UserDashboard = lazy(() => import("./User/UserDashboard/UserDashboard"));
-const KRA = lazy(() => import("./KRA/KRA"));
+const KRA = lazy(() => import("./HRMS/KRA/KRA"));
 const UserWiseResponsibility = lazy(() =>
   import("./UserResponsbility/UserWiseResponsibility/UserWiseResponsibility")
 );
@@ -140,15 +149,15 @@ const LeadManagement = lazy(() => import("../LeadManagement/LeadManagement"));
 const EditLead = lazy(() => import("../LeadManagement/EditLead"));
 const LeadHome = lazy(() => import("../LeadManagement/LeadHome"));
 const SELeadTable = lazy(() => import("../LeadManagement/SELeadTable"));
-const Reason = lazy(() => import("./Reason/Reason"));
+const Reason = lazy(() => import("./HRMS/Reason/Reason"));
 const SubDepartmentMaster = lazy(() =>
-  import("./Department/SubDepartmentMaster")
+  import("./HRMS/Department/SubDepartmentMaster")
 );
 const SubDepartmentOverview = lazy(() =>
-  import("./Department/SubDepartmentOverview")
+  import("./HRMS/Department/SubDepartmentOverview")
 );
 const SubDepartmentUpdate = lazy(() =>
-  import("./Department/SubDepartmentUpdate")
+  import("./HRMS/Department/SubDepartmentUpdate")
 );
 const ExecutionInventory = lazy(() =>
   import("../Execution/ExecutionInventory")
@@ -326,8 +335,8 @@ const IncompleteProfileUsers = lazy(() =>
   import("./WFH/IncompleteProfileUsers")
 );
 const UserGraphs = lazy(() => import("./User/UserGraphs"));
-const Hobbies = lazy(() => import("./Hobbies/Hobbies"));
-const HobbiesOverview = lazy(() => import("./Hobbies/HobbiesOverview"));
+const Hobbies = lazy(() => import("./HRMS/Hobbies/Hobbies"));
+const HobbiesOverview = lazy(() => import("./HRMS/Hobbies/HobbiesOverview"));
 const AddEmailTemp = lazy(() => import("./User/AddEmailTemp"));
 const EmailTempOverview = lazy(() => import("./User/EmailTempOverview"));
 const EditEmailTemp = lazy(() => import("./User/EditEmailTemp"));
@@ -365,7 +374,8 @@ const PurchaseManagementAllTransaction = lazy(() =>
 const Discard = lazy(() =>
   import("../Finance/Purchase Management/Discard/Discard")
 );
-const JobTypeMaster = lazy(() => import("../JobType/JobTypeMaster"));
+const JobTypeMaster = lazy(() => import("./HRMS/JobType/JobTypeMaster"));
+
 const FinanceWFHDashboard = lazy(() =>
   import("../Finance Dashboard/FinanceWFHDashboard")
 );
@@ -385,7 +395,7 @@ const PhasecreationNew = lazy(() =>
   import("./RegisterCampaign/PhasecreationNew")
 );
 const DesiDeptAuth = lazy(() =>
-  import("../AdminPanel/Designation/DesiDeptAuth")
+  import("../AdminPanel/HRMS/Designation/DesiDeptAuth")
 );
 const PlanDashboard = lazy(() =>
   import("./RegisterCampaign/PlanDashboard/PlanDashboard")
@@ -779,13 +789,13 @@ const PaymentUpdateBankWise = lazy(() =>
   import("./Sales/PaymentUpdate/PaymentUpdateBankWise")
 );
 const MajorDepartmentMast = lazy(() =>
-  import("./Department/MajorDepartment/MajorDepartmentMast")
+  import("./HRMS/Department/MajorDepartment/MajorDepartmentMast")
 );
 const MajorDepartmentOverview = lazy(() =>
-  import("./Department/MajorDepartment/MajorDepartmentOverview")
+  import("./HRMS/Department/MajorDepartment/MajorDepartmentOverview")
 );
 const MajorDepartmentUpdate = lazy(() =>
-  import("./Department/MajorDepartment/MajorDepartmentUpdate")
+  import("./HRMS/Department/MajorDepartment/MajorDepartmentUpdate")
 );
 const AllAssignedCategory = lazy(() =>
   import("../SuperTracker/CommunityManagement/AllAssignedCategory")
@@ -880,8 +890,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
