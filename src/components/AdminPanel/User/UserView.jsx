@@ -4,7 +4,7 @@ import Logo from "../../../assets/img/logo/logo.png";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import FieldContainer from "../FieldContainer";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const UserView = () => {
   const { id } = useParams();
@@ -57,51 +57,49 @@ const UserView = () => {
   };
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}`+`get_single_user/${id}`)
-      .then((res) => {
-        const fetchedData = res.data;
-        setFetchedAlreadyData(res.data);
-        const {
-          user_name,
-          Role_name,
-          user_email_id,
-          user_contact_no,
-          user_login_id,
-          department_name,
-          job_type,
-          Report_L1,
-          Report_L2,
-          Report_L3,
-          PersonalEmail,
-          PersonalNumber,
-          designation_name,
-          image_url,
-          uid_url,
-          pan_url,
-          highest_upload_url,
-          other_upload_url,
-        } = fetchedData;
+    axios.get(`${baseUrl}` + `get_single_user/${id}`).then((res) => {
+      const fetchedData = res.data;
+      setFetchedAlreadyData(res.data);
+      const {
+        user_name,
+        Role_name,
+        user_email_id,
+        user_contact_no,
+        user_login_id,
+        department_name,
+        job_type,
+        Report_L1,
+        Report_L2,
+        Report_L3,
+        PersonalEmail,
+        PersonalNumber,
+        designation_name,
+        image_url,
+        uid_url,
+        pan_url,
+        highest_upload_url,
+        other_upload_url,
+      } = fetchedData;
 
-        setUserName(user_name);
-        setEmail(user_email_id);
-        setLoginId(user_login_id);
-        setContact(user_contact_no);
-        setRoles(Role_name);
-        setDepartment(department_name);
-        setPersonalContact(PersonalNumber);
-        setPersonalEmail(PersonalEmail);
-        setJobType(job_type);
-        setReportL1(Report_L1);
-        setReportL2(Report_L2);
-        setReportL3(Report_L3);
-        setDesignation(designation_name);
-        setProfilePic(image_url);
-        setUidImage(uid_url);
-        setPanImage(pan_url);
-        setHighestQualificationImage(highest_upload_url);
-        setOtherImages(other_upload_url);
-      });
+      setUserName(user_name);
+      setEmail(user_email_id);
+      setLoginId(user_login_id);
+      setContact(user_contact_no);
+      setRoles(Role_name);
+      setDepartment(department_name);
+      setPersonalContact(PersonalNumber);
+      setPersonalEmail(PersonalEmail);
+      setJobType(job_type);
+      setReportL1(Report_L1);
+      setReportL2(Report_L2);
+      setReportL3(Report_L3);
+      setDesignation(designation_name);
+      setProfilePic(image_url);
+      setUidImage(uid_url);
+      setPanImage(pan_url);
+      setHighestQualificationImage(highest_upload_url);
+      setOtherImages(other_upload_url);
+    });
   }, [id]);
 
   const handleVerify = async (e) => {
@@ -121,7 +119,7 @@ const UserView = () => {
     formData.append("created_by", fetchedAlreadyData.created_by);
     formData.append("user_contact_no", fetchedAlreadyData.user_contact_no);
     formData.append("dept_id", fetchedAlreadyData.dept_id);
-    formData.append("location_id", fetchedAlreadyData.location_id);
+    // formData.append("location_id", fetchedAlreadyData.location_id);
     formData.append("role_id", fetchedAlreadyData.role_id);
     formData.append("sitting_id", fetchedAlreadyData.sittig_id);
     formData.append("image", fetchedAlreadyData.image);
@@ -154,15 +152,11 @@ const UserView = () => {
     formData.append("onboard_status", fetchedAlreadyData.onboard_status);
 
     try {
-      await axios.put(
-        baseUrl+"update_usernew",
-        fromData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      await axios.put(baseUrl + "update_usernew", fromData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
     } catch (error) {
       console.log("Failed on Submit form", error);
     }

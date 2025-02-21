@@ -44,7 +44,8 @@ const AppProvider = ({ children }) => {
     setAssetDataContext(res?.data.data);
   }
   async function getUserAPIData() {
-    axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
+    // axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
+    axios.get(baseUrl + "get_all_users").then((res) => {
       setUsersContextData(res?.data.data);
     });
   }
