@@ -35,7 +35,7 @@ const VendorOutstandingOverview = () => {
         debounce(async (search) => {
             try {
                 if (search.length >= 3) {
-                    const res = await axios.get(`${baseUrl}v1/vendor?search=${search}&page=1&limit=10`);
+                    const res = await axios.get(`${baseUrl}v1/vendor?search=${search}&page=1&limit=50`);
                     if (res.status === 200) {
                         setVendorData(res.data.data);
                         console.log(res.data.data, "res.data.data");
@@ -96,12 +96,8 @@ const VendorOutstandingOverview = () => {
             name: "Action",
             width: 200,
             renderRowCell: (row) => {
-
-
                 return (
                     <Button onClick={() => handlePaymentRequest(row)}>Request Payment</Button>
-
-
                 );
             },
         },
