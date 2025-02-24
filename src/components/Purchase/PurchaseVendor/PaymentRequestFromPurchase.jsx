@@ -43,7 +43,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
 
 
-  console.log(vendorDetail, "venodrDocuments", venodrDocuments)
+  // console.log(vendorDetail, "venodrDocuments", venodrDocuments)
   useEffect(() => {
     if (vendorDetail) {
 
