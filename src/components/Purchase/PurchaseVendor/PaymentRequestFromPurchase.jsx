@@ -58,7 +58,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const [selectedFileName, setSelectedFileName] = useState('');
   const [selectedPaymentType, setSelectedPaymentType] = useState("payment");
 
-
+  console.log(vendorDetail, "vendorDetail")
 
   useEffect(() => {
     if (vendorDetail) {
@@ -407,7 +407,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       "branchCode": vendorBankDetail[selectedBankIndex]?.ifsc,
       "createdBy": userID,
       "vendorId": vendorBankDetail[selectedBankIndex]?.vendor_id,
-      "vendorName": vendorBankDetail[selectedBankIndex]?.account_holder_name,
+      "vendorName": vendorDetail?.vendor_name,
       "vendorPhpId": vendorBankDetail[selectedBankIndex]?.php_vendor_id,
       "zohoVendorId": "1111",
       "isTestingData": false,
@@ -496,13 +496,14 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
             </Select>
           </FormControl>
         )}
-        <Button onClick={handlePennyDropforVendor} sx={{ ml: 1 }} variant="contained" color='success'>
+        <Button disabled={vendorBankDetail[selectedBankIndex]?.is_verified} onClick={handlePennyDropforVendor} sx={{ ml: 1 }} variant="contained" color='success'>
           Penny Drop
         </Button>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
           {selectedValues.length === 0 && <TextField
             autoComplete="off"
             type="number"
+            onWheel={(e) => e.target.blur()} // Prevents scroll from changing number value
             label="Request Amount (With GST)" name="request_amount" value={formData?.request_amount} onChange={handleChange} fullWidth />}
           {selectedValues.length === 0 && <FormControlLabel sx={{ width: 200 }} control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />}
 
