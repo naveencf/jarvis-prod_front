@@ -5,7 +5,7 @@ import FormContainer from "../AdminPanel/FormContainer";
 import DeleteButton from "../AdminPanel/DeleteButton";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../utils/config";
 
@@ -26,7 +26,7 @@ const IpCountUpdate = () => {
 
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`lastdataofipcount/${id}`)
+      .get(`${baseUrl}` + `lastdataofipcount/${id}`)
       .then((res) => {
         const fetchedData = res.data[0];
         setIPID(fetchedData.ip_regist_id);
@@ -42,13 +42,13 @@ const IpCountUpdate = () => {
     let intervalId;
 
     try {
-      const apiUrl = baseUrl+"instagram";
+      const apiUrl = baseUrl + "instagram";
       const response = await axios.post(apiUrl, { IPName: ipName });
       const dataRequestId = response.data.data_request_id;
 
       intervalId = setInterval(async () => {
         try {
-          const secondApiUrl = `${baseUrl}`+`instagram2/${dataRequestId}`;
+          const secondApiUrl = `${baseUrl}` + `instagram2/${dataRequestId}`;
           const secondApiResponse = await axios.get(secondApiUrl);
           const followers =
             secondApiResponse.data.response_entries[0].followers;
@@ -74,7 +74,7 @@ const IpCountUpdate = () => {
     const dateString = currDate.replace("T", " ").replace("Z", "");
 
     e.preventDefault();
-    axios.post(baseUrl+"ipcountpost", {
+    axios.post(baseUrl + "ipcountpost", {
       ip_id: Number(id),
       last_updated_by: userID,
       last_updated_at: dateString,

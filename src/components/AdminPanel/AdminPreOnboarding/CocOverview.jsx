@@ -2,14 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
-import FormContainer from "../FormContainer";
-import { FaEdit } from "react-icons/fa";
-import DeleteButton from "../../AdminPanel/DeleteButton";
-
 import DataTable from "react-data-table-component";
 import { useGlobalContext } from "../../../Context/Context";
 import { baseUrl } from "../../../utils/config";
 import DateISOtoNormal from "../../../utils/DateISOtoNormal";
+import DeleteButton from "../DeleteButton";
+import FormContainer from "../FormContainer";
+
 
 const CocOverview = () => {
   const { toastAlert } = useGlobalContext();

@@ -1,9 +1,9 @@
 import React from "react";
-import UserNav from "../../Pantry/UserPanel/UserNav";
+import UserNav from "../../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import FormContainer from "../../AdminPanel/FormContainer";
-import DeleteButton from "../../AdminPanel/DeleteButton";
+import DeleteButton from "../DeleteButton";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
@@ -31,7 +31,7 @@ const DataCategory = () => {
   const handleSubCategroy = async (row) => {
     try {
       const response = await axios.get(
-        `${baseUrl}`+`get_data_sub_category_from_categoryid/${row}`
+        `${baseUrl}` + `get_data_sub_category_from_categoryid/${row}`
       );
       console.log(response, "responsne ere");
       setSubcategroycount(response.data.data.sub_categories);
@@ -45,7 +45,7 @@ const DataCategory = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        baseUrl+"add_data_sub_category",
+        baseUrl + "add_data_sub_category",
         {
           data_sub_cat_name: subCatName,
           cat_id: categoryNameSub,
@@ -133,7 +133,7 @@ const DataCategory = () => {
         alert("Category already Exists");
       } else {
         const response = await axios.post(
-          baseUrl+"add_data_category",
+          baseUrl + "add_data_category",
           {
             category_name: categoryName,
           }
@@ -148,7 +148,7 @@ const DataCategory = () => {
   };
   async function getModalData() {
     const res = await axios.get(
-      baseUrl+"get_all_data_categorys"
+      baseUrl + "get_all_data_categorys"
     );
     setModalData(res.data.simcWithSubCategoryCount);
     setModalFilter(res.data.simcWithSubCategoryCount);
@@ -164,7 +164,7 @@ const DataCategory = () => {
   };
   const handleModalUpdate = () => {
     axios
-      .put(baseUrl+"update_data_category", {
+      .put(baseUrl + "update_data_category", {
         _id: modalId,
         category_name: categoryNameUpdate,
       })

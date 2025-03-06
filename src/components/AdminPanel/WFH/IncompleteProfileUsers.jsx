@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../../AdminPanel/User/ShowData.css";
+import "../../AdminPanel/HRMS/User/ShowData.css";
 import { Link } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import jwtDecode from "jwt-decode";
@@ -9,7 +9,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Swal from "sweetalert2";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const IncompleteProfileUsers = () => {
   const storedToken = sessionStorage.getItem("token");
@@ -27,9 +27,7 @@ const IncompleteProfileUsers = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}`+`get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setData(res.data);
         });
@@ -38,9 +36,7 @@ const IncompleteProfileUsers = () => {
 
   async function getData() {
     try {
-      const res = await axios.get(
-        baseUrl+"get_all_percentage"
-      );
+      const res = await axios.get(baseUrl + "get_all_percentage");
 
       const data = res.data.incompleteUsersDetails;
       setFilterData(data);
@@ -73,7 +69,7 @@ const IncompleteProfileUsers = () => {
       .then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`${baseUrl}`+`delete_user/${userId}`)
+            .delete(`${baseUrl}` + `delete_user/${userId}`)
             .then(() => {
               swalWithBootstrapButtons.fire(
                 "Deleted!",

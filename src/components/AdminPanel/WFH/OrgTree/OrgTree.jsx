@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Tree, TreeNode } from "react-organizational-chart";
 import axios from "axios";
 import "./OrgTree.css"; // Import your CSS file
-import FormContainer from "../../FormContainer";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import { baseUrl } from "../../../../utils/config";
+import FormContainer from "../../FormContainer";
 
 const OrgTree = () => {
   const { userID } = useAPIGlobalContext();
@@ -14,10 +14,10 @@ const OrgTree = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          baseUrl+`report_l1_users_data/${userID}`
+          baseUrl + `report_l1_users_data/${userID}`
         );
         setOrgData(response.data.data);
-      } catch (error) {}
+      } catch (error) { }
     };
     fetchData();
   }, []);

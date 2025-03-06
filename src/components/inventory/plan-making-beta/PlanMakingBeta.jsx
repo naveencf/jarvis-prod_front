@@ -210,54 +210,65 @@ const PlanMakingBeta = () => {
   const handleUpdateValues = (type) => {
     const isPost = type === 'post';
     const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
-
+  
     getTableData.forEach((row) => {
       const isChecked = showTotalCost[row._id];
-
+  
       if (isChecked) {
         const newValue = isPost ? postCountDefault || 1 : storyCountDefault || 0;
         updatedValues[row._id] = newValue;
       }
     });
-
+  
     if (isPost) {
       setPostPerPageValues(updatedValues);
     } else {
       setStoryPerPageValues(updatedValues);
     }
-
-    // Trigger other updates or calculations dynamically based on type
+  
     getTableData.forEach((row) => {
-      const count = updatedValues[row._id];
-      // const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
-      // const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
-
-      calculateTotalCost(row._id, isPost ? count : postPerPageValues[row._id] || 0, isPost ? storyPerPageValues[row._id] || 0 : count, costPerPostValues[row._id] || 0, costPerStoryValues[row._id] || 0, costPerBothValues?.[row._id] || 0);
+      const postCount = postPerPageValues[row._id] || 0;
+      const storyCount = storyPerPageValues[row._id] || 0;
+      const newCount = isPost ? updatedValues[row._id] : postCount;
+      const newStoryCount = isPost ? storyCount : updatedValues[row._id];
+      
+      calculateTotalCost(
+        row._id,
+        newCount,
+        newStoryCount,
+        costPerPostValues[row._id] || 0,
+        costPerStoryValues[row._id] || 0,
+        costPerBothValues?.[row._id] || 0
+      );
     });
-    // Update the plan data dynamically for post or story
+  
     const updatedPlanData = selectedRows.map((row) => {
-      const { _id, page_price_list, page_name, rate_type, followers_count } = row;
-
+      const { _id, page_price_list, page_name, rate_type, followers_count, platform_name, platform_id } = row;
       const isFixedRate = rate_type === 'fixed';
-
-      const getPrice = (priceType) => (isFixedRate ? getPriceDetail(page_price_list, `instagram_${priceType}`) : calculatePrice(rate_type, { page_price_list, followers_count }, priceType));
-
+  
+      const getPrice = (priceType) => (isFixedRate
+        ? getPriceDetail(page_price_list, `instagram_${priceType}`)
+        : calculatePrice(rate_type, { page_price_list, followers_count }, priceType));
+  
       return {
         _id,
         page_name,
-        [`${type}_price`]: getPrice(type),
-        [`${type}_count`]: Number(updatedValues[row._id]) || 0,
+        post_price: getPrice('post'),
+        story_price: getPrice('story'),
+        post_count: isPost ? Number(updatedValues[row._id]) || 0 : Number(postPerPageValues[row._id]) || 0,
+        story_count: isPost ? Number(storyPerPageValues[row._id]) || 0 : Number(updatedValues[row._id]) || 0,
+        platform_name,
+        platform_id,
       };
     });
-
+  
     setPlanData(updatedPlanData);
-
-    // Debounced send of plan details
+  
     if (!isAutomaticCheck) {
       debouncedSendPlanDetails(updatedPlanData);
     }
   };
-
+  
   const handleOptionChange = (event, newValue) => {
     if (!newValue) return;
 

@@ -12,8 +12,6 @@ import { useGlobalContext } from "../../../Context/Context";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { baseUrl } from "../../../utils/config";
 import FormContainer from "../FormContainer";
-import CreateCampaign from "./CampaignMaster/CreateCampaign";
-import OverViewCampaign from "./CampaignMaster/OverViewCampaign";
 import { useGetAllExeCampaignsQuery } from "../../Store/API/Sales/ExecutionCampaignApi";
 import { useGetAllAgenciesQuery } from "../../Store/API/Sales/AgencyApi";
 import formatString from "./CampaignMaster/WordCapital";
@@ -636,21 +634,6 @@ export default function RegisterCampaigns() {
           {loading ? "Submitting" : "Submit"}
         </button>
       </Box>
-      <>
-        <>
-          {/* Create Campaign */}
-          <CreateCampaign
-            openCamp={openCamp}
-            handleOpenCampaign={handleOpenCampaign}
-            handleCloseCampaign={handleCloseCampaign}
-          />
-          <OverViewCampaign
-            openCamp={openCampView}
-            handleOpenCampaign={handleViewCampaign}
-            handleCloseCampaign={handleCloseCampaignView}
-          />
-        </>
-      </>
     </div>
   );
 }

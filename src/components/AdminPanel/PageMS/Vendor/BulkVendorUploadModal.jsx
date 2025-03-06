@@ -8,10 +8,9 @@ import jwtDecode from 'jwt-decode';
 import { FormatName } from '../../../../utils/FormatName';
 import CustomSelect from '../../../ReusableComponents/CustomSelect';
 import formatString from '../../Operation/CampaignMaster/WordCapital';
-import { AppContext } from '../../../../Context/Context';
 import axios from 'axios';
 import { baseUrl } from '../../../../utils/config';
-// import { AppContext } from '../../../Context/Context';
+import { useAPIGlobalContext } from '../../APIContext/APIContext';
 
 export default function BulkVendorUploadModal({ open, onClose, rowData }) {
   const storedToken = sessionStorage.getItem('token');
@@ -19,7 +18,7 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
   const token = sessionStorage.getItem('token');
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
 
   const [rateType, setRateType] = useState();
   const [closeBy, setCloseBy] = useState('');
@@ -199,14 +198,14 @@ export default function BulkVendorUploadModal({ open, onClose, rowData }) {
                 <sup className="form-error">*</sup>
               </label>
               <Autocomplete
-                options={usersDataContext.map((option) => ({
+                options={userContextData.map((option) => ({
                   value: option.user_id,
                   label: option.user_name,
                 }))}
                 getOptionLabel={(option) => option.label || ''}
                 isOptionEqualToValue={(option, value) => option.value === value.value}
                 value={
-                  usersDataContext
+                  userContextData
                     ?.map((option) => ({
                       value: option.user_id,
                       label: option.user_name,

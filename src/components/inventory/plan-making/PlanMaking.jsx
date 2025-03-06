@@ -115,7 +115,7 @@ const PlanMaking = () => {
   // renderCount.current++;
   // console.log(`Component re-rendered: ${renderCount.current} times`);
   const { pageDetail } = usePageDetail(id);
-  const { planDetails,fetchPlanDetails } = useFetchPlanDetails(id);
+  const { planDetails, fetchPlanDetails } = useFetchPlanDetails(id);
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
 
   const { versionDetails, loading, error } = usePlanPagesVersionDetails(id);
@@ -161,7 +161,7 @@ const PlanMaking = () => {
     const detail = priceDetails?.find((item) => {
       return Object?.keys(item)?.some((priceKey) => priceKey?.includes(keyType));
     });
-
+    console.log("priceDetails", priceDetails);
     return detail ? detail[Object?.keys(detail).find((key) => key?.includes(keyType))] : 0;
   };
 
@@ -199,19 +199,19 @@ const PlanMaking = () => {
 
     // Trigger other updates or calculations dynamically based on type
     getTableData.forEach((row) => {
-      const count = updatedValues[row._id] 
+      const count = updatedValues[row._id]
       // const count = updatedValues[row._id] ?? (isPost ? 1 : 0);
       // const cost = isPost ? costPerPostValues[row._id] ?? 0 : costPerStoryValues[row._id] ?? 0;
- 
+
       calculateTotalCost(
         row._id,
-        isPost ? count : postPerPageValues[row._id] || 0, 
-        isPost ? storyPerPageValues[row._id] || 0 : count, 
-        costPerPostValues[row._id] || 0,  
-        costPerStoryValues[row._id] || 0, 
-        costPerBothValues?.[row._id] || 0  
+        isPost ? count : postPerPageValues[row._id] || 0,
+        isPost ? storyPerPageValues[row._id] || 0 : count,
+        costPerPostValues[row._id] || 0,
+        costPerStoryValues[row._id] || 0,
+        costPerBothValues?.[row._id] || 0
       );
-          });
+    });
     // Update the plan data dynamically for post or story
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count } = row;
@@ -311,7 +311,7 @@ const PlanMaking = () => {
 
   const handleCheckboxChange = (row, shortcut, event, index) => {
     const isChecked = event.target.checked;
-    if(index){
+    if (index) {
       setActiveIndex(index)
     }
     // 1. Manage selected rows state
@@ -483,14 +483,14 @@ const PlanMaking = () => {
     setTotalStoriesPerPage(stories);
     setTotalPagesSelected(rows?.length);
   };
-   const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
+  const calculateTotalCost = (id, postPerPage, storyPerPage, costPerPost, costPerStory, costPerBoth) => {
     let totalCost;
     // if (postPerPage == storyPerPage) {
-      
+
     //   // totalCost = postPerPage + costPerBoth;
     //   totalCost = postPerPage + storyPerPage;
     // } else {
-      totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
+    totalCost = postPerPage * costPerPost + storyPerPage * costPerStory;
     // }
     setTotalCostValues((prevValues) => ({
       ...prevValues,
@@ -662,7 +662,7 @@ const PlanMaking = () => {
       // Create a copy of the currently selected rows
       const updatedSelectedRows = [...selectedRows];
       const updatedPostValues = { ...postPerPageValues };
-     const updatedShowTotalCost = {...showTotalCost}
+      const updatedShowTotalCost = { ...showTotalCost }
       // Loop through each filtered row
       filtered?.forEach((row) => {
         // Check if the row is already selected
@@ -800,9 +800,9 @@ const PlanMaking = () => {
     } else if (event.code === 'ArrowDown' && activeIndex < filterData.length - 1) {
       setShortcutTriggered(true);
       setActiveIndex(activeIndex + 1);
-  
-       if (event.shiftKey) {
-        const nextRow = getTableData[activeIndex + 1]; 
+
+      if (event.shiftKey) {
+        const nextRow = getTableData[activeIndex + 1];
         handleCheckboxChange(nextRow, 'shiftArrow', { target: { checked: true } }, activeIndex + 1);
       }
     } else if (event.code === 'ArrowUp' && activeIndex > 0) {
@@ -810,7 +810,7 @@ const PlanMaking = () => {
       setActiveIndex(activeIndex - 1);
     }
   };
-  
+
 
   const displayPercentage = Math.floor(percentage);
 
@@ -926,10 +926,10 @@ const PlanMaking = () => {
     }
   }, [selectedRows]);
 
- 
+
   useEffect(() => {
     updateStatistics(selectedRows);
-    if(leftSideDataUpdate){
+    if (leftSideDataUpdate) {
       setTimeout(() => {
         fetchPlanDetails()
         setLeftSideBarDataUpdate(false)

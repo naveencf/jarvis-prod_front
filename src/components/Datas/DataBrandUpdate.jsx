@@ -5,7 +5,7 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import { MdCancel } from "react-icons/md";
 import pdf from "./pdf-file.png";
 import sheets from "./sheets.png";
@@ -200,7 +200,7 @@ const DataBrandUpdate = () => {
       .then((res) => {
         setBrandCategory(res.data.data);
       })
-      .catch((err) => {});
+      .catch((err) => { });
     axios.get(baseUrl + "projectxSubCategory").then((res) => {
       setBrandSubCatData(res.data.data);
     });
@@ -444,7 +444,7 @@ const DataBrandUpdate = () => {
             number_of_story_views: NumOfStoryViews,
             operation_remark: OperationRemark,
           })
-          .then(() => {})
+          .then(() => { })
           .catch((err) => {
             console.log(err, "err");
           });
@@ -468,7 +468,7 @@ const DataBrandUpdate = () => {
                 "Content-Type": "multipart/form-data",
               },
             })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
               console.log(err, "err");
             });
@@ -495,7 +495,7 @@ const DataBrandUpdate = () => {
                 "Content-Type": "multipart/form-data",
               },
             })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
               console.log(err, "err");
             });
@@ -523,7 +523,7 @@ const DataBrandUpdate = () => {
                 "Content-Type": "multipart/form-data",
               },
             })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
               console.log(err, "err");
             });
@@ -551,7 +551,7 @@ const DataBrandUpdate = () => {
                 "Content-Type": "multipart/form-data",
               },
             })
-            .then(() => {})
+            .then(() => { })
             .catch((err) => {
               console.log(err, "err");
             });
@@ -832,7 +832,7 @@ const DataBrandUpdate = () => {
                 type="text"
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
-                // onBlur={handleContentBlur}
+              // onBlur={handleContentBlur}
               />
 
               <FieldContainer
@@ -1154,8 +1154,8 @@ const DataBrandUpdate = () => {
                             <img
                               className="brandimg_icon"
                               // src={detail.data_image}
-                              src={detail.data_type === "jpg"||detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.data_image : detail.data_type === "pdf" ? pdf : video}
-                              />
+                              src={detail.data_type === "jpg" || detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.data_image : detail.data_type === "pdf" ? pdf : video}
+                            />
                           </div>
                           <div className="col summary_box brand_img_box">
                             <h4>
@@ -1195,9 +1195,9 @@ const DataBrandUpdate = () => {
                     <div className="summary_cardrow brand_img_row">
                       <div className="col summary_box brand_img_box col140">
                         {detail.fileType === "jpg" ||
-                        detail.fileType === "jpeg" ||
-                        detail.fileType === "png" ||
-                        detail.fileType === "gif" ? (
+                          detail.fileType === "jpeg" ||
+                          detail.fileType === "png" ||
+                          detail.fileType === "gif" ? (
                           <img
                             className="brandimg_icon"
                             src={
@@ -1257,7 +1257,7 @@ const DataBrandUpdate = () => {
                           <div className="col summary_box brand_img_box">
                             <img
                               className="brandimg_icon"
-                              src={detail.data_type === "jpg"||detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.mmc_image : detail.data_type === "pdf" ? pdf : video}
+                              src={detail.data_type === "jpg" || detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.mmc_image : detail.data_type === "pdf" ? pdf : video}
                             />
                           </div>
                           <div className="col summary_box brand_img_box">
@@ -1298,9 +1298,9 @@ const DataBrandUpdate = () => {
                     <div className="summary_cardrow brand_img_row">
                       <div className="col summary_box brand_img_box col140">
                         {detail.fileType === "jpg" ||
-                        detail.fileType === "jpeg" ||
-                        detail.fileType === "png" ||
-                        detail.fileType === "gif" ? (
+                          detail.fileType === "jpeg" ||
+                          detail.fileType === "png" ||
+                          detail.fileType === "gif" ? (
                           <img
                             className="brandimg_icon"
                             src={
@@ -1360,7 +1360,7 @@ const DataBrandUpdate = () => {
                           <div className="col summary_box brand_img_box">
                             <img
                               className="brandimg_icon"
-                              src={detail.data_type === "jpg"||detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.sarcasm_image : detail.data_type === "pdf" ? pdf : video}
+                              src={detail.data_type === "jpg" || detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.sarcasm_image : detail.data_type === "pdf" ? pdf : video}
                             />
                           </div>
                           <div className="col summary_box brand_img_box">
@@ -1401,9 +1401,9 @@ const DataBrandUpdate = () => {
                     <div className="summary_cardrow brand_img_row">
                       <div className="col summary_box brand_img_box col140">
                         {detail.fileType === "jpg" ||
-                        detail.fileType === "jpeg" ||
-                        detail.fileType === "png" ||
-                        detail.fileType === "gif" ? (
+                          detail.fileType === "jpeg" ||
+                          detail.fileType === "png" ||
+                          detail.fileType === "gif" ? (
                           <img
                             className="brandimg_icon"
                             src={
@@ -1463,7 +1463,7 @@ const DataBrandUpdate = () => {
                           <div className="col summary_box brand_img_box">
                             <img
                               className="brandimg_icon"
-                              src={detail.data_type === "jpg"||detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.no_logo_image : detail.data_type === "pdf" ? pdf : video}
+                              src={detail.data_type === "jpg" || detail.data_type === "jpeg" || detail.data_type === "png" || detail.data_type === "gif" ? detail.no_logo_image : detail.data_type === "pdf" ? pdf : video}
                             />
                           </div>
                           <div className="col summary_box brand_img_box">
@@ -1504,9 +1504,9 @@ const DataBrandUpdate = () => {
                     <div className="summary_cardrow brand_img_row">
                       <div className="col summary_box brand_img_box col140">
                         {detail.fileType === "jpg" ||
-                        detail.fileType === "jpeg" ||
-                        detail.fileType === "png" ||
-                        detail.fileType === "gif" ? (
+                          detail.fileType === "jpeg" ||
+                          detail.fileType === "png" ||
+                          detail.fileType === "gif" ? (
                           <img
                             className="brandimg_icon"
                             src={

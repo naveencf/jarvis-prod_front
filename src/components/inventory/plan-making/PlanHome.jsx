@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import { AppContext, useGlobalContext } from '../../../Context/Context';
+import {  useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
@@ -18,6 +18,7 @@ import { CiStickyNote } from 'react-icons/ci';
 import PlanXNoteModal from './PlanXNoteModal';
 import DataGridOverviewColumns from './DataGridOverviewColumns';
 import numberToWords from '../../../utils/convertNumberToIndianString';
+import { useAPIGlobalContext } from '../../AdminPanel/APIContext/APIContext';
 
 function PlanHome() {
   const navigate = useNavigate();
@@ -107,11 +108,12 @@ function PlanHome() {
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
 
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
+
   const userID = decodedToken.id;
 
-  const salesUsers = usersDataContext?.filter((user) => user?.department_name === 'Sales');
-  const globalFilteredUsers = usersDataContext?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
+  const salesUsers = userContextData?.filter((user) => user?.department_name === 'Sales');
+  const globalFilteredUsers = userContextData?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
   const fetchDescriptions = async () => {
     try {
       const response = await fetch(`${baseUrl}v1/planxnote`);
@@ -351,7 +353,7 @@ function PlanHome() {
 
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
-    const selectedUser = usersDataContext.find((user) => user.user_id === row.sales_executive_id);
+    const selectedUser = userContextData.find((user) => user.user_id === row.sales_executive_id);
 
     setPlanDetails({
       planName: row.planName,
@@ -400,9 +402,9 @@ function PlanHome() {
         brandId: selectedAccount ? selectedAccount.brand_id : '',
       }));
     }
-    // Handle user selection from usersDataContext
+    // Handle user selection from userContextData
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find((user) => user.user_name === value);
+      const selectedUser = userContextData.find((user) => user.user_name === value);
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
@@ -700,7 +702,7 @@ function PlanHome() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
-              defaultValue={usersDataContext.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
+              defaultValue={userContextData.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {

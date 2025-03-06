@@ -8,36 +8,18 @@ import { Suspense, lazy } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 const Login = lazy(() => import("./Login/Login"));
-// import SimUpdate from "./components/Sim/SimUpdate";
-const SimUpdate = lazy(() => import("./components/Sim/SimUpdate"));
+// const SimUpdate = lazy(() =>
+//   import("./components/AdminPanel/HRMS/Sim/SimUpdate")
+// );
 // import PreOnboardingUserMaster from "./components/PreOnboarding/PreOnboardingUserMaster";
 const PreOnboardingUserMaster = lazy(() =>
   import("./components/PreOnboarding/PreOnboardingUserMaster")
 );
-
 import {
   APIContext,
   ApiContextData,
 } from "./components/AdminPanel/APIContext/APIContext";
-// import ForgetPassword from "./Login/Forget/ForgetPassword";
-// import AccountInfo from "./components/AdminPanel/Sales/Account/AccountInfoComponent/AccountInfo";
-// import Profile from "./components/Pantry/UserPanel/Profile/Profile";
-// import User from "./components/Pantry/UserPanel/User";
-// import Delivery from "./components/Pantry/DeliveryPanel/Delivery";
-// import OrderHistory from "./components/Pantry/UserPanel/OrderHistory";
-// import PendingOrderSingleUser from "./components/Pantry/UserPanel/PendingOrderSingleUser";
-// import Loader from "./components/Finance/Loader/Loader";
-// import Learning from "./components/SuperTracker/CommunityManagement/Learning/Learning";
-// import ErrorPage from "./ErrorPage";
-// import { AppProvider } from "./Context/Context";
 
-// const SimUpdate = lazy(() => import("./components/Sim/SimUpdate"));
-// const PreOnboardingUserMaster = lazy(() =>
-//   import("./components/PreOnboarding/PreOnboardingUserMaster")
-// );
-// const APIContext = lazy(() =>
-//   import("./components/AdminPanel/APIContext/APIContext")
-// );
 const ForgetPassword = lazy(() => import("./Login/Forget/ForgetPassword"));
 const AccountInfo = lazy(() =>
   import(
@@ -63,62 +45,6 @@ const Learning = lazy(() =>
 );
 const ErrorPage = lazy(() => import("./ErrorPage"));
 import { AppProvider } from "./Context/Context";
-
-// import Protected from "./Login/Protected";
-// import Admin from "./components/AdminPanel/Admin";
-// import Home from "./components/Home";
-// import SimOverview from "./components/Sim/SimOverview";
-// import SimMaster from "./components/Sim/SimMaster";
-// import SimAllocationOverview from "./components/Sim/SimAllocationOverview";
-// import UpdateCaseStudy from "./components/AdminPanel/RegisterCampaign/CaseStudies/UpdateCaseStudy";
-
-// import SimSummary from "./components/Sim/SimSummary";
-// import IpMaster from "./components/IntellectualProperty/IpMaster";
-// import IpOverview from "./components/IntellectualProperty/IpOverview";
-// import IpUpdate from "./components/IntellectualProperty/IpUpdate";
-// import IpCountUpdate from "./components/IntellectualProperty/IpCountUpdate";
-
-// import BrandMaster from "./components/Brand/BrandMaster";
-// import BrandOverview from "./components/Brand/BrandOverview";
-// import BrandUpdate from "./components/Brand/BrandUpdate";
-// import IpHistory from "./components/IntellectualProperty/IpHistory";
-// import BrandView from "./components/Brand/BrandView";
-// import SimDashboard from "./components/Sim/SimDashboard";
-// import IpGraph from "./components/IntellectualProperty/IpGraph";
-
-// import Notification from "./Notification";
-
-// import AssetCategoryMaster from "./components/Sim/AssetCategory/AssetCategoryMaster";
-// import AssetCategoryOverview from "./components/Sim/AssetCategory/AssetCategoryOverview";
-// import AssetCategoryUpdate from "./components/Sim/AssetCategory/AssetCategoryUpdate";
-// import BrandMast from "./components/Sim/Brand/BrandMast";
-// import ModalMast from "./components/Sim/ModalName/ModalMast";
-// import RepairReason from "./components/Sim/RepairReasonMast/RepairReason";
-// import RepairRequest from "./components/Sim/RepairRequest/RepairRequest";
-
-// import AssetSubCategoryMaster from "./components/Sim/AssetCategory/AssetSubCategoryMaster";
-// import AssetSubCategoryOverview from "./components/Sim/AssetCategory/AssetSubCategoryOverview";
-// import AssetSubCategoryUpdate from "./components/Sim/AssetCategory/AssetSubCategoryUpdate";
-// import VenderOverView from "./components/Sim/Vender/VenderOverView";
-// import VenderMaster from "./components/Sim/Vender/VenderMaster";
-// import VendorUpdate from "./components/Sim/Vender/VendorUpdate";
-// import SingleAssetUserDetails from "./components/Sim/SingleAssetUserDetails";
-
-// import DataBrandMaster from "./components/Datas/DataBrandMaster";
-// import DataBrandOverview from "./components/Datas/DataBrandOverview";
-// import DataBrandUpdate from "./components/Datas/DataBrandUpdate";
-// import DataBrandView from "./components/Datas/DataBrandView";
-// import DataCategory from "./components/Datas/DataCategory/DataCategory";
-// import DataSubCategory from "./components/Datas/DataSubCategory/DataSubCategory";
-
-// import Platform from "./components/Datas/Platform/Platform";
-// import ContentType from "./components/Datas/ContentType/ContentType";
-// import DataBrand from "./components/Datas/DataBrand/DataBrand";
-// import Dashboard from "./components/Datas/Dashboard";
-// import BrandCaseStudy from "./components/AdminPanel/RegisterCampaign/CaseStudies/BrandCaseStudy";
-// import CaseStudyDashboard from "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyDashboard";
-// import CaseStudyplateform from "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyplateform";
-// import CaseStudyView from "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyView";
 
 const Protected = lazy(() => import("./Login/Protected"));
 const Home = lazy(() => import("./components/Home"));
@@ -190,63 +116,73 @@ const Admin = lazy(() => import("./components/AdminPanel/Admin"));
 // );
 
 // const ForgetPassword = lazy(() => import("./Login/Forget/ForgetPassword"));
-const AssetSubCategoryMaster = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetSubCategoryMaster")
-);
-const AssetSubCategoryOverview = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetSubCategoryOverview")
-);
-const AssetSubCategoryUpdate = lazy(() =>
-  import("./components/Sim/AssetCategory/AssetSubCategoryUpdate")
-);
-const VenderOverView = lazy(() =>
-  import("./components/Sim/Vender/VenderOverView")
-);
-const VenderMaster = lazy(() => import("./components/Sim/Vender/VenderMaster"));
-const VendorUpdate = lazy(() => import("./components/Sim/Vender/VendorUpdate"));
-const SingleAssetUserDetails = lazy(() =>
-  import("./components/Sim/SingleAssetUserDetails")
-);
+// const AssetSubCategoryMaster = lazy(() =>
+//   import(
+//     "./components/AdminPanel/HRMS/Sim/AssetCategory/AssetSubCategoryMaster"
+//   )
+// );
+// const AssetSubCategoryOverview = lazy(() =>
+//   import(
+//     "./components/AdminPanel/HRMS/Sim/AssetCategory/AssetSubCategoryOverview"
+//   )
+// );
+// const AssetSubCategoryUpdate = lazy(() =>
+//   import(
+//     "./components/AdminPanel/HRMS/Sim/AssetCategory/AssetSubCategoryUpdate"
+//   )
+// );
+// const VenderOverView = lazy(() =>
+//   import("./components/AdminPanel/HRMS/Sim/Vender/VenderOverView")
+// );
+// const VenderMaster = lazy(() =>
+//   import("./components/AdminPanel/HRMS/Sim/Vender/VenderMaster")
+// );
+// const VendorUpdate = lazy(() =>
+//   import("./components/AdminPanel/HRMS/Sim/Vender/VendorUpdate")
+// );
+// const SingleAssetUserDetails = lazy(() =>
+//   import("./components/AdminPanel/HRMS/Sim/SingleAssetUserDetails")
+// );
 
-const DataBrandMaster = lazy(() =>
-  import("./components/Datas/DataBrandMaster")
-);
-const DataBrandOverview = lazy(() =>
-  import("./components/Datas/DataBrandOverview")
-);
-const DataBrandUpdate = lazy(() =>
-  import("./components/Datas/DataBrandUpdate")
-);
-const DataBrandView = lazy(() => import("./components/Datas/DataBrandView"));
-const DataCategory = lazy(() =>
-  import("./components/Datas/DataCategory/DataCategory")
-);
-const DataSubCategory = lazy(() =>
-  import("./components/Datas/DataSubCategory/DataSubCategory")
-);
+// const DataBrandMaster = lazy(() =>
+//   import("./components/Datas/DataBrandMaster")
+// );
+// const DataBrandOverview = lazy(() =>
+//   import("./components/Datas/DataBrandOverview")
+// );
+// const DataBrandUpdate = lazy(() =>
+//   import("./components/Datas/DataBrandUpdate")
+// );
+// const DataBrandView = lazy(() => import("./components/Datas/DataBrandView"));
+// const DataCategory = lazy(() =>
+//   import("./components/Datas/DataCategory/DataCategory")
+// );
+// const DataSubCategory = lazy(() =>
+//   import("./components/Datas/DataSubCategory/DataSubCategory")
+// );
 
-const Platform = lazy(() => import("./components/Datas/Platform/Platform"));
-const ContentType = lazy(() =>
-  import("./components/Datas/ContentType/ContentType")
-);
-const DataBrand = lazy(() => import("./components/Datas/DataBrand/DataBrand"));
-const Dashboard = lazy(() => import("./components/Datas/Dashboard"));
-const BrandCaseStudy = lazy(() =>
-  import("./components/AdminPanel/RegisterCampaign/CaseStudies/BrandCaseStudy")
-);
-const CaseStudyDashboard = lazy(() =>
-  import(
-    "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyDashboard"
-  )
-);
-const CaseStudyplateform = lazy(() =>
-  import(
-    "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyplateform"
-  )
-);
-const CaseStudyView = lazy(() =>
-  import("./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyView")
-);
+// const Platform = lazy(() => import("./components/Datas/Platform/Platform"));
+// const ContentType = lazy(() =>
+//   import("./components/Datas/ContentType/ContentType")
+// );
+// const DataBrand = lazy(() => import("./components/Datas/DataBrand/DataBrand"));
+// const Dashboard = lazy(() => import("./components/Datas/Dashboard"));
+// const BrandCaseStudy = lazy(() =>
+//   import("./components/AdminPanel/RegisterCampaign/CaseStudies/BrandCaseStudy")
+// );
+// const CaseStudyDashboard = lazy(() =>
+//   import(
+//     "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyDashboard"
+//   )
+// );
+// const CaseStudyplateform = lazy(() =>
+//   import(
+//     "./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyplateform"
+//   )
+// );
+// const CaseStudyView = lazy(() =>
+//   import("./components/AdminPanel/RegisterCampaign/CaseStudies/CaseStudyView")
+// );
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -334,7 +270,7 @@ function App() {
 
   return (
     <>
-      <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div>
+      {/* <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div> */}
 
       {/* <Notification /> */}
 
@@ -354,7 +290,6 @@ function App() {
           }
         />
         <Route path="/forget-password" element={<ForgetPassword />} />
-
 
         <Route path="/" element={<Protected />}>
           <Route
@@ -732,7 +667,7 @@ function App() {
 
         {/* ------------------------------ case Study end-----------------------------------------  */}
 
-        <Route
+        {/* <Route
           path="/data-brand-dashboard"
           element={
             <AppProvider>

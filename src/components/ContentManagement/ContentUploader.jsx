@@ -5,8 +5,8 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
-import {baseUrl} from '../../utils/config'
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
+import { baseUrl } from '../../utils/config'
 
 const ContentUploader = () => {
   const { toastAlert } = useGlobalContext();
@@ -25,7 +25,7 @@ const ContentUploader = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"alldataofIptype")
+      .get(baseUrl + "alldataofIptype")
       .then((res) => setIpTypeData(res.data));
   }, []);
 
@@ -40,7 +40,7 @@ const ContentUploader = () => {
     formData.append("content", content);
     formData.append("user_id", userID);
 
-    await axios.post(baseUrl+"content_upload", formData, {
+    await axios.post(baseUrl + "content_upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

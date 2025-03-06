@@ -39,7 +39,7 @@ import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import { setStatsUpdate } from "../../Store/PageMaster";
 import PageDetail from "./PageOverview/PageDetail";
 import formatString from "../Operation/CampaignMaster/WordCapital";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
+import {  useGlobalContext } from "../../../Context/Context";
 import PageClosedByDetails from "./Page/PageClosedByDetails";
 import VendorDetails from "./Vendor/VendorDetails";
 import CategoryWisePageOverview from "./PageOverview/CategoryWisePageOverview";
@@ -53,8 +53,11 @@ import PriceLogs from "./PriceLogs";
 import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
 import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
 import StatsOfOverview from "./PageOverview/StatsOfOverview";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 const PageOverview = () => {
-  const { toastAlert, toastError, usersDataContext } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -194,7 +197,7 @@ const PageOverview = () => {
   }
 
   const getData = () => {
-    setUser(usersDataContext);
+    setUser(userContextData);
     axios
       .get(baseUrl + "v1/vendor_group_link", {
         headers: {

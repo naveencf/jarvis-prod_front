@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import "../../AdminPanel/User/ShowData.css";
+import "../../AdminPanel/HRMS/User/ShowData.css";
 import { Link, useParams } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import jwtDecode from "jwt-decode";
@@ -9,7 +9,7 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Swal from "sweetalert2";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const WFHUserOverview = () => {
   const { deptId } = useParams();
@@ -29,9 +29,7 @@ const WFHUserOverview = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}`+`get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setData(res.data);
         });
@@ -41,15 +39,11 @@ const WFHUserOverview = () => {
   async function getData() {
     try {
       if (deptId != 0) {
-        const res = await axios.get(
-          `${baseUrl}`+`get_wfh_user/${deptId}`
-        );
+        const res = await axios.get(`${baseUrl}` + `get_wfh_user/${deptId}`);
         const data = res.data;
         setFilterData(data);
       } else {
-        const res = await axios.get(
-          baseUrl+"get_all_wfh_users"
-        );
+        const res = await axios.get(baseUrl + "get_all_wfh_users");
         const data = res.data.data;
         setFilterData(data);
       }
@@ -82,7 +76,7 @@ const WFHUserOverview = () => {
       .then((result) => {
         if (result.isConfirmed) {
           axios
-            .delete(`${baseUrl}`+`delete_user/${userId}`)
+            .delete(`${baseUrl}` + `delete_user/${userId}`)
             .then(() => {
               swalWithBootstrapButtons.fire(
                 "Deleted!",
@@ -176,7 +170,7 @@ const WFHUserOverview = () => {
   return (
     <>
       <div className="action_heading">
-        <div className="action_title" >
+        <div className="action_title">
           <FormContainer
             mainTitle="User"
             link="/admin/user"
@@ -238,8 +232,8 @@ const WFHUserOverview = () => {
           <span>Loading</span>
         </div>
       ) : (
-        <div className="page_height" >
-          <div className="card mb-4" >
+        <div className="page_height">
+          <div className="card mb-4">
             <div className="data_tbl" style={{ height: "10vh", width: "100%" }}>
               <DataGrid
                 rows={filterdata.map((data, index) => ({ ...data, id: index }))}

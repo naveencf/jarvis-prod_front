@@ -128,7 +128,7 @@ function VendorPages({ vendorDetails , tab1 }) {
         return <div>{name}</div>;
       },
       width: 200,
-      width: 200,
+      // width: 200,
     },
 
     {

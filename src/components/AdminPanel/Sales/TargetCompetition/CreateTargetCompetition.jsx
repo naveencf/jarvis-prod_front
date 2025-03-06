@@ -103,7 +103,7 @@ const TargetCompetitionForm = () => {
     } catch (error) {
       toastError(
         error.data?.message ||
-          `Failed to ${id ? "update" : "create"} target competition`
+        `Failed to ${id ? "update" : "create"} target competition`
       );
     }
   };

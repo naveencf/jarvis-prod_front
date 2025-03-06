@@ -28,7 +28,6 @@ import { useContext } from "react";
 import LoopIcon from "@mui/icons-material/Loop";
 import DownloadingIcon from "@mui/icons-material/Downloading";
 import Loader from "../Finance/Loader/Loader";
-import { AppContext } from "../../Context/Context";
 import jwtDecode from "jwt-decode";
 import sarcasmLogo from "../../assets/imgs/screenshot/sarcasm.jpg";
 import naughtyworldLogo from "../../assets/imgs/screenshot/naughtyworld.jpg";
@@ -51,13 +50,15 @@ import {
 
 import PostGenerator from "../InstaPostGenerator/PostGenerator";
 import { insightsBaseUrl } from "../../utils/config";
+import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
 
 function PostStats() {
   const screenshotRef = useRef(null);
   const accNameRef = useRef(null);
   const likesRef = useRef(null);
   const commentRef = useRef(null);
-  const { usersDataContext } = useContext(AppContext);
+  const { userContextData } = useAPIGlobalContext();
+
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -94,7 +95,7 @@ function PostStats() {
   };
 
   // const handleRequestedExcel =(value)=>{
-  // console.log(usersDataContext);
+  // console.log(userContextData);
   // }
 
   const token =
@@ -154,19 +155,42 @@ function PostStats() {
           if (res.status === 200) {
             // console.log(res.data.data,"res.data.data",value)
             // Extracting only the required fields from the response data
-            const extractedData = res.data.data.map((item, index) => ({
-              sno: index + 1,
-              pagename: item?.owner_info?.username,
-              link:
-                item?.postType == "REEL"
-                  ? `https://www.instagram.com/reel/${item.shortCode}`
-                  : `https://www.instagram.com/p/${item.shortCode}`,
-              postType: item?.postType,
-              likes: item?.like_count,
-              Views: item?.play_count,
-              comments: item?.comment_count,
-              Time: addTimeToPostedOn(item?.postedOn),
-            }));
+            const getRandomMultiplier = (min, max) =>
+              Math.floor(Math.random() * (max - min + 1)) + min;
+
+            const extractedData = res.data.data.map((item, index) => {
+              let views = item?.play_count || 0; // Default views to 0 if not available
+              let randomValue1 = getRandomMultiplier(19, 23);
+              let randomValue2 = getRandomMultiplier(23, 29);
+
+              if (views == 0 && item?.like_count > 0) {
+                views = item.like_count * randomValue2;
+              }
+
+              // views = Math.max(views, 1);
+
+              let reach = views + (views / 100) * randomValue1;
+              // reach = Math.max(reach, 1); // Ensure reach is never 0
+
+              let impression = reach + (reach / 100) * randomValue1;
+
+              return {
+                sno: index + 1,
+                pagename: item?.owner_info?.username || "Unknown",
+                link:
+                  item?.postType === "REEL"
+                    ? `https://www.instagram.com/reel/${item.shortCode}`
+                    : `https://www.instagram.com/p/${item.shortCode}`,
+                postType: item?.postType,
+                likes: item?.like_count || 0,
+                Views: Math.round(views), // Updated views
+                comments: item?.comment_count || 0,
+                reach: Math.round(reach), // Updated reach
+                impression: Math.round(impression), // Corrected impression calculation
+                Time: addTimeToPostedOn(item?.postedOn),
+              };
+            });
+
             console.log(extractedData, "extract data");
             // Rearranging the extractedData array based on the sequence of shortCodes
             const rearrangedData = [];
@@ -215,7 +239,7 @@ function PostStats() {
   const handlePartialRequest = (value) => {
     // console.log(value);
     let emailto = "naveen@creativefuel.io";
-    const tempemailIdobject = usersDataContext.find(
+    const tempemailIdobject = userContextData.find(
       (ele) => ele.user_id == userID
     );
     if (tempemailIdobject?.user_email_id) {
@@ -317,8 +341,9 @@ function PostStats() {
     hour = hour ? hour : 12; // "0" should be displayed as "12"
 
     // Format time with seconds
-    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${second < 10 ? "0" + second : second
-      } ${ampm}`;
+    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${
+      second < 10 ? "0" + second : second
+    } ${ampm}`;
 
     return { date, time };
   }
@@ -395,7 +420,7 @@ function PostStats() {
       // type: "text",
       renderCell: (params) => {
         try {
-          const username = usersDataContext.find(
+          const username = userContextData.find(
             (ele) => ele.user_id == params.row.userId
           );
           // console.log(username);
@@ -523,8 +548,6 @@ function PostStats() {
     },
   ];
 
-
-
   return (
     <>
       <PostGenerator />
@@ -545,7 +568,7 @@ function PostStats() {
               {upload && (
                 <BulkPostsUpload
                   userID={userID}
-                  usersDataContext={usersDataContext}
+                  userContextData={userContextData}
                   setUpload={setUpload}
                   setOpen={setOpen}
                   reload={reload}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button, TextField } from "@mui/material";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import PaymentRequestFromPurchase from "./PaymentRequestFromPurchase";
 import { useGetAllVendorQuery } from "../../Store/reduxBaseURL";
@@ -29,13 +29,18 @@ const VendorOutstandingOverview = () => {
     //     page,
     //     limit,
     // });
+    useEffect(() => {
+        fetchVendors("abc");
+    }, []);
 
     // Debounced function to call the API
     const fetchVendors = useCallback(
         debounce(async (search) => {
             try {
                 if (search.length >= 3) {
-                    const res = await axios.get(`${baseUrl}v1/vendor?search=${search}&page=1&limit=50`);
+                    const res = await axios.get(
+                        `${baseUrl}v1/vendor?search=${search}&page=1&limit=10`
+                    );
                     if (res.status === 200) {
                         setVendorData(res.data.data);
                         console.log(res.data.data, "res.data.data");
@@ -86,6 +91,16 @@ const VendorOutstandingOverview = () => {
             width: 200,
         },
         {
+            key: "vendor_outstandings",
+            name: "Outstanding",
+            width: 200,
+        },
+        {
+            key: "vendor_total_remaining_advance_amount",
+            name: "Advance",
+            width: 200,
+        },
+        {
             key: "primary_page_name",
             name: "Primary Page",
             width: 200,
@@ -97,7 +112,14 @@ const VendorOutstandingOverview = () => {
             width: 200,
             renderRowCell: (row) => {
                 return (
-                    <Button onClick={() => handlePaymentRequest(row)}>Request Payment</Button>
+                    <>
+                        <Button onClick={() => handlePaymentRequest(row)}>
+                            Request Payment
+                        </Button>
+                        {/* <Link to={`/admin/ledger/${row.vendor_id}`}>
+                            <Button onClick={() => handlePaymentRequest(row)}>Ledger</Button>
+                        </Link> */}
+                    </>
                 );
             },
         },
@@ -116,14 +138,28 @@ const VendorOutstandingOverview = () => {
             name: "Pincode",
             width: 200,
         },
+        {
+            key: "action",
+            name: "Ledger",
+            width: 200,
+            renderRowCell: (row) => {
+                return (
+                    <Link to={`/admin/ledger/${row._id}`}>
+                        <Button>Ledger</Button>
+                    </Link>
+                );
+            },
+        },
 
         // Add more columns as needed
     ];
     const handlePaymentRequest = (row) => {
-        if (!row) { return; }
-        setReqestPaymentDialog(true)
+        if (!row) {
+            return;
+        }
+        setReqestPaymentDialog(true);
         setVendorDetail(row);
-    }
+    };
     return (
         <>
             {reqestPaymentDialog && (
@@ -155,7 +191,6 @@ const VendorOutstandingOverview = () => {
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
-
                         </>
                     }
                 />

@@ -108,10 +108,9 @@ const ViewPaymentUpdate = () => {
       name: "Customer Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${
-            allAccountData?.find((data) => data?.account_id === row?.account_id)
+          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row?.account_id)
               ?._id
-          }`}
+            }`}
         >
           {row.account_name}
         </Link>

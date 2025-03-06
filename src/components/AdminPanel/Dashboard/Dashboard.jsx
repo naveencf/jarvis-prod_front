@@ -299,7 +299,7 @@ function Dashboard() {
           <WFHDDahboard />
         )} */}
 
-        {/* <div className="statementDoc">
+        <div className="statementDoc">
           <div className="statementDocHeader">
             <div className="vendorBox">
               <div className="vendorImg">
@@ -395,7 +395,7 @@ function Dashboard() {
               </tbody>
             </table>
           </div>
-        </div> */}
+        </div>
 
         {/* Success Modal */}
         <div className="modal fade statusModal" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">

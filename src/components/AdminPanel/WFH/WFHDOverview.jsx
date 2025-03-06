@@ -15,6 +15,7 @@ import ReportL1Component from "./ReportL1Component";
 import WFHDExcelConverter from "./WFHDExcelConverter";
 import { GrUserNew } from "react-icons/gr";
 import WFHDSheetTemplete from "./WFHDSheetTemplete";
+import "../../AdminPanel/HRMS/User/ShowData.css";
 
 const customStyles = {
   headCells: {
@@ -88,6 +89,13 @@ const WFHDOverview = () => {
     { label: "PF & ESIC", value: "pf_and_esic" },
     { label: "IN Hand", value: "in_hand" },
   ];
+
+  const [switchStatus, setSwitchStatus] = useState("");
+  const switchInHouseData = [
+    // { label: "PF", value: "pf" },
+    { label: "IN House", value: 1 },
+    { label: "Onboard", value: 2 },
+  ];
   const handleOpenOnboardInHouseModal = (row) => {
     setModalOpenInHouse(true);
     setUserIDOnboarding(row.user_id);
@@ -107,7 +115,7 @@ const WFHDOverview = () => {
     const password = email?.split("@")[0];
     await axios.put(baseUrl + "update_user", {
       user_id: userOnboardingID,
-      onboard_status: 2,
+      onboard_status: switchStatus.value,
       offer_letter_send: true,
       joining_date: joiningDate,
       emergency_contact_person_name2: isApplicable.value,
@@ -1116,6 +1124,22 @@ const WFHDOverview = () => {
             x
           </button>
           <h1 className="mb-2">Switch To In House</h1>
+          <div className="form-group col-12">
+            <label className="form-label">
+              Switch <sup className="form-error">*</sup>
+            </label>
+            <Select
+              options={switchInHouseData.map((option) => ({
+                value: `${option.value}`,
+                label: `${option.label}`,
+              }))}
+              value={{
+                value: switchStatus.value,
+                label: switchStatus.label || "",
+              }}
+              onChange={(e) => setSwitchStatus(e)}
+            />
+          </div>
 
           <div className="form-group col-12">
             <label className="form-label">

@@ -1,5 +1,4 @@
 import React, { use, useEffect, useState } from "react";
-import FormContainer from "../../../FormContainer";
 import View from "../../Account/View/View";
 import {
   useGetAccountWiseStatusQuery,
@@ -11,6 +10,7 @@ import getDecodedToken from "../../../../../utils/DecodedToken";
 import { Link } from "react-router-dom";
 import { useGetAllAccountQuery } from "../../../../Store/API/Sales/SalesAccountApi";
 import { useAPIGlobalContext } from "../../../APIContext/APIContext";
+import FormContainer from "../../../FormContainer";
 
 const ViewOutstanding = () => {
   const [activeData, setActiveData] = useState([]);
@@ -84,10 +84,9 @@ const ViewOutstanding = () => {
       name: "Account Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${
-            allAccountData?.find((data) => data?.account_id === row?.account_id)
+          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row?.account_id)
               ?._id
-          }`}
+            }`}
         >
           {row.account_name}
         </Link>

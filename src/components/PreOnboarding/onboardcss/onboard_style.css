@@ -144,7 +144,7 @@ img {
 }
 
 .btn_primary:first-child:active,
-:not(.btn-check) + .btn_primary:active {
+:not(.btn-check)+.btn_primary:active {
   border-color: var(--primaryBoard);
   background-color: var(--primaryBoard);
   color: var(--text-white);
@@ -171,7 +171,7 @@ img {
 }
 
 .btn_secondary:first-child:active,
-:not(.btn-check) + .btn_secondary:active {
+:not(.btn-check)+.btn_secondary:active {
   border-color: var(--secondaryBoard);
   background-color: var(--secondaryBoard);
   color: var(--text-white);
@@ -198,7 +198,7 @@ img {
 }
 
 .btn_white:first-child:active,
-:not(.btn-check) + .btn_white:active {
+:not(.btn-check)+.btn_white:active {
   border-color: var(--bg-white);
   background-color: var(--bg-white);
   color: var(--primary-board);
@@ -216,8 +216,7 @@ img {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url(../../../assets/imgs/bg/auth-bg.png) var(--bgBoard) center
-    no-repeat;
+  background: url(../../../assets/imgs/bg/auth-bg.png) var(--bgBoard) center no-repeat;
   background-size: cover;
   padding: 40px 40px;
 }
@@ -226,14 +225,11 @@ img {
   width: 460px;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.07);
-  box-shadow: -22.366666793823242px 22.366666793823242px 22.366666793823242px
-      0px rgba(255, 255, 255, 0.07) inset,
-    22.366666793823242px -22.366666793823242px 22.366666793823242px 0px rgba(
-        194,
-        194,
-        194,
-        0.07
-      ) inset,
+  box-shadow: -22.366666793823242px 22.366666793823242px 22.366666793823242px 0px rgba(255, 255, 255, 0.07) inset,
+    22.366666793823242px -22.366666793823242px 22.366666793823242px 0px rgba(194,
+      194,
+      194,
+      0.07) inset,
     0px 0px 16px 0px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(5px);
 }
@@ -270,7 +266,7 @@ img {
 }
 
 .authlogo img {
-  width: 130px;
+  width: 100px;
 }
 
 .authform_area {
@@ -1438,10 +1434,7 @@ img {
 .sidebar_itembox.sidebar_item_active h2,
 .sidebar_itembox.sidebar_item_active h3,
 .sidebar_itembox.sidebar_item_active span,
-.sidebar_itembox.sidebar_item_active
-  .progress-circle
-  .progress-circle-content
-  i {
+.sidebar_itembox.sidebar_item_active .progress-circle .progress-circle-content i {
   color: #fffbf2;
 }
 
@@ -1460,11 +1453,7 @@ img {
 .slick-active.slick-current .sidebar_itembox h3,
 .slick-active.slick-current .sidebar_itembox p,
 .slick-active.slick-current .sidebar_itembox span,
-.slick-active.slick-current
-  .sidebar_itembox
-  .progress-circle
-  .progress-circle-content
-  i {
+.slick-active.slick-current .sidebar_itembox .progress-circle .progress-circle-content i {
   color: #fffbf2;
 }
 
@@ -2139,10 +2128,7 @@ img {
   fill: var(--white) !important;
 }
 
-.board_form
-  label[data-shrink="false"]
-  + .MuiInputBase-formControl
-  .MuiInputBase-input {
+.board_form label[data-shrink="false"]+.MuiInputBase-formControl .MuiInputBase-input {
   color: transparent !important;
 }
 
@@ -2162,10 +2148,7 @@ img {
   height: 38px;
 }
 
-.board_form
-  .form-group
-  .input-group-append
-  button.btn.btn-outline-primary:hover {
+.board_form .form-group .input-group-append button.btn.btn-outline-primary:hover {
   border-color: transparent;
   color: var(--white);
   background-color: transparent;
@@ -2212,11 +2195,11 @@ img {
   border-radius: 6px;
 }
 
-.cstm_check:hover input ~ .checkmark {
+.cstm_check:hover input~.checkmark {
   background-color: transparent;
 }
 
-.cstm_check input:checked ~ .checkmark {
+.cstm_check input:checked~.checkmark {
   background-color: var(--primaryBoard);
 }
 
@@ -2226,7 +2209,7 @@ img {
   display: none;
 }
 
-.cstm_check input:checked ~ .checkmark:after {
+.cstm_check input:checked~.checkmark:after {
   display: block;
 }
 
@@ -2467,6 +2450,7 @@ img {
   background: var(--primaryLight);
   color: var(--primary);
 }
+
 .MuiChip-root {
   font-family: var(--body-font) !important;
 }
@@ -2771,28 +2755,21 @@ img {
   display: none;
 }
 
-.mobileTourWrapper {
-}
+.mobileTourWrapper {}
 
-.mobileTourWrapperOverlay {
-}
+.mobileTourWrapperOverlay {}
 
-.mobileTourArea {
-}
+.mobileTourArea {}
 
 /* Responsive Start Here */
 
-@media only screen and (max-width: 1599px) {
-}
+@media only screen and (max-width: 1599px) {}
 
-@media only screen and (max-width: 1399px) {
-}
+@media only screen and (max-width: 1399px) {}
 
-@media only screen and (max-width: 1199px) {
-}
+@media only screen and (max-width: 1199px) {}
 
-@media only screen and (max-width: 991px) {
-}
+@media only screen and (max-width: 991px) {}
 
 @media only screen and (max-width: 767px) {
   .policy_tab_name {

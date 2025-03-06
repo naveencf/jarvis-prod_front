@@ -57,6 +57,50 @@ const PurchaseRequestPaymentApi = createApi({
                 }
             },
         }),
+        // Delete a vendor payment request
+        deletePurchaseRequest: builder.mutation({
+            query: (_id) => ({
+                url: `v1/vendor_payment_request/${_id}`,
+                method: "DELETE",
+            }),
+            onQueryStarted: async (_id, { dispatch, queryFulfilled }) => {
+                try {
+                    const { data: deletedPurchase } = await queryFulfilled;
+                    if (deletedPurchase && deletedPurchase.success) {
+                        console.log("Purchase request deleted successfully:", _id);
+                    }
+                } catch (error) {
+                    console.error("Failed to delete purchase request:", error);
+                }
+            },
+        }),
+
+        // Fetch advanced payment details
+        getAdvancedPayment: builder.query({
+            query: (vendorObjId) => ({
+                url: `purchase/advanced_payment/${vendorObjId}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data, // Optional: transform the response
+        }),
+        // Advanced Payment Settlement
+        advancedPaymentSettlement: builder.mutation({
+            query: ({ settlementData, vendorObjId }) => ({
+                url: `purchase/advanced_payment_settlement/${vendorObjId}`,
+                method: "PUT",
+                body: settlementData,
+            }),
+            onQueryStarted: async (settlementData, { dispatch, queryFulfilled }) => {
+                try {
+                    const { data: settlementResponse } = await queryFulfilled;
+                    if (settlementResponse && settlementResponse.data) {
+                        console.log("Advanced payment settled successfully:", settlementResponse.data);
+                    }
+                } catch (error) {
+                    console.error("Failed to settle advanced payment:", error);
+                }
+            },
+        }),
     }),
 });
 // ?vendorId=${vendorId}&page=${page}&limit=${limit}
@@ -64,7 +108,10 @@ export const {
     useAddPurchaseMutation,
     useGetVendorPaymentTransactionsQuery,
     useGetVendorPaymentRequestsQuery,
-    useUpdatePurchaseRequestMutation
+    useUpdatePurchaseRequestMutation,
+    useDeletePurchaseRequestMutation,
+    useGetAdvancedPaymentQuery,
+    useAdvancedPaymentSettlementMutation
 } = PurchaseRequestPaymentApi;
 
 export default PurchaseRequestPaymentApi;

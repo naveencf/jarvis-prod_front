@@ -4,9 +4,12 @@ import axios from "axios";
 import { baseUrl } from "../../../utils/config";
 import { useGlobalContext } from "../../../Context/Context";
 import Select from "react-select";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const ReportL1Component = ({ isModalOpenSend, onClose, rowData, getData }) => {
-  const { toastAlert, usersDataContext } = useGlobalContext();
+  const { toastAlert } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
   const [subDepartmentData, setSubDepartmentData] = useState([]);
   const [reportL1, setReportL1] = useState("");
   const [subDepartment, setSubDeparment] = useState("");
@@ -81,14 +84,14 @@ const ReportL1Component = ({ isModalOpenSend, onClose, rowData, getData }) => {
             </label>
             <Select
               className=""
-              options={usersDataContext.map((option) => ({
+              options={userContextData.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL1,
                 label:
-                  usersDataContext.find((user) => user.user_id === reportL1)
+                  userContextData.find((user) => user.user_id === reportL1)
                     ?.user_name || "",
               }}
               onChange={(e) => {

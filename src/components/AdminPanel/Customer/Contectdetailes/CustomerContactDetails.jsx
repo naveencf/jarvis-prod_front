@@ -7,11 +7,10 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../utils/config";
 import { useParams} from "react-router-dom"
-// import FieldContainer from "../FieldContainer";
-// import FormContainer from "../FormContainer";
 import FieldContainer from "../../FieldContainer";
-import FormContainer from "../../FormContainer";
 import Select from "react-select";
+import FormContainer from "../../FormContainer";
+
 
 const CustomerContactDetails = () => {
   let { customer_id } = useParams();

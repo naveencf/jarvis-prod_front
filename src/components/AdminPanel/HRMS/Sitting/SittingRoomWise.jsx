@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import Slider from "react-slick"; // Import Slider
 import "slick-carousel/slick/slick.css"; // Import Slick CSS
 import "slick-carousel/slick/slick-theme.css"; // Import Slick Theme CSS
-import { baseUrl } from "../../../../utils/config";
 import View from "../../Sales/Account/View/View";
+import { baseUrl } from "../../../../utils/config";
 
 const OfficeSittingRoomWise = () => {
-  const { selectedRoom } = useParams(); // Extract param from URL
+  const { selectedRoom, shift } = useParams(); // Extract param from URL
   const [fetchSittingModalData, setFetchSittingModalData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,6 +18,7 @@ const OfficeSittingRoomWise = () => {
       try {
         const response = await axios.post(`${baseUrl}get_all_data_of_sitting`, {
           roomName: selectedRoom,
+          shift_id: shift,
         });
         setFetchSittingModalData(response.data);
       } catch (error) {

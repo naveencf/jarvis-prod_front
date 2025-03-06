@@ -24,9 +24,8 @@ const IncentiveSettlement = () => {
 
       response = await axios.get(
         baseUrl +
-          `sales/incentive_settlement_dashboard${
-            loginUserId ? "?userId=" + loginUserId : ""
-          }`,
+        `sales/incentive_settlement_dashboard${loginUserId ? "?userId=" + loginUserId : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,

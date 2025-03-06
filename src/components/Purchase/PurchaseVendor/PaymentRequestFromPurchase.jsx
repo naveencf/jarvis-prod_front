@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Button, MenuItem, List, ListItem, ListItemText, Stack } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Button, MenuItem, List, ListItem, ListItemText, Stack, Autocomplete } from '@mui/material';
 import { Select, FormControl, InputLabel } from '@mui/material';
-import { useAddPurchaseMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
+import { useAddPurchaseMutation, useAdvancedPaymentSettlementMutation, useDeletePurchaseRequestMutation, useGetAdvancedPaymentQuery, useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import { useEffect } from 'react';
 import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../utils/config';
 import axios from 'axios';
@@ -9,6 +9,8 @@ import formatString from '../../../utils/formatString';
 import { useGlobalContext } from '../../../Context/Context';
 import jwtDecode from 'jwt-decode';
 import { useGetVendorDocumentByVendorDetailQuery } from '../../Store/reduxBaseURL';
+import VendorAdvanceSettlement from './VendorAdvanceSettlement';
+import VendorAdavanceRequest from './VendorAdavanceRequest';
 
 const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialog, vendorDetail, setVendorDetail, userName }) => {
   const token = sessionStorage.getItem('token');
@@ -17,9 +19,13 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   const [addPurchase, { isLoading, isSuccess, isError }] = useAddPurchaseMutation();
+  const [updatePurchaseRequest, { isLoading: UpdateLoading }] = useUpdatePurchaseRequestMutation();
+  const [deletePurchaseRequest] = useDeletePurchaseRequestMutation();
+  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery();
   const [vendorPhpDetail, setVendorPhpDetail] = useState('');
   const [vendorBankDetail, setVendorBankDetail] = useState('');
   const [selectedBankIndex, setSelectedBankIndex] = useState(0);
+  const [selectedValues, setSelectedValues] = useState([]);
   const { toastAlert, toastError } = useGlobalContext();
   const [formData, setFormData] = useState({
     vendor_id: vendorDetail?.vendor_id,
@@ -33,17 +39,27 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     remark_audit: '',
     invc_img: '',
     request_by: userName,
-    outstandings: 0
+    outstandings: 0,
+    payment_type: 'payment',
+    advanced_payment_id: "",
+    advance_name: "",
+    at_price: "",
+    // for_campaign_id: "",
+    // for_brand_id: "",
+    no_of_post: "",
+    page_list: [],
+    page_name: "",
+    page_id: null,
     // accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
     // branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
     // vpa: vendorBankDetail[selectedBankIndex]?.vpa,
   });
   const [isGSTAvailable, setIsGSTAvailable] = useState(false);
   const [selectedFileName, setSelectedFileName] = useState('');
+  const [selectedPaymentType, setSelectedPaymentType] = useState("payment");
 
 
 
-  // console.log(vendorDetail, "venodrDocuments", venodrDocuments)
   useEffect(() => {
     if (vendorDetail) {
 
@@ -72,34 +88,57 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     }
   }, []);
 
+  // console.log(vendorDetail, "vendorDetail")
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const numericValue = parseFloat(value) || 0;
 
     setFormData((prev) => {
+      if (!prev) return {}; // Ensure prev is always defined
+
       const updatedData = { ...prev, [name]: value };
 
+      if (
+        selectedPaymentType === "payment" &&
+        vendorPhpDetail?.length
+        && numericValue > (Number(vendorPhpDetail[0]?.outstanding) + Number(vendorDetail?.vendor_outstandings))
+      ) {
+        toastError("Payment is not allowed more than outstanding. You can request Advance or Upfront Payment");
+        return prev; // Return previous state to avoid breaking the component
+      }
 
-      if (name === "request_amount") {
-        const requestAmount = parseFloat(value) || 0;
-        if (updatedData.gst) {
-          updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
-          updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
-          updatedData.request_amount = requestAmount;
-          updatedData.outstandings = requestAmount;
+      // Handle GST Calculation Logic
+      if (name === "base_amount") {
+        if (isGSTAvailable) {
+          updatedData.request_amount = (numericValue * 1.18).toFixed(2); // Adding 18%
+          updatedData.gst_amount = (numericValue * 0.18).toFixed(2);
         } else {
+          updatedData.request_amount = numericValue.toFixed(2);
           updatedData.gst_amount = "0";
-          updatedData.base_amount = requestAmount.toFixed(2);
-          updatedData.request_amount = requestAmount;
-          updatedData.outstandings = requestAmount;
         }
       }
+
+      if (name === "request_amount") {
+        if (isGSTAvailable) {
+          updatedData.gst_amount = ((numericValue * 18) / 118).toFixed(2);
+          updatedData.base_amount = (numericValue - updatedData.gst_amount).toFixed(2);
+        } else {
+          updatedData.base_amount = numericValue.toFixed(2);
+          updatedData.gst_amount = "0";
+        }
+      }
+
+
       return updatedData;
     });
   };
 
+
+
   useEffect(() => {
     if (vendorDetail && vendorDetail.request_id && vendorBankDetail) {
-      console.log("Editing Request");
+      // console.log("Editing Request", vendorDetail);
 
       // Find matching bank index
       const bankIndex = vendorBankDetail.findIndex((bank) =>
@@ -107,7 +146,8 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
           ? bank.account_number === vendorDetail.account_number
           : bank.upi_id === vendorDetail.vpa
       );
-
+      setSelectedPaymentType(vendorDetail?.payment_type)
+      // payment_type
       // If a matching bank is found, set the selected index
       if (bankIndex !== -1) {
         setSelectedBankIndex(bankIndex);
@@ -126,7 +166,8 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       if (vendorDetail.gst_amount > 0) {
         setIsGSTAvailable(true);
       }
-    } else {
+    }
+    else {
       console.log("Adding Request");
       // setSelectedBankIndex(""); // Reset when adding a new request
     }
@@ -171,10 +212,14 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setFormData({ ...formData, invc_img: file });
     }
   };
-  // console.log(vendorBankDetail[selectedBankIndex], "selectedBank", vendorDetail)
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    // Ensure request amount is not 0
+    if (formData.request_amount === 0) {
+      toastError("Request amount cannot be 0.");
+      return;
+    }
     // Ensure selected bank details are valid before submitting
     const selectedBank = vendorBankDetail[selectedBankIndex];
     if (!selectedBank) {
@@ -191,8 +236,6 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     // Append the selected bank details to the payload
     payload.append("accountNumber", selectedBank?.account_number);
     payload.append("branchCode", selectedBank?.ifsc);
-    // payload.append("accountNumber", selectedBank?.account_number || "");
-    // payload.append("branchCode", selectedBank?.ifsc || "");
     payload.append("vpa", selectedBank?.upi_id || "");
     payload.append("is_bank_verified", selectedBank?.is_verified);
 
@@ -202,7 +245,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       // return;
       // const tempOutstanding =parseInt(vendorPhpDetail[0]?.outstanding);
       await addPurchase(payload).unwrap();
-      toastAlert("Purchase added successfully!");
+      toastAlert("Payment requested successfully!");
       setFormData({
         gst: false,
         outstandings: 0,
@@ -221,8 +264,58 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       console.error("Failed to add purchase:", error);
     }
   };
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    // Ensure request amount is not 0
+    if (formData.request_amount == 0) {
+      toastError("Request amount cannot be 0.");
+      return;
+    }
+    // Ensure selected bank details are valid before submitting
+    const selectedBank = vendorBankDetail[selectedBankIndex];
+    if (!selectedBank) {
+      toastError('Please select a valid bank.');
+      return;
+    }
+    const payload = new FormData();
+    Object.keys(formData).forEach((key) => {
+      if (key !== "outstanding") { // Exclude 'outstanding' key
+        payload.append(key, formData[key]);
+      }
+    });
+
+    // Append the selected bank details to the payload
+    payload.append("accountNumber", selectedBank?.account_number);
+    payload.append("branchCode", selectedBank?.ifsc);
+    payload.append("vpa", selectedBank?.upi_id || "");
+    payload.append("is_bank_verified", selectedBank?.is_verified);
 
 
+    try {
+      // console.log(vendorPhpDetail[0]?.outstanding, "vendorPhpDetail[0]?.outstanding")
+      // return;
+      // const tempOutstanding =parseInt(vendorPhpDetail[0]?.outstanding);
+      await updatePurchaseRequest({ _id: vendorDetail._id, formData: payload }).unwrap();
+
+      toastAlert("Payment request updated successfully!");
+      setFormData({
+        gst: false,
+        outstandings: 0,
+        request_amount: 0,
+        gst_amount: 0,
+        base_amount: 0,
+        priority: "",
+        invc_no: "",
+        invc_date: "",
+        remark_audit: "",
+        invc_img: "",
+      });
+      setSelectedFileName("");
+      setReqestPaymentDialog(false);
+    } catch (error) {
+      console.error("Failed to add purchase:", error);
+    }
+  };
   const handleCloseDialog = () => {
     setReqestPaymentDialog(false)
     setVendorDetail("");
@@ -230,8 +323,77 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     setVendorBankDetail("");
     setSelectedBankIndex(0);
   }
+  // const handleDeleteRequest = async () => {
+  //   try {
+  //     const payload = new FormData();
+  //     // Append the selected bank details to the payload
+  //     payload.append("accountNumber", selectedBank?.account_number);
+  //     await updatePurchaseRequest(payload).unwrap();
+  //     toastAlert("Purchase Deleted Successfully!");
+  //     setFormData({
+  //       gst: false,
+  //       outstandings: 0,
+  //       request_amount: 0,
+  //       gst_amount: 0,
+  //       base_amount: 0,
+  //       priority: "",
+  //       invc_no: "",
+  //       invc_date: "",
+  //       remark_audit: "",
+  //       invc_img: "",
+  //     });
+  //     setSelectedFileName("");
+  //     setReqestPaymentDialog(false);
+  //   } catch (error) {
+  //     console.error("Failed to add purchase:", error);
+  //   }
+  //   setReqestPaymentDialog(false)
+  //   setVendorDetail("");
+  //   setVendorPhpDetail("")
+  //   setVendorBankDetail("");
+  //   setSelectedBankIndex(0);
+
+  // }
+  const handleDeleteRequest = async () => {
+    if (window.confirm("Are you sure you want to delete this purchase request?")) {
+      try {
+        await deletePurchaseRequest(vendorDetail._id).unwrap();
+        toastAlert("Purchase request deleted successfully!");
+        refetchPaymentRequest();
+        setFormData({
+          gst: false,
+          outstandings: 0,
+          request_amount: 0,
+          gst_amount: 0,
+          base_amount: 0,
+          priority: "",
+          invc_no: "",
+          invc_date: "",
+          remark_audit: "",
+          invc_img: "",
+        });
+        setSelectedFileName("");
+        setReqestPaymentDialog(false);
+      } catch (error) {
+        console.error("Error deleting purchase request:", error);
+      }
+    }
+  };
   const handleBankChange = (event) => {
     setSelectedBankIndex(event.target.value);
+  };
+  const handlePaymentTypeChange = (event) => {
+    let paymentType = event.target.value?.toLowerCase();
+    // console.log(paymentType, "paymentType")
+    // if (paymentType = "advance") {
+    //   paymentType = "advanced"
+    // }
+    setSelectedPaymentType(paymentType);
+    setFormData((prev) => {
+      const updatedData = { ...prev, payment_type: paymentType };
+
+      return updatedData;
+    });
   };
   const handlePennyDropforVendor = async () => {
     if (vendorBankDetail[selectedBankIndex]?.account_number == "") {
@@ -274,12 +436,14 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       console.log(error)
     }
   }
+
+
   return (
     <Dialog
       open={reqestPaymentDialog}
       onClose={() => setReqestPaymentDialog(false)}
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
     >
       <DialogTitle>Request Payment</DialogTitle>
       <DialogContent>
@@ -304,7 +468,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
               <ListItemText primary="Page" secondary={vendorDetail?.primary_page_name} />
             </ListItem>
             <ListItem>
-              <ListItemText primary="Outstanding" secondary={vendorPhpDetail[0]?.outstanding} />
+              <ListItemText primary="Outstanding" secondary={`${vendorPhpDetail[0]?.outstanding} + ${vendorDetail?.vendor_outstandings} = ${(Number(vendorPhpDetail[0]?.outstanding) + Number(vendorDetail?.vendor_outstandings))}`} />
             </ListItem>
             <ListItem>
               <ListItemText primary="Account Verified" secondary={vendorBankDetail[selectedBankIndex]?.is_verified ? "Yes" : "No"} />
@@ -334,13 +498,34 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
           Penny Drop
         </Button>
         <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
-          <TextField label="Request Amount (With GST)" name="request_amount" value={formData?.request_amount} onChange={handleChange} fullWidth />
-          <FormControlLabel control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />
+          {selectedValues.length === 0 && <TextField
+            autoComplete="off"
+            type="number"
+            label="Request Amount (With GST)" name="request_amount" value={formData?.request_amount} onChange={handleChange} fullWidth />}
+          {selectedValues.length === 0 && <FormControlLabel sx={{ width: 200 }} control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />}
+
           <Stack direction="row" spacing={2}>
-            <TextField label="GST Amount" value={formData?.gst_amount} InputProps={{ readOnly: true }} />
-            <TextField label="Base Amount (Excl. GST)" value={formData?.base_amount} InputProps={{ readOnly: true }} />
+            {selectedValues.length === 0 && <TextField label="GST Amount" value={formData?.gst_amount} inputProps={{ readOnly: true }} />}
+            <TextField label="Base Amount (Excl. GST)" name="base_amount" onChange={handleChange} value={formData?.base_amount} />
+            <FormControl fullWidth sx={{ maxWidth: 360 }} disabled={!!vendorDetail?.request_id}>
+              <InputLabel id="bank-select-label">Payment Type</InputLabel>
+              <Select
+                labelId="bank-select-label"
+                value={selectedPaymentType}
+                onChange={handlePaymentTypeChange}
+                label="Payment Type"
+              >
+                <MenuItem value="payment">Payment</MenuItem>
+                <MenuItem value="advanced">Advance</MenuItem>
+                <MenuItem value="upfront">Upfront</MenuItem>
+              </Select>
+            </FormControl>
 
           </Stack>
+
+          {selectedPaymentType === "advanced" || selectedPaymentType === "upfront" &&
+            <VendorAdavanceRequest formData={formData} setFormData={setFormData} vendorId={vendorDetail._id} />
+          }
           <Stack direction="row" spacing={2}>
             <TextField label="Invoice No#" name="invc_no" value={formData?.invc_no} onChange={handleChange} fullWidth />
             <TextField type="date" label="Invoice Date" name="invc_date" value={formData?.invc_date} onChange={handleChange} InputLabelProps={{ shrink: true }} fullWidth />
@@ -356,10 +541,22 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCloseDialog}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? 'Submitting...' : 'Request Payment'}
-        </Button>
+        <VendorAdvanceSettlement selectedValues={selectedValues} setSelectedValues={setSelectedValues} vendorDetail={vendorDetail} vendorId={vendorDetail?._id} formData={formData} handleCloseDialog={handleCloseDialog} />
+        <Stack direction='row' spacing={1}>
+
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          {(vendorDetail && vendorDetail.request_id) ? <Button variant="contained" onClick={handleEditSubmit} disabled={formData?.request_amount == 0 || selectedValues?.length > 0 || UpdateLoading ? true : false}>
+            {/* {UpdateLoading ? 'Submitting...' : 'Edit Payment Request'} */}
+            Edit Payment Request
+          </Button> :
+
+            <Button variant="contained" onClick={handleSubmit} disabled={formData?.request_amount == 0 || selectedValues?.length > 0 ? true : false}>
+              {isLoading ? 'Submitting...' : 'Request Payment'}
+            </Button>
+
+          }
+          {vendorDetail && vendorDetail.request_id && <Button variant="contained" color='error' onClick={handleDeleteRequest}>Delete</Button>}
+        </Stack>
       </DialogActions>
     </Dialog>
   );

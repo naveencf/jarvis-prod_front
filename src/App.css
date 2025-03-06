@@ -1311,7 +1311,7 @@ label.checkbox-inline.propscss {
 
 .form-group {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   .custom-btn-2 {
     pointer-events: none;

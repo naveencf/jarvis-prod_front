@@ -106,9 +106,8 @@ const IncentiveOverview = () => {
       </div>
       <View
         version={1}
-        title={`Incentive Overview (${
-          allIncentiveData?.length
-        }) - ${"There will be no incentive for competitive plan"}`}
+        title={`Incentive Overview (${allIncentiveData?.length
+          }) - ${"There will be no incentive for competitive plan"}`}
         data={incentiveData}
         columns={columns}
         isLoading={incentiveLoading}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { use, useCallback, useEffect, useRef, useState } from "react";
 import {
   Stage,
   Layer,
@@ -13,67 +13,133 @@ import reelOne from "../../assets/imgs/screenshot/reel1.jpg";
 import sarcasmLogo from "../../assets/imgs/screenshot/sarcasm.jpg";
 import muteIcon from "../../assets/imgs/screenshot/icon/mute.png";
 import userIcon from "../../assets/imgs/screenshot/icon/user.png";
+import shade from "../../assets/imgs/bg/BlurBG5.png";
+import { formatNumber } from "../../utils/formatNumber";
+import JSZip from "jszip";
 
-const PostGenerator = ({ type = "reel" }) => {
+const PostGenerator = ({ singledata, bulk, preview = false }) => {
+  const [type, setType] = useState("reel");
   const accNameRef = useRef(null);
   const likesRef = useRef(null);
   const stageRef = useRef(null); // Ref for the Konva stage
   const commentRef = useRef(null);
+  const [data, setData] = useState(null);
   const [image, setImage] = useState(null);
   const [postImage, setPostImage] = useState(null);
   const [muteImage, setMuteImage] = useState(null);
   const [userImage, setUserImage] = useState(null);
   const [multi, setMulti] = useState(true);
-  const [multipost, setMultipost] = useState(5);
+  const [multipost, setMultipost] = useState(3);
   const [width, setWidth] = useState(420);
   const [collab, setCollab] = useState(false);
+  const [isVerfied, setIsVerified] = useState(true);
   const [height, setHeight] = useState(type === "reel" ? 795.63 : 635);
+  const [shadeImg, setShadeImg] = useState(null);
+  const [isSquare, setIsSquare] = useState(false);
+  useEffect(() => {
+    if (singledata && preview) {
+      setData(singledata);
+    }
+  }, [singledata]);
+
+  useEffect(() => {
+    setIsVerified(data?.owner_info?.is_verified);
+    if (data?.coauthor_producers?.length > 0) {
+      setIsVerified(false);
+    }
+    setType(data?.postType == "REEL" ? "reel" : "post");
+    setMulti(data?.postType == "CAROUSEL");
+  }, [data]);
 
   useEffect(() => {
     setWidth(420);
     if (type === "reel") {
       setHeight(795.63);
-      setMulti(false);
     } else if (type === "post") {
-      setHeight(multi ? 658 : 635);
+      if (isSquare) {
+        setHeight(multi ? 557 : 530);
+      } else setHeight(multi ? 658 : 635);
     }
-  }, [type, multi]);
+  }, [type, multi, isSquare]);
 
   useEffect(() => {
     const img = new window.Image();
-    img.src = sarcasmLogo; // Replace with your image URL
+    // img.crossOrigin = "Anonymous";
+    img.src = `https://storage.googleapis.com/insights_backend_bucket/cr/${data?.owner_info?.username}.jpeg`; // Replace with your image URL
     img.onload = () => {
       setImage(img); // Set the image once loaded
     };
-    const img1 = new window.Image();
 
-    img1.src = type === "reel" ? reelOne : postOne;
+    const img1 = new window.Image();
+    // img1.crossOrigin = "jarvis.works";
+    img1.src = data?.postImage;
     img1.onload = () => {
+      setIsSquare(img1.width === img1.height);
       setPostImage(img1);
     };
+
     const img3 = new window.Image();
     img3.src = muteIcon;
     img3.onload = () => {
       setMuteImage(img3);
     };
+
     const img4 = new window.Image();
     img4.src = userIcon;
     img4.onload = () => {
       setUserImage(img4);
     };
-  }, []);
 
-  const downloadImage = () => {
-    const uri = stageRef.current.toDataURL();
-    const link = document.createElement("a");
-    link.download = "instagram_post.png";
-    link.href = uri;
-    link.click();
+    const img5 = new window.Image();
+    img5.src = shade;
+    img5.onload = () => {
+      setShadeImg(img5);
+    };
+
+    setCollab(data?.coauthor_producers?.length > 0);
+
+    return () => {
+      setImage(null);
+      setPostImage(null);
+      setMuteImage(null);
+      setUserImage(null);
+      setShadeImg(null);
+    };
+  }, [data]);
+  // const downloadImage = () => {
+  //   const uri = stageRef.current.toDataURL();
+  //   const link = document.createElement("a");
+  //   link.download = "instagram_post.png";
+  //   link.href = uri;
+  //   link.click();
+  // };
+  const downloadImage = async () => {
+    const zip = new JSZip();
+    for (let i = 0; i < bulk.length; i++) {
+      await new Promise((resolve) => {
+        setData(bulk[i]);
+        setTimeout(resolve, 100); // Wait for the canvas to render
+      });
+      const uri = stageRef.current.toDataURL({ mimeType: "image/jpeg" });
+      zip.file(`image${i + 1}.jpeg`, uri.split(",")[1], { base64: true });
+    }
+    const content = await zip.generateAsync({ type: "blob" });
+    saveAs(content, "screenShot.zip");
+  };
+
+  const getDisplayName = (data) => {
+    let name = data?.owner_info?.username;
+    if (data?.coauthor_producers?.length > 1) {
+      name += ` and ${data?.coauthor_producers?.length} others`;
+    } else if (data?.coauthor_producers?.length == 1) {
+      name += ` and ${data?.coauthor_producers[0]?.username}`;
+    }
+    return name?.length > 34 ? name.substring(0, 34) + "..." : name;
   };
 
   return (
     <>
-      <div>
+      <div className={!preview ? `d-none` : ``}>
         {/* Konva Stage */}
         <Stage width={420} height={height} ref={stageRef}>
           <Layer>
@@ -85,6 +151,15 @@ const PostGenerator = ({ type = "reel" }) => {
               height={type === "post" ? height - (multi ? 137 : 110) : 745.63}
               image={postImage}
             />
+            {type == "reel" && (
+              <KonvaImage
+                x={0}
+                y={0}
+                width={width}
+                height={200}
+                image={shadeImg}
+              />
+            )}
             {collab ? (
               <>
                 <Circle
@@ -92,14 +167,16 @@ const PostGenerator = ({ type = "reel" }) => {
                   y={30.5 - 8}
                   width={29}
                   height={29}
-                  fill={type == "post" ? "#9f9f9f" : "#fff"}
+                  fill={
+                    type == "post" ? "#9f9f9f" : collab ? "#9f9f9f " : "#fff"
+                  }
                 />
                 <KonvaImage
                   x={10 + 15}
                   y={18 - 8}
                   width={25}
                   height={25}
-                  image={image}
+                  image={userImage}
                   cornerRadius={50}
                 />
                 <Circle
@@ -107,14 +184,16 @@ const PostGenerator = ({ type = "reel" }) => {
                   y={30.5 + 3}
                   width={29}
                   height={29}
-                  fill={type == "post" ? "#9f9f9f" : "#fff"}
+                  fill={
+                    type == "post" ? "#9f9f9f" : collab ? "#9f9f9f " : "#fff"
+                  }
                 />
                 <KonvaImage
                   x={0 + 15}
                   y={18 + 3}
                   width={25}
                   height={25}
-                  image={image}
+                  image={image?.width ? image : userImage}
                   cornerRadius={50}
                 />
               </>
@@ -132,7 +211,7 @@ const PostGenerator = ({ type = "reel" }) => {
                   y={13}
                   width={35}
                   height={35}
-                  image={image}
+                  image={image?.width ? image : userImage}
                   cornerRadius={50}
                 />
               </>
@@ -143,37 +222,42 @@ const PostGenerator = ({ type = "reel" }) => {
             {/* Text */}
             <Text
               ref={accNameRef}
-              text={"sarcastic_us"}
+              text={getDisplayName(data)}
               fontSize={15}
               fontFamily="Arial"
               x={5 + 55}
-              y={16}
+              y={data?.music_info !== "" || data?.location !== null ? 16 : 23}
               width={500}
               align="start"
               fill={type == "reel" ? "#fff" : "#333"}
             />
             {/* Verififed Badge */}
-            {collab && (
+            {isVerfied && (
               <Path
                 x={
                   5 +
                   (accNameRef.current ? accNameRef.current.getTextWidth() : 0) +
                   60
                 } // 10px padding after text
-                y={16} // Align with the text
+                y={data?.music_info !== "" || data?.location !== null ? 16 : 23} // Align with the text
                 data="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-52.2,6.84-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z" // Example triangle path
-                fill="#0890e8"
+                fill={type === "reel" ? "#ffffff" : "#0890e8"}
                 scale={{ x: 0.055, y: 0.055 }}
               />
             )}
+            {data?.location && !data?.music_info && (
+              <Text
+                text={data?.location?.name}
+                x={5 + 55}
+                y={32}
+                fontSize={13}
+                fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+                fontWeight="400"
+                align="start"
+                fill={type == "reel" ? "#fff" : "#515151"}
+              />
+            )}
             {/* music */}
-            <Path
-              x={5 + 55} // Position X
-              y={32} // Position Y
-              data="M212.92,17.71a7.89,7.89,0,0,0-6.86-1.46l-128,32A8,8,0,0,0,72,56V166.1A36,36,0,1,0,88,196V102.25l112-28V134.1A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.71Z"
-              fill={type == "reel" ? "#fff" : "#000"} // Fill color (black by default)
-              scale={{ x: 0.05, y: 0.05 }} // Scale the SVG
-            />
             <Path
               x={420 - 40}
               y={20.5}
@@ -181,50 +265,61 @@ const PostGenerator = ({ type = "reel" }) => {
               fill={type == "reel" ? "#fff" : "rgba(0, 0, 0, 0.5)"}
               scale={{ x: 0.099, y: 0.099 }}
             />
-            <Text
-              text="Coldplay . A Sky Full of Stars"
-              fontSize={13}
-              fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
-              fontWeight="400"
-              x={5 + 75}
-              y={32}
-              align="start"
-              fill={type == "reel" ? "#fff" : "#515151"}
-            />
-            <Circle
-              x={5 + 24}
-              y={height - (multi ? 100 : 73)}
-              fill="rgba(0, 0, 0, 0.54)"
-              width={25}
-              height={25}
-            />
-            {/* <Path
-              x={5 + 24}
-              y={height - 100}
-              scale={{ x: 0.05, y: 0.05 }}
-              data="M16 438C16 344.112 92.1116 268 186 268H326C419.888 268 496 344.112 496 438V463C496 476.807 484.807 488 471 488H41C27.1929 488 16 476.807 16 463V438Z"
-              fill="#000"
-            /> */}
-            <Circle
-              x={width - 5 - 24}
-              y={height - (multi ? 100 : 73)}
-              fill="rgba(0, 0, 0, 0.54)"
-              width={25}
-              height={25}
-            />
-            <KonvaImage
-              image={muteImage}
-              x={width - 5 - 30}
-              y={height - (multi ? 106 : 79)}
-              scale={{ x: 0.025, y: 0.025 }}
-            />
 
-            <KonvaImage
-              image={userImage}
-              x={5 + 18}
-              y={height - (multi ? 107 : 80)}
-              scale={{ x: 0.025, y: 0.025 }}
-            />
+            {data?.music_info !== "" && (
+              <>
+                <Path
+                  x={5 + 55} // Position X
+                  y={32} // Position Y
+                  data="M212.92,17.71a7.89,7.89,0,0,0-6.86-1.46l-128,32A8,8,0,0,0,72,56V166.1A36,36,0,1,0,88,196V102.25l112-28V134.1A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.71Z"
+                  fill={type == "reel" ? "#fff" : "#000"} // Fill color (black by default)
+                  scale={{ x: 0.05, y: 0.05 }} // Scale the SVG
+                />
+
+                <Text
+                  text={`${data?.music_info?.artist_name} . ${data?.music_info?.song_name}`}
+                  fontSize={13}
+                  fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+                  fontWeight="400"
+                  x={5 + 75}
+                  y={32}
+                  align="start"
+                  fill={type == "reel" ? "#fff" : "#515151"}
+                />
+
+                <Circle
+                  x={width - 5 - 24}
+                  y={height - (multi ? 100 : 73)}
+                  fill="rgba(0, 0, 0, 0.54)"
+                  width={25}
+                  height={25}
+                />
+                <KonvaImage
+                  image={muteImage}
+                  x={width - 5 - 30}
+                  y={height - (multi ? 106 : 79)}
+                  scale={{ x: 0.025, y: 0.025 }}
+                />
+              </>
+            )}
+
+            {data?.tagged_users.length > 0 && (
+              <>
+                <Circle
+                  x={5 + 24}
+                  y={height - (multi ? 100 : 73)}
+                  fill="rgba(0, 0, 0, 0.54)"
+                  width={25}
+                  height={25}
+                />
+                <KonvaImage
+                  image={userImage}
+                  x={5 + 18}
+                  y={height - (multi ? 107 : 80)}
+                  scale={{ x: 0.025, y: 0.025 }}
+                />
+              </>
+            )}
             {/* // likes */}
             <Path
               x={10}
@@ -237,19 +332,21 @@ const PostGenerator = ({ type = "reel" }) => {
               stroke="#000"
               strokeWidth={25}
             />
-            <Text
-              ref={likesRef}
-              y={height - 30}
-              x={
-                //  + 60
-                43
-              }
-              text={"97.8K"}
-              fontSize={13}
-              fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
-              align="start"
-              fill="#333"
-            />
+            {data?.like_count > 0 && (
+              <Text
+                ref={likesRef}
+                y={height - 30}
+                x={
+                  //  + 60
+                  43
+                }
+                text={formatNumber(data?.like_count)}
+                fontSize={13}
+                fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+                align="start"
+                fill="#333"
+              />
+            )}
             {/* //comment */}
             <Path
               x={
@@ -264,26 +361,28 @@ const PostGenerator = ({ type = "reel" }) => {
               stroke="#000"
               strokeWidth={25}
             />
-            <Text
-              ref={commentRef}
-              y={height - 30}
-              x={
-                (likesRef?.current ? likesRef?.current?.getTextWidth() : 0) +
-                56 +
-                33
-              }
-              text={"83"}
-              fontSize={13}
-              fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
-              align="start"
-              fill="#333"
-            />
+            {data?.comment_count > 0 && (
+              <Text
+                ref={commentRef}
+                y={height - 30}
+                x={
+                  (likesRef?.current ? likesRef?.current?.getTextWidth() : 0) +
+                  56 +
+                  33
+                }
+                text={formatNumber(data?.comment_count)}
+                fontSize={13}
+                fontFamily="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif"
+                align="start"
+                fill="#333"
+              />
+            )}
             {/* //share */}
             <Path
               x={
                 (commentRef?.current
                   ? commentRef?.current?.getTextWidth()
-                  : 0) +
+                  : 10) +
                 56 +
                 80
               }
@@ -322,21 +421,12 @@ const PostGenerator = ({ type = "reel" }) => {
           </Layer>
         </Stage>
         {/* Download Button */}
-        <button
-          onClick={downloadImage}
-          style={{
-            marginTop: "20px",
-            padding: "10px 20px",
-            background: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Download as Image
-        </button>
       </div>
+      {!preview && (
+        <button onClick={downloadImage} className="btn btn-primary cmnbtn mb-3">
+          Download Image
+        </button>
+      )}
     </>
   );
 };

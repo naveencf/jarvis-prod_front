@@ -43,24 +43,7 @@ export const PageBaseURL = createApi({
       // query: () => `projectxpagecategory`,
       providesTags: ['categoryList'],
     }),
-    // updatePageCategory: builder.mutation({
-    //   query: (data) => {
-    //     const { _id, category_name } = data;
-    //     return {
-    //       url:()=>`v1/page_category/${_id}`,
-    //       // url: `projectxpagecategory`, // or use the commented out URL if needed: `v1/page_category/${_id}`,
-    //       method: "PUT",
-    //       body: {
-    //         // id: _id,
-    //         page_category: category_name,
-    //         description: data.description,
-    //         last_updated_by:data.last_updated_by
-    //         // category_name: category_name
-    //       },
-    //     };
-    //   },
-    //   invalidatesTags: ["categoryList"],
-    // }),
+
     updatePageCategory: builder.mutation({
       query: (data) => {
         const { _id, ...payload } = data;
@@ -113,14 +96,14 @@ export const PageBaseURL = createApi({
 
         return isAdmin
           ? {
-              url: `v1/get_all_pages?${pagequery}`, // Admin: GET request
-              method: 'GET',
-            }
+            url: `v1/get_all_pages?${pagequery}`, // Admin: GET request
+            method: 'GET',
+          }
           : {
-              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
-              method: 'GET',
-              // body: { user_id: userID },
-            };
+            url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+            method: 'GET',
+            // body: { user_id: userID },
+          };
       },
       transformResponse: (response, meta, { decodedToken }) => {
         const isAdmin = decodedToken?.role_id === 1;
@@ -296,15 +279,23 @@ export const PageBaseURL = createApi({
         url: `v1/operation_content_cost`,
         method: 'PUT',
         body: {
-          id: data._id, 
+          id: data._id,
           operation_cost: Number(data.operation_cost),
           content_cost: Number(data.content_cost),
           twitter_trend_cost: Number(data.twitter_trend_cost),
           ugc_video_cost: Number(data.ugc_video_cost),
         },
       }),
-     }),
+    }),
+    // Vendor Pages
+    getPageByVendorId: builder.query({
+      query: (vendorId) => `v1/vendor_wise_page_master_data/${vendorId}`,
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
-export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery, useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery, useGetCountDocumentsQuery, useGetOperationContentCostQuery,useUpdateOperationContentCostMutation } = PageBaseURL;
+export const { useGetAllProfileListQuery, useAddProfileTypeMutation, useUpdateProfileTypeMutation, useAddPageCategoryMutation, useGetAllPageCategoryQuery, useUpdatePageCategoryMutation, useGetAllPriceListQuery, useAddPlatformPriceMutation, useGetPlatformPriceQuery,
+  useUpdatePlatformPriceMutation, useGetAllPageListQuery, useGetPageByIdQuery, useGetMultiplePagePriceQuery, useGetpagePriceTypeQuery, useAddPageStateMutation, useGetPageStateQuery, useGetPageStateByIdQuery, useUpdatePageStateMutation, useGetAllCitiesQuery, useGetOwnershipTypeQuery, useGetVendorCompanyDetailQuery, useAddPageSubCategoryMutation, useUpdatePageSubCategoryMutation, useDeletePageSubCategoryMutation, useGetAllPageSubCategoryQuery, useDeletePageCategoryMutation, useGetAllCountsQuery, useGetAllPageClosebyListQuery, useGetPageCountQuery, useGetAllCategoryWiseInventoryQuery, useGetCountDocumentsQuery, useGetOperationContentCostQuery, useUpdateOperationContentCostMutation,
+  useGetPageByVendorIdQuery
+} = PageBaseURL;

@@ -23,7 +23,7 @@ export default function BulkPostsUpload({
   setOpen,
   reload,
   setReload,
-  usersDataContext,
+  userContextData,
 }) {
   const [dialogopen, setDialogOpen] = useState(false);
   const [bulklead, setBulklead] = useState([]);
@@ -143,7 +143,7 @@ export default function BulkPostsUpload({
 
   const handlepageaddition = async () => {
     // Extract shortcodes from links
-    const tempEmailIdObject = usersDataContext.find((ele) => ele.user_id == userID);
+    const tempEmailIdObject = userContextData.find((ele) => ele.user_id == userID);
     let emailTo = "naveen@creativefuel.io";
     if (tempEmailIdObject?.user_email_id) {
       emailTo = tempEmailIdObject?.user_email_id;

@@ -3,7 +3,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
 import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ApiContextData } from "../../AdminPanel/APIContext/APIContext";
 import {
   Modal,
   TableContainer,
@@ -15,6 +14,7 @@ import {
   Box,
   Table,
 } from "@mui/material";
+import { ApiContextData } from "../../AdminPanel/APIContext/APIContext";
 
 const CommunityManagerView = () => {
   const { userContextData } = useContext(ApiContextData);

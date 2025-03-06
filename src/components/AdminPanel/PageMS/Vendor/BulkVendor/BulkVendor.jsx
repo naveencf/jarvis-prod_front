@@ -6,11 +6,12 @@ import BulkVendorUploadModal from '../BulkVendorUploadModal';
 import { useGetAllVendorQuery } from '../../../../Store/reduxBaseURL';
 import { FaEdit } from 'react-icons/fa';
 import { Box, Button, Typography, Modal } from '@mui/material';
-import FieldContainer from '../../../FieldContainer';
 import FormContainer from '../../../FormContainer';
 import { useGetAllPageListQuery } from '../../../../Store/PageBaseURL';
 import jwtDecode from 'jwt-decode';
 import Select, { components } from 'react-select';
+import FieldContainer from '../../../FieldContainer';
+
 
 const BulkVendor = () => {
   const storedToken = sessionStorage.getItem('token');

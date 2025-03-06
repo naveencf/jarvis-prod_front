@@ -2,9 +2,9 @@ import { TextField, Button, Paper, Box, Grid } from "@mui/material";
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useGlobalContext } from "../../../../Context/Context";
-import { baseUrl } from '../../../../utils/config'
-import FormContainer from "../../FormContainer";
+import FormContainer from "../FormContainer";
+import { useGlobalContext } from "../../../Context/Context";
+import { baseUrl } from "../../../utils/config";
 
 const CreateMaster = ({ name, data }) => {
   const { toastAlert, toastError } = useGlobalContext();

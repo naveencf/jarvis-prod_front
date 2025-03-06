@@ -1,6 +1,7 @@
 import CustomTable from "../../../../CustomTable/CustomTable";
 import CustomTableWrapper from "../../../../ReusableComponents/CustomTableWrapper";
 import CustomTableV2 from "../../../../CustomTable_v2/CustomTableV2";
+import React, { memo, useCallback } from "react";
 
 //c
 const View = ({
@@ -16,8 +17,11 @@ const View = ({
   addHtml,
   version = 0,
   exportData,
+  getFilteredData,
 }) => {
-  const Version = !version ? CustomTableV2 : CustomTable;
+  const Version = useCallback(!version ? CustomTableV2 : CustomTable, [
+    version,
+  ]);
 
   return (
     <CustomTableWrapper title={title} addHtml={addHtml}>
@@ -37,4 +41,4 @@ const View = ({
   );
 };
 
-export default View;
+export default memo(View);

@@ -11,6 +11,7 @@ const Home = () => {
       ) : (
         <Navigate to={"/pre-onboard-user-from"} />
       )}
+       {/* {status == 2 && <Navigate to={"/pre-onboard-user-from"} />}  */}
     </>
   );
 };

@@ -5,11 +5,10 @@ import axios from "axios";
 import "slick-carousel/slick/slick.css"; // Import Slick CSS
 import "slick-carousel/slick/slick-theme.css"; // Import Slick Theme CSS
 import { useParams } from "react-router-dom";
-import SittingOverview from "./SittingOverview";
 import { baseUrl } from "../../../../utils/config";
 
 const OfficeMastOverview = () => {
-  const { room } = useParams();
+  const { room, shift } = useParams();
   const [roomWiseCount, setRoomWiseCount] = useState([]);
   const [selectedRoomName, setSelectedRoomName] = useState(null);
   const [totalSittingCount, setTotalSittingCount] = useState([]);
@@ -25,9 +24,10 @@ const OfficeMastOverview = () => {
       } catch (error) {
         console.error("Error fetching sitting data:", error);
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
+      // finally {
+      //   setLoading(false);
+      // }
     };
 
     if (room) {
@@ -65,9 +65,9 @@ const OfficeMastOverview = () => {
     fetchAllocationCounts();
   }, []);
 
-  // const handleCardClick = (room, d) => {
-  //   setSelectedRoomName(room);
-  // };
+  const handleCardClick = (room, d) => {
+    setSelectedRoomName(room);
+  };
 
   useEffect(() => {
     setSelectedRoomName(room);
@@ -108,6 +108,13 @@ const OfficeMastOverview = () => {
 
   return (
     <>
+      <Viewer
+        counts={assignedCounts}
+        shift={shift}
+        roomNameCard={selectedRoomName}
+        totalSittingDataCount={totalSittingDataCount}
+        fetchAllocationCounts={fetchAllocationCounts}
+      />
       {/* <SittingOverview /> */}
       {/* <div className="scrollRow">
         <Slider {...sliderSettings}>
@@ -187,12 +194,6 @@ const OfficeMastOverview = () => {
         </Slider>
       </div> */}
       {/* This is a room viewer componenent  */}
-      <Viewer
-        counts={assignedCounts}
-        roomNameCard={selectedRoomName}
-        totalSittingDataCount={totalSittingDataCount}
-        fetchAllocationCounts={fetchAllocationCounts}
-      />
     </>
   );
 };

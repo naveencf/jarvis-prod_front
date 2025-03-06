@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
-import DeleteButton from "../../AdminPanel/DeleteButton";
 import DataTable from "react-data-table-component";
 import { useGlobalContext } from "../../../Context/Context";
 import { baseUrl } from "../../../utils/config";
+import DeleteButton from "../DeleteButton";
 
 const NotificationHistory = () => {
   const { toastAlert } = useGlobalContext();

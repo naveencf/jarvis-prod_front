@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { baseUrl } from "../../utils/config";
 import Loader from "../Finance/Loader/Loader";
 import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
-import Profile from "../Pantry/UserPanel/Profile/Profile";
+import Profile from "./HRMS/Pantry/UserPanel/Profile/Profile";
 import PostStats from "../Stats/PostStats";
 import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor";
 import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard";
@@ -28,23 +28,30 @@ import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater"
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
 import SittingRoomWise from "./HRMS/Sitting/SittingRoomWise";
-import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
+// import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
+import UserLoginHistory from'./HRMS/User/UserDashboard/LoginHistory/UserLoginHistory'
+
 import CommonRoom from "./HRMS/Sitting/CommonRoom";
 import { useAPIGlobalContext } from "./APIContext/APIContext";
-
+import OperationDashboard from "../UnusedCode/UnusedOp/OperationDashboard/OperationDashboard";
+// import OperationDashboard from "../UnusedCode/Plan/OperationDashboard/OperationDashboard";
+import Ledger from "../Purchase/PurchaseVendor/Ledger";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
+const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
 const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
 const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
-const UserMaster = lazy(() => import("./User/UserMaster"));
-const UserView = lazy(() => import("./User/UserView"));
-const UserUpdate = lazy(() => import("./User/UserUpdate"));
-const UserOverview = lazy(() => import("./User/UserOverview"));
+const UserMaster = lazy(() => import("./HRMS/User/UserMaster"));
+const UserView = lazy(() => import("./HRMS/User/UserView"));
+
+const UserUpdate = lazy(() => import("./HRMS/User/UserUpdate"));
+
+const UserOverview = lazy(() => import("./HRMS/User/UserOverview"));
 const RoleMaster = lazy(() => import("./HRMS/Role/RoleMaster"));
 const RoleOverView = lazy(() => import("./HRMS/Role/RoleOverview"));
 const RoleMastUpdate = lazy(() => import("./HRMS/Role/RoleMastUpdate"));
@@ -65,27 +72,31 @@ const OfficeMastOverview = lazy(() =>
   import("./HRMS/Sitting/OfficeMastOverview")
 );
 const UserResposOverview = lazy(() =>
-  import("./UserResponsbility/UserResposOverview")
+  import("./HRMS/UserResponsbility/UserResposOverview")
 );
 const UserResponsbility = lazy(() =>
-  import("./UserResponsbility/UserResponsbility")
+  import("./HRMS/UserResponsbility/UserResponsbility")
 );
 const UserResponsbilityUpdate = lazy(() =>
-  import("./UserResponsbility/userResponsbilityUpdate")
+  import("./HRMS/UserResponsbility/userResponsbilityUpdate")
 );
-const UserAuthDetail = lazy(() => import("./UserAuthDetail/UserAuthDetail"));
+const UserAuthDetail = lazy(() =>
+  import("./HRMS/UserAuthDetail/UserAuthDetail")
+);
 
 const ObjectMaster = lazy(() => import("./Object/ObjectMaster"));
 const ObjectOverview = lazy(() => import("./Object/ObjectOverview"));
 const ObjectUpdate = lazy(() => import("./Object/ObjectUpdate"));
 
 const DeliverdOrder = lazy(() =>
-  import("../Pantry/DeliverdOrder/DeliverdOrder")
+  import("./HRMS/Pantry/DeliverdOrder/DeliverdOrder")
 );
-const PendingOrder = lazy(() => import("../Pantry/PendingOrder/PendingOrder"));
+const PendingOrder = lazy(() =>
+  import("./HRMS/Pantry/PendingOrder/PendingOrder")
+);
 const Dashboard = lazy(() => import("./Dashboard/Dashboard"));
-const TransferReq = lazy(() => import("../Pantry/TransferReq/TransferReq"));
-const AllOrder = lazy(() => import("../Pantry/AllOrders/AllOrders"));
+const TransferReq = lazy(() => import("./HRMS/Pantry/TransferReq/TransferReq"));
+const AllOrder = lazy(() => import("./HRMS/Pantry/AllOrders/AllOrders"));
 const DesignationOverview = lazy(() =>
   import("./HRMS/Designation/DesignationOverview")
 );
@@ -102,15 +113,15 @@ const LogoCategoryOverview = lazy(() =>
 const LogoCategoryUpdate = lazy(() =>
   import("./LogoCategory/LogoCategoryUpdate")
 );
-const PantryHome = lazy(() => import("../Pantry/PantryHome/PantryHome"));
+const PantryHome = lazy(() => import("./HRMS/Pantry/PantryHome/PantryHome"));
 const ResponsibilityMast = lazy(() =>
-  import("./UserResponsbility/Responsbility/ResponsibilityMast")
+  import("./HRMS/UserResponsbility/Responsbility/ResponsibilityMast")
 );
 const ResponsiblityOverview = lazy(() =>
-  import("./UserResponsbility/Responsbility/ResponsiblityOverview")
+  import("./HRMS/UserResponsbility/Responsbility/ResponsiblityOverview")
 );
 const ResponsibilityUpdate = lazy(() =>
-  import("./UserResponsbility/Responsbility/ResponsibilityUpdate")
+  import("./HRMS/UserResponsbility/Responsbility/ResponsibilityUpdate")
 );
 const IpTypeMaster = lazy(() => import("./IpType/IpTypeMaster"));
 const IpTypeOverview = lazy(() => import("./IpType/IpTypeOverview"));
@@ -119,26 +130,30 @@ const PlatformMaster = lazy(() => import("./Platform/PlatformMaster"));
 const PlatformOverview = lazy(() => import("./Platform/PlatformOverview"));
 const PlatformUpdate = lazy(() => import("./Platform/PlatformUpdate"));
 const DeclinedOrder = lazy(() =>
-  import("../Pantry/DeclinedOrder/DeclinedOrder")
+  import("./HRMS/Pantry/DeclinedOrder/DeclinedOrder")
 );
-const UserDirectory = lazy(() => import("./User/UserDirectory"));
+const UserDirectory = lazy(() => import("./HRMS/User/UserDirectory"));
 const AdminPreOnboarding = lazy(() =>
   import("./AdminPreOnboarding/AdminPreOnboarding")
 );
 const Attendence = lazy(() => import("./WFH/Attendence"));
 const AttendanceOverview = lazy(() => import("./WFH/AttendanceOverview"));
-const UserDashboard = lazy(() => import("./User/UserDashboard/UserDashboard"));
+const UserDashboard = lazy(() => import("./HRMS/User/UserDashboard"));
+
 const KRA = lazy(() => import("./HRMS/KRA/KRA"));
 const UserWiseResponsibility = lazy(() =>
-  import("./UserResponsbility/UserWiseResponsibility/UserWiseResponsibility")
+  import(
+    "./HRMS/UserResponsbility/UserWiseResponsibility/UserWiseResponsibility"
+  )
 );
 const UserWiseDashboard = lazy(() =>
-  import("./User/UserWIseDashboard/UserWiseDashboard")
+  import("./HRMS/User/UserWIseDashboard/UserWiseDashboard")
 );
 const SalaryWFH = lazy(() => import("./WFH/SalaryGeneration/SalaryWFH"));
 const SalarySummary = lazy(() => import("./WFH/SalarySummary/SalarySummary"));
-const UserHierarchy = lazy(() => import("./User/UserHierarchy"));
-const UserSingle = lazy(() => import("./User/UserSingle"));
+const UserHierarchy = lazy(() => import("./HRMS/User/UserHierarchy"));
+const UserSingle = lazy(() => import("./HRMS/User/UserSingle"));
+
 const DashboardWFHUser = lazy(() => import("./WFH/DashboardWFHUser"));
 const DashboardWFHCardDetails = lazy(() =>
   import("./WFH/DashboardWFHCardDetails")
@@ -181,20 +196,20 @@ const ExecutionDone = lazy(() => import("../Execution/Done/ExecutionDone"));
 const ExecutionAccepted = lazy(() =>
   import("../Execution/Accepted/ExecutionAccepted")
 );
-const RegisterCampaign = lazy(() =>
-  import("./RegisterCampaign/RegisterCampaign")
-);
+// const RegisterCampaign = lazy(() =>
+//   import("./RegisterCampaign/RegisterCampaign")
+// );
 const ExecutionRejected = lazy(() =>
   import("../Execution/Rejected/ExecutionRejected")
 );
-const RegisteredCampaign = lazy(() =>
-  import("./RegisterCampaign/RegisteredCampaign")
-);
+// const RegisteredCampaign = lazy(() =>
+//   import("./RegisterCampaign/RegisteredCampaign")
+// );
 const SalaryDashboard = lazy(() =>
   import("./WFH/SalaryGeneration/SalaryDashboard")
 );
 const CampignAdmin = lazy(() => import("./CampaginAdmin/CampignAdmin"));
-const BrandMaster = lazy(() => import("./RegisterCampaign/BrandMaster"));
+// const BrandMaster = lazy(() => import("./RegisterCampaign/BrandMaster"));
 /* Sarcasm start*/
 const SarcasmDashboard = lazy(() => import("../sarcasm/content-from/index"));
 const SarcasmBlog = lazy(() => import("../sarcasm/blog-managment/index"));
@@ -205,21 +220,21 @@ const SarcasmCategory = lazy(() =>
   import("../sarcasm/category-management/index")
 );
 /* Sarcasm end*/
-const CategoryMaster = lazy(() => import("./RegisterCampaign/CategoryMaster"));
-const ContentType = lazy(() => import("./RegisterCampaign/ContentType"));
-const CampaignCommitment = lazy(() =>
-  import("./RegisterCampaign/CampaignCommitment")
-);
-const ContentCreater = lazy(() => import("./RegisterCampaign/ContentCreater"));
-const CheckPageFollowers = lazy(() =>
-  import("./RegisterCampaign/CheckPageFollowers")
-);
-const SubCategoryMaster = lazy(() =>
-  import("./RegisterCampaign/SubCategoryMaster")
-);
-const CreaterDashboard = lazy(() =>
-  import("./RegisterCampaign/CreaterDashboard")
-);
+// const CategoryMaster = lazy(() => import("./RegisterCampaign/CategoryMaster"));
+// const ContentType = lazy(() => import("./RegisterCampaign/ContentType"));
+// const CampaignCommitment = lazy(() =>
+//   import("./RegisterCampaign/CampaignCommitment")
+// );
+// const ContentCreater = lazy(() => import("./RegisterCampaign/ContentCreater"));
+// const CheckPageFollowers = lazy(() =>
+//   import("./RegisterCampaign/CheckPageFollowers")
+// );
+// const SubCategoryMaster = lazy(() =>
+//   import("./RegisterCampaign/SubCategoryMaster")
+// );
+// const CreaterDashboard = lazy(() =>
+//   import("./RegisterCampaign/CreaterDashboard")
+// );
 const BillingOverview = lazy(() => import("./WFH/Billing/BillingOverview"));
 const BillingMast = lazy(() => import("./WFH/Billing/BillingMast"));
 const BillingUpdate = lazy(() => import("./WFH/Billing/BillingUpdate"));
@@ -247,7 +262,7 @@ const PreonboardingDocumentOverview = lazy(() =>
 const PreonboardingDocumentsUpdate = lazy(() =>
   import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentsUpdate")
 );
-const PlanOverview = lazy(() => import("./RegisterCampaign/PlanOverview"));
+// const PlanOverview = lazy(() => import("./RegisterCampaign/PlanOverview"));
 const ExeUPdate = lazy(() => import("../Execution/ExeUPdate"));
 const ExeHistory = lazy(() => import("../Execution/ExeHistory"));
 
@@ -304,58 +319,61 @@ const PendingPaymentsList = lazy(() =>
   import("../Finance/PendingPaymentsList")
 );
 const CityMaster = lazy(() => import("../Execution/cityMast/CityMaster"));
-const Experties = lazy(() => import("./RegisterCampaign/Experties/Experties"));
+// const Experties = lazy(() => import("./RegisterCampaign/Experties/Experties"));
 const PagePerformanceDashboard = lazy(() =>
   import("../Execution/PagePerformanceDashboard")
 );
-const ExcusionCampaign = lazy(() =>
-  import("./RegisterCampaign/ExcusionCampaign")
-);
-const ExpertiesOverview = lazy(() =>
-  import("./RegisterCampaign/Experties/ExpertiesOverview")
-);
-const ExpertiesUpdate = lazy(() =>
-  import("./RegisterCampaign/Experties/ExpertUpdate")
-);
-const PhaseDashboard = lazy(() =>
-  import("./RegisterCampaign/PhaseDashboard/PhaseDashboard")
-);
-const ReplacementDashobard = lazy(() =>
-  import("./RegisterCampaign/ReplacementDashboard/ReplacementDashboard")
-);
-const AssignmentDashobard = lazy(() =>
-  import("./RegisterCampaign/AssignmentDashboard/AssignmentDashboard")
-);
+// const ExcusionCampaign = lazy(() =>
+//   import("./RegisterCampaign/ExcusionCampaign")
+// );
+// const ExpertiesOverview = lazy(() =>
+//   import("./RegisterCampaign/Experties/ExpertiesOverview")
+// );
+// const ExpertiesUpdate = lazy(() =>
+//   import("./RegisterCampaign/Experties/ExpertUpdate")
+// );
+// const PhaseDashboard = lazy(() =>
+//   import("../UnusedCode/PhaseDashboard/PhaseDashboard")
+// );
+// const ReplacementDashobard = lazy(() =>
+//   import("./RegisterCampaign/ReplacementDashboard/ReplacementDashboard")
+// );
+// const AssignmentDashobard = lazy(() =>
+//   import("./RegisterCampaign/AssignmentDashboard/AssignmentDashboard")
+// );
 const WFHUserOverview = lazy(() => import("./WFH/WFHUserOverview"));
-const CreateAssign = lazy(() => import("./RegisterCampaign/CreateAssign"));
+// const CreateAssign = lazy(() => import("./RegisterCampaign/CreateAssign"));
 const PagePerformanceAnalytics = lazy(() =>
   import("../Execution/PagePerformanceAnalytics")
 );
 const IncompleteProfileUsers = lazy(() =>
   import("./WFH/IncompleteProfileUsers")
 );
-const UserGraphs = lazy(() => import("./User/UserGraphs"));
+
+const UserGraphs = lazy(() => import("./HRMS/User/UserGraphs"));
 const Hobbies = lazy(() => import("./HRMS/Hobbies/Hobbies"));
 const HobbiesOverview = lazy(() => import("./HRMS/Hobbies/HobbiesOverview"));
-const AddEmailTemp = lazy(() => import("./User/AddEmailTemp"));
-const EmailTempOverview = lazy(() => import("./User/EmailTempOverview"));
-const EditEmailTemp = lazy(() => import("./User/EditEmailTemp"));
-const ManagerDashboard = lazy(() =>
-  import("./RegisterCampaign/ManagerDashboard/ManagerDashboard")
-);
+const AddEmailTemp = lazy(() => import("./HRMS/User/AddEmailTemp"));
+const EmailTempOverview = lazy(() => import("./HRMS/User/EmailTempOverview"));
+const EditEmailTemp = lazy(() => import("./HRMS/User/EditEmailTemp"));
+// const ManagerDashboard = lazy(() =>
+//   import("./RegisterCampaign/ManagerDashboard/ManagerDashboard")
+// );
 const ManagerCampaign = lazy(() =>
-  import("./RegisterCampaign/ManagerCampaignDashboard/ManagerCampaign")
+  import("../UnusedCode/UnusedOp/ManagerCampaignDashboard/ManagerCampaign")
 );
 const AssetVisibleToTagedPerosn = lazy(() =>
-  import("../Sim/AssetVisibleToTagedPerson/AssetVisibleToTagedPerosn")
+  import("./HRMS/Sim/AssetVisibleToTagedPerson/AssetVisibleToTagedPerosn")
 );
+
 const AssetSingleUser = lazy(() =>
-  import("../Sim/AssetSingeUser/AssetSingleUser")
+  import("./HRMS/Sim/AssetSingeUser/AssetSingleUser")
 );
+
 const AssetVisibleToHr = lazy(() =>
-  import("../Sim/AssetVisibleToHr/AssetVisibleToHr")
+  import("./HRMS/Sim/AssetVisibleToHr/AssetVisibleToHr")
 );
-const AssetManager = lazy(() => import("../Sim/AssetManager/AssetManager"));
+const AssetManager = lazy(() => import("./HRMS/Sim/AssetManager/AssetManager"));
 const WFHAllSalary = lazy(() => import("./WFH/WFHAllSalary"));
 
 const PendingPaymentRequest = lazy(() =>
@@ -385,43 +403,43 @@ const WFHTemplateOverview = lazy(() =>
 const ViewEditDigiSignature = lazy(() =>
   import("./WFH/DigitalSignature/ViewEditDigiSignature")
 );
-const PlancreationNew = lazy(() =>
-  import("./RegisterCampaign/PlancreationNew")
-);
-const TempPlanCreation = lazy(() =>
-  import("./RegisterCampaign/tempPlan/TempPlanCreation")
-);
-const PhasecreationNew = lazy(() =>
-  import("./RegisterCampaign/PhasecreationNew")
-);
+// const PlancreationNew = lazy(() =>
+//   import("./RegisterCampaign/PlancreationNew")
+// );
+// const TempPlanCreation = lazy(() =>
+//   import("./RegisterCampaign/tempPlan/TempPlanCreation")
+// );
+// const PhasecreationNew = lazy(() =>
+//   import("./RegisterCampaign/PhasecreationNew")
+// );
 const DesiDeptAuth = lazy(() =>
   import("../AdminPanel/HRMS/Designation/DesiDeptAuth")
 );
-const PlanDashboard = lazy(() =>
-  import("./RegisterCampaign/PlanDashboard/PlanDashboard")
-);
-const CreateAgency = lazy(() =>
-  import("./RegisterCampaign/Masters/CreateAgency")
-);
-const CreateGoal = lazy(() => import("./RegisterCampaign/Masters/CreateGoal"));
-const CreateIndustry = lazy(() =>
-  import("./RegisterCampaign/Masters/CreateIndustry")
-);
-const AgencyOverview = lazy(() =>
-  import("./RegisterCampaign/Masters/AgencyOverview")
-);
-const GoalOverview = lazy(() =>
-  import("./RegisterCampaign/Masters/GoalOverview")
-);
-const IndustryOverview = lazy(() =>
-  import("./RegisterCampaign/Masters/IndustryOverview")
-);
-const CreateService = lazy(() =>
-  import("./RegisterCampaign/Masters/CreateService")
-);
-const ServicesOverview = lazy(() =>
-  import("./RegisterCampaign/Masters/ServicesOverview")
-);
+// const PlanDashboard = lazy(() =>
+//   import("../UnusedCode/PlanDashboard/PlanDashboard")
+// );
+// const CreateAgency = lazy(() =>
+//   import("./RegisterCampaign/Masters/CreateAgency")
+// );
+// const CreateGoal = lazy(() => import("./RegisterCampaign/Masters/CreateGoal"));
+// const CreateIndustry = lazy(() =>
+//   import("./RegisterCampaign/Masters/CreateIndustry")
+// );
+// const AgencyOverview = lazy(() =>
+//   import("./RegisterCampaign/Masters/AgencyOverview")
+// );
+// const GoalOverview = lazy(() =>
+//   import("./RegisterCampaign/Masters/GoalOverview")
+// );
+// const IndustryOverview = lazy(() =>
+//   import("./RegisterCampaign/Masters/IndustryOverview")
+// );
+// const CreateService = lazy(() =>
+//   import("./RegisterCampaign/Masters/CreateService")
+// );
+// const ServicesOverview = lazy(() =>
+//   import("./RegisterCampaign/Masters/ServicesOverview")
+// );
 const TaskStatusDeptWiseMaster = lazy(() =>
   import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster")
 );
@@ -440,18 +458,19 @@ const FinanceDashboard = lazy(() =>
 const SalesExecutiveIncentiveRequestReleaseList = lazy(() =>
   import("../Finance/SalesExecutiveIncentiveRequestReleaseList")
 );
-const AssetDashboard = lazy(() => import("../Sim/AssetDashboard"));
-const CreatePlan = lazy(() => import("./RegisterCampaign/Plan/CreatePlan"));
-const EmailEvent = lazy(() => import("./User/EmailEvent/EmailEvent"));
-const AllPlan = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
-const AllPlanData = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
-const AllPlanOverview = lazy(() =>
-  import("./RegisterCampaign/Plan/AllPlanOverview")
-);
-const AssetSummary = lazy(() => import("../Sim/AssetSummary"));
-const CaseStudyOperation = lazy(() =>
-  import("./RegisterCampaign/CaseStudies/CaseStudyOperation")
-);
+const AssetDashboard = lazy(() => import("./HRMS/Sim/AssetDashboard"));
+// const CreatePlan = lazy(() => import("./RegisterCampaign/Plan/CreatePlan"));
+const EmailEvent = lazy(() => import("./HRMS/User/EmailEvent/EmailEvent"));
+
+// const AllPlan = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
+// const AllPlanData = lazy(() => import("./RegisterCampaign/Plan/AllPlanData"));
+// const AllPlanOverview = lazy(() =>
+//   import("./RegisterCampaign/Plan/AllPlanOverview")
+// );
+const AssetSummary = lazy(() => import("./HRMS/Sim/AssetSummary"));
+// const CaseStudyOperation = lazy(() =>
+//   import("./RegisterCampaign/CaseStudies/CaseStudyOperation")
+// );
 const WFHDRegister = lazy(() => import("./WFH/WFHDRegister/WFHDRegister"));
 const UpdateDocument = lazy(() => import("./WFH/UpdateDocument"));
 const HRTemplateOverview = lazy(() => import("./WFH/HRTemplateOverview"));
@@ -474,10 +493,10 @@ const TDSdeduct = lazy(() =>
 const GSThold = lazy(() =>
   import("../Finance/Purchase Management/GSTHold/GSThold")
 );
-const NewExcelFile = lazy(() => import("./RegisterCampaign/Plan/NewExcelFile"));
-const TempExecution = lazy(() =>
-  import("./RegisterCampaign/tempPlan/TempExecution")
-);
+// const NewExcelFile = lazy(() => import("./RegisterCampaign/Plan/NewExcelFile"));
+// const TempExecution = lazy(() =>
+//   import("./RegisterCampaign/tempPlan/TempExecution")
+// );
 const AccountType = lazy(() => import("./Customer/AccountType"));
 const AccountMaster = lazy(() => import("./Customer/BrandNameType"));
 const OwnershipMaster = lazy(() => import("./Customer/OwnershipMaster"));
@@ -514,7 +533,9 @@ const PageAssignmentUser = lazy(() => import("./PageMS/PageAssignmentUser"));
 const PageAssignmentUserAdd = lazy(() =>
   import("./PageMS/PageAssignmentUserAdd")
 );
-const RepairRetrunSummary = lazy(() => import("../Sim/RepairRetrunSummary"));
+const RepairRetrunSummary = lazy(() =>
+  import("./HRMS/Sim/RepairRetrunSummary")
+);
 const VendorPagePriceOverview = lazy(() =>
   import("./PageMS/VendorPagePriceOverview")
 );
@@ -526,22 +547,24 @@ const PageEdit = lazy(() => import("./PageMS/PageEdit"));
 const AnnouncementPost = lazy(() => import("./Announcement/AnnoucementPost"));
 const AnnouncementView = lazy(() => import("./Announcement/AnnouncementView"));
 const PMSmaster = lazy(() => import("./PageMS/PMSmaster"));
-const OperationCampaigns = lazy(() =>
-  import("./RegisterCampaign/OperationCampaigns")
-);
-const OperationDashboards = lazy(() =>
-  import("./RegisterCampaign/OperationDashboards")
-);
-const OperationContents = lazy(() =>
-  import("./RegisterCampaign/OperationContents")
-);
+// const OperationCampaigns = lazy(() =>
+//   import("./RegisterCampaign/OperationCampaigns")
+// );
+// const OperationDashboards = lazy(() =>
+//   import("./RegisterCampaign/OperationDashboards")
+// );
+// const OperationContents = lazy(() =>
+//   import("./RegisterCampaign/OperationContents")
+// );
 const GstNongstIncentiveReport = lazy(() =>
   import(
     "../Finance/Sales Management/Incentive/IncentiveComponents/GstNongstIncentiveReport"
   )
 );
-const AssetRepairSummary = lazy(() => import("../Sim/AssetRepairSummaryHR"));
-const VendorSummary = lazy(() => import("../Sim/VendorSummary"));
+const AssetRepairSummary = lazy(() =>
+  import("./HRMS/Sim/AssetRepairSummaryHR")
+);
+const VendorSummary = lazy(() => import("./HRMS/Sim/VendorSummary"));
 const SalesDashboard = lazy(() => import("./Sales/SalesDashboard"));
 const SalesServicesOverview = lazy(() =>
   import("./Sales/SalesServices/SalesServicesOverview")
@@ -570,9 +593,9 @@ const CustomerDocumentMaster = lazy(() =>
 const CustomerDocumentOverview = lazy(() =>
   import("./Customer/CustomerDocumentOverview")
 );
-const NewExpertUpdate = lazy(() =>
-  import("./RegisterCampaign/Experties/NewExpertUpdate")
-);
+// const NewExpertUpdate = lazy(() =>
+//   import("./RegisterCampaign/Experties/NewExpertUpdate")
+// );
 const IncentiveCreate = lazy(() =>
   import("./Sales/IncentivePlan/IncentiveCreate")
 );
@@ -596,9 +619,7 @@ const CustomerDocumentDetails = lazy(() =>
 const CustomerDocumentUpdate = lazy(() =>
   import("./Customer/CustomerDocumentUpdate")
 );
-const OperationDashboard = lazy(() =>
-  import("./RegisterCampaign/OperationDashboard/OperationDashboard")
-);
+
 const CreateSaleBooking = lazy(() =>
   import("./Sales/SaleBooking/CreateSaleBooking")
 );
@@ -618,9 +639,11 @@ const RegisteredCampaigns = lazy(() =>
 );
 const PlanCreation = lazy(() => import("./Operation/PlanCreation"));
 const PhaseCreation = lazy(() => import("./Operation/PhaseCreation"));
+const AuditPurchase = lazy(() => import("../Purchase/AuditPurchase"));
 const CampaignExecutions = lazy(() =>
   import("./Operation/CampaignExecutionOverview/CampaignExecutions")
 );
+
 const CreatePaymentUpdate = lazy(() =>
   import("./Sales/PaymentUpdate/CreatePaymentUpdate")
 );
@@ -1215,12 +1238,12 @@ const Admin = () => {
                       contextData[6].view_value === 1 && (
                         <>
                           <Route
-                            path="/office-mast-overview/:room"
+                            path="/office-mast-overview/:room/:shift"
                             element={<OfficeMastOverview />}
                           />
                           <Route path="/common-room" element={<CommonRoom />} />
                           <Route
-                            path="/office-sitting-room-wise/:selectedRoom"
+                            path="/office-sitting-room-wise/:selectedRoom/:shift"
                             element={<SittingRoomWise />}
                           />
                         </>
@@ -1511,18 +1534,18 @@ const Admin = () => {
                       path="/sub-department-update/:id"
                       element={<SubDepartmentUpdate />}
                     />
-                    <Route
+                    {/* <Route
                       path="/operation-campaigns"
                       element={<OperationCampaigns />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/operation-dashboards"
                       element={<OperationDashboards />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/operation-contents"
                       element={<OperationContents />}
-                    />
+                    /> */}
                     <Route path="/calender" element={<CalenderCreation />} />
                     <Route
                       path="/campaign_execution"
@@ -1530,11 +1553,11 @@ const Admin = () => {
                     />
                     <Route path="/op-calender" element={<OpCalender />} />
 
-                    <Route
+                    {/* <Route
                       path="/register-campaign"
                       element={<RegisterCampaign />}
-                    />
-                    <Route path="/create-plan" element={<CreatePlan />} />
+                    /> */}
+                    {/* <Route path="/create-plan" element={<CreatePlan />} /> */}
                     {/* HOBBIES */}
                     <Route path="/hobbies/:id" element={<Hobbies />} />
                     <Route
@@ -1542,93 +1565,93 @@ const Admin = () => {
                       element={<HobbiesOverview />}
                     />
                     {/* ----------------------Case Studies -----------------------------*/}
-                    <Route
+                    {/* <Route
                       path="/operation/case-study"
                       element={<CaseStudyOperation />}
-                    />
+                    /> */}
 
                     {/* Phase Dashboard here  */}
-                    <Route
+                    {/* <Route
                       path="/phase-dashboard"
                       element={<PhaseDashboard />}
-                    />
-                    <Route path="/direct_allPlan" element={<AllPlanData />} />
-                    <Route
+                    /> */}
+                    {/* <Route path="/direct_allPlan" element={<AllPlanData />} /> */}
+                    {/* <Route
                       path="/all-planoverview/:id"
                       element={<AllPlanOverview />}
-                    />
+                    /> */}
 
-                    <Route
+                    {/* <Route
                       path="/plan-dashboard/:id"
                       element={<PlanDashboard />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/replacement-dashboard"
                       element={<ReplacementDashobard />}
-                    />
+                    /> */}
                     <Route
                       path="/operationDashboard"
                       element={<OperationDashboard />}
                     />
-                    <Route
+                    {/* <Route
                       path="/assignment-dashboard"
                       element={<AssignmentDashobard />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/manager-dashboard/:id"
                       element={<ManagerDashboard />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/manager-campaign"
                       element={<ManagerCampaign />}
-                    />
-                    <Route path="/experties" element={<Experties />} />
-                    <Route
+                    /> */}
+                    {/* <Route path="/experties" element={<Experties />} /> */}
+                    {/* <Route
                       path="/experties-overview"
                       element={<ExpertiesOverview />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/expeties-update/:id"
                       element={<NewExpertUpdate />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/registered-campaign"
                       element={<RegisteredCampaign />}
-                    />
+                    /> */}
                     <Route path="/campaign-admin" element={<CampignAdmin />} />
-                    <Route
+                    {/* <Route
                       path="/createrdashboard"
                       element={<CreaterDashboard />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/planOverview/:id"
                       element={<PlanOverview />}
-                    />
-                    <Route path="/phase/:id" element={<PhasecreationNew />} />
+                    /> */}
+                    {/* <Route path="/phase/:id" element={<PhasecreationNew />} />
                     <Route
                       path="/planCreation/:id"
                       element={<PlancreationNew />}
-                    />
-                    <Route path="/tempExcel" element={<NewExcelFile />} />
+                    /> */}
+                    {/* <Route path="/tempExcel" element={<NewExcelFile />} /> */}
                     {/* <Route path="/phase/:id" element={<PhaseCreation />} /> */}
-                    <Route
+                    {/* <Route
                       path="/planCreation/:id"
                       element={<PlancreationNew />}
                     />
                     <Route
                       path="/tempplanCreation/:id"
                       element={<TempPlanCreation />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/createAssign/:id"
                       element={<CreateAssign />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/checkPageFollowers"
                       element={<CheckPageFollowers />}
-                    />
-                    <Route path="/brandmaster" element={<BrandMaster />} />
-                    <Route path="/agency" element={<CreateAgency />} />
+                    /> */}
+                    {/* <Route path="/brandmaster" element={<BrandMaster />} /> */}
+                    {/* <Route path="/agency" element={<CreateAgency />} />
                     <Route path="/goal" element={<CreateGoal />} />
                     <Route path="/industry" element={<CreateIndustry />} />
                     <Route path="/service" element={<CreateService />} />
@@ -1644,29 +1667,29 @@ const Admin = () => {
                     <Route
                       path="/overview/service"
                       element={<ServicesOverview />}
-                    />
-                    <Route path="/contenttype" element={<ContentType />} />
-                    <Route
+                    /> */}
+                    {/* <Route path="/contenttype" element={<ContentType />} /> */}
+                    {/* <Route
                       path="/campaigncommitment"
                       element={<CampaignCommitment />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/categorymaster"
                       element={<CategoryMaster />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/subcategory"
                       element={<SubCategoryMaster />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/contentcreater"
                       element={<ContentCreater />}
-                    />
-                    <Route
+                    /> */}
+                    {/* <Route
                       path="/excusionCampaign"
                       element={<ExcusionCampaign />}
-                    />
-                    <Route path="/tempexcusion" element={<TempExecution />} />
+                    /> */}
+                    {/* <Route path="/tempexcusion" element={<TempExecution />} /> */}
                     {/* ----------------------lead source routes -----------------------------*/}
                     <Route
                       path="/exploreleads"
@@ -2316,6 +2339,7 @@ const Admin = () => {
                         <Route path="/statics" element={<PostStats />} />
                       )}
                     {/* Purchase Transaction */}
+                    <Route path="/ledger/:id" element={<Ledger />} />
                     <Route
                       path="/vendor_outstanding"
                       element={<VendorOutstandingOverview />}
@@ -2323,6 +2347,11 @@ const Admin = () => {
                     <Route
                       path="/record-purchase"
                       element={<CampaignExecution />}
+                    />
+                    <Route path="/audit-purchase" element={<AuditPurchase />} />
+                    <Route
+                      path="/purchase-dashboard"
+                      element={<PurchaseDashboard />}
                     />
                   </Route>
                   <Route path="**" element={<ErrorPage />} />

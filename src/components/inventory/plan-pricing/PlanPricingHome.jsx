@@ -3,21 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 // import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import { AppContext, useGlobalContext } from '../../../Context/Context';
+import {  useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
 import AddIcon from '@mui/icons-material/Add';
-// import FormContainer from '../../AdminPanel/FormContainer';
 import jwtDecode from 'jwt-decode';
 import { useGetAllPageListQuery } from '../../Store/PageBaseURL';
 import PlanXStatusDialog from '../plan-making/StatusDialog';
 import PlanXHeader from '../plan-making/PlanXHeader';
 import PageDialog from '../plan-making/PageDialog';
-// import { CiStickyNote } from 'react-icons/ci';
-// import PlanXNoteModal from '../plan-making/PlanXNoteModal';
 import DataGridOverviewPlanPricing from './DataGridOverviewPlanPricing';
-import numberToWords from '../../../utils/convertNumberToIndianString';
+import { useAPIGlobalContext } from '../../AdminPanel/APIContext/APIContext';
 
 function PlanPricingHome() {
   const navigate = useNavigate();
@@ -101,11 +98,12 @@ function PlanPricingHome() {
     setSuggestions([]); // Clear suggestions after selection
   };
 
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
+
   // const userID = decodedToken.id;
 
-  // const salesUsers = usersDataContext?.filter((user) => user?.department_name === 'Sales');
-  // const globalFilteredUsers = usersDataContext?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
+  // const salesUsers = userContextData?.filter((user) => user?.department_name === 'Sales');
+  // const globalFilteredUsers = userContextData?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
 
   const fetchAccounts = async () => {
     try {
@@ -215,7 +213,7 @@ function PlanPricingHome() {
 
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
-    const selectedUser = usersDataContext.find((user) => user.user_id === row.sales_executive_id);
+    const selectedUser = userContextData.find((user) => user.user_id === row.sales_executive_id);
 
     setPlanDetails({
       planName: row.planName,
@@ -264,9 +262,9 @@ function PlanPricingHome() {
         brandId: selectedAccount ? selectedAccount.brand_id : '',
       }));
     }
-    // Handle user selection from usersDataContext
+    // Handle user selection from userContextData
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find((user) => user.user_name === value);
+      const selectedUser = userContextData.find((user) => user.user_name === value);
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
@@ -559,7 +557,7 @@ function PlanPricingHome() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
-              defaultValue={usersDataContext.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
+              defaultValue={userContextData.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {

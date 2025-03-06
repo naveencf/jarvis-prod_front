@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { AiOutlineReload } from "react-icons/ai";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
+import { useGlobalContext } from "../../../Context/Context";
 import Select from "react-select";
 import WhatsappAPI from "../../WhatsappAPI/WhatsappAPI";
 // import { City } from "country-state-city";
@@ -22,11 +22,12 @@ import IndianStatesMui from "../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../ReusableComponents/IndianCitiesMui";
 import { useContext } from "react";
 import { IsApplicableData } from "../../../utils/helper";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const onBoardStatus = 2;
 
 const AdminPreOnboarding = () => {
-  const { usersDataContext } = useContext(AppContext);
+  const { userContextData } = useAPIGlobalContext();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -342,15 +343,15 @@ const AdminPreOnboarding = () => {
     };
 
     try {
-      const isLoginIdExists = usersDataContext.some(
+      const isLoginIdExists = userContextData.some(
         (user) =>
           user.user_login_id?.toLocaleLowerCase() ===
           loginId?.toLocaleLowerCase()
       );
-      const contactNumberExists = usersDataContext.some(
+      const contactNumberExists = userContextData.some(
         (user) => user.user_contact_no == personalContact
       );
-      const emailIdExists = usersDataContext.some(
+      const emailIdExists = userContextData.some(
         (user) =>
           user.user_email_id?.toLocaleLowerCase() ==
           personalEmail?.toLocaleLowerCase()
@@ -940,14 +941,14 @@ const AdminPreOnboarding = () => {
           <Select
             required={true}
             className=""
-            options={usersDataContext.map((option) => ({
+            options={userContextData.map((option) => ({
               value: option.user_id,
               label: `${option.user_name}`,
             }))}
             value={{
               value: reportL1,
               label:
-                usersDataContext.find((user) => user.user_id === reportL1)
+                userContextData.find((user) => user.user_id === reportL1)
                   ?.user_name || "",
             }}
             onChange={(e) => {

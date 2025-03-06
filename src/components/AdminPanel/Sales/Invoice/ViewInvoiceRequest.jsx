@@ -21,8 +21,7 @@ const ViewInvoiceRequest = () => {
   async function apicall() {
     try {
       const response = await axios.get(
-        `${baseUrl}sales/invoice_request${
-          loginUserId ? `?userId=${loginUserId}` : ""
+        `${baseUrl}sales/invoice_request${loginUserId ? `?userId=${loginUserId}` : ""
         }`,
         {
           headers: {

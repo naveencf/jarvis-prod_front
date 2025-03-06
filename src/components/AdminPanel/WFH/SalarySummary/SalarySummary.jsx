@@ -5,7 +5,7 @@ import DataTable from "react-data-table-component";
 import Select from "react-select";
 import Modal from "react-modal";
 import { baseUrl } from "../../../../utils/config";
-import { DataGrid,GridToolbar } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 
 const SalarySummary = () => {
   const [allSalaryData, setAllSalaryData] = useState([]);
@@ -18,28 +18,28 @@ const SalarySummary = () => {
 
   const [departmentData, setDepartmentData] = useState([]);
   const [departmentFilter, setDepartmentFilter] = useState([]);
-  const [totalSalaryDepartmentWise,setTotalSalaryDepartmentWise] = useState("")
+  const [totalSalaryDepartmentWise, setTotalSalaryDepartmentWise] =
+    useState("");
   const [dynamicFilter, setDynamicFilter] = useState("");
 
-  const [OpenBonus , setHandleOpenBonus] = useState(false)
-  const [bonusData , setBonusData] = useState([])
-  const handleOpenBonus = () =>{
-    setHandleOpenBonus(true)
-  }
-  const handleCloseBonus = () =>{
-    setHandleOpenBonus(false)
-  }
+  const [OpenBonus, setHandleOpenBonus] = useState(false);
+  const [bonusData, setBonusData] = useState([]);
+  const handleOpenBonus = () => {
+    setHandleOpenBonus(true);
+  };
+  const handleCloseBonus = () => {
+    setHandleOpenBonus(false);
+  };
 
-  const bonusDatas = () =>{
-     axios.get(baseUrl+`get_all_wfhd_users_with_bonus`).then((res)=>{
-      setBonusData(res.data.data)
-       console.log(res.data.data)
-     })
-    
-  }
-  useEffect(()=>{
-  bonusDatas()
-  },[])
+  const bonusDatas = () => {
+    axios.get(baseUrl + `get_all_wfhd_users_with_bonus`).then((res) => {
+      setBonusData(res.data.data);
+      console.log(res.data.data);
+    });
+  };
+  useEffect(() => {
+    bonusDatas();
+  }, []);
   const MonthData = [
     { label: "All", value: "" },
     { label: "January", value: "January" },
@@ -74,9 +74,6 @@ const SalarySummary = () => {
     setHandleOpenUser(false);
   };
 
-  
-  
-
   const departmentAPI = () => {
     axios.get(baseUrl + "get_wfh_users_with_dept").then((res) => {
       setDepartmentData(res.data.data);
@@ -90,13 +87,10 @@ const SalarySummary = () => {
       const monthMatch = !month || d.month === month;
       return deptMatch && monthMatch;
     });
-    const sumMonth = result?.reduce(
-      (acc, obj) => acc + obj.totalSalary,
-      0
-    );
+    const sumMonth = result?.reduce((acc, obj) => acc + obj.totalSalary, 0);
     setAllSalaryData(result);
     setTotalSalaryDepartmentWise(sumMonth);
-  }, [departmentFilter, month ]);
+  }, [departmentFilter, month]);
 
   useEffect(() => {
     departmentAPI();
@@ -210,7 +204,6 @@ const SalarySummary = () => {
       name: "Bonus",
       cell: (row) => row.totalBonus + " ₹",
     },
-
   ];
 
   const SubCatColumns = [
@@ -255,7 +248,6 @@ const SalarySummary = () => {
     },
   ];
 
-
   const BonusColumns = [
     {
       field: "S.NO",
@@ -265,7 +257,7 @@ const SalarySummary = () => {
         const rowIndex = bonusData.indexOf(params.row);
         return <div>{rowIndex + 1}</div>;
       },
-    },  
+    },
     {
       field: "user_name",
       headerName: "User Name",
@@ -296,19 +288,17 @@ const SalarySummary = () => {
       headerName: "Total Salary",
       width: 150,
     },
-      {
-        field: "toPay",
-        headerName: "To Pay",
-        width: 150,
-      },
-  ]
+    {
+      field: "toPay",
+      headerName: "To Pay",
+      width: 150,
+    },
+  ];
   return (
     <>
       <div className="row">
         <div className="form-group col-3">
-          <label className="form-label">
-            Department Name
-          </label>
+          <label className="form-label">Department Name</label>
           <Select
             options={[
               { value: "", label: "All" },
@@ -348,7 +338,7 @@ const SalarySummary = () => {
                 getData(); // Call getData function
               } else {
                 setMonth(selectedOption.value); // Update state
-              } 
+              }
             }}
           />
         </div>
@@ -370,17 +360,20 @@ const SalarySummary = () => {
           />
         </div>
         <div className="col-2 mt-4">
-        <button className="btn btn-primary" onClick={handleOpenBonus}>Bonus Users List</button>
+          <button className="btn btn-primary" onClick={handleOpenBonus}>
+            Bonus Users List
+          </button>
         </div>
-        
       </div>
-      
+
       <div className="master-card-css">
         <FormContainer mainTitle="Salary Summary" link={"/admin/"} />
         <div className="card">
           <div className="card-header sb">
             {/* <h5>Total Salary Summary</h5> */}
-            <h5 style={{color:'green'}}>Total Deparmtent Wise Salary:- {totalSalaryDepartmentWise}</h5>
+            <h5 style={{ color: "green" }}>
+              Total Deparmtent Wise Salary:- {totalSalaryDepartmentWise}
+            </h5>
             <input
               type="text"
               placeholder="Search Here"
@@ -415,7 +408,6 @@ const SalarySummary = () => {
               bottom: "auto",
               marginRight: "-50%",
               transform: "translate(-50%, -50%)",
-             
             },
           }}
         >
@@ -426,15 +418,14 @@ const SalarySummary = () => {
             x
           </button>
           <DataGrid
-          rows={userCount}
-          columns={SubCatColumns}
-          getRowId={(row)=>row?.user_id}
-          slots={{
-            toolbar: GridToolbar
-          }}
+            rows={userCount}
+            columns={SubCatColumns}
+            getRowId={(row) => row?.user_id}
+            slots={{
+              toolbar: GridToolbar,
+            }}
           />
         </Modal>
-
 
         {/* bonus user list  */}
         <Modal
@@ -452,7 +443,6 @@ const SalarySummary = () => {
               bottom: "auto",
               marginRight: "-50%",
               transform: "translate(-50%, -50%)",
-             
             },
           }}
         >
@@ -463,12 +453,12 @@ const SalarySummary = () => {
             x
           </button>
           <DataGrid
-          rows={bonusData}
-          columns={BonusColumns}
-          getRowId={(row)=>row?.user_id}
-          slots={{
-            toolbar: GridToolbar
-          }}
+            rows={bonusData}
+            columns={BonusColumns}
+            getRowId={(row) => row?.user_id}
+            slots={{
+              toolbar: GridToolbar,
+            }}
           />
         </Modal>
       </div>

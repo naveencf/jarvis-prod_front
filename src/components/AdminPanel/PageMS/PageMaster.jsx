@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
+import { useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
@@ -44,6 +44,7 @@ import { useParams, useNavigate } from "react-router";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import { useContext } from "react";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const PageMaster = () => {
   const location = useLocation();
@@ -71,6 +72,7 @@ const PageMaster = () => {
   const [link, setLink] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const [platformId, setPlatformId] = useState("666818824366007df1df1319");
+
   const [primary, setPrimary] = useState({ value: "No", label: "No" });
   const [categoryId, setCategoryId] = useState("");
   const [subCategoryId, setSubCategoryId] = useState("");
@@ -144,6 +146,9 @@ const PageMaster = () => {
   const { data: profileData } = useGetAllProfileListQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data || [];
+  console.log(platformData,'platformData');
+  
+
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
@@ -167,7 +172,8 @@ const PageMaster = () => {
 
   const [existError, setExistError] = useState("");
   const [messageColor, setMessageColor] = useState("");
-  const { usersDataContext } = useContext(AppContext);
+  const { userContextData } = useAPIGlobalContext()
+
   const getLanguage = async () => {
     try {
       const res = await axios.get(`${baseUrl}v1/get_all_page_languages`);
@@ -179,6 +185,11 @@ const PageMaster = () => {
 
   useEffect(() => {
     getLanguage();
+    const params = new URLSearchParams(window.location.search);
+    const username = params.get("username");
+    if (username !== "") {
+      setPageName(username)
+    }
   }, []);
 
   useEffect(() => {
@@ -635,10 +646,11 @@ const PageMaster = () => {
   const checkPageExistence = async (name) => {
     if (!name) return;
     try {
-      const res = await axios.get(
-        `${baseUrl}v1/check_page_exist_or_not/${name}`
-      );
-      if (res.data?.message == "This Page already exists") {
+      const res = await axios.post(`${baseUrl}v1/check_page_exist_or_not`, {
+        page_name: name,
+        platform_name: platformData.find((ob) => ob._id === platformId)?.platform_name || ""
+      });
+      if (res.data?.message === "This Page already exists") {
         alert(res.data.message);
         setPageName("");
       }
@@ -646,6 +658,7 @@ const PageMaster = () => {
       console.error("Error fetching page existence:", error);
     }
   };
+  
 
   const handleUpadteFollowers = async () => {
     const payload = {
@@ -1291,7 +1304,7 @@ const PageMaster = () => {
                 </label>
                 <Select
                   // components={{ MenuList }}
-                  options={usersDataContext
+                  options={userContextData
                     // .filter((item)=>item?.department_name == "Finance")
                     .map((option) => ({
                       value: option.user_id,
@@ -1301,7 +1314,7 @@ const PageMaster = () => {
                   value={{
                     value: singleVendor?.closed_by || closeBy,
                     label:
-                      usersDataContext?.find(
+                      userContextData?.find(
                         (role) =>
                           role.user_id == singleVendor?.closed_by ||
                           role.user_id == closeBy

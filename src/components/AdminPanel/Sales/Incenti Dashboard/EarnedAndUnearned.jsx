@@ -40,14 +40,12 @@ const EarnedAndUnearned = () => {
     setIsEarnedAndUnearnedDataLoading(true);
     try {
       const response = await axios.get(
-        `${baseUrl}sales/incentive_calculation_status_wise_data/${
-          userData.id
-        }?incentive_earning_status=${userData.status}${
-          userData.flag === 0
-            ? `&year=${extractYear(userData.month)}&month=${extractMonthNumber(
-                userData.month
-              )}`
-            : ""
+        `${baseUrl}sales/incentive_calculation_status_wise_data/${userData.id
+        }?incentive_earning_status=${userData.status}${userData.flag === 0
+          ? `&year=${extractYear(userData.month)}&month=${extractMonthNumber(
+            userData.month
+          )}`
+          : ""
         }`,
         {
           headers: {

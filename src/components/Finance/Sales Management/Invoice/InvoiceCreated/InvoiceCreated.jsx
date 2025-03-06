@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import { useGlobalContext } from "../../../../../Context/Context";
-import { useNavigate, Link } from "react-router-dom";
-import { baseUrl } from "../../../../../utils/config";
 import ImageView from "../../../ImageView";
 import {
   invoiceCreatedColumns,
@@ -15,6 +12,7 @@ import InvoiceCreatedFilters from "./Components/InvoiceCreatedFilters";
 import EditInvoiceActionDialog from "../PendingInvoice/EditInvoiceActionDialog";
 import View from "../../../../AdminPanel/Sales/Account/View/View";
 import { useGetAllProformaListQuery } from "../../../../Store/API/Finance/InvoiceRequestApi";
+import { useAPIGlobalContext } from "../../../../AdminPanel/APIContext/APIContext";
 
 const InvoiceCreated = ({
   setUniqueCustomerCount,
@@ -32,7 +30,8 @@ const InvoiceCreated = ({
     isLoading: allPendingInvoiceCreatedLoading,
   } = useGetAllProformaListQuery({ status: "uploaded", type: "tax-invoice" });
 
-  const { toastAlert, toastError, usersDataContext } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
@@ -68,7 +67,7 @@ const InvoiceCreated = ({
     if (!allPendingInvoiceCreatedList) return;
 
     const mergedData = allPendingInvoiceCreatedList.map((item) => {
-      const userData = usersDataContext?.find(
+      const userData = userContextData?.find(
         (user) => user?.user_id === item?.created_by
       );
 

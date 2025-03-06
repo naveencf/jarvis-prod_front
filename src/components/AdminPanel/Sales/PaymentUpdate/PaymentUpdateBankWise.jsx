@@ -131,7 +131,7 @@ const PaymentUpdateBankWise = () => {
           pagination={[100]}
           isLoading={paymentDetailsLoading}
           tableName={"PaymentUpdateBankWise"}
-          //   rowSelectable={true}
+        //   rowSelectable={true}
         />
       </div>
     </>

@@ -1,8 +1,8 @@
 import React from "react";
-import UserNav from "../../Pantry/UserPanel/UserNav";
+import UserNav from "../../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import FormContainer from "../../AdminPanel/FormContainer";
-import DeleteButton from "../../AdminPanel/DeleteButton";
+import DeleteButton from "../DeleteButton";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
@@ -27,7 +27,7 @@ const DataSubCategory = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_all_data_categorys")
+      .get(baseUrl + "get_all_data_categorys")
       .then((res) => {
         setCategoryData(res.data.simcWithSubCategoryCount);
       });
@@ -92,7 +92,7 @@ const DataSubCategory = () => {
         );
       } else {
         const response = await axios.post(
-          baseUrl+"add_data_sub_category",
+          baseUrl + "add_data_sub_category",
           {
             data_sub_cat_name: subCatName,
             cat_id: categoryName,
@@ -110,7 +110,7 @@ const DataSubCategory = () => {
 
   async function getModalData() {
     const res = await axios.get(
-      baseUrl+"get_all_data_Sub_categories"
+      baseUrl + "get_all_data_Sub_categories"
     );
     setModalData(res.data);
     setModalFilter(res.data);
@@ -127,7 +127,7 @@ const DataSubCategory = () => {
   };
   const handleModalUpdate = () => {
     axios
-      .put(baseUrl+"update_data_sub_category", {
+      .put(baseUrl + "update_data_sub_category", {
         _id: modalId,
         cat_id: categoryNameUpdate,
         data_sub_cat_name: subCatNameUpdate,

@@ -13,8 +13,8 @@ import * as XLSX from "xlsx";
 import jwtDecode from "jwt-decode";
 // import BrandTableSkeleton from "../../InstaApi.jsx/Analytics/Brand/Skeleton/BrandTableSkeleton";
 import formatString from "../../../../utils/formatString";
-import { ApiContextData } from "../../../AdminPanel/APIContext/APIContext";
 import { useContext } from "react";
+import { ApiContextData } from "../../../AdminPanel/APIContext/APIContext";
 
 function ManagerTeamView() {
   const { userContextData } = useContext(ApiContextData);

@@ -23,8 +23,6 @@ const PhaseTab = ({
   const [shortCodeCount, setShortCodeCount] = useState({});
   const [usernameCount, setUsernameCount] = useState({});
 
-
-
   const handleOpen = (filteredData) => {
     setModalData(filteredData);
     setUsernameCount(getShortCodeCountByUsername(filteredData));
@@ -50,7 +48,7 @@ const PhaseTab = ({
 
   const handleNext = () => {
     const virtualPhase = addAll();
-    if (virtualPhase.length >= visibleTabs.length) {
+    if (virtualPhase.length > visibleTabs.length) {
       setVisibleTabs((prev) => {
         const lastIndex = prev[prev.length - 1];
         if (lastIndex < virtualPhase.length - 1) {
@@ -83,7 +81,7 @@ const PhaseTab = ({
 
   const handlePrevious = () => {
     const virtualPhase = addAll();
-    if (virtualPhase.length >= visibleTabs.length) {
+    if (virtualPhase.length > visibleTabs.length) {
       setVisibleTabs((prev) => {
         const firstIndex = prev[0];
         if (firstIndex > 0) {
@@ -121,7 +119,7 @@ const PhaseTab = ({
   }
 
   // const getShortCodeCountByPlatform = (data) => {
-  //   const shortCode = data?.shortCode || "N/A"; 
+  //   const shortCode = data?.shortCode || "N/A";
 
   //   return data.reduce((acc, item) => {
   //     const platform = item.platform_name;
@@ -136,16 +134,16 @@ const PhaseTab = ({
     return data.reduce((acc, item) => {
       const platform = item.platform_name || "Unknown";
       const shortCode = item.shortCode || "N/A";
-  
+
       if (!acc[platform]) {
         acc[platform] = [];
       }
-  
+
       // Add only unique shortcodes to the array
       if (!acc[platform].includes(shortCode)) {
         acc[platform].push(shortCode);
       }
-  
+
       return acc;
     }, {});
   };
@@ -153,19 +151,18 @@ const PhaseTab = ({
   const getShortCodeCountByUsername = (data) => {
     return data.reduce((acc, item) => {
       const user = item?.owner_info?.username || "Unknown";
-      const shortCode = item?.shortCode || "N/A"; 
-  
+      const shortCode = item?.shortCode || "N/A";
+
       if (!acc[user]) {
         acc[user] = { count: 0, shortCodes: [] };
       }
-  
+
       acc[user].count += 1;
       acc[user].shortCodes.push(shortCode);
-  
+
       return acc;
     }, {});
   };
-  
 
   return (
     <div className="tabs-container tabslide">
@@ -198,17 +195,16 @@ const PhaseTab = ({
                   }
                   onClick={() => handleTabClick(phase, index)}
                 >
-                  {phase.label}
+                  {phase.label ? phase.label : "service"}
                   <button
                     className="ml-2 px-2 py-1 border border-secondary rounded-pill "
                     onClick={() => handleOpen(filteredData)}
                   >
-                    {filteredData.length}
+                    {filteredData?.length}
                   </button>
                 </button>
               );
             })}
-
         </div>
 
         {phaseList.length > 1 && (
@@ -233,7 +229,6 @@ const PhaseTab = ({
         handleTabChange={handleTabChange}
         shortCodeCount={shortCodeCount}
         usernameCount={usernameCount}
-   
         PlanData={PlanData}
       />
     </div>

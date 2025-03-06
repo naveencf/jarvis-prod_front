@@ -27,14 +27,14 @@ import ZohoBillCreation from './Components/ZohoBillCreation';
 import { Balance } from '@mui/icons-material';
 import { formatNumber } from '../../../../utils/formatNumber';
 import { useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
-import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 import PaymentRequestFromPurchase from '../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase';
+import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 
 export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
   const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
-  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequerst } = useGetVendorPaymentRequestsQuery();
+  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery();
   const [updatePurchaseRequest, { isLoading: updateLoading, error: updateError }] = useUpdatePurchaseRequestMutation();
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
@@ -96,7 +96,7 @@ export default function PendingPaymentRequest() {
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
-  console.log(contextData, "contextData")
+  // console.log(contextData, "contextData")
   const getValidationCSSForRemainder = (params) => {
     const reminder = phpRemainderData?.filter((item) => item.request_id == params.row.request_id);
     return reminder?.length > 2 ? 'bg-danger' : '';
@@ -138,7 +138,7 @@ export default function PendingPaymentRequest() {
     //   .catch((error) => {
     //     console.log("Error while getting single user data");
     //   });
-    refetchPaymentRequerst();
+    refetchPaymentRequest();
   };
 
   useEffect(() => {
@@ -209,12 +209,12 @@ export default function PendingPaymentRequest() {
       totalFY: calculateTotalFY(row),
     };
     setLoading(true);
-    setRowData(enrichedRow);
+    setRowData(row);
     // console.log(Number(row.outstandings) - Number(row?.getway_process_amt), 'bal-proc');
     setPaymentAmount(Number(row.outstandings) - Number(row?.proccessingAmount));
     setNetAmount(row.outstandings);
     setBaseAmount(row.base_amount != 0 ? row.base_amount : row.request_amount);
-    console.log(row, row?.proccessingAmount, "row");
+    // console.log(row, row?.proccessingAmount, "row");
     setPayDialog(true);
   };
 
@@ -517,12 +517,14 @@ export default function PendingPaymentRequest() {
   const handleZohoStatusUpload = async (row) => {
     // e.preventDefault();
     // Toggle zoho_status: If it's 0, change to 1, otherwise change to 0
-    const updatedStatus = row.zoho_status == "0" ? "1" : "0";
+    // const updatedStatus = row.zoho_status == "0" ? "1" : "0";
     // zoho_status
-    console.log(updatedStatus, "updatedStatus")
+    // console.log(updatedStatus, "updatedStatus")
     try {
-      await updatePurchaseRequest({ _id: row._id, formData: { ...row, zoho_status: updatedStatus } }).unwrap();
-      toastAlert("Purchase request updated successfully!");
+      await updatePurchaseRequest({ _id: row._id, formData: { zoho_status: !row.zoho_status, invc_img: row.invc_img || "" } }).unwrap();
+      toastAlert("Zoho Status updated successfully!");
+      refetchPaymentRequest();
+
     } catch (err) {
       console.error("Failed to update request:", err);
     }
@@ -671,7 +673,7 @@ export default function PendingPaymentRequest() {
                       Check Balance
                     </button>
                   </>}
-                  <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={() => refetchPaymentRequerst()}>
+                  <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={() => refetchPaymentRequest()}>
                     Refetch
                   </button>
                   <button className="btn cmnbtn btn_sm btn-secondary ms-2" onClick={(e) => handleClearSameRecordFilter(e)}>
@@ -690,7 +692,7 @@ export default function PendingPaymentRequest() {
         {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />}
         {payThroughVendor && <PayThroughVendorDialog setPayThroughVendor={setPayThroughVendor} payThroughVendor={payThroughVendor} rowSelectionModel={selectedRows} filterData={filterData} />}
         {bulkPayThroughVendor && <BulkPayThroughVendorDialog setBulkPayThroughVendor={setBulkPayThroughVendor} bulkPayThroughVendor={bulkPayThroughVendor} rowSelectionModel={selectedRows} filterData={filterData} />}
-        {payDialog && <PayVendorDialog callApi={refetchPaymentRequerst} userName={userName} loading={loading} setLoading={setLoading} phpRemainderData={phpRemainderData} rowData={rowData} setRowData={setRowData} paymentAmout={paymentAmout} setPaymentAmount={setPaymentAmount} netAmount={netAmount} setNetAmount={setNetAmount} baseAmount={baseAmount} setBaseAmount={setBaseAmount} payDialog={payDialog} setPayDialog={setPayDialog} rowSelectionModel={selectedRows} filterData={filterData} GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount} refetch={refetch} setRefetch={refetchPaymentRequerst} />}
+        {payDialog && <PayVendorDialog callApi={refetchPaymentRequest} userName={userName} loading={loading} setLoading={setLoading} phpRemainderData={phpRemainderData} rowData={rowData} setRowData={setRowData} paymentAmout={paymentAmout} setPaymentAmount={setPaymentAmount} netAmount={netAmount} setNetAmount={setNetAmount} baseAmount={baseAmount} setBaseAmount={setBaseAmount} payDialog={payDialog} setPayDialog={setPayDialog} rowSelectionModel={selectedRows} filterData={filterData} GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount} refetch={refetch} setRefetch={refetchPaymentRequest} />}
         {/* <ZohoBillCreation
           rowData={rowData}
           paymentAmout={paymentAmout}
@@ -699,7 +701,7 @@ export default function PendingPaymentRequest() {
           TDSValue={TDSValue} setTDSValue={setTDSValue}
         /> */}
 
-        {showDisCardModal && <DiscardConfirmation userName={userName} rowData={rowData} setShowDiscardModal={setShowDiscardModal} userID={userID} callApi={refetchPaymentRequerst} />}
+        {showDisCardModal && <DiscardConfirmation userName={userName} rowData={rowData} setShowDiscardModal={setShowDiscardModal} userID={userID} callApi={refetchPaymentRequest} />}
 
         {remainderDialog && (
           <ShowDataModal
@@ -712,7 +714,7 @@ export default function PendingPaymentRequest() {
             aknowledgementDialog={aknowledgementDialog}
             setAknowledgementDialog={setAknowledgementDialog}
             userName={userName}
-            callApi={refetchPaymentRequerst}
+            callApi={refetchPaymentRequest}
             setRemainderDialo={setRemainderDialog}
           />
         )}

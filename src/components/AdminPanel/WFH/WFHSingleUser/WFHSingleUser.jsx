@@ -3,7 +3,6 @@ import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import FileOpenIcon from "@mui/icons-material/FileOpen";
 import DataTable from "react-data-table-component";
 import axios from "axios";
-import FormContainer from "../../FormContainer";
 import { useGlobalContext } from "../../../../Context/Context";
 import jwtDecode from "jwt-decode";
 import * as XLSX from "xlsx";
@@ -16,7 +15,6 @@ import {
   View,
 } from "@react-pdf/renderer";
 import { Text, StyleSheet } from "@react-pdf/renderer";
-
 import MyTemplate1 from "../SalaryGeneration/Template";
 import MyTemplate2 from "../SalaryGeneration/Template2";
 import MyTemplate3 from "../SalaryGeneration/Template3";
@@ -28,8 +26,8 @@ import useInvoiceTemplateImages from "../Templates/Hooks/useInvoiceTemplateImage
 import PreviewInvoice from "./PreviewInvoice";
 import { baseUrl } from "../../../../utils/config";
 import WFHTemplateOverview from "./WFHTemplateOverview";
-import { Link } from "react-router-dom";
-import UserSingleWFHDSalaryTab from "../../User/UserSingleWFHDSalaryTab";
+import FormContainer from "../../FormContainer";
+import UserSingleWFHDSalaryTab from "../../HRMS/User/UserSingleWFHDSalaryTab";
 
 const images = useInvoiceTemplateImages();
 

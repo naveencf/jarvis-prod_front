@@ -42,7 +42,6 @@ const PageOverviewNew = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // const { usersDataContext } = useContext(AppContext);
   const [vendorDetails, setVendorDetails] = useState(null);
   const [activeTab, setActiveTab] = useState('Tab0');
   const [user, setUser] = useState();

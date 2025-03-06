@@ -1,11 +1,12 @@
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import React, { useContext } from "react";
-import { AppContext } from "../../../../Context/Context";
+// import { AppContext } from "../../../../Context/Context";
 import { Button } from "@mui/material";
 import { formatNumber } from "../../../../utils/formatNumber";
 import * as XLSX from "xlsx";
 import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const FilterWisePageOverview = ({
   platformData,
@@ -19,7 +20,9 @@ const FilterWisePageOverview = ({
   newFilterData,
   vendorData,
 }) => {
-  const { usersDataContext } = useContext(AppContext);
+  // const { userContextData } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
+
   const handleExport = () => {
     const formattedData = newFilterData?.map((row, index) => {
       const platformName = platformData?.find(
@@ -34,7 +37,7 @@ const FilterWisePageOverview = ({
         (item) => item?.vendor_id === row.temp_vendor_id
       )?.vendor_name;
 
-      const closeByName = usersDataContext?.find(
+      const closeByName = userContextData?.find(
         (item) => item?.user_id === row.page_closed_by
       )?.user_name;
 
@@ -304,7 +307,7 @@ const FilterWisePageOverview = ({
               ),
             ]}
             getOptionLabel={(option) => {
-              const users = usersDataContext?.find((e) => e.user_id == option);
+              const users = userContextData?.find((e) => e.user_id == option);
               const count = vendorTypes?.filter(
                 (d) => d.page_closed_by == option
               )?.length;

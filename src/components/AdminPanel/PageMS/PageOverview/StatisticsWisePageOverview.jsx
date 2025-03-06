@@ -3,8 +3,8 @@ import Brightness6Icon from "@mui/icons-material/Brightness6";
 import ToggleOffIcon from "@mui/icons-material/ToggleOff";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import { AppContext } from "../../../../Context/Context";
 import axios from "axios";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const StatisticsWisePageOverview = ({
   tabFilterData,
@@ -14,7 +14,8 @@ const StatisticsWisePageOverview = ({
   allVendorWhats,
   newFilterData,
 }) => {
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
+
   const [pageLevels, setPageLevels] = useState([]);
   const [pageStatus, setPageStatus] = useState([]);
   const [zeroLinksCount, setZeroLinksCount] = useState(0);
@@ -159,7 +160,7 @@ const StatisticsWisePageOverview = ({
   const userCounts = Object.keys(closedByCounts)?.map((key) => {
     const userId = parseInt(key);
     const userName =
-      usersDataContext?.find((u) => u?.user_id === parseInt(key))?.user_name ||
+      userContextData?.find((u) => u?.user_id === parseInt(key))?.user_name ||
       "NA";
     return { userId, userName, count: closedByCounts[key] };
   });

@@ -2,8 +2,8 @@ import { createContext, useEffect, useContext, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { baseUrl } from "../utils/config";
 import getDecodedToken from "../utils/DecodedToken";
+import { baseUrl } from "../utils/config";
 
 const AppContext = createContext();
 const AppProvider = ({ children }) => {
@@ -16,7 +16,7 @@ const AppProvider = ({ children }) => {
   const [categoryDataContext, setCategoryData] = useState([]);
   const [getBrandDataContext, setBrandDataContext] = useState([]);
   const [getAssetDataContext, setAssetDataContext] = useState([]);
-  const [usersDataContext, setUsersContextData] = useState([]);
+  // const [usersDataContext, setUsersContextData] = useState([]);
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
 
   const toastAlert = (text) => {
@@ -43,12 +43,12 @@ const AppProvider = ({ children }) => {
     const res = await axios.get(baseUrl + "get_all_sims");
     setAssetDataContext(res?.data.data);
   }
-  async function getUserAPIData() {
-    // axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      setUsersContextData(res?.data.data);
-    });
-  }
+  // async function getUserAPIData() {
+  //   // axios.get(baseUrl + "get_all_users_with_required_data").then((res) => {
+  //   axios.get(baseUrl + "get_all_users").then((res) => {
+  //     setUsersContextData(res?.data.data);
+  //   });
+  // }
 
   async function getauth() {
     axios
@@ -62,7 +62,7 @@ const AppProvider = ({ children }) => {
     // getAllCategoryContextFunction();
     // getBrandData();
     // getAssetData();
-    getUserAPIData();
+    // getUserAPIData();
     // getauth();
   }, []);
   return (
@@ -75,7 +75,7 @@ const AppProvider = ({ children }) => {
         categoryDataContext,
         getBrandDataContext,
         getAssetDataContext,
-        usersDataContext,
+        // usersDataContext,
         activeAccordionIndex,
         setActiveAccordionIndex,
       }}

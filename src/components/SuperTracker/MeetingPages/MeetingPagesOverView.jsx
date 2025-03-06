@@ -9,6 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton } from '@mui/material';
 import CreateMeetingPages from "./CreateMeetingPages";
 import { AppContext, useGlobalContext } from "../../../Context/Context";
+import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
 
 const achievedStatus = [
     { value: 1, label: "Achieved" },
@@ -16,7 +17,8 @@ const achievedStatus = [
 ];
 
 const MeetingPagesOverView = () => {
-    const {  usersDataContext } = useContext(AppContext);
+
+    const {userContextData} = useAPIGlobalContext()
     const { toastAlert, toastError } = useGlobalContext();
     const location = useLocation();
     const { creatorDetail } = location.state || {}
@@ -49,7 +51,7 @@ const MeetingPagesOverView = () => {
     useEffect(() => {
         getMeetingPages();
         getMeetingViapage();
-    }, [usersDataContext]);
+    }, [userContextData]);
 
     const handleEdit = async (row) => {
         setModalOpenUpdate(true)
@@ -87,7 +89,7 @@ const MeetingPagesOverView = () => {
             headerName: "User Name",
             width: 200,
             renderCell: (params) =>
-                usersDataContext?.find(
+                userContextData?.find(
                     (user) => user?.user_id === params.row.poc
                 )?.user_name || "N/A",
         }

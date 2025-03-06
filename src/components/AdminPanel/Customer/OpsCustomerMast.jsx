@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useGlobalContext } from "../../../Context/Context";
+// import { useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
 import { Navigate } from "react-router";
 import Select from "react-select";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
   
 const OpsCustomerMaster = () => {
-  const {usersDataContext} = useGlobalContext()
+  // const {userContextData} = useGlobalContext()
+  const {userContextData} = useAPIGlobalContext()
+
   const { toastAlert, toastError  } = useGlobalContext();
   const [customerName, setCustomerName] = useState("");
   const [customerTypeName, setCustomerTypeName] = useState("");
@@ -419,14 +422,14 @@ const getData = () => {
             Account Owner Name <sup style={{ color: "red" }}>*</sup>
           </label>
           <Select
-            options={usersDataContext.map((option) => ({
+            options={userContextData.map((option) => ({
               value: option.user_id,
               label: option.user_name,
             }))}
             value={{
               value: accountOwnerName,
               label:
-              usersDataContext?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
+              userContextData?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
             }}
             onChange={(e) => {
               setAccountOwnerName(e.value);
