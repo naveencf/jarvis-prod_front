@@ -32,7 +32,7 @@ import Swal from "sweetalert2";
 import jwtDecode from "jwt-decode";
 
 const AuditPurchase = () => {
-  const { toastAlert, toastError } = useGlobalContext();
+  const { toastAlert, toastError, data: contextData } = useGlobalContext();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [phaseList, setPhaseList] = useState([]);
   const [vendorName, setVendorName] = useState("");
@@ -114,12 +114,12 @@ const AuditPurchase = () => {
           return selectedVendorId &&
             (shortCodes?.length || (startDate && endDate) || selectedPlan)
             ? {
-                ...(selectedVendorId && { vendorId: selectedVendorId }),
-                ...(shortCodes?.length && { shortCodes: sCodes }),
-                ...(startDate && { startDate }),
-                ...(endDate && { endDate }),
-                ...(selectedPlan && { campaignId: selectedPlan }),
-              }
+              ...(selectedVendorId && { vendorId: selectedVendorId }),
+              ...(shortCodes?.length && { shortCodes: sCodes }),
+              ...(startDate && { startDate }),
+              ...(endDate && { endDate }),
+              ...(selectedPlan && { campaignId: selectedPlan }),
+            }
             : {};
         case "Tab2":
           return startDate && endDate ? { startDate, endDate } : {};
@@ -204,8 +204,8 @@ const AuditPurchase = () => {
         amount: priceMillionWise
           ? Math.floor(priceMillionWise)
           : price
-          ? price
-          : row.amount,
+            ? price
+            : row.amount,
         shortCode: row.shortCode,
       });
       if (res.error) throw new Error(res.error);
@@ -775,8 +775,8 @@ const AuditPurchase = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                      ? "pending"
-                      : row.audit_status,
+                        ? "pending"
+                        : row.audit_status,
                 };
                 handledataUpdate({
                   ...row,
@@ -784,13 +784,12 @@ const AuditPurchase = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${
-                row.audit_status === "pending"
+              className={`pointer badge ${row.audit_status === "pending"
                   ? "btn btn-sm cmnbtn btn-primary"
                   : row.audit_status !== "audited"
-                  ? "bg-success"
-                  : "btn btn-sm cmnbtn btn-primary"
-              }`}
+                    ? "bg-success"
+                    : "btn btn-sm cmnbtn btn-primary"
+                }`}
             >
               {row.audit_status}
             </button>
@@ -854,11 +853,11 @@ const AuditPurchase = () => {
         return row.audit_status !== "pending"
           ? "#c4fac4"
           : row.amoumt == 0 || row.vendor_name == ""
-          ? "#ffff008c"
-          : "";
+            ? "#ffff008c"
+            : "";
       },
     },
-    {
+    contextData && contextData[66]?.view_value == 1 && {
       name: "Action",
       key: "action",
       width: 100,
@@ -978,7 +977,7 @@ const AuditPurchase = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-            modalData?.data?.data?.requestStatsUpdate?.length ? (
+              modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1310,9 +1309,8 @@ const AuditPurchase = () => {
             )}
             <button
               title="Reload Data"
-              className={`icon-1 btn_sm btn-outline-primary  ${
-                fetchingPlanData && "animate_rotate"
-              }`}
+              className={`icon-1 btn_sm btn-outline-primary  ${fetchingPlanData && "animate_rotate"
+                }`}
               onClick={refetchPlanData}
             >
               <ArrowClockwise />
