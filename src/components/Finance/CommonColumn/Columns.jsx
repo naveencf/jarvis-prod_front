@@ -2806,12 +2806,12 @@ export const pendingPaymentRequestColumns = ({
             >
               <AccountBalanceIcon style={{ fontSize: "25px" }} />
             </Button>
-            <a
+            {/* <a
               style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
               onClick={() => handleOpenSameVender(row?.vendor_name)}
             >
               {row?.vendor_name}
-            </a>
+            </a> */}
           </div>
         );
       },

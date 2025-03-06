@@ -41,7 +41,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     request_by: userName,
     outstandings: 0,
     payment_type: 'payment',
-    advanced_payment_id: "",
+    // advanced_payment_id: null,
     advance_name: "",
     at_price: "",
     // for_campaign_id: "",
@@ -246,6 +246,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       // const tempOutstanding =parseInt(vendorPhpDetail[0]?.outstanding);
       await addPurchase(payload).unwrap();
       toastAlert("Payment requested successfully!");
+      refetchPaymentRequest();
       setFormData({
         gst: false,
         outstandings: 0,
@@ -298,6 +299,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       await updatePurchaseRequest({ _id: vendorDetail._id, formData: payload }).unwrap();
 
       toastAlert("Payment request updated successfully!");
+      refetchPaymentRequest();
       setFormData({
         gst: false,
         outstandings: 0,
