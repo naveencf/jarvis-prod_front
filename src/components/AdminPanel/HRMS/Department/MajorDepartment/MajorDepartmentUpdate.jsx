@@ -4,8 +4,9 @@ import { Navigate, useParams } from "react-router-dom";
 import { useState } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
 import { baseUrl } from "../../../../../utils/config";
-import FormContainer from "../../../FormContainer";
 import FieldContainer from "../../../FieldContainer";
+import FormContainer from "../../../FormContainer";
+
 
 export default function MajorDepartmentUpdate() {
   const { toastAlert, toastError } = useGlobalContext();

@@ -2739,7 +2739,7 @@ textarea.form-control {
 
 .form-group {
   position: relative;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 
   .custom-btn-2 {
     pointer-events: none;
@@ -2773,11 +2773,17 @@ textarea.form-control {
 }
 
 .form-group label {
-  font-size: 13.5px;
+  font-size: 14px;
   line-height: 16px;
-  font-weight: 500;
+  font-weight: 400;
   margin-bottom: 8px;
   color: var(--dark);
+}
+
+.form-group p {
+  font-size: 14px;
+  line-height: 18px;
+  color: var(--medium);
 }
 
 .form-text {
@@ -2833,10 +2839,11 @@ textarea.form-control {
 }
 
 .form-check-inline .form-check-input {
-  position: static;
+  position: relative;
   margin-top: 0;
   margin-right: 0.3125rem;
   margin-left: 0;
+  top: 3px;
 }
 
 .valid-feedback {
@@ -6107,7 +6114,7 @@ body.sidebar-toggled .topbarBrand {
 .card-body {
   flex: 1 1 auto;
   min-height: 1px;
-  padding: 20px 20px 0px;
+  padding: 20px 20px 4px;
   width: 100%;
 
   .card {
@@ -6254,6 +6261,18 @@ body.sidebar-toggled .topbarBrand {
   }
 }
 
+.tabs.sm {
+  min-height: 40px;
+  height: 40px;
+  border-radius: 12px;
+
+  .btn {
+    min-height: 40px;
+    font-size: 13px;
+    font-weight: 400;
+  }
+}
+
 .sb {
   display: flex;
   justify-content: space-between !important;
@@ -6317,7 +6336,7 @@ body.sidebar-toggled .topbarBrand {
   display: flex;
   flex-direction: row;
   height: max-content;
-  min-height: 60px;
+  min-height: 54px;
   background-color: var(--card-bg);
   border-radius: var(--radiusS) var(--radiusS) 0px 0px;
   border-bottom: 1px solid var(--border);
@@ -12247,7 +12266,7 @@ body.sidebar-toggled .fixed-top {
 }
 
 .mt28 {
-  margin-top: 24px;
+  margin-top: 28px;
 }
 
 .mt30 {
@@ -13936,8 +13955,8 @@ body.sidebar-toggled .topbar {
 .page_content {
   display: flex;
   flex-direction: column;
-  padding: 20px 20px 20px 20px;
-  height: calc(100vh - 70px);
+  padding: 20px 20px 0px 20px;
+  /* height: calc(100vh - 70px); */
 }
 
 .grid-con {
@@ -17770,7 +17789,7 @@ col,
   z-index: 10000;
 
   .ReactModal__Content {
-    background-color: var(--body-bg) !important;
+    background-color: var(--body-sub-bg) !important;
   }
 
   .ReactModal__Content::-webkit-scrollbar {
@@ -17965,20 +17984,19 @@ col,
 
 .text-area {
   width: 100%;
-  height: 60px;
-  padding: 10px;
+  height: 54px;
+  padding: 12px 12px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radiusS);
   background: var(--body-bg);
   color: var(--dark);
   font-size: 14px;
   font-weight: 400;
-
-  line-height: 20px;
+  line-height: 18px;
   resize: none;
   outline: none;
-  transition: height 0.4s ease-in-out;
-  margin-top: 10px;
+  transition: height 0.4sease-in-out;
+  margin-top: 4px;
 }
 
 .text-area:focus {
@@ -21756,21 +21774,22 @@ hr:not([size]) {
     ul.seatInfo {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: space-around;
       gap: 0px 16px;
 
       li {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 0px 8px;
+        gap: 2px 4px;
         color: var(--dark);
-        font-size: 14px;
+        font-size: 13px;
         line-height: 20px;
         font-weight: 500;
 
         img {
-          width: 30px;
-          height: 30px;
+          width: 34px;
+          height: 34px;
           object-fit: scale-down;
         }
       }
@@ -21788,6 +21807,84 @@ hr:not([size]) {
   background-color: blue;
   display: flex;
   align-items: center;
+}
+
+.blankWarning {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0px 12px;
+  background-color: var(--card-bg);
+  box-shadow: 0 0.125rem 0 rgba(10, 10, 10, 0.04);
+  border-radius: var(--radiusS);
+  margin-bottom: 24px;
+  padding: 16px 16px;
+  width: 480px;
+  margin: 0 auto;
+
+  .blankWarningImg {
+    min-width: 100px;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--white-bg);
+    border-radius: 100%;
+
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 100%;
+      object-fit: contain;
+    }
+  }
+
+  .blankWarningTxt {
+    h4 {
+      color: var(--dark);
+      font-size: 18px;
+      line-height: 24px;
+      font-weight: 500;
+      margin: 0 0 4px;
+      padding: 0;
+    }
+
+    p {
+      color: var(--medium);
+      font-size: 14px;
+      line-height: 18px;
+      font-weight: 400;
+      margin: 0;
+      padding: 0;
+    }
+  }
+}
+
+.roomLayoutCard {
+  .roomLayoutCardIn {
+    padding: 0px 0px;
+    margin: 0px 0px;
+
+    .roomLayoutCardLeft {
+      padding: 16px 16px;
+      flex: 0 0 70%;
+      max-width: 70%;
+      border-right: 1px dashed var(--borderDark);
+    }
+
+    .roomLayoutCardRight {
+      padding: 16px 16px;
+      flex: 0 0 30%;
+      max-width: 30%;
+    }
+  }
+}
+
+.floorStage {
+  position: relative;
+  width: 820px;
+  margin: 0 auto;
 }
 
 .tabslide {
@@ -21839,8 +21936,6 @@ hr:not([size]) {
 .scrollRow .slick-track {
   margin: 0px 0px 0px -10px;
 }
-
-.scrollRow .slick-arrow {}
 
 .slick-prev,
 .slick-next {
@@ -22948,6 +23043,22 @@ hr:not([size]) {
           font-weight: 400;
           color: var(--medium);
         }
+
+        ul {
+          margin: 5px 0px 0px;
+
+          li {
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: 400;
+            color: var(--medium);
+
+            span {
+              font-weight: 500;
+              color: var(--dark);
+            }
+          }
+        }
       }
     }
 
@@ -22955,17 +23066,18 @@ hr:not([size]) {
       display: flex;
       align-items: center;
       gap: 0px 60px;
+      padding-right: 20px;
 
       .statsBox {
         h4 {
-          font-size: 13px;
+          font-size: 14px;
           line-height: 18px;
           font-weight: 400;
           color: var(--medium);
         }
 
         h2 {
-          font-size: 18px;
+          font-size: 16px;
           line-height: 24px;
           font-weight: 500;
           color: var(--dark);
@@ -23474,7 +23586,7 @@ hr:not([size]) {
 .floorPlanWrapper {
   .floorPlan {
     position: relative;
-    max-width: 1160px;
+    max-width: 780px;
     margin: 0 auto;
     border: 2px solid var(--dark);
     margin-bottom: 20px;
@@ -23537,7 +23649,167 @@ hr:not([size]) {
       position: absolute;
       top: 0;
       left: 0;
-      width: 162px;
+      width: 109px;
+    }
+  }
+}
+
+.infoTable {
+  margin: 0;
+  border: 1px solid var(--border);
+
+  thead {
+    th {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 500;
+      color: var(--dark);
+      padding: 13px 10px;
+      border-bottom: 1px solid var(--border);
+      border-top: none;
+      background-color: var(--theme-bg-hover);
+    }
+  }
+
+  tbody {
+    td {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 400;
+      color: var(--medium);
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      border-top: none;
+    }
+  }
+
+  tfoot {
+    th {
+      font-size: 14px;
+      line-height: 20px;
+      font-weight: 500;
+      color: var(--dark);
+      padding: 12px 10px;
+      border-bottom: none;
+      border-top: none;
+      background-color: var(--theme-bg);
+    }
+  }
+}
+
+.selectGroup {
+  .form-control {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    padding: 0px 10px;
+  }
+
+  .btn {
+    border: 1px solid var(--border);
+    border-left: none;
+    padding: 0;
+    font-size: 20px;
+  }
+}
+
+.password-input-container {
+  position: relative;
+
+  input {
+    position: relative;
+    z-index: 5;
+  }
+
+  .password-toggle-icon {
+    position: absolute;
+    z-index: 6;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #000;
+  }
+}
+
+.formHeadingM0 .form-heading {
+  margin: 0;
+}
+
+hr.cardBodyHr {
+  margin: 12px -20px 20px;
+}
+
+.input-group:not(.has-validation)>.form-control:not(:last-child),
+.input-group:not(.has-validation)>.custom-select:not(:last-child),
+.input-group:not(.has-validation)>.custom-file:not(:last-child) .custom-file-label::after {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}
+
+.thmInputGroup {
+  flex-wrap: nowrap;
+
+  button.btn {
+    border-radius: 0 var(--radiusS) var(--radiusS) 0 !important;
+
+    &:nth-child(1) {
+      border-radius: 0 !important;
+    }
+  }
+
+  button.icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .css-16xfy0z-control,
+  .css-13cymwt-control,
+  .css-13cymwt-control {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+  }
+}
+
+.photoPreviewModal {
+  .btnClose {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
+
+.auditedDataViewModal {
+  min-width: 1400px;
+
+  .auditedDataViewBox {
+    margin: 0px 0px 10px;
+
+    p {
+      font-size: 14px;
+      line-height: 20px;
+      color: var(--dark);
+      margin-bottom: 5px;
+    }
+
+    ul {
+      border: 1px solid var(--border);
+      border-radius: var(--radiusS);
+
+      li {
+        font-size: 14px;
+        line-height: 20px;
+        color: var(--dark);
+        border-bottom: 1px solid var(--border);
+        padding: 6px 12px;
+        display: flex;
+
+        &:nth-last-child(1) {
+          border-bottom: none;
+        }
+
+        span {
+          min-width: 20%;
+        }
+      }
     }
   }
 }

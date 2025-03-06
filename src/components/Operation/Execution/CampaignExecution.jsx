@@ -1,9 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
+  useGetAllPagessByPlatformQuery,
+  useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
   usePostDataUpdateMutation,
+  useUpdateMultipleAuditStatusMutation,
+  useUpdatePriceforPostMutation,
   useVendorDataQuery,
 } from "../../Store/API/Operation/OperationApi";
 import View from "../../AdminPanel/Sales/Account/View/View";
@@ -21,6 +31,17 @@ import AuditedDataView from "./AuditedDataView";
 import PageEdit from "../../AdminPanel/PageMS/PageEdit";
 import PurchasePagesStats from "../../Purchase/PurchaseVendor/PurchasePagesStats";
 import DuplicayModal from "./DuplicayModal";
+import PostGenerator from "../../InstaPostGenerator/PostGenerator";
+import PhotoPreview from "./PhotoPreview";
+import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
+import { Autocomplete } from "@mui/lab";
+import { TextField } from "@mui/material";
+import { useGetVendorsQuery } from "../../Store/API/Purchase/DirectPurchaseApi";
+import formatDataObject from "../../../utils/formatDataObject";
+import StoryModal from "./StoryModal.jsx";
+import MultipleService from "./MultipleService.jsx";
+import { set } from "date-fns";
+import StringLengthLimiter from "../../../utils/StringLengthLimiter.js";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -34,14 +55,36 @@ const CampaignExecution = () => {
   const [duplicateMsg, setDuplicateMsg] = useState(false);
   const [links, setLinks] = useState("");
   const [phaseDate, setPhaseDate] = useState("");
-
+  const [selectedData, setSelectedData] = useState([]);
+  const [platformName, setPlatformName] = useState("");
+  const [pageName, setPageName] = useState({ page_name: "" });
+  const [selectedPrice, setSelectedPrice] = useState("");
   const maxTabs = useRef(4);
+  const removeStory = useRef(null);
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const page_id = useRef(null);
   const token = getDecodedToken();
+  const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsQuery();
+
+  const {
+    data: allPages,
+    isLoading: allPagesLoading,
+    isFetching: allPagesFetching,
+  } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
+
+  const {
+    data: pmsPlatform,
+    isLoading: pmsPlatformLoading,
+    isFetching: pmsPlatformFetching,
+  } = useGetPmsPlatformQuery();
+
+  const [
+    bulkAudit,
+    { isLoading: bulkAuditLoading, isSuccess: bulkAuditSuccess },
+  ] = useUpdateMultipleAuditStatusMutation();
 
   const {
     data: campaignList,
@@ -55,19 +98,30 @@ const CampaignExecution = () => {
     isFetching: fetchingPlanData,
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
-  } = useGetPlanByIdQuery(selectedPlan, { skip: !selectedPlan });
+  } = useGetPlanByIdQuery(selectedPlan);
 
   const [updateData, { isLoading, isSuccess }] = usePostDataUpdateMutation();
   const [uploadAudetedData, { isLoading: AuditedUploading }] =
     useAuditedDataUploadMutation();
 
+  const [
+    updatePrice,
+    { isLoading: vendorUpdateLoading, isSuccess: vendorUpdateSuccess },
+  ] = useUpdatePriceforPostMutation();
+
   const {
-    data: vendorList,
-    isLoading: vendorLoading,
-    isFetching: vendorFetching,
-    isSuccess: vendorSuccess,
-    isError: vendorError,
-  } = useVendorDataQuery(vendorName, { skip: !vendorName });
+    data: deleteStoryData,
+    isLoading: deleteStoryLoading,
+    isSuccess: deleteStorySuccess,
+  } = useGetDeleteStoryDataQuery(removeStory.current, {
+    skip: !removeStory.current,
+  });
+  useEffect(() => {
+    if (deleteStorySuccess) {
+      toastAlert("Story Deleted");
+      removeStory.current = null;
+    }
+  }, [deleteStorySuccess, deleteStoryLoading]);
 
   useEffect(() => {
     const cachedData = JSON.parse(localStorage.getItem("tab"));
@@ -95,13 +149,13 @@ const CampaignExecution = () => {
       if (phaseList.length === 1) {
         setActiveTab(phaseList[0].value);
       }
-      if (phaseList.length > 1) {
+      if (phaseList.length > 1 || !selectedPlan) {
         setActiveTab("all");
       }
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row) {
+  async function handledataUpdate(row, setEditFlag) {
     const data = columns.reduce((acc, col) => {
       if (
         col.key !== "Sr.No" &&
@@ -109,7 +163,8 @@ const CampaignExecution = () => {
         col.key !== "postedOn1" &&
         col.key !== "phaseDate1" &&
         col.key != "postLinks" &&
-        col.key !== "pageedits"
+        col.key !== "pageedits" &&
+        col.key !== "postStatus"
       ) {
         acc[col.key] = row[col.key];
       }
@@ -122,23 +177,39 @@ const CampaignExecution = () => {
     formData.append("postedOn", row.postedOn);
     formData.append("phaseDate", row.phaseDate);
 
+    if (vendorName) {
+      formData.append(
+        "vendor_id",
+        vendorsList?.find((item) => item.vendor_name === row.vendor_name)
+          ?.vendor_id
+      );
+      formData.append(
+        "vendorId",
+        vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
+      );
+    }
+
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         if (key === "postImage") {
           formData.append("image", value);
         } else formData.append(key, value);
+        if (!pageName) {
+          formData.delete("page_name");
+        }
       }
     });
 
     try {
-      console.log("here");
-
-      const res = await updateData(formData);
-      if (res.error) throw new Error(res.error);
+      const res = await updateData(formatDataObject(formData));
+      if (res?.error) throw new Error(res.error);
       await refetchPlanData();
 
       toastAlert("Data Updated with amount " + row.amount);
       setToggleModal(false);
+      setEditFlag && setEditFlag(false);
+      setVendorName("");
+      setPageName("");
     } catch (err) {
       toastError("Error while Uploading");
     }
@@ -157,7 +228,7 @@ const CampaignExecution = () => {
     if (cachedData) {
       const firstKey = Object.keys(cachedData)[0];
       if (firstKey == selectedPlan || !selectedPlan) {
-        setSelectedPlan(firstKey);
+        setSelectedPlan(firstKey == 0 ? 0 : firstKey);
       }
     }
     if (selectedPlan && successPlanData) {
@@ -171,6 +242,8 @@ const CampaignExecution = () => {
         return acc;
       }, []);
       setPhaseList(uniqPhaseList);
+    } else {
+      setPhaseList([]);
     }
   }, [selectedPlan, fetchingPlanData]);
 
@@ -184,13 +257,97 @@ const CampaignExecution = () => {
 
     return `${day}/${month}/${year}`;
   }
+  function checkAbletoAudit() {
+    return selectedData.every(
+      (data) =>
+        data.amount > 0 &&
+        !!data.vendor_name &&
+        data.audit_status !== "purchased"
+    );
+  }
+
+  const phaseWiseData = useMemo(() => {
+    const phasedData = PlanData?.filter((data) => {
+      if (activeTab === "all") {
+        return true;
+      }
+      return data.phaseDate === activeTab;
+    });
+    return phasedData;
+  }, [PlanData, activeTab, fetchingPlanData, loadingPlanData]);
+
+  useEffect(() => {
+    if (selectedPrice) {
+      handlePriceUpdate(selectedPrice);
+    }
+  }, [selectedPrice]);
+
+  async function handlePriceUpdate(row) {
+    try {
+      const data = {
+        shortCode: row.shortCode,
+        platform_name: row.platform_name,
+        price_key: row.price_key,
+      };
+      if (!data.platform_name) {
+        toastError("Please select the platform");
+        return;
+      }
+      if (!data.price_key) {
+        toastError("Please enter the price");
+        return;
+      }
+
+      const res = await updatePrice(data);
+      if (res.error) throw new Error(res.error);
+      await refetchPlanData();
+      setSelectedPrice("");
+      toastAlert("Price Updated");
+    } catch (error) {}
+  }
+
+  async function handleBulkAudit() {
+    if (selectedData.length === 0) {
+      toastError("Please select the data to update");
+      return;
+    }
+    try {
+      if (selectedData.some((data) => data.audit_status === "purchased")) {
+        toastError("You have selected purchased data");
+        return;
+      }
+      if (!checkAbletoAudit()) {
+        toastError(
+          "Please fill the amount and vendor name for all the selected data or you have selected purchased data"
+        );
+        return;
+      }
+      const data = {
+        audit_status: "audited",
+        shortCodes: selectedData.map((data) => data.shortCode),
+      };
+
+      const res = await bulkAudit(data);
+      if (res.error) throw new Error(res.error);
+      await refetchPlanData();
+
+      toastAlert("Status Updated");
+    } catch (err) {
+      toastError("Error Uploading Data");
+    }
+  }
 
   async function handleAuditedDataUpload() {
     try {
       const data = {
         campaignId: selectedPlan,
         userId: token.id,
-        phaseDate: activeTab,
+        phaseDate:
+          activeTab == "all"
+            ? phaseList?.length == 1
+              ? phaseList[0]?.value
+              : ""
+            : activeTab,
       };
 
       const res = await uploadAudetedData(data);
@@ -208,7 +365,6 @@ const CampaignExecution = () => {
 
     return date.toISOString(); // Returns ISO UTC string
   }
-
   let columns = [
     {
       name: "S.No",
@@ -217,16 +373,247 @@ const CampaignExecution = () => {
       renderRowCell: (row, index) => index + 1,
     },
     {
+      key: "story_image",
+      name: "Story Image",
+      width: 100,
+      renderRowCell: (row) =>
+        row?.story_image && (
+          <img
+            src={row.story_image}
+            style={{
+              aspectRatio: "6/9",
+              width: "50px",
+            }}
+          />
+        ),
+      editable: true,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        return (
+          <div className="row" style={{ width: "300px", display: "flex" }}>
+            <FieldContainer
+              fieldGrid={12}
+              type="file"
+              onChange={(e) => {
+                const data = {
+                  target: { value: e.target.files[0] },
+                };
+                handelchange(data, index, column, false, "story_image");
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      key: "story_link",
+      name: "Story Link",
+      width: 100,
+      editable: true,
+    },
+
+    {
+      name: "Platform",
+      key: "platform_name",
+      editable: true,
+      renderRowCell: (row) => {
+        return row.platform_name;
+      },
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        setPlatformName(row.platform_name);
+        return (
+          <CustomSelect
+            fieldGrid={12}
+            dataArray={pmsPlatform.data || []}
+            optionId={"platform_name"}
+            optionLabel={"platform_name"}
+            selectedId={row?.platform_name}
+            setSelectedId={(val) => {
+              setPlatformName(val);
+              const data = {
+                platform_name: val,
+              };
+              handelchange(data, index, column, true);
+            }}
+          />
+        );
+      },
+      width: 300,
+    },
+    {
+      key: "ref_link",
+      name: "Link",
+      width: 200,
+    },
+    {
+      name: "Vendor Name",
+      key: "vendor_name",
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        setVendorName(row.vendor_id);
+        return (
+          <div className="row" style={{ width: "300px", display: "flex" }}>
+            <CustomSelect
+              fieldGrid={12}
+              dataArray={vendorsList}
+              optionId={"vendor_id"}
+              optionLabel={"vendor_name"}
+              selectedId={row?.vendor_id}
+              setSelectedId={(name) => {
+                const vendorDetail = vendorsList.find(
+                  (item) => item.vendor_id === name
+                );
+
+                const vendorData = {
+                  vendor_id: vendorDetail.vendor_id,
+                  vendor_name: vendorDetail.vendor_name,
+                };
+
+                setVendorName(vendorDetail.temp_vendor_id);
+
+                handelchange(vendorData, index, column, true);
+              }}
+            />
+          </div>
+        );
+      },
+      width: 300,
+      editable: true,
+    },
+    {
       key: "page_name",
       name: "Page Name",
-      width: 100,
+      width: 200,
       renderRowCell: (row) => row?.owner_info?.username,
       compare: true,
+      editable: true,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        // if (!platformName || allPagesFetching || allPagesLoading)
+        //   return <p>Please select the platform</p>;
+        return (
+          <div style={{ position: "relative", width: "100%" }}>
+            {/* <input
+              className="form-control"
+              type="text"
+              placeholder={row?.page_name}
+              value={row?.owner_info?.username}
+              onChange={(e) => {
+                const data = {
+                  ...row?.owner_info,
+                  username: e.target.value,
+                };
+
+                handelchange({ owner_info: data }, index, column, true);
+              }}
+            /> */}
+            <Autocomplete
+              options={
+                Array.isArray(allPages?.pageData)
+                  ? allPages.pageData?.filter(
+                      (data) => data?.temp_vendor_id === vendorName
+                    )
+                  : []
+              }
+              getOptionLabel={(option) => option.page_name || ""}
+              // getOptionKey={(option) => option.page_name}
+              renderInput={(params) => {
+                return (
+                  <TextField {...params} label="Page Name" variant="outlined" />
+                );
+              }}
+              value={pageName}
+              onChange={(event, newValue) => {
+                page_id.current = newValue?._id;
+                setPageName(newValue);
+                const data = {
+                  page_name: newValue?.page_name,
+                };
+                setVendorName(newValue?.page_name);
+                handelchange(data, index, column, true);
+              }}
+            />
+          </div>
+        );
+      },
     },
     {
       name: "Short Code",
       key: "shortCode",
       width: 100,
+    },
+    {
+      name: "Post Status",
+      key: "postStatus",
+      width: 100,
+      compare: true,
+      renderRowCell: (row) => {
+        if (row.like_count === -111111) {
+          return <div className="badge badge-danger">Deleted / Private</div>;
+        } else if (row.postTypeDecision == 0) {
+          return <div className="badge badge-success">Fetched</div>;
+        } else if (row.postTypeDecision == 1) {
+          return <div className="badge badge-warning">Pending</div>;
+        }
+      },
+    },
+    {
+      key: "campaignId",
+      name: "Campaign Name",
+      width: 150,
+      editable: true,
+      renderRowCell: (row) =>
+        campaignList?.find((item) => item._id === row.campaignId)
+          ?.exe_campaign_name,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        return (
+          <CustomSelect
+            fieldGrid={12}
+            dataArray={campaignList}
+            optionId={"_id"}
+            optionLabel={"exe_campaign_name"}
+            selectedId={row?.campaignId}
+            setSelectedId={(val) => {
+              const data = {
+                campaignId: val,
+              };
+              handelchange(data, index, column, true);
+            }}
+          />
+        );
+      },
     },
     {
       name: "Phase Date",
@@ -241,21 +628,19 @@ const CampaignExecution = () => {
       renderRowCell: (row) => {
         return (
           <div className="d-flex gap-2">
-            <a
-              href={`https://www.instagram.com/p/${row.shortCode}`}
-              className="icon-1"
-              target="blank_"
-            >
+            <a href={row.ref_link} className="icon-1" target="blank_">
               <i className="bi bi-arrow-up-right"></i>
             </a>
             <div
               title="Copy Link"
               className="icon-1"
               onClick={() => {
-                navigator.clipboard.writeText(
-                  `https://www.instagram.com/p/${row.shortCode}`
-                );
-                toastAlert("Link Copied");
+                if (row.ref_link) {
+                  navigator.clipboard.writeText(row.ref_link);
+                  toastAlert("Link Copied");
+                } else {
+                  toastError("Link is not available");
+                }
               }}
             >
               <i className="bi bi-clipboard"></i>
@@ -265,46 +650,7 @@ const CampaignExecution = () => {
       },
       width: 100,
     },
-    {
-      name: "Vendor Name",
-      key: "vendor_name",
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        if (editflag == false) setVendorName("");
-        else setVendorName(row.page_name);
-        return (
-          <div className="row" style={{ width: "300px", display: "flex" }}>
-            <CustomSelect
-              fieldGrid={12}
-              dataArray={vendorFetching ? [] : vendorList}
-              optionId={"vendor_id"}
-              optionLabel={"vendor_name"}
-              selectedId={row?.vendor_id}
-              setSelectedId={(name) => {
-                const vendorDetail = vendorList.find(
-                  (item) => item.vendor_id === name
-                );
-                page_id.current = vendorDetail._id;
-                const vendorData = {
-                  vendor_id: vendorDetail.vendor_id,
-                  vendor_name: vendorDetail.vendor_name,
-                };
 
-                handelchange(vendorData, index, column, true);
-              }}
-            />
-          </div>
-        );
-      },
-      width: 300,
-      editable: true,
-    },
     // {
     //   name: "Plan ID",
     //   key: "campaignId",
@@ -330,22 +676,48 @@ const CampaignExecution = () => {
       name: "Amount",
       key: "amount",
       editable: true,
-      // customEditElement:(
-      //   row,
-      //   index,
-      //   setEditFlag,
-      //   editflag,
-      //   handelchange,
-      //   column
-      // )=>{
-
-      // }
       width: 100,
     },
     {
-      name: "Accessibility Caption",
+      key: "price_key",
+      name: "Price Key",
+      editable: true,
+      customEditElement: (row) => {
+        return (
+          <CustomSelect
+            fieldGrid={12}
+            dataArray={[
+              { price_key: "instagram_post" },
+              {
+                price_key: "instagram_story",
+              },
+              {
+                price_key: "instagram_reel",
+              },
+              {
+                price_key: "instagram_carousel",
+              },
+              {
+                price_key: "instagram_both",
+              },
+            ]}
+            optionId={"price_key"}
+            optionLabel={"price_key"}
+            selectedId={selectedPrice}
+            setSelectedId={(val) => {
+              let data = { ...row, price_key: val };
+              setSelectedPrice(data);
+            }}
+          />
+        );
+      },
+      width: 100,
+    },
+    {
+      name: "Caption",
       key: "accessibility_caption",
-      width: 150,
+      renderRowCell: (row) => StringLengthLimiter(row.accessibility_caption),
+      width: 300,
       editable: true,
     },
     {
@@ -366,12 +738,12 @@ const CampaignExecution = () => {
       width: 100,
       editable: true,
     },
-    {
-      name: "Location",
-      key: "location",
-      width: 150,
-      editable: true,
-    },
+    // {
+    //   name: "Location",
+    //   key: "location",
+    //   width: 150,
+    //   editable: true,
+    // },
     // {
     //   name: "Music Info",
     //   key: "music_info",
@@ -395,19 +767,17 @@ const CampaignExecution = () => {
       name: "Post Image",
       key: "postImage",
       renderRowCell: (row) => (
-        <a
-          href={row?.postImage}
-          target="_blank"
-          className="icon-1"
-          title="View Image"
-        >
-          <img
-            src={row?.postImage}
-            style={{
-              aspectRatio: "6/9",
-            }}
-          />
-        </a>
+        <img
+          src={row?.postImage}
+          style={{
+            aspectRatio: "6/9",
+            width: "50px",
+          }}
+          onClick={() => {
+            setModalName("postPreview");
+            setToggleModal(true);
+          }}
+        />
       ),
 
       customEditElement: (
@@ -572,7 +942,7 @@ const CampaignExecution = () => {
         handelchange,
         column
       ) => {
-        if (row.amount <= 0 || row.vendor_name == "") {
+        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null) {
           return (
             <p>
               Amount should be greater than 0 and select the vendor for the page
@@ -583,8 +953,9 @@ const CampaignExecution = () => {
             <button
               disabled={
                 row.audit_status === "purchased" ||
-                row.amount <= 0 ||
-                row?.vendor_name == ""
+                row.amount < 1 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
               }
               onClick={() => {
                 const data = {
@@ -626,7 +997,7 @@ const CampaignExecution = () => {
 
         if (row?.audit_status === "purchased") return <p>Purchased</p>;
 
-        if (Number(row?.amount) <= 0)
+        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null)
           return (
             <p>
               Amount should be greater than 0 and select the vendor for the page
@@ -667,8 +1038,13 @@ const CampaignExecution = () => {
         );
       },
       colorRow: (row) => {
+        if (row?.phaseDate == null) {
+          return "";
+        }
         if (!row?.owner_info?.username) return "#ff00009c";
-        return row.audit_status !== "pending"
+        return row.audit_status === "audited"
+          ? "rgb(255 131 0 / 80%)"
+          : row.audit_status === "purchased"
           ? "#c4fac4"
           : row.amoumt == 0 || row.vendor_name == ""
           ? "#ffff008c"
@@ -701,18 +1077,36 @@ const CampaignExecution = () => {
           </button>
 
           {editflag === index && (
-            <button
-              className="btn btn-sm cmnbtn btn-primary"
-              onClick={() => handledataUpdate(row)}
-              title="Save"
-              disabled={
-                row.audit_status === "purchased" ||
-                Number(row.amount) <= 0 ||
-                !row.vendor_name
-              }
-            >
-              save
-            </button>
+            <>
+              <button
+                className="btn btn-sm cmnbtn btn-primary"
+                onClick={() => {
+                  handledataUpdate(row, setEditFlag);
+                  // handlePriceUpdate(row);
+                }}
+                title="Save"
+                disabled={
+                  row.audit_status === "purchased" ||
+                  Number(row.amount) < 1 ||
+                  !row.vendor_name ||
+                  (row.audit_status == "audited" && editflag)
+                }
+              >
+                save
+              </button>
+              <button
+                className="btn btn-sm cmnbtn btn-danger ml-3"
+                onClick={() => {
+                  removeStory.current = row._id;
+                }}
+                disabled={
+                  deleteStoryLoading ||
+                  (row.story_link == "" && row.story_link == "")
+                }
+              >
+                Delete Story
+              </button>
+            </>
           )}
         </div>
       ),
@@ -722,7 +1116,7 @@ const CampaignExecution = () => {
       key: "Pageedits",
       customEditElement: (row) => {
         if (page_id.current === null)
-          return "Please select the vendor for this page";
+          return "Please select the vendor and its page";
         return (
           <button
             className="btn btn-primary btn-sm cmnbtn"
@@ -741,16 +1135,28 @@ const CampaignExecution = () => {
   ];
 
   function disableAuditUpload() {
-    if (activeTab === "all") return true;
-    const phaseData = PlanData?.filter((data) => data.phaseDate === activeTab);
-    const hasPending = phaseData?.some(
-      (data) => data.audit_status === "pending"
-    );
+    const phaseData = phaseWiseData;
+    // const hasPending = phaseData?.some(
+    //   (data) => data.audit_status === "pending"
+    // );
     const allPurchased = phaseData?.every(
       (data) => data.audit_status === "purchased"
     );
-    return hasPending || allPurchased;
+    return allPurchased;
   }
+
+  const CampaignSelection = useMemo(
+    () => [
+      {
+        _id: 0,
+        exe_campaign_name: "Vendor Wise Data",
+      },
+      ...(campaignList
+        ? campaignList.filter((data) => data?.is_sale_booking_created)
+        : []),
+    ],
+    [campaignList]
+  );
 
   function modalViewer(name) {
     if (name === "auditedData")
@@ -826,10 +1232,30 @@ const CampaignExecution = () => {
           </div>
         </>
       );
-    }
+    } else if (name == "postPreview") {
+      return (
+        <PhotoPreview
+          setToggleModal={setToggleModal}
+          planData={phaseWiseData}
+        />
+      );
+    } else if (name == "storyPost") {
+      return (
+        <StoryModal
+          record={modalData}
+          setToggleModal={setToggleModal}
+          selectedPlan={selectedPlan}
+        />
+      );
+    } else if (name == "multipleService")
+      return (
+        <MultipleService
+          setModalData={setModalData}
+          setToggleModal={setToggleModal}
+        />
+      );
     return null;
   }
-
   return (
     <>
       <Modal
@@ -861,32 +1287,59 @@ const CampaignExecution = () => {
       </Modal>
 
       <FormContainer mainTitle={"Record Purchase"} link={"true"} />
-      {selectedPlan && (
+      <div className="card">
+        <div className="card-body row">
+          <div className="col-md-6">
+            {selectedPlan == 0
+              ? "Vendor Wise Data"
+              : campaignList?.find((data) => data?._id == selectedPlan)
+                  ?.exe_campaign_name}
+          </div>
+          <CustomSelect
+            disabled={!!links}
+            fieldGrid={6}
+            dataArray={CampaignSelection}
+            optionId={"_id"}
+            optionLabel={"exe_campaign_name"}
+            selectedId={selectedPlan}
+            setSelectedId={(val) => {
+              localStorage.setItem(
+                "tab",
+                JSON.stringify({ [val]: { activeTab, activeTabIndex } })
+              );
+              setSelectedPlan(val);
+            }}
+            label={"Plans"}
+          />
+        </div>
+      </div>
+      {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
+      {/* {selectedPlan != 0 && (
         <>
           <PurchasePagesStats
             // phaseList={phaseList}
             PlanData={PlanData?.filter((data) =>
               activeTab === "all" ? data : data.phaseDate === activeTab
             )}
-          /> 
-
-          <LinkUpload
-            phaseList={phaseList}
-            token={token}
-            refetchPlanData={refetchPlanData}
-            selectedPlan={selectedPlan}
-            PlanData={PlanData}
-            setDuplicateMsg={setDuplicateMsg}
-            links={links}
-            setLinks={setLinks}
-            phaseDate={phaseDate}
-            setPhaseDate={setPhaseDate}
-            setModalName={setModalName}
-            setModalData={setModalData}
-            setToggleModal={setToggleModal}
           />
         </>
-      )}
+      )} */}
+      <LinkUpload
+        phaseList={phaseList}
+        token={token}
+        refetchPlanData={refetchPlanData}
+        selectedPlan={selectedPlan}
+        PlanData={PlanData}
+        setDuplicateMsg={setDuplicateMsg}
+        links={links}
+        setLinks={setLinks}
+        phaseDate={phaseDate}
+        setPhaseDate={setPhaseDate}
+        setModalName={setModalName}
+        setModalData={setModalData}
+        setToggleModal={setToggleModal}
+        setSelectedPlan={setSelectedPlan}
+      />
 
       {phaseList.length > 1 && (
         <PhaseTab
@@ -904,48 +1357,49 @@ const CampaignExecution = () => {
       )}
 
       <View
+        rowSelectable={true}
         version={1}
-        data={PlanData?.filter((data) =>
-          activeTab === "all" ? data : data.phaseDate === activeTab
-        )}
+        data={phaseWiseData}
         columns={columns}
         title={`Records`}
         tableName={"PlanX-execution"}
         isLoading={loadingPlanData || fetchingPlanData}
         pagination={[50, 100, 200]}
+        selectedData={(data) => setSelectedData(data)}
         addHtml={
-          <div className="d-flex sb w-75">
+          <div className="d-flex sb w-100">
             <div></div>
-            <div className="d-flex gap-2">
-              <CustomSelect
-                fieldGrid={12}
-                dataArray={campaignList?.filter(
-                  (data) => data?.is_sale_booking_created
-                )}
-                optionId={"_id"}
-                optionLabel={"exe_campaign_name"}
-                selectedId={selectedPlan}
-                setSelectedId={setSelectedPlan}
-                label={"Plans"}
-              />
-              {activeTab !== "all" && selectedPlan && (
+            <div className="d-flex">
+              {phaseWiseData?.length > 0 && (
                 <button
                   title="Upload Audited Data"
-                  className={`cmnbtn btn btn-sm btn-outline-primary`}
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                  }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
-                  Submit
+                  Record Purchase
                 </button>
               )}
               <button
                 title="Reload Data"
-                className={`icon-1 btn-outline-primary  ${
+                className={`mr-3 icon-1 btn-outline-primary  ${
                   fetchingPlanData && "animate_rotate"
                 }`}
                 onClick={refetchPlanData}
               >
                 <ArrowClockwise />
+              </button>
+              <button
+                title="audit"
+                className={`cmnbtn btn btn-sm btn-outline-primary`}
+                onClick={() => {
+                  handleBulkAudit();
+                }}
+                disabled={bulkAuditLoading}
+              >
+                Audit
               </button>
             </div>
           </div>

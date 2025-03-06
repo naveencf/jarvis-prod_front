@@ -20,7 +20,7 @@ import { useGlobalContext } from "../../Context/Context";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { styled } from "@mui/material/styles";
 import { Country, City } from "country-state-city";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import FormContainer from "../AdminPanel/FormContainer";
 import { useEffect } from "react";
 import axios from "axios";

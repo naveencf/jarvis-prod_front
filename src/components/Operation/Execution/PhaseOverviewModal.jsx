@@ -9,11 +9,9 @@ const PhaseOverviewModal = ({
   handleClose,
   activeTabData,
   handleTabChange,
-  shortCodeCount,
   usernameCount,
   PlanData,
 }) => {
-  console.log(usernameCount, "shortCodeCount");
 
   const uniquePlatforms = [
     ...new Set(PlanData?.map((item) => item?.platform_name)),
@@ -30,7 +28,7 @@ const PhaseOverviewModal = ({
   const [modalShortCodes, setModalShortCodes] = useState([]); // Store shortCodes
 
   const handlePlatformClick = (platform, count, shortCodes) => {
-    setModalShortCodes(shortCodes || []); // Store shortCodes in state
+    setModalShortCodes(shortCodes || []); 
     setPlatformModalOpen(true);
   };
 
@@ -38,20 +36,39 @@ const PhaseOverviewModal = ({
     setPlatformModalOpen(false);
   };
   const usernameColumns = [
-    { name: "S.No", key: "Sr.No", width: 40, renderRowCell: (row, index) => index + 1 },
-    { name: "Page Name", key: "page_name", width: 100, renderRowCell: (row) => formatString(row?.username) },
+    {
+      name: "S.No",
+      key: "Sr.No",
+      width: 40,
+      renderRowCell: (row, index) => index + 1,
+    },
+    {
+      name: "Page Name",
+      key: "page_name",
+      width: 100,
+      renderRowCell: (row) => formatString(row?.username),
+    },
     { name: "Count", key: "count", width: 100 },
     {
-        name: "Short Codes",
-        key: "shortCodes",
-        width: 200,
-        renderRowCell: (row) => (
-            <Button variant="outlined" onClick={() => handlePlatformClick(row.username, row.count, row.shortCodes?.split(", "))}>
-                View Link
-            </Button>
-        ),
+      name: "Short Codes",
+      key: "shortCodes",
+      width: 200,
+      renderRowCell: (row) => (
+        <Button
+          variant="outlined"
+          onClick={() =>
+            handlePlatformClick(
+              row.username,
+              row.count,
+              row.shortCodes?.split(", ")
+            )
+          }
+        >
+          View Link
+        </Button>
+      ),
     },
-];
+  ];
 
   return (
     <>
@@ -66,7 +83,7 @@ const PhaseOverviewModal = ({
             bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
-            height:600,
+            height: 600,
             borderRadius: 2,
           }}
         >
@@ -84,27 +101,26 @@ const PhaseOverviewModal = ({
               >
                 <Tab label="Pages Wise link" value={0} />
                 <Tab label="Platform Wise" value={1} />
-                {/* <Tab label="Platforms" value={2} /> */}
               </Tabs>
             </div>
 
             <div className="card-body p0 m0 table table-responsive ml-2">
               {activeTabData === 0 && (
-                <div style={{width:"600px",height:"400px"}}>
-                <View
-                  version={1}
-                  data={Object.entries(usernameCount).map(
-                    ([username, data]) => ({
-                      username,
-                      count: data?.count,
-                      shortCodes: data?.shortCodes?.join(", ") || "N/A",
-                    })
-                  )}
-                  columns={usernameColumns}
-                  title={`Records`}
-                  tableName={"PlanX-execution"}
-                  pagination={[50, 100, 200]}
-                />
+                <div style={{ width: "600px", height: "400px" }}>
+                  <View
+                    version={1}
+                    data={Object.entries(usernameCount).map(
+                      ([username, data]) => ({
+                        username,
+                        count: data?.count,
+                        shortCodes: data?.shortCodes?.join(", ") || "N/A",
+                      })
+                    )}
+                    columns={usernameColumns}
+                    title={`Records`}
+                    tableName={"PlanX-execution"}
+                    pagination={[50, 100, 200]}
+                  />
                 </div>
               )}
               {activeTabData === 1 && (
@@ -165,49 +181,7 @@ const PhaseOverviewModal = ({
                   />
                 </div>
               )}
-              {/* {activeTabData === 2 && (
-                <DataGrid
-                  getRowId={(row) => row?.id}
-                  rows={Object.entries(shortCodeCount)?.map(
-                    ([platform, count], index) => ({
-                      id: index + 1,
-                      platform,
-                      count,
-                    })
-                  )}
-                  columns={[
-                    { field: "id", headerName: "S. No.", flex: 0.5 },
-                    {
-                      field: "platform",
-                      headerName: "Platform Name",
-                      flex: 1,
-                      renderCell: (params) => formatString(params.row.platform),
-                    },
-                    {
-                      field: "count",
-                      headerName: "Count",
-                      flex: 1,
-                      renderCell: (params) => (
-                        <Button
-                          variant="outlined"
-                          onClick={() =>
-                            handlePlatformClick(
-                              params?.row?.platform,
-                              params?.row?.count
-                            )
-                          }
-                        >
-                          {Array.isArray(params?.row?.count)
-                            ? params?.row?.count.length
-                            : params?.row?.count}
-                        </Button>
-                      ),
-                    },
-                  ]}
-                  autoHeight
-                  pageSizeOptions={[5]}
-                />
-              )} */}
+             
             </div>
           </div>
 

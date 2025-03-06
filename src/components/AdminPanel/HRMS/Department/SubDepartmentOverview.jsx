@@ -3,10 +3,10 @@ import DataTable from "react-data-table-component";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Modal from "react-modal";
-import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import { baseUrl } from "../../../../utils/config";
 import DeleteButton from "../../DeleteButton";
 import FormContainer from "../../FormContainer";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 export default function SubDepartmentOverview() {
   const { contextData } = useAPIGlobalContext();

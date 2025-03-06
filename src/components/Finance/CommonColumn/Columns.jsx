@@ -2698,17 +2698,6 @@ export const pendingPaymentRequestColumns = ({
       name: "S.NO",
       // width: 70,
       renderRowCell: (row, index) => index + 1,
-      // editable: false,
-      // renderRowCell: (row) => {
-      //   const rowIndex =
-      //     activeAccordionIndex == 0
-      //       ? filterData?.indexOf(row)
-      //       : activeAccordionIndex == 1
-      //         ? filterData?.filter((d) => d.status === "3").indexOf(row)
-      //         : filterData?.filter((d) => d.status === "0").indexOf(row);
-
-      //   return <div>{rowIndex + 1}</div>;
-      // },
     },
     {
       key: "invoice_file_url",
@@ -2762,18 +2751,18 @@ export const pendingPaymentRequestColumns = ({
 
     },
     {
-      key: "Zoho Uploaded",
+      key: "zoho_status",
       name: "Zoho Uploaded",
       width: 130,
       renderRowCell: (row) => {
         return (
           <div>
-            <button
+            {!row?.zoho_status ? <button
               className="btn btn-primary cmnbtn btn_sm "
               onClick={() => handleZohoStatusUpload(row)}
             >
               Zoho Uploaded
-            </button>
+            </button> : "Uploaded"}
           </div>
         );
       },
@@ -3141,12 +3130,12 @@ export const pendingPaymentRequestColumns = ({
             >
               Pay
             </button>}
-            {/* {contextData && contextData[66].view_value == 1 && row.proccessingAmount == 0 && row.paid_amount == 0 && < button
+            {contextData && contextData[66].view_value == 1 && row.proccessingAmount == 0 && row.paid_amount == 0 && < button
               className="btn cmnbtn btn_sm btn-success"
               onClick={() => handlePaymentRequest(row)}
             >
               Edit
-            </button>} */}
+            </button>}
             {/* } */}
             <button className="btn cmnbtn btn_sm btn-danger">
               <Link

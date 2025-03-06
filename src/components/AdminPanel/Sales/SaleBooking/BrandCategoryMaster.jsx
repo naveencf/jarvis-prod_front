@@ -10,7 +10,6 @@ import { Autocomplete, Grid, Stack, TextField } from "@mui/material";
 import { event } from "jquery";
 import { useEffect } from "react";
 import axios from "axios";
-import BrandCategory from "./BrandCategoryMaster";
 import { useContext } from "react";
 // import { InstaInterpretorContext } from "./InterpretorContext";
 // import { InstaContext } from "../InstaApiContext";

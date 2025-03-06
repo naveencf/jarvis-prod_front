@@ -15,6 +15,7 @@ import EsicTable from "./table/EsicTable";
 import Inhandless from "./table/Inhandless";
 import Inhandmore from "./table/Inhandmore";
 import { formatNumber } from "../../utils/formatNumber";
+import OnlyEsic from "./table/OnlyEsic";
 
 const styles = StyleSheet.create({
   logoBold: {
@@ -318,16 +319,23 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
               </View>
             </View>
           </View> */}
-            <View style={styles.section}>
-    <Text>
-      We take immense pleasure in offering you the esteemed position of{" "}
-      <Text style={styles.boldText}>{allUserData?.designation_name}</Text>, with
-      <Text style={styles.boldText}> Creativefuel Private Limited</Text> (the
-      ‘Company’). Your employment with the Company will be governed by terms
-      and conditions as detailed in Annexure A (effective from joining date),
-      and the other documents listed as annexures in this Appointment Letter.
-    </Text>
-  </View>
+          <View style={styles.section}>
+            <Text>
+              We take immense pleasure in offering you the esteemed position of{" "}
+              <Text style={styles.boldText}>
+                {allUserData?.designation_name}
+              </Text>
+              , with
+              <Text style={styles.boldText}>
+                {" "}
+                Creativefuel Private Limited
+              </Text>{" "}
+              (the ‘Company’). Your employment with the Company will be governed
+              by terms and conditions as detailed in Annexure A (effective from
+              joining date), and the other documents listed as annexures in this
+              Appointment Letter.
+            </Text>
+          </View>
 
           <View style={styles.section}>
             <Text style={styles.points}>1. COMMENCEMENT OF EMPLOYMENT:</Text>
@@ -1150,6 +1158,11 @@ const AppointmentLetter = ({ allUserData, image64, EMPPF }) => {
           {allUserData.emergency_contact_person_name2 == "pf_and_esic" && (
             <EsicTable UserDetails={UserDetails} />
           )}
+
+          {allUserData.emergency_contact_person_name2 == "esic" && (
+            <OnlyEsic UserDetails={UserDetails} />
+          )}
+
           {allUserData.emergency_contact_person_name2 == "in_hand" &&
             allUserData.salary < 19199 && (
               <Inhandless UserDetails={UserDetails} />

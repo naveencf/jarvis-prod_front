@@ -1,9 +1,9 @@
 import React from "react";
-import UserNav from "../../Pantry/UserPanel/UserNav";
+import UserNav from "../../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import FormContainer from "../../AdminPanel/FormContainer";
-import DeleteButton from "../../AdminPanel/DeleteButton";
+import DeleteButton from "../DeleteButton";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
@@ -68,7 +68,7 @@ const ContentType = () => {
         alert("Content Type already Exists");
       } else {
         const response = await axios.post(
-          baseUrl+"add_data_content_type",
+          baseUrl + "add_data_content_type",
           {
             content_name: contentType,
             remark: "",
@@ -84,7 +84,7 @@ const ContentType = () => {
   };
   async function getModalData() {
     const res = await axios.get(
-      baseUrl+"get_all_data_content_types"
+      baseUrl + "get_all_data_content_types"
     );
     setModalData(res.data);
     setModalFilter(res.data);
@@ -100,7 +100,7 @@ const ContentType = () => {
   };
   const handleModalUpdate = () => {
     axios
-      .put(baseUrl+"update_data_content_type", {
+      .put(baseUrl + "update_data_content_type", {
         _id: modalId,
         content_name: contentTypeUpdate,
       })

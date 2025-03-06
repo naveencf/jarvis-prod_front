@@ -24,6 +24,7 @@ import ReadableList from "./ReadableList";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
 import PayThroughVendorDialog from "./PayThroughVendorDialog";
+import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
 
 function PayVendorDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -69,6 +70,8 @@ function PayVendorDialog(props) {
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
   const [preview, setPreview] = useState("");
+  const [paymentIntiated, setPaymentIntiated] = useState(false);
+
   const [paymentDate, setPaymentDate] = useState(
     dayjs(new Date()).add(5, "hours").add(30, "minutes").$d.toGMTString()
   );
@@ -105,21 +108,32 @@ function PayVendorDialog(props) {
         // console.log(res.data.data, "res.data.data")
       }
     });
+    axios.get(`${baseUrl}` + `v1/vendordata/${rowData?.vendor_id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
+      if (res.status == 200) {
+        console.log(res.data.data)
+        setVendorDetail(res.data.data)
+
+      }
+    });
   }, []);
 
 
 
-  useEffect(() => {
-    const isTDSMandatory =
-      rowData?.totalFY > 100000 || rowData?.totalFY > 25000;
-    const isTDSDeducted = rowData?.TDSDeduction === "1";
-    setIsTDSMandatory(isTDSMandatory);
-    setIsTDSDeducted(isTDSDeducted);
+  // useEffect(() => {
+  //   const isTDSMandatory =
+  //     rowData?.totalFY > 100000 || rowData?.totalFY > 25000;
+  //   const isTDSDeducted = rowData?.TDSDeduction === "1";
+  //   setIsTDSMandatory(isTDSMandatory);
+  //   setIsTDSDeducted(isTDSDeducted);
 
-    if (isTDSMandatory && !isTDSDeducted) {
-      setTDSDeduction(true);
-    }
-  }, [rowData]);
+  //   if (isTDSMandatory && !isTDSDeducted) {
+  //     setTDSDeduction(true);
+  //   }
+  // }, [rowData]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -139,7 +153,7 @@ function PayVendorDialog(props) {
   const handlePayVendorClick = (e) => {
     e.preventDefault();
 
-
+    setPaymentIntiated(true);
     const phpFormData = new FormData();
 
     phpFormData.append("clientReferenceId", `${rowData?.request_id}_${(Number(rowData?.transaction_count) + 1)}`);
@@ -190,8 +204,9 @@ function PayVendorDialog(props) {
           setPaymentAmount(0);
           setNetAmount("");
           callApi();
+          setPaymentIntiated(false);
         } else {
-
+          setPaymentIntiated(false);
           toastError("There is some error while uploading data on Php")
         }
 
@@ -226,12 +241,12 @@ function PayVendorDialog(props) {
       setPaymentStatus("Full");
     }
 
-    let paymentAmount = rowData.outstandings;
+    let paymentAmount = rowData.outstandings - rowData.tds_deduction;
     let baseamount = baseAmount;
     let tdsvalue = 0;
 
     if (TDSDeduction) {
-      tdsvalue = (baseamount * TDSPercentage) / 100;
+      tdsvalue = ((baseamount * TDSPercentage) / 100).toFixed();
       paymentAmount = paymentAmount - tdsvalue;
     }
     if (gstHold) {
@@ -310,7 +325,7 @@ function PayVendorDialog(props) {
     if (!userEmail || userEmail == "") {
       mailTo = "naveen@creativefuel.io";
     }
-
+    setPaymentIntiated(true);
     try {
 
       axios
@@ -328,13 +343,15 @@ function PayVendorDialog(props) {
           } else {
             toastAlert("You are not authorizied make this payment")
           }
+          setPaymentIntiated(false);
         })
     } catch (error) {
       toastAlert("There some issue")
+      setPaymentIntiated(false);
     }
 
   };
-
+  console.log(rowData.outstandings, vendorDetail?.vendor_outstandings, "outstanding", vendorDetail, rowData)
   return (
     <div>
       {/*Dialog Box */}
@@ -365,7 +382,7 @@ function PayVendorDialog(props) {
                   <Checkbox
                     onChange={handleTDSDeduction}
                     checked={TDSDeduction}
-                    disabled={isTDSDeducted}
+                    disabled={rowData?.tds_deduction > 0}
                   />
                 }
                 label="TDS Deduction"
@@ -472,7 +489,7 @@ function PayVendorDialog(props) {
             />
           </div>
 
-          <div className="row">
+          {/* <div className="row">
             <FormControlLabel
               className="col-md-5"
               control={
@@ -496,7 +513,7 @@ function PayVendorDialog(props) {
                 variant="standard"
               />
             )}
-          </div>
+          </div> */}
           <div className="row gap-3">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
@@ -545,9 +562,15 @@ function PayVendorDialog(props) {
                   } else {
                     const numericValue = Number(currentValue)
                     const paymentProcessingAmount = Number(rowData?.proccessingAmount)
-                    // (Number(row?.outstandings) - Number(row?.proccessingAmount)) > 0
-                    if (numericValue + paymentProcessingAmount <= +rowData.outstandings) {
-                      // if (numericValue + paymentProcessingAmount <= +rowData.outstandings) {
+                    // This will prevent negative outstanding and gst amount management in ledger
+                    if (numericValue + paymentProcessingAmount >= (vendorDetail?.vendor_outstandings * 1.18) && rowData?.payment_type == "payment") {
+                      console.log(numericValue + paymentProcessingAmount, (vendorDetail?.vendor_outstandings * 1.18))
+                      toastError(
+                        "Payment Amount should be less than vendor total outstanding Amount or Pay Advance"
+                      );
+                      return;
+                    }
+                    if (numericValue + paymentProcessingAmount <= rowData.outstandings - rowData.tds_deduction) {
                       setPaymentAmount(numericValue);
 
                       // Set Gateway Payment Mode
@@ -561,7 +584,8 @@ function PayVendorDialog(props) {
                       } else {
                         setPaymentStatus("Full");
                       }
-                    } else {
+                    }
+                    else {
                       toastError(
                         "Payment Amount should be less than or equal to Remainning Amount"
                       );
@@ -659,7 +683,7 @@ function PayVendorDialog(props) {
             // className="mx-2"
             size="small"
             onClick={(e) => handlePayVendorClick(e)}
-            disabled={!paymentMode || !paymentAmout}
+            disabled={!paymentMode || !paymentAmout || paymentIntiated}
           >
             Pay Vendor
           </Button> :
@@ -669,7 +693,7 @@ function PayVendorDialog(props) {
               color="primary"
               size="small"
               onClick={handleOpenPayThroughVendor}
-              disabled={!paymentAmout > 0}
+              disabled={!paymentAmout > 0 || paymentIntiated}
             >
               Pay Through Gateway
             </Button>}

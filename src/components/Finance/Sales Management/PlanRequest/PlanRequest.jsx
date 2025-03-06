@@ -16,8 +16,8 @@ import PageDialog from '../../../inventory/plan-making/PageDialog';
 import DataGridOverviewColumns from '../../../inventory/plan-making/DataGridOverviewColumns';
 import numberToWords from '../../../../utils/convertNumberToIndianString';
 import PlanRequestNoteModal from './PlanRequestNoteModal';
-import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 import DataGridOverviewColumnsPlanRequest from './DataGridOverviewColumnsPlanRequest';
+import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
 
 function PlanRequest() {
   const navigate = useNavigate();
@@ -105,12 +105,13 @@ function PlanRequest() {
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
 
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
+
   const { contextData } = useAPIGlobalContext();
   const isSalesAdmin = contextData?.find((item) => item?._id === 63)?.view_value;
 
-  const salesUsers = usersDataContext?.filter((user) => user?.department_name === 'Sales');
-  const globalFilteredUsers = usersDataContext?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
+  const salesUsers = userContextData?.filter((user) => user?.department_name === 'Sales');
+  const globalFilteredUsers = userContextData?.filter((user) => user?.user_name?.toLowerCase()?.includes(searchInput?.toLowerCase()));
   const fetchDescriptions = async () => {
     try {
       const response = await fetch(`${baseUrl}v1/planxnote`);
@@ -331,7 +332,7 @@ function PlanRequest() {
 
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
-    const selectedUser = usersDataContext.find((user) => user.user_id === row.sales_executive_id);
+    const selectedUser = userContextData.find((user) => user.user_id === row.sales_executive_id);
 
     setPlanDetails({
       planName: row.planName,
@@ -380,9 +381,9 @@ function PlanRequest() {
         brandId: selectedAccount ? selectedAccount.brand_id : '',
       }));
     }
-    // Handle user selection from usersDataContext
+    // Handle user selection from userContextData
     else if (name === 'salesExecutiveId') {
-      const selectedUser = usersDataContext.find((user) => user.user_name === value);
+      const selectedUser = userContextData.find((user) => user.user_name === value);
       setPlanDetails((prevDetails) => ({
         ...prevDetails,
         salesExecutiveId: selectedUser ? selectedUser._id : '',
@@ -672,7 +673,7 @@ function PlanRequest() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
-              defaultValue={usersDataContext.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
+              defaultValue={userContextData.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {

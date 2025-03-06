@@ -82,7 +82,6 @@ const CustomSelect = ({
   if (multiple) {
     options?.unshift(selectAllOption);
   }
-
   return (
     <div className={`form-group col-${fieldGrid}`}>
       <label className="form-label">
@@ -96,6 +95,7 @@ const CustomSelect = ({
         required={required}
         isDisabled={disabled}
         isMulti={multiple}
+        // placeholder={`Select ${label}`}
       />
     </div>
   );

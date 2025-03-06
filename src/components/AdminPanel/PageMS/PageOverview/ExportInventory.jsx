@@ -2,17 +2,17 @@ import jwtDecode from "jwt-decode";
 import React, { useContext } from "react";
 import { useGetAllPageListQuery } from "../../../Store/PageBaseURL";
 import * as XLSX from 'xlsx-js-style';
-import { AppContext } from "../../../../Context/Context";
 import { FormatName } from "../../../../utils/FormatName";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 function ExportInventory({ pageList }) {
 
-  const { usersDataContext } = useContext(AppContext);
+  const {userContextData} = useAPIGlobalContext()
 
   // console.log(pageList, 'pageList');
   const handleExport = () => {
     const formattedData = pageList?.map((row, index) => {
-      const closeByName = usersDataContext?.find(
+      const closeByName = userContextData?.find(
         (item) => item?.user_id === row.page_closed_by
       )?.user_name;
 

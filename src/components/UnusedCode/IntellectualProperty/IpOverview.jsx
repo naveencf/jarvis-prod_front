@@ -5,7 +5,7 @@ import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import FormContainer from "../AdminPanel/FormContainer";
 import DeleteButton from "../AdminPanel/DeleteButton";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import { CgPassword } from "react-icons/cg";
 import { baseUrl } from "../../utils/config";
 
@@ -44,7 +44,7 @@ const IpOverview = () => {
 
   async function getData() {
     await axios
-      .get(baseUrl+"get_all_instapages")
+      .get(baseUrl + "get_all_instapages")
       .then((res) => {
         setData(res.data);
         setFilterData(res.data);

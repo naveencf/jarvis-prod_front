@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";

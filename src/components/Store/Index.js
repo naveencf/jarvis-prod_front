@@ -17,7 +17,8 @@ import OperationApi from "./API/Operation/OperationApi";
 import PurchaseRequestPaymentApi from "./API/Purchase/PurchaseRequestPaymentApi";
 import { salesReducers } from "./Reducer/SalesReducer";
 import { salesMiddlewares } from "./Middleware/SalesMiddleware";
-import DirectPuchaseApi from "./API/Purchase/DirectPuchaseApi";
+import DirectPurchaseApi from "./API/Purchase/DirectPurchaseApi";
+import { purchaseApi } from "../Purchase/api/purchaseApiSlice";
 
 const store = configureStore({
   reducer: {
@@ -25,6 +26,7 @@ const store = configureStore({
     [reduxBaseURL.reducerPath]: reduxBaseURL.reducer,
     [PageBaseURL.reducerPath]: PageBaseURL.reducer,
     [TagCategoryApi.reducerPath]: TagCategoryApi.reducer,
+    [purchaseApi.reducerPath]: purchaseApi.reducer,
     [CatAssignment.reducerPath]: CatAssignment.reducer,
     [OutstandingApi.reducerPath]: OutstandingApi.reducer,
     [InvoiceRequestApi.reducerPath]: InvoiceRequestApi.reducer,
@@ -32,7 +34,7 @@ const store = configureStore({
     [OutstandingNewApi.reducerPath]: OutstandingNewApi.reducer,
     [OperationApi.reducerPath]: OperationApi.reducer,
     [PurchaseRequestPaymentApi.reducerPath]: PurchaseRequestPaymentApi.reducer,
-    [DirectPuchaseApi.reducerPath]: DirectPuchaseApi.reducer,
+    [DirectPurchaseApi.reducerPath]: DirectPurchaseApi.reducer,
     executon,
     PageOverview,
     vendorMaster,
@@ -44,6 +46,7 @@ const store = configureStore({
       .concat(...salesMiddlewares)
       .concat(reduxBaseURL.middleware)
       .concat(PageBaseURL.middleware)
+      .concat(purchaseApi.middleware)
       .concat(TagCategoryApi.middleware)
       .concat(CatAssignment.middleware)
       .concat(OutstandingApi.middleware)
@@ -52,7 +55,7 @@ const store = configureStore({
       .concat(OperationApi.middleware)
       .concat(PurchaseRequestPaymentApi.middleware)
       .concat(OutstandingNewApi.middleware)
-      .concat(DirectPuchaseApi.middleware),
+      .concat(DirectPurchaseApi.middleware),
 });
 setupListeners(store.dispatch);
 

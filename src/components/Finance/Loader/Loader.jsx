@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import "./Loader.css";
 import loader from "../../../assets/imgs/other/coffee-loader.gif";
+import cfloader from "../../../assets/imgs/other/cf-loader.gif";
 import logo from "../../../assets/logo.png";
 
 const Loader = () => {
@@ -31,7 +32,7 @@ const Loader = () => {
           <div className="loaderLogo">
             <img src={logo} />
           </div>
-          <img src={loader} className="cup" />
+          <img src={cfloader} className="cup" />
         </div>
       </div>
     </>

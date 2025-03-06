@@ -303,7 +303,7 @@ const RenderedTable = ({
     }
     setSortedData(newData);
 
-    if (e.target.value === "" || editflag === false) {
+    if (e?.target?.value === "" || editflag === false) {
       let prevData = [...sortedData];
       prevData[index - (currentPage - 1) * itemsPerPage] = {
         ...prevData[index],

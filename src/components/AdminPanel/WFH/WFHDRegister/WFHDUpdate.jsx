@@ -16,36 +16,36 @@ const WFHDUpdate = () => {
   const [user, setUser] = useState({});
   const { toastAlert, toastError } = useGlobalContext();
 
-const [documentData, setDocumentData] = useState([]);
+  const [documentData, setDocumentData] = useState([]);
   async function getDocuments() {
     const response = await axios.post(baseUrl + "get_wfhd_user_doc", {
       user_id: id,
     });
     setDocumentData(response.data.data);
-   
   }
-  useEffect(()=>{
-    getDocuments()
-  },[])
+  useEffect(() => {
+    getDocuments();
+  }, []);
 
   // New tab
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
-  const accordionButtons = ["Update WFHD User" , 'Update Document'];
+  const accordionButtons = ["Update WFHD User", "Update Document"];
 
   const tab1 = <WFHDRegister userUpdateID={id} />;
-  const tab2 = 
-  <div className="table-wrap-user">
-        <DocumentTab
-          documentData={documentData}
-          setDocumentData={setDocumentData}
-          getDocuments={getDocuments}
-          submitButton={false}
-          normalUserLayout={true}
-        />
-</div>
+  const tab2 = (
+    <div className="table-wrap-user">
+      <DocumentTab
+        documentData={documentData}
+        setDocumentData={setDocumentData}
+        getDocuments={getDocuments}
+        submitButton={false}
+        normalUserLayout={true}
+      />
+    </div>
+  );
 
   return (
     <>

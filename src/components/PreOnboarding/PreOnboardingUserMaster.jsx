@@ -5,12 +5,10 @@ import "./onboardcss/onboard_style.css";
 import "./onboardcss/onboard_responsive.css";
 import "./onboardcss/onboard_animate.min.css";
 import welcomeImage from "../../assets/imgs/other/welcome.png";
-import { useGlobalContext } from "../../Context/Context";
 import { useNavigate } from "react-router-dom";
 import { TextField } from "@mui/material";
 import { MenuItem } from "@mui/material";
 import Autocomplete from "@mui/material/Autocomplete";
-import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
 import Tour from "reactour";
 import Swal from "sweetalert2";
 
@@ -60,8 +58,11 @@ import Slider from "react-slick";
 import OnboardingBankDetails from "./OnboardingForms/OnboardingBankDetails";
 import OtherDetails from "./OnboardingForms/OtherDetails";
 import IdentityDetails from "./OnboardingForms/IdentityDetails";
-import WorkExperience from "./OnboardingForms/WorkExperience";
+import WorkExperience from "../AdminPanel/HRMS/User/WorkExperienceSingleUser";
+import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
+import { useGlobalContext } from "../../Context/Context";
 import JobSection from "./OnboardingForms/JobSection";
+
 
 var settings = {
   arrows: false,

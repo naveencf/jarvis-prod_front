@@ -3,10 +3,11 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
-import FormContainer from "../AdminPanel/FormContainer";
 import DeleteButton from "../AdminPanel/DeleteButton";
-import UserNav from "../Pantry/UserPanel/UserNav";
 import { baseUrl } from "../../utils/config";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
+import FormContainer from "../AdminPanel/FormContainer";
+
 
 const ContentOverview = () => {
   // const { data } = useGlobalContext();
@@ -16,7 +17,7 @@ const ContentOverview = () => {
 
   async function getData() {
     await axios
-      .get(baseUrl+"content_upload")
+      .get(baseUrl + "content_upload")
       .then((res) => {
         setData(res.data);
         setFilterData(res.data);

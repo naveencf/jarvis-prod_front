@@ -1,9 +1,9 @@
 import React from "react";
-import UserNav from "../../Pantry/UserPanel/UserNav";
+import UserNav from "../../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import FormContainer from "../../AdminPanel/FormContainer";
-import DeleteButton from "../../AdminPanel/DeleteButton";
+import DeleteButton from "../DeleteButton";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
 import axios from "axios";
@@ -72,7 +72,7 @@ const Platform = () => {
         alert("Platform already Exists");
       } else {
         const response = await axios.post(
-          baseUrl+"add_data_platform",
+          baseUrl + "add_data_platform",
           {
             platform_name: platformName,
             remark: "",
@@ -88,7 +88,7 @@ const Platform = () => {
   };
   async function getModalData() {
     const res = await axios.get(
-      baseUrl+"get_all_data_platforms"
+      baseUrl + "get_all_data_platforms"
     );
     setModalData(res.data);
     setModalFilter(res.data);
@@ -104,7 +104,7 @@ const Platform = () => {
   };
   const handleModalUpdate = () => {
     axios
-      .put(baseUrl+"update_data_platform", {
+      .put(baseUrl + "update_data_platform", {
         _id: modalId,
         platform_name: platformNameUpdate,
       })

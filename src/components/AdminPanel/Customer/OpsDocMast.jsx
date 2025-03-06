@@ -7,7 +7,8 @@ import { baseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
 import DataTable from "react-data-table-component";
 import { FaEdit } from "react-icons/fa";
-import DeleteButton from "../DeleteButton";
+// import DeleteButton from "../DeleteButton";
+// import DeleteButton from "../DeleteButton";
 
 const OpsDocMast = () => {
   const { toastAlert } = useGlobalContext();

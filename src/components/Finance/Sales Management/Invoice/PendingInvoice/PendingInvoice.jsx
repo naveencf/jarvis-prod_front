@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useGlobalContext } from "../../../../../Context/Context";
 import ImageView from "../../../ImageView";
 import {
   pendingInvoiceColumn,
@@ -16,6 +15,7 @@ import {
   useGetAllInvoiceRequestQuery,
   useGetAllProformaListQuery,
 } from "../../../../Store/API/Finance/InvoiceRequestApi";
+import { useAPIGlobalContext } from "../../../../AdminPanel/APIContext/APIContext";
 
 const PendingInvoice = ({
   setUniqueCustomerCount,
@@ -40,7 +40,8 @@ const PendingInvoice = ({
     isLoading: allProformaInvoiceListLoading,
   } = useGetAllProformaListQuery({ status: "uploaded", type: "proforma" });
 
-  const { usersDataContext } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [contextData, setDatas] = useState([]);
@@ -63,22 +64,22 @@ const PendingInvoice = ({
   const token = sessionStorage.getItem("token");
 
   useEffect(() => {
-    if (allPendingInvoiceRequest && usersDataContext?.length > 0) {
+    if (allPendingInvoiceRequest && userContextData?.length > 0) {
       getData();
     }
-  }, [allPendingInvoiceRequest, usersDataContext]);
+  }, [allPendingInvoiceRequest, userContextData]);
 
   useEffect(() => {
-    if (allProformaInvoiceList && usersDataContext?.length > 0) {
+    if (allProformaInvoiceList && userContextData?.length > 0) {
       handleGetProforma();
     }
-  }, [allProformaInvoiceList, usersDataContext]);
+  }, [allProformaInvoiceList, userContextData]);
 
   const getData = () => {
     if (!allPendingInvoiceRequest) return;
 
     const mergedData = allPendingInvoiceRequest?.map((item) => {
-      const userData = usersDataContext?.find(
+      const userData = userContextData?.find(
         (user) => user?.user_id === item?.created_by
       );
 
@@ -147,7 +148,7 @@ const PendingInvoice = ({
     if (!allProformaInvoiceList) return;
 
     const mergedData = allProformaInvoiceList?.map((item) => {
-      const userData = usersDataContext?.find(
+      const userData = userContextData?.find(
         (user) => user?.user_id === item?.created_by
       );
 

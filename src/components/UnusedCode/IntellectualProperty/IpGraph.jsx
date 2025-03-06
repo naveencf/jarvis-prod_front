@@ -5,11 +5,11 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 // import { Chart } from 'chart.js';
 // import Chart from "chart.js/auto";
 import Select from "react-select";
-import {baseUrl} from '../../utils/config'
+import { baseUrl } from '../../utils/config'
 
 const setFollowersDataY = {
   labels: [
@@ -92,7 +92,7 @@ const IpGraph = () => {
     setActiveButton("Year");
     const currentYear = new Date().getFullYear()?.toString();
     axios
-      .post(`${baseUrl}`+`dataforgraph`, {
+      .post(`${baseUrl}` + `dataforgraph`, {
         dateFormat: currentYear, // 2023
         ip_id: id,
       })
@@ -164,7 +164,7 @@ const IpGraph = () => {
     const currentYearMonth = `${year}-${month}`;
 
     axios
-      .post(`${baseUrl}`+`dataforgraph`, {
+      .post(`${baseUrl}` + `dataforgraph`, {
         dateFormat: currentYearMonth, // 2023-08
         ip_id: id,
       })
@@ -182,7 +182,7 @@ const IpGraph = () => {
     const year = currentDate.getFullYear();
 
     axios
-      .post(`${baseUrl}`+`dataforgraph`, {
+      .post(`${baseUrl}` + `dataforgraph`, {
         start_date: `${year}-${firstMonth}-${"01"}`,
         end_date: `${year}-${secondMonth}-${"30"}`,
         ip_id: id,
@@ -201,7 +201,7 @@ const IpGraph = () => {
 
   const saveStats = async (e) => {
     e.preventDefault();
-    axios.post(`${baseUrl}`+`ip_stats_post`, {
+    axios.post(`${baseUrl}` + `ip_stats_post`, {
       ip_id: id,
       story_view: storyView,
       month_reach: monthReach,
@@ -223,7 +223,7 @@ const IpGraph = () => {
 
   const saveIpPageResponsiblity = async (e) => {
     e.preventDefault();
-    axios.put(`${baseUrl}`+`ipregiupdatenew`, {
+    axios.put(`${baseUrl}` + `ipregiupdatenew`, {
       id: id,
       user_id: ipAllocateUser,
       user_response: ipAllocatePage?.map((option) => option.value).join(),
@@ -233,7 +233,7 @@ const IpGraph = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_all_users")
+      .get(baseUrl + "get_all_users")
       .then((res) => setUserData(res.data.data));
   }, []);
 
@@ -249,7 +249,7 @@ const IpGraph = () => {
     };
 
     axios
-      .post(baseUrl+"show_stats", payload)
+      .post(baseUrl + "show_stats", payload)
       .then((res) => {
         setStatsData(res.data.data);
 
@@ -280,7 +280,7 @@ const IpGraph = () => {
     };
 
     axios
-      .post(baseUrl+"show_stats", payload)
+      .post(baseUrl + "show_stats", payload)
       .then((res) => {
         setStatsData(res.data.data);
 

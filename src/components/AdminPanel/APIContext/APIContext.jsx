@@ -32,9 +32,9 @@ const APIContext = ({ children }) => {
       setLoading(true);
     });
 
-    // axios.get(baseUrl + "get_all_departments").then((res) => {
-    //   setDepartmentContext(res?.data);
-    // });
+    axios.get(baseUrl + "get_all_departments").then((res) => {
+      setDepartmentContext(res?.data);
+    });
 
     axios.get(`${baseUrl}get_single_user/${userID}`).then((res) => {
       setLoginUserData(res.data);

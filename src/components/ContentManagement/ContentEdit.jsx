@@ -5,8 +5,8 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
-import {baseUrl} from '../../utils/config'
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
+import { baseUrl } from '../../utils/config'
 
 const ContentEdit = () => {
   const { toastAlert } = useGlobalContext();
@@ -27,7 +27,7 @@ const ContentEdit = () => {
 
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`content_upload/${id}`)
+      .get(`${baseUrl}` + `content_upload/${id}`)
       .then((res) => {
         const fetchedData = res.data[0];
         setPageName(fetchedData.pageName);
@@ -40,7 +40,7 @@ const ContentEdit = () => {
       });
 
     axios
-      .get(baseUrl+"alldataofIptype")
+      .get(baseUrl + "alldataofIptype")
       .then((res) => setIpTypeData(res.data));
   }, []);
 
@@ -57,7 +57,7 @@ const ContentEdit = () => {
     // formData.append("reason", reason);
     // formData.append("status", status)
 
-    await axios.put(baseUrl+"content_upload", formData, {
+    await axios.put(baseUrl + "content_upload", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

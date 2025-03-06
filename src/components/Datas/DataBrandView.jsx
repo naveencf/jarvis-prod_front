@@ -4,11 +4,11 @@ import { Navigate, useParams, Link } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import pdf from "./pdf-file.png";
 import sheets from "./sheets.png";
 import video from "./montage.png";
-import {baseUrl} from '../../utils/config'
+import { baseUrl } from '../../utils/config'
 
 const DataBrandView = () => {
   const [brand, setBrand] = useState("");
@@ -22,7 +22,7 @@ const DataBrandView = () => {
   const [images, setImages] = useState([]);
   const [details, setDetails] = useState([]);
   const [category, setCategory] = useState("");
-  
+
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
@@ -30,7 +30,7 @@ const DataBrandView = () => {
 
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`get_data_based_data_name/${id}`)
+      .get(`${baseUrl}` + `get_data_based_data_name/${id}`)
       .then((res) => {
         const fetchedData = res.data[0];
         const { data_name, upload_logo, remark, cat_name } = fetchedData;
@@ -47,7 +47,7 @@ const DataBrandView = () => {
   useEffect(() => {
     if (brand) {
       axios
-        .get(`${baseUrl}`+`get_data_based_data_name_new/${brand}`)
+        .get(`${baseUrl}` + `get_data_based_data_name_new/${brand}`)
         .then((res) => {
           console.log(res.data);
           setLogos(res.data);
@@ -115,7 +115,7 @@ const DataBrandView = () => {
                     style={{ margin: "0 0 10px 0" }}
                   >
                     <div>
-                      {getFileIcon(detail.data_type, detail.data_image?detail.data_image:detail.mmc_image?detail.mmc_image:detail.sarcasm_image?detail.sarcasm_image:detail.no_logo_image)}
+                      {getFileIcon(detail.data_type, detail.data_image ? detail.data_image : detail.mmc_image ? detail.mmc_image : detail.sarcasm_image ? detail.sarcasm_image : detail.no_logo_image)}
                     </div>
                     <div className="card-body"></div>
                     <ul className="list-group list-group-flush">

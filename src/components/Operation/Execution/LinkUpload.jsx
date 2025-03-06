@@ -1,13 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
+  useAddStoryDataMutation,
   usePlanDataUploadMutation,
+  usePlanDataUploadPlatformWiseMutation,
   useUpdateVendorMutation,
 } from "../../Store/API/Operation/OperationApi";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import { useGlobalContext } from "../../../Context/Context";
 import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
-import { useGetVendorsQuery } from "../../Store/API/Purchase/DirectPuchaseApi";
+import {
+  useAddServiceMutation,
+  useGetVendorsQuery,
+} from "../../Store/API/Purchase/DirectPurchaseApi";
+import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
+import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi.js";
 
 const LinkUpload = ({
   phaseList,
@@ -23,10 +30,12 @@ const LinkUpload = ({
   setModalName,
   setModalData,
   setToggleModal,
+  setSelectedPlan,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
-
   const [notnewLine, setNotNewLine] = useState(false);
+  const { userContextData } = useAPIGlobalContext();
+
   const [isValid, setIsValid] = useState({
     shortCodes: false,
     department: false,
@@ -34,13 +43,20 @@ const LinkUpload = ({
     phaseDate: false,
     campaignId: false,
     vendor: false,
+    amount: false,
+    service_description: false,
   });
   const [shortCodes, setShortCodes] = useState([]);
-  const [record, setRecord] = useState(true);
+  const [record, setRecord] = useState(0);
+  const updatevendorTab = useRef(false);
   const [vendor, setVendor] = useState("");
+  const [otherPlatform, setOtherPlatform] = useState("");
+  const [selectedOpUser, setSelectedOpUser] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [file, setFile] = useState(null);
+  const [serviceName, setServiceName] = useState("");
   const platformID = useRef(null);
-
-  console.log(record);
+  const selectedCampaign = useRef("");
 
   useEffect(() => {
     if (vendor) {
@@ -50,15 +66,36 @@ const LinkUpload = ({
     }
   }, [vendor]);
 
+  useEffect(() => {
+    if (selectedPlan) {
+      setRecord(0);
+    } else setRecord(3);
+  }, [selectedPlan]);
+
   const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
-    skip: record,
+    skip: record == 0,
   });
+
+  const {
+    data: campaignsNameWiseData,
+    isLoading: campaignsNameWiseLoading,
+    isError: campaignsNameWiseError,
+  } = useGetExeCampaignsNameWiseDataQuery();
 
   const {
     data: pmsPlatformData,
     isLoading: pmsPlatformLoading,
     error: pmsPlatformError,
-  } = useGetPmsPlatformQuery({ skip: record });
+  } = useGetPmsPlatformQuery({ skip: record == 0 });
+
+  const [
+    uploadServiceData,
+    {
+      error: serviceError,
+      isLoading: serviceLoading,
+      isSuccess: serviceSuccess,
+    },
+  ] = useAddServiceMutation();
 
   const [
     updateVendor,
@@ -75,12 +112,20 @@ const LinkUpload = ({
     },
   ] = usePlanDataUploadMutation();
 
+  const [
+    uploadOtherPlatformData,
+    {
+      isLoading: uploadOtherPlatformDataLoading,
+      isSuccess: uploadOtherPlatformDataSuccess,
+    },
+  ] = usePlanDataUploadPlatformWiseMutation();
+
   useEffect(() => {
     checkLinksForErrors();
     setShortCodes(extractShortCodes());
+    setOtherPlatform(extractSocialMediaId());
   }, [links]);
-
-  const generateShortCode = () => {
+  const filterDuplicateLinks = () => {
     if (!links) return [];
     const uniqueLinks = Array.from(
       new Set(links.split("\n").filter((link) => link.startsWith("https")))
@@ -89,11 +134,16 @@ const LinkUpload = ({
   };
 
   const extractShortCodes = () => {
-    const uniqueLinks = generateShortCode();
+    const uniqueLinks = filterDuplicateLinks();
     const shortCodes = uniqueLinks
       .map((link) => {
         const match = link.match(/\/(reel|p)\/([A-Za-z0-9-_]+)/);
-        return match ? match[2] : null;
+        return match
+          ? {
+              ref_link: link,
+              shortCode: match[2],
+            }
+          : null;
       })
       .filter((code) => code !== null);
     return shortCodes.map((code) => code);
@@ -111,78 +161,227 @@ const LinkUpload = ({
     }
   };
 
-  async function handleUpload() {
-    let Data = record
-      ? {
-          shortCodes: shortCodes,
-          department: token.dept_id,
-          userId: token.id,
-          phaseDate: phaseDate,
-          campaignId: selectedPlan,
-        }
-      : {
-          shortCodes: shortCodes,
-          platform_name: pmsPlatformData?.data?.find(
-            (data) => data._id == platformID.current
-          ).platform_name,
-          vendor_id: vendor,
-        };
+  function extractSocialMediaId() {
+    let urls = filterDuplicateLinks();
 
-    let newIsValid = record
-      ? {
-          shortCodes: !shortCodes.length > 0,
-          department: !token.dept_id,
-          userId: !token.id,
-          phaseDate: !phaseDate,
-          campaignId: !selectedPlan,
+    const platforms = [
+      {
+        name: "X",
+        regex: /https?:\/\/x\.com\/[^\/]+\/status\/(\d+)/,
+        type: "status",
+      },
+      {
+        name: "Threads",
+        regex: /https?:\/\/www\.threads\.net\/@[^\/]+\/post\/([a-zA-Z0-9_-]+)/,
+        type: "post",
+      },
+      {
+        name: "Facebook",
+        regex: /https?:\/\/www\.facebook\.com\/share\/(?:p\/)?([a-zA-Z0-9]+)/,
+        type: "share",
+      },
+      {
+        name: "Facebook",
+        regex: /https?:\/\/www\.facebook\.com\/[0-9]+\/posts\/([a-zA-Z0-9]+)/,
+        type: "post",
+      },
+      {
+        name: "Facebook",
+        regex:
+          /https?:\/\/www\.facebook\.com\/stories\/([0-9]+)\/([a-zA-Z0-9=]+)\//,
+        type: "story",
+      },
+    ];
+
+    const result = [];
+
+    for (const url of urls) {
+      for (const platform of platforms) {
+        const match = url.match(platform.regex);
+        if (match) {
+          result.push({
+            platform_name: platform.name,
+            postType: platform.type,
+            shortCode: match.length > 2 ? match[2] : match[1],
+            ref_link: url,
+          });
+        } else {
+          continue;
         }
-      : {
-          shortCodes: !shortCodes.length > 0,
-          vendor: !vendor,
-        };
+      }
+    }
+
+    return result;
+  }
+
+  async function handleUpload() {
+    let otherData = {
+      createdBy: token.id,
+      phaseDate: phaseDate,
+      campaignId: selectedPlan,
+      campaign_name: campaignsNameWiseData?.find(
+        (data) => data._id == selectedPlan
+      ).exe_campaign_name,
+      postData: otherPlatform,
+    };
+    if (record == 3) {
+      otherData = {
+        ...otherData,
+        vendorId: vendorListData?.find((data) => data.vendor_id == vendor)?._id,
+        vendor_name: vendorListData?.find((data) => data.vendor_id == vendor)
+          ?.vendor_name,
+        vendor_id: vendor,
+      };
+      delete otherData.phaseDate;
+      delete otherData.campaignId;
+      delete otherData.campaign_name;
+    }
+
+    let Data =
+      record == 2
+        ? {
+            vendor_id: vendor,
+            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+              ?._id,
+            vendor_name: vendorListData?.find(
+              (data) => data.vendor_id == vendor
+            )?.vendor_name,
+            amount: amount,
+            service_description: serviceName,
+            ref_link: links,
+            campaignId: selectedPlan,
+            campaign_name: campaignsNameWiseData?.find(
+              (data) => data._id == selectedPlan
+            ).exe_campaign_name,
+            createdBy: token.id,
+            record_purchase_by: token.id,
+            audit_by: token.id,
+            file: file,
+          }
+        : record == 0
+        ? {
+            shortCodes: shortCodes,
+            department: token.dept_id,
+            userId: token.id,
+            phaseDate: phaseDate,
+            campaignId: selectedPlan,
+            manager: selectedOpUser,
+          }
+        : record == 1
+        ? {
+            dataToBeUpdate: {
+              record_purchase_by: token.id,
+            },
+            shortCodes: [
+              ...shortCodes.map((data) => data.shortCode),
+              ...otherPlatform.map((data) => data.shortCode),
+            ],
+            platform_name: pmsPlatformData?.data?.find(
+              (data) => data._id == platformID.current
+            ).platform_name,
+            vendor_id: vendor,
+            manager: selectedOpUser,
+          }
+        : {
+            vendor_id: vendor,
+            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+              ?._id,
+            vendor_name: vendorListData?.find(
+              (data) => data.vendor_id == vendor
+            )?.vendor_name,
+            shortCodes: shortCodes,
+            department: token.dept_id,
+            userId: token.id,
+            campaignId: selectedPlan,
+            campaign_name: campaignsNameWiseData?.find(
+              (data) => data._id == selectedPlan
+            ).exe_campaign_name,
+          };
+
+    let arrData = shortCodes.length + otherPlatform.length;
+
+    let newIsValid =
+      record == 2
+        ? {
+            vendor: !vendor,
+            amount: !amount,
+            service_description: !serviceName,
+          }
+        : record == 0
+        ? {
+            shortCodes: !(arrData > 0),
+            department: !token.dept_id,
+            userId: !token.id,
+            phaseDate: !phaseDate,
+            campaignId: !selectedPlan,
+          }
+        : record == 1
+        ? {
+            shortCodes: !(arrData > 0),
+            vendor: !vendor,
+          }
+        : {
+            shortCodes: !(arrData > 0),
+            vendor: !vendor,
+          };
 
     setIsValid(newIsValid);
 
     if (Object.values(newIsValid).includes(true)) {
       return;
     }
+
+    let serviceData = new FormData();
+    if (record == 2)
+      Object.keys(Data).forEach((key) => {
+        serviceData.append(key, Data[key]);
+      });
+
     try {
-      const res = record
-        ? await uploadPlanData(Data)
-        : await updateVendor(Data);
-
+      if (record == 0 || record == 3) {
+        await uploadOtherPlatformData(otherData);
+      }
+      const res =
+        record == 2
+          ? await uploadServiceData(serviceData)
+          : record == 0 || record == 3
+          ? await uploadPlanData(Data)
+          : await updateVendor(Data);
       if (res.error) throw new Error(res.error);
-
       await refetchPlanData();
       setLinks("");
       setPhaseDate("");
       setVendor("");
+      setAmount(0);
+      setServiceName("");
+      setFile(null);
+      setShortCodes([]);
+      setOtherPlatform([]);
+
       if (
-        record &&
+        (record == 0 || record == 3) &&
         res?.data?.data?.shortCodeNotPresentInCampaign?.length > 0
       ) {
         setModalName("uploadMessage");
         setModalData(res);
         setToggleModal(true);
       }
-
       toastAlert("Plan Uploaded");
     } catch (err) {
       toastError("Error Uploading");
     }
   }
-
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);
   }
+
   function CheckDuplicateInPlan() {
     const duplicate = PlanData?.filter((data) => {
-      return shortCodes.includes(data.shortCode);
+      return shortCodes.some((item) => item?.shortCode === data?.shortCode);
     });
 
     const LinksArray = links.trim().split("\n");
-
     let duplicateShortCodes = [];
     let NewShortCodes = [];
     let duplicateLinks = "";
@@ -202,7 +401,6 @@ const LinkUpload = ({
       });
       duplicateLinks = matchedLinks.join(` \n`);
       NewLinks = unmatchedLinks.join(` \n`);
-
       setDuplicateMsg({
         duplicateLinks,
         NewLinks,
@@ -213,67 +411,101 @@ const LinkUpload = ({
   }
 
   useEffect(() => {
-    if (record && phaseDate) CheckDuplicateInPlan();
+    if (record == 0 && phaseDate) CheckDuplicateInPlan();
   }, [shortCodes, phaseDate]);
 
   return (
     <div className="card">
       <div className="card-header">
+        {selectedPlan != 0 && (
+          <div
+            className={`pointer header-tab ${record == 0 && "header-active"}`}
+            onClick={() => {
+              setRecord(0);
+            }}
+          >
+            Record Links
+          </div>
+        )}
         <div
-          className={`pointer header-tab ${record && "header-active"}`}
+          className={`pointer header-tab ${record == 3 && "header-active"}`}
           onClick={() => {
-            setRecord(true);
+            setRecord(3);
+            setSelectedPlan(null);
+            localStorage.setItem(
+              "tab",
+              JSON.stringify({
+                0: {
+                  activeTab: "all",
+                  activeTabIndex: 0,
+                },
+              })
+            );
           }}
         >
-          Record Links
+          Add Vendor Links{" "}
         </div>
-        <div
-          className={`pointer header-tab ${!record && "header-active"}`}
-          onClick={() => {
-            setRecord(false);
-          }}
-        >
-          Direct Purchase Vendor{" "}
-        </div>
+        {selectedPlan != 0 && (
+          <div
+            className={`pointer header-tab ${record == 1 && "header-active"}`}
+            onClick={() => {
+              setRecord(1);
+            }}
+          >
+            Update Vendor{" "}
+          </div>
+        )}
+        {selectedPlan != 0 && (
+          <div
+            className={`pointer header-tab ${record == 2 && "header-active"}`}
+            onClick={() => {
+              setRecord(2);
+            }}
+          >
+            Service{" "}
+          </div>
+        )}
       </div>
       <div className="card-body">
         <div className="row mb-3">
           <div className="col-md-6">
             <textarea
               className="text-area"
-              placeholder={`Please enter the insta links here. Each link should start from a new line. \nexample: \nhttps://www.instagram.com/reel/abc123 \nhttps://www.instagram.com/p/def456sbhv`}
+              placeholder={
+                record !== 2
+                  ? `Please enter the insta links here. Each link should start from a new line. \nexample: \nhttps://www.instagram.com/reel/abc123 \nhttps://www.instagram.com/p/def456sbhv`
+                  : "Please enter the link here"
+              }
               value={links}
               onChange={(e) => setLinks(e.target.value)}
             />
-
             {notnewLine && (
               <p className="form-error">
                 Please start each link from a new line
               </p>
             )}
           </div>
+          {vendorListData?.length > 0 && record != 0 && (
+            <div className="col-md-6">
+              <CustomSelect
+                fieldGrid={12}
+                label={"Vendor"}
+                dataArray={vendorListData}
+                optionId={"vendor_id"}
+                optionLabel={"vendor_name"}
+                selectedId={vendor}
+                setSelectedId={(value) => {
+                  setVendor(value);
+                  setIsValid((prev) => ({ ...prev, vendor: false }));
+                }}
+              />
+              {isValid?.vendor && (
+                <p className="form-error">Please select the vendor</p>
+              )}
+            </div>
+          )}
 
-          {!record ? (
-            vendorListData?.length > 0 && (
-              <div className="col-md-6">
-                <CustomSelect
-                  fieldGrid={12}
-                  label={"Vendor"}
-                  dataArray={vendorListData}
-                  optionId={"vendor_id"}
-                  optionLabel={"vendor_name"}
-                  selectedId={vendor}
-                  setSelectedId={(value) => {
-                    setVendor(value);
-                    setIsValid((prev) => ({ ...prev, vendor: false }));
-                  }}
-                />
-                {isValid?.vendor && (
-                  <p className="form-error">Please select the vendor</p>
-                )}
-              </div>
-            )
-          ) : (
+          {record == 0 && (
             <>
               <div className="col-md-4">
                 <FieldContainer
@@ -295,7 +527,6 @@ const LinkUpload = ({
                   <p className="form-error">Please select the phase date</p>
                 )}
               </div>
-
               {phaseList?.length > 0 && (
                 <CustomSelect
                   label={"Existing Phase Date"}
@@ -310,20 +541,131 @@ const LinkUpload = ({
               )}
             </>
           )}
-
+          {record == 2 && (
+            <>
+              <div className="col-md-6">
+                <CustomSelect
+                  fieldGrid={12}
+                  label="Service Name"
+                  dataArray={[
+                    { lable: "Comments", value: "Comments" },
+                    { lable: "Edit", value: "Edit" },
+                    { lable: "Video", value: "Video" },
+                    { lable: "Tweeter Trends", value: "Tweeter Trends" },
+                    { lable: "Others", value: "Others" },
+                  ]}
+                  optionId={"value"}
+                  optionLabel={"lable"}
+                  selectedId={serviceName}
+                  setSelectedId={(value) => {
+                    setServiceName(value);
+                    setIsValid((prev) => ({
+                      ...prev,
+                      service_description: false,
+                    }));
+                  }}
+                />
+                {isValid?.service_description && (
+                  <p className="form-error">Please select the service</p>
+                )}
+              </div>
+              <div className="col-md-4">
+                <FieldContainer
+                  fieldGrid={12}
+                  label="Amount"
+                  type="number"
+                  value={amount}
+                  onChange={(e) => {
+                    setAmount(e.target.value);
+                    setIsValid((prev) => ({ ...prev, amount: false }));
+                  }}
+                />
+                {isValid?.amount && (
+                  <p className="form-error">Please enter amount </p>
+                )}
+              </div>
+              <div className="col-md-4">
+                <FieldContainer
+                  fieldGrid={12}
+                  label="Upload File"
+                  type="file"
+                  onChange={(e) => {
+                    setFile(e.target.files[0]);
+                  }}
+                />
+              </div>
+              <button
+                className="btn cmnbtn btn-primary mt-4 ml-3"
+                onClick={() => {
+                  setToggleModal(true);
+                  setModalName("multipleService");
+                }}
+              >
+                Add Multiple Service
+              </button>
+            </>
+          )}
+          {record == 3 && campaignsNameWiseData?.length > 0 && (
+            <CustomSelect
+              fieldGrid={6}
+              label={"Campaign"}
+              dataArray={campaignsNameWiseData}
+              optionId={"_id"}
+              optionLabel={"exe_campaign_name"}
+              selectedId={selectedCampaign}
+              setSelectedId={(value) => {
+                selectedCampaign.current = value;
+              }}
+            />
+          )}
+          {record != 2 && record != 3 && (
+            <div className="col-md-6">
+              <CustomSelect
+                fieldGrid={12}
+                label={"Manager"}
+                dataArray={userContextData}
+                optionId={"user_id"}
+                optionLabel={"user_name"}
+                selectedId={selectedOpUser}
+                setSelectedId={(value) => {
+                  setSelectedOpUser(value);
+                }}
+              />
+            </div>
+          )}
+          {(record == 0 || record == 3) && (
+            <button
+              className="btn cmnbtn btn-primary mt-4 ml-3"
+              onClick={() => {
+                setToggleModal(true);
+                setModalName("storyPost");
+                setModalData(record);
+              }}
+            >
+              Add Story
+            </button>
+          )}
           <button
             className="cmnbtn btn-primary mt-4 ml-3"
             disabled={
-              notnewLine || !shortCodes.length || uploadLoading || vendorLoading
+              record != 2
+                ? notnewLine ||
+                  !shortCodes.length ||
+                  uploadLoading ||
+                  vendorLoading
+                : false || serviceLoading || vendorLoading
             }
             onClick={() => handleUpload()}
           >
-            {record ? "Record" : "Update Vendor"}
+            {record == 2
+              ? "Add Service"
+              : record == 0 || record == 3
+              ? "Record"
+              : "Update Vendor"}
           </button>
         </div>
       </div>
     </div>
   );
 };
-
 export default LinkUpload;

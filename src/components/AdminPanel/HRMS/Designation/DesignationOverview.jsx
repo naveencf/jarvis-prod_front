@@ -6,8 +6,8 @@ import { FaEdit } from "react-icons/fa";
 import jwtDecode from "jwt-decode";
 import Modal from "react-modal";
 import DeleteButton from "../../DeleteButton";
-import FormContainer from "../../FormContainer";
 import { baseUrl } from "../../../../utils/config";
+import FormContainer from "../../FormContainer";
 
 const DesignationOverview = () => {
   // State variables

@@ -5,7 +5,7 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../AdminPanel/FormContainer";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { useGlobalContext } from "../../Context/Context";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import pdf from "./pdf-file.png";
 import sheets from "./sheets.png";
 import video from "./montage.png";
@@ -613,7 +613,7 @@ const DataBrandMaster = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
 
@@ -1065,9 +1065,9 @@ const DataBrandMaster = () => {
               <div className="summary_cardrow brand_img_row">
                 <div className="col summary_box brand_img_box col140">
                   {detail.fileType === "jpg" ||
-                  detail.fileType === "jpeg" ||
-                  detail.fileType === "png" ||
-                  detail.fileType === "gif" ? (
+                    detail.fileType === "jpeg" ||
+                    detail.fileType === "png" ||
+                    detail.fileType === "gif" ? (
                     images[index] && (
                       <img
                         onClick={() =>
@@ -1136,9 +1136,9 @@ const DataBrandMaster = () => {
               <div className="summary_cardrow brand_img_row">
                 <div className="col summary_box brand_img_box col140">
                   {detail.fileType === "jpg" ||
-                  detail.fileType === "jpeg" ||
-                  detail.fileType === "png" ||
-                  detail.fileType === "gif" ? (
+                    detail.fileType === "jpeg" ||
+                    detail.fileType === "png" ||
+                    detail.fileType === "gif" ? (
                     mmcImages[index] && (
                       <img
                         onClick={() =>
@@ -1223,9 +1223,9 @@ const DataBrandMaster = () => {
               <div className="summary_cardrow brand_img_row">
                 <div className="col summary_box brand_img_box col140">
                   {detail.fileType === "jpg" ||
-                  detail.fileType === "jpeg" ||
-                  detail.fileType === "png" ||
-                  detail.fileType === "gif" ? (
+                    detail.fileType === "jpeg" ||
+                    detail.fileType === "png" ||
+                    detail.fileType === "gif" ? (
                     sarcasmImages[index] && (
                       <img
                         onClick={() =>
@@ -1310,9 +1310,9 @@ const DataBrandMaster = () => {
               <div className="summary_cardrow brand_img_row">
                 <div className="col summary_box brand_img_box col140">
                   {detail.fileType === "jpg" ||
-                  detail.fileType === "jpeg" ||
-                  detail.fileType === "png" ||
-                  detail.fileType === "gif" ? (
+                    detail.fileType === "jpeg" ||
+                    detail.fileType === "png" ||
+                    detail.fileType === "gif" ? (
                     nologoImages[index] && (
                       <img
                         onClick={() =>

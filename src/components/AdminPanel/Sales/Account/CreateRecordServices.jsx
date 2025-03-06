@@ -3,8 +3,8 @@ import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import FieldContainer from "../../FieldContainer";
 import { useParams } from "react-router-dom";
 import { useGlobalContext } from "../../../../Context/Context";
-import { set } from "date-fns"
-  ;
+import { set } from "date-fns";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const RecordServices = ({
   records,
@@ -18,7 +18,8 @@ const RecordServices = ({
   setRemainingAmount,
   remainingAmount,
 }) => {
-  const { usersDataContext } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
 
   const { editId } = useParams();
   const [selectedRecords, setSelectedRecords] = useState(
@@ -222,7 +223,7 @@ const RecordServices = ({
                         {
                           getincentiveSharingData?.services?.find(data => data?.service_id === record?.sales_service_master_id)?.incentive_sharing_users?.map((data, index) => (
                             <div key={index} className="sb gap-2  cmnbtn btn btn_sm">
-                              <p>{usersDataContext?.find(user => user?.user_id === data?.user_id)?.user_name}</p>
+                              <p>{userContextData?.find(user => user?.user_id === data?.user_id)?.user_name}</p>
                               <p>{data?.user_percentage + "%"}</p>
                             </div>
                           ))

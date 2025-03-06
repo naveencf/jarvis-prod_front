@@ -1,4 +1,4 @@
-;
+
 (function ($) {
 	$.fn.loading = function () {
 		var DEFAULTS = {

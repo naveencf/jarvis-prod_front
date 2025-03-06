@@ -7,6 +7,24 @@ const FormContainer = ({
   mainTitle,
   title,
   uniqueVendorCount,
+  link,
+  buttonAccess,
+  newbutton,
+  newbuttonRouting,
+  newbuttonName,
+  children,
+  handleSubmit,
+  submitButton = true,
+  activeAccordionIndex,
+  addNewButtonName,
+  accordionButtons = [],
+  accIndex,
+  onAccordionButtonClick,
+  loading = false,
+  mainTitleRequired = true,
+  Titleheadercomponent,
+  TitleHeaderComponentDisplay = "none",
+
   totalPendingAmount,
   pendingRequestCount,
   uniqueCustomerCount,
@@ -20,7 +38,6 @@ const FormContainer = ({
   nonInvcbalanceAmountTotal,
   handleOpenUniqueSalesExecutive,
   totalBalanceAmount,
-  link,
   uniqueNonInvoiceCustomerCount,
   uniqueNonInvoiceSalesExecutiveCount,
   balanceAmountPartial,
@@ -32,21 +49,9 @@ const FormContainer = ({
   // openCount,
   // closeCount,
   // aboutToCloseCount,
-  buttonAccess,
-  newbutton,
-  newbuttonRouting,
-  newbuttonName,
-  children,
-  handleSubmit,
   withInvoiceCount,
   withoutInvoiceCount,
   handleOpenUniqueCustomerClick,
-  submitButton = true,
-  activeAccordionIndex,
-  addNewButtonName,
-  accordionButtons = [],
-  accIndex,
-  onAccordionButtonClick,
   refundAmountTotal,
   balanceAmountTotal,
   requestedAmountTotal,
@@ -90,11 +95,8 @@ const FormContainer = ({
   saleBookingVerifyPaymentAdditionalTitles = false,
   pendingInvoicePaymentAdditionalTitles = false,
   gstNongstIncentiveReport = false,
-  loading = false,
   pendingpaymentRemainder = 0,
-  mainTitleRequired = true,
-  Titleheadercomponent,
-  TitleHeaderComponentDisplay = "none",
+
 }) => {
   const location = useLocation();
   const activeLink = location.pathname;
@@ -589,9 +591,8 @@ const FormContainer = ({
               <Link to={link}>
                 <button
                   title={"Add New " + mainTitle}
-                  className={`btn cmnbtn btn_sm btn-primary ${
-                    addNewButtonName && "text_button"
-                  }`}
+                  className={`btn cmnbtn btn_sm btn-primary ${addNewButtonName && "text_button"
+                    }`}
                 >
                   {/* {addNewButtonName ? addNewButtonName : <FaUserPlus />} */}
                   {addNewButtonName ? addNewButtonName : "Add"}
@@ -601,9 +602,8 @@ const FormContainer = ({
                 <Link to={newbuttonRouting}>
                   <button
                     title={"Add " + mainTitle}
-                    className={`btn cmnbtn btn_sm btn-success ${
-                      newbuttonName && "text_button"
-                    }`}
+                    className={`btn cmnbtn btn_sm btn-success ${newbuttonName && "text_button"
+                      }`}
                   >
                     {/* {newbuttonName ? newbuttonName : <FaUserPlus />} */}
                     {newbuttonName ? newbuttonName : "Add"}
@@ -638,9 +638,8 @@ const FormContainer = ({
             <div
               className="btn-group w-100"
               style={{
-                display: `${
-                  TitleHeaderComponentDisplay === "none" ? "" : "none"
-                }`,
+                display: `${TitleHeaderComponentDisplay === "none" ? "" : "none"
+                  }`,
               }}
             >
               {accordionButtons.map((buttonName, index) => (
@@ -678,9 +677,8 @@ const FormContainer = ({
                     {activeAccordionIndex === accordionButtons.length - 1 &&
                       submitButton && (
                         <button
-                          className={`btn cmnbtn ${
-                            loading ? "btn-danger" : "btn-success"
-                          }`}
+                          className={`btn cmnbtn ${loading ? "btn-danger" : "btn-success"
+                            }`}
                           style={{ marginRight: "5px" }}
                           type="submit"
                           disabled={loading}

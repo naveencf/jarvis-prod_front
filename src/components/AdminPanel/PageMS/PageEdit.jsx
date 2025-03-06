@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
+import { useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../FieldContainer";
 import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
@@ -24,7 +24,14 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useGetOwnershipTypeQuery } from "../../Store/PageBaseURL";
 import formatString from "../Operation/CampaignMaster/WordCapital";
 import { useContext } from "react";
-import { IconButton, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  IconButton,
+  Modal,
+  Stack,
+  Typography,
+} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import InfoIcon from "@mui/icons-material/Info";
 import {
@@ -37,6 +44,9 @@ import PageInfoModal from "./PageInfoModal";
 import { FormatName } from "../../../utils/FormatName";
 import { Spinner } from "react-bootstrap";
 import { error } from "jquery";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
+import View from "../Sales/Account/View/View";
+import { Eye } from "@phosphor-icons/react";
 
 setOpenShowAddModal;
 const Page = ({ pageMast_id, handleEditClose }) => {
@@ -103,7 +113,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [tempVendorId, setTempVendorId] = useState();
   const [pagePriceList, setPagePriceList] = useState([]);
   const token = sessionStorage.getItem("token");
-  const { usersDataContext } = useContext(AppContext);
+  const { userContextData } = useAPIGlobalContext();
+
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  const [multiplePage, setMultipalPage] = useState([]);
 
   const PageLevels = [
     { value: "high", label: "Level 1 (High)" },
@@ -112,10 +129,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   ];
 
   const PageStatus = [
-    { value: 'active', label: 'Active' },
-    { value: 'semi_active', label: 'Semi Active' },
+    { value: "active", label: "Active" },
+    { value: "semi_active", label: "Semi Active" },
     { value: "maintained_dead", label: "Maintained Dead" },
-    { value: 'dead', label: 'Dead' },
+    { value: "dead", label: "Dead" },
   ];
 
   const PageTypes = [
@@ -448,6 +465,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       rate_type: rateType || "",
       updated_by: userID,
       engagment_rate: engagment || 0,
+      multi_page_names: multiplePage,
       variable_type: rateType == "Variable" ? variableType.value : null,
 
       platform_name: platformData
@@ -519,7 +537,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => { })
+          .then(() => {})
           .catch((err) => {
             console.log(err);
           });
@@ -795,14 +813,14 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           Close by <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
-          options={usersDataContext.map((option) => ({
+          options={userContextData?.map((option) => ({
             value: option.user_id,
             label: option.user_name,
           }))}
           value={{
             value: closeBy,
             label:
-              usersDataContext.find((role) => role.user_id === closeBy)
+              userContextData?.find((role) => role.user_id === closeBy)
                 ?.user_name || "",
           }}
           onChange={(e) => {
@@ -996,10 +1014,18 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         />
       </div>
 
-      <FieldContainer label="Description" value={description} required={false} onChange={(e) => setDescription(e.target.value)} />
-      <FieldContainer label="Bio" value={bio} required={false} onChange={(e) => setBio(e.target.value)} />
-
-
+      <FieldContainer
+        label="Description"
+        value={description}
+        required={false}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <FieldContainer
+        label="Bio"
+        value={bio}
+        required={false}
+        onChange={(e) => setBio(e.target.value)}
+      />
 
       <FieldContainer
         label="Description"
@@ -1025,6 +1051,31 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             setEngagment(e.target.value);
           }}
         />
+      </div>
+      <div className="col-md-6 p0 mb16 d-flex">
+        <FieldContainer
+          label="Multiple Page *"
+          required
+          Tag="textarea"
+          type="text"
+          onChange={(e) => setMultipalPage(e.target.value.split("\n"))} // Split by new lines
+          value={multiplePage.join("\n")} // Convert array back to string for display
+        />
+        {multiplePage.length > 0 &&
+          multiplePage.some((item) => item.trim() !== "") && (
+            <Button
+              sx={{
+                marginTop: "35px",
+                width: "50px", // Adjust width
+                height: "50px", // Adjust height
+                minWidth: "unset", // Prevents MUI from enforcing a minimum width
+              }}
+              variant="contained"
+              onClick={handleOpen}
+            >
+              <Eye />
+            </Button>
+          )}
       </div>
 
       <div className="col-12 row">
@@ -1193,6 +1244,40 @@ const Page = ({ pageMast_id, handleEditClose }) => {
             Submit
           </button>
         )}
+        <Modal open={open} onClose={handleClose}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 400,
+              height: 550, // Fixed height
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 4,
+              borderRadius: 2,
+              overflow: "auto", // Enables scrolling if content overflows
+            }}
+          >
+            <Typography variant="h6" component="h2">
+              View Multiple Page
+            </Typography>
+            <Box sx={{ mt: 2, maxHeight: "400px", overflowY: "auto" }}>
+              {multiplePage.map((d, index) => (
+                <ul key={index}>
+                  <li>
+                    {index + 1}. {d}
+                  </li>
+                </ul>
+              ))}
+            </Box>
+            <Button onClick={handleClose} sx={{ mt: 2 }} variant="contained">
+              Close
+            </Button>
+          </Box>
+        </Modal>
+
         {/* <button
           type="submit"
           className="btn btn-primary mt-2 btn-sm"

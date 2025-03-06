@@ -46,8 +46,8 @@ const EditCampaign = ({
         disabled={
           isLoading ||
           editedCampaign ===
-            campaignList?.find((data) => data?._id === campaignName)
-              ?.exe_campaign_name
+          campaignList?.find((data) => data?._id === campaignName)
+            ?.exe_campaign_name
         }
         onClick={(e) => handleSubmit(e)}
       >

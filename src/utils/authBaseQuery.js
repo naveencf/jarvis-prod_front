@@ -44,11 +44,6 @@ const authBaseQuery = async (args, api, extraOptions) => {
     }
 
     // Handle errors explicitly
-    if (statusCode >= 400) {
-      throw new Error(
-        result.data?.message || `Request failed with status ${statusCode}`
-      );
-    }
   }
 
   return result;

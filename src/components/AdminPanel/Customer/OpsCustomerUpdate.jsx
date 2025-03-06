@@ -7,11 +7,13 @@ import { baseUrl } from '../../../utils/config';
 import jwtDecode from 'jwt-decode';
 import { Navigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
+import { useAPIGlobalContext } from '../APIContext/APIContext';
 
 const OpsCustomerUpdate = () => {
   const { id } = useParams();
-  console.log('id: ', id);
- const { usersDataContext, toastAlert, toastError } = useGlobalContext();
+  const {userContextData} = useAPIGlobalContext()
+
+ const { toastAlert, toastError } = useGlobalContext();
    const [customerName, setCustomerName] = useState('');
   const [customerTypeName, setCustomerTypeName] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -404,14 +406,14 @@ const getData = () => {
             Account Owner Name <sup style={{ color: "red" }}>*</sup>
           </label>
           <Select
-            options={usersDataContext.map((option) => ({
+            options={userContextData.map((option) => ({
               value: option.user_id,
               label: option.user_name,
             }))}
             value={{
               value: accountOwnerName,
               label:
-              usersDataContext?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
+              userContextData?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
             }}
             onChange={(e) => {
               setAccountOwnerName(e.value);

@@ -13,7 +13,6 @@ import Bronze from "../../../assets/img/icon/badge/bronze.png";
 import Basic from "../../../assets/img/icon/badge/iron.png";
 import { List } from "@phosphor-icons/react";
 import { formatNumber } from "../../../utils/formatNumber";
-import InternetSpeedChecker from "../User/UserDashboard/InternetSpeedChecker";
 import rupee from "../../../assets/img/icon/badge/rupee.png";
 import { useGlobalContext } from "../../../Context/Context";
 import { useGetAdjustmentQuery } from "../../Store/API/Sales/IncentivePlanApi";
@@ -103,8 +102,9 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
-        }`,
+          `sales/badges_sales_booking_data${
+            RoleID != 1 ? `?userId=${loginUserId}` : ""
+          }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -136,10 +136,7 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (
-      isSalesRoute &&
-      data[52]?.view_value == 1) {
-
+    if (isSalesRoute && data[52]?.view_value == 1) {
       getUserBadge();
     }
     // getAdjustment();
@@ -213,7 +210,7 @@ const Navbar = () => {
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -248,7 +245,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                userBadgeData?.totalUnEarnedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -261,7 +258,7 @@ const Navbar = () => {
                               Un-Billed Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalUnEarnedOutstandingAmount -
-                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -462,7 +459,7 @@ const Navbar = () => {
               aria-haspopup="true"
               aria-controls="Profilebar"
             >
-              {loginUserData[0]?.image == null ? (
+              {loginUserData?.image_url == null ? (
                 <div className="profile-img">
                   <img src={imageTest1} alt="" width={40} />
                 </div>
@@ -470,7 +467,7 @@ const Navbar = () => {
                 <img
                   key={1}
                   className="img-profile"
-                  src={loginUserData[0]?.image}
+                  src={loginUserData?.image_url}
                   alt="user"
                 />
               )}
@@ -521,7 +518,7 @@ const Navbar = () => {
             </div>
           </li>
         </ul>
-      </nav >
+      </nav>
       {/* Topbar End */}
     </>
   );

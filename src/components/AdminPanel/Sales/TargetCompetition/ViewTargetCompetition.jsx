@@ -91,9 +91,8 @@ const ViewTargetCompetition = () => {
 
         return (
           <button
-            className={`btn cmnbtn btn_sm ${
-              row.status ? "btn-danger" : "btn-success"
-            }`}
+            className={`btn cmnbtn btn_sm ${row.status ? "btn-danger" : "btn-success"
+              }`}
             onClick={() => handleUpdateStatus(row)}
           >
             {row.status ? "Inactive" : "Active"}

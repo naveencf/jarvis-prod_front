@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import loginlogo from "../assets/img/logo/logo_login1.png";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../utils/config";
-import useIPAddress from "../components/AdminPanel/User/UserDashboard/LoginHistory/UseIPAddress";
+import useIPAddress from "../components/AdminPanel/HRMS/User/UserDashboard/LoginHistory/UseIPAddress";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCk0q-yHS182mYMIc_IH9oOn3Tii-4UVeg";
 
@@ -132,29 +132,26 @@ const Login = () => {
                 </div>
 
                 {/* Password input */}
-                <div className="form-group">
-                  <div className="password-input-container">
-                    <input
-                      className="form-control"
-                      name="password"
-                      placeholder="Password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      type={showPassword ? "text" : "password"}
-                      required
-                    />
-                    <span
-                      className="password-toggle-icon"
-                      onClick={() => setShowPassword(!showPassword)}
-                      style={{ cursor: "pointer", marginLeft: "-30px" }}
-                    >
-                      {showPassword ? (
-                        <i className="fas fa-eye"></i>
-                      ) : (
-                        <i className="fas fa-eye-slash"></i>
-                      )}
-                    </span>
-                  </div>
+                <div class="form-group input-group password-input-container">
+                  <input
+                    className="form-control"
+                    name="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    type={showPassword ? "text" : "password"}
+                    required
+                  />
+                  <span
+                    className="password-toggle-icon"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <i className="fas fa-eye"></i>
+                    ) : (
+                      <i className="fas fa-eye-slash"></i>
+                    )}
+                  </span>
                 </div>
 
                 {/* Error message */}

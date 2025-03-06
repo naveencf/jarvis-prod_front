@@ -103,7 +103,7 @@ function Circlebar(prefs) {
                     }
                 }(times, 0);
                 setTimeout(internalCallback, factor);
-            };
+            }
             setDeceleratingTimeout(0.1, 100);
         }
     }

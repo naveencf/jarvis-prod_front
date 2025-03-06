@@ -25,9 +25,9 @@ const BrandNameType = () => {
   const userID = decodedToken.id;
 
   const getData = () => {
-    axios.get(baseUrl + "get_all_account_type") 
+    axios.get(baseUrl + "get_all_account_type")
       .then((res) => {
-        setAccounts(res.data.data); 
+        setAccounts(res.data.data);
         setFilterData(res.data.data);
       });
   };
@@ -38,24 +38,24 @@ const BrandNameType = () => {
 
   useEffect(() => {
     const result = accounts.filter((d) => {
-      return d.account_type_name?.toLowerCase().match(search.toLowerCase()); 
+      return d.account_type_name?.toLowerCase().match(search.toLowerCase());
     });
     setFilterData(result);
   }, [search]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.post(baseUrl + "add_account_type", { 
-        account_type_name: accountType, 
-        description: description,
-        created_by: userID
-      })
+    axios.post(baseUrl + "add_account_type", {
+      account_type_name: accountType,
+      description: description,
+      created_by: userID
+    })
       .then(() => {
         toastAlert("Submitted");
-        setAccountType(""); 
+        setAccountType("");
         setDescription("");
-        getData(); 
-      });   
+        getData();
+      });
   };
 
   const columns = [
@@ -66,7 +66,7 @@ const BrandNameType = () => {
     },
     {
       name: "Brand Name Type",
-      selector: (row) => row.account_type_name, 
+      selector: (row) => row.account_type_name,
     },
     {
       name: "Description",
@@ -89,7 +89,7 @@ const BrandNameType = () => {
             <FaEdit />{" "}
           </button>
           <DeleteButton
-            endpoint="delete_account_type" 
+            endpoint="delete_account_type"
             id={row._id}
             getData={getData}
           />
@@ -101,38 +101,38 @@ const BrandNameType = () => {
 
   const handleRowData = (row) => {
     setRowData(row);
-    setAccountTypeUpdate(row.account_type_name); 
+    setAccountTypeUpdate(row.account_type_name);
     setDescriptionUpdate(row.description);
   };
 
   const handleModalUpdate = () => {
-    axios.put(baseUrl + `update_account_type/${rowData._id}`, { 
-      account_type_name: accountTypeUpdate, 
+    axios.put(baseUrl + `update_account_type/${rowData._id}`, {
+      account_type_name: accountTypeUpdate,
       description: descriptionUpdate,
       updated_by: userID
     })
-    .then(() => {
-      toastAlert("Successfully Update");
-      getData();
-      setAccountTypeUpdate(""); 
-      setDescriptionUpdate("");
-    });
+      .then(() => {
+        toastAlert("Successfully Update");
+        getData();
+        setAccountTypeUpdate("");
+        setDescriptionUpdate("");
+      });
   };
 
   return (
     <>
       <FormContainer
-        mainTitle="Brand" 
-        title="Brand" 
+        mainTitle="Brand"
+        title="Brand"
         handleSubmit={handleSubmit}
       >
         <FieldContainer
-          label="Brand Name Type *" 
+          label="Brand Name Type *"
           value={accountType}
           required={true}
           onChange={(e) => setAccountType(e.target.value)}
         />
-        
+
         <FieldContainer
           label="Description"
           value={description}
@@ -144,7 +144,7 @@ const BrandNameType = () => {
       <div className="card">
         <div className="data_tbl table-responsive">
           <DataTable
-            title="Brand Overview" 
+            title="Brand Overview"
             columns={columns}
             data={filterData}
             fixedHeader
@@ -188,12 +188,12 @@ const BrandNameType = () => {
               />
             </div>
             <div className="modal-footer">
-              <button type="button" 
-                className="btn btn-primary" 
+              <button type="button"
+                className="btn btn-primary"
                 data-dismiss="modal"
               >Close</button>
-              <button type="button" 
-                className="btn btn-success" 
+              <button type="button"
+                className="btn btn-success"
                 onClick={handleModalUpdate}
                 data-dismiss="modal"
               >Update</button>

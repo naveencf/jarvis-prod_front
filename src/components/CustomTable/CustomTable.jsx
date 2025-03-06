@@ -91,7 +91,7 @@ const CustomTable = ({
   }, [data, columns, tableName]);
 
   useEffect(() => {
-    //console.log("selected data");
+    // console.log("selected data");
     selectedData(selectedRowsData);
   }, [selectedRowsData]);
 
@@ -200,7 +200,7 @@ const CustomTable = ({
   };
 
   useEffect(() => {
-    //console.log("filtering of data");
+    // console.log("filtering of data");
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
@@ -253,7 +253,7 @@ const CustomTable = ({
   };
 
   useEffect(() => {
-    //console.log("invade flag");
+    // console.log("invade flag");
 
     if (invadeFlag) {
       cloudInvader();
@@ -304,7 +304,7 @@ const CustomTable = ({
   };
 
   useEffect(() => {
-    //console.log("table creation");
+    // console.log("table creation");
 
     // const isTableCreated = localStorage.getItem(
     //   `isTableCreated_${tableName + loginUserId}`
@@ -355,12 +355,12 @@ const CustomTable = ({
     }
   };
   useEffect(() => {
-    //console.log("use to fetch columns");
+    // console.log("use to fetch columns");
     fetchCreatedTable();
   }, [loginUserId, tableName]);
 
   useEffect(() => {
-    //console.log("initializing columns to update ui");
+    // console.log("initializing columns to update ui");
     const getIndex = (colName) =>
       apiColumns?.findIndex((item) => item?.name?.trim() === colName?.trim());
 
@@ -391,7 +391,7 @@ const CustomTable = ({
   }, [columns, apiColumns]);
 
   useEffect(() => {
-    //console.log("initializing data to update ui");
+    // console.log("initializing data to update ui");
 
     if (data) {
       setUnSortedData(data);
@@ -457,7 +457,7 @@ const CustomTable = ({
 
           const additionalProps = cols.reduce((acc, column) => {
             // if (column.name === "Proforma Invoice")
-            //   console.log(
+            // console.log(
             //     React.isValidElement(getTextContent(column.renderRowCell(item)))
             //   );
 
@@ -508,7 +508,7 @@ const CustomTable = ({
           return val1?.localeCompare(val2);
         });
       } else return sorted;
-      console.log("sorted", sorted);
+      // console.log("sorted", sorted);
     } else sorted.reverse();
 
     setSortedData(sorted);

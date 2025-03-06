@@ -2,11 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { baseUrl } from "../../../../utils/config";
 import Modal from "react-modal";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
-import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
-import ReJoinReusable from "../../User/ReJoinReusable";
 import View from "../../Sales/Account/View/View";
 import { convertDateToDDMMYYYY } from "../../../../utils/lengthFuntion";
+import ReJoinReusable from "../../HRMS/User/ReJoinReusable";
 
 const NewJoineeAndExitUsers = () => {
   const [newJoineeData, setNewJoineeData] = useState([]);

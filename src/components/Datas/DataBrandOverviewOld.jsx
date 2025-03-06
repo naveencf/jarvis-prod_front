@@ -7,7 +7,7 @@ import { GrView } from "react-icons/gr";
 import { BsFillEyeFill } from "react-icons/bs";
 import FormContainer from "../AdminPanel/FormContainer";
 import DeleteButton from "../AdminPanel/DeleteButton";
-import UserNav from "../Pantry/UserPanel/UserNav";
+import UserNav from "../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import { baseUrl } from "../../utils/config";
 
@@ -23,7 +23,7 @@ const DataBrandOverviewOld = () => {
   const [countData, setCountData] = useState([]);
 
   function getData() {
-    axios.get(baseUrl+"logodata").then((res) => {
+    axios.get(baseUrl + "logodata").then((res) => {
       setCountData(res.data);
       const responseData = res.data;
       const uniqueBrandName = new Set();
@@ -39,11 +39,11 @@ const DataBrandOverviewOld = () => {
     });
 
     axios
-      .get(baseUrl+"alllogocat")
+      .get(baseUrl + "alllogocat")
       .then((res) => setCategoryData(res.data));
 
     axios
-      .get(baseUrl+"get_all_users")
+      .get(baseUrl + "get_all_users")
       .then((res) => setEmployeeData(res.data.data));
   }
 
