@@ -303,7 +303,7 @@ const CampaignExecution = () => {
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async function handleBulkAudit() {
@@ -536,8 +536,8 @@ const CampaignExecution = () => {
               options={
                 Array.isArray(allPages?.pageData)
                   ? allPages.pageData?.filter(
-                      (data) => data?.temp_vendor_id === vendorName
-                    )
+                    (data) => data?.temp_vendor_id === vendorName
+                  )
                   : []
               }
               getOptionLabel={(option) => option.page_name || ""}
@@ -678,41 +678,41 @@ const CampaignExecution = () => {
       editable: true,
       width: 100,
     },
-    {
-      key: "price_key",
-      name: "Price Key",
-      editable: true,
-      customEditElement: (row) => {
-        return (
-          <CustomSelect
-            fieldGrid={12}
-            dataArray={[
-              { price_key: "instagram_post" },
-              {
-                price_key: "instagram_story",
-              },
-              {
-                price_key: "instagram_reel",
-              },
-              {
-                price_key: "instagram_carousel",
-              },
-              {
-                price_key: "instagram_both",
-              },
-            ]}
-            optionId={"price_key"}
-            optionLabel={"price_key"}
-            selectedId={selectedPrice}
-            setSelectedId={(val) => {
-              let data = { ...row, price_key: val };
-              setSelectedPrice(data);
-            }}
-          />
-        );
-      },
-      width: 100,
-    },
+    // {
+    //   key: "price_key",
+    //   name: "Price Key",
+    //   editable: true,
+    //   customEditElement: (row) => {
+    //     return (
+    //       <CustomSelect
+    //         fieldGrid={12}
+    //         dataArray={[
+    //           { price_key: "instagram_post" },
+    //           {
+    //             price_key: "instagram_story",
+    //           },
+    //           {
+    //             price_key: "instagram_reel",
+    //           },
+    //           {
+    //             price_key: "instagram_carousel",
+    //           },
+    //           {
+    //             price_key: "instagram_both",
+    //           },
+    //         ]}
+    //         optionId={"price_key"}
+    //         optionLabel={"price_key"}
+    //         selectedId={selectedPrice}
+    //         setSelectedId={(val) => {
+    //           let data = { ...row, price_key: val };
+    //           setSelectedPrice(data);
+    //         }}
+    //       />
+    //     );
+    //   },
+    //   width: 100,
+    // },
     {
       name: "Caption",
       key: "accessibility_caption",
@@ -963,8 +963,8 @@ const CampaignExecution = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                      ? "pending"
-                      : row.audit_status,
+                        ? "pending"
+                        : row.audit_status,
                 };
                 handledataUpdate({
                   ...row,
@@ -972,13 +972,12 @@ const CampaignExecution = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${
-                row.audit_status === "pending"
+              className={`pointer badge ${row.audit_status === "pending"
                   ? "btn btn-sm cmnbtn btn-primary"
                   : row.audit_status !== "audited"
-                  ? "bg-success"
-                  : "btn btn-sm cmnbtn btn-primary"
-              }`}
+                    ? "bg-success"
+                    : "btn btn-sm cmnbtn btn-primary"
+                }`}
             >
               {row.audit_status}
             </button>
@@ -1045,10 +1044,10 @@ const CampaignExecution = () => {
         return row.audit_status === "audited"
           ? "rgb(255 131 0 / 80%)"
           : row.audit_status === "purchased"
-          ? "#c4fac4"
-          : row.amoumt == 0 || row.vendor_name == ""
-          ? "#ffff008c"
-          : "";
+            ? "#c4fac4"
+            : row.amoumt == 0 || row.vendor_name == ""
+              ? "#ffff008c"
+              : "";
       },
     },
     {
@@ -1206,7 +1205,7 @@ const CampaignExecution = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-            modalData?.data?.data?.requestStatsUpdate?.length ? (
+              modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1293,7 +1292,7 @@ const CampaignExecution = () => {
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                  ?.exe_campaign_name}
+                ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -1373,9 +1372,8 @@ const CampaignExecution = () => {
               {phaseWiseData?.length > 0 && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${
-                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                  }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                    }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -1384,9 +1382,8 @@ const CampaignExecution = () => {
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${
-                  fetchingPlanData && "animate_rotate"
-                }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
+                  }`}
                 onClick={refetchPlanData}
               >
                 <ArrowClockwise />
