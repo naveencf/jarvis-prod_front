@@ -2794,27 +2794,27 @@ export const pendingPaymentRequestColumns = ({
       key: "vendor_name",
       name: "Vendor Name",
       width: 200,
-      renderRowCell: (row) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {/* Hold for confirmation of sourabh sir */}
-            <Button
-              disabled={
-                row?.payment_details ? !row?.payment_details.length > 0 : true
-              }
-              onClick={() => handleOpenBankDetail(row)}
-            >
-              <AccountBalanceIcon style={{ fontSize: "25px" }} />
-            </Button>
-            {/* <a
-              style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
-              onClick={() => handleOpenSameVender(row?.vendor_name)}
-            >
-              {row?.vendor_name}
-            </a> */}
-          </div>
-        );
-      },
+      // renderRowCell: (row) => {
+      //   return (
+      //     <div style={{ display: "flex", alignItems: "center" }}>
+      //       {/* Hold for confirmation of sourabh sir */}
+      //       <Button
+      //       // disabled={
+      //       //   row?.payment_details ? !row?.payment_details.length > 0 : true
+      //       // }
+      //       // onClick={() => handleOpenBankDetail(row)}
+      //       >
+      //         {row?.vendor_name}
+      //       </Button>
+      //       {/* <a
+      //         style={{ cursor: "pointer", marginRight: "20px", color: "blue" }}
+      //         onClick={() => handleOpenSameVender(row?.vendor_name)}
+      //       >
+      //         {row?.vendor_name}
+      //       </a> */}
+      //     </div>
+      //   );
+      // },
     },
 
     // {
