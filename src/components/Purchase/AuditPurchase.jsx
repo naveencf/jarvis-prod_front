@@ -30,9 +30,11 @@ import LinkUploadAudit from "../Operation/Execution/LinkUploadAudit";
 import PriceUpdateModal from "./PriceUpdateModal";
 import Swal from "sweetalert2";
 import jwtDecode from "jwt-decode";
+import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
 
 const AuditPurchase = () => {
-  const { toastAlert, toastError, data: contextData } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
+  const { contextData } = useAPIGlobalContext();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [phaseList, setPhaseList] = useState([]);
   const [vendorName, setVendorName] = useState("");
@@ -785,10 +787,10 @@ const AuditPurchase = () => {
                 handelchange(data, index, column, true);
               }}
               className={`pointer badge ${row.audit_status === "pending"
-                  ? "btn btn-sm cmnbtn btn-primary"
-                  : row.audit_status !== "audited"
-                    ? "bg-success"
-                    : "btn btn-sm cmnbtn btn-primary"
+                ? "btn btn-sm cmnbtn btn-primary"
+                : row.audit_status !== "audited"
+                  ? "bg-success"
+                  : "btn btn-sm cmnbtn btn-primary"
                 }`}
             >
               {row.audit_status}
@@ -857,7 +859,7 @@ const AuditPurchase = () => {
             : "";
       },
     },
-    contextData && contextData[66]?.view_value == 1 && {
+    {
       name: "Action",
       key: "action",
       width: 100,
@@ -882,7 +884,7 @@ const AuditPurchase = () => {
             <i className="bi bi-eye"></i>
           </button>
 
-          {editflag === index && (
+          {editflag === index && contextData && contextData[66]?.view_value == 1 && (
             <button
               className="btn btn-sm cmnbtn btn-primary"
               onClick={() => handledataUpdate(row)}
