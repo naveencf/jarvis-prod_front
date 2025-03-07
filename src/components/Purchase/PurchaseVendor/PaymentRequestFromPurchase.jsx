@@ -98,15 +98,15 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       if (!prev) return {}; // Ensure prev is always defined
 
       const updatedData = { ...prev, [name]: value };
+      const outstandingPhp = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
+      const outstandingVendor = Number(vendorDetail?.vendor_outstandings) || 0;
+      const totalOutstanding = (outstandingPhp + outstandingVendor) * 1.18;
 
-      if (
-        selectedPaymentType === "payment" &&
-        vendorPhpDetail?.length
-        && numericValue > (Number(vendorPhpDetail[0]?.outstanding) + Number(vendorDetail?.vendor_outstandings))
-      ) {
+      if (selectedPaymentType === "payment" && vendorPhpDetail?.length && numericValue > totalOutstanding) {
         toastError("Payment is not allowed more than outstanding. You can request Advance or Upfront Payment");
-        return prev; // Return previous state to avoid breaking the component
+        return prev; // Preserve previous state
       }
+
 
       // Handle GST Calculation Logic
       if (name === "base_amount") {

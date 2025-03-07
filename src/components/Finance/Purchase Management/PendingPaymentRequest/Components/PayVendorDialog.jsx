@@ -459,7 +459,7 @@ function PayVendorDialog(props) {
             />
             <TextField
               className="col"
-              value={`₹${rowData.outstandings}`}
+              value={`₹${rowData.outstandings - rowData.tds_deduction}`}
               autoFocus
               margin="dense"
               id="name"

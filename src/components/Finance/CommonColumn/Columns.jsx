@@ -2741,7 +2741,7 @@ export const pendingPaymentRequestColumns = ({
       name: "Zoho Status",
       width: 130,
       renderRowCell: (row) => {
-        return <div>{row?.zoho_status === "1" ? "Uploaded" : ""}</div>;
+        return <div>{row?.zoho_status === "1" ? "Uploaded" : "pending"}</div>;
       },
     },
     {
@@ -2751,18 +2751,20 @@ export const pendingPaymentRequestColumns = ({
 
     },
     {
-      key: "zoho_status",
+      key: "zoho status",
       name: "Zoho Uploaded",
       width: 130,
       renderRowCell: (row) => {
         return (
           <div>
-            {!row?.zoho_status ? <button
+            {/* {!row?.zoho_status ? */}
+            <button
               className="btn btn-primary cmnbtn btn_sm "
               onClick={() => handleZohoStatusUpload(row)}
             >
               Zoho Uploaded
-            </button> : "Uploaded"}
+            </button>
+            {/* } */}
           </div>
         );
       },
@@ -2868,21 +2870,21 @@ export const pendingPaymentRequestColumns = ({
       },
     },
 
-    {
-      key: "email",
-      name: "Email",
-      width: 150,
-    },
+    // {
+    //   key: "email",
+    //   name: "Email",
+    //   width: 150,
+    // },
     // {
     //   key: "page_name",
     //   name: "Page Name",
     //   width: 150,
     // },
-    {
-      key: "payment_cycle",
-      name: "Payment Cycle",
-      width: 150,
-    },
+    // {
+    //   key: "payment_cycle",
+    //   name: "Payment Cycle",
+    //   width: 150,
+    // },
     // {
     //   key: "total_paid",
     //   name: "Total Paid",
@@ -2989,12 +2991,12 @@ export const pendingPaymentRequestColumns = ({
       name: "Pan",
       // width: 150,
     },
-    {
-      key: "gst",
-      name: "GST Status",
-      NearMeDisabledOutlined: "GST",
-      // width: 200,
-    },
+    // {
+    //   key: "gst",
+    //   name: "GST Status",
+    //   NearMeDisabledOutlined: "GST",
+    //   // width: 200,
+    // },
 
     {
       key: "priority",
@@ -3020,7 +3022,7 @@ export const pendingPaymentRequestColumns = ({
       // width: 150,
       // getTotal: true,
       renderRowCell: (row) => {
-        return row?.balance_amount;
+        return row?.outstandings - row?.tds_deduction;
       },
     },
     {
@@ -3037,9 +3039,9 @@ export const pendingPaymentRequestColumns = ({
       name: "GST Amount",
       // width: 150,
       // getTotal: true,
-      renderRowCell: (row) => {
-        return row?.gst_amount ? row?.gst_amount : "NA";
-      },
+      // renderRowCell: (row) => {
+      //   return row?.gst_amount ? row?.gst_amount : "NA";
+      // },
     },
     {
       key: "outstandings",
@@ -3051,12 +3053,12 @@ export const pendingPaymentRequestColumns = ({
       },
     },
     {
-      key: "TDSDeduction",
+      key: "tds_deduction",
       name: "TDS Deducted ",
       // width: 150,
-      renderRowCell: (row) => {
-        return <p> &#8377; {row?.TDSDeduction === "1" ? "Yes" : "No"}</p>;
-      },
+      // renderRowCell: (row) => {
+      //   return <p> &#8377; {row?.tds_deduction > "1" ? "Yes" : "No"}</p>;
+      // },
     },
     // {
     //   key: "aging",
@@ -3092,24 +3094,24 @@ export const pendingPaymentRequestColumns = ({
     //     );
     //   },
     // },
-    {
-      key: "status",
-      name: "Status",
-      // width: 150,
-      renderRowCell: (row) => (
-        <div>
-          {row?.status === "0"
-            ? "Pending"
-            : row?.status === "1"
-              ? "Paid"
-              : row?.status === "2"
-                ? "Discard"
-                : row?.status === "3"
-                  ? "Partial"
-                  : ""}
-        </div>
-      ),
-    },
+    // {
+    //   key: "status",
+    //   name: "Status",
+    //   // width: 150,
+    //   renderRowCell: (row) => (
+    //     <div>
+    //       {row?.status === "0"
+    //         ? "Pending"
+    //         : row?.status === "1"
+    //           ? "Paid"
+    //           : row?.status === "2"
+    //             ? "Discard"
+    //             : row?.status === "3"
+    //               ? "Partial"
+    //               : ""}
+    //     </div>
+    //   ),
+    // },
     {
       key: "Action",
       name: "Action",
