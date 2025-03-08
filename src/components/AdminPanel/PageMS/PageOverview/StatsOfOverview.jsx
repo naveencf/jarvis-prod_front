@@ -46,7 +46,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
       // Get the appropriate query string or an empty string if key not found
       const tempQuery = followerRanges[val] || '';
 
-      // console.log("first", tempQuery);
+      // // console.log("first", tempQuery);
       setPagequery(tempQuery);
     } else {
       setPagequery(`${key}=${val}`);
@@ -72,7 +72,7 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
         lavel,
         value,
       }));
- 
+
       const status = Object?.entries(followerCounts.status).map(
         ([lavel, value]) => ({
           lavel,
@@ -165,14 +165,14 @@ const StatsOfOverview = ({ dataGridcolumns }) => {
                         {item.range == 'lt_1'
                           ? 'Less than 10 Lac'
                           : item.range == '1_to_10'
-                          ? '1-0 Lac'
-                          : item.range == '10_to_20'
-                          ? '10-20 Lac'
-                          : item.range == '20_to_30'
-                          ? '20-30 Lac'
-                          : item.range == 'gt_30'
-                          ? 'Greater than 30 Lac'
-                          : ''}
+                            ? '1-0 Lac'
+                            : item.range == '10_to_20'
+                              ? '10-20 Lac'
+                              : item.range == '20_to_30'
+                                ? '20-30 Lac'
+                                : item.range == 'gt_30'
+                                  ? 'Greater than 30 Lac'
+                                  : ''}
                       </h6>
                       <h6 className="mt4 fs_16">{item.count}</h6>
                     </div>

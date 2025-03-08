@@ -43,15 +43,15 @@ const TempExecutionDetails = ({ assignmentData, status, HardRender }) => {
     const { toastAlert, toastError } = useGlobalContext();
     const [loading, setLoading] = React.useState(false)
     const [instaData, setInstaData] = React.useState({})
-    const [searchedData,setSearchedData]=React.useState([])
+    const [searchedData, setSearchedData] = React.useState([])
 
     const [open, setOpen] = React.useState(false);
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    React.useEffect(()=>{
+    React.useEffect(() => {
         setSearchedData(assignmentData)
-    },[assignmentData])
+    }, [assignmentData])
     function Row(props) {
         const { row } = props;
         const [open, setOpen] = React.useState(false);
@@ -212,17 +212,17 @@ const TempExecutionDetails = ({ assignmentData, status, HardRender }) => {
     const updateExe = async () => {
 
         try {
-            
+
             const commitUpdate = await axios.put(`${baseUrl}tempexecution`, instaData)
             setInstaData({})
             setLoading(false)
             setOpen(false)
             toastAlert("Assignment Verified")
-    
+
             HardRender()
         } catch (error) {
-           toastError(error?.response?.data?.message)
-        //    setOpen(false)
+            toastError(error?.response?.data?.message)
+            //    setOpen(false)
         }
     }
 
@@ -260,11 +260,11 @@ const TempExecutionDetails = ({ assignmentData, status, HardRender }) => {
             <TextField
                 label="Search"
                 variant="outlined"
-                style={{width:"200px"}}
-                
-              onChange={handleSearchChange}
+                style={{ width: "200px" }}
+
+                onChange={handleSearchChange}
             />
-            <TableContainer style={{marginTop:'20px'}} component={Paper}>
+            <TableContainer style={{ marginTop: '20px' }} component={Paper}>
                 <Table aria-label="collapsible table">
                     <TableHead>
                         <TableRow>

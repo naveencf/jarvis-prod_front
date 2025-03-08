@@ -30,7 +30,7 @@ function PageGrowthViewAll({
   setCreatorProgress,
 }) {
 
-  console.log(creatorProgress,' creatorProgress new data');
+  console.log(creatorProgress, ' creatorProgress new data');
   const StripedDataGrid = styled(DataGrid)(({ theme }) => ({
     [`& .${gridClasses.row}.even`]: {
       backgroundColor: theme.palette.grey[200],
@@ -49,8 +49,8 @@ function PageGrowthViewAll({
           backgroundColor: alpha(
             theme.palette.primary.main,
             ODD_OPACITY +
-              theme.palette.action.selectedOpacity +
-              theme.palette.action.hoverOpacity
+            theme.palette.action.selectedOpacity +
+            theme.palette.action.hoverOpacity
           ),
           // Reset on touch devices, it doesn't add specificity
           "@media (hover: none)": {
@@ -82,7 +82,7 @@ function PageGrowthViewAll({
       type: "number",
       width: 150,
       valueFormatter: ({ value }) => value,
-      valueGetter: (params) => {return formatDate(params.row.createdAt)}
+      valueGetter: (params) => { return formatDate(params.row.createdAt) }
       // valueGetter: (params) => {
       //   const oldDate = params.row.createdAt.split("T");
       //   const arr = oldDate[0].toString().split("-");
@@ -155,7 +155,7 @@ function PageGrowthViewAll({
       day: "2-digit",
     });
   };
-  const handleCheckBox = (e) => {};
+  const handleCheckBox = (e) => { };
   function CustomToolbar() {
     return (
       <GridToolbarContainer>
@@ -170,36 +170,36 @@ function PageGrowthViewAll({
   return (
     <div className="card">
       {/* <div style={{ height: 1000 }} className="thmTable"> */}
-        {creatorProgress.length > 0 ? (
-          <StripedDataGrid
-            rows={creatorProgress}
-            // rowHeight={150}
-            // initialState={{
-            //   sorting: {
-            //     sortModel: [{ field: "postcount", sort: "desc" }],
-            //   },
-            // }}
-            getRowId={(row) => row._id}
-              slots={{ toolbar: GridToolbar }}
-            // onRowClick={(e) => handleCheckBox(e)}
-            // slots={{
-            //   toolbar: () => <CustomToolbar />,
-            // }}
-            // onRowSelectionModelChange={(newRowSelectionModel) => {
-            //   setRowSelectionModel(newRowSelectionModel);
-            // }}
-            // rowSelectionModel={rowSelectionModel}
-            // checkboxSelection
-            columns={postcolumns}
-            // visibleFields={VISIBLE_FIELDS}
-            // disableRowSelectionOnClick
-            // getRowClassName={(params) =>
-            //   params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
-            // }
-          />
-        ) : (
-          <TableSkeleton />
-        )}
+      {creatorProgress.length > 0 ? (
+        <StripedDataGrid
+          rows={creatorProgress}
+          // rowHeight={150}
+          // initialState={{
+          //   sorting: {
+          //     sortModel: [{ field: "postcount", sort: "desc" }],
+          //   },
+          // }}
+          getRowId={(row) => row._id}
+          slots={{ toolbar: GridToolbar }}
+          // onRowClick={(e) => handleCheckBox(e)}
+          // slots={{
+          //   toolbar: () => <CustomToolbar />,
+          // }}
+          // onRowSelectionModelChange={(newRowSelectionModel) => {
+          //   setRowSelectionModel(newRowSelectionModel);
+          // }}
+          // rowSelectionModel={rowSelectionModel}
+          // checkboxSelection
+          columns={postcolumns}
+        // visibleFields={VISIBLE_FIELDS}
+        // disableRowSelectionOnClick
+        // getRowClassName={(params) =>
+        //   params.indexRelativeToCurrentPage % 2 === 0 ? "even" : "odd"
+        // }
+        />
+      ) : (
+        <TableSkeleton />
+      )}
       {/* </div> */}
     </div>
   );

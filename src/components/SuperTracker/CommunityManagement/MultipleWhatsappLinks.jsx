@@ -125,7 +125,7 @@ const MultipleWhatsappLinks = ({ creatorDetail }) => {
                 aria-describedby="child-modal-description"
             >
                 <Box sx={{ ...style }}>
-                    <Button onClick={handleClose} variant="outlined" sx={{ float:'right'}} color='error'> X </Button>
+                    <Button onClick={handleClose} variant="outlined" sx={{ float: 'right' }} color='error'> X </Button>
                     <FormContainer
                         mainTitle="Add Link"
                         handleSubmit={handleSubmit}
@@ -220,7 +220,7 @@ const MultipleWhatsappLinks = ({ creatorDetail }) => {
                     aria-describedby="child-modal-description"
                 >
                     <Box sx={{ ...style }}>
-                    <Button onClick={handleEditClose} sx={{ float:'right'}} variant="outlined" color='error'>X </Button>
+                        <Button onClick={handleEditClose} sx={{ float: 'right' }} variant="outlined" color='error'>X </Button>
                         <FormContainer
                             mainTitle="Update Link"
                             handleSubmit={handleEditSubmit}

@@ -15,7 +15,7 @@ const CategoryManager = () => {
     try {
       const response = await fetch(constant.CONST_SARCASM_BLOG_CATEGORY);
       const json = await response.json();
-      console.log("json", json);
+      // console.log("json", json);
       if (json.success) {
         setCategories(json.data);
         setLoading(false);
@@ -106,7 +106,7 @@ const CategoryManager = () => {
     setOpenModal(false)
     setEditCategory({ name: '', _id: null });
   };
-   useEffect(() => {
+  useEffect(() => {
     fetchAllCategories();
   }, []);
 

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import {  useGlobalContext } from '../../../Context/Context';
+import { useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
@@ -108,7 +108,7 @@ function PlanHome() {
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
 
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
   const userID = decodedToken.id;
 
@@ -266,8 +266,8 @@ function PlanHome() {
     if ((planDetails.brandType === 'existing' && !planDetails.accountId) || !planDetails.accountName) {
       newErrors.accountName = 'Account Name is required';
       setTimeout(() => {
-        newErrors.accountName = ''; 
-        setErrors({ ...newErrors });  
+        newErrors.accountName = '';
+        setErrors({ ...newErrors });
       }, 5000);
     }
     if (!planDetails.salesExecutiveId) newErrors.salesExecutiveId = 'Sales Executive is required';
@@ -583,7 +583,7 @@ function PlanHome() {
       setSuggestions(generateSuggestions(inputValue));
     }
   }, [inputValue]);
- 
+
   return (
     <div>
       <PageDialog open={openPageDialog} onClose={handleClosePageDialog} notFoundPages={selectedPages} />
@@ -649,8 +649,8 @@ function PlanHome() {
                     brandId: '',
                   }))
                 }
-                // error={}
-                // helperText={errors.accountName}
+              // error={}
+              // helperText={errors.accountName}
               />
             )}
             {planDetails.accountTypeName && (
@@ -665,7 +665,7 @@ function PlanHome() {
               </div>
             )}
             <span style={{ color: 'red', fontSize: '0.775rem' }}>{errors.accountName}</span>
-           
+
             <TextField className="mb16" margin="dense" label="Plan Name* (sheet name will be same)" name="planName" fullWidth value={planDetails.planName} onChange={handleInputChange} error={!!errors.planName} helperText={errors.planName} />
             <TextField margin="dense" label="Description" name="description" fullWidth value={planDetails.description} onChange={handleInputChange} />
             <TextField margin="dense" label="Selling Price *" name="sellingPrice" fullWidth type="number" value={inputValue} onChange={handleInputChangeWithSuggestions} error={!!errors.sellingPrice} helperText={errors.sellingPrice} />

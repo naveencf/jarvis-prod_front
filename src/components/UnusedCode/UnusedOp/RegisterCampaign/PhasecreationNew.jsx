@@ -114,15 +114,15 @@ const PhasecreationNew = () => {
 
   return (
     <div className="master-card-css">
-    <FormContainer
-      mainTitle="Phase Creation"
-      link="true"
-    />
-      
+      <FormContainer
+        mainTitle="Phase Creation"
+        link="true"
+      />
+
       <CampaignDetailes cid={id} getCampaign={getCampaignName} />
       {/* add Accordion for show phase------------------- */}
       <Paper>
-        {allPhaseData?.map((item,index)=>(
+        {allPhaseData?.map((item, index) => (
           <Paper key={index}>
             <Link
               to={`/admin/createAssign/${item.phase_id}`}
@@ -149,8 +149,8 @@ const PhasecreationNew = () => {
             >
               <AccordionSummary
                 expandIcon={<GridExpandMoreIcon />}
-                // aria-controls={`panel${index}bh-content`}
-                // id={`panel${index}bh-header`}
+              // aria-controls={`panel${index}bh-content`}
+              // id={`panel${index}bh-header`}
               >
                 <Typography>{`Phase ${index + 1}`}</Typography>
               </AccordionSummary>
@@ -189,7 +189,7 @@ const PhasecreationNew = () => {
             create final phase
           </Button>
 
-          <Button variant="outlined"  onClick={handlePlanDashboard}sx={{ m: 2, mb: 2 }}>
+          <Button variant="outlined" onClick={handlePlanDashboard} sx={{ m: 2, mb: 2 }}>
             Plan Overview
           </Button>
         </>
@@ -221,8 +221,8 @@ const PhasecreationNew = () => {
                   // }
                 }}
                 sx={{ m: 1, width: "300px" }}
-                // error={!!phaseDataError}
-                // helperText={phaseDataError}
+              // error={!!phaseDataError}
+              // helperText={phaseDataError}
               />
 
               <TextField
@@ -297,7 +297,7 @@ const PhasecreationNew = () => {
               getPhaseData,
               setExpanded,
               setShowPageDetails,
-              
+
               assignAll,
             }}
             setPhaseDataError={setPhaseDataError}

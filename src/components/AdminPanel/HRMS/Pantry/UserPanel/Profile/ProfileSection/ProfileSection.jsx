@@ -227,7 +227,7 @@ const ProfileSection = ({ userData, educationData, familyData }) => {
         );
       }
     } else {
-      console.log("Validation errors:", errors);
+      // console.log("Validation errors:", errors);
     }
   };
   return (

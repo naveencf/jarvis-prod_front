@@ -112,18 +112,18 @@ export default function BrandMaster() {
 
   const FormatName = (name) => {
     const lettersOnly = /^[A-Za-z]+$/;
-  
+
     const correctedNameParts = name?.split(" ").map((part) => {
       let filteredPart = part
         .split("")
         .filter((char) => char.match(lettersOnly))
         ?.join("");
-  
+
       return (
         filteredPart.charAt(0)?.toUpperCase() + filteredPart?.slice(1)?.toLowerCase()
       );
     });
-  
+
     return correctedNameParts.join(" ");
   };
   const handleChange = (event) => {
@@ -261,7 +261,7 @@ export default function BrandMaster() {
   }, [editData.category_id]);
 
   const handlePlatformData = (params) => {
-    console.log("");
+    // console.log("");
   };
 
   useEffect(() => {

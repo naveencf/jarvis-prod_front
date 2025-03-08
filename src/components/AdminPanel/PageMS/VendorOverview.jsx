@@ -828,7 +828,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={state}
-                        // onClick={() => vendorWithCategories(state)}
+                      // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -859,7 +859,7 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={city}
-                        // onClick={() => vendorWithCategories(city)}
+                      // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">

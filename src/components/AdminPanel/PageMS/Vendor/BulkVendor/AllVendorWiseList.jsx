@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { useGetAllVendorWiseListQuery } from '../../../../Store/reduxBaseURL';
 import View from '../../../Sales/Account/View/View';
 import axios from 'axios';
@@ -23,7 +23,7 @@ const AllVendorWiseList = () => {
   const { data: vendorWiseList } = useGetAllVendorWiseListQuery();
 
   const vendorData = vendorWiseList?.data;
- 
+
   const storedToken = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;

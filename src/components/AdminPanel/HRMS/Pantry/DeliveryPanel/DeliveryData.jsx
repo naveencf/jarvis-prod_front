@@ -46,7 +46,7 @@ const DeliveryData = () => {
         } else {
         }
       })
-      .catch((error) => {});
+      .catch((error) => { });
   }
 
   useEffect(() => {
@@ -100,7 +100,7 @@ const DeliveryData = () => {
         order_req_id: orderRequestTransfer,
       })
       .then((response) => {
-        // console.log("Order delivery submitted successfully", response);
+        // // console.log("Order delivery submitted successfully", response);
         setTransferTo("");
         setReason("");
         setSelectedDeliveryBoy("");

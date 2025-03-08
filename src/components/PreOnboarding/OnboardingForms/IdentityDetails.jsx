@@ -68,7 +68,7 @@ const IdentityDetails = () => {
     const value = e.target.value.toUpperCase();
     setPanNumber(value);
     if (!validatePan(value)) {
-      console.log("Invalid PAN number");
+      // console.log("Invalid PAN number");
     }
   };
 
@@ -136,12 +136,12 @@ const IdentityDetails = () => {
       {/* Aadhar Card Number */}
       <div className="form-group">
         <TextField
-          label={<span>Aadhar Number <span style={{color:"red"}}>*</span></span>}
+          label={<span>Aadhar Number <span style={{ color: "red" }}>*</span></span>}
           variant="outlined"
           fullWidth
           type="number"
           value={aadharNumber}
-          onChange={(e) => setAadharNumber(e.target.value.slice(0, 12))} 
+          onChange={(e) => setAadharNumber(e.target.value.slice(0, 12))}
           inputProps={{ maxLength: 12 }}
         />
       </div>
@@ -159,10 +159,10 @@ const IdentityDetails = () => {
       {/* PAN Card Number */}
       <div className="form-group">
         <TextField
-          label={<span>PAN Number <span style={{color:"red"}}>*</span></span>}
+          label={<span>PAN Number <span style={{ color: "red" }}>*</span></span>}
           variant="outlined"
           fullWidth
-          inputProps={{ maxLength: 10 }} 
+          inputProps={{ maxLength: 10 }}
           value={panNumber}
           onChange={handlePanChange}
           error={panNumber && !validatePan(panNumber)}

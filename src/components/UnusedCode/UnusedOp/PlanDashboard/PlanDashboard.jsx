@@ -11,7 +11,7 @@ const PlanDashboard = () => {
   const { id } = useParams();
   const planDash = async () => {
     const planDashboardData = await axios.post(
-      `${baseUrl}`+`operation_plan_dashboard`,
+      `${baseUrl}` + `operation_plan_dashboard`,
       { campaignId: id }
     );
     setPlanData(planDashboardData?.data?.data);

@@ -8,12 +8,12 @@ import jwtDecode from "jwt-decode";
 import { Navigate } from "react-router";
 import Select from "react-select";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
-  
+
 const OpsCustomerMaster = () => {
   // const {userContextData} = useGlobalContext()
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
-  const { toastAlert, toastError  } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const [customerName, setCustomerName] = useState("");
   const [customerTypeName, setCustomerTypeName] = useState("");
   const [accountName, setAccountName] = useState("");
@@ -53,7 +53,7 @@ const OpsCustomerMaster = () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-  const [industryData,setIndustryData]=useState([]);
+  const [industryData, setIndustryData] = useState([]);
 
   const companySizeOptions = [
     "0-5",
@@ -105,7 +105,7 @@ const OpsCustomerMaster = () => {
     { value: "Puducherry", label: "Puducherry" },
   ];
 
-  
+
   const countries = [
     { value: "Afghanistan", label: "Afghanistan" },
     { value: "Albania", label: "Albania" },
@@ -143,28 +143,28 @@ const OpsCustomerMaster = () => {
 
 
   const establishmentYearOptions = [];
-for (let year = 1950; year <= 2050; year++) {
-  establishmentYearOptions.push({ value: year.toString(), label: year.toString() });  
-}
+  for (let year = 1950; year <= 2050; year++) {
+    establishmentYearOptions.push({ value: year.toString(), label: year.toString() });
+  }
 
-const [parentData, setParentData] = useState([]);
-function parentDatas() {
-  axios.get(baseUrl + "get_all_customer_mast").then((res) => {
+  const [parentData, setParentData] = useState([]);
+  function parentDatas() {
+    axios.get(baseUrl + "get_all_customer_mast").then((res) => {
       //console.log(res.data.customerMastList, "rrrr")
       setParentData(res.data.customerMastList);
-  });
-}
+    });
+  }
 
-useEffect(() => {
-  parentDatas();
-}, []);
+  useEffect(() => {
+    parentDatas();
+  }, []);
 
 
-const [customersData, setCustomersData] = useState([]);
+  const [customersData, setCustomersData] = useState([]);
   const CustomerData = () => {
-    axios.get(baseUrl + "get_all_customer_type")   
+    axios.get(baseUrl + "get_all_customer_type")
       .then((res) => {
-        setCustomersData(res.data.data);  
+        setCustomersData(res.data.data);
       });
   };
 
@@ -174,9 +174,9 @@ const [customersData, setCustomersData] = useState([]);
 
   const [accountsData, setAccountsData] = useState([]);
   const AccountData = () => {
-    axios.get(baseUrl + "get_all_account_type") 
+    axios.get(baseUrl + "get_all_account_type")
       .then((res) => {
-        setAccountsData(res.data.data); 
+        setAccountsData(res.data.data);
       });
   };
 
@@ -189,7 +189,7 @@ const [customersData, setCustomersData] = useState([]);
     axios.get(baseUrl + "get_all_ownership")
       .then((res) => {
         setOwnershipsData(res.data.data);
-       // setFilterData(res.data.data);
+        // setFilterData(res.data.data);
       });
   };
 
@@ -197,21 +197,21 @@ const [customersData, setCustomersData] = useState([]);
     OwnershipData();
   }, []);
 
-  const getIndustryInfo= ()=>{
+  const getIndustryInfo = () => {
     axios.get(baseUrl + "industry").then((res) => {
       setIndustryData(res.data.result
-        )
-console.log(res.data.result
-  ,"ddddddd")
-  
-       });
+      )
+      console.log(res.data.result
+        , "ddddddd")
+
+    });
   }
-  useEffect(()=>{
+  useEffect(() => {
     getIndustryInfo()
-},[])
+  }, [])
 
 
-const getData = () => {
+  const getData = () => {
     axios.get(baseUrl + "get_all_customer_mast").then((res) => {
       setTypeData(res.data.data);
     });
@@ -242,7 +242,7 @@ const getData = () => {
     }
   };
 
-  
+
 
   const handleEmailSet = (e, setState) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -253,18 +253,18 @@ const getData = () => {
     return setEmailIsInvalid(true);
   };
 
-  
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     const panRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
     if (companyPan !== "" && !panRegex.test(companyPan)) {
       toastError("Invalid PAN card number");
       return;
     }
     const regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/;
-    if(companyGst !== "" && !regex.test(companyGst)) {
+    if (companyGst !== "" && !regex.test(companyGst)) {
       toastError("Invalid GST number");
       return;
     }
@@ -312,7 +312,7 @@ const getData = () => {
     });
   };
 
- 
+
   if (isFormSubmitted) {
     return <Navigate to="/admin/ops-customer-overview" />;
   }
@@ -343,7 +343,7 @@ const getData = () => {
             value={{
               value: customerTypeName,
               label:
-              customersData?.find((cust) => cust._id === customerTypeName)?.customer_type_name || "",
+                customersData?.find((cust) => cust._id === customerTypeName)?.customer_type_name || "",
             }}
             onChange={(e) => {
               setCustomerTypeName(e.value);
@@ -351,8 +351,8 @@ const getData = () => {
           ></Select>
         </div>
 
-         
-          <div className="form-group col-6">
+
+        <div className="form-group col-6">
           <label className="form-label">
             Brand Name <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -364,7 +364,7 @@ const getData = () => {
             value={{
               value: accountName,
               label:
-              accountsData?.find((acc) => acc._id === accountName)?.account_type_name || "",
+                accountsData?.find((acc) => acc._id === accountName)?.account_type_name || "",
             }}
             onChange={(e) => {
               setAccountName(e.value);
@@ -373,7 +373,7 @@ const getData = () => {
         </div>
 
 
-         <div className="form-group col-6">
+        <div className="form-group col-6">
           <label className="form-label">
             Ownership Name <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -385,7 +385,7 @@ const getData = () => {
             value={{
               value: ownershipName,
               label:
-              ownershipsData?.find((own) => own._id === ownershipName)?.ownership_name || "",
+                ownershipsData?.find((own) => own._id === ownershipName)?.ownership_name || "",
             }}
             onChange={(e) => {
               setOwnershipName(e.value);
@@ -394,8 +394,8 @@ const getData = () => {
         </div>
 
 
-        
-         <div className="form-group col-6">
+
+        <div className="form-group col-6">
           <label className="form-label">
             Industry Name <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -407,7 +407,7 @@ const getData = () => {
             value={{
               value: industryName,
               label:
-              industryData?.find((ind) => ind._id === industryName)?.name || "",
+                industryData?.find((ind) => ind._id === industryName)?.name || "",
             }}
             onChange={(e) => {
               setIndustryName(e.value);
@@ -416,8 +416,8 @@ const getData = () => {
         </div>
 
 
-        
-         <div className="form-group col-6">
+
+        <div className="form-group col-6">
           <label className="form-label">
             Account Owner Name <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -429,7 +429,7 @@ const getData = () => {
             value={{
               value: accountOwnerName,
               label:
-              userContextData?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
+                userContextData?.find((acc) => acc.user_id === accountOwnerName)?.user_name || "",
             }}
             onChange={(e) => {
               setAccountOwnerName(e.value);
@@ -438,7 +438,7 @@ const getData = () => {
         </div>
 
 
-          {/* <FieldContainer
+        {/* <FieldContainer
           label="Parent Account "
           value={parentAccountName}
           required={false}
@@ -446,7 +446,7 @@ const getData = () => {
           onChange={(e) => setParentAccountName(e.target.value)}
         /> */}
 
-         <div className="form-group col-6">
+        <div className="form-group col-6">
           <label className="form-label">
             Parent Account Name <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -458,7 +458,7 @@ const getData = () => {
             value={{
               value: parentAccountName,
               label:
-              parentData?.find((acc) => acc.customer_id === parentAccountName)?.customer_name || "", 
+                parentData?.find((acc) => acc.customer_id === parentAccountName)?.customer_name || "",
             }}
             onChange={(e) => {
               setParentAccountName(e.value);
@@ -469,23 +469,23 @@ const getData = () => {
 
 
         <div className="form-group col-6">
-        <label className="form-label">
-        Company Size <sup style={{ color: "red" }}>*</sup>
-        </label>
-        <Select
-        options={companySizeOptions.map((option) => ({ value: option, label: option }))}
-        value={{ value: companySize, label: companySize }}
-       // onChange={(selectedOption) => setCompanySize(selectedOption.value.toString())}
-       onChange={(selectedOption) => setCompanySize(selectedOption.value.toString())}
-        />
-       </div>
+          <label className="form-label">
+            Company Size <sup style={{ color: "red" }}>*</sup>
+          </label>
+          <Select
+            options={companySizeOptions.map((option) => ({ value: option, label: option }))}
+            value={{ value: companySize, label: companySize }}
+            // onChange={(selectedOption) => setCompanySize(selectedOption.value.toString())}
+            onChange={(selectedOption) => setCompanySize(selectedOption.value.toString())}
+          />
+        </div>
 
-         <FieldContainer
+        <FieldContainer
           label="Primary Contact No. *"
           type="number"
           value={primaryContactNo}
           required={true}
-          onChange={(e) => handlePrimaryContactNo(e, setPrimaryContactNo )}
+          onChange={(e) => handlePrimaryContactNo(e, setPrimaryContactNo)}
         />
 
         <FieldContainer
@@ -502,7 +502,7 @@ const getData = () => {
           value={email}
           required={false}
           type="email"
-          onChange={(e) => handleEmailSet(e, setEmail )}
+          onChange={(e) => handleEmailSet(e, setEmail)}
         />
         {emailIsInvalid && (
           <span style={{ color: "red", fontSize: "12px" }}>
@@ -510,22 +510,22 @@ const getData = () => {
           </span>
         )}
 
-          <FieldContainer
+        <FieldContainer
           label="Website"
           value={website}
           required={false}
           onChange={(e) => setWebsite(e.target.value)}
         />
-        
+
         <div className="form-group col-6">
-        <label className="form-label">
-        Establishment Year <sup style={{ color: "red" }}>*</sup>
-        </label>
-        <Select
-         options={establishmentYearOptions}
-         value={establishmentYearOptions.find(option => option.value === establishmentYear)}
-        onChange={(e) => setEstablishmentYear(e.value)}
-        />
+          <label className="form-label">
+            Establishment Year <sup style={{ color: "red" }}>*</sup>
+          </label>
+          <Select
+            options={establishmentYearOptions}
+            value={establishmentYearOptions.find(option => option.value === establishmentYear)}
+            onChange={(e) => setEstablishmentYear(e.value)}
+          />
         </div>
 
         <FieldContainer
@@ -535,8 +535,8 @@ const getData = () => {
           required={false}
           onChange={(e) => setEmployeesCount(e.target.value)}
         />
-        
-         <FieldContainer
+
+        <FieldContainer
           label="PAN"
           value={companyPan}
           required={false}
@@ -559,22 +559,22 @@ const getData = () => {
           onChange={(e) => setGstImage(e.target.files[0])}
         />
 
-        <FieldContainer 
-        label="GST Address" 
-        value={gstAddress} 
-        onChange={(e) => setGstAddress(e.target.value)} />
+        <FieldContainer
+          label="GST Address"
+          value={gstAddress}
+          onChange={(e) => setGstAddress(e.target.value)} />
 
-         <FieldContainer
+        <FieldContainer
           label="Turnover (in cr)"
           type="number"
           value={turnover}
           required={false}
           onChange={(e) => setTurnover(e.target.value)}
         />
-        
 
 
-          <FieldContainer
+
+        <FieldContainer
           label="How many offices?"
           type="number"
           value={howManyOffices}
@@ -583,89 +583,89 @@ const getData = () => {
         />
 
         <FieldContainer
-        label="Connected Office"
-        value={connectedOffice}
-        required={false}
-        onChange={(e) => setConnectedOffice(e.target.value)}
-      />
-
-      <FieldContainer
-        label="Connected Billing Street"
-        value={connectedBillingStreet}
-        required={false}
-        onChange={(e) => setConnectedBillingStreet(e.target.value)}
-      />
-      <FieldContainer
-        label="Connected Billing City"
-        value={connectedBillingCity}
-        required={false}
-        onChange={(e) => setConnectedBillingCity(e.target.value)}
-      />
-          
-          <div className="form-group col-6">
-        <label className="form-label">
-          Connected Billing State
-        </label>
-        <Select
-          options={indianStates}
-          value={indianStates.find((option) => option.value === connectedBillingState)}
-          onChange={(e) => setConnectedBillingState(e.value)}
+          label="Connected Office"
+          value={connectedOffice}
+          required={false}
+          onChange={(e) => setConnectedOffice(e.target.value)}
         />
-         </div>
+
+        <FieldContainer
+          label="Connected Billing Street"
+          value={connectedBillingStreet}
+          required={false}
+          onChange={(e) => setConnectedBillingStreet(e.target.value)}
+        />
+        <FieldContainer
+          label="Connected Billing City"
+          value={connectedBillingCity}
+          required={false}
+          onChange={(e) => setConnectedBillingCity(e.target.value)}
+        />
 
         <div className="form-group col-6">
-      <label className="form-label">
-        Connected Billing Country
-      </label>
-      <Select
-        options={countries}
-        value={countries.find((option) => option.value === connectedBillingCountry)}
-        onChange={(e) => setConnectedBillingCountry(e.value)}
-      />
-    </div>
-      <FieldContainer
-        label="Head Office"
-        value={headOffice}
-        required={false}
-        onChange={(e) => setHeadOffice(e.target.value)}
-      />
-      <FieldContainer
-        label="Head Billing Street"
-        value={headBillingStreet}
-        required={false}
-        onChange={(e) => setHeadBillingStreet(e.target.value)}
-      />
-      <FieldContainer
-        label="Head Billing City"
-        value={headBillingCity}
-        required={false}
-        onChange={(e) => setHeadBillingCity(e.target.value)}
-      />
-      <FieldContainer
-        label="Head Billing State"
-        value={headBillingState}
-        required={false}
-        onChange={(e) => setHeadBillingState(e.target.value)}
-      />
-      <FieldContainer
-        label="Head Billing Country"
-        value={headBillingCountry}
-        required={false}
-        onChange={(e) => setHeadBillingCountry(e.target.value)}
-      />
-      <FieldContainer 
-      label="Pin Code" 
-      type="number" 
-      value={pinCode} 
-      onChange={(e) => setPinCode(e.target.value)} />
+          <label className="form-label">
+            Connected Billing State
+          </label>
+          <Select
+            options={indianStates}
+            value={indianStates.find((option) => option.value === connectedBillingState)}
+            onChange={(e) => setConnectedBillingState(e.value)}
+          />
+        </div>
 
-      <FieldContainer
-        label="Description"
-        value={description}
-        required={false}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-     </FormContainer>
+        <div className="form-group col-6">
+          <label className="form-label">
+            Connected Billing Country
+          </label>
+          <Select
+            options={countries}
+            value={countries.find((option) => option.value === connectedBillingCountry)}
+            onChange={(e) => setConnectedBillingCountry(e.value)}
+          />
+        </div>
+        <FieldContainer
+          label="Head Office"
+          value={headOffice}
+          required={false}
+          onChange={(e) => setHeadOffice(e.target.value)}
+        />
+        <FieldContainer
+          label="Head Billing Street"
+          value={headBillingStreet}
+          required={false}
+          onChange={(e) => setHeadBillingStreet(e.target.value)}
+        />
+        <FieldContainer
+          label="Head Billing City"
+          value={headBillingCity}
+          required={false}
+          onChange={(e) => setHeadBillingCity(e.target.value)}
+        />
+        <FieldContainer
+          label="Head Billing State"
+          value={headBillingState}
+          required={false}
+          onChange={(e) => setHeadBillingState(e.target.value)}
+        />
+        <FieldContainer
+          label="Head Billing Country"
+          value={headBillingCountry}
+          required={false}
+          onChange={(e) => setHeadBillingCountry(e.target.value)}
+        />
+        <FieldContainer
+          label="Pin Code"
+          type="number"
+          value={pinCode}
+          onChange={(e) => setPinCode(e.target.value)} />
+
+        <FieldContainer
+          label="Description"
+          value={description}
+          required={false}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </FormContainer>
     </>
   );
 };

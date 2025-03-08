@@ -43,7 +43,7 @@ const UserSidebar = ({ cartItems, updatedCart, selectedSitting }) => {
   async function getData() {
     try {
       await axios
-        .get(baseUrl+"get_LastOrderId")
+        .get(baseUrl + "get_LastOrderId")
         .then((res) => {
           setOrderID(res.data.Order_req_id);
         });
@@ -79,7 +79,7 @@ const UserSidebar = ({ cartItems, updatedCart, selectedSitting }) => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_delivery_boy")
+      .get(baseUrl + "get_delivery_boy")
       .then((res) => setReqDelApiData(res.data.results));
   }, []);
   const handlePlaceOrder = async () => {
@@ -94,7 +94,7 @@ const UserSidebar = ({ cartItems, updatedCart, selectedSitting }) => {
       const finalsitting_id =
         selectedSitting == "" ? Number(SittingId) : Number(selectedSitting);
       await axios
-        .post(baseUrl+"add_orderreq", {
+        .post(baseUrl + "add_orderreq", {
           product_id: element.product_id,
           order_quantity: count[element.product_id],
           special_request: specialRequest,

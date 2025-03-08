@@ -15,7 +15,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material/styles";
 import AlertDialog from "./AlertDialog";
 import axios from "axios";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 export default function BulkUpload({ setUpload }) {
   const { datalead } = useContext(UserContext);
@@ -72,7 +72,7 @@ export default function BulkUpload({ setUpload }) {
         console.log(fieldname[i]);
         setAlerttemp(true);
         setAlert(true);
-        console.log("worng");
+        // console.log("worng");
         return false;
       }
       setOpen(true);
@@ -96,7 +96,7 @@ export default function BulkUpload({ setUpload }) {
     const uniqueData = [];
     for (let i = 0; i < bulklead.length; i++) {
       try {
-        axios.post(baseUrl+"leadmastpost", {
+        axios.post(baseUrl + "leadmastpost", {
           lead_name: bulklead[i].lead_name,
           mobile_no: bulklead[i].mobile_no,
           alternate_mobile_no: bulklead[i].alternate_mobile_no,
@@ -106,7 +106,7 @@ export default function BulkUpload({ setUpload }) {
           email: bulklead[i].email,
           Last_updated_by: 1,
         });
-        // console.log("post api  completed ");
+        // // console.log("post api  completed ");
         // window.location.reload();
       } catch (error) {
         console.log(error);

@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 const ProductMaster = () => {
   // const [categoryNames, setCategoryNames] = useState({});
@@ -40,7 +40,7 @@ const ProductMaster = () => {
     formData.append("Opening_stock_date", openingStockDate);
     formData.append("Remarks", remark);
 
-    await axios.post(baseUrl+"add_product", formData, {
+    await axios.post(baseUrl + "add_product", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -55,7 +55,7 @@ const ProductMaster = () => {
 
       try {
         await axios.post(
-          `${baseUrl}`+`add_proppost`,
+          `${baseUrl}` + `add_proppost`,
           payload,
           {
             headers: {
@@ -64,7 +64,7 @@ const ProductMaster = () => {
           }
         );
 
-        console.log("Request successfully sent for", inputField);
+        // console.log("Request successfully sent for", inputField);
       } catch (error) {
         console.error("Error sending request for", inputField, error);
       }

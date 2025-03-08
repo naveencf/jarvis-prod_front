@@ -60,13 +60,13 @@ export default function MergeSubCategory() {
             start_date: startDate,
             end_date: currentDate,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          )
           .then(() => {
             Swal.fire({
               title: "Merged!",
@@ -122,7 +122,7 @@ export default function MergeSubCategory() {
                 value={{
                   value: preference,
                   label:
-                  formatString(subCategoryData.find(
+                    formatString(subCategoryData.find(
                       (user) => user._id === preference
                     )?.page_sub_category || ""),
                 }}
@@ -145,7 +145,7 @@ export default function MergeSubCategory() {
                 value={{
                   value: remove,
                   label:
-                  formatString( subCategoryData?.find(
+                    formatString(subCategoryData?.find(
                       (user) => user._id === remove
                     )?.page_sub_category || ""),
                 }}

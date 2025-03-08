@@ -22,12 +22,12 @@ const OrderHistory = () => {
   useEffect(() => {
     axios
       .get(
-        `${baseUrl}`+`get_single_orderreqshistory/${userId}`
+        `${baseUrl}` + `get_single_orderreqshistory/${userId}`
       )
       .then((res) => {
         setOldUserProduct(res.data);
         setFilterData(res.data);
-        console.log("orderhistory", res.data);
+        // console.log("orderhistory", res.data);
       });
   }, []);
 
@@ -40,7 +40,7 @@ const OrderHistory = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_delivery_boy")
+      .get(baseUrl + "get_delivery_boy")
       .then((res) => setReqDelApiData(res.data.results));
   }, []);
 
@@ -66,7 +66,7 @@ const OrderHistory = () => {
       }
       var productProp1 = propNames.toString();
     }
-    await axios.post(baseUrl+"add_orderreq", {
+    await axios.post(baseUrl + "add_orderreq", {
       product_id: row.product_id,
       order_quantity: row.Order_quantity,
       // special_request: specialRequest,
@@ -79,7 +79,7 @@ const OrderHistory = () => {
       room_id: loginUserRoomId,
       props1: productProp1,
     });
-    // console.log("new console", row.product_id);
+    // // console.log("new console", row.product_id);
   };
 
   const getRowDetail = (row) => {
@@ -87,10 +87,10 @@ const OrderHistory = () => {
     setSelectedRow(row);
     axios
       .get(
-        `${baseUrl}`+`get_single_productdata/${row.product_id}`
+        `${baseUrl}` + `get_single_productdata/${row.product_id}`
       )
       .then((res) => {
-        // console.log("new console", res.data);
+        // // console.log("new console", res.data);
         setItem(res.data);
       });
   };

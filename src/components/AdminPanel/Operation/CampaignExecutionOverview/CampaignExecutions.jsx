@@ -33,8 +33,8 @@ const CampaignExecutions = () => {
   const [pageDetails, setPageDetails] = useState([]);
   const [assignData, setAssignData] = useState([]);
   const [allCampData, setAllCampData] = useState([]);
-  console.log(allCampData,'allCampData');
-  
+  console.log(allCampData, 'allCampData');
+
   const [selectedCampaign, setSelectedCampaign] = useState("");
   const [shiftPages, setShiftPages] = useState("");
   const [allPhaseData, setAllPhaseData] = useState([]);
@@ -190,7 +190,7 @@ const CampaignExecutions = () => {
         }
         setUpdateClicked(false);
       } else {
-        console.log("No match found or invalid shortcode.");
+        // console.log("No match found or invalid shortcode.");
       }
     };
     fetchPageDetails();
@@ -232,23 +232,23 @@ const CampaignExecutions = () => {
     phases === "all"
       ? ""
       : {
-          field: "Shifting",
-          headerName: "Shifting",
-          width: 120,
-          renderCell: (params) => {
-            return (
-              <Button
-                variant="text"
-                onClick={() => openModal(params.row.phase_id)}
-              >
-                <ScreenRotationAltRoundedIcon
-                  color="secondary"
-                  sx={{ fontSize: "1.5rem" }}
-                />
-              </Button>
-            );
-          },
+        field: "Shifting",
+        headerName: "Shifting",
+        width: 120,
+        renderCell: (params) => {
+          return (
+            <Button
+              variant="text"
+              onClick={() => openModal(params.row.phase_id)}
+            >
+              <ScreenRotationAltRoundedIcon
+                color="secondary"
+                sx={{ fontSize: "1.5rem" }}
+              />
+            </Button>
+          );
         },
+      },
     {
       field: "last_link_hit_date",
       headerName: " Fetched D|T",
@@ -502,7 +502,7 @@ const CampaignExecutions = () => {
   };
 
   const handleSelectedPages = () => {
-    // console.log("new ");
+    // // console.log("new ");
   };
 
   const handleSelectionChange = (selectedIds) => {
@@ -591,9 +591,8 @@ const CampaignExecutions = () => {
               allPhaseData.map((item, i) => (
                 <button
                   key={i}
-                  className={`named-tab ${
-                    phases === item?._id ? "active-tab" : ""
-                  }`}
+                  className={`named-tab ${phases === item?._id ? "active-tab" : ""
+                    }`}
                   onClick={() => handleClick(item?.phaseName)}
                 >
                   {formatString(item?.phaseName)}

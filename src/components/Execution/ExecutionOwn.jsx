@@ -129,7 +129,7 @@ function ExecutionOwn() {
         const filterVendorId = res.data.body.filter(
           (check) => check.vendor_id == "8"
         );
-        // console.log("filtervendorid",filterVendorId);
+        // // console.log("filtervendorid",filterVendorId);
         setAlldata(filterVendorId);
         // let tempdata = alldata.filter((ele) => {
         let tempdata = filterVendorId.filter((ele) => {
@@ -168,7 +168,7 @@ function ExecutionOwn() {
       .writeText(copyData)
       .then(() => {
         // Data successfully copied to the clipboard
-        console.log("Copied to clipboard: ", copyData);
+        // console.log("Copied to clipboard: ", copyData);
       })
       .catch((err) => {
         // Handle errors
@@ -427,7 +427,7 @@ function ExecutionOwn() {
 
   const saveStats = async (e) => {
     e.preventDefault();
-    console.log("save stats");
+    // console.log("save stats");
     const formData = new FormData();
     formData.append("p_id", rowData.p_id);
     formData.append("reach", reach);

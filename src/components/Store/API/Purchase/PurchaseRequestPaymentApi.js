@@ -17,7 +17,7 @@ const PurchaseRequestPaymentApi = createApi({
                     const { data: addedPurchase } = await queryFulfilled;
 
                     if (addedPurchase && addedPurchase.data) {
-                        console.log("Purchase added successfully:", addedPurchase.data);
+                        // // console.log("Purchase added successfully:", addedPurchase.data);
                     }
                 } catch (error) {
                     console.error("Failed to add purchase:", error);
@@ -33,8 +33,8 @@ const PurchaseRequestPaymentApi = createApi({
             transformResponse: (response) => response.data, // Optional: transform the response
         }),
         getVendorPaymentRequests: builder.query({
-            query: () => ({
-                url: `v1/vendor_payment_request`,
+            query: (status) => ({
+                url: `v1/vendor_payment_request?${status}`,
                 method: "GET",
             }),
             transformResponse: (response) => response.data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3)), // Optional: transform the response
@@ -50,7 +50,7 @@ const PurchaseRequestPaymentApi = createApi({
                 try {
                     const { data: updatedPurchase } = await queryFulfilled;
                     if (updatedPurchase && updatedPurchase.data) {
-                        console.log("Purchase updated successfully:", updatedPurchase.data);
+                        // // console.log("Purchase updated successfully:", updatedPurchase.data);
                     }
                 } catch (error) {
                     console.error("Failed to update purchase:", error);
@@ -67,7 +67,7 @@ const PurchaseRequestPaymentApi = createApi({
                 try {
                     const { data: deletedPurchase } = await queryFulfilled;
                     if (deletedPurchase && deletedPurchase.success) {
-                        console.log("Purchase request deleted successfully:", _id);
+                        // // console.log("Purchase request deleted successfully:", _id);
                     }
                 } catch (error) {
                     console.error("Failed to delete purchase request:", error);
@@ -94,7 +94,7 @@ const PurchaseRequestPaymentApi = createApi({
                 try {
                     const { data: settlementResponse } = await queryFulfilled;
                     if (settlementResponse && settlementResponse.data) {
-                        console.log("Advanced payment settled successfully:", settlementResponse.data);
+                        // // console.log("Advanced payment settled successfully:", settlementResponse.data);
                     }
                 } catch (error) {
                     console.error("Failed to settle advanced payment:", error);

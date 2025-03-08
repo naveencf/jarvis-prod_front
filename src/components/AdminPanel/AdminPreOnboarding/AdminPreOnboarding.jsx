@@ -399,7 +399,7 @@ const AdminPreOnboarding = () => {
           })
           .catch((error) => {
             setLoading(false);
-            console.log("Failed to send email:", error);
+            // console.log("Failed to send email:", error);
           });
 
         setUserName("");
@@ -424,7 +424,7 @@ const AdminPreOnboarding = () => {
         setIsFormSubmitted(true);
       }
     } catch (error) {
-      console.log("Failed to submit form", error);
+      // console.log("Failed to submit form", error);
     } finally {
       setLoading(false);
     }
@@ -778,7 +778,7 @@ const AdminPreOnboarding = () => {
         title="User Registration"
         handleSubmit={handleSubmit}
         submitButton={false}
-        // loading={loading}
+      // loading={loading}
       >
         <div className="col-md-3">
           <FieldContainer
@@ -967,16 +967,16 @@ const AdminPreOnboarding = () => {
                   return { ...prev, reportL1: false };
                 });
             }}
-            // onBlur={(e) => {
-            //   !reportL1 &&
-            //     setIsRequired((prev) => {
-            //       return { ...prev, reportL1: true };
-            //     });
-            //   reportL1 &&
-            //     setIsRequired((prev) => {
-            //       return { ...prev, reportL1: false };
-            //     });
-            // }}
+          // onBlur={(e) => {
+          //   !reportL1 &&
+          //     setIsRequired((prev) => {
+          //       return { ...prev, reportL1: true };
+          //     });
+          //   reportL1 &&
+          //     setIsRequired((prev) => {
+          //       return { ...prev, reportL1: false };
+          //     });
+          // }}
           />
           {isRequired.reportL1 && (
             <p className="form-error">Please select Report L1</p>
@@ -1009,7 +1009,7 @@ const AdminPreOnboarding = () => {
             value={personalContact}
             required={false}
             onChange={handlePersonalContactChange}
-            // onBlur={handlePersonalContactBlur}
+          // onBlur={handlePersonalContactBlur}
           />
           {(isContactTouched1 || personalContact.length >= 10) &&
             !isValidcontact1 && (
@@ -1083,23 +1083,23 @@ const AdminPreOnboarding = () => {
             required={false}
             value={userCtc}
             onChange={handleYearlySalaryChange}
-            // onChange={(e) => {
-            //   // setUserCtc(e.target.value);
-            //   const value = e.target.value;
-            //   // Limit input to 6 digits
-            //   if (/^\d{0,7}$/.test(value)) {
-            //     setUserCtc(value);
-            //   }
+          // onChange={(e) => {
+          //   // setUserCtc(e.target.value);
+          //   const value = e.target.value;
+          //   // Limit input to 6 digits
+          //   if (/^\d{0,7}$/.test(value)) {
+          //     setUserCtc(value);
+          //   }
 
-            //   userCtc !== "" &&
-            //     setIsRequired((prev) => {
-            //       return { ...prev, userCtc: true };
-            //     });
-            //   userCtc &&
-            //     setIsRequired((prev) => {
-            //       return { ...prev, userCtc: false };
-            //     });
-            // }}
+          //   userCtc !== "" &&
+          //     setIsRequired((prev) => {
+          //       return { ...prev, userCtc: true };
+          //     });
+          //   userCtc &&
+          //     setIsRequired((prev) => {
+          //       return { ...prev, userCtc: false };
+          //     });
+          // }}
           />
 
           {isRequired.userCtc && <p className="form-error">Please Enter CTC</p>}
@@ -1255,9 +1255,9 @@ const AdminPreOnboarding = () => {
             value={
               selectedRole
                 ? {
-                    value: selectedRole.role_id,
-                    label: selectedRole.Role_name,
-                  }
+                  value: selectedRole.role_id,
+                  label: selectedRole.Role_name,
+                }
                 : null
             }
             onChange={(e) => {

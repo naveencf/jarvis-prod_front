@@ -17,7 +17,7 @@ import { Paper, Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useGlobalContext } from "../../../Context/Context";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 let options = [];
 const PageDetaling = ({
@@ -272,7 +272,7 @@ const PageDetaling = ({
       };
       try {
         const result = await axios.post(
-          baseUrl+"campaignplan",
+          baseUrl + "campaignplan",
           newdata
         );
         // console.log(result);
@@ -285,7 +285,7 @@ const PageDetaling = ({
       }
     }
     if (pageName == "phaseCreation") {
-      // console.log("phase creation")
+      // // console.log("phase creation")
       if (phaseInfo.phaseDataError === "") {
         setPhaseDataError("Phase ID is Required");
       }
@@ -308,7 +308,7 @@ const PageDetaling = ({
       };
       try {
         const result = await axios.post(
-          baseUrl+"campaignphase",
+          baseUrl + "campaignphase",
           newdata
         );
         // console.log(result);

@@ -1,7 +1,7 @@
 import { Paper, TextField, Grid } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 let commInfo = [];
 
@@ -21,7 +21,7 @@ const CampaignDetailes = ({
   const getData = async () => {
     try {
       const res = await axios.get(
-        `${baseUrl}`+`register_campaign/${cid}`
+        `${baseUrl}` + `register_campaign/${cid}`
       );
       setCampaignData(res.data.data);
     } catch (error) {
@@ -32,7 +32,7 @@ const CampaignDetailes = ({
   // console.log(cid, "mycid");
   // console.log(campaignData)
   const getBrandInfo = async () => {
-    const brand = await axios.get(`${baseUrl}`+`get_brands`);
+    const brand = await axios.get(`${baseUrl}` + `get_brands`);
     const myBrand = brand.data.data.find(
       (brand) => brand.brand_id == campaignData.brand_id
     );
@@ -44,7 +44,7 @@ const CampaignDetailes = ({
   // },[getCampaign])
 
   const getCampaignName = async () => {
-    const camp = await axios.get(`${baseUrl}`+`exe_campaign`);
+    const camp = await axios.get(`${baseUrl}` + `exe_campaign`);
     const mycamp = camp.data.data.find(
       (camp) => camp.exeCmpId == campaignData.exeCmpId
     );
@@ -57,7 +57,7 @@ const CampaignDetailes = ({
 
   const getCommitments = async () => {
     const comm = await axios.get(
-      baseUrl+"get_all_commitments"
+      baseUrl + "get_all_commitments"
     );
     const myComm = comm.data.data.filter((comm) =>
       commInfo.includes(comm.cmtId)
@@ -65,8 +65,8 @@ const CampaignDetailes = ({
     setCommitData(myComm);
     // console.log(myComm);
     let data = [];
-    myComm.forEach((x,index) => {
-      data.push({ commitment: x.cmtName, value: "0",max:campaignData?.commitment[index]?.textValue });
+    myComm.forEach((x, index) => {
+      data.push({ commitment: x.cmtName, value: "0", max: campaignData?.commitment[index]?.textValue });
     });
 
     setCommitmentCompleteData(data);
@@ -74,7 +74,7 @@ const CampaignDetailes = ({
 
   useEffect(() => {
     if (commitmentCompleteData.length > 0 && getCampaign) {
-      getCampaign(commitmentCompleteData, cmpName?.exeCmpName,campaignData);
+      getCampaign(commitmentCompleteData, cmpName?.exeCmpName, campaignData);
     }
   }, [commitmentCompleteData, cmpName]);
 
@@ -130,29 +130,29 @@ const CampaignDetailes = ({
           {commitData.length > 0 &&
             commitData.map((comm, index) => {
               // commitForValidate.push()
-              return  <>
-              <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
-                <TextField
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  fullWidth
-                  label="Commitment"
-                  value={comm.cmtName}
-                />
-              </Grid>
-              <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
-               
-                <TextField
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                  fullWidth
-                  label="value"
-                  value={campaignData?.commitment[index]?.textValue}
-                />
-              </Grid>
-            </>
+              return <>
+                <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
+                  <TextField
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                    label="Commitment"
+                    value={comm.cmtName}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6} sx={{ mb: 2 }}>
+
+                  <TextField
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                    label="value"
+                    value={campaignData?.commitment[index]?.textValue}
+                  />
+                </Grid>
+              </>
             })}
         </Grid>
       </div>

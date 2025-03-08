@@ -88,12 +88,12 @@ export default function Stats() {
   const [storyViewValidation, setStoryViewValidation] = useState(true);
   const [storyViewDate, setStoryViewDate] = useState("");
   const [countryListTemp, setCountryListTemp] = useState([]);
-  const rowData= useSelector((state) => state.executon.row);
+  const rowData = useSelector((state) => state.executon.row);
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const { toastAlert } = useGlobalContext();
-const navigation = useNavigate();
+  const navigation = useNavigate();
   const dropdownStaticData = [
     "Daily",
     "Weekly",
@@ -144,12 +144,12 @@ const navigation = useNavigate();
 
   const cityCopyValidation = (selectedCity) => {
     setTimeout(() => {
-        // console.log(selectedCity,"selectedCity, city")
+      // console.log(selectedCity,"selectedCity, city")
       if (selectedCity === null || selectedCity == "") {
         let temp = cityListTemp.filter(
           (city) => ![city1, city2, city3, city4, city5].includes(city)
         );
-        setCityList(prev=>[...temp, prev]);
+        setCityList(prev => [...temp, prev]);
         return;
       }
       const newCityList = cityListTemp.filter(
@@ -172,10 +172,10 @@ const navigation = useNavigate();
     setCountryList(Country.getAllCountries());
     setCountryListTemp(Country.getAllCountries());
     axios.get(baseUrl + "get_all_cities").then((res) => {
-        setCityListTemp(res.data.data.map((city) => city.city_name));
-        setCityList(res.data.data.map((city) => city.city_name));
-      });
-  
+      setCityListTemp(res.data.data.map((city) => city.city_name));
+      setCityList(res.data.data.map((city) => city.city_name));
+    });
+
   }, []);
 
   const countryCopyValidation = (selectedCountry, country) => {
@@ -303,7 +303,7 @@ const navigation = useNavigate();
     formData.append("user_id", userID);
 
     axios
-    //   .post(`${baseUrl}` + `add_exe_pid_history`, formData, {
+      //   .post(`${baseUrl}` + `add_exe_pid_history`, formData, {
       .post(`${baseUrl}` + `add_exe_history`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -370,7 +370,7 @@ const navigation = useNavigate();
         setStoryViewDate(null);
 
         toastAlert("Form Submitted success");
-      return  navigation("/admin/pms-page-overview");
+        return navigation("/admin/pms-page-overview");
       });
   };
 
@@ -452,8 +452,8 @@ const navigation = useNavigate();
                   <TextField
                     {...params}
                     label="Quater *"
-                    // error={!quaterIsValid}
-                    // helperText={!quaterIsValid ? "Please select an option" : ""}
+                  // error={!quaterIsValid}
+                  // helperText={!quaterIsValid ? "Please select an option" : ""}
                   />
                 )}
               />

@@ -25,7 +25,7 @@ export default function ImgDialogBox({
   openReviewDisalog,
   setOpenReviewDisalog,
 }) {
-    console.log(openReviewDisalog.image, "openReviewDisalog.detail");
+  console.log(openReviewDisalog.image, "openReviewDisalog.detail");
   const [open, setOpen] = React.useState(true);
 
   const handleClose = () => {
@@ -44,36 +44,36 @@ export default function ImgDialogBox({
   }
 
   function renderFile(fileType, fileSource) {
-    console.log( fileSource, "fileType, fileSource");
+    console.log(fileSource, "fileType, fileSource");
     if (allowedImageTypes.includes(fileType)) {
       return (
         <img
           src={fileSource}
           alt="img"
-          
+
           width="10%"
-          style={{ 
+          style={{
             // objectFit: "contain"
-         }}
+          }}
           height="auto"
         />
       );
     } else if (allowedVideoTypes.includes(fileType)) {
       return (
         <div>
-        <video className="mt-5" controls width="100%" height="auto">
-          <source src={fileSource} type={`video/${fileType}`} />
-          Your browser does not support the video tag.
-        </video>
+          <video className="mt-5" controls width="100%" height="auto">
+            <source src={fileSource} type={`video/${fileType}`} />
+            Your browser does not support the video tag.
+          </video>
         </div>
       );
     } else if (allowedPdfTypes.includes(fileType)) {
       return (
-        <iframe src= {fileSource} 
-                width="100%"
-                height="100%"
-                > 
-        </iframe> 
+        <iframe src={fileSource}
+          width="100%"
+          height="100%"
+        >
+        </iframe>
       )
     } else {
       return <p>Unsupported file type</p>;
@@ -104,12 +104,12 @@ export default function ImgDialogBox({
           </Toolbar>
         </AppBar>
         <List style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "80vh",
-            width: "98.3vw",
-            
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+          width: "98.3vw",
+
         }}>
           {/* {
          allowedFileTypes.includes(openReviewDisalog.detail.fileType)  && 

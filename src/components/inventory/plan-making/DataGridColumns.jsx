@@ -34,7 +34,7 @@ const DataGridColumns = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
-  
+
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');
 
@@ -63,7 +63,7 @@ const DataGridColumns = ({
           return '#FF6347';
         }
         if (searchPages?.some((item) => item.toLowerCase() === row?.page_name?.toLowerCase() && showSearchColorRow)) {
-          return '#9fd387';  
+          return '#9fd387';
         }
         return undefined;
       },
@@ -203,7 +203,7 @@ const DataGridColumns = ({
               handleCheckboxChange(row, 'column', event, index);
             }}
             onClick={() => setShortcutTriggered(false)}
-            // onClick={() => handleRowClick(row)}
+          // onClick={() => handleRowClick(row)}
           />
         </div>
       ),
@@ -297,7 +297,7 @@ const DataGridColumns = ({
       width: 50,
       showCol: true,
     },
-    
+
     {
       key: 'total_cost',
       name: 'Total Cost',

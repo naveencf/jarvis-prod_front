@@ -161,7 +161,7 @@ const BalanceReleaseIncentive = (props) => {
   const handleClose = () => {
     setModalOpen(false)
     setPayingAmount(null)
-    // // console.log("first")
+    // // // console.log("first")
   }
 
   const totalIncentiveRemaining = userBookingsData?.incentiveCalculationDashboard?.reduce(

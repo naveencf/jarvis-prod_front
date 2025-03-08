@@ -25,7 +25,7 @@ const UserChatData = (props) => {
       const response = await axios.get(`${baseUrl}message/${chatId}`);
       console.log(response, "response>>> ");
       if (response.status === 200) {
-        console.log("HIIIIIIIIIIII 24 Line no.");
+        // console.log("HIIIIIIIIIIII 24 Line no.");
         setDataChat(response?.data?.data);
         const res = response?.data?.data;
         getChattingUserData();

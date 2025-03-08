@@ -499,7 +499,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   });
   // const twitterTrendCost = Number(((planDetails[0]?.selling_price * twitterTrendPercentage) / 100).toFixed(2)) || 0; // Default to 0 if undefined
 
-  //   console.log("twitterTrendCost", twitterTrendCost);
+  //   // console.log("twitterTrendCost", twitterTrendCost);
 
   //   let twitterTrendRow = overviewSheet.addRow(['', 'Twitter Trend Cost', '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
 
@@ -511,7 +511,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   //       cell.alignment = { horizontal: 'center', vertical: 'middle' };
   //     }
   //   });
-  // console.log("twitterTrendCost", twitterTrendCost);
+  // // console.log("twitterTrendCost", twitterTrendCost);
 
   // const twitterTrend = Number(((planDetails[0]?.selling_price * agencyFees) / 100).toFixed(2));
   // let twitterTrendRow = overviewSheet.addRow(['', `Twitter Trends Fees (${twitterTrendCost}%)`, '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);

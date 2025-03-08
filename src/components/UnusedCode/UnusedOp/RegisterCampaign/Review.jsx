@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Modal, Typography } from "@mui/material";
 import { SnippetFolderTwoTone } from "@mui/icons-material";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -53,7 +53,7 @@ export default function Review() {
   const [enhancement, setEnhancement] = useState([]);
 
   const getData = () => {
-    axios.get(baseUrl+"contentSectionReg").then((res) => {
+    axios.get(baseUrl + "contentSectionReg").then((res) => {
       const data = res.data.data.filter(
         (e) => e.status == "22" && e.stage == 3
       );
@@ -80,14 +80,14 @@ export default function Review() {
   };
 
   function getContentType() {
-    axios.get(baseUrl+"content").then((res) => {
+    axios.get(baseUrl + "content").then((res) => {
       const data = res.data.data;
       setContent(data);
       console.log(data, "this is by content");
     });
   }
   const getBrand = () => {
-    axios.get(baseUrl+"get_brands").then((res) => {
+    axios.get(baseUrl + "get_brands").then((res) => {
       const data = res.data.data;
       setBrandName(data);
       console.log(data, "this is by saimyual");
@@ -349,7 +349,7 @@ export default function Review() {
   const handleBackSubmit = (e) => {
     e.preventDefault();
     axios
-      .put(baseUrl+"contentSectionReg", {
+      .put(baseUrl + "contentSectionReg", {
         content_section_id: contentSectionId,
         creator_remark: text,
         // stage: 3,

@@ -44,11 +44,11 @@
 
 //   const handleSend = async () => {
 //     if (!socketConnected) {
-//       console.log("Socket not connected");
+//       // console.log("Socket not connected");
 //       return;
 //     }
 //     if (!message.trim()) {
-//       console.log("Message is empty");
+//       // console.log("Message is empty");
 //       return;
 //     }
 
@@ -69,7 +69,7 @@
 
 //   // const scrollToBottom = () => {
 //   //   if (messagesEndRef.current) {
-//   //     console.log("Scrolling to bottom");
+//   //     // console.log("Scrolling to bottom");
 //   //     messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
 //   //   }
 //   // };
@@ -116,12 +116,12 @@
 //       //   selectedChatCompare._id !== newMessageReceived.chatId._id
 //       // ) {
 //       //   if (!notification.includes()) {
-//       //     console.log("in if !notification.includes() 11");
+//       //     // console.log("in if !notification.includes() 11");
 //       //     setNotification([newMessageReceived, ...notification]);
 //       //     setFetchAgain(!fetchAgain);
 //       //   }
 //       // } else {
-//       //   console.log("in else 111");
+//       //   // console.log("in else 111");
 //       //   setMessages([...messages, newMessageReceived]);
 //       // }
 //     });
@@ -132,7 +132,7 @@
 //       const response = await axios.get(`${baseUrl}message/${apiChatId}`);
 //       console.log(response, "response   133 line no>>>>>");
 //       if (response.status === 200) {
-//         console.log(" string inside Response");
+//         // console.log(" string inside Response");
 //         setDataChat(response?.data?.data);
 //       }
 //       socket.emit("join chat", chatIdData);

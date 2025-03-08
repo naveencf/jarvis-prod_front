@@ -64,22 +64,26 @@ const OpsCustomerOverview = () => {
     { field: "howManyOffices", headerName: "How Many Offices", width: 200 },
     { field: "panNumber", headerName: "PAN Number", width: 150 },
     { field: "gstNumber", headerName: "GST Number", width: 150 },
-    { field: "panImage", headerName: "PAN Image", width: 200,renderCell:(({row})=>{
-      console.log(row.panImage,"image")
-      return <img style={{
-        height:"80px",
-        width:"80px"
-      }}src={row.panImage}/>
-      
-    }) },
-    { field: "gstImage", headerName: "GST Image", width: 200, renderCell:(({row})=>{ 
-      console.log(row.gstImage,"image")
-      return <img style={{
-        height:"80px",
-        width:"80px"
-      }}src={row.gstImage}/>
-      
-    }) },
+    {
+      field: "panImage", headerName: "PAN Image", width: 200, renderCell: (({ row }) => {
+        console.log(row.panImage, "image")
+        return <img style={{
+          height: "80px",
+          width: "80px"
+        }} src={row.panImage} />
+
+      })
+    },
+    {
+      field: "gstImage", headerName: "GST Image", width: 200, renderCell: (({ row }) => {
+        console.log(row.gstImage, "image")
+        return <img style={{
+          height: "80px",
+          width: "80px"
+        }} src={row.gstImage} />
+
+      })
+    },
     { field: "gstAddress", headerName: "GST Adress", width: 200 },
     { field: "pinCode", headerName: "Pin Code", width: 200 },
     { field: "connectedOffice", headerName: "Connected Office", width: 200 },
@@ -94,7 +98,7 @@ const OpsCustomerOverview = () => {
     { field: "headBillingCountry", headerName: "Head Billing Country", width: 200 },
     { field: "description", headerName: "Description", width: 200 },
     {
-  field: "actions",
+      field: "actions",
       headerName: "Actions",
       width: 300,
       renderCell: (params) => (
@@ -160,7 +164,7 @@ const OpsCustomerOverview = () => {
     headBillingCountry: data.head_billing_country,
     description: data.description,
 
-   ...data,
+    ...data,
   }));
 
   return (

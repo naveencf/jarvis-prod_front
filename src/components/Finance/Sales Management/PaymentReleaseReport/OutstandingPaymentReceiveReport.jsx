@@ -51,7 +51,7 @@ const OutstandingPaymentReceiveReport = () => {
     await axios
       .get(
         baseUrl +
-          `sales/payment_update?status=${"approval"}&&start_date=${fromDate}&&end_date=${toDate}`,
+        `sales/payment_update?status=${"approval"}&&start_date=${fromDate}&&end_date=${toDate}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -11,9 +11,9 @@ import DeleteButton from "../DeleteButton";
 
 const ProfileType = () => {
   const { toastAlert, toastError } = useGlobalContext();
- // const [typeName, setTypeName] = useState("");
+  // const [typeName, setTypeName] = useState("");
   const [description, setDescription] = useState("");
-  const [data,setData]=useState([]);  
+  const [data, setData] = useState([]);
   const [profileTypes, setProfileTypes] = useState([]);
   const [search, setSearch] = useState("");
   const [filterData, setFilterData] = useState([]);
@@ -26,7 +26,7 @@ const ProfileType = () => {
   const userID = decodedToken.id;
 
   const getData = () => {
-    axios.get(baseUrl + "getProfileList") 
+    axios.get(baseUrl + "getProfileList")
       .then((res) => {
         setData(res.data.data);
         setFilterData(res.data.data);
@@ -39,24 +39,24 @@ const ProfileType = () => {
 
   useEffect(() => {
     const result = data?.filter((d) => {
-      return d.profile_type?.toLowerCase().match(search.toLowerCase()); 
+      return d.profile_type?.toLowerCase().match(search.toLowerCase());
     });
     setFilterData(result);
   }, [search]);
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post(baseUrl + "addProfile", { 
-      profile_type: profileTypes, 
+    axios.post(baseUrl + "addProfile", {
+      profile_type: profileTypes,
       description: description,
       created_by: userID
     })
-    .then(() => {
-      toastAlert("Submitted");
-      setProfileTypes("");
-      setDescription("");
-      getData();
-    });
+      .then(() => {
+        toastAlert("Submitted");
+        setProfileTypes("");
+        setDescription("");
+        getData();
+      });
   };
 
   const columns = [
@@ -66,8 +66,8 @@ const ProfileType = () => {
       sortable: true,
     },
     {
-      name: "Profile Type", 
-      selector: (row) => row.profile_type, 
+      name: "Profile Type",
+      selector: (row) => row.profile_type,
     },
     {
       name: "Description",
@@ -90,7 +90,7 @@ const ProfileType = () => {
             <FaEdit />
           </button>
           <DeleteButton
-            endpoint="deleteProfile" 
+            endpoint="deleteProfile"
             id={row._id}
             getData={getData}
           />
@@ -111,17 +111,17 @@ const ProfileType = () => {
       toastError("Profile Type is required");
       return;
     }
-    axios.put(baseUrl + `updateProfile/${rowData._id}`, { 
-      profile_type: profileUpdate, 
+    axios.put(baseUrl + `updateProfile/${rowData._id}`, {
+      profile_type: profileUpdate,
       description: descriptionUpdate,
       updated_by: userID
     })
-    .then(() => {
-      toastAlert("Profile Type Updated Successfully");
-      getData();
-      setProfileUpdate("");
-      setDescriptionUpdate("");
-    });
+      .then(() => {
+        toastAlert("Profile Type Updated Successfully");
+        getData();
+        setProfileUpdate("");
+        setDescriptionUpdate("");
+      });
   };
 
   return (
@@ -137,7 +137,7 @@ const ProfileType = () => {
           required={true}
           onChange={(e) => setProfileTypes(e.target.value)}
         />
-        
+
         <FieldContainer
           label="Description"
           value={description}
@@ -194,7 +194,7 @@ const ProfileType = () => {
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-primary" data-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-success" onClick={handleModalUpdate} data-dismiss={`${profileUpdate === "" ?"": 'modal'}`} >Update</button>
+              <button type="button" className="btn btn-success" onClick={handleModalUpdate} data-dismiss={`${profileUpdate === "" ? "" : 'modal'}`} >Update</button>
             </div>
           </div>
 

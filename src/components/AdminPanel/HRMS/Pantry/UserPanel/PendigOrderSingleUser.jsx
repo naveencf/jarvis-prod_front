@@ -20,11 +20,11 @@ const PendingOrderSingleUser = () => {
 
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`get_single_pendingorders/${userId}`)
+      .get(`${baseUrl}` + `get_single_pendingorders/${userId}`)
       .then((res) => {
         setOldUserProduct(res.data.data);
         setFilterData(res.data.data);
-        console.log("pending order", res.data);
+        // console.log("pending order", res.data);
       });
   }, []);
 

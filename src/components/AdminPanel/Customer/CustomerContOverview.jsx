@@ -12,25 +12,25 @@ const CustomerContOverview = () => {
   const [datas, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
 
-    const storedToken = sessionStorage.getItem("token");
-    const decodedToken = jwtDecode(storedToken);
+  const storedToken = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(storedToken);
 
-    function getData() {
-      axios.get(baseUrl + "get_all_customer_contact").then((res) => {
-        setData(res.data.data);
-        console.log(res.data.data, '----ok')
-        setFilterData(res.data.data);
-      });
-    }
+  function getData() {
+    axios.get(baseUrl + "get_all_customer_contact").then((res) => {
+      setData(res.data.data);
+      console.log(res.data.data, '----ok')
+      setFilterData(res.data.data);
+    });
+  }
 
-    useEffect(() => {
+  useEffect(() => {
     getData();
   }, []);
 
   useEffect(() => {
     const result = datas?.filter((d) => {
       return (
-       // d.customer_id?.toLowerCase().includes(search.toLowerCase()) ||
+        // d.customer_id?.toLowerCase().includes(search.toLowerCase()) ||
         d.contact_name?.toLowerCase().includes(search.toLowerCase()) ||
         d.contact_no?.toLowerCase().includes(search.toLowerCase()) ||
         d.alternative_contact_no?.toLowerCase().includes(search.toLowerCase())
@@ -99,7 +99,7 @@ const CustomerContOverview = () => {
           Add Contact
         </button>
       </Link>
-      
+
       <div className="card">
         <div className="data_tbl table-responsive">
           <DataTable

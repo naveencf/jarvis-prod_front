@@ -54,7 +54,7 @@ function CommunityManagerPage() {
             const filteredData = res.data.data.filter((row) =>
               pageNames.includes(row._id)
             );
-            // console.log("Filtered Data:", filteredData);
+            // // console.log("Filtered Data:", filteredData);
             setRows(filteredData);
           }
         })
@@ -175,8 +175,8 @@ function CommunityManagerPage() {
           }}
           pageSizeOptions={[10, 25, 50, 100]}
         />
-      ):
-      <Skeleton />
+      ) :
+        <Skeleton />
       }
     </div>
   );

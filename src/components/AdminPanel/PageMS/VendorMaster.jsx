@@ -933,7 +933,7 @@ const VendorMaster = () => {
 
           handleSuccess("Vendor and documents added successfully!");
         } else if (res?.status === 409) {
-          console.log("resss", res.error);
+          // console.log("resss", res.error);
           toastError(res?.error?.data?.message);
         } else {
           handleSuccess("Vendor data added successfully!");
@@ -965,7 +965,7 @@ const VendorMaster = () => {
         try {
           await axios.post(baseUrl + `node_data_to_php_update_vendor`, payload);
         } catch (err) {
-          console.log("Error updating vendor data in PHP:", err);
+          // console.log("Error updating vendor data in PHP:", err);
         }
 
         for (let i = 0; i < docDetails?.length; i++) {
@@ -1066,10 +1066,10 @@ const VendorMaster = () => {
           // console.log('postOffice', postOffice.District);
           setHomeCity(postOffice.District);
         } else {
-          console.log("Invalid Pincode");
+          // console.log("Invalid Pincode");
         }
       } catch (error) {
-        console.log("Error fetching details.");
+        // console.log("Error fetching details.");
       }
     }
   };
@@ -1127,10 +1127,10 @@ const VendorMaster = () => {
             setCompState(abbreviatedState);
             setCompCity(postOffice.District);
           } else {
-            console.log("Invalid Pincode");
+            // console.log("Invalid Pincode");
           }
         } catch (error) {
-          console.log("Error fetching details.");
+          // console.log("Error fetching details.");
         }
       }
     }

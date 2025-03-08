@@ -835,21 +835,19 @@ const WFHDOverview = () => {
                   deptData === ""
                     ? { value: "", label: "All" }
                     : {
-                        value: deptData,
-                        label: departmentData.find(
+                      value: deptData,
+                      label: departmentData.find(
+                        (user) => user.dept_id === deptData
+                      )
+                        ? `${departmentData.find(
                           (user) => user.dept_id === deptData
-                        )
-                          ? `${
-                              departmentData.find(
-                                (user) => user.dept_id === deptData
-                              ).dept_name
-                            } (${
-                              departmentData.find(
-                                (user) => user.dept_id === deptData
-                              ).user_count
-                            })`
-                          : "",
-                      }
+                        ).dept_name
+                        } (${departmentData.find(
+                          (user) => user.dept_id === deptData
+                        ).user_count
+                        })`
+                        : "",
+                    }
                 }
                 onChange={(e) => {
                   const val = e.value;
@@ -1039,13 +1037,13 @@ const WFHDOverview = () => {
                 {(separationStatus === "On Long Leave" ||
                   separationStatus === "Subatical" ||
                   separationStatus === "Suspended") && (
-                  <FieldContainer
-                    label="Reinstated Date"
-                    type="date"
-                    value={separationReinstateDate}
-                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                  />
-                )}
+                    <FieldContainer
+                      label="Reinstated Date"
+                      type="date"
+                      value={separationReinstateDate}
+                      onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                    />
+                  )}
                 {separationStatus == "Resign Accepted" && (
                   <input
                     label="Last Working Day"

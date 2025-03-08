@@ -73,10 +73,10 @@ const NewDocumentCom = () => {
         await axios.put(baseUrl + "update_training", {
           user_id: id,
           att_status: "document_upload",
-        }); 
+        });
       }
-      
-      setIsFormSubmitted(true) 
+
+      setIsFormSubmitted(true)
       // navigate("/admin/wfhd-overview");
       toastAlert("Documents Updated");
       getDocuments();

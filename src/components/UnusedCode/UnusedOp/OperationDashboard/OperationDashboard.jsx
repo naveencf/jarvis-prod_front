@@ -10,7 +10,7 @@ const OperationDashboard = () => {
   const [data, setData] = useState([]);
   const [selectDate, setSelectDate] = useState("");
   const [openAccordion, setOpenAccordion] = useState(null);
-Console.log("saimu")
+  // console.log("saimu")
 
   const getAllOperationData = async () => {
     try {
@@ -71,9 +71,8 @@ Console.log("saimu")
                 </h2>
                 <div
                   id={`collapse${index}`}
-                  className={`accordion-collapse collapse ${
-                    openAccordion === index ? "show" : ""
-                  }`}
+                  className={`accordion-collapse collapse ${openAccordion === index ? "show" : ""
+                    }`}
                   aria-labelledby={`heading${index}`}
                   data-bs-parent="#accordionExample"
                 >

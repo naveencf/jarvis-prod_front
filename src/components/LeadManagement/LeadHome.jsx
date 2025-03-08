@@ -61,14 +61,14 @@ export default function LeadHome() {
   const processRowUpdate = useCallback(
     (newRow, oldRow) =>
       new Promise((resolve, reject) => {
-        // console.log("Hitted processRowUpdate");
+        // // console.log("Hitted processRowUpdate");
         const mutation = computeMutation(newRow, oldRow);
         if (mutation) {
-          // console.log("mutation there");
+          // // console.log("mutation there");
           // Save the arguments to resolve or reject the promise later
           setPromiseArguments({ resolve, reject, newRow, oldRow });
         } else {
-          // console.log("undefined mutation there");
+          // // console.log("undefined mutation there");
           resolve(oldRow); // Nothing was changed
         }
       }),
@@ -107,7 +107,7 @@ export default function LeadHome() {
   // const handleEntered = () => {};
 
   const renderConfirmDialog = () => {
-    // console.log("render confirmation called");
+    // // console.log("render confirmation called");
     if (!promiseArguments) {
       return null;
     }
@@ -303,7 +303,7 @@ export default function LeadHome() {
     },
   ];
   return (
-    <Paper sx={{  width: "100%" }}>
+    <Paper sx={{ width: "100%" }}>
       {renderConfirmDialog()}
       <DataGrid
         rows={datalead}

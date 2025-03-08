@@ -16,11 +16,18 @@ const DirectPurchaseApi = createApi({
         body: data,
       }),
     }),
+    recordPurchase: builder.mutation({
+      query: (data) => ({
+        url: `v1/operation/record_purchase`,
+        method: "POST",
+        body: data,
+      }),
+    }),
     updatePurchasedStatusData: builder.mutation({
-      query: ({ amount, shortCode }) => ({
+      query: ({ amount, shortCode, audit_status }) => ({
         url: `v1/purchase/update_purchased_status_data`,
         method: "PUT",
-        body: { amount, shortCode },
+        body: { amount, shortCode, audit_status },
       }),
     }),
     updatePurchasedStatusVendor: builder.mutation({
@@ -31,7 +38,7 @@ const DirectPurchaseApi = createApi({
       }),
     }),
     getLedger: builder.query({
-      query: ({ id , query}) => `v1/get_vendor_ledger_details/${id}?${query}`,
+      query: ({ id, query }) => `v1/get_vendor_ledger_details/${id}?${query}`,
       transformResponse: (response) => response?.data,
     }),
     getTotalData: builder.query({
@@ -51,7 +58,7 @@ const DirectPurchaseApi = createApi({
       transformResponse: (response) => response?.data,
     }),
     getVendorAdvancedPayment: builder.query({
-      query: ({ id , query}) => `purchase/advanced_payment/${id}?${query}`,
+      query: ({ id, query }) => `purchase/advanced_payment/${id}?${query}`,
       transformResponse: (response) => response?.data,
     }),
     getVendorDetail: builder.query({
@@ -62,7 +69,7 @@ const DirectPurchaseApi = createApi({
   }),
 });
 
-export const { useGetVendorsQuery, useAddServiceMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
-  useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery,useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
+export const { useGetVendorsQuery, useAddServiceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
+  useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery, useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;

@@ -59,7 +59,7 @@ export default function ExecutionUpdate({ id, rowData, setReload, status, execut
     // setValue(null);
     // setRemark("");
     setValidationError(false);
-    // console.log("hitted");
+    // // console.log("hitted");
     console.log(value);
   };
   const validation = () => {

@@ -156,8 +156,8 @@ const PhaseCreation = () => {
       });
 
       toastAlert(" Phase Created Successfully");
-      navigate("/admin/op-campaign-executions",{
-        state: {campaignId:payloadData._id}
+      navigate("/admin/op-campaign-executions", {
+        state: { campaignId: payloadData._id }
       });
     } catch (err) {
       console.log(err);

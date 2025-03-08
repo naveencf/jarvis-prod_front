@@ -80,7 +80,7 @@ export default function CategoryMaster() {
         }
         setIsModalOpen(false);
         getData();
-        // console.log("Data saved:", response.data);
+        // // console.log("Data saved:", response.data);
       })
       .catch((error) => {
         console.error("Error saving data:", error);
@@ -132,7 +132,7 @@ export default function CategoryMaster() {
         getData();
         setReload(!reload);
       });
-    // console.log("put data");
+    // // console.log("put data");
   };
   const handleEditClick = (id, row) => () => {
     // console.log(row);
@@ -144,7 +144,7 @@ export default function CategoryMaster() {
   // const handleDeleteClick = (id) => () => {
   //   axios.delete(`${baseUrl}`+`projectxCategory/${id}`).then((res) => {
   //     getData();
-  //     console.log("re data ", res.data);
+  //     // console.log("re data ", res.data);
   //   });
   // };
 
@@ -159,7 +159,7 @@ export default function CategoryMaster() {
         .delete(`${baseUrl}` + `projectxCategory/${itemToDeleteId}`)
         .then(() => {
           getData();
-          // console.log("Data deleted successfully");
+          // // console.log("Data deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting data:", error);

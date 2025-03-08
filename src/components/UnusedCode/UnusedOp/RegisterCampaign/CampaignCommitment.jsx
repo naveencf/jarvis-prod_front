@@ -145,7 +145,7 @@ export default function CampaignCommitment() {
         setIsPutOpen(false);
         setReload(!reload);
       });
-    // console.log("put data");
+    // // console.log("put data");
   };
   const handleEditClick = (id, row) => () => {
     setEditData(row);
@@ -163,7 +163,7 @@ export default function CampaignCommitment() {
       axios
         .delete(`${url}/${itemToDeleteId}`)
         .then(() => {
-          // console.log("Data deleted successfully");
+          // // console.log("Data deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting data:", error);

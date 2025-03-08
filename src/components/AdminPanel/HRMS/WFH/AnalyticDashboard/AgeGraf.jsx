@@ -1,8 +1,7 @@
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { baseUrl } from "../../../../utils/config";
+import { baseUrl } from "../../../../../utils/config";
 
 function AgeGraf() {
   const [graphData, setGraphData] = useState([]);
@@ -170,25 +169,24 @@ function AgeGraf() {
   }, [graphData]);
 
   return (
-    
-        <div className="card">
-          <div className="card-header">
-            <h5 className="card-title">Age Wise Users Graph</h5>
+    <div className="card">
+      <div className="card-header">
+        <h5 className="card-title">Age Wise Users Graph</h5>
+      </div>
+      <div className="card-body p0"></div>
+      <div className="card-body pb0">
+        {state && graphData.length > 0 && (
+          <div className="allSelChart thmChart">
+            <ReactApexChart
+              options={state.options}
+              series={state.series}
+              type="bar"
+              height={300}
+            />
           </div>
-          <div className="card-body p0"></div>
-          <div className="card-body pb0">
-            {state && graphData.length > 0 && (
-              <div className="allSelChart thmChart">
-                <ReactApexChart
-                  options={state.options}
-                  series={state.series}
-                  type="bar"
-                  height={300}
-                />
-              </div>
-            )}
-          </div>
-        </div>
+        )}
+      </div>
+    </div>
   );
 }
 

@@ -31,10 +31,10 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
   const [oldUserProduct, setOldUserProduct] = useState([]);
 
   useEffect(() => {
-    axios.get(baseUrl+"get_all_products").then((res) => {
+    axios.get(baseUrl + "get_all_products").then((res) => {
       setProducts(res.data);
     });
-    axios.get(baseUrl+"get_all_rooms").then((res) => {
+    axios.get(baseUrl + "get_all_rooms").then((res) => {
       setOffice(res.data.data);
     });
   }, []);
@@ -43,7 +43,7 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
   useEffect(() => {
     axios
       .get(
-        `${baseUrl}`+`get_single_orderreqshistory/${userId}`
+        `${baseUrl}` + `get_single_orderreqshistory/${userId}`
       )
       .then((res) => {
         setOldUserProduct(res.data);
@@ -84,19 +84,19 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
 
   useEffect(() => {
     axios
-      .post(baseUrl+"get_user_pre_sitting", {
+      .post(baseUrl + "get_user_pre_sitting", {
         user_id: userId,
       })
       .then((res) => setSittingHistory(res.data));
 
     axios
-      .get(baseUrl+"get_all_sittings")
+      .get(baseUrl + "get_all_sittings")
       .then((res) => setSittingData(res.data.data));
   }, []);
   // new sitting api ---------------------------------------------
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`get_single_sitting/${sittingId}`)
+      .get(`${baseUrl}` + `get_single_sitting/${sittingId}`)
       .then((res) => {
         setSittingAreaData(res.data);
       });
@@ -105,7 +105,7 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
   useEffect(() => {
     if (selectedSitting) {
       axios
-        .get(`${baseUrl}`+`get_single_sitting/${sittingId}`)
+        .get(`${baseUrl}` + `get_single_sitting/${sittingId}`)
         .then((res) => {
           // handleSitting(res.data.sitting_area);
           //  104 sitting problem ke liye comment kiya
@@ -140,13 +140,13 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
   };
 
   const handleModalImage = (e) => {
-    // console.log("fffffff", e);
+    // // console.log("fffffff", e);
     setShowRoomImageModal(true);
     const selectedRoom = office.find((room) => room.room_id === e.value);
     if (selectedRoom) {
       setSelectedRoomImage(selectedRoom.room_image_url);
-      // console.log("hello:", selectedRoom.room_image_url);
-      // console.log("selectedRoomImage:", selectedRoomImage);
+      // // console.log("hello:", selectedRoom.room_image_url);
+      // // console.log("selectedRoomImage:", selectedRoomImage);
     }
     return;
   };
@@ -238,7 +238,7 @@ const UserProducts = ({ handleCartAddition, cartItems, handleSitting }) => {
                       <div className="prdct_card_btn">
                         <div className="add_counter">
                           {count[product.product_id] === undefined ||
-                          count[product.product_id] === 0 ? (
+                            count[product.product_id] === 0 ? (
                             <button
                               className="btn add_btn"
                               onClick={() =>

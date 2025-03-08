@@ -111,9 +111,8 @@ export default function Accepted() {
       field: "creator_dt",
       headerName: "Time Taken (Hours)",
       renderCell: (params) =>
-        `${
-          Math.floor((new Date() - new Date(params.row.creator_dt)) / 3600000) +
-          "h"
+        `${Math.floor((new Date() - new Date(params.row.creator_dt)) / 3600000) +
+        "h"
         }`,
     },
     {

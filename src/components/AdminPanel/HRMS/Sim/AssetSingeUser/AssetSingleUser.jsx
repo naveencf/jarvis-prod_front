@@ -15,7 +15,7 @@ const AssetSingleUser = () => {
   const { getAssetDataContext, toastAlert, toastError } =
     useGlobalContext();
 
-  const { userID,userContextData } = useAPIGlobalContext();
+  const { userID, userContextData } = useAPIGlobalContext();
 
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -190,9 +190,8 @@ const AssetSingleUser = () => {
       <div className="tab">
         {accordionButtons.map((button, index) => (
           <div
-            className={`named-tab ${
-              activeAccordionIndex === index ? "active-tab" : ""
-            }`}
+            className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
+              }`}
             onClick={() => {
               handleAccordionButtonClick(index);
             }}

@@ -20,10 +20,10 @@ import { memo } from "react";
 import BulkUpload from "./Tools/BulkUpload";
 import DwndTemplate from "./Tools/DwndTemplate";
 // import { columns } from "./Tools/EditColoum";
-import {baseUrl} from '../../utils/config'
+import { baseUrl } from '../../utils/config'
 
 function EditLead() {
-  // console.log("Edit lead reload");
+  // // console.log("Edit lead reload");
   const { datalead, setDatalead, setUpdate, reload, setReload } =
     useContext(UserContext);
   const [rows, setRows] = useState(datalead);
@@ -111,9 +111,9 @@ function EditLead() {
     setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
     if (addrows) {
       setAddRows(false);
-      // console.log("post api hitted");
+      // // console.log("post api hitted");
       try {
-        axios.post(baseUrl+"leadmastpost", {
+        axios.post(baseUrl + "leadmastpost", {
           lead_name: updatedRow.lead_name,
           mobile_no: updatedRow.mobile_no,
           alternate_mobile_no: updatedRow.alternate_mobile_no,
@@ -123,7 +123,7 @@ function EditLead() {
           email: updatedRow.email,
           Last_updated_by: 1,
         });
-        // console.log("post api  completed ");
+        // // console.log("post api  completed ");
         // window.location.reload();
       } catch (error) {
         console.log(error);
@@ -133,7 +133,7 @@ function EditLead() {
       return updatedRow;
     }
     try {
-      axios.put(baseUrl+"leadmastupdate", {
+      axios.put(baseUrl + "leadmastupdate", {
         id: updatedRow.leadmast_id,
         lead_name: updatedRow.lead_name,
         mobile_no: updatedRow.mobile_no,
@@ -153,7 +153,7 @@ function EditLead() {
         Last_updated_by: 1,
       });
       // console.log(updatedRow.assign_to);
-      // console.log("put Api hitted");
+      // // console.log("put Api hitted");
     } catch (error) {
       console.log(error);
     }
@@ -161,7 +161,7 @@ function EditLead() {
     return updatedRow;
   };
   const handleProcessRowUpdateError = useCallback((error) => {
-    // console.log("handleProcessRowUpdateError");
+    // // console.log("handleProcessRowUpdateError");
     setSnackbar({ children: error.message, severity: "error" });
   }, []);
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -212,7 +212,7 @@ function EditLead() {
             className="textPrimary"
             onClick={handleEditClick(id)}
             color="inherit"
-            // color="primary"
+          // color="primary"
           />,
         ];
       },

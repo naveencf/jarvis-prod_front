@@ -44,7 +44,7 @@ const TableData = ({
     try {
       const response = await axios.get(
         baseUrl +
-          `get_dynamic_table_data?userId=${userID}&tableName=${tableName}`
+        `get_dynamic_table_data?userId=${userID}&tableName=${tableName}`
       );
       const responseData = response?.data;
 
@@ -634,9 +634,8 @@ const TableData = ({
               </span>
               <div className="MuiTablePagination-actions mr-4">
                 <button
-                  className={`MuiButtonBase-root MuiIconButton-root  MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root ${
-                    currentPage === 0 ? "Mui-disabled" : ""
-                  }`}
+                  className={`MuiButtonBase-root MuiIconButton-root  MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root ${currentPage === 0 ? "Mui-disabled" : ""
+                    }`}
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 0}
                 >
@@ -651,9 +650,8 @@ const TableData = ({
                   </svg>
                 </button>
                 <button
-                  className={`MuiButtonBase-root MuiIconButton-root  MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root ${
-                    currentPage === getPageCount() - 1 ? "Mui-disabled" : ""
-                  }`}
+                  className={`MuiButtonBase-root MuiIconButton-root  MuiIconButton-colorInherit MuiIconButton-sizeMedium css-zylse7-MuiButtonBase-root-MuiIconButton-root ${currentPage === getPageCount() - 1 ? "Mui-disabled" : ""
+                    }`}
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === getPageCount() - 1}
                 >

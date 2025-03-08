@@ -1031,7 +1031,7 @@ const PlanPricing = () => {
   //       setPageQuery(`platform_name=${storedTab}`);
   //     }
   //   }, []);
-  // console.log("planDetail", planDetails);
+  // // console.log("planDetail", planDetails);
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
   const allNotFoundUnfetched = unfetechedPages ? notFoundPages.every((page) => unfetechedPages.includes(page)) : false;
 

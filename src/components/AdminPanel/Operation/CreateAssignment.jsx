@@ -35,7 +35,7 @@ const Follower_Count = [
 const CreateAssign = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  
+
   const [allPageData, setAllPageData] = useState([]);
   const [commit, setCommit] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,7 +57,7 @@ const CreateAssign = () => {
     try {
       //1.check if preAssignment Exist for particular phase
       const isPreAss = await axios.post(
-        `${baseUrl}`+`preassignment/phase`,
+        `${baseUrl}` + `preassignment/phase`,
         {
           phase_id: id,
         }
@@ -65,7 +65,7 @@ const CreateAssign = () => {
 
       if (isPreAss?.data?.data?.length > 0) {
         const assignment = await axios.get(
-          `${baseUrl}`+`assignment/phase/${id}`
+          `${baseUrl}` + `assignment/phase/${id}`
         );
         setcampaignId(assignment.data.data[0].campaignId)
         const filter = assignment?.data?.data.filter((page) => {
@@ -83,7 +83,7 @@ const CreateAssign = () => {
         const loadingTimeout = setTimeout(() => setIsLoading(false), 3000);
 
         const createPreAssignment = await axios.post(
-          `${baseUrl}`+`preassignment`,
+          `${baseUrl}` + `preassignment`,
           {
             phase_id: id,
             ass_by: "123",
@@ -121,12 +121,12 @@ const CreateAssign = () => {
   const ExpertiseDa = async () => {
     try {
       const response = await axios.get(
-        baseUrl+"expertise"
+        baseUrl + "expertise"
       );
       const res = response.data.data;
       setExpertiseData(res);
     } catch {
-      console.log("not fatch data");
+      // console.log("not fatch data");
     }
   };
 
@@ -134,7 +134,7 @@ const CreateAssign = () => {
   const handleSubmitAssign = async () => {
     try {
       const createAssignment = await axios.post(
-        `${baseUrl}`+`assignment/bulk`,
+        `${baseUrl}` + `assignment/bulk`,
         { pages: payload }
       );
       alert("assignment created successfully");
@@ -460,8 +460,8 @@ const CreateAssign = () => {
         if (page.preAssignedTo.length == 0 && page.rejected_by.length > 0)
           return page;
       } else if (e.target.value == "unassigned") {
-        // console.log("first");
-        return page.ass_status=="unassigned" && page.preAssignedTo.length == 0 && page.rejected_by.length == 0  ;
+        // // console.log("first");
+        return page.ass_status == "unassigned" && page.preAssignedTo.length == 0 && page.rejected_by.length == 0;
       } else if (e.target.value == "pending") {
         return page.ass_status == "unassigned";
       } else {
@@ -601,7 +601,7 @@ const CreateAssign = () => {
   if (isLoading) {
     return <Loader message="Auto Assignment in Progress..." />;
   }
-// console.log(filteredPages)
+  // console.log(filteredPages)
   return (
     <>
       <div className="form-heading">

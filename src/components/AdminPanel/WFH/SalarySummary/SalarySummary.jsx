@@ -311,12 +311,12 @@ const SalarySummary = () => {
               departmentFilter === ""
                 ? { value: "", label: "All" }
                 : {
-                    value: departmentFilter,
-                    label:
-                      departmentData?.find(
-                        (dept) => dept.dept_id === departmentFilter
-                      )?.dept_name || "All",
-                  }
+                  value: departmentFilter,
+                  label:
+                    departmentData?.find(
+                      (dept) => dept.dept_id === departmentFilter
+                    )?.dept_name || "All",
+                }
             }
             onChange={(selectedOption) => {
               const selectedValue = selectedOption ? selectedOption.value : "";

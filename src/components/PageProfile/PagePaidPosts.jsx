@@ -17,7 +17,7 @@ function PagePaidPosts({
   requestedData,
   tabvalue,
   setValue,
-  setRequestedData,endDate, setEndDate,startDate, setStartDate,setEngagementArrayDateWise
+  setRequestedData, endDate, setEndDate, startDate, setStartDate, setEngagementArrayDateWise
 }) {
   const { creatorName } = useParams();
   const [postrows, setPostRows] = useState([]);
@@ -55,8 +55,8 @@ function PagePaidPosts({
   // }, [requestedData]);
 
   useEffect(() => {
-    let tempmatchCondition = { postedOn : { $gte: startDate,$lte:endDate }};
-    if(endDate == null){
+    let tempmatchCondition = { postedOn: { $gte: startDate, $lte: endDate } };
+    if (endDate == null) {
       tempmatchCondition = ""
     }
     // axios
@@ -73,7 +73,7 @@ function PagePaidPosts({
     //     }
     //   )
     //   .then((res) => {
-        
+
     //     setPostRows(res.data);
     //     setPostdataLoaded(true);
     //     const sumOfMetrics = calculateAverageOfMetricsByPostType(res.data);
@@ -89,16 +89,16 @@ function PagePaidPosts({
           request_value_2: creatorName,
           flag: 1, // flag 1 for count and 2 for all data
           model: 1,
-          matchCondition: tempmatchCondition ,
+          matchCondition: tempmatchCondition,
         }
       )
       .then((res) => {
-      //  console.log(res.data)
-       setEngagementArray(res.data);
+        //  console.log(res.data)
+        setEngagementArray(res.data);
       });
-   
-      
-  }, [creatorName, key2, value2,endDate ]);
+
+
+  }, [creatorName, key2, value2, endDate]);
 
   // useEffect(() => {
   //   axios
@@ -140,8 +140,8 @@ function PagePaidPosts({
       avgViews,
       avgComments,
       postCount,
-      carouselCount :countByType.CAROUSEL || 0,
-      reelCount :countByType.REEL || 0
+      carouselCount: countByType.CAROUSEL || 0,
+      reelCount: countByType.REEL || 0
     };
   }
 
@@ -160,7 +160,7 @@ function PagePaidPosts({
     setAllFilterCampaign(filtered);
   };
 
- 
+
 
   return (
     <div className="">

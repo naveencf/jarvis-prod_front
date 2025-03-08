@@ -1,11 +1,41 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactApexChart from "react-apexcharts";
+import { CircularProgress, Box, Typography } from "@mui/material";
+
 const LoginHistoryChart = ({ loginChartData }) => {
-  console.log(loginChartData, "login cgart");
-  if (!loginChartData || loginChartData.length === 0) {
-    return <p>No login data available</p>;
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (loginChartData) {
+      setLoading(false);
+    }
+  }, [loginChartData]);
+
+  // Show loader if data is pending
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height={250}
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
+
+  // Show error message if no data is available after loading
+  if (!loginChartData || loginChartData.length === 0) {
+    return (
+      <Box textAlign="center" py={3}>
+        <Typography variant="h6" color="textSecondary">
+          No login data available
+        </Typography>
+      </Box>
+    );
+  }
+
   // Group login count by date, ensuring each user is counted only once per date
   const groupedData = loginChartData.reduce((acc, user) => {
     const date = user.login_time.split(" ")[0]; // Extract date part
@@ -15,9 +45,11 @@ const LoginHistoryChart = ({ loginChartData }) => {
     acc[date].add(user.user_id); // Add user ID (duplicates are ignored)
     return acc;
   }, {});
+
   // Convert groupedData to an array with date-wise unique login counts
   const categories = Object.keys(groupedData).sort(); // Sorted dates
   const seriesData = categories.map((date) => groupedData[date].size); // Unique user count per date
+
   const chartOptions = {
     chart: {
       type: "area",
@@ -56,6 +88,7 @@ const LoginHistoryChart = ({ loginChartData }) => {
     },
     grid: { borderColor: "#F1F1F1" },
   };
+
   return (
     <div>
       <h3>Login History</h3>
@@ -72,4 +105,5 @@ const LoginHistoryChart = ({ loginChartData }) => {
     </div>
   );
 };
+
 export default LoginHistoryChart;

@@ -87,7 +87,7 @@ function ExecutionInventory() {
       .writeText(copyData)
       .then(() => {
         // Data successfully copied to the clipboard
-        console.log("Copied to clipboard: ", copyData);
+        // console.log("Copied to clipboard: ", copyData);
       })
       .catch((err) => {
         // Handle errors
@@ -133,7 +133,7 @@ function ExecutionInventory() {
     converttoclipboard(copydata);
   };
 
-  const showlimiteddata = () => {};
+  const showlimiteddata = () => { };
   const copyAllRows = () => {
     let copydata = [];
     let Followerscount = 0;
@@ -179,17 +179,17 @@ function ExecutionInventory() {
     },
     pagemode == 1 || pagemode == 2
       ? {
-          field: "page_name",
-          headerName: "Page Name",
-          // width: 150,
-        }
+        field: "page_name",
+        headerName: "Page Name",
+        // width: 150,
+      }
       : pagemode == 3 || pagemode == 4
-      ? {
+        ? {
           field: "account_name",
           headerName: "Account Name",
           // width: 150,
         }
-      : {
+        : {
           field: "channel_username",
           headerName: "Channel Name",
           // width: 150,
@@ -206,23 +206,23 @@ function ExecutionInventory() {
     },
     pagemode == 1 || pagemode == 2
       ? {
-          field: "page_link",
-          headerName: "Link",
-          // width: 160,
-          renderCell: (params) => {
-            const date = params.row.page_link;
-            // console.log(date);
-            return (
-              <div style={{ color: "blue" }}>
-                <a href={date} target="blank">
-                  {date == "" ? "" : "Link"}
-                </a>
-              </div>
-            );
-          },
-        }
+        field: "page_link",
+        headerName: "Link",
+        // width: 160,
+        renderCell: (params) => {
+          const date = params.row.page_link;
+          // console.log(date);
+          return (
+            <div style={{ color: "blue" }}>
+              <a href={date} target="blank">
+                {date == "" ? "" : "Link"}
+              </a>
+            </div>
+          );
+        },
+      }
       : pagemode == 3 || pagemode == 4
-      ? {
+        ? {
           field: "account_link",
           headerName: "Link",
           // width: 160,
@@ -238,7 +238,7 @@ function ExecutionInventory() {
             );
           },
         }
-      : {
+        : {
           field: "channel_link",
           headerName: "Link",
           // width: 160,
@@ -256,12 +256,12 @@ function ExecutionInventory() {
         },
     pagemode == 1 || pagemode == 4
       ? {
-          field: "follower_count",
-          headerName: "Followers",
-          // width: 150,
-        }
+        field: "follower_count",
+        headerName: "Followers",
+        // width: 150,
+      }
       : pagemode == 2
-      ? ({
+        ? ({
           field: "follower_count",
           headerName: "Followers",
           // width: 150,
@@ -270,61 +270,61 @@ function ExecutionInventory() {
           field: "page_likes",
           headerName: "Page Likes",
         })
-      : {
+        : {
           field: "subscribers",
           headerName: "Subscribers",
           // width: 150,
         },
     pagemode == 1 || pagemode == 2
       ? ({
-          field: "story",
-          headerName: "Story",
-          type: "number",
-          // width: 110,
-        },
-        {
-          field: "post",
-          headerName: "Post",
-          // width: 150,
-        },
-        {
-          field: "both_",
-          headerName: "Both",
-          type: "number",
-          // width: 110,
-        })
+        field: "story",
+        headerName: "Story",
+        type: "number",
+        // width: 110,
+      },
+      {
+        field: "post",
+        headerName: "Post",
+        // width: 150,
+      },
+      {
+        field: "both_",
+        headerName: "Both",
+        type: "number",
+        // width: 110,
+      })
       : pagemode == 3
-      ? {
+        ? {
           field: "post",
           headerName: "Post",
           // width: 150,
         }
-      : pagemode == 4
-      ? ({
-          field: "post",
-          headerName: "Post",
-          // width: 150,
-        },
-        {
-          field: "repost",
-          headerName: "Repost",
-          // width: 150,
-        })
-      : ({
-          field: "shorts",
-          headerName: "Shorts",
-          // width: 150,
-        },
-        {
-          field: "logo_Integration",
-          headerName: "Logo Integration",
-          // width: 150,
-        },
-        {
-          field: "brand_Integration",
-          headerName: "Brand Integration",
-          // width: 150,
-        }),
+        : pagemode == 4
+          ? ({
+            field: "post",
+            headerName: "Post",
+            // width: 150,
+          },
+          {
+            field: "repost",
+            headerName: "Repost",
+            // width: 150,
+          })
+          : ({
+            field: "shorts",
+            headerName: "Shorts",
+            // width: 150,
+          },
+          {
+            field: "logo_Integration",
+            headerName: "Logo Integration",
+            // width: 150,
+          },
+          {
+            field: "brand_Integration",
+            headerName: "Brand Integration",
+            // width: 150,
+          }),
 
     {
       field: "page_health",

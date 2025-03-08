@@ -106,7 +106,7 @@ const CampaignExecution = () => {
 
   const [
     updatePrice,
-    { isLoading: vendorUpdateLoading, isSuccess: vendorUpdateSuccess },
+    { isLoading: PriceUpdateLoading, isSuccess: vendorUpdateSuccess },
   ] = useUpdatePriceforPostMutation();
 
   const {
@@ -215,6 +215,12 @@ const CampaignExecution = () => {
     }
   }
 
+  const pageesOnvendor = useMemo(() => {
+    return Array.isArray(allPages?.pageData)
+      ? allPages.pageData?.filter((data) => data?.temp_vendor_id === vendorName)
+      : [];
+  }, [allPages, vendorName]);
+
   useEffect(() => {
     if (duplicateMsg) {
       setToggleModal(true);
@@ -276,18 +282,43 @@ const CampaignExecution = () => {
     return phasedData;
   }, [PlanData, activeTab, fetchingPlanData, loadingPlanData]);
 
-  useEffect(() => {
-    if (selectedPrice) {
-      handlePriceUpdate(selectedPrice);
-    }
-  }, [selectedPrice]);
+  // useEffect(() => {
+  //   if (selectedPrice) {
+  //     handlePriceUpdate(selectedPrice);
+  //   }
+  // }, [selectedPrice]);
 
   async function handlePriceUpdate(row) {
     try {
+      const key = [
+        { price_key: "instagram_post" },
+        {
+          price_key: "instagram_story",
+        },
+        {
+          price_key: "instagram_reel",
+        },
+        {
+          price_key: "instagram_carousel",
+        },
+        {
+          price_key: "instagram_both",
+        },
+      ];
+
       const data = {
         shortCode: row.shortCode,
         platform_name: row.platform_name,
-        price_key: row.price_key,
+        price_key:
+          row?.postType == "REEL"
+            ? key[2].price_key
+            : row?.postType == "CAROUSEL"
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key,
       };
       if (!data.platform_name) {
         toastError("Please select the platform");
@@ -303,7 +334,7 @@ const CampaignExecution = () => {
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async function handleBulkAudit() {
@@ -367,57 +398,19 @@ const CampaignExecution = () => {
   }
   let columns = [
     {
-      name: "S.No",
-      key: "Sr.No",
-      width: 40,
-      renderRowCell: (row, index) => index + 1,
-    },
-    {
-      key: "story_image",
-      name: "Story Image",
-      width: 100,
-      renderRowCell: (row) =>
-        row?.story_image && (
-          <img
-            src={row.story_image}
-            style={{
-              aspectRatio: "6/9",
-              width: "50px",
-            }}
-          />
-        ),
-      editable: true,
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        return (
-          <div className="row" style={{ width: "300px", display: "flex" }}>
-            <FieldContainer
-              fieldGrid={12}
-              type="file"
-              onChange={(e) => {
-                const data = {
-                  target: { value: e.target.files[0] },
-                };
-                handelchange(data, index, column, false, "story_image");
-              }}
-            />
-          </div>
-        );
+      key: "ref_link",
+      name: "Link",
+      renderRowCell: (row) => {
+        return row?.ref_link.split("?")[0];
       },
-    },
-    {
-      key: "story_link",
-      name: "Story Link",
-      width: 100,
-      editable: true,
+      width: 200,
     },
 
+    {
+      name: "Short Code",
+      key: "shortCode",
+      width: 100,
+    },
     {
       name: "Platform",
       key: "platform_name",
@@ -452,11 +445,6 @@ const CampaignExecution = () => {
         );
       },
       width: 300,
-    },
-    {
-      key: "ref_link",
-      name: "Link",
-      width: 200,
     },
     {
       name: "Vendor Name",
@@ -533,13 +521,7 @@ const CampaignExecution = () => {
               }}
             /> */}
             <Autocomplete
-              options={
-                Array.isArray(allPages?.pageData)
-                  ? allPages.pageData?.filter(
-                    (data) => data?.temp_vendor_id === vendorName
-                  )
-                  : []
-              }
+              options={pageesOnvendor}
               getOptionLabel={(option) => option.page_name || ""}
               // getOptionKey={(option) => option.page_name}
               renderInput={(params) => {
@@ -547,7 +529,7 @@ const CampaignExecution = () => {
                   <TextField {...params} label="Page Name" variant="outlined" />
                 );
               }}
-              value={pageName}
+              value={pageName || row?.page_name}
               onChange={(event, newValue) => {
                 page_id.current = newValue?._id;
                 setPageName(newValue);
@@ -562,11 +544,7 @@ const CampaignExecution = () => {
         );
       },
     },
-    {
-      name: "Short Code",
-      key: "shortCode",
-      width: 100,
-    },
+
     {
       name: "Post Status",
       key: "postStatus",
@@ -580,6 +558,210 @@ const CampaignExecution = () => {
         } else if (row.postTypeDecision == 1) {
           return <div className="badge badge-warning">Pending</div>;
         }
+      },
+    },
+    {
+      name: "Amount",
+      key: "amount",
+      editable: true,
+      width: 100,
+    },
+    {
+      name: "Fetch Price",
+      key: "fetch_price",
+      width: 100,
+      renderRowCell: (row, index) => (
+        <button
+          className={`icon-1`}
+          onClick={() => handlePriceUpdate(row)}
+          title="Fetch Price"
+        >
+          <i className={`bi bi-currency-dollar`}></i>
+        </button>
+      ),
+    },
+    {
+      name: "Action",
+      key: "action",
+      width: 100,
+      renderRowCell: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => (
+        <div className="d-flex gap-2">
+          <button
+            className="icon-1"
+            onClick={() => {
+              setModalName("auditedData");
+              setToggleModal(true);
+              setModalData(row);
+            }}
+            title="View"
+          >
+            <i className="bi bi-eye"></i>
+          </button>
+
+          {editflag === index && (
+            <>
+              <button
+                className="btn btn-sm cmnbtn btn-primary"
+                onClick={() => {
+                  handledataUpdate(row, setEditFlag);
+                  // handlePriceUpdate(row);
+                }}
+                title="Save"
+                disabled={
+                  row.audit_status === "purchased" ||
+                  Number(row.amount) < 1 ||
+                  !row.vendor_name ||
+                  (row.audit_status == "audited" && editflag)
+                }
+              >
+                save
+              </button>
+              <button
+                className="btn btn-sm cmnbtn btn-danger ml-3"
+                onClick={() => {
+                  removeStory.current = row._id;
+                }}
+                disabled={
+                  deleteStoryLoading ||
+                  (row.story_link == "" && row.story_link == "")
+                }
+              >
+                Delete Story
+              </button>
+            </>
+          )}
+        </div>
+      ),
+    },
+    {
+      name: "Audit Status",
+      key: "audit_status",
+      editable: true,
+      renderRowCell: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null) {
+          return (
+            <p>
+              Amount should be greater than 0 and select the vendor for the page
+            </p>
+          );
+        } else
+          return (
+            <button
+              disabled={
+                row.audit_status === "purchased" ||
+                row.amount < 1 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
+              }
+              onClick={() => {
+                const data = {
+                  audit_status:
+                    row.audit_status === "pending"
+                      ? "audited"
+                      : row.audit_status === "audited"
+                      ? "pending"
+                      : row.audit_status,
+                };
+                handledataUpdate({
+                  ...row,
+                  audit_status: data.audit_status,
+                });
+                handelchange(data, index, column, true);
+              }}
+              className={`pointer badge ${
+                row.audit_status === "pending"
+                  ? "btn btn-sm cmnbtn btn-primary"
+                  : row.audit_status !== "audited"
+                  ? "bg-success"
+                  : "btn btn-sm cmnbtn btn-primary"
+              }`}
+            >
+              {row.audit_status}
+            </button>
+          );
+      },
+      width: 300,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        let data = ["audited", "pending"];
+
+        if (row?.audit_status === "purchased") return <p>Purchased</p>;
+
+        // if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null)
+        //   return (
+        //     <p>
+        //       Amount should be greater than 0 and select the vendor for the page
+        //     </p>
+        //   );
+
+        return (
+          // <div className="row" style={{ width: "300px", display: "flex" }}>
+          //   <CustomSelect
+          //     fieldGrid={12}
+          //     dataArray={[
+          //       { audit_status: "pending" },
+          //       { audit_status: "audited" },
+          //     ]}
+          //     optionId={"audit_status"}
+          //     optionLabel={"audit_status"}
+          //     selectedId={row?.audit_status}
+          //     setSelectedId={(val) => {
+          //       const data = {
+          //         audit_status: val,
+          //       };
+          //       handelchange(data, index, column, true);
+          //     }}
+          //   />
+          // </div>
+          <button
+            disabled={
+              row.amount < 1 || row.vendor_name == "" || row.campaignId == null
+            }
+            className="btn btn-primary btn-sm cmnbtn"
+            onClick={() => {
+              const data = {
+                audit_status:
+                  row.audit_status === "pending" ? "audited" : "pending",
+              };
+              handelchange(data, index, column, true);
+            }}
+          >
+            {row.audit_status === "pending" ? "pending" : "audited"}
+          </button>
+        );
+      },
+      colorRow: (row) => {
+        if (row?.phaseDate == null) {
+          return "";
+        }
+        if (!row?.owner_info?.username) return "#ff00009c";
+        return row.audit_status === "audited"
+          ? "rgb(255 131 0 / 80%)"
+          : row.audit_status === "purchased"
+          ? "#c4fac4"
+          : row.amoumt == 0 || row.vendor_name == ""
+          ? "#ffff008c"
+          : "";
       },
     },
     {
@@ -672,12 +854,6 @@ const CampaignExecution = () => {
     //   width: 150,
     // },
 
-    {
-      name: "Amount",
-      key: "amount",
-      editable: true,
-      width: 100,
-    },
     // {
     //   key: "price_key",
     //   name: "Price Key",
@@ -714,12 +890,51 @@ const CampaignExecution = () => {
     //   width: 100,
     // },
     {
-      name: "Caption",
-      key: "accessibility_caption",
-      renderRowCell: (row) => StringLengthLimiter(row.accessibility_caption),
-      width: 300,
+      key: "story_image",
+      name: "Story Image",
+      width: 100,
+      renderRowCell: (row) =>
+        row?.story_image && (
+          <img
+            src={row.story_image}
+            style={{
+              aspectRatio: "6/9",
+              width: "50px",
+            }}
+          />
+        ),
+      editable: true,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        return (
+          <div className="row" style={{ width: "300px", display: "flex" }}>
+            <FieldContainer
+              fieldGrid={12}
+              type="file"
+              onChange={(e) => {
+                const data = {
+                  target: { value: e.target.files[0] },
+                };
+                handelchange(data, index, column, false, "story_image");
+              }}
+            />
+          </div>
+        );
+      },
+    },
+    {
+      key: "story_link",
+      name: "Story Link",
+      width: 100,
       editable: true,
     },
+
     {
       name: "Comment Count",
       key: "comment_count",
@@ -848,6 +1063,13 @@ const CampaignExecution = () => {
     //   width: 150,
     // },
     {
+      name: "Caption",
+      key: "accessibility_caption",
+      renderRowCell: (row) => StringLengthLimiter(row.accessibility_caption),
+      width: 300,
+      editable: true,
+    },
+    {
       name: "Posted On",
       key: "postedOn1",
       renderRowCell: (
@@ -930,186 +1152,6 @@ const CampaignExecution = () => {
     //   width: 150,
     // },
 
-    {
-      name: "Audit Status",
-      key: "audit_status",
-      editable: true,
-      renderRowCell: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null) {
-          return (
-            <p>
-              Amount should be greater than 0 and select the vendor for the page
-            </p>
-          );
-        } else
-          return (
-            <button
-              disabled={
-                row.audit_status === "purchased" ||
-                row.amount < 1 ||
-                row?.vendor_name == "" ||
-                row?.campaignId == null
-              }
-              onClick={() => {
-                const data = {
-                  audit_status:
-                    row.audit_status === "pending"
-                      ? "audited"
-                      : row.audit_status === "audited"
-                        ? "pending"
-                        : row.audit_status,
-                };
-                handledataUpdate({
-                  ...row,
-                  audit_status: data.audit_status,
-                });
-                handelchange(data, index, column, true);
-              }}
-              className={`pointer badge ${row.audit_status === "pending"
-                  ? "btn btn-sm cmnbtn btn-primary"
-                  : row.audit_status !== "audited"
-                    ? "bg-success"
-                    : "btn btn-sm cmnbtn btn-primary"
-                }`}
-            >
-              {row.audit_status}
-            </button>
-          );
-      },
-      width: 300,
-      customEditElement: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
-        let data = ["audited", "pending"];
-
-        if (row?.audit_status === "purchased") return <p>Purchased</p>;
-
-        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null)
-          return (
-            <p>
-              Amount should be greater than 0 and select the vendor for the page
-            </p>
-          );
-
-        return (
-          // <div className="row" style={{ width: "300px", display: "flex" }}>
-          //   <CustomSelect
-          //     fieldGrid={12}
-          //     dataArray={[
-          //       { audit_status: "pending" },
-          //       { audit_status: "audited" },
-          //     ]}
-          //     optionId={"audit_status"}
-          //     optionLabel={"audit_status"}
-          //     selectedId={row?.audit_status}
-          //     setSelectedId={(val) => {
-          //       const data = {
-          //         audit_status: val,
-          //       };
-          //       handelchange(data, index, column, true);
-          //     }}
-          //   />
-          // </div>
-          <button
-            className="btn btn-primary btn-sm cmnbtn"
-            onClick={() => {
-              const data = {
-                audit_status:
-                  row.audit_status === "pending" ? "audited" : "pending",
-              };
-              handelchange(data, index, column, true);
-            }}
-          >
-            {row.audit_status === "pending" ? "pending" : "audited"}
-          </button>
-        );
-      },
-      colorRow: (row) => {
-        if (row?.phaseDate == null) {
-          return "";
-        }
-        if (!row?.owner_info?.username) return "#ff00009c";
-        return row.audit_status === "audited"
-          ? "rgb(255 131 0 / 80%)"
-          : row.audit_status === "purchased"
-            ? "#c4fac4"
-            : row.amoumt == 0 || row.vendor_name == ""
-              ? "#ffff008c"
-              : "";
-      },
-    },
-    {
-      name: "Action",
-      key: "action",
-      width: 100,
-      renderRowCell: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => (
-        <div className="d-flex gap-2">
-          <button
-            className="icon-1"
-            onClick={() => {
-              setModalName("auditedData");
-              setToggleModal(true);
-              setModalData(row);
-            }}
-            title="View"
-          >
-            <i className="bi bi-eye"></i>
-          </button>
-
-          {editflag === index && (
-            <>
-              <button
-                className="btn btn-sm cmnbtn btn-primary"
-                onClick={() => {
-                  handledataUpdate(row, setEditFlag);
-                  // handlePriceUpdate(row);
-                }}
-                title="Save"
-                disabled={
-                  row.audit_status === "purchased" ||
-                  Number(row.amount) < 1 ||
-                  !row.vendor_name ||
-                  (row.audit_status == "audited" && editflag)
-                }
-              >
-                save
-              </button>
-              <button
-                className="btn btn-sm cmnbtn btn-danger ml-3"
-                onClick={() => {
-                  removeStory.current = row._id;
-                }}
-                disabled={
-                  deleteStoryLoading ||
-                  (row.story_link == "" && row.story_link == "")
-                }
-              >
-                Delete Story
-              </button>
-            </>
-          )}
-        </div>
-      ),
-    },
     {
       name: "Page Edit",
       key: "Pageedits",
@@ -1205,7 +1247,7 @@ const CampaignExecution = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-              modalData?.data?.data?.requestStatsUpdate?.length ? (
+            modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1292,7 +1334,7 @@ const CampaignExecution = () => {
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                ?.exe_campaign_name}
+                  ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -1372,8 +1414,9 @@ const CampaignExecution = () => {
               {phaseWiseData?.length > 0 && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                    }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                  }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -1382,8 +1425,9 @@ const CampaignExecution = () => {
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
-                  }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${
+                  fetchingPlanData && "animate_rotate"
+                }`}
                 onClick={refetchPlanData}
               >
                 <ArrowClockwise />

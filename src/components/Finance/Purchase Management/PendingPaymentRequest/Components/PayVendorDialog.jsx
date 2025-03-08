@@ -114,7 +114,7 @@ function PayVendorDialog(props) {
       },
     }).then((res) => {
       if (res.status == 200) {
-        console.log(res.data.data)
+        // console.log(res.data.data)
         setVendorDetail(res.data.data)
 
       }
@@ -336,7 +336,7 @@ function PayVendorDialog(props) {
           //   "Content-Type": "multipart/form-data",
           // },
         }).then((res) => {
-          console.log(res)
+          // console.log(res)
           if (res.status == 200) {
             toastAlert("OTP sent to registered Id successfully")
             setPayThroughVendor(true);
@@ -351,7 +351,7 @@ function PayVendorDialog(props) {
     }
 
   };
-  console.log(rowData.outstandings, vendorDetail?.vendor_outstandings, "outstanding", vendorDetail, rowData)
+  // console.log(rowData.outstandings, vendorDetail?.vendor_outstandings, "outstanding", vendorDetail, rowData)
   return (
     <div>
       {/*Dialog Box */}
@@ -564,7 +564,7 @@ function PayVendorDialog(props) {
                     const paymentProcessingAmount = Number(rowData?.proccessingAmount)
                     // This will prevent negative outstanding and gst amount management in ledger
                     if (numericValue + paymentProcessingAmount >= (vendorDetail?.vendor_outstandings * 1.18) && rowData?.payment_type == "payment") {
-                      console.log(numericValue + paymentProcessingAmount, (vendorDetail?.vendor_outstandings * 1.18))
+                      // console.log(numericValue + paymentProcessingAmount, (vendorDetail?.vendor_outstandings * 1.18))
                       toastError(
                         "Payment Amount should be less than vendor total outstanding Amount or Pay Advance"
                       );

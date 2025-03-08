@@ -796,7 +796,7 @@ const UpdateCaseStudy = () => {
           toastAlert("Add successfully");
         }
         postData.sub_category_name = "";
-        console.log("Data saved:", response.data);
+        // console.log("Data saved:", response.data);
         setIsModalOpenSubCat(false);
         getSubCat();
       })
@@ -1104,7 +1104,8 @@ const UpdateCaseStudy = () => {
               <div className="summary_cards brand_img_list">
                 <h4 className="lead text-black-50 fs-6">Data</h4>
                 {console.log(logos, "logos")}
-                {logos.length > 0 &&
+                {
+                  logos.length > 0 &&
                   logos
                     ?.filter((e) => e.data_image !== null)
                     .map((detail, index) => (
@@ -1180,7 +1181,8 @@ const UpdateCaseStudy = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
+                    ))
+                }
                 {details.slice(0, images.length).map((detail, index) => (
                   <div key={index} className="summary_card brand_img_item">
                     <div className="summary_cardrow brand_img_row">

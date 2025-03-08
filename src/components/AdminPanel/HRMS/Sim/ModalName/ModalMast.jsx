@@ -50,7 +50,7 @@ const ModalMast = () => {
       setTotalAssets(response.data.data);
       seAssetModel(true);
     } catch (error) {
-      console.log("total asset not working", error);
+      // console.log("total asset not working", error);
     }
   };
   const handleClosAssetCounteModal = () => {
@@ -65,7 +65,7 @@ const ModalMast = () => {
       setTotalAssets(response.data.data);
       seAssetModel(true);
     } catch (error) {
-      console.log("total asset not working", error);
+      // console.log("total asset not working", error);
     }
   };
   const columns = [

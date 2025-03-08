@@ -79,7 +79,7 @@ const CustomTableV2 = ({
   const loginUserId = decodedToken.id;
 
   useEffect(() => {
-    //console.log("pagination");
+    //// console.log("pagination");
     if (
       pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
       data?.length > 0
@@ -88,21 +88,21 @@ const CustomTableV2 = ({
   }, [data, columns, tableName]);
 
   useEffect(() => {
-    // console.log("selected data");
+    // // console.log("selected data");
     selectedData(selectedRowsData);
   }, [selectedRowsData]);
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-        columnsheader
-          .map((column) => column.key)
-          .some((key) =>
-            item[key]
-              ?.toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-      )
+      columnsheader
+        .map((column) => column.key)
+        .some((key) =>
+          item[key]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+    )
     : unSortedData;
 
   const filterFunctions = {
@@ -193,7 +193,7 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    // console.log("filtering of data");
+    // // console.log("filtering of data");
     const filterData = () => {
       const fd = originalData.filter((item) => {
         // Check filterCondition
@@ -231,7 +231,7 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    // console.log("invade flag");
+    // // console.log("invade flag");
 
     if (invadeFlag) {
       cloudInvader();
@@ -242,9 +242,9 @@ const CustomTableV2 = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
@@ -282,7 +282,7 @@ const CustomTableV2 = ({
   };
 
   useEffect(() => {
-    // console.log("table creation");
+    // // console.log("table creation");
 
     memoize(createTable)();
   }, [tableName]);
@@ -320,12 +320,12 @@ const CustomTableV2 = ({
     }
   };
   useEffect(() => {
-    // console.log("use to fetch columns");
+    // // console.log("use to fetch columns");
     fetchCreatedTable();
   }, [loginUserId, tableName]);
 
   useEffect(() => {
-    // console.log("initializing columns to update ui");
+    // // console.log("initializing columns to update ui");
     const getIndex = (colName) =>
       apiColumns?.findIndex((item) => item?.name?.trim() === colName?.trim());
 
@@ -339,11 +339,11 @@ const CustomTableV2 = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-            apiColumns[index]?.visibility === undefined ||
+          apiColumns[index]?.visibility === undefined ||
             apiColumns[index]?.visibility === null
-              ? true
-              : apiColumns[index]?.visibility
-          )
+            ? true
+            : apiColumns[index]?.visibility
+        )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -355,7 +355,7 @@ const CustomTableV2 = ({
     // setTriggerSort(prev => !prev);
   }, [columns, apiColumns]);
   useEffect(() => {
-    // console.log("initializing data to update ui");
+    // // console.log("initializing data to update ui");
 
     if (data) {
       setUnSortedData(data);
@@ -394,7 +394,7 @@ const CustomTableV2 = ({
   }, [data]);
 
   const renderSort_v2 = useMemo(() => {
-    // console.log("sortKey", sortKey, oldSortKey);
+    // // console.log("sortKey", sortKey, oldSortKey);
 
     if (!sortKey) return unSortedData;
     let sorted = [...unSortedData];
@@ -410,7 +410,7 @@ const CustomTableV2 = ({
         }
       }
       if (datatType === "number") {
-        // console.log("number");
+        // // console.log("number");
 
         sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || -Infinity;
@@ -418,7 +418,7 @@ const CustomTableV2 = ({
           return val1 - val2;
         });
       } else if (datatType === "string") {
-        // console.log("string");
+        // // console.log("string");
         sorted = [...unSortedData].sort((a, b) => {
           const val1 = a[sortKey] || "";
           const val2 = b[sortKey] || "";

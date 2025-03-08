@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import imageTest1 from "../../../../assets/img/product/Avtrar1.png";
 import axios from "axios";
-import { baseUrl } from "../../../../utils/config";
+import { baseUrl } from "../../../../../utils/config";
 
 const BirthdayAndWorkAniCard = () => {
   const [birthdayData, setBirthdayData] = useState([]);

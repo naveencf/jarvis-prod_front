@@ -161,7 +161,7 @@ const PlanMaking = () => {
     const detail = priceDetails?.find((item) => {
       return Object?.keys(item)?.some((priceKey) => priceKey?.includes(keyType));
     });
-    console.log("priceDetails", priceDetails);
+    // console.log("priceDetails", priceDetails);
     return detail ? detail[Object?.keys(detail).find((key) => key?.includes(keyType))] : 0;
   };
 
@@ -947,7 +947,7 @@ const PlanMaking = () => {
     setFilterData(platform);
   }, [activePlatform]);
 
-  // console.log("planDetail", planDetails);
+  // // console.log("planDetail", planDetails);
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
   const allNotFoundUnfetched = unfetechedPages ? notFoundPages.every((page) => unfetechedPages.includes(page)) : false;
 

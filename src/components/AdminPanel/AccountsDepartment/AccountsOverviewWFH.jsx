@@ -251,18 +251,16 @@ const AccountsOverviewWFH = () => {
                 <div className="btn-group mr-2" role="group">
                   <button
                     type="button"
-                    className={`btn cmnbtn btn_sm btn-${
-                      salaryStatusToggle == 0 ? "primary" : "outline-primary"
-                    }`}
+                    className={`btn cmnbtn btn_sm btn-${salaryStatusToggle == 0 ? "primary" : "outline-primary"
+                      }`}
                     onClick={() => setSalaryStatusToggle(0)}
                   >
                     Pending
                   </button>
                   <button
                     type="button"
-                    className={`btn cmnbtn btn_sm btn-${
-                      salaryStatusToggle == 1 ? "primary" : "outline-primary"
-                    }`}
+                    className={`btn cmnbtn btn_sm btn-${salaryStatusToggle == 1 ? "primary" : "outline-primary"
+                      }`}
                     onClick={() => setSalaryStatusToggle(1)}
                   >
                     Paid
@@ -284,7 +282,7 @@ const AccountsOverviewWFH = () => {
               data={filterData}
               // fixedHeader
               pagination
-              // fixedHeaderScrollHeight="64vh"
+            // fixedHeaderScrollHeight="64vh"
             />
           </div>
         </div>
@@ -366,7 +364,7 @@ const AccountsOverviewWFH = () => {
                   <button
                     type="submit"
                     className="btn btn-primary"
-                    // onClick={handlePayOut}
+                  // onClick={handlePayOut}
                   >
                     Pay
                   </button>

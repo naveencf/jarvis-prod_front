@@ -6,11 +6,11 @@ import FormContainer from "../FormContainer";
 import { baseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
 import Select from "react-select";
-import { Navigate, useParams } from "react-router-dom"; 
+import { Navigate, useParams } from "react-router-dom";
 
 const CustomerContUpdate = () => {
   const { id } = useParams();
-  
+
   const { toastAlert, toastError } = useGlobalContext();
   const [customerName, setCustomerName] = useState("");
   const [contactName, setContactName] = useState("");
@@ -27,18 +27,18 @@ const CustomerContUpdate = () => {
   const userID = decodedToken.id;
 
   const [customersData, setCustomersData] = useState([]);
-  
+
 
   const fetchCustomerContactDetails = () => {
     axios.get(`${baseUrl}get_customer_contact/${id}`).then((res) => {
       const data = res.data.data;
-      console.log(res.data.data , 'jay siya ram')
+      console.log(res.data.data, 'jay siya ram')
       setCustomerName(data[0].customer_id);
       setContactName(data[0].contact_name);
       setContactNo(data[0].contact_no);
       setAlternateContact(data[0].alternative_contact_no);
       setEmailId(data[0].email_Id);
-      console.log(data,'asdfghjkl')
+      console.log(data, 'asdfghjkl')
       setDepartment(data[0].department);
       setDesignation(data[0].designation);
       setDescription(data[0].description);
@@ -76,8 +76,8 @@ const CustomerContUpdate = () => {
     }
   };
 
-  
-const handleEmailSet = (e, setState) => {
+
+  const handleEmailSet = (e, setState) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     setState(e.target.value);
     if (re.test(e.target.value) || e.target.value === "") {
@@ -98,15 +98,15 @@ const handleEmailSet = (e, setState) => {
       department,
       designation,
       description,
-      updated_by: userID, 
+      updated_by: userID,
     })
-    .then(() => {
-      setIsFormSubmitted(true);
-      toastAlert("Contact updated successfully");
-    })
-    .catch((error) => {
-      toastError("An error occurred: " + error.message);
-    });
+      .then(() => {
+        setIsFormSubmitted(true);
+        toastAlert("Contact updated successfully");
+      })
+      .catch((error) => {
+        toastError("An error occurred: " + error.message);
+      });
   };
 
   if (isFormSubmitted) {
@@ -119,14 +119,14 @@ const handleEmailSet = (e, setState) => {
       title="Update Customer Contact"
       handleSubmit={handleSubmit}
     >
-<div className="form-group col-6">
+      <div className="form-group col-6">
         <label className="form-label">
           Customer Name  <sup style={{ color: "red" }}>*</sup>
         </label>
         <Select
           options={customersData?.map((option) => ({
             value: option.customer_id,
-            label: option.customer_name ,
+            label: option.customer_name,
           }))}
           value={{
             value: customerName,
@@ -163,14 +163,14 @@ const handleEmailSet = (e, setState) => {
       <FieldContainer
         label="Email ID"
         value={emailId}
-        onChange={(e) => handleEmailSet(e,setEmailId )}
-        />
-        {emailIsInvalid && (
-            <span style={{ color: "red", fontSize: "12px" }}>
-              Please enter a valid email
-            </span>
-          )}      
-      
+        onChange={(e) => handleEmailSet(e, setEmailId)}
+      />
+      {emailIsInvalid && (
+        <span style={{ color: "red", fontSize: "12px" }}>
+          Please enter a valid email
+        </span>
+      )}
+
       <FieldContainer
         label="Department"
         value={department}

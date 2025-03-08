@@ -112,7 +112,13 @@ const Ledger = () => {
     {
       key: "transaction_date",
       name: "Transaction Date",
-      renderRowCell: (row) => formatDate(row.Trans_date),
+      renderRowCell: (row) => formatDate(row?.Trans_date),
+      width: 120,
+    },
+    {
+      key: "createdAt",
+      name: "Created Date",
+      renderRowCell: (row) => formatDate(row?.createdAt),
       width: 120,
     },
     { key: "campaign_name", name: "Campaign Name", width: 120 },

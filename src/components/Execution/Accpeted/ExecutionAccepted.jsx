@@ -55,7 +55,7 @@ export default function ExecutionAccepted() {
       if (userID && contextData == false) {
         axios
           .get(
-            `${baseUrl}`+`get_single_user_auth_detail/${userID}`
+            `${baseUrl}` + `get_single_user_auth_detail/${userID}`
           )
           .then((res) => {
             if (res.data[26].view_value == 1) {
@@ -116,7 +116,7 @@ export default function ExecutionAccepted() {
               size="small"
               color="success"
               variant="outlined"
-              // fontSize="inherit"
+            // fontSize="inherit"
             >
               Accepted
             </Button>

@@ -98,7 +98,7 @@ const BlogList = () => {
             marginRight: '10px',
           }}
         />
-        <Button onClick={handleClearSearch} style={{ padding: '8px 16px', borderRadius:'6px' }}>
+        <Button onClick={handleClearSearch} style={{ padding: '8px 16px', borderRadius: '6px' }}>
           Clear
         </Button>
       </div>

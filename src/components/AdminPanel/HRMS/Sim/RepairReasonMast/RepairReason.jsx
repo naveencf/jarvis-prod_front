@@ -47,7 +47,7 @@ const RepairReason = () => {
       setTotalRepariData(response.data.data);
       setRepariModal(true);
     } catch (error) {
-      console.log("total asset not working", error);
+      // console.log("total asset not working", error);
     }
   };
   const handleClosAssetCounteModal = () => {

@@ -7,7 +7,7 @@ import MuiAccordionSummary from "@mui/material/AccordionSummary";
 import ArrowForwardIosSharpIcon from "@mui/icons-material/ArrowForwardIosSharp";
 import MuiAccordionDetails from "@mui/material/AccordionDetails";
 
-export default function StatsHistory({pageRow}) {
+export default function StatsHistory({ pageRow }) {
   // console.log(pageRow,"pageRow" )
   const Accordion = styled((props) => (
     <MuiAccordion disableGutters elevation={0} square {...props} />

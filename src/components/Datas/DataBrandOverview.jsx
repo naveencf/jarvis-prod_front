@@ -780,8 +780,8 @@ const DataBrandOverview = () => {
                                                         <div
                                                           key={index}
                                                           className={`carousel-item ${index === 0
-                                                              ? "active"
-                                                              : ""
+                                                            ? "active"
+                                                            : ""
                                                             }`}
                                                           data-interval="10000"
                                                         >
@@ -929,8 +929,8 @@ const DataBrandOverview = () => {
                                                         <div
                                                           key={index}
                                                           className={`carousel-item ${index === 0
-                                                              ? "active"
-                                                              : ""
+                                                            ? "active"
+                                                            : ""
                                                             }`}
                                                           data-interval="10000"
                                                         >
@@ -1082,8 +1082,8 @@ const DataBrandOverview = () => {
                                                         <div
                                                           key={index}
                                                           className={`carousel-item ${index === 0
-                                                              ? "active"
-                                                              : ""
+                                                            ? "active"
+                                                            : ""
                                                             }`}
                                                           data-interval="10000"
                                                         >

@@ -146,8 +146,8 @@ const PageMaster = () => {
   const { data: profileData } = useGetAllProfileListQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data || [];
-  console.log(platformData,'platformData');
-  
+  console.log(platformData, 'platformData');
+
 
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
@@ -209,7 +209,7 @@ const PageMaster = () => {
       setPriceTypeList(platformPriceData);
       setFilterPriceTypeList(platformPriceData);
     } else {
-      // console.log("Condition not met");                                                                                  
+      // // console.log("Condition not met");                                                                                  
     }
   }, [platformPriceData, isPriceLoading]);
 
@@ -658,7 +658,7 @@ const PageMaster = () => {
       console.error("Error fetching page existence:", error);
     }
   };
-  
+
 
   const handleUpadteFollowers = async () => {
     const payload = {
@@ -701,7 +701,7 @@ const PageMaster = () => {
           toastError(res?.data?.data[0]?.message);
         }
       } else {
-        console.log("Response was not successful:", response.status);
+        // console.log("Response was not successful:", response.status);
       }
     } catch (error) {
       console.error("Error fetching followers:", error);

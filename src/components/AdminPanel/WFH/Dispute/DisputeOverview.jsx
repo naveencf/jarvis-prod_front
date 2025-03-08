@@ -154,7 +154,7 @@ const DisputeOverview = () => {
         data = data.filter((item) => item.dept === loginUserDept);
       }
 
-      console.log("data", data);
+      // console.log("data", data);
       setData(data);
       setFilterData(data);
       toastAlert("Data Fetched Successfully");

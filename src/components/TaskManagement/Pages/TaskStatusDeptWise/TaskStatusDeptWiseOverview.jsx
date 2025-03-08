@@ -13,7 +13,7 @@ const TaskStatusDeptWiseOverview = () => {
   const getData = async () => {
     try {
       const response = await axios.get(
-        baseUrl+"deptwisestatus"
+        baseUrl + "deptwisestatus"
       );
       console.log(response.data);
       setData(response.data);

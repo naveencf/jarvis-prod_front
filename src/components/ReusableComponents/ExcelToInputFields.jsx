@@ -20,7 +20,7 @@ const App = () => {
   const handleUpload = (data) => {
     const workbook = XLSX.read(data, { type: "binary" });
     const sheetNames = workbook.SheetNames;
-    console.log("Sheet Names:", sheetNames);
+    // console.log("Sheet Names:", sheetNames);
     const dataFromAllSheets = {};
 
     sheetNames.forEach((sheetName) => {
@@ -53,7 +53,7 @@ const App = () => {
     });
 
     setExcelData(dataFromAllSheets);
-    console.log("Processed Data:", dataFromAllSheets);
+    // console.log("Processed Data:", dataFromAllSheets);
   };
 
   return (

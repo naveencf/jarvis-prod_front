@@ -132,7 +132,7 @@ export default function Complected() {
           params.row.endDate &&
           Math.floor(
             (new Date(params.row.creator_dt) - new Date(params.row.endDate)) /
-              3600000
+            3600000
           ) + "h"
         );
       },

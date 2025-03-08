@@ -5,7 +5,7 @@ import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
 import jwtDecode from "jwt-decode";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 const LogoCategoryUpdate = () => {
   const { toastAlert } = useGlobalContext();
@@ -24,7 +24,7 @@ const LogoCategoryUpdate = () => {
     if (id) {
       console.log(id);
       axios
-        .get(`${baseUrl}`+`get_single_category/${id}`)
+        .get(`${baseUrl}` + `get_single_category/${id}`)
         .then((res) => {
           const fetchedData = res.data;
           setCategoryName(fetchedData.cat_name);
@@ -36,7 +36,7 @@ const LogoCategoryUpdate = () => {
     e.preventDefault();
     setError("");
     axios
-      .put(baseUrl+"update_logo_category", {
+      .put(baseUrl + "update_logo_category", {
         id: id,
         cat_name: categoryName,
         remark: remark,

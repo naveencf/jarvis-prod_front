@@ -291,7 +291,7 @@ export default function RegisterCampaign() {
     setSelectedIndustry(newValue);
   };
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const addCampaignData = () => {
     setMaster("Campaign");
     setIsModalOpenForCampaign(true);

@@ -243,7 +243,7 @@ export default function BrandMaster() {
   }, [editData.category_id]);
 
   const handlePlatformData = (params) => {
-    console.log("");
+    // console.log("");
   };
 
   useEffect(() => {

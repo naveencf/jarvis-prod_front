@@ -345,10 +345,9 @@ const DocumentTab = ({
                           <span
                             className={`badge 
                         ${item.status == "" && "not_uploaded"}
-                        ${
-                          item.status == "Document Uploaded" &&
-                          "document_uploaded"
-                        }
+                        ${item.status == "Document Uploaded" &&
+                              "document_uploaded"
+                              }
                         ${item.status == "Verification Pending" && "pending"}
                         ${item.status == "Approved" && "approve"}
                         ${item.status == "Rejected" && "reject"}
@@ -399,7 +398,7 @@ const DocumentTab = ({
                               </button>
                             )}
                           {item?.status == "Not Available" ||
-                          item?.status !== "" ? (
+                            item?.status !== "" ? (
                             ""
                           ) : (
                             <button

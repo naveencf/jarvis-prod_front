@@ -91,11 +91,11 @@ const ExtendJoining = ({
       const emailResponse = await axios.post(`${url}send_mail_for_extend_joining_date`, {
         email: email,
         name: username,
-        joining_date:currentJoiningDate,
-        joining_date_extend:joingingExtendDate,
+        joining_date: currentJoiningDate,
+        joining_date_extend: joingingExtendDate,
         joining_date_extend_reason: joiningExtendReason,
       });
-      console.log("Email sent successfully:", emailResponse.data);
+      // console.log("Email sent successfully:", emailResponse.data);
 
       // Call WhatsApp API
       whatsappApi.callWhatsAPI(

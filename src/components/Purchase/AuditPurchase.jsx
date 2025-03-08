@@ -23,6 +23,7 @@ import FormContainer from "../AdminPanel/FormContainer";
 import Calendar from "./Calender";
 import {
   useGetVendorsQuery,
+  useRecordPurchaseMutation,
   useUpdatePurchasedStatusDataMutation,
   useUpdatePurchasedStatusVendorMutation,
 } from "../Store/API/Purchase/DirectPurchaseApi";
@@ -82,10 +83,10 @@ const AuditPurchase = () => {
   const [pricePerMillion, setPricePerMillion] = useState("");
 
   // const handleSave = () => {
-  //     console.log("Price:", price);
+  //     // console.log("Price:", price);
   //     // handledataUpdate()
   //     selectedData.map((item)=> (handledataUpdate(item)))
-  //     console.log("Price per Million:", pricePerMillion);
+  //     // console.log("Price per Million:", pricePerMillion);
   // };
 
   const handleSave = () => {
@@ -107,7 +108,7 @@ const AuditPurchase = () => {
 
   const fetchFilteredPosts = async () => {
     const sCodes = shortCodes.map(({ shortCode }) => shortCode);
-    console.log("scoded", sCodes);
+    // // console.log("scoded", sCodes);
     const payload = (() => {
       switch (currentTab) {
         case "Tab4":
@@ -147,23 +148,21 @@ const AuditPurchase = () => {
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
   } = useGetPlanByIdQuery(selectedPlan, { skip: !selectedPlan });
-
+  const [recordPurchase, { Success: recordPurcaseSuccess }] = useRecordPurchaseMutation()
   // const [updateData, { isLoading, isSuccess }] = usePostDataUpdaxpteMutation();
-  const [uploadAudetedData, { isLoading: AuditedUploading }] =
-    useAuditedDataUploadMutation();
 
-  const {
-    data: vendorList,
-    isLoading: vendorLoading,
-    isFetching: vendorFetching,
-    isSuccess: vendorSuccess,
-    isError: vendorError,
-  } = useVendorDataQuery(vendorName, { skip: !vendorName });
+  // const {
+  //   data: vendorList,
+  //   isLoading: vendorLoading,
+  //   isFetching: vendorFetching,
+  //   isSuccess: vendorSuccess,
+  //   isError: vendorError,
+  // } = useVendorDataQuery(vendorName, { skip: !vendorName });
 
   const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
     skip: true,
   });
-  console.log("phaseList", phaseList);
+
   useEffect(() => {
     const cachedData = JSON.parse(localStorage.getItem("tab"));
     if (cachedData?.[selectedPlan]) {
@@ -196,7 +195,8 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row) {
+  async function handledataUpdate(row,) {
+    // console.log('row', row);
     const followerCount = row?.owner_info?.followers
       ? row.owner_info.followers / 1000000
       : 0;
@@ -209,6 +209,7 @@ const AuditPurchase = () => {
             ? price
             : row.amount,
         shortCode: row.shortCode,
+        audit_status: row.audit_status
       });
       if (res.error) throw new Error(res.error);
       const response = await refetchPlanData();
@@ -297,7 +298,7 @@ const AuditPurchase = () => {
     }
     // fetchFilteredPosts()
   }, [selectedPlan, fetchingPlanData]);
-  console.log("shortCode", shortCodes);
+
   useEffect(() => {
     if (
       selectedVendorId ||
@@ -308,7 +309,7 @@ const AuditPurchase = () => {
       fetchFilteredPosts();
     }
   }, [selectedVendorId, startDate, endDate, selectedPlan, shortCodes]);
-  console.log("shortCode", shortCodes);
+
   // const filteredData = useMemo(() => {
   //     if (!shortCodes.length) return campaignPlanData;
   //     return shortCodes.flatMap(item => campaignPlanData.filter(data => data.shortCode === item.shortCode));
@@ -317,6 +318,16 @@ const AuditPurchase = () => {
   // useEffect(() => {
   //     setCampainPlanData(filteredData);
   // }, [filteredData]);
+  function disableAuditUpload() {
+    const phaseData = campaignPlanData;
+    // const hasPending = phaseData?.some(
+    //   (data) => data.audit_status === "pending"
+    // );
+    const allPurchased = phaseData?.every(
+      (data) => data.audit_status === "purchased"
+    );
+    return allPurchased;
+  }
 
   function utcToIst(utcDate) {
     let date = new Date(utcDate);
@@ -332,14 +343,17 @@ const AuditPurchase = () => {
   async function handleAuditedDataUpload() {
     try {
       const data = {
-        campaignId: selectedPlan,
+        vendor_id: vendorNumericId,
         userId: token.id,
-        phaseDate: activeTab,
+        isVendorWise: true,
       };
 
-      const res = await uploadAudetedData(data);
+      const res = await recordPurchase(data);
       if (res.error) throw new Error(res.error);
-      await refetchPlanData();
+      const response = await refetchPlanData();
+      if (response.isSuccess && response.data) {
+        setCampainPlanData(response.data);
+      }
       toastAlert("Data Uploaded");
     } catch (err) {
       toastError("Error Uploading Data");
@@ -920,17 +934,17 @@ const AuditPurchase = () => {
     },
   ];
 
-  function disableAuditUpload() {
-    if (activeTab === "all") return true;
-    const phaseData = PlanData?.filter((data) => data.phaseDate === activeTab);
-    const hasPending = phaseData?.some(
-      (data) => data.audit_status === "pending"
-    );
-    const allPurchased = phaseData?.every(
-      (data) => data.audit_status === "purchased"
-    );
-    return hasPending || allPurchased;
-  }
+  // function disableAuditUpload() {
+  //   if (activeTab === "all") return true;
+  //   const phaseData = PlanData?.filter((data) => data.phaseDate === activeTab);
+  //   const hasPending = phaseData?.some(
+  //     (data) => data.audit_status === "pending"
+  //   );
+  //   const allPurchased = phaseData?.every(
+  //     (data) => data.audit_status === "purchased"
+  //   );
+  //   return hasPending || allPurchased;
+  // }
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1018,7 +1032,7 @@ const AuditPurchase = () => {
     return phasedData;
   }, [campaignPlanData, activeTab, fetchingPlanData, loadingPlanData]);
 
-  console.log("PlanData", PlanData);
+  // // console.log("PlanData", PlanData);
   return (
     <>
       {/* <Modal
@@ -1152,6 +1166,7 @@ const AuditPurchase = () => {
                     selectedId={selectedVendorId}
                     setSelectedId={(id) => {
                       setSelectedVendorId(id);
+                      setVendorNumericId(vendorListData.find((item) => item._id == id).vendor_id)
                       setStartDate(null);
                       setEndDate(null);
                     }}
@@ -1243,6 +1258,17 @@ const AuditPurchase = () => {
                     setToggleModal={setToggleModal}
                   />
                 </div>
+                {campaignPlanData?.length > 0 && (
+                  <button
+                    title="Upload Audited Data"
+                    className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                      }`}
+                    onClick={handleAuditedDataUpload}
+                    disabled={disableAuditUpload()}
+                  >
+                    Record Purchase
+                  </button>
+                )}
               </>
             )}
 
@@ -1299,7 +1325,7 @@ const AuditPurchase = () => {
         pagination={[50, 100, 200]}
         addHtml={
           <div className="flexCenterBetween colGap8 ml-auto">
-            {activeTab !== "all" && selectedPlan && (
+            {/* {activeTab !== "all" && selectedPlan && (
               <button
                 title="Upload Audited Data"
                 className={`cmnbtn btn btn_sm btn-outline-primary`}
@@ -1308,7 +1334,7 @@ const AuditPurchase = () => {
               >
                 Submit
               </button>
-            )}
+            )} */}
             <button
               title="Reload Data"
               className={`icon-1 btn_sm btn-outline-primary  ${fetchingPlanData && "animate_rotate"

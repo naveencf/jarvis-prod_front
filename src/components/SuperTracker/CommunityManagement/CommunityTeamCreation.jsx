@@ -35,7 +35,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import axios from "axios";
 // import LogoLoader from "../../InstaApi.jsx/LogoLoader";
 import EditIcon from "@mui/icons-material/Edit";
-import  formatString  from "../../../utils/formatString";
+import formatString from "../../../utils/formatString";
 import SaveIcon from '@mui/icons-material/Save';
 import { ApiContextData } from "../../AdminPanel/APIContext/APIContext";
 
@@ -67,7 +67,7 @@ export default function CommunityTeamCreation({
   reload,
   setReload,
   editShowMode,
-  setRows,teamDetail
+  setRows, teamDetail
 }) {
   const { userContextData } = useContext(ApiContextData);
   const [checked, setChecked] = useState([]);
@@ -290,10 +290,10 @@ export default function CommunityTeamCreation({
           !teamCreated && editView == null
             ? title
             : teamCreated && editView == false
-            ? "COR"
-            : teamCreated && editView
-            ? "Add User COR %"
-            : "COR"
+              ? "COR"
+              : teamCreated && editView
+                ? "Add User COR %"
+                : "COR"
         }
         subheader={
           teamCreated ? (
@@ -321,9 +321,9 @@ export default function CommunityTeamCreation({
           // Calculate the sum of cost_of_running values
           const totalCostOfRunning = userDetails[value.user_id]
             ? userDetails[value.user_id].reduce(
-                (sum, detail) => sum + detail.cost_of_running,
-                0
-              )
+              (sum, detail) => sum + detail.cost_of_running,
+              0
+            )
             : 0;
 
           return (
@@ -354,7 +354,7 @@ export default function CommunityTeamCreation({
                     />
                   </ListItemIcon>
                   <ListItemText id={labelId} primary={value.user_name} />
-                 
+
                 </ListItemButton>
                 {teamCreated && (
                   <TextField
@@ -372,102 +372,102 @@ export default function CommunityTeamCreation({
               </Stack>
               {teamCreated && userDetails[value.user_id] && (
                 <>
-               
-                <Accordion 
-                  expanded={true}
-                  onChange={() => handleAccordionToggle(value.user_id)}
-                >
-                {/* <Accordion > */}
-               
-                 
-                  <AccordionSummary >
-                  {/* <AccordionSummary expandIcon={<ExpandMoreIcon />}> */}
-                    <Typography>
-                      {value.user_name}'s Other Page Details
-                    </Typography>
-                   
-                    {!editMode[value.user_id] ? <EditIcon
-                      sx={{ ml: 2 }}
-                      onClick={() =>
-                        handleEditToggle(
-                          value.user_id,
-                          userDetails[value.user_id].length
-                        )
-                      }
-                    />:
-                    <SaveIcon
-                      sx={{ ml: 2 }}
-                      onClick={() =>
-                        handleEditToggle(
-                          value.user_id,
-                          userDetails[value.user_id].length
-                        )
-                      }
-                    />}
-                   
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <TableContainer component={Paper}>
-                      <Table aria-label="simple table">
-                        <TableHead>
-                          <TableRow>
-                            <TableCell>Page Name</TableCell>
-                            <TableCell>Role</TableCell>
-                            <TableCell>Cost of Running</TableCell>
-                            <TableCell>Actions</TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {userDetails[value.user_id].map((detail, index) => (
-                            <TableRow key={index}>
-                              <TableCell>{detail.page_name}</TableCell>
-                              <TableCell>Editor</TableCell>
-                              <TableCell>
-                                {editMode[value.user_id] ? (
-                                  <TextField
-                                    required
-                                    id="standard-required"
-                                    value={
-                                      editingValues[`${value.user_id}-${index}`]
-                                    }
-                                    onChange={handleEditingChange(
-                                      value.user_id,
-                                      index
-                                    )}
-                                    sx={{ width: 100 }}
-                                    inputProps={{
-                                      min: 0,
-                                      max: 100,
-                                    }}
-                                  />
-                                ) : (
-                                  <Typography>
-                                    {detail.cost_of_running}
-                                  </Typography>
-                                )}
-                              </TableCell>
-                              <TableCell>
-                                {editMode[value.user_id] && (
-                                  <Button
-                                    onClick={() =>
-                                      handleSave(
-                                        value.user_id,
-                                        index,
-                                        detail._id
-                                      )
-                                    }
-                                  >
-                                    Save
-                                  </Button>
-                                )}
-                              </TableCell>
+
+                  <Accordion
+                    expanded={true}
+                    onChange={() => handleAccordionToggle(value.user_id)}
+                  >
+                    {/* <Accordion > */}
+
+
+                    <AccordionSummary >
+                      {/* <AccordionSummary expandIcon={<ExpandMoreIcon />}> */}
+                      <Typography>
+                        {value.user_name}'s Other Page Details
+                      </Typography>
+
+                      {!editMode[value.user_id] ? <EditIcon
+                        sx={{ ml: 2 }}
+                        onClick={() =>
+                          handleEditToggle(
+                            value.user_id,
+                            userDetails[value.user_id].length
+                          )
+                        }
+                      /> :
+                        <SaveIcon
+                          sx={{ ml: 2 }}
+                          onClick={() =>
+                            handleEditToggle(
+                              value.user_id,
+                              userDetails[value.user_id].length
+                            )
+                          }
+                        />}
+
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <TableContainer component={Paper}>
+                        <Table aria-label="simple table">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell>Page Name</TableCell>
+                              <TableCell>Role</TableCell>
+                              <TableCell>Cost of Running</TableCell>
+                              <TableCell>Actions</TableCell>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                  </AccordionDetails>
-                </Accordion>
+                          </TableHead>
+                          <TableBody>
+                            {userDetails[value.user_id].map((detail, index) => (
+                              <TableRow key={index}>
+                                <TableCell>{detail.page_name}</TableCell>
+                                <TableCell>Editor</TableCell>
+                                <TableCell>
+                                  {editMode[value.user_id] ? (
+                                    <TextField
+                                      required
+                                      id="standard-required"
+                                      value={
+                                        editingValues[`${value.user_id}-${index}`]
+                                      }
+                                      onChange={handleEditingChange(
+                                        value.user_id,
+                                        index
+                                      )}
+                                      sx={{ width: 100 }}
+                                      inputProps={{
+                                        min: 0,
+                                        max: 100,
+                                      }}
+                                    />
+                                  ) : (
+                                    <Typography>
+                                      {detail.cost_of_running}
+                                    </Typography>
+                                  )}
+                                </TableCell>
+                                <TableCell>
+                                  {editMode[value.user_id] && (
+                                    <Button
+                                      onClick={() =>
+                                        handleSave(
+                                          value.user_id,
+                                          index,
+                                          detail._id
+                                        )
+                                      }
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    </AccordionDetails>
+                  </Accordion>
                 </>
               )}
             </div>
@@ -620,7 +620,7 @@ export default function CommunityTeamCreation({
         salary: user?.salary,
       };
     });
-// console.log(right,"right")
+    // console.log(right,"right")
     const payload = {
       page_name: pageName,
       team_count: right.length,

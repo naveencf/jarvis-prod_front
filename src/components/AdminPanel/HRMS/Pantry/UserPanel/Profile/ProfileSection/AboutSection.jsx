@@ -215,7 +215,7 @@ const AboutSection = ({ educationData, familyData }) => {
     const detailToUpdate = updatedEducationDetails[index];
 
     if (name === "percentage" && value > 100) {
-      return console.log("Can't input value greater than 100");
+      return // console.log("Can't input value greater than 100");
     }
 
     detailToUpdate[name] = value;

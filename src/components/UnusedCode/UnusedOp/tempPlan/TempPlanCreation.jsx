@@ -1,6 +1,6 @@
 import CampaignDetailes from "../CampaignDetailes";
 import { useParams } from "react-router-dom";
-import { useState} from "react";
+import { useState } from "react";
 import PageDetailingNew from "../PageDetailingNew";
 import FormContainer from "../../../AdminPanel/FormContainer";
 
@@ -19,19 +19,19 @@ const TempPlanCreation = () => {
 
     return (
         <>
-           
-            <FormContainer 
-            mainTitle="Plan Creation"
-            link="true"
+
+            <FormContainer
+                mainTitle="Plan Creation"
+                link="true"
             />
             <CampaignDetailes cid={id} getCampaign={getCampaignName} />
 
             <PageDetailingNew
-                
+
                 pageName={"tempPlanCreation"}
-               
+
                 data={{ campaignId: id, campaignName }}
-                
+
             />
         </>
     )

@@ -9,26 +9,26 @@ import Select from "react-select";
 import { useParams, Navigate } from "react-router-dom";
 
 const CustomerDocumentUpdate = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const { toastAlert, toastError } = useGlobalContext();
- // const [customerName, setCustomerName] = useState("");
+  // const [customerName, setCustomerName] = useState("");
   const [docFile, setDocFile] = useState("");
   const [docNo, setDocNo] = useState("");
   const [customerName, setCustomerName] = useState("");
- const [docName, setDocName] = useState(""); 
+  const [docName, setDocName] = useState("");
   const [description, setDescription] = useState("");
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
 
-  const [customersData, setCustomersData] = useState([]); 
+  const [customersData, setCustomersData] = useState([]);
   console.log(customersData, "new name");
   const [customersDoc, setCustomersDoc] = useState([]);
   const getData = () => {
-    axios.get(baseUrl + "get_all_doc_mast") 
+    axios.get(baseUrl + "get_all_doc_mast")
       .then((res) => {
-        setCustomersDoc(res?.data?.data); 
+        setCustomersDoc(res?.data?.data);
         console.log(res.data.data);
         setFilterData(res.data.data);
       });
@@ -47,7 +47,7 @@ const CustomerDocumentUpdate = () => {
   useEffect(() => {
     CustomerData();
   }, []);
-  
+
   useEffect(() => {
     axios.get(baseUrl + "get_all_customer_document").then((res) => {
       setCustomersData(res.data.customerMastList);
@@ -56,7 +56,7 @@ const CustomerDocumentUpdate = () => {
 
   useEffect(() => {
     axios.get(baseUrl + `get_customer_document/${id}`).then((res) => {
-      const documentData = res.data.data; 
+      const documentData = res.data.data;
       setCustomerName(documentData[0]?.customer_id);
       setDocName(documentData[0]?.doc_id);
       setDocNo(documentData[0]?.doc_no);
@@ -97,7 +97,7 @@ const CustomerDocumentUpdate = () => {
       title="Update Customer Document"
       handleSubmit={handleSubmit}
     >
-     <div className="form-group col-6">
+      <div className="form-group col-6">
         <label className="form-label">
           Customer Name <sup style={{ color: "red" }}>*</sup>
         </label>
@@ -117,7 +117,7 @@ const CustomerDocumentUpdate = () => {
           }}
         ></Select>
       </div>
-     
+
       <div className="form-group col-6">
         <label className="form-label">
           Doc Name <sup style={{ color: "red" }}>*</sup>
@@ -125,12 +125,12 @@ const CustomerDocumentUpdate = () => {
         <Select
           options={customersDoc?.map((option) => ({
             value: option?._id,
-            label: option?.doc_name ,
+            label: option?.doc_name,
           }))}
           value={{
             value: docName,
             label:
-            customersDoc?.find((cust) => cust._id === docName)
+              customersDoc?.find((cust) => cust._id === docName)
                 ?.doc_name || "",
           }}
           onChange={(e) => {

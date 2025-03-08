@@ -532,57 +532,59 @@ const CasestudyTabulerData = ({
   console.log(brandCategory, "brandCat", brandSubCatData)
   return (
     <>
-      {console.log("datagrid rendered")}
-      {brandCategory.length > 0 && brandSubCatData.length > 0 &&
+      {// console.log("datagrid rendered")}
+        {
+          brandCategory.length > 0 && brandSubCatData.length > 0 &&
 
-        <DataGrid
-          rows={newData}
-          columns={resizableColumns}
-          pageSize={5}
-          getRowId={(row) => row._id}
-          initialState={{
-            // sorting: {
-            //   sortModel: [{ field: "brand_name", sort: "desc" }],
-            // },
-          }}
-          slots={{ toolbar: CustomToolbar }}
-          slotProps={{
-            panel: {
-              anchorEl: filterButtonEl,
-            },
-            toolbar: {
-              setFilterButtonEl,
-            },
-          }}
-          filterModel={filterModel}
-          onFilterModelChange={(model) => setFilterModel(model)}
-          columnVisibilityModel={columnVisibilityModel}
-          onColumnVisibilityModelChange={(newModel) =>
-            setColumnVisibilityModel(newModel)
-          }
-        />}
+            <DataGrid
+              rows={newData}
+              columns={resizableColumns}
+              pageSize={5}
+              getRowId={(row) => row._id}
+              initialState={{
+                // sorting: {
+                //   sortModel: [{ field: "brand_name", sort: "desc" }],
+                // },
+              }}
+              slots={{ toolbar: CustomToolbar }}
+              slotProps={{
+                panel: {
+                  anchorEl: filterButtonEl,
+                },
+                toolbar: {
+                  setFilterButtonEl,
+                },
+              }}
+              filterModel={filterModel}
+              onFilterModelChange={(model) => setFilterModel(model)}
+              columnVisibilityModel={columnVisibilityModel}
+              onColumnVisibilityModelChange={(newModel) =>
+                setColumnVisibilityModel(newModel)
+              }
+            />
+        }
 
-      <Modal
+        < Modal
         isOpen={isModalOpen}
-        onRequestClose={handleCloseModal}
-        style={{
-          content: {
-            alignContent: "center",
-            alignItems: "center",
-            display: "flex",
-            justifyContent: "center",
-            top: "50%",
-            left: "50%",
-            right: "auto",
-            bottom: "auto",
-            width: "50%",
-            height: [enlargedFileType === "pdf" ? "100vh" : "auto"],
-            transform: "translate(-50%, -50%)",
-          },
-        }}
+      onRequestClose={handleCloseModal}
+      style={{
+        content: {
+          alignContent: "center",
+          alignItems: "center",
+          display: "flex",
+          justifyContent: "center",
+          top: "50%",
+          left: "50%",
+          right: "auto",
+          bottom: "auto",
+          width: "50%",
+          height: [enlargedFileType === "pdf" ? "100vh" : "auto"],
+          transform: "translate(-50%, -50%)",
+        },
+      }}
       >
-        {renderEnlargedContent()}
-      </Modal>
+      {renderEnlargedContent()}
+    </Modal >
     </>
   );
 };

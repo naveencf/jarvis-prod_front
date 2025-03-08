@@ -90,7 +90,7 @@ const CreditNoteDialog = (props) => {
       handleCloseCreditNote();
       getData();
     } catch (err) {
-      console.log("Error While Updating Credit Note: ", ErrorBar);
+      // console.log("Error While Updating Credit Note: ", ErrorBar);
       handleCloseCreditNote();
     }
   };

@@ -7,7 +7,7 @@ import { baseUrl } from "../../../utils/config";
 import { useGlobalContext } from "../../../Context/Context";
 
 const OnboardingBankDetails = () => {
-    const {toastError,toastAlert} = useGlobalContext()
+  const { toastError, toastAlert } = useGlobalContext()
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -29,7 +29,7 @@ const OnboardingBankDetails = () => {
   useEffect(() => {
     axios.get(`${baseUrl}` + `get_single_user/${userID}`).then((res) => {
       const fetchedData = res.data;
-      const { bank_name, ifsc_code, beneficiary, account_no, account_type,old_esic_number,upi_Id,uan_number,old_pf_number } =
+      const { bank_name, ifsc_code, beneficiary, account_no, account_type, old_esic_number, upi_Id, uan_number, old_pf_number } =
         fetchedData;
       setBankName(bank_name);
       setIFSC(ifsc_code);
@@ -76,7 +76,7 @@ const OnboardingBankDetails = () => {
         }
       );
       toastAlert("Bank Details Update");
-      console.log("Update successful", response.data);
+      // console.log("Update successful", response.data);
     } catch (error) {
       console.error(
         "Update failed",

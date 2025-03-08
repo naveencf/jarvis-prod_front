@@ -3,7 +3,7 @@ import FieldContainer from '../../FieldContainer';
 import { Button, Modal } from 'react-bootstrap';
 
 const VendorPreviewModal = ({ open, onClose, vendorData }) => {
-  console.log("vendordata", vendorData);
+  // console.log("vendordata", vendorData);
   return (
     <Modal open={open} onClose={onClose}>
       <div className="modal-content">

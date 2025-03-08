@@ -25,7 +25,7 @@ const AccountType = () => {
   const userID = decodedToken.id;
 
   const getData = () => {
-    axios.get(baseUrl + "get_all_customer_type") 
+    axios.get(baseUrl + "get_all_customer_type")
       .then((res) => {
         setCustomers(res.data.data);
         console.log(res.data.data);
@@ -39,7 +39,7 @@ const AccountType = () => {
 
   useEffect(() => {
     const result = customers.filter((d) => {
-      return d.customer_type_name?.toLowerCase().match(search.toLowerCase()); 
+      return d.customer_type_name?.toLowerCase().match(search.toLowerCase());
     });
     setFilterData(result);
   }, [search]);
@@ -47,16 +47,16 @@ const AccountType = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post(baseUrl + "add_customer_type", {
-        customer_type_name: customerType,
-        description: description,
-        created_by: userID
-      })
+      customer_type_name: customerType,
+      description: description,
+      created_by: userID
+    })
       .then(() => {
         toastAlert("Submitted");
         setCustomerType("");
         setDescription("");
-        getData(); 
-      });   
+        getData();
+      });
   };
 
   const columns = [
@@ -67,7 +67,7 @@ const AccountType = () => {
     },
     {
       name: "Account Type",
-      selector: (row) => row.customer_type_name, 
+      selector: (row) => row.customer_type_name,
     },
     {
       name: "Description",
@@ -90,7 +90,7 @@ const AccountType = () => {
             <FaEdit />{" "}
           </button>
           <DeleteButton
-            endpoint="delete_customer_type" 
+            endpoint="delete_customer_type"
             id={row._id}
             getData={getData}
           />
@@ -101,38 +101,38 @@ const AccountType = () => {
 
   const handleRowData = (row) => {
     setRowData(row);
-    setCustomerTypeUpdate(row.customer_type_name); 
+    setCustomerTypeUpdate(row.customer_type_name);
     setDescriptionUpdate(row.description);
   };
 
   const handleModalUpdate = () => {
-    axios.put(baseUrl + `update_customer_type/${rowData._id}`, { 
-      customer_type_name: customerTypeUpdate, 
+    axios.put(baseUrl + `update_customer_type/${rowData._id}`, {
+      customer_type_name: customerTypeUpdate,
       decription: descriptionUpdate,
       updated_by: userID
     })
-    .then(() => {
-      toastAlert("Successfully Update");
-      getData();
-      setCustomerTypeUpdate("");
-      setDescriptionUpdate("");
-    });
+      .then(() => {
+        toastAlert("Successfully Update");
+        getData();
+        setCustomerTypeUpdate("");
+        setDescriptionUpdate("");
+      });
   };
 
   return (
     <>
       <FormContainer
-        mainTitle="Account" 
-        title="Account" 
+        mainTitle="Account"
+        title="Account"
         handleSubmit={handleSubmit}
       >
         <FieldContainer
-          label="Account Type *" 
+          label="Account Type *"
           value={customerType}
           required={true}
           onChange={(e) => setCustomerType(e.target.value)}
         />
-        
+
         <FieldContainer
           label="Description"
           value={description}
@@ -144,7 +144,7 @@ const AccountType = () => {
       <div className="card">
         <div className="data_tbl table-responsive">
           <DataTable
-            title="Account Overview" 
+            title="Account Overview"
             columns={columns}
             data={filterData}
             fixedHeader
@@ -188,12 +188,12 @@ const AccountType = () => {
               />
             </div>
             <div className="modal-footer">
-              <button type="button" 
-                className="btn btn-primary" 
+              <button type="button"
+                className="btn btn-primary"
                 data-dismiss="modal"
               >Close</button>
-              <button type="button" 
-                className="btn btn-success" 
+              <button type="button"
+                className="btn btn-success"
                 onClick={handleModalUpdate}
                 data-dismiss="modal"
               >Update</button>

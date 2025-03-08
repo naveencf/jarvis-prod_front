@@ -77,7 +77,7 @@ const PreonboardingDocumentOverview = () => {
       setData(data);
       setFilterData(data);
     } catch (error) {
-      console.log("", error);
+      // console.log("", error);
     }
   };
 
@@ -120,7 +120,7 @@ const PreonboardingDocumentOverview = () => {
               data={filterData}
               pagination
               paginationPerPage={100}
-              // selectableRows
+            // selectableRows
             />
           </div>
           <div className="data_tbl table-responsive"></div>

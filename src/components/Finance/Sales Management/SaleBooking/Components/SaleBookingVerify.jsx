@@ -170,9 +170,9 @@ const SaleBookingVerify = ({
     getData();
     setButtonAccess(
       contextData &&
-        contextData[2] &&
-        contextData[2].insert_value === 1 &&
-        false
+      contextData[2] &&
+      contextData[2].insert_value === 1 &&
+      false
     );
   }, []);
 

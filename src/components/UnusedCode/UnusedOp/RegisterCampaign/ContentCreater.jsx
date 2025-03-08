@@ -84,7 +84,7 @@ export default function CampaignCommitment() {
         setIsModalOpen(false);
         setPostData("");
         setReload(!reload);
-        // console.log("Data saved:", response.data);
+        // // console.log("Data saved:", response.data);
         if (response.data.success === false) {
           toastError(response.data.message);
         } else {
@@ -152,7 +152,7 @@ export default function CampaignCommitment() {
         .finally(() => {
           setIsPutOpen(false);
         });
-      console.log("put data");
+      // console.log("put data");
     } else {
       toastError("Commitment name fill");
     }
@@ -173,7 +173,7 @@ export default function CampaignCommitment() {
         .delete(`${baseUrl}` + `delete_commitment/${itemToDeleteId}`)
         .then(() => {
           setReload(!reload);
-          console.log("Data deleted successfully");
+          // console.log("Data deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting data:", error);
@@ -229,7 +229,7 @@ export default function CampaignCommitment() {
         return [
           // eslint-disable-next-line react/jsx-key
           <button
-            icon={<EditIcon  />}
+            icon={<EditIcon />}
             label="Edit"
             // className=" "
             className="icon-1"
@@ -271,19 +271,19 @@ export default function CampaignCommitment() {
         <div className="card-header sb">
           <div></div>
           <div className="pack w-25">
-            
-              <FieldContainer
-                fieldGrid={12}
-                label=""
-                placeholder="Search Here"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-              />
-           
+
+            <FieldContainer
+              fieldGrid={12}
+              label=""
+              placeholder="Search Here"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+            />
+
           </div>
         </div>
         <div className="card-body body-padding">
-          <Box sx={{ height: "max-content",maxHeight:"700px"}}>
+          <Box sx={{ height: "max-content", maxHeight: "700px" }}>
             <DataGrid
               rows={filteredRows}
               columns={columns}
@@ -298,7 +298,7 @@ export default function CampaignCommitment() {
         </div>
       </div>
 
-     
+
 
       {/* AddRecordModal post data */}
       <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>

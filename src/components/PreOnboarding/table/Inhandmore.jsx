@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const Inhandmore = ({ UserDetails }) => {
-    console.log("indhand more")
+    // console.log("indhand more")
     let salary = UserDetails?.salary;
     let basicSalary = salary >= 19200 ? salary * 0.6 : 0;
     let HRA = basicSalary * 0.4;

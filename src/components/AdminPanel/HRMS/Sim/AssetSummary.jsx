@@ -30,7 +30,7 @@ const AssetSummary = () => {
       setHistoryData(response.data.data);
       setHistoryModal(true);
     } catch (error) {
-      console.log("total asset not working", error);
+      // console.log("total asset not working", error);
     }
   };
 
@@ -113,35 +113,35 @@ const AssetSummary = () => {
 
       <div className="card">
         <div className="card-header sb">
-       <h5>Asset Summary </h5> 
-        <input
-                type="text"
-                placeholder="Search here"
-                className="w-50 form-control"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+          <h5>Asset Summary </h5>
+          <input
+            type="text"
+            placeholder="Search here"
+            className="w-50 form-control"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
         <div className="card-body body-padding">
-        <DataTable
-          
+          <DataTable
+
             columns={columns}
             data={filterData}
-            
+
             pagination
             selectableRows
-            // fixedHeaderScrollHeight="64vh"
-            // highlightOnHover
-            // subHeader
-            // subHeaderComponent={
-            //   <input
-            //     type="text"
-            //     placeholder="Search here"
-            //     className="w-50 form-control"
-            //     value={search}
-            //     onChange={(e) => setSearch(e.target.value)}
-            //   />
-            // }
+          // fixedHeaderScrollHeight="64vh"
+          // highlightOnHover
+          // subHeader
+          // subHeaderComponent={
+          //   <input
+          //     type="text"
+          //     placeholder="Search here"
+          //     className="w-50 form-control"
+          //     value={search}
+          //     onChange={(e) => setSearch(e.target.value)}
+          //   />
+          // }
           />
         </div>
         {/* <div className="data_tbl table-responsive">
@@ -176,7 +176,7 @@ const AssetSummary = () => {
               X
             </button>
           </div>
-         
+
           <DataTable
             columns={[
               {
@@ -206,15 +206,15 @@ const AssetSummary = () => {
             highlightOnHover
             // subHeade
             pagination
-            // subHeaderComponent={
-            //   <input
-            //     type="text"
-            //     placeholder="Search..."
-            //     className="w-50 form-control"
-            //     value={modalSearch}
-            //     onChange={(e) => setModalSearch(e.target.value)}
-            //   />
-            // }
+          // subHeaderComponent={
+          //   <input
+          //     type="text"
+          //     placeholder="Search..."
+          //     className="w-50 form-control"
+          //     value={modalSearch}
+          //     onChange={(e) => setModalSearch(e.target.value)}
+          //   />
+          // }
           />
         </div>
         {/* )} */}

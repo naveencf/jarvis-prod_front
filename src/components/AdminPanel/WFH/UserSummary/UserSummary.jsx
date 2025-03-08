@@ -68,9 +68,8 @@ const UserSummary = () => {
           {accordionButtons.map((button, index) => (
             <div
               key={index}
-              className={`named-tab ${
-                activeAccordionIndex === index ? "active-tab" : ""
-              }`}
+              className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
+                }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               {button}
