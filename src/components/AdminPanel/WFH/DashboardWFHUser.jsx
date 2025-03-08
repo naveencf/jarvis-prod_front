@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 import { baseUrl } from "../../../utils/config";
-import TabPanelCard from "../HRMS/WFH/components/TabPanelCard";
+import TabPanelCard from "../HRMS/WFH/AnniversaryComponent/TabPanelCard";
 
 const DashboardWFHUser = () => {
   const { contextData } = useAPIGlobalContext();
