@@ -1,5 +1,6 @@
-import React from "react";
 import Select from "react-select";
+import formatString from "../../utils/formatString";
+import { useEffect, useState } from "react";
 
 const CustomSelect = ({
   fieldGrid = 4,
@@ -13,7 +14,10 @@ const CustomSelect = ({
   disabled,
   multiple = false,
   filterOption,
+  setSearchQuery
 }) => {
+  const [inputValue, setInputValue] = useState("");
+
   const findOptionLabelById = (id) =>
     dataArray?.find((option) => option[optionId] === id)?.[optionLabel];
 
@@ -28,7 +32,7 @@ const CustomSelect = ({
   if (multiple) {
     const selection = selectedId?.map((id) => ({
       value: id,
-      label: findOptionLabelById(id),
+      label: formatString(findOptionLabelById(id)),
     }));
     valueProp = isAllSelected ? [selectAllOption, ...selection] : selection;
   } else {
@@ -38,7 +42,7 @@ const CustomSelect = ({
     if (selectedOption) {
       valueProp = {
         value: selectedId,
-        label: findOptionLabelById(selectedId),
+        label: formatString(findOptionLabelById(selectedId)),
       };
     } else {
       valueProp = null;
@@ -47,16 +51,21 @@ const CustomSelect = ({
 
   const handleChange = (selectedOptions, action_meta) => {
     if (multiple) {
+      if (!selectedOptions) {
+        setSelectedId([]); 
+        return;
+      }
+  
       if (
-        selectedOptions?.some(
-          (option) => option.value === selectAllOption.value
-        )
+        selectedOptions?.some((option) => option.value === selectAllOption.value)
       ) {
         if (action_meta.action === "remove-value") {
           setSelectedId(
-            dataArray?.filter(
-              (option) => option[optionId] != action_meta.removedValue.value
-            )?.optionId
+            dataArray
+              ?.filter(
+                (option) => option[optionId] !== action_meta.removedValue.value
+              )
+              ?.map((option) => option[optionId])
           );
         } else {
           setSelectedId(dataArray?.map((option) => option[optionId]));
@@ -70,18 +79,32 @@ const CustomSelect = ({
         setSelectedId(selectedOptions?.map((option) => option?.value));
       }
     } else {
+      if (!selectedOptions) {
+        setSelectedId(null);  
+        return;
+      }
       setSelectedId(selectedOptions?.value);
     }
   };
+  
 
   const options = dataArray?.map((option) => ({
     value: option[optionId],
-    label: option[optionLabel],
+    label: formatString(option[optionLabel]),
   }));
 
   if (multiple) {
     options?.unshift(selectAllOption);
   }
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setSearchQuery(inputValue);
+    }, 300); // 300ms delay
+
+    return () => {
+      clearTimeout(handler); // Clear timeout on every new keystroke
+    };
+  }, [inputValue, setSearchQuery]);
   return (
     <div className={`form-group col-${fieldGrid}`}>
       <label className="form-label">
@@ -95,7 +118,8 @@ const CustomSelect = ({
         required={required}
         isDisabled={disabled}
         isMulti={multiple}
-        // placeholder={`Select ${label}`}
+        isClearable={true}  
+        onInputChange={(value) => setInputValue(value)}
       />
     </div>
   );

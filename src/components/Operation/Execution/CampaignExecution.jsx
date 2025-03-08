@@ -408,32 +408,7 @@ const CampaignExecution = () => {
       },
       width: 200,
     },
-    {
-      key: "post_dec",
-      name: "Type",
-      renderRowCell: (row) => (
-        <div className="d-flex gap-2 align-items-center">
-          <img
-            className="mr-3"
-            src={
-              row?.postType == "REEL"
-                ? Reel
-                : row?.postType == "CAROUSEL"
-                ? Carousel
-                : Image
-            }
-            style={{ width: "20px", height: "20px" }}
-            alt=""
-          />
 
-          <img
-            className="icon-1"
-            src={`https://storage.googleapis.com/insights_backend_bucket/cr/${row?.owner_info?.username}.jpeg`}
-            alt=""
-          />
-        </div>
-      ),
-    },
     {
       name: "Short Code",
       key: "shortCode",
@@ -473,6 +448,32 @@ const CampaignExecution = () => {
         );
       },
       width: 300,
+    },
+    {
+      key: "post_dec",
+      name: "Logo",
+      renderRowCell: (row) => (
+        <div className="d-flex gap-2 align-items-center">
+          <img
+            className="mr-3"
+            src={
+              row?.postType == "REEL"
+                ? Reel
+                : row?.postType == "CAROUSEL"
+                ? Carousel
+                : Image
+            }
+            style={{ width: "20px", height: "20px" }}
+            alt=""
+          />
+
+          <img
+            className="icon-1"
+            src={`https://storage.googleapis.com/insights_backend_bucket/cr/${row?.owner_info?.username}.jpeg`}
+            alt=""
+          />
+        </div>
+      ),
     },
     {
       name: "Vendor Name",
@@ -689,6 +690,14 @@ const CampaignExecution = () => {
         } else
           return (
             <button
+              title={
+                row.audit_status === "purchased" ||
+                row.amount < 1 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
+                  ? "Amount should be greater than 0 and select the vendor for the page or this link is not present in any campaign"
+                  : ""
+              }
               disabled={
                 row.audit_status === "purchased" ||
                 row.amount < 1 ||

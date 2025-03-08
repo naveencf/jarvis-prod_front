@@ -55,6 +55,7 @@ const LinkUpload = ({
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
   const [serviceName, setServiceName] = useState("");
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("")
   const platformID = useRef(null);
   const selectedCampaign = useRef("");
 
