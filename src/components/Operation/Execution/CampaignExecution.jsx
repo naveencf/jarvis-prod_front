@@ -42,6 +42,9 @@ import StoryModal from "./StoryModal.jsx";
 import MultipleService from "./MultipleService.jsx";
 import { set } from "date-fns";
 import StringLengthLimiter from "../../../utils/StringLengthLimiter.js";
+import Carousel from "/copy.png";
+import Reel from "/reel.png";
+import Image from "/more.png";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -405,7 +408,32 @@ const CampaignExecution = () => {
       },
       width: 200,
     },
+    {
+      key: "post_dec",
+      name: "Type",
+      renderRowCell: (row) => (
+        <div className="d-flex gap-2 align-items-center">
+          <img
+            className="mr-3"
+            src={
+              row?.postType == "REEL"
+                ? Reel
+                : row?.postType == "CAROUSEL"
+                ? Carousel
+                : Image
+            }
+            style={{ width: "20px", height: "20px" }}
+            alt=""
+          />
 
+          <img
+            className="icon-1"
+            src={`https://storage.googleapis.com/insights_backend_bucket/cr/${row?.owner_info?.username}.jpeg`}
+            alt=""
+          />
+        </div>
+      ),
+    },
     {
       name: "Short Code",
       key: "shortCode",
@@ -1355,16 +1383,6 @@ const CampaignExecution = () => {
         </div>
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
-      {/* {selectedPlan != 0 && (
-        <>
-          <PurchasePagesStats
-            // phaseList={phaseList}
-            PlanData={PlanData?.filter((data) =>
-              activeTab === "all" ? data : data.phaseDate === activeTab
-            )}
-          />
-        </>
-      )} */}
       <LinkUpload
         phaseList={phaseList}
         token={token}
@@ -1442,6 +1460,64 @@ const CampaignExecution = () => {
               >
                 Audit
               </button>
+              <div className="popover-container">
+                <i
+                  style={{ cursor: "pointer" }}
+                  className="bi bi-info-circle-fill warningText ml-3 mt-3"
+                />
+                <div className="popover-content">
+                  <div className="popover-item">
+                    <span
+                      className="rounded-circle mr-3"
+                      style={{
+                        backgroundColor: "#c4fac4",
+                        width: "10px",
+                        height: "10px",
+                      }}
+                    ></span>{" "}
+                    <p>Purchased</p>
+                  </div>
+                  <div className="popover-item">
+                    <span
+                      className="rounded-circle mr-3"
+                      style={{
+                        backgroundColor: "rgb(255 131 0 / 80%)",
+                        width: "10px",
+                        height: "10px",
+                      }}
+                    ></span>{" "}
+                    <p>Audited</p>
+                  </div>{" "}
+                  <div className="popover-item">
+                    <span
+                      className="rounded-circle mr-3"
+                      style={{
+                        backgroundColor: "#ffff008c",
+                        width: "10px",
+                        height: "10px",
+                      }}
+                    ></span>{" "}
+                    <p>Amount is 0 or Vendor name is empty</p>
+                  </div>
+                  <div className="popover-item">
+                    <span
+                      className="rounded-circle mr-3"
+                      style={{
+                        backgroundColor: "#ff00009c",
+                        width: "10px",
+                        height: "10px",
+                      }}
+                    ></span>{" "}
+                    <p>Data is not fetched</p>
+                  </div>
+                  <div className="popover-item">
+                    <p>
+                      No colour means all data is present and It's in pending
+                      Stage
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         }

@@ -30,7 +30,7 @@ const VendorOutstandingOverview = () => {
     //     limit,
     // });
     useEffect(() => {
-        fetchVendors("abhi");
+        fetchVendors("abc");
     }, []);
 
     // Debounced function to call the API
