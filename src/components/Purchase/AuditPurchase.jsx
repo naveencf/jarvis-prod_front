@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 // import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
+  useGetAllPagessByPlatformQuery,
   useGetPlanByIdQuery,
   useGetPostDetailsBasedOnFilterMutation,
   usePostDataUpdateMutation,
@@ -11,18 +12,19 @@ import View from "../AdminPanel/Sales/Account/View/View";
 import CustomSelect from "../ReusableComponents/CustomSelect";
 import getDecodedToken from "../../utils/DecodedToken";
 import { useGlobalContext } from "../../Context/Context";
+import Modal from "react-modal";
 import { formatDate } from "../../utils/formatDate";
 import { useGetAllExeCampaignsQuery } from "../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import PageEdit from "../AdminPanel/PageMS/PageEdit";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import PhaseTab from "../Operation/Execution/PhaseTab";
+import { Autocomplete } from "@mui/lab";
 import AuditedDataView from "../Operation/Execution/AuditedDataView";
 import DuplicayModal from "../Operation/Execution/DuplicayModal";
-import FormContainer from "../AdminPanel/FormContainer";
 import Calendar from "./Calender";
 import {
-  useGetVendorsQuery,
+  useGetVendorsWithSearchQuery,
   useRecordPurchaseMutation,
   useUpdatePurchasedStatusDataMutation,
   useUpdatePurchasedStatusVendorMutation,
@@ -30,7 +32,8 @@ import {
 import LinkUploadAudit from "../Operation/Execution/LinkUploadAudit";
 import PriceUpdateModal from "./PriceUpdateModal";
 import Swal from "sweetalert2";
-import jwtDecode from "jwt-decode";
+import { TextField } from "@mui/material";
+import { useGetPmsPlatformQuery } from "../Store/reduxBaseURL";
 import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
 
 const AuditPurchase = () => {
@@ -41,8 +44,10 @@ const AuditPurchase = () => {
   const [vendorName, setVendorName] = useState("");
   const [toggleModal, setToggleModal] = useState(false);
   const [modalData, setModalData] = useState({});
+  const [pageName, setPageName] = useState({ page_name: "" });
   const [activeTab, setActiveTab] = useState("tab1");
   const [currentTab, setcurrentTab] = useState("Tab1");
+  const [platformName, setPlatformName] = useState("");
   const [campaignPlanData, setCampainPlanData] = useState();
   const [modalName, setModalName] = useState("");
   const [duplicateMsg, setDuplicateMsg] = useState(false);
@@ -54,13 +59,14 @@ const AuditPurchase = () => {
   const [endDate, setEndDate] = useState(null);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [vendorNumericId, setVendorNumericId] = useState(null);
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("")
   const [showModal, setShowModal] = useState(false);
 
   const maxTabs = useRef(4);
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
-  const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsQuery();
+   const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsWithSearchQuery(vendorSearchQuery.length >= 4 ? vendorSearchQuery:"" );
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const page_id = useRef(null);
   const token = getDecodedToken();
@@ -69,6 +75,19 @@ const AuditPurchase = () => {
     isFetching: fetchingCampaignList,
     isLoading: loadingCampaignList,
   } = useGetAllExeCampaignsQuery();
+
+  const {
+    data: allPages,
+    isLoading: allPagesLoading,
+    isFetching: allPagesFetching,
+  } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
+
+  const {
+    data: pmsPlatform,
+    isLoading: pmsPlatformLoading,
+    isFetching: pmsPlatformFetching,
+  } = useGetPmsPlatformQuery();
+
   const [updatePurchasedStatus] = useUpdatePurchasedStatusDataMutation();
   const [getPostDetailsBasedOnFilter] =
     useGetPostDetailsBasedOnFilterMutation();
@@ -108,7 +127,6 @@ const AuditPurchase = () => {
 
   const fetchFilteredPosts = async () => {
     const sCodes = shortCodes.map(({ shortCode }) => shortCode);
-    // // console.log("scoded", sCodes);
     const payload = (() => {
       switch (currentTab) {
         case "Tab4":
@@ -159,9 +177,9 @@ const AuditPurchase = () => {
   //   isError: vendorError,
   // } = useVendorDataQuery(vendorName, { skip: !vendorName });
 
-  const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
-    skip: true,
-  });
+  // const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
+  //   skip: true,
+  // });
 
   useEffect(() => {
     const cachedData = JSON.parse(localStorage.getItem("tab"));
@@ -222,11 +240,31 @@ const AuditPurchase = () => {
       toastError("Error while Uploading");
     }
   }
-
+  console.log("selectedData", selectedData);
   const handleUpdateStatus = async (vendorId) => {
-    const sCodes = selectedData.map(({ shortCode }) => shortCode);
 
-    // SweetAlert confirmation
+    if (selectedData.length !== 1) {
+      Swal.fire({
+        title: "Invalid Selection!",
+        text: "Please select only one vendor to update.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    const selectedItem = selectedData[0];
+
+    if (selectedItem.audit_status !== "purchased") {
+      Swal.fire({
+        title: "Action Denied!",
+        text: "The selected vendor does not have 'purchased' status.",
+        icon: "warning",
+      });
+      return;
+    }
+
+    const sCodes = selectedItem.shortCode;
+
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "You are about to update the Vendor!",
@@ -239,7 +277,7 @@ const AuditPurchase = () => {
     if (result.isConfirmed) {
       try {
         const response = await updatePurchasedStatusVendor({
-          shortCodes: sCodes,
+          shortCodes: [sCodes],
           vendor_id: vendorId,
           userId: token.id,
         });
@@ -277,13 +315,13 @@ const AuditPurchase = () => {
   }, [duplicateMsg]);
   useEffect(() => {
     // creating unique phase list
-    const cachedData = JSON.parse(localStorage.getItem("tab"));
-    if (cachedData) {
-      const firstKey = Object.keys(cachedData)[0];
-      if (firstKey == selectedPlan || !selectedPlan) {
-        setSelectedPlan(firstKey);
-      }
-    }
+    // const cachedData = JSON.parse(localStorage.getItem("tab"));
+    // if (cachedData) {
+    //   const firstKey = Object.keys(cachedData)[0];
+    //   if (firstKey == selectedPlan || !selectedPlan) {
+    //     setSelectedPlan(firstKey);
+    //   }
+    // }
     if (selectedPlan && successPlanData) {
       const uniqPhaseList = campaignPlanData?.reduce((acc, curr) => {
         if (!acc.some((item) => item.value === curr.phaseDate)) {
@@ -300,6 +338,9 @@ const AuditPurchase = () => {
   }, [selectedPlan, fetchingPlanData]);
 
   useEffect(() => {
+    if (selectedPlan == null) {
+      setCampainPlanData([])
+    }
     if (
       selectedVendorId ||
       (startDate && endDate) ||
@@ -309,7 +350,6 @@ const AuditPurchase = () => {
       fetchFilteredPosts();
     }
   }, [selectedVendorId, startDate, endDate, selectedPlan, shortCodes]);
-
   // const filteredData = useMemo(() => {
   //     if (!shortCodes.length) return campaignPlanData;
   //     return shortCodes.flatMap(item => campaignPlanData.filter(data => data.shortCode === item.shortCode));
@@ -377,25 +417,39 @@ const AuditPurchase = () => {
     setcurrentTab(tab);
     switch (tab) {
       case "Tab1":
+        setCampainPlanData([])
+        setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
-        setSelectedVendorId(null);
-        setShortCodes([]);
+        // setSelectedVendorId(null);
+        // setShortCodes([]);
         break;
       case "Tab2":
-        setShortCodes([]);
+        setCampainPlanData([])
         setSelectedPlan(null);
-        break;
-      case "Tab3":
-        setShortCodes([]);
         setStartDate(null);
         setEndDate(null);
+        // setShortCodes([]);
+        // setSelectedPlan(null);
+        // setSelectedVendorId(null);
+        break;
+      case "Tab3":
+        setCampainPlanData([])
         setSelectedPlan(null);
+        setStartDate(null);
+        setEndDate(null);
+        // setShortCodes([]);
+        // setStartDate(null);
+        // setEndDate(null);
+        // setSelectedVendorId(null);
+        // setSelectedPlan(null);
         break;
       case "Tab4":
-        setShortCodes([]);
-        setSelectedPlan(null);
-
+        setCampainPlanData([])
+        setStartDate(null);
+        setEndDate(null);
+        // setShortCodes([]);
+        // setSelectedPlan(null);
         break;
       default:
         break;
@@ -410,11 +464,102 @@ const AuditPurchase = () => {
       renderRowCell: (row, index) => index + 1,
     },
     {
+      name: "Platform",
+      key: "platform_name",
+      editable: true,
+      renderRowCell: (row) => {
+        return row.platform_name;
+      },
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        setPlatformName(row.platform_name);
+        return (
+          <CustomSelect
+            fieldGrid={12}
+            dataArray={pmsPlatform.data || []}
+            optionId={"platform_name"}
+            optionLabel={"platform_name"}
+            selectedId={row?.platform_name}
+            setSelectedId={(val) => {
+              setPlatformName(val);
+              const data = {
+                platform_name: val,
+              };
+              handelchange(data, index, column, true);
+            }}
+          />
+        );
+      },
+      width: 300,
+    },
+    {
       key: "page_name",
       name: "Page Name",
-      width: 100,
+      width: 200,
       renderRowCell: (row) => row?.owner_info?.username,
       compare: true,
+      editable: true,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        // if (!platformName || allPagesFetching || allPagesLoading)
+        //   return <p>Please select the platform</p>;
+        return (
+          <div style={{ position: "relative", width: "100%" }}>
+            {/* <input
+              className="form-control"
+              type="text"
+              placeholder={row?.page_name}
+              value={row?.owner_info?.username}
+              onChange={(e) => {
+                const data = {
+                  ...row?.owner_info,
+                  username: e.target.value,
+                };
+
+                handelchange({ owner_info: data }, index, column, true);
+              }}
+            /> */}
+            <Autocomplete
+              options={
+                Array.isArray(allPages?.pageData)
+                  ? allPages.pageData?.filter(
+                    (data) => data?.temp_vendor_id === vendorName
+                  )
+                  : []
+              }
+              getOptionLabel={(option) => option.page_name || ""}
+              // getOptionKey={(option) => option.page_name}
+              renderInput={(params) => {
+                return (
+                  <TextField {...params} label="Page Name" variant="outlined" />
+                );
+              }}
+              value={pageName}
+              onChange={(event, newValue) => {
+                page_id.current = newValue?._id;
+                setPageName(newValue);
+                const data = {
+                  page_name: newValue?.page_name,
+                };
+                setVendorName(newValue?.page_name);
+                handelchange(data, index, column, true);
+              }}
+            />
+          </div>
+        );
+      },
     },
     {
       name: "Short Code",
@@ -1035,7 +1180,7 @@ const AuditPurchase = () => {
   // // console.log("PlanData", PlanData);
   return (
     <>
-      {/* <Modal
+      <Modal
         className="salesModal"
         isOpen={toggleModal}
         contentLabel="modal"
@@ -1061,7 +1206,7 @@ const AuditPurchase = () => {
         }}
       >
         <>{modalViewer(modalName)}</>
-      </Modal> */}
+      </Modal>
 
       {showModal && (
         <PriceUpdateModal
@@ -1117,7 +1262,7 @@ const AuditPurchase = () => {
               <CustomSelect
                 label="Update Vendor"
                 fieldGrid={6}
-                dataArray={vendorListData}
+                dataArray={vendorsList}
                 optionId="vendor_id"
                 optionLabel="vendor_name"
                 selectedId={selectedVendorId}
@@ -1140,6 +1285,7 @@ const AuditPurchase = () => {
                 selectedId={selectedPlan}
                 setSelectedId={setSelectedPlan}
                 label="Plans"
+                isClearable={true}
               />
             )}
 
@@ -1160,16 +1306,16 @@ const AuditPurchase = () => {
                   <CustomSelect
                     label="Select Vendor"
                     fieldGrid={12}
-                    dataArray={vendorListData}
+                    dataArray={vendorsList}
                     optionId="_id"
                     optionLabel="vendor_name"
                     selectedId={selectedVendorId}
                     setSelectedId={(id) => {
                       setSelectedVendorId(id);
-                      setVendorNumericId(vendorListData.find((item) => item._id == id).vendor_id)
-                      setStartDate(null);
-                      setEndDate(null);
+                      setVendorNumericId(vendorsList.find((item) => item._id == id).vendor_id)
                     }}
+                    setSearchQuery={setVendorSearchQuery}
+
                   />
                 </div>
 
@@ -1314,8 +1460,8 @@ const AuditPurchase = () => {
 
       <View
         version={1}
-        // data={campaignPlanData}
-        data={phaseWiseData}
+        data={campaignPlanData}
+        // data={phaseWiseData}
         columns={columns}
         title={`Records`}
         rowSelectable={true}

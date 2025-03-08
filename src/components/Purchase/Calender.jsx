@@ -17,6 +17,7 @@ const Calendar = ({ startDate, endDate, setStartDate, setEndDate }) => {
               label="Start Date"
               value={startDate}
               onChange={(newValue) => setStartDate(newValue)}
+              maxDate={dayjs()}
               renderInput={(params) => <TextField {...params} fullWidth />}
             />
           </div>
@@ -27,6 +28,7 @@ const Calendar = ({ startDate, endDate, setStartDate, setEndDate }) => {
               value={endDate}
               onChange={(newValue) => setEndDate(newValue)}
               minDate={startDate} // Ensures end date is after start date
+              maxDate={dayjs()}
               renderInput={(params) => <TextField {...params} fullWidth />}
             />
           </div>

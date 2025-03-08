@@ -18096,7 +18096,8 @@ button:disabled {
 }
 
 .header-active {
-  background-color: var(--border);
+  background-color: var(--primary);
+  color:var(--white);
 }
 
 .header-tab {

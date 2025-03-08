@@ -9,6 +9,15 @@ const DirectPurchaseApi = createApi({
       query: () => `v1/vendor`,
       transformResponse: (response) => response?.data,
     }),
+    getVendorsWithSearch: builder.query({
+      query: (query) => {
+        if (typeof query === "string" && query.trim() !== "") {
+          return `v1/vendor?search=${encodeURIComponent(query)}&page=1&limit=10`;
+        }
+        return `v1/vendor?page=1&limit=10`;
+      },
+      transformResponse: (response) => response?.data,
+    }),
     addService: builder.mutation({
       query: (data) => ({
         url: `v1/operation/add_service_in_campaign`,
@@ -69,7 +78,7 @@ const DirectPurchaseApi = createApi({
   }),
 });
 
-export const { useGetVendorsQuery, useAddServiceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
+export const { useGetVendorsQuery,useGetVendorsWithSearchQuery, useAddServiceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
   useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery, useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;
