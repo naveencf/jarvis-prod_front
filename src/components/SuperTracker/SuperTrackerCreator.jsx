@@ -122,7 +122,7 @@ function SuperTrackerCreator({
 
     setConfirmationOpen(true);
   };
-// console.log(rowSelectionModel,rowSelectionModel)
+  // console.log(rowSelectionModel,rowSelectionModel)
   const confirmAddition = () => {
     const promises = rowSelectionModel.map((pageName) => {
       return axios.post(

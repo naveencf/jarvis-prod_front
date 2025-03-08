@@ -39,7 +39,7 @@ const IpOverview = () => {
     textarea.select();
     document.execCommand("copy");
     document.body.removeChild(textarea);
-    // console.log("Selected Rows:", selectedData);
+    // // console.log("Selected Rows:", selectedData);
   };
 
   async function getData() {

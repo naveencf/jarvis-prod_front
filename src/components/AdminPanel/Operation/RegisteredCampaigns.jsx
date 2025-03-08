@@ -281,7 +281,7 @@ const RegisteredCampaigns = () => {
   // ?.filter((item) =>
   //   item.campaign_data?.exeCmpName?.toLowerCase().includes(search.toLowerCase())
   // );
-  console.log("first", allCampaign)
+  // console.log("first", allCampaign)
 
   return (
     <div>

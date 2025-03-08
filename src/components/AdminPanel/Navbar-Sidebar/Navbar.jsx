@@ -102,9 +102,8 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-          `sales/badges_sales_booking_data${
-            RoleID != 1 ? `?userId=${loginUserId}` : ""
-          }`,
+        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -210,7 +209,7 @@ const Navbar = () => {
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -245,7 +244,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedOutstandingAmount
+                                userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -258,7 +257,7 @@ const Navbar = () => {
                               Un-Billed Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalUnEarnedOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>

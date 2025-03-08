@@ -34,7 +34,8 @@ export default function PendingPaymentRequest() {
   const whatsappApi = WhatsappAPI();
   const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
-  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery();
+  const [vendorPaymentRequestQuery, setVendorPaymentRequestQuery] = useState(1);
+  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
   const [updatePurchaseRequest, { isLoading: updateLoading, error: updateError }] = useUpdatePurchaseRequestMutation();
   const token = sessionStorage.getItem('token');
   const decodedToken = jwtDecode(token);
@@ -123,11 +124,11 @@ export default function PendingPaymentRequest() {
 
     //   })
     //   .catch((error) => {
-    //     console.log("Error while getting Node Data");
+    //     // console.log("Error while getting Node Data");
     //   });
     // })
     // .catch((error) => {
-    //   console.log("Error while getting php pending payment request data");
+    //   // console.log("Error while getting php pending payment request data");
     // });
 
     // axios
@@ -136,7 +137,7 @@ export default function PendingPaymentRequest() {
     //     setUserName(res.data.user_name);
     //   })
     //   .catch((error) => {
-    //     console.log("Error while getting single user data");
+    //     // console.log("Error while getting single user data");
     //   });
     refetchPaymentRequest();
   };
@@ -153,7 +154,7 @@ export default function PendingPaymentRequest() {
       setFilterData(requestPayments);
       setPendingRequestCount(requestPayments.length);
     }
-    // console.log("dataFilter", dateFilter);
+    // // console.log("dataFilter", dateFilter);
   }, [dateFilter, refetch, data]);
 
   const handleRemainderModal = (reaminderData) => {

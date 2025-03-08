@@ -46,41 +46,41 @@ const Overview = (props) => {
   const filteredData = loading
     ? {}
     : {
-        "0-10k": data?.filter(
-          (item) => item.balance_amount && item.balance_amount < 10000
-        ),
-        "10k-20k": data?.filter(
-          (item) =>
-            item.balance_amount &&
-            item.balance_amount >= 10000 &&
-            item.balance_amount < 20000
-        ),
-        "20k-30k": data?.filter(
-          (item) =>
-            item.balance_amount &&
-            item.balance_amount >= 20000 &&
-            item.balance_amount < 30000
-        ),
-        "30k-40k": data?.filter(
-          (item) =>
-            item.balance_amount &&
-            item.balance_amount >= 30000 &&
-            item.balance_amount < 40000
-        ),
-        "40-50k": data?.filter(
-          (item) =>
-            item.balance_amount &&
-            item.balance_amount >= 40000 &&
-            item.balance_amount < 50000
-        ),
-        "50k-100k": data?.filter(
-          (item) =>
-            item.balance_amount &&
-            item.balance_amount >= 50000 &&
-            item.balance_amount < 100000
-        ),
-        "100k-above": data?.filter((item) => item.balance_amount >= 100000),
-      };
+      "0-10k": data?.filter(
+        (item) => item.balance_amount && item.balance_amount < 10000
+      ),
+      "10k-20k": data?.filter(
+        (item) =>
+          item.balance_amount &&
+          item.balance_amount >= 10000 &&
+          item.balance_amount < 20000
+      ),
+      "20k-30k": data?.filter(
+        (item) =>
+          item.balance_amount &&
+          item.balance_amount >= 20000 &&
+          item.balance_amount < 30000
+      ),
+      "30k-40k": data?.filter(
+        (item) =>
+          item.balance_amount &&
+          item.balance_amount >= 30000 &&
+          item.balance_amount < 40000
+      ),
+      "40-50k": data?.filter(
+        (item) =>
+          item.balance_amount &&
+          item.balance_amount >= 40000 &&
+          item.balance_amount < 50000
+      ),
+      "50k-100k": data?.filter(
+        (item) =>
+          item.balance_amount &&
+          item.balance_amount >= 50000 &&
+          item.balance_amount < 100000
+      ),
+      "100k-above": data?.filter((item) => item.balance_amount >= 100000),
+    };
 
   const handleCheckboxChange = (range) => {
     setSelectedRanges((prev) => ({

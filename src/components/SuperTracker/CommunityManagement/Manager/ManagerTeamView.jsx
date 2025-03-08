@@ -38,7 +38,7 @@ function ManagerTeamView() {
           if (res && res.status === 200) {
             setRows(res.data.data);
           }
-        //   console.log(res.data.data, "res.data.data");
+          //   console.log(res.data.data, "res.data.data");
         })
         .catch((error) => {
           console.error("Error fetching data: ", error);

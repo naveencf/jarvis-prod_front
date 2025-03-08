@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const Inhandless = ({ UserDetails }) => {
-    console.log("inhand less");
+    // console.log("inhand less");
 
 
     let salary = UserDetails?.salary;
@@ -146,7 +146,7 @@ const Inhandless = ({ UserDetails }) => {
                         <Text style={styles.tableCell}>INR {(AdvanceBonus * 12).toFixed(2)}</Text>
                     </View>
                 </View>
-                
+
                 {/* {salary >= 19200 &&(  */}
                 <View style={styles.tableRow}>
                     <View style={styles.tableCol}>
@@ -172,7 +172,7 @@ const Inhandless = ({ UserDetails }) => {
                         <Text style={styles.tableCell}>INR {(specialAllowance * 12).toFixed(2)}</Text>
                     </View>
                 </View> */}
-                
+
                 <View style={styles.tableRow}>
                     <View style={styles.tableCol}>
                         <Text style={styles.tableCell1}>NET PAY BEFORE TAX</Text>

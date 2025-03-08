@@ -118,7 +118,7 @@ const PendingOrder = () => {
   }, []);
 
   const modalSubmit = (selectedRow) => {
-    // console.log("selectedRow", selectedRow);
+    // // console.log("selectedRow", selectedRow);
     if (remarks.length > 2) {
       axios
         .put(baseUrl + "update_orderrequest", {

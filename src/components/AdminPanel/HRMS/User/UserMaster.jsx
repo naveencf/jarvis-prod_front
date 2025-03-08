@@ -721,7 +721,7 @@ const UserMaster = () => {
         }
       );
       toastAlert("Other Details Submitted");
-      // console.log("Update successful", response.data);
+      // // console.log("Update successful", response.data);
     } catch (error) {
       console.error(
         "Update failed",
@@ -796,7 +796,7 @@ const UserMaster = () => {
         // setActiveAccordionIndex((prev) => prev + 1)
       );
       toastAlert("Bank Details Submitted");
-      // console.log("Update successful", response.data);
+      // // console.log("Update successful", response.data);
       setActiveAccordionIndex((prev) => prev + 1);
     } catch (error) {
       console.error(
@@ -1080,8 +1080,8 @@ const UserMaster = () => {
   const handleAccordionButtonClick = (index) => {
     // {
     if (userResID !== "") setActiveAccordionIndex(index);
-    // console.log("hhhhhh");
-    // console.log("ss");
+    // // console.log("hhhhhh");
+    // // console.log("ss");
   };
 
   const images = [
@@ -1147,10 +1147,10 @@ const UserMaster = () => {
           setcurrentState(abbreviatedState);
           setcurrentCity(postOffice.District);
         } else {
-          console.log("Invalid Pincode");
+          // console.log("Invalid Pincode");
         }
       } catch (error) {
-        console.log("Error fetching details.");
+        // console.log("Error fetching details.");
       }
     }
   };
@@ -1528,7 +1528,7 @@ const UserMaster = () => {
               value={personalContact}
               required={false}
               onChange={handlePersonalContactChange}
-              // onBlur={(e) => handleContentBlur(e, "personalContact")}
+            // onBlur={(e) => handleContentBlur(e, "personalContact")}
             />
             {(isContactTouched1 || personalContact.length >= 10) &&
               !isValidcontact1 && (
@@ -1581,7 +1581,7 @@ const UserMaster = () => {
               value={alternateContact}
               required={false}
               onChange={handleAlternateContactChange}
-              // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
+            // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
             />
             {(isAlternateTouched1 || alternateContact.length >= 10) &&
               !isValidcontact3 && (
@@ -2000,9 +2000,9 @@ const UserMaster = () => {
               value={
                 selectedRole
                   ? {
-                      value: selectedRole.role_id,
-                      label: selectedRole.Role_name,
-                    }
+                    value: selectedRole.role_id,
+                    label: selectedRole.Role_name,
+                  }
                   : null
               }
               onChange={(e) => {
@@ -3092,21 +3092,20 @@ const UserMaster = () => {
         {accordionButtons.map((button, index) => (
           <div className="flex-row align-items-center w-100 gap-4" key={index}>
             <button
-              className={`tab ${
-                activeAccordionIndex === index
-                  ? "active"
-                  : userResID !== ""
+              className={`tab ${activeAccordionIndex === index
+                ? "active"
+                : userResID !== ""
                   ? "completed"
                   : "disabled"
-              }`}
+                }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               <div className="gap-1 flex-row">
                 {activeAccordionIndex === index
                   ? indicator.active
                   : userResID !== ""
-                  ? indicator.completed
-                  : indicator.disabled}
+                    ? indicator.completed
+                    : indicator.disabled}
                 <p>{button}</p>
               </div>
               {accordionButtonstitle[index]}
@@ -3126,9 +3125,8 @@ const UserMaster = () => {
                     fill-rule="evenodd"
                     clip-rule="evenodd"
                     d="M6.51171 4.43057C6.8262 4.161 7.29968 4.19743 7.56924 4.51192L13.5692 11.5119C13.81 11.7928 13.81 12.2072 13.5692 12.4881L7.56924 19.4881C7.29968 19.8026 6.8262 19.839 6.51171 19.5695C6.19721 19.2999 6.16079 18.8264 6.43036 18.5119L12.012 12L6.43036 5.48811C6.16079 5.17361 6.19721 4.70014 6.51171 4.43057ZM10.5119 4.43068C10.8264 4.16111 11.2999 4.19753 11.5694 4.51202L17.5694 11.512C17.8102 11.7929 17.8102 12.2073 17.5694 12.4882L11.5694 19.4882C11.2999 19.8027 10.8264 19.8391 10.5119 19.5696C10.1974 19.3 10.161 18.8265 10.4306 18.512L16.0122 12.0001L10.4306 5.48821C10.161 5.17372 10.1974 4.70024 10.5119 4.43068Z"
-                    fill={`${
-                      activeAccordionIndex === index ? "var(--primary)" : ""
-                    }`}
+                    fill={`${activeAccordionIndex === index ? "var(--primary)" : ""
+                      }`}
                   />
                 </g>
               </svg>

@@ -57,7 +57,7 @@ const Loader = ({ message }) => {
 const PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
   const location = useLocation();
   const executionExcel = location.state?.executionExcel;
-  console.log(executionExcel,"excel")
+  console.log(executionExcel, "excel")
   const campValue = data?.campaignName;
 
   const { toastAlert, toastError } = useGlobalContext();
@@ -296,7 +296,7 @@ const PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
       if (radioSelected == "all") {
         return page;
       } else if (radioSelected == "Selected") {
-        // console.log("first")
+        // // console.log("first")
         if (selectedRows.includes(page.p_id)) {
           return page;
         }
@@ -949,7 +949,7 @@ const PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
 
   //for uploading the excel
   const handleFile = (file) => {
-    console.log(file,"file 1");
+    console.log(file, "file 1");
     setExcelUpload(true);
     const reader = new FileReader();
 
@@ -1025,7 +1025,7 @@ const PageDetailingNew = ({ pageName, data, setPhaseDataError, phaseInfo }) => {
 
   const handleFileInputChange = (e) => {
     const file = e.target.files[0];
-console.log(executionExcel,"new data")
+    console.log(executionExcel, "new data")
     if (file) {
       handleFile(file);
     }
@@ -1134,7 +1134,7 @@ console.log(executionExcel,"new data")
             variant="outlined"
             onChange={(e) => handlePost(e, "post")}
           />
-      
+
           <TextField
             sx={{ ml: 2, width: "50%" }}
             id="outlined-basic"

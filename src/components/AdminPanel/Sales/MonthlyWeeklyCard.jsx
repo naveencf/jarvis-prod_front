@@ -48,7 +48,7 @@ const MonthlyWeeklyCard = ({
           month: monthName,
           startdate: new Date(
             pastMonthStart.getTime() -
-              pastMonthStart.getTimezoneOffset() * 60000
+            pastMonthStart.getTimezoneOffset() * 60000
           )
             .toISOString()
             .split("T")[0],
@@ -82,7 +82,7 @@ const MonthlyWeeklyCard = ({
 
   useEffect(() => {
     if (slectedOption && title === "Monthly") {
-      console.log("getData");
+      // console.log("getData");
       getData(
         startDate.current,
         endDate.current,
@@ -91,10 +91,10 @@ const MonthlyWeeklyCard = ({
       );
     }
   }, [slectedOption]);
-  // console.log("startDate", startDate.current);
-  // console.log("endDate", endDate.current);
-  // console.log("laststartDate", laststartDate.current);
-  // console.log("lastendDate", lastendDate.current);
+  // // console.log("startDate", startDate.current);
+  // // console.log("endDate", endDate.current);
+  // // console.log("laststartDate", laststartDate.current);
+  // // console.log("lastendDate", lastendDate.current);
 
   const handleNavigate = (start, end) => {
     navigate("/admin/view-sales-booking", { state: { start, end } });

@@ -73,11 +73,10 @@ const UserSingleTab1 = ({ user, roomId }) => {
         </div>
       </div>
       <div
-        className={`${
-          user.job_type === "WFH"
-            ? "col-xl-4 col-lg-4 col-md-6 col-sm-12"
-            : "col-xl-4 col-lg-4 col-md-6 col-sm-12"
-        }`}
+        className={`${user.job_type === "WFH"
+          ? "col-xl-4 col-lg-4 col-md-6 col-sm-12"
+          : "col-xl-4 col-lg-4 col-md-6 col-sm-12"
+          }`}
       >
         <div className="profileInfo_box">
           <h3>Spoken Languages</h3>

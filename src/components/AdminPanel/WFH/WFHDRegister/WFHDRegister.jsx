@@ -231,7 +231,7 @@ const WFHDRegister = ({ userUpdateID }) => {
     setDepartment(deptID);
   }, [deptID]);
 
-  useEffect(() => {}, [reportL2]);
+  useEffect(() => { }, [reportL2]);
 
   // Handle change for Monthly Salary
   const handleMonthlySalaryChange = (e) => {
@@ -623,7 +623,7 @@ const WFHDRegister = ({ userUpdateID }) => {
         })
         .then((res) => {
           // setLoading(true);
-          console.log("Email sent successfully:", res.data);
+          // console.log("Email sent successfully:", res.data);
         })
         .then((res) => {
           if (res.status == 200) {
@@ -637,7 +637,7 @@ const WFHDRegister = ({ userUpdateID }) => {
         })
         .catch((error) => {
           setLoading(false);
-          console.log("Failed to send email:", error);
+          // console.log("Failed to send email:", error);
         });
 
       setUserName("");
@@ -662,7 +662,7 @@ const WFHDRegister = ({ userUpdateID }) => {
       toastAlert("User Registered");
       setIsFormSubmitted(true);
     } catch (error) {
-      console.log("Failed to submit form", error);
+      // console.log("Failed to submit form", error);
     } finally {
       setLoading(false);
     }
@@ -1330,7 +1330,7 @@ const WFHDRegister = ({ userUpdateID }) => {
                 value={personalContact}
                 required={false}
                 onChange={handlePersonalContactChange}
-                // onBlur={handlePersonalContactBlur}
+              // onBlur={handlePersonalContactBlur}
               />
               {(isContactTouched1 || personalContact?.length >= 10) &&
                 !isValidcontact1 && (
@@ -1350,7 +1350,7 @@ const WFHDRegister = ({ userUpdateID }) => {
                 value={contact}
                 required={false}
                 onChange={handleContactChange}
-                // onBlur={handleContactBlur}
+              // onBlur={handleContactBlur}
               />
               {(isContactTouched || contact?.length >= 10) &&
                 !isValidcontact && (

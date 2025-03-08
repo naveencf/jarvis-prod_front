@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button } from "@mui/material";
- import FormContainer from "../../../FormContainer";
+import FormContainer from "../../../FormContainer";
 import DeleteEmailEventDialgo from "./EmailEventDialog/DeleteEmailEventDialgo";
 // import DeleteEmailEventDialgo from '../../../User/EmailEvent/EmailEventDialog/DeleteEmailEventDialgo';
 import EmailEventDialog from "./EmailEventDialog/EmailEventDialog";
@@ -21,8 +21,8 @@ export default function EmailEvent() {
 
   const getApi = () => {
     axios
-      .get(`${baseUrl}get_all_email_events`,{
-        headers:{
+      .get(`${baseUrl}get_all_email_events`, {
+        headers: {
           Authorization: `Bearer ${token}`
         }
       })
@@ -129,7 +129,7 @@ export default function EmailEvent() {
         <DeleteEmailEventDialgo
           setOpenDelateEmailEventDialog={setOpenDelateEmailEventDialog}
           openDelateEmailEventDialog={openDelateEmailEventDialog}
-            rowData={rowData}
+          rowData={rowData}
         />
       )}
     </>

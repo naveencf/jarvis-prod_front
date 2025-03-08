@@ -31,8 +31,8 @@ const dynamicPDFDownload = (data) => {
           </thead>
           <tbody>
             ${tableRows
-              .map(
-                (row) => `
+      .map(
+        (row) => `
               <tr>
                 <td style="border: 1px solid #ddd; padding: 8px;">${row["S.No"]}</td>
                 <td style="border: 1px solid #ddd; padding: 8px;">${row["Service Name"]}</td>
@@ -40,8 +40,8 @@ const dynamicPDFDownload = (data) => {
                 <td style="border: 1px solid #ddd; padding: 8px;">${row["Value"]}</td>
               </tr>
             `
-              )
-              .join("")}
+      )
+      .join("")}
           </tbody>
         </table>
       </div>

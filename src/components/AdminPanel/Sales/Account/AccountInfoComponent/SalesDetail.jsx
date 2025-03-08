@@ -110,7 +110,7 @@ const SalesDetail = ({ SingleAccount, refetchSingleAccount }) => {
 
     // const url = event.dataTransfer;
     // if (url) {
-    //   console.log("url", url);
+    //   // console.log("url", url);
 
     //   fetch(url)
     //     .then((response) => response.blob())

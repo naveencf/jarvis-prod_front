@@ -159,7 +159,7 @@ const UserView = () => {
         },
       });
     } catch (error) {
-      console.log("Failed on Submit form", error);
+      // console.log("Failed on Submit form", error);
     }
   };
 

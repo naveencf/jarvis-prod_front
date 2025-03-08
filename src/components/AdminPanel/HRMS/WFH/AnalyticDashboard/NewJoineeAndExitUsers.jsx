@@ -1,10 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { baseUrl } from "../../../../utils/config";
 import Modal from "react-modal";
-import View from "../../Sales/Account/View/View";
-import { convertDateToDDMMYYYY } from "../../../../utils/lengthFuntion";
-import ReJoinReusable from "../../HRMS/User/ReJoinReusable";
+import { baseUrl } from "../../../../../utils/config";
+import View from "../../../Sales/Account/View/View";
+import { convertDateToDDMMYYYY } from "../../../../../utils/lengthFuntion";
+import ReJoinReusable from "../../User/ReJoinReusable";
 
 const NewJoineeAndExitUsers = () => {
   const [newJoineeData, setNewJoineeData] = useState([]);

@@ -125,86 +125,86 @@ const ExpertiesUpdate = () => {
         <FormControl className="gap4" sx={{ width: "100%" }}>
           <div className="grid-con ">
             {/* <div className="col-sm-12 col-lg-12 "> */}
-              <Autocomplete
-                fullWidth={true}
-                disablePortal
-                value={expertiesusername?.exp_name}
-                id="combo-box-demo"
-                options={getUserData.map((user) => ({
-                  label: user.user_name,
-                  value: user.user_id,
-                }))}
-                onChange={(e, newvalue) => {
-                  if (newvalue != null) {
-                    setExpertiesUserName((prev) => ({
-                      label: newvalue.label,
-                      user_id: newvalue.value,
-                    }));
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField {...params} label="User Name" />
-                )}
-              />
+            <Autocomplete
+              fullWidth={true}
+              disablePortal
+              value={expertiesusername?.exp_name}
+              id="combo-box-demo"
+              options={getUserData.map((user) => ({
+                label: user.user_name,
+                value: user.user_id,
+              }))}
+              onChange={(e, newvalue) => {
+                if (newvalue != null) {
+                  setExpertiesUserName((prev) => ({
+                    label: newvalue.label,
+                    user_id: newvalue.value,
+                  }));
+                }
+              }}
+              renderInput={(params) => (
+                <TextField {...params} label="User Name" />
+              )}
+            />
             {/* </div> */}
             {/* <div className="col-sm-12 col-lg-3"> */}
-              <Autocomplete
-                multiple
-                id="combo-box-demo"
-                value={selectedCategory}
-                options={options}
-                renderInput={(params) => (
-                  <TextField {...params} label="Category" />
-                )}
-                onChange={categoryChangeHandler}
-              />
+            <Autocomplete
+              multiple
+              id="combo-box-demo"
+              value={selectedCategory}
+              options={options}
+              renderInput={(params) => (
+                <TextField {...params} label="Category" />
+              )}
+              onChange={categoryChangeHandler}
+            />
             {/* </div> */}
 
             {/* <div className="col-sm-12 col-lg-3"> */}
-              <Autocomplete
-                multiple
-                id="combo-box-demo"
-                options={plateformvar}
-                renderInput={(params) => (
-                  <TextField {...params} label="Platform" />
-                )}
-                onChange={plateformHandler}
-              />
+            <Autocomplete
+              multiple
+              id="combo-box-demo"
+              options={plateformvar}
+              renderInput={(params) => (
+                <TextField {...params} label="Platform" />
+              )}
+              onChange={plateformHandler}
+            />
             {/* </div> */}
             {/* <div className="col-sm-12 col-lg-3"> */}
-              <Autocomplete
-                multiple
-                id="combo-box-demo"
-                options={Follower_Count}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Follower Count" />
-                )}
-                onChange={followerChangeHandler}
-              />
+            <Autocomplete
+              multiple
+              id="combo-box-demo"
+              options={Follower_Count}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Follower Count" />
+              )}
+              onChange={followerChangeHandler}
+            />
             {/* </div> */}
             {/* <div className="col-sm-12 col-lg-3"> */}
-              <Autocomplete
-                multiple
-                id="combo-box-demo"
-                options={page_health}
-                value={pageHealth}
-                onChange={(e, newvalue) => setPageHealth(newvalue)}
-                getOptionLabel={(option) => option}
-                renderInput={(params) => (
-                  <TextField {...params} label="Page health" />
-                )}
-              />
+            <Autocomplete
+              multiple
+              id="combo-box-demo"
+              options={page_health}
+              value={pageHealth}
+              onChange={(e, newvalue) => setPageHealth(newvalue)}
+              getOptionLabel={(option) => option}
+              renderInput={(params) => (
+                <TextField {...params} label="Page health" />
+              )}
+            />
             {/* </div> */}
           </div>
-          
-                  <div className="pack mt-2">
 
-            <button onClick={handleSubmit}className="btn btn-outline-primary">
+          <div className="pack mt-2">
+
+            <button onClick={handleSubmit} className="btn btn-outline-primary">
               Submit
             </button>
-                  </div>
-         
+          </div>
+
         </FormControl>
       </div>
     </>

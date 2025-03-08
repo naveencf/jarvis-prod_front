@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 const ProductUpdate = () => {
   // const [categoryNames, setCategoryNames] = useState({});
@@ -50,7 +50,7 @@ const ProductUpdate = () => {
 
     // formData.append("Opening_stock_date", openingStockDate);
 
-    axios.put(baseUrl+"update_productupdate", formData, {
+    axios.put(baseUrl + "update_productupdate", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -65,13 +65,13 @@ const ProductUpdate = () => {
       };
 
       try {
-        axios.post(`${baseUrl}`+`add_proppost`, payload, {
+        axios.post(`${baseUrl}` + `add_proppost`, payload, {
           headers: {
             "Content-Type": "application/json",
           },
         });
 
-        console.log("Request successfully sent for", inputField);
+        // console.log("Request successfully sent for", inputField);
       } catch (error) {
         console.error("Error sending request for", inputField, error);
       }
@@ -92,10 +92,10 @@ const ProductUpdate = () => {
 
   const removeProp = async (propid) => {
     var data = await axios
-      .delete(`${baseUrl}`+`delete_propdelete/${propid}`, null)
+      .delete(`${baseUrl}` + `delete_propdelete/${propid}`, null)
       .then((crash) => {
         axios
-          .get(`${baseUrl}`+`get_single_productdata/${id}`)
+          .get(`${baseUrl}` + `get_single_productdata/${id}`)
           .then((res) => {
             setInputFields(res.data.Product_Prop);
           });
@@ -133,7 +133,7 @@ const ProductUpdate = () => {
   useEffect(() => {
     if (localStorage.getItem("product_id")) {
       axios
-        .get(`${baseUrl}`+`get_single_productdata/${id}`)
+        .get(`${baseUrl}` + `get_single_productdata/${id}`)
         .then((res) => {
           setInputFields(res.data.Product_Prop);
         });

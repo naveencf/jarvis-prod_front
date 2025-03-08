@@ -13,7 +13,7 @@ const InvoiceTemplate8 = ({ data }) => {
     const handelrightalign = (text, size) => {
       return doc.internal.pageSize.width - (doc.getStringUnitWidth(text) * size / doc.internal.scaleFactor) - 15
     }
-    console.log("in this function");
+    // console.log("in this function");
     // Add "INVOICE" heading on the left side with 20px margin
 
     var width = doc.internal.pageSize.getWidth();

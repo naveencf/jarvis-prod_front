@@ -8,7 +8,7 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import axios from "axios";
 
 const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
-console.log(payload)
+  console.log(payload)
   const [summaryData, setSummaryData] = useState({
     total: 0,
     totalPost: 0,
@@ -20,9 +20,9 @@ console.log(payload)
   const [totalPostPerPage, setTotalPostPerPage] = useState(0);
   const [totalStoryPerPage, setStoryPerPage] = useState(0);
   const [filteredData, setFilteredData] = useState(payload);
-console.log(catNameLengths,"1");
-console.log(summaryData,"2");
-console.log(filteredData,"3");
+  console.log(catNameLengths, "1");
+  console.log(summaryData, "2");
+  console.log(filteredData, "3");
   useEffect(() => {
     const updatedCatNameLengths = {};
     payload.forEach((entry) => {

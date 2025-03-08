@@ -210,28 +210,28 @@ const PlanMakingBeta = () => {
   const handleUpdateValues = (type) => {
     const isPost = type === 'post';
     const updatedValues = isPost ? { ...postPerPageValues } : { ...storyPerPageValues };
-  
+
     getTableData.forEach((row) => {
       const isChecked = showTotalCost[row._id];
-  
+
       if (isChecked) {
         const newValue = isPost ? postCountDefault || 1 : storyCountDefault || 0;
         updatedValues[row._id] = newValue;
       }
     });
-  
+
     if (isPost) {
       setPostPerPageValues(updatedValues);
     } else {
       setStoryPerPageValues(updatedValues);
     }
-  
+
     getTableData.forEach((row) => {
       const postCount = postPerPageValues[row._id] || 0;
       const storyCount = storyPerPageValues[row._id] || 0;
       const newCount = isPost ? updatedValues[row._id] : postCount;
       const newStoryCount = isPost ? storyCount : updatedValues[row._id];
-      
+
       calculateTotalCost(
         row._id,
         newCount,
@@ -241,15 +241,15 @@ const PlanMakingBeta = () => {
         costPerBothValues?.[row._id] || 0
       );
     });
-  
+
     const updatedPlanData = selectedRows.map((row) => {
       const { _id, page_price_list, page_name, rate_type, followers_count, platform_name, platform_id } = row;
       const isFixedRate = rate_type === 'fixed';
-  
+
       const getPrice = (priceType) => (isFixedRate
         ? getPriceDetail(page_price_list, `instagram_${priceType}`)
         : calculatePrice(rate_type, { page_price_list, followers_count }, priceType));
-  
+
       return {
         _id,
         page_name,
@@ -261,14 +261,14 @@ const PlanMakingBeta = () => {
         platform_id,
       };
     });
-  
+
     setPlanData(updatedPlanData);
-  
+
     if (!isAutomaticCheck) {
       debouncedSendPlanDetails(updatedPlanData);
     }
   };
-  
+
   const handleOptionChange = (event, newValue) => {
     if (!newValue) return;
 
@@ -751,7 +751,7 @@ const PlanMakingBeta = () => {
       setNotFoundPages([]);
     }
   };
-  //   console.log("searchInput", searchIn);
+  //   // console.log("searchInput", searchIn);
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -984,7 +984,7 @@ const PlanMakingBeta = () => {
     setFilterData(platform);
   }, [activePlatform]);
 
-  // console.log("planDetail", planDetails);
+  // // console.log("planDetail", planDetails);
   const unfetechedPages = planDetails && planDetails[0]?.not_available_pages;
   const allNotFoundUnfetched = unfetechedPages ? notFoundPages.every((page) => unfetechedPages.includes(page)) : false;
 

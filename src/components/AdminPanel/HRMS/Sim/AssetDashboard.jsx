@@ -164,9 +164,9 @@ const AssetDashboard = () => {
               />
             </div>
           </div>
-          
+
           <div className="card asset-card body-padding ">
-           
+
 
 
             <div className=" flex-direct">
@@ -203,13 +203,13 @@ const AssetDashboard = () => {
                     }}
                   >
                     <div className="card-body sb ">
-                      <div className="pack gap"> 
-                      <div className="asset-d_infocard_icon">
-                        <h1>{availableObjects.length}</h1>
-                      </div>
-                      <div className="asset-d_infocard_txt">
-                        <h3>Available</h3>
-                      </div>
+                      <div className="pack gap">
+                        <div className="asset-d_infocard_icon">
+                          <h1>{availableObjects.length}</h1>
+                        </div>
+                        <div className="asset-d_infocard_txt">
+                          <h3>Available</h3>
+                        </div>
                       </div>
                       <i className="bi bi-box-arrow-up-right"></i>
                     </div>
@@ -228,14 +228,14 @@ const AssetDashboard = () => {
                     <div className="card-body sb">
                       <div className="pack gap">
 
-                     
-                      <div className="asset-d_infocard_icon">
-                        <h1>{allocatedObjects.length}</h1>
-                      </div>
-                      <div className="asset-d_infocard_txt">
-                        <h3>Allocated</h3>
-                        {/* <SimOverview allocated={isAllocation} /> */}
-                      </div>
+
+                        <div className="asset-d_infocard_icon">
+                          <h1>{allocatedObjects.length}</h1>
+                        </div>
+                        <div className="asset-d_infocard_txt">
+                          <h3>Allocated</h3>
+                          {/* <SimOverview allocated={isAllocation} /> */}
+                        </div>
                       </div>
                       <i className="bi bi-box-arrow-up-right"></i>
                     </div>
@@ -246,84 +246,84 @@ const AssetDashboard = () => {
           </div>
           <div className="card asset-card body-padding ">
             <div className="pack sb">
-          <h1>Asset Details</h1>
-          <Link to="/admin/asset_summary">
-          <button className="btn btn-primary sb" style={{justifyContent:"center", alignItems:"center",gap:"10px"}}>Asset Summary <i className="bi bi-file-earmark-text"></i></button>
-          </Link>
-          </div>
+              <h1>Asset Details</h1>
+              <Link to="/admin/asset_summary">
+                <button className="btn btn-primary sb" style={{ justifyContent: "center", alignItems: "center", gap: "10px" }}>Asset Summary <i className="bi bi-file-earmark-text"></i></button>
+              </Link>
+            </div>
           </div>
           <div className="asset_chart">
             <div className="card" style={{
               width: "50%",
               height: "100%",
             }}>
-            <div className="chart_container body-padding">
-            <h5 style={{ fontWeight: "600",color:"var(--gray-700)" }}>
-                Total Asset - {simData.length}
-              </h5>
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      {
-                        id: 0,
-                        value: availableObjects.length,
-                        label: "Available",
-                        color: "rgb(184, 0, 216)",
-                      },
-                      {
-                        id: 1,
-                        value: allocatedObjects.length,
-                        label: "Allocated",
-                      },
-                    ],
-                    innerRadius: 30,
-                    outerRadius: 70,
-                    cornerRadius: 5,
-                    paddingAngle:1,
-                    highlightScope: { faded: "global", highlighted: "item" },
-                    faded: {
+              <div className="chart_container body-padding">
+                <h5 style={{ fontWeight: "600", color: "var(--gray-700)" }}>
+                  Total Asset - {simData.length}
+                </h5>
+                <PieChart
+                  series={[
+                    {
+                      data: [
+                        {
+                          id: 0,
+                          value: availableObjects.length,
+                          label: "Available",
+                          color: "rgb(184, 0, 216)",
+                        },
+                        {
+                          id: 1,
+                          value: allocatedObjects.length,
+                          label: "Allocated",
+                        },
+                      ],
                       innerRadius: 30,
-                      additionalRadius: -30,
-                      color: "gray",
+                      outerRadius: 70,
+                      cornerRadius: 5,
+                      paddingAngle: 1,
+                      highlightScope: { faded: "global", highlighted: "item" },
+                      faded: {
+                        innerRadius: 30,
+                        additionalRadius: -30,
+                        color: "gray",
+                      },
+
                     },
-                    
-                  },
-                ]}
-                height={200}
-              />
-              
+                  ]}
+                  height={200}
+                />
+
+              </div>
             </div>
-            </div>
-            
-            <div className="chart_container p-0" style={{width:"50%",height:"100% "}}>
+
+            <div className="chart_container p-0" style={{ width: "50%", height: "100% " }}>
               <div className="card">
-              <BarChart
-                xAxis={[
-                  {
-                    scaleType: "band",
-                    data: [
-                      "New Asset Request",
-                      "Repair Request",
-                      "Return Asset Request",
-                    ],
-                  },
-                ]}
-                series={[
-                  {
-                    data: [
-                      newAssetRequest.length,
-                      repairRequestData.length,
-                      returnAssetData.length,
-                    ],
-                  },
-                  { data: [] },
-                  // { data: [2, 5, 6] },
-                ]}
-                width={600}
-                height={300}
-              />
-            </div>
+                <BarChart
+                  xAxis={[
+                    {
+                      scaleType: "band",
+                      data: [
+                        "New Asset Request",
+                        "Repair Request",
+                        "Return Asset Request",
+                      ],
+                    },
+                  ]}
+                  series={[
+                    {
+                      data: [
+                        newAssetRequest.length,
+                        repairRequestData.length,
+                        returnAssetData.length,
+                      ],
+                    },
+                    { data: [] },
+                    // { data: [2, 5, 6] },
+                  ]}
+                  width={600}
+                  height={300}
+                />
+              </div>
             </div>
 
             {/* ----------------------------------------------- */}
@@ -342,7 +342,7 @@ const AssetDashboard = () => {
             </div> */}
           </div>
 
-          
+
           <div className="row">
             <div className="form-group col-2">
               <label className="form-label">
@@ -507,8 +507,8 @@ const AssetDashboard = () => {
             </div>
             <div className="card">
               <div className="card-header sb">
-               <h5>Assigned Assets</h5>
-              <input
+                <h5>Assigned Assets</h5>
+                <input
                   type="text"
                   placeholder="Search..."
                   className="w-50 form-control"
@@ -517,31 +517,31 @@ const AssetDashboard = () => {
                 />
               </div>
               <div className="card-body body padding">
-              <DataTable
-              columns={[
-                {
-                  name: "S.No",
-                  cell: (row, index) => <div>{index + 1}</div>,
-                  width: "10%",
-                },
-                { name: "Name", selector: (row) => row.user_name },
-                { name: "Asset Name", selector: (row) => row.asset_name },
-                { name: "Category Name", selector: (row) => row.category_name },
-                {
-                  name: "SubCategory Name",
-                  selector: (row) => row.sub_category_name,
-                },
-                { name: "Department Name", selector: (row) => row.dept_name },
-              ]}
-              data={selectedUserData.filter((user) =>
-                user.user_name.toLowerCase().includes(modalSearch.toLowerCase())
-              )}
-              pagination
-              selectableRows
-            />
+                <DataTable
+                  columns={[
+                    {
+                      name: "S.No",
+                      cell: (row, index) => <div>{index + 1}</div>,
+                      width: "10%",
+                    },
+                    { name: "Name", selector: (row) => row.user_name },
+                    { name: "Asset Name", selector: (row) => row.asset_name },
+                    { name: "Category Name", selector: (row) => row.category_name },
+                    {
+                      name: "SubCategory Name",
+                      selector: (row) => row.sub_category_name,
+                    },
+                    { name: "Department Name", selector: (row) => row.dept_name },
+                  ]}
+                  data={selectedUserData.filter((user) =>
+                    user.user_name.toLowerCase().includes(modalSearch.toLowerCase())
+                  )}
+                  pagination
+                  selectableRows
+                />
               </div>
             </div>
-            
+
           </div>
         )}
       </Modal>

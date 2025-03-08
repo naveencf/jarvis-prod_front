@@ -113,7 +113,7 @@ const OverviewIndex = () => {
         <div className="card">
           <div className="card-body">
             <Button variant="outlined">
-           Rejected   {data.filter((ele) => ele.execution_status == "4").length}{" "}
+              Rejected   {data.filter((ele) => ele.execution_status == "4").length}{" "}
             </Button>
             <Button variant="outlined">
               Pending {data.filter((ele) => ele.execution_status == "1").length}{" "}
@@ -125,7 +125,7 @@ const OverviewIndex = () => {
               Complete {data.filter((ele) => ele.execution_status == "3").length}{" "}
             </Button>
             <Button variant="outlined">
-              Hold {data.filter((ele) => ele.execution_status == "5" || ele.execution_status=='6').length}{" "}
+              Hold {data.filter((ele) => ele.execution_status == "5" || ele.execution_status == '6').length}{" "}
             </Button>
             <h3 className="card-head-title mb-2 ml-2">Execution</h3>
             <div className="flex-row gap16 sb">

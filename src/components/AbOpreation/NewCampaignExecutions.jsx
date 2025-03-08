@@ -81,7 +81,7 @@ const NewCampaignExecutions = () => {
         updatePayload,
         config
       );
-      console.log("Update successful:", res.data);
+      // console.log("Update successful:", res.data);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -225,7 +225,7 @@ const NewCampaignExecutions = () => {
           console.error("Error fetching page details:", error);
         }
       } else {
-        console.log("No match found or invalid shortcode.");
+        // console.log("No match found or invalid shortcode.");
       }
     };
     fetchPageDetails();
@@ -298,8 +298,8 @@ const NewCampaignExecutions = () => {
               showAllPages
                 ? planWisePage
                 : filteredData.length > 0
-                ? filteredData
-                : planWisePage
+                  ? filteredData
+                  : planWisePage
             }
             isLoading={false}
             tableName={"Op_executions"}

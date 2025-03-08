@@ -164,7 +164,7 @@ const PayThroughVendorDialog = (props) => {
           setRefetch(!refetch)
           callApi();
           return;
-          // console.log("Payment successful:", payResponse);
+          // // console.log("Payment successful:", payResponse);
         } else {
           toastError("Unknown Error found.");
         }

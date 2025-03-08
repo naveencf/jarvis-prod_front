@@ -4,7 +4,7 @@ import FormContainer from '../../AdminPanel/FormContainer';
 import FieldContainer from '../../AdminPanel/FieldContainer';
 import Select from 'react-select'
 import axios from "axios";
-import { useEffect, useState ,useContext} from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { IconButton } from '@mui/material';
 import CreateMeetingPages from "./CreateMeetingPages";
@@ -18,7 +18,7 @@ const achievedStatus = [
 
 const MeetingPagesOverView = () => {
 
-    const {userContextData} = useAPIGlobalContext()
+    const { userContextData } = useAPIGlobalContext()
     const { toastAlert, toastError } = useGlobalContext();
     const location = useLocation();
     const { creatorDetail } = location.state || {}
@@ -34,7 +34,7 @@ const MeetingPagesOverView = () => {
     const [nextFollowUp, setNextFollowUp] = useState(null);
     const [status, setStatus] = useState(null);
     const [pagesViaData, setPagesViaData] = useState([]);
-    
+
     const getMeetingPages = async () => {
         const res = await axios.get('https://insights.ist:8080/api/v1/community/page_meeting');
         setMeetingpage(res.data.data);
@@ -44,7 +44,7 @@ const MeetingPagesOverView = () => {
             const res = await axios.get('https://insights.ist:8080/api/v1/community/page_meeting_mode');
             setPagesViaData(res.data.data);
         } catch (error) {
-           console.log('Failed to fetch meeting data');
+            console.log('Failed to fetch meeting data');
         }
     };
 
@@ -71,7 +71,7 @@ const MeetingPagesOverView = () => {
     const handleDelete = async (row) => {
         const res = await axios.delete(`https://insights.ist:8080/api/v1/community/page_meeting/${row._id}`)
         getMeetingPages();
-        toastAlert("Delete SuccessFully ",res)
+        toastAlert("Delete SuccessFully ", res)
     };
 
     const columns = [
@@ -129,7 +129,7 @@ const MeetingPagesOverView = () => {
             field: "page_name",
             headerName: "Page Name",
             width: 150,
-            
+
         },
         {
             field: 'achieved',
@@ -235,7 +235,7 @@ const MeetingPagesOverView = () => {
                         boxShadow: 24,
                         p: 4
                     }}>
-                            <Button sx={{ float:'right'}} variant="outlined" color='error' onClick={handleClose}> X </Button>
+                        <Button sx={{ float: 'right' }} variant="outlined" color='error' onClick={handleClose}> X </Button>
                         <Box>
                             <FormContainer
                                 mainTitle="Update Meeting Page "

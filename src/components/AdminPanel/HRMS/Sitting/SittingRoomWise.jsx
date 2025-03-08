@@ -18,9 +18,10 @@ const OfficeSittingRoomWise = () => {
       try {
         const response = await axios.post(`${baseUrl}get_all_data_of_sitting`, {
           roomName: selectedRoom,
-          shift_id: shift,
+          shift_id: Number(shift),
         });
-        setFetchSittingModalData(response.data);
+        setFetchSittingModalData(response?.data);
+        console.log(response?.data, "tata");
       } catch (error) {
         console.error("Error fetching sitting data:", error);
         setError(error.message);
@@ -33,8 +34,6 @@ const OfficeSittingRoomWise = () => {
       fetchSittingData();
     }
   }, [selectedRoom]);
-
-  console.log(fetchSittingModalData, "okok");
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -106,40 +105,42 @@ const OfficeSittingRoomWise = () => {
       <>
         <div className="scrollRow">
           <Slider {...sliderSettings}>
-            <div className="timeDataCard card">
-              <div className="card-header">
-                <div className="titleCard w-100">
-                  <div className="titleCardImg bgPrimary border-0">
-                    <i className="bi bi-pc-display-horizontal"></i>
+            {fetchSittingModalData?.data && (
+              <div className="timeDataCard card">
+                <div className="card-header">
+                  <div className="titleCard w-100">
+                    <div className="titleCardImg bgPrimary border-0">
+                      <i className="bi bi-pc-display-horizontal"></i>
+                    </div>
+                    <div className="titleCardText w-75">
+                      <h2 className="colorPrimary">{selectedRoom}</h2>
+                      <h3>
+                        Total Seats:{" "}
+                        {fetchSittingModalData?.data[0]?.totalNumberOfSeats}
+                      </h3>
+                    </div>
                   </div>
-                  <div className="titleCardText w-75">
-                    <h2 className="colorPrimary">{selectedRoom}</h2>
-                    <h3>
-                      Total Seats:{" "}
-                      {fetchSittingModalData.data[0].totalNumberOfSeats}
-                    </h3>
+                </div>
+                <div className="card-body">
+                  <div className="timeDataCardInfo">
+                    <ul>
+                      <li>
+                        <span>Total Assigned</span>
+                        <div className="growthBadge growthSuccess">
+                          {fetchSittingModalData?.data[0]?.allocated}
+                        </div>
+                      </li>
+                      <li>
+                        <span>Total Not Assigned</span>
+                        <div className="growthBadge growthWarning">
+                          {fetchSittingModalData?.data[0]?.not_allocated}
+                        </div>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
-              <div className="card-body">
-                <div className="timeDataCardInfo">
-                  <ul>
-                    <li>
-                      <span>Total Assigned</span>
-                      <div className="growthBadge growthSuccess">
-                        {fetchSittingModalData.data[0].allocated}
-                      </div>
-                    </li>
-                    <li>
-                      <span>Total Not Assigned</span>
-                      <div className="growthBadge growthWarning">
-                        {fetchSittingModalData.data[0].not_allocated}
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
+            )}
             {fetchSittingModalData.departmentCounts?.map((d, index) => (
               <div className="RoomSlideCard" key={index}>
                 <div

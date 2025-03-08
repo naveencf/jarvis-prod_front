@@ -99,7 +99,7 @@ export default function PageRecommendation({ setShowrecommendedpage }) {
                 {recommend.map((ele) => {
                   return (
                     <>
-                   
+
                       <Link to={`/admin/instaapi/${ele}`}>
                         <ListItem alignItems="flex-start">
                           <ListItemAvatar>
@@ -124,7 +124,7 @@ export default function PageRecommendation({ setShowrecommendedpage }) {
                                 {` — ${currpagecategory?.category_name}`}
                               </>
                             }
-                            // onClick={() => handleNavigationofPage(ele)}
+                          // onClick={() => handleNavigationofPage(ele)}
                           />
                         </ListItem>
                       </Link>

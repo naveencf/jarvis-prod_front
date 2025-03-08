@@ -28,7 +28,7 @@ const AssignmentDashboard = () => {
   const [dashboardData, setDashboardData] = useState({})
   const [open, setOpen] = useState(false)
   const [modalData, setModalData] = useState([])
-  const [modalHeading,setModalHeading]=useState("")
+  const [modalHeading, setModalHeading] = useState("")
 
   //function to fetch dashboard data
 
@@ -40,7 +40,7 @@ const AssignmentDashboard = () => {
   }
 
   // Function to handle click and open the modal
-  const handleOpenModal = (param,name) => {
+  const handleOpenModal = (param, name) => {
     setModalData(param)
     setModalHeading(name)
     setOpen(true);
@@ -90,8 +90,8 @@ const AssignmentDashboard = () => {
       headerName: 'Executor',
       width: 70
     },
-    
-    
+
+
   ]
   return (
     <>
@@ -110,14 +110,14 @@ const AssignmentDashboard = () => {
 
         <AssignmentCard data={{ name: "Total number of Post", value: dashboardData?.total_number_of_post }} />
         <AssignmentCard data={{ name: "Total number of story", value: dashboardData?.total_number_of_story }} />
-        <span onClick={() => handleOpenModal(dashboardData?.all_assignments[0]?.assignments,"Total number of assignment")}>
+        <span onClick={() => handleOpenModal(dashboardData?.all_assignments[0]?.assignments, "Total number of assignment")}>
 
           <AssignmentCard data={{ name: "Total number of assignment", value: dashboardData?.total_no_of_assgnments }} />
         </span>
 
-        <span onClick={() => handleOpenModal(dashboardData?.executor_wise_assignments[0]?.assignedPages,"assignment accepted")}>
+        <span onClick={() => handleOpenModal(dashboardData?.executor_wise_assignments[0]?.assignedPages, "assignment accepted")}>
 
-        <AssignmentCard data={{ name: "Total number of assignment accepted", value: dashboardData?.total_assignments_accepted }} />
+          <AssignmentCard data={{ name: "Total number of assignment accepted", value: dashboardData?.total_assignments_accepted }} />
         </span>
         <AssignmentCard data={{ name: "Total number of Execution Remaining", value: dashboardData?.execution_remaining }} />
         <AssignmentCard data={{ name: "Total number of Execution", value: dashboardData?.total_no_of_execution }} />
@@ -149,14 +149,14 @@ const AssignmentDashboard = () => {
           <DataGrid
             rows={modalData}
             columns={columnForModal}
-            getRowId={(row)=>row.p_id}
+            getRowId={(row) => row.p_id}
             initialState={{
               pagination: {
                 paginationModel: { page: 0, pageSize: 5 },
               },
             }}
             pageSizeOptions={[5, 10]}
-            // checkboxSelection
+          // checkboxSelection
           />
         </Box>
       </Modal>

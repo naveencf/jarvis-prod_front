@@ -150,7 +150,7 @@ const BrandCaseStudy = () => {
           toastAlert("Add successfully");
         }
         postData.sub_category_name = "";
-        console.log("Data saved:", response.data);
+        // console.log("Data saved:", response.data);
         setIsModalOpenSubCat(false);
         getSubCat();
       })
@@ -322,7 +322,7 @@ const BrandCaseStudy = () => {
       }
     });
     if (details[0] == undefined) {
-      console.log("come");
+      // console.log("come");
       return setFileDetails([]);
     }
     Promise.all(details).then((detailsArray) => {
@@ -379,7 +379,7 @@ const BrandCaseStudy = () => {
       }
     });
     if (details[0] == undefined) {
-      console.log("come");
+      // console.log("come");
       return setFileDetails([]);
     }
 
@@ -549,7 +549,7 @@ const BrandCaseStudy = () => {
         toastError("please Provide Brand ");
       } else {
         e.preventDefault();
-        console.log("1");
+        // console.log("1");
         try {
           if (
             platform &&
@@ -596,7 +596,7 @@ const BrandCaseStudy = () => {
               },
             });
           }
-          console.log("2");
+          // console.log("2");
           for (let i = 0; i < mmcDetails.length; i++) {
             const formData = new FormData();
             formData.append("data_name", brand);

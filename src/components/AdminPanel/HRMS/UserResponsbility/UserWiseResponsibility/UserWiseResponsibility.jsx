@@ -45,7 +45,7 @@ const UserWiseResponsibility = () => {
 
       setTransferToUser(data);
     } catch (error) {
-      console.log("Error fething Data", error);
+      // console.log("Error fething Data", error);
     }
   }
 
@@ -124,10 +124,10 @@ const UserWiseResponsibility = () => {
               // password: password,
             })
             .then((res) => {
-              console.log("Email sent successfully:", res.data);
+              // console.log("Email sent successfully:", res.data);
             })
             .catch((error) => {
-              console.log("Failed to send email:", error);
+              // console.log("Failed to send email:", error);
             });
         })
 
@@ -194,12 +194,12 @@ const UserWiseResponsibility = () => {
       <FormContainer
         mainTitle="User Wise Responsibility"
         link="/admin/responsibility-master"
-        // buttonAccess={
-        //   contextData &&
-        //   contextData[16] &&
-        //   contextData[16].insert_value === 1 &&
-        //   true
-        // }
+      // buttonAccess={
+      //   contextData &&
+      //   contextData[16] &&
+      //   contextData[16].insert_value === 1 &&
+      //   true
+      // }
       />
       <div className="page_height">
         <div className="card mb-4">

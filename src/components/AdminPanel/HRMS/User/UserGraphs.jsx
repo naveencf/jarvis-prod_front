@@ -10,7 +10,7 @@ const UserGraphs = () => {
 
   useEffect(() => {
     axios
-      .post(baseUrl+"get_user_graph_data", {
+      .post(baseUrl + "get_user_graph_data", {
         caseType: "gender",
       })
       .then((res) => {
@@ -22,7 +22,7 @@ const UserGraphs = () => {
     const newFilter = e.target ? e.target.value : e;
     setSelectedFilter(newFilter);
     await axios
-      .post(baseUrl+"get_user_graph_data", {
+      .post(baseUrl + "get_user_graph_data", {
         caseType: e.target.value,
       })
       .then((res) => {
@@ -83,11 +83,11 @@ const UserGraphs = () => {
                       : graphData.map((item) => item.dept_name),
                 },
               ]}
-              // onBarClick={(barData, index, event) => {
-              //   // Add your event handling logic here
-              //   console.log('Bar Clicked!');
-              //   // You can perform actions based on the bar data, index, or event
-              // }}
+            // onBarClick={(barData, index, event) => {
+            //   // Add your event handling logic here
+            //   console.log('Bar Clicked!');
+            //   // You can perform actions based on the bar data, index, or event
+            // }}
             />
           </>
         )}
@@ -106,10 +106,10 @@ const UserGraphs = () => {
                     selectedFilter === "year"
                       ? graphData.map((item) => item.userjoined)
                       : selectedFilter === "age"
-                      ? graphData.map((item) => item.userCount)
-                      : selectedFilter === "experience"
-                      ? graphData.map((item) => item.userCounts)
-                      : [],
+                        ? graphData.map((item) => item.userCount)
+                        : selectedFilter === "experience"
+                          ? graphData.map((item) => item.userCounts)
+                          : [],
                   label: "User Counts",
                 },
               ]}
@@ -120,10 +120,10 @@ const UserGraphs = () => {
                     selectedFilter === "year"
                       ? graphData.map((item) => item.year)
                       : selectedFilter === "age"
-                      ? graphData.map((item) => item.age)
-                      : selectedFilter === "experience"
-                      ? graphData.map((item) => item.years)
-                      : [],
+                        ? graphData.map((item) => item.age)
+                        : selectedFilter === "experience"
+                          ? graphData.map((item) => item.years)
+                          : [],
                 },
               ]}
             />

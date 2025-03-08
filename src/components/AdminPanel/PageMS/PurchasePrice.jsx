@@ -95,7 +95,7 @@ export default function PurchasePrice() {
       return;
     }
 
-    if ( !rateType || !price) {
+    if (!rateType || !price) {
       toastError("Please fill all the fields");
       return;
     }
@@ -189,7 +189,7 @@ export default function PurchasePrice() {
         </strong>
       ),
     },
-   
+
     { field: "price_cal_type", headerName: "Rate Type", width: 200 },
     { field: "variable_type", headerName: "Variable Type", width: 200 },
     {
@@ -201,7 +201,7 @@ export default function PurchasePrice() {
           <div>
             {row.purchase_price && (
               <button
-              type="button"
+                type="button"
                 title="Price"
                 onClick={handlePriceClick(row)}
                 className="btn btn-outline-primary btn-sm user-button"

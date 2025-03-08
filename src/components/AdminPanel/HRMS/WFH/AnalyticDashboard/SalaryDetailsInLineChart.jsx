@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { baseUrl } from "../../../../utils/config";
 import ReactApexChart from "react-apexcharts";
+import { baseUrl } from "../../../../../utils/config";
 
 function SalaryDetailsInLineChart() {
   const [graphData, setGraphData] = useState([]);

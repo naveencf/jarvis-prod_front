@@ -589,9 +589,9 @@ const PageOverviewNew = () => {
     return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
   function capitalizeFirstLetter(str) {
-    if (!str) return '';  
+    if (!str) return '';
     return str.charAt(0).toUpperCase() + str.slice(1);
-}
+  }
   const dataGridcolumns = [
     {
       key: 'S.NO',
@@ -885,19 +885,19 @@ const PageOverviewNew = () => {
     },
     { key: 'rate_type', name: 'Rate Type', width: 200 },
     platformName !== 'twitter' &&
-      platformName !== 'thread' &&
-      platformName !== 'youtube' && {
-        key: 'Post Price',
-        name: 'Post Price',
-        width: 200,
-        renderRowCell: (row) => {
-          const postPrice = getPriceDetail(row?.page_price_list, 'platform_post');
-          // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-          // const postPrice = postData ? postData.instagram_post : 0;
-          return postPrice > 0 ? Number(postPrice) : 0;
-        },
-        compare: true,
+    platformName !== 'thread' &&
+    platformName !== 'youtube' && {
+      key: 'Post Price',
+      name: 'Post Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const postPrice = getPriceDetail(row?.page_price_list, 'platform_post');
+        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        // const postPrice = postData ? postData.instagram_post : 0;
+        return postPrice > 0 ? Number(postPrice) : 0;
       },
+      compare: true,
+    },
     platformName === 'youtube' && {
       key: 'Youtube Short Price',
       name: 'Youtube Short Price',
@@ -947,46 +947,46 @@ const PageOverviewNew = () => {
       compare: true,
     },
     platformName !== 'youtube' &&
-      platformName !== 'twitter' &&
-      platformName !== 'thread' && {
-        key: 'Reel Price',
-        name: 'Reel Price',
-        width: 200,
-        renderRowCell: (row) => {
-          const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
-          const reelPrice = reelData ? reelData.instagram_reel : 0;
-          return reelPrice > 0 ? Number(reelPrice) : 0;
-        },
-        compare: true,
+    platformName !== 'twitter' &&
+    platformName !== 'thread' && {
+      key: 'Reel Price',
+      name: 'Reel Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
+        const reelPrice = reelData ? reelData.instagram_reel : 0;
+        return reelPrice > 0 ? Number(reelPrice) : 0;
       },
+      compare: true,
+    },
     platformName !== 'youtube' &&
-      platformName !== 'twitter' &&
-      platformName !== 'thread' && {
-        key: 'Story Price',
-        name: 'Story Price',
-        width: 200,
-        renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(row?.page_price_list, 'platform_story');
+    platformName !== 'twitter' &&
+    platformName !== 'thread' && {
+      key: 'Story Price',
+      name: 'Story Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const storyPrice = getPriceDetail(row?.page_price_list, 'platform_story');
 
-          // const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
-          // const storyPrice = storyData ? storyData.instagram_story : 0;
-          return storyPrice > 0 ? Number(storyPrice) : 0;
-        },
-        compare: true,
+        // const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
+        // const storyPrice = storyData ? storyData.instagram_story : 0;
+        return storyPrice > 0 ? Number(storyPrice) : 0;
       },
+      compare: true,
+    },
     platformName !== 'youtube' &&
-      platformName !== 'twitter' &&
-      platformName !== 'thread' && {
-        key: 'Both Price',
-        name: 'Both Price',
-        width: 200,
-        renderRowCell: (row) => {
-          const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
-          const bothPrice = bothData ? bothData.instagram_both : 0;
-          return bothPrice;
-        },
-        compare: true,
+    platformName !== 'twitter' &&
+    platformName !== 'thread' && {
+      key: 'Both Price',
+      name: 'Both Price',
+      width: 200,
+      renderRowCell: (row) => {
+        const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
+        const bothPrice = bothData ? bothData.instagram_both : 0;
+        return bothPrice;
       },
+      compare: true,
+    },
 
     // {
     //   key: 'ownership_type',

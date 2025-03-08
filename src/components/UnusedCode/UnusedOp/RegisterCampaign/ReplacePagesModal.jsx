@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 const style = {
   position: "absolute",
@@ -64,7 +64,7 @@ const ReplacePagesModal = ({
       vendor_id: page.vendor_id,
     }));
     const result = await axios.post(
-      baseUrl+"replacement/plan",
+      baseUrl + "replacement/plan",
       {
         campaignName: selection?.campaignName,
         campaignId: selection?.campaignId,

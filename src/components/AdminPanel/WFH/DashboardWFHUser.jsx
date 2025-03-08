@@ -1,9 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import TabPanelCard from "./Components/TabPanelCard";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 import { baseUrl } from "../../../utils/config";
+import TabPanelCard from "../HRMS/WFH/components/TabPanelCard";
 
 const DashboardWFHUser = () => {
   const { contextData } = useAPIGlobalContext();
@@ -20,80 +20,66 @@ const DashboardWFHUser = () => {
 
   const getDepartment = async () => {
     try {
-      const response = await axios.get(
-        baseUrl+"all_departments_of_wfh"
-      );
+      const response = await axios.get(baseUrl + "all_departments_of_wfh");
 
       setDepartmentData(response.data.data);
     } catch (error) {
-      console.log("Error Fetching Department", error);
+      // console.log("Error Fetching Department", error);
     }
   };
 
   const getTotalSalary = async () => {
     try {
-      const response = await axios.get(
-        baseUrl+"get_total_salary"
-      );
+      const response = await axios.get(baseUrl + "get_total_salary");
       setTotalSalary(response.data.data[0].totalsalary);
     } catch (error) {
-      console.log("Error Fetching total salary", error);
+      // console.log("Error Fetching total salary", error);
     }
   };
 
   const preOnboardCount = async () => {
     try {
-      const res = await axios.get(
-        baseUrl+"get_all_wfh_users"
-      );
+      const res = await axios.get(baseUrl + "get_all_wfh_users");
       const data = res.data.data;
       const onboarddata = data.filter((d) => d.onboard_status === 2).length;
 
       setWfhUsersCount(data.length);
       setYetToOnBoardCount(onboarddata);
     } catch (error) {
-      console.log("Error fething all wfh users", error);
+      // console.log("Error fething all wfh users", error);
     }
   };
 
   const getAnniversaryBirthdays = async () => {
     try {
-      const responseDOB = await axios.get(
-        baseUrl+"get_all_users_with_dob"
-      );
-      const responseDOJ = await axios.get(
-        baseUrl+"get_all_users_with_doj"
-      );
+      const responseDOB = await axios.get(baseUrl + "get_all_users_with_dob");
+      const responseDOJ = await axios.get(baseUrl + "get_all_users_with_doj");
       setBirthdays(responseDOB.data.users);
       setWorkAnniversary(responseDOJ.data.users);
     } catch (error) {
-      console.log("Api problem getanniversary", error);
+      // console.log("Api problem getanniversary", error);
     }
   };
 
   const getThisMonthJoinees = async () => {
     try {
-      const response = await axios.get(
-        baseUrl+"get_last_month_users"
-      );
+      const response = await axios.get(baseUrl + "get_last_month_users");
       setThisMonthJoinee(response.data);
     } catch (error) {
-      console.log("Api problem getanniversary", error);
+      // console.log("Api problem getanniversary", error);
     }
   };
 
   const IncompleteUserProfiles = async () => {
     try {
-      const response = await axios.get(
-        baseUrl+"get_all_percentage"
-      );
+      const response = await axios.get(baseUrl + "get_all_percentage");
       setIncompleteUserProfileData(response.data.incompleteUsersDetails);
     } catch (error) {
-      console.log("incomplete profile Api Problem", error);
+      // console.log("incomplete profile Api Problem", error);
     }
   };
 
-  console.log("this month Joinee", thisMonthJoinee);
+  // console.log("this month Joinee", thisMonthJoinee);
   useEffect(() => {
     getDepartment();
     preOnboardCount();

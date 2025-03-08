@@ -188,7 +188,7 @@ function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    console.log("errorcought");
+    // console.log("errorcought");
     const handleGlobalError = (event) => {
       console.error("Received Global API Error:", event.detail);
       alert(event.detail); // Show error message to the user
@@ -252,7 +252,7 @@ function App() {
 
   // useEffect(() => {
   //   const token = sessionStorage.getItem("token")
-  //   console.log("inside useEffect");
+  //   // console.log("inside useEffect");
   //   const isTokenExpired = () => {
   //     try {
   //       const tokenData = JSON.parse(atob(token.split(".")[1]));
@@ -261,7 +261,7 @@ function App() {
   //       return true;
   //     }
   //   };
-  //   console.log("isToken Expired:", isTokenExpired());
+  //   // console.log("isToken Expired:", isTokenExpired());
   //   if (!token || isTokenExpired()) {
   //     sessionStorage.clear();
   //     navigate("/login");

@@ -52,9 +52,9 @@ const TempPlanCreation = () => {
       const normalizeString = (str) => {
         return str
           ? str
-              .trim()
-              .toLowerCase()
-              .replace(/\u200B/g, "")
+            .trim()
+            .toLowerCase()
+            .replace(/\u200B/g, "")
           : "";
       };
       const matchedDataWithPId = filteredDataU.map((itemU) => {

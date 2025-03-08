@@ -72,7 +72,7 @@ const Backup_Attendence = () => {
   }, []);
 
   const getAttendanceData = () => {
-    console.log("reach");
+    // console.log("reach");
     const payload = {
       dept_id: department,
       month: selectedMonth,
@@ -328,8 +328,8 @@ const Backup_Attendence = () => {
                   type="text"
                   placeholder="Search here"
                   className="w-50 form-control"
-                  // value={search}
-                  // onChange={(e) => setSearch(e.target.value)}
+                // value={search}
+                // onChange={(e) => setSearch(e.target.value)}
                 />
               }
             />

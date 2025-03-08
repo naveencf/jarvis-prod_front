@@ -341,9 +341,8 @@ function PostStats() {
     hour = hour ? hour : 12; // "0" should be displayed as "12"
 
     // Format time with seconds
-    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${
-      second < 10 ? "0" + second : second
-    } ${ampm}`;
+    const time = `${hour}:${minute < 10 ? "0" + minute : minute}:${second < 10 ? "0" + second : second
+      } ${ampm}`;
 
     return { date, time };
   }

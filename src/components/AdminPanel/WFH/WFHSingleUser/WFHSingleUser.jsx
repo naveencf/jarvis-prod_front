@@ -114,7 +114,7 @@ const WFHSingleUser = () => {
           const firstUser = filteredUser[0];
           setUserName(firstUser);
         } else {
-          console.log("No users found for the selected department.");
+          // console.log("No users found for the selected department.");
         }
       } catch (error) {
         console.error("Error fetching data:", error);

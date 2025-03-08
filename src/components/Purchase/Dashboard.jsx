@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState("");
 
-  console.log("range", range);
+  // console.log("range", range);
   const { data, error, isLoading } = useGetTotalDataQuery();
   const { data: vendorDetail } = useGetVendorOutstandingQuery(range);
   const { data: unregisteredPages } = useGetCountOfUnregisteredPagesQuery();

@@ -216,7 +216,7 @@
 //                     <p>965</p>
 //                   </div>
 //                 </div>
-                
+
 //               </div>
 //             </div>
 //           </div>
@@ -227,9 +227,9 @@ import React from 'react';
 
 export default function OurAnalytics({ rows }) {
   // Extract the first 4 brands from the rows array
-  
+
   const topBrands = rows.slice(0, 4);
-// console.log(topBrands);
+  // console.log(topBrands);
   const formatNumber = (value) => {
     if (value >= 1000000) {
       return `${(value / 1000000).toFixed(2)} M`;
@@ -243,7 +243,7 @@ export default function OurAnalytics({ rows }) {
   const formatString = (s) => {
     // Remove leading underscores
     let formattedString = s.replace(/^_+/, "");
-  
+
     // Capitalize the first letter of each word and make the rest lowercase
     if (formattedString) {
       formattedString = formattedString
@@ -251,47 +251,47 @@ export default function OurAnalytics({ rows }) {
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
         .join(" ");
     }
-  
+
     return formattedString;
   };
-  
+
   return (
     <>
-     {rows.length >0 && 
-     <div className="card">
-        <div className="card-body p0">
-          <div className="brandCompareWrapper table-responsive">
-            <div className="divTable">
-              <div className="divTableHeading">
-                <div className="divTableRow">
-                  <div className="divTableHead">
-                    <h5 >Brands</h5>
-                  </div>
-                  {topBrands.map((brand, index) => (
-                    <div className="divTableHead" key={index}>
-                      <div className="compBrandHead titleCard">
-                        <div className="titleCardImg">
-                          <img
-                            src={brand.brand_image ||  "https://storage.googleapis.com/insights_backend_bucket/br/dummybrand.jpeg"}
-                            alt='i'
-                          />
-                        </div>
-                        <div className="titleCardText">
-                          <h2>{brand.instaBrandName}</h2>
-                          <ul>
-                            <li>{formatString(brand.majorCategory)}</li>
-                    
-                            <li>{formatString(brand.brandCategoryName)}</li>
-                            <li>{formatNumber(brand.postcount)}</li>
-                          </ul>
-                          {/* <h6 style={{ fontWeight: 'normal' }}>{formatString(brand.brandSubCategoryName)}</h6> */}
+      {rows.length > 0 &&
+        <div className="card">
+          <div className="card-body p0">
+            <div className="brandCompareWrapper table-responsive">
+              <div className="divTable">
+                <div className="divTableHeading">
+                  <div className="divTableRow">
+                    <div className="divTableHead">
+                      <h5 >Brands</h5>
+                    </div>
+                    {topBrands.map((brand, index) => (
+                      <div className="divTableHead" key={index}>
+                        <div className="compBrandHead titleCard">
+                          <div className="titleCardImg">
+                            <img
+                              src={brand.brand_image || "https://storage.googleapis.com/insights_backend_bucket/br/dummybrand.jpeg"}
+                              alt='i'
+                            />
+                          </div>
+                          <div className="titleCardText">
+                            <h2>{brand.instaBrandName}</h2>
+                            <ul>
+                              <li>{formatString(brand.majorCategory)}</li>
+
+                              <li>{formatString(brand.brandCategoryName)}</li>
+                              <li>{formatNumber(brand.postcount)}</li>
+                            </ul>
+                            {/* <h6 style={{ fontWeight: 'normal' }}>{formatString(brand.brandSubCategoryName)}</h6> */}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-              {/* <div className="divTableBody">
+                {/* <div className="divTableBody">
                 <div className="divTableRow">
                   <div className="divTableCell" data-label="Hero Title">
                     <h6 className="divTableTH">
@@ -368,10 +368,10 @@ export default function OurAnalytics({ rows }) {
                   ))}
                 </div>
               </div> */}
+              </div>
             </div>
           </div>
-        </div>
-      </div>}
+        </div>}
     </>
   );
 }

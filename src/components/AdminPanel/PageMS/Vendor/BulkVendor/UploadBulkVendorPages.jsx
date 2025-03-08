@@ -77,14 +77,14 @@ const UploadBulkVendorPages = ({ getRowData, from, onClose, category, activePlat
           </thead>
           <tbody>
             ${duplicates
-              .map(
-                (item) => `
+          .map(
+            (item) => `
                 <tr>
                   <td style="border-bottom: 1px solid #ddd; padding: 8px;">${item.page_name}</td>
                 </tr>
               `
-              )
-              .join('')}
+          )
+          .join('')}
           </tbody>
         </table>
       `,

@@ -25,7 +25,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
     //         const match = shortcode?.match(regex);
 
     //         if (!match || !match[2]) {
-    //             console.log("Invalid shortcode format.");
+    //             // console.log("Invalid shortcode format.");
     //             return;
     //         }
 
@@ -140,7 +140,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
     //             console.error("Error fetching page details:", error);
     //         }
     //     } else {
-    //         console.log("No shortcode provided.");
+    //         // console.log("No shortcode provided.");
     //     }
     // };
 
@@ -151,7 +151,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
             const match = instaLink?.match(regex);
 
             if (!match || !match[2]) {
-                console.log("Invalid instaLink format.");
+                // console.log("Invalid instaLink format.");
                 return;
             }
 
@@ -269,7 +269,7 @@ const OpreationLinkUpdateDirect = ({ getPlanWisePages, planWisePage }) => {
                 console.error("Error fetching page details:", error);
             }
         } else {
-            console.log("No shortcode provided.");
+            // console.log("No shortcode provided.");
         }
     };
 

@@ -49,7 +49,7 @@ export default function Pending() {
   const handleClose2 = () => setOpen2(false);
   const setAssignTo = useRef("");
 
-  const handleCheckBox = (params) => {};
+  const handleCheckBox = (params) => { };
   const handleGetRowData = (row) => {
     const data = showTable1Data.filter(
       (e) => e.status == 1 && e.stage == 1 && e.brand_id == row

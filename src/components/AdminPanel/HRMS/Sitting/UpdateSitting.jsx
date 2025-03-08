@@ -19,7 +19,6 @@ import room104 from "../../../../assets/imgs/sitting/room-104.png";
 import { baseUrl } from "../../../../utils/config";
 import { useGlobalContext } from "../../../../Context/Context";
 
-
 // Slider Settings
 const sliderSettings = {
   dots: false,
@@ -99,9 +98,9 @@ const UpdateSitting = ({
   console.log(roomWiseCount, "room wise count");
 
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Track selected dropdown value
-  const userData = usersDataContext.filter(
-    (d) => d.user_status === "Active" && d.job_type === "WFO"
-  );
+  // const userData = usersDataContext.filter(
+  //   (d) => d.user_status === "Active" && d.job_type === "WFO"
+  // );
 
   useEffect(() => {
     // Load chair SVG
@@ -139,7 +138,7 @@ const UpdateSitting = ({
     axios
       .get(baseUrl + "get_all_arrangement")
       .then((response) => {
-        const layoutsData = response.data.reduce((acc, layout) => {
+        const layoutsData = response?.data?.reduce((acc, layout) => {
           acc[layout.roomName] = layout; // Group by room name
           return acc;
         }, {});
@@ -337,8 +336,8 @@ const UpdateSitting = ({
                             selectedId === el.id
                               ? "green"
                               : el.employee
-                              ? "white"
-                              : "white"
+                                ? "white"
+                                : "white"
                           }
                           stroke={selectedId === el.id ? "green" : "black"}
                           strokeWidth={selectedId === el.id ? 2 : 1}

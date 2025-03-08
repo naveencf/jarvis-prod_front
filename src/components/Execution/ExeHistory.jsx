@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import FormContainer from "../AdminPanel/FormContainer";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";
@@ -12,7 +12,7 @@ import { render } from "react-dom";
 
 export default function ExeHistory({ pageRow }) {
   const { id } = useParams();
- 
+
   // console.log(id, "id");
   const [buttonAccess, setButtonAccess] = useState(false);
   const [data, setData] = useState([]);
@@ -359,8 +359,9 @@ export default function ExeHistory({ pageRow }) {
       field: "Age_18_24_percent",
       headerName: "Age 18-24 %",
       width: 150,
-      renderCell: (params) => { 
-          return params.row?.Age_18_24_percent ?? "NA"}
+      renderCell: (params) => {
+        return params.row?.Age_18_24_percent ?? "NA"
+      }
     },
     {
       field: "Age_25_34_percent",
@@ -393,7 +394,7 @@ export default function ExeHistory({ pageRow }) {
     {
       field: "Age_65_plus_percent",
       headerName: "Age 65+ %",
-      renderCell: params=>{
+      renderCell: params => {
         return params.row?.Age_65_plus_percent ?? "NA";
       }
     },
@@ -449,19 +450,19 @@ export default function ExeHistory({ pageRow }) {
       renderCell: (params) => {
         return (
           <>
-          <Button
-            variant="contained"
-            color="primary"
-          >
-          <Link to={`/admin/pageStats/${params.row._id}`}>Edit</Link>
-          </Button>
-          <Button
-            onClick={() => handleDeleteRowData(params.row)}
-            variant="contained"
-            color="error"
-          >
-            Delete
-          </Button>
+            <Button
+              variant="contained"
+              color="primary"
+            >
+              <Link to={`/admin/pageStats/${params.row._id}`}>Edit</Link>
+            </Button>
+            <Button
+              onClick={() => handleDeleteRowData(params.row)}
+              variant="contained"
+              color="error"
+            >
+              Delete
+            </Button>
           </>
         );
       },
@@ -476,31 +477,33 @@ export default function ExeHistory({ pageRow }) {
         buttonAccess={buttonAccess}
       />
       <div className="card body-padding fx-head nt-head">
-      {console.log(data[0]?._id ,"nnnnnnnnnnnnnnnnnn")}
-        {data[0]?._id ? (
-          <DataGrid
-            rows={data}
-            columns={columns}
-            pageSize={10}
-            rowsPerPageOptions={[10]}
-            checkboxSelection
-            getRowId={(row) => row._id}
-          />
-        ) : (
-          <>
-          
-          <h3 className="text-center">No Data Found</h3>
-          <Link to={{ pathname: `/admin/pageStats/${id}` }}>
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-               
-              >
-                Add Stats
-              </button>
-            </Link>
-          </>
-        )}
+        {console.log(data[0]?._id, "nnnnnnnnnnnnnnnnnn")}
+        {
+          data[0]?._id ? (
+            <DataGrid
+              rows={data}
+              columns={columns}
+              pageSize={10}
+              rowsPerPageOptions={[10]}
+              checkboxSelection
+              getRowId={(row) => row._id}
+            />
+          ) : (
+            <>
+
+              <h3 className="text-center">No Data Found</h3>
+              <Link to={{ pathname: `/admin/pageStats/${id}` }}>
+                <button
+                  type="button"
+                  className="btn cmnbtn btn_sm btn-outline-primary"
+
+                >
+                  Add Stats
+                </button>
+              </Link>
+            </>
+          )
+        }
       </div>
 
       <DeleteHistoryConfirmation

@@ -37,13 +37,13 @@ export default function PriceLogs({ open, onClose, rowData, allPriceTypeList }) 
         );
 
         setData(res.data.data);
-        setLoadingProgress(100); 
+        setLoadingProgress(100);
         console.log(res.data.data, "page logs data");
       } catch (error) {
-        setLoadingProgress(100); 
+        setLoadingProgress(100);
         console.error("Error fetching page logs:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 

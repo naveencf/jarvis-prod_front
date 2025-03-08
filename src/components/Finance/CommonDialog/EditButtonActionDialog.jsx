@@ -12,7 +12,7 @@ const EditButtonActionDialog = ({
   handleCloseEditAction,
   outstandingRowData,
 }) => {
-  console.log("hii");
+  // console.log("hii");
   const [invcNumber, setInvcNumber] = useState("");
   const [partyName, setPartyName] = useState("");
   const [invcDate, setInvcDate] = useState("");

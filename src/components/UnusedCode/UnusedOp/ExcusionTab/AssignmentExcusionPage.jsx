@@ -56,7 +56,7 @@ const AssignmentExcusionPage = ({
           console.error("Error fetching page details:", error);
         }
       } else {
-        console.log("No match found or invalid shortcode.");
+        // console.log("No match found or invalid shortcode.");
       }
     };
     fetchPageDetails();
@@ -135,7 +135,7 @@ const AssignmentExcusionPage = ({
           placeholder="Story Link"
           type="text"
           value=""
-          // onChange={(event) => setShortcode(event.target.value)}
+        // onChange={(event) => setShortcode(event.target.value)}
         />
       ),
     },

@@ -14,8 +14,8 @@ import { useNavigate, useParams } from "react-router-dom";
 
 const VendorGroupLink = () => {
   const navigate = useNavigate();
-  const {vendorMast_name}= useParams();
-  const { toastAlert,toastError } = useGlobalContext();
+  const { vendorMast_name } = useParams();
+  const { toastAlert, toastError } = useGlobalContext();
   const [groupLink, setGroupLink] = useState("");
   const [description, setDescription] = useState("");
   const [vendorId, setVendorId] = useState("")
@@ -36,23 +36,23 @@ const VendorGroupLink = () => {
   const userID = decodedToken.id;
 
   const getData = () => {
-    axios.get(baseUrl+"getAllVendorGroupList")
+    axios.get(baseUrl + "getAllVendorGroupList")
       .then((res) => {
         setVendorTypes(res.data.data);
         setFilterData(res.data.data);
-    });
+      });
 
     axios.get(baseUrl + "vendorAllData").then((res) => {
-        setVendorData(res.data.tmsVendorkMastList);
+      setVendorData(res.data.tmsVendorkMastList);
     });
     axios.get(baseUrl + "getAllGroupLink").then((res) => {
-        setGroupData(res.data.data);
+      setGroupData(res.data.data);
     });
   };
 
   useEffect(() => {
-    if(vendorMast_name?.length>0) {
-     let vendordata= vendorData?.find((role) => role.vendorMast_name === vendorMast_name?.replace(/-/g, " "));
+    if (vendorMast_name?.length > 0) {
+      let vendordata = vendorData?.find((role) => role.vendorMast_name === vendorMast_name?.replace(/-/g, " "));
       setVendorId(vendordata?.vendorMast_id)
 
       let result = vendorTypes?.filter((d) => {
@@ -60,11 +60,11 @@ const VendorGroupLink = () => {
       });
       setFilterData(result);
     }
-  },[vendorData])
+  }, [vendorData])
 
   useEffect(() => {
     getData();
-  },[])
+  }, [])
 
   useEffect(() => {
     const result = vendorTypes.filter((d) => {
@@ -75,15 +75,15 @@ const VendorGroupLink = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(groupLink === "" ){  
+    if (groupLink === "") {
       toastError("Please Fill  Group Link  ");
       return;
     }
-    else if(vendorId === "" ){
+    else if (vendorId === "") {
       toastError("Please Fill  Vendor Id  ");
       return;
     }
-    else if(linkTypeId === "" ){
+    else if (linkTypeId === "") {
       toastError("Please Fill  Group Link Type Id  ");
       return;
     }
@@ -95,20 +95,20 @@ const VendorGroupLink = () => {
       description: description,
       created_by: userID
     })
-    .then(() => {
-      // setIsFormSubmitted(true);
-      toastAlert("Submitted");
-      setGroupLink("")
-      setDescription("")
-      setVendorId('')
-      setLinkTypeId('')
-      getData()
-      navigate("/admin/pms-vendor-overview")
-    }).catch((error) => {
-      toastError(error.response.data.message);
-      console.log(error.response.data.message)
-    }
-    );
+      .then(() => {
+        // setIsFormSubmitted(true);
+        toastAlert("Submitted");
+        setGroupLink("")
+        setDescription("")
+        setVendorId('')
+        setLinkTypeId('')
+        getData()
+        navigate("/admin/pms-vendor-overview")
+      }).catch((error) => {
+        toastError(error.response.data.message);
+        console.log(error.response.data.message)
+      }
+      );
   };
 
   const columns = [
@@ -159,7 +159,7 @@ const VendorGroupLink = () => {
     },
   ];
 
-  const handleRowData = (row) =>{
+  const handleRowData = (row) => {
     // console.log(row.PMS_VendorMasts_data.PMSGroupLinks_data.group_link_type_id," row.PMSGroupLinks_data.link_type")
     setRowData(row);
     setGroupLinkUpdate(row.group_link);
@@ -169,34 +169,34 @@ const VendorGroupLink = () => {
   }
 
   const handleModalUpdate = () => {
-    if(groupLinkUpdate === "" ){
+    if (groupLinkUpdate === "") {
       toastError("Please Fill  Group Link  ");
       return;
     }
-    else if(vendorIdUpdate === "" ){  
+    else if (vendorIdUpdate === "") {
       toastError("Please Fill  Vendor Id  ");
       return;
     }
-    else if(linkTypeIdUpdate === "" ){  
+    else if (linkTypeIdUpdate === "") {
       toastError("Please Fill  Group Link Type Id  ");
       return;
     }
 
-    axios.put(baseUrl+`updateVendorGroup/${rowData._id}`, {
+    axios.put(baseUrl + `updateVendorGroup/${rowData._id}`, {
       vendorMast_id: vendorIdUpdate,
       group_link_type_id: linkTypeIdUpdate,
       group_link: groupLinkUpdate,
       description: descriptionUpdate,
       updated_by: userID
     })
-    .then(() => {
-      toastAlert("Successfully Update");
-      getData();
-      setGroupLinkUpdate("")
-      setDescriptionUpdate("")
-      setVendorIdUpdate('');
-      setLinkTypeIdUpdate('');
-    });
+      .then(() => {
+        toastAlert("Successfully Update");
+        getData();
+        setGroupLinkUpdate("")
+        setDescriptionUpdate("")
+        setVendorIdUpdate('');
+        setLinkTypeIdUpdate('');
+      });
   };
 
   return (
@@ -206,7 +206,7 @@ const VendorGroupLink = () => {
         title="Vendor Group Link"
         handleSubmit={handleSubmit}
       >
-   <div className="form-group col-6">
+        <div className="form-group col-6">
           <label className="form-label">
             Group Link Type  <sup style={{ color: "red" }}>*</sup>
           </label>
@@ -234,7 +234,7 @@ const VendorGroupLink = () => {
           required={true}
           onChange={(e) => setGroupLink(e.target.value)}
         />
-        
+
         <FieldContainer
           label="Description"
           value={description}
@@ -247,7 +247,7 @@ const VendorGroupLink = () => {
             Vendor  <sup style={{ color: "red" }}>*</sup>
           </label>
           <Select
-          isDisabled={vendorMast_name?.length > 0}
+            isDisabled={vendorMast_name?.length > 0}
             options={vendorData.map((option) => ({
               value: option.vendorMast_id,
               label: option.vendorMast_name,
@@ -266,7 +266,7 @@ const VendorGroupLink = () => {
           ></Select>
         </div>
 
-     
+
 
       </FormContainer>
 
@@ -316,59 +316,59 @@ const VendorGroupLink = () => {
                 onChange={(e) => setDescriptionUpdate(e.target.value)}
               />
 
-            <div className="form-group col-6">
-              <label className="form-label">
-                Vendor id <sup style={{ color: "red" }}>*</sup>
-              </label>
-              <Select
-                options={vendorData.map((option) => ({
-                  value: option.vendorMast_id,
-                  label: option.vendorMast_name,
-                }))}
-                value={{
-                  value: vendorId,
-                  label:
-                    vendorData.find((role) => role.vendorMast_id === vendorIdUpdate)?.vendorMast_name ||
-                    "",
-                }}
-                onChange={(e) => {
-                  // console.log(e.value," e.value")
-                  setVendorIdUpdate(e.value);
-                }}
-              ></Select>
-            </div>
+              <div className="form-group col-6">
+                <label className="form-label">
+                  Vendor id <sup style={{ color: "red" }}>*</sup>
+                </label>
+                <Select
+                  options={vendorData.map((option) => ({
+                    value: option.vendorMast_id,
+                    label: option.vendorMast_name,
+                  }))}
+                  value={{
+                    value: vendorId,
+                    label:
+                      vendorData.find((role) => role.vendorMast_id === vendorIdUpdate)?.vendorMast_name ||
+                      "",
+                  }}
+                  onChange={(e) => {
+                    // console.log(e.value," e.value")
+                    setVendorIdUpdate(e.value);
+                  }}
+                ></Select>
+              </div>
 
-            <div className="form-group col-6">
-              <label className="form-label">
-                Group link type id <sup style={{ color: "red" }}>*</sup>
-              </label>
-              <Select
-                options={groupData.map((option) => ({
-                  value: option._id,
-                  label: option.link_type,
-                }))}
-                value={{
-                  value: linkTypeId,
-                  label:
-                    groupData.find((role) => role._id === linkTypeIdUpdate)?.link_type ||
-                    "",
-                }}
-                onChange={(e) => {
-                  setLinkTypeIdUpdate(e.value);
-                }}
-              ></Select>
-            </div>
-            
+              <div className="form-group col-6">
+                <label className="form-label">
+                  Group link type id <sup style={{ color: "red" }}>*</sup>
+                </label>
+                <Select
+                  options={groupData.map((option) => ({
+                    value: option._id,
+                    label: option.link_type,
+                  }))}
+                  value={{
+                    value: linkTypeId,
+                    label:
+                      groupData.find((role) => role._id === linkTypeIdUpdate)?.link_type ||
+                      "",
+                  }}
+                  onChange={(e) => {
+                    setLinkTypeIdUpdate(e.value);
+                  }}
+                ></Select>
+              </div>
+
             </div>
             <div className="modal-footer">
-              <button type="button" 
-                className="btn btn-danger" 
+              <button type="button"
+                className="btn btn-danger"
                 data-dismiss="modal"
               >Close</button>
-              <button type="button" 
-                className="btn btn-success" 
+              <button type="button"
+                className="btn btn-success"
                 onClick={handleModalUpdate}
-                  data-dismiss={`${groupLinkUpdate === "" ?"": 'modal'}`}
+                data-dismiss={`${groupLinkUpdate === "" ? "" : 'modal'}`}
               >Update</button>
             </div>
           </div>

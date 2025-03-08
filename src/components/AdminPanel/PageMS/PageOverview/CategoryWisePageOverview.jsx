@@ -5,8 +5,8 @@ import { formatNumber } from '../../../../utils/formatNumber';
 
 
 const CategoryWisePageOverview = ({ categoryData, setFilterData, pageList, setActiveTab }) => {
-    console.log(pageList,' new catgory');
-    
+    console.log(pageList, ' new catgory');
+
     const categoryGridcolumns = [
         {
             field: "S.NO",

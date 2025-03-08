@@ -221,7 +221,7 @@ const PageProfile = () => {
                   color="primary"
                   label={`Store-Post : ${formatNumber(
                     analyticsData?.paidPostInfoObj?.totalPost +
-                      analyticsData?.unPaidPostInfoObj?.totalPost
+                    analyticsData?.unPaidPostInfoObj?.totalPost
                   )}
                    `}
                 />
@@ -231,7 +231,7 @@ const PageProfile = () => {
                   label={`Post / Day : ${formatNumber(
                     (analyticsData?.paidPostInfoObj?.totalPost +
                       analyticsData?.unPaidPostInfoObj?.totalPost) /
-                      analyticsData?.noOfDays
+                    analyticsData?.noOfDays
                   )}`}
                 />
               </Stack>
@@ -266,7 +266,7 @@ const PageProfile = () => {
                           <span>Promotional/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.paidPostInfoObj?.totalPost /
-                              analyticsData?.noOfDays
+                            analyticsData?.noOfDays
                           )}
                         </div>
                       </div>
@@ -275,7 +275,7 @@ const PageProfile = () => {
                           <span>Views/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.paidPostInfoObj?.totalViews /
-                              analyticsData?.paidPostInfoObj?.totalPost
+                            analyticsData?.paidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -284,7 +284,7 @@ const PageProfile = () => {
                           <span>Likes/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.paidPostInfoObj?.totalLikes /
-                              analyticsData?.paidPostInfoObj?.totalPost
+                            analyticsData?.paidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -293,7 +293,7 @@ const PageProfile = () => {
                           <span>Comments/Day</span>
                           {formatNumber(
                             analyticsData?.paidPostInfoObj?.totalComments /
-                              analyticsData?.paidPostInfoObj?.totalPost
+                            analyticsData?.paidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -329,7 +329,7 @@ const PageProfile = () => {
                           <span>Non-Promotional/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.unPaidPostInfoObj?.totalPost /
-                              analyticsData?.noOfDays
+                            analyticsData?.noOfDays
                           )}
                         </div>
                       </div>
@@ -338,7 +338,7 @@ const PageProfile = () => {
                           <span>Views/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.unPaidPostInfoObj?.totalViews /
-                              analyticsData?.unPaidPostInfoObj?.totalPost
+                            analyticsData?.unPaidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -347,7 +347,7 @@ const PageProfile = () => {
                           <span>Likes/Day</span>{" "}
                           {formatNumber(
                             analyticsData?.unPaidPostInfoObj?.totalLikes /
-                              analyticsData?.unPaidPostInfoObj?.totalPost
+                            analyticsData?.unPaidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -356,7 +356,7 @@ const PageProfile = () => {
                           <span>Comments/Day</span>
                           {formatNumber(
                             analyticsData?.unPaidPostInfoObj?.totalComments /
-                              analyticsData?.unPaidPostInfoObj?.totalPost
+                            analyticsData?.unPaidPostInfoObj?.totalPost
                           )}
                         </div>
                       </div>
@@ -442,7 +442,7 @@ const PageProfile = () => {
             </div>
           </div>
         </div>
-        <PageDateWiseStatus creatorDetail={creatorDetail}  creatorProgress={creatorProgress} setCreatorProgress={setCreatorProgress}/>
+        <PageDateWiseStatus creatorDetail={creatorDetail} creatorProgress={creatorProgress} setCreatorProgress={setCreatorProgress} />
         <PostsTabs
           rows={rows}
           setRows={setRows}
@@ -455,8 +455,8 @@ const PageProfile = () => {
           startDate={startDate}
           setStartDate={setStartDate}
         />
-      </div>:
-      <LogoLoader/>
+      </div> :
+        <LogoLoader />
       }
     </>
   );

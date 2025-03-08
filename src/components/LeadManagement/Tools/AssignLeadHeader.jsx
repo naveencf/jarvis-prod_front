@@ -42,13 +42,13 @@ function AssignLeadHeader({
 
   const checkinputvalidtaion = () => {
     if (input == 0) {
-      console.log("working");
+      // console.log("working");
       tj = 0;
       setAlert(true);
       return false;
     } else if (N == 0) {
       tj = 1;
-      console.log("emp catch and tj = 1");
+      // console.log("emp catch and tj = 1");
       setAlert(true);
       return false;
     }
@@ -60,7 +60,7 @@ function AssignLeadHeader({
     if (checkinputvalidtaion()) {
       N = rowSelectionModel.length;
       for (let i = 0; i < n; i++) {
-        console.log("put api will hit here" + i);
+        // console.log("put api will hit here" + i);
       }
       setInput(0);
       setRowSelectionModel([]);
@@ -79,26 +79,26 @@ function AssignLeadHeader({
         console.log(hm.get(rowSelectionModel[i]));
       }
       ta = ta + Number(n);
-      console.log(" ta:" + ta + " n:" + typeof n);
+      // console.log(" ta:" + ta + " n:" + typeof n);
 
       let avgass = Math.floor(ta / N),
         q = 0,
         p = 0;
-      console.log(" ta:" + ta + " avgass:" + avgass);
+      // console.log(" ta:" + ta + " avgass:" + avgass);
       while (q < n && p < N) {
         if (hm.get(rowSelectionModel[p]) >= avgass) {
           p++;
         } else {
           hm.set(rowSelectionModel[p], hm.get(rowSelectionModel[p]) + 1);
-          console.log("put api will  hit here");
-          console.log("Assign to " + rowSelectionModel[p]);
+          // console.log("put api will  hit here");
+          // console.log("Assign to " + rowSelectionModel[p]);
           q++;
         }
       }
       if (q < n) {
         while (q < n) {
-          console.log("api put hit for remainder leads");
-          console.log("Assign to " + rowSelectionModel[q % N]);
+          // console.log("api put hit for remainder leads");
+          // console.log("Assign to " + rowSelectionModel[q % N]);
           q++;
         }
       }

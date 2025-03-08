@@ -1,6 +1,6 @@
 import CampaignDetailes from "./CampaignDetailes";
 import { useParams } from "react-router-dom";
-import { useState} from "react";
+import { useState } from "react";
 import PageDetailingNew from "./PageDetailingNew";
 
 const PlancreationNew = () => {
@@ -25,11 +25,11 @@ const PlancreationNew = () => {
             <CampaignDetailes cid={id} getCampaign={getCampaignName} />
 
             <PageDetailingNew
-                
+
                 pageName={"planCreation"}
-               
+
                 data={{ campaignId: id, campaignName }}
-                
+
             />
         </>
     )

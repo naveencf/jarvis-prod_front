@@ -19,8 +19,9 @@ const OfficeMastOverview = () => {
       try {
         const response = await axios.post(`${baseUrl}get_all_data_of_sitting`, {
           roomName: room,
+          shift_id: Number(shift),
         });
-        setAssignedCount(response.data.data);
+        setAssignedCount(response?.data?.data);
       } catch (error) {
         console.error("Error fetching sitting data:", error);
         setError(error.message);

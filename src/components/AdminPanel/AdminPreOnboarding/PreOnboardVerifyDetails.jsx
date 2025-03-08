@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import FormContainer from "../FormContainer";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 
 const PreOnboardVerifyDetails = () => {
   const [search, setSearch] = useState("");
@@ -14,14 +14,14 @@ const PreOnboardVerifyDetails = () => {
   async function getData() {
     try {
       const response = await axios.get(
-        baseUrl+"get_all_users"
+        baseUrl + "get_all_users"
       );
       const data = response.data.data;
 
       setDatas(data);
       setFilterData(data);
     } catch (error) {
-      console.log("Error fething Data", error);
+      // console.log("Error fething Data", error);
     } finally {
       setLoading(false);
     }

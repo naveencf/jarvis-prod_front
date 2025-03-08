@@ -10,8 +10,8 @@ import { Navigate } from "react-router-dom";
 
 const CustomerDocumentMaster = () => {
   const { toastAlert, toastError } = useGlobalContext();
- const [customerName, setCustomerName] = useState("");
- const [docName, setDocName] = useState(""); 
+  const [customerName, setCustomerName] = useState("");
+  const [docName, setDocName] = useState("");
   const [docFile, setDocFile] = useState("");
   const [docNo, setDocNo] = useState("");
   const [description, setDescription] = useState("");
@@ -22,11 +22,11 @@ const CustomerDocumentMaster = () => {
 
   const [customersDoc, setCustomersDoc] = useState([]);
   const getData = () => {
-    axios.get(baseUrl + "get_all_doc_mast") 
+    axios.get(baseUrl + "get_all_doc_mast")
       .then((res) => {
         console.log(res.data.data);
-      
-        setCustomersDoc(res?.data?.data); 
+
+        setCustomersDoc(res?.data?.data);
         setFilterData(res.data.data);
       });
   };
@@ -47,7 +47,7 @@ const CustomerDocumentMaster = () => {
   }, []);
 
 
- 
+
 
   useEffect(() => {
     CustomerData();
@@ -105,7 +105,7 @@ const CustomerDocumentMaster = () => {
           }}
         ></Select>
       </div>
-     
+
       <div className="form-group col-6">
         <label className="form-label">
           Doc Name <sup style={{ color: "red" }}>*</sup>
@@ -113,12 +113,12 @@ const CustomerDocumentMaster = () => {
         <Select
           options={customersDoc?.map((option) => ({
             value: option?._id,
-            label: option?.doc_name ,
+            label: option?.doc_name,
           }))}
           value={{
             value: docName,
             label:
-            customersDoc?.find((doc) => doc._id === docName)
+              customersDoc?.find((doc) => doc._id === docName)
                 ?.doc_name || "",
           }}
           onChange={(e) => {

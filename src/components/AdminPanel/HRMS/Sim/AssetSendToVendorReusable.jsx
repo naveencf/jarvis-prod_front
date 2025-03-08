@@ -54,7 +54,7 @@ const AssetSendToVendorReusable = ({
       getData();
       onClose();
       toastAlert("Status Updated");
-    } catch {}
+    } catch { }
   };
 
   return (

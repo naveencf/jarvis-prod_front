@@ -100,7 +100,7 @@ const BulkPayThroughVendorDialog = (props) => {
         }
       );
 
-      console.log("Upload successful:", response?.data);
+      // console.log("Upload successful:", response?.data);
     } catch (error) {
       console.error("Error uploading CSV:", error);
     }

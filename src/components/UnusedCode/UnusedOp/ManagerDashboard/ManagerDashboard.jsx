@@ -23,13 +23,13 @@ const ManagerDashboard = () => {
   const Assigndata = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}`+`assignment/campaign/${Cid}`
+        `${baseUrl}` + `assignment/campaign/${Cid}`
       );
-      
-    
+
+
       const assigned = response.data?.data?.filter(
-        (item) =>  item.ass_status === "assigned" || item.ass_status === "pending"
-         
+        (item) => item.ass_status === "assigned" || item.ass_status === "pending"
+
       );
       const executed = response.data?.data?.filter(
         (item) => item.ass_status === "executed"
@@ -100,27 +100,27 @@ const ManagerDashboard = () => {
       <FormContainer
         submitButton={false}
         mainTitle=" Campaign Progress Tab "
-       link={true}
-       handleSubmit={false}
+        link={true}
+        handleSubmit={false}
       >
-      
+
       </FormContainer>
       <div className="tab">
-      {accordionButtons.map((item, index) => (
-        <div className={`named-tab ${activeAccordionIndex === index ?"active-tab":""}`}
-        onClick={()=>{handleAccordionButtonClick(index)}}>{item}</div>
-      ))}
+        {accordionButtons.map((item, index) => (
+          <div className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""}`}
+            onClick={() => { handleAccordionButtonClick(index) }}>{item}</div>
+        ))}
       </div>
       <div className="card">
         <div className="card-header">
           <div className="pack">
-          <TextField
-            label="Search Experts"
-            type="text"
-            value={filterData}
-            onChange={handleFilterChange}
-            sx={{ mb: 2, width: "20%" }}
-          />
+            <TextField
+              label="Search Experts"
+              type="text"
+              value={filterData}
+              onChange={handleFilterChange}
+              sx={{ mb: 2, width: "20%" }}
+            />
           </div>
         </div>
         <div className="card-body">

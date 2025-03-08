@@ -8,7 +8,7 @@ import TopBrands from "../Dashboard/TopBrands";
 import { useEffect } from "react";
 import TopCampaigninPages from "../Dashboard/TopCampaigninPages";
 
-function PageTopBrandsCampaigns({ analyticsData,rows, setRows ,campaignrows, setCampaignRows,setRequestedData}) {
+function PageTopBrandsCampaigns({ analyticsData, rows, setRows, campaignrows, setCampaignRows, setRequestedData }) {
   const { dataForDecisionall, brands, allcampaign } = useContext(AnalyticsContext);
   // const [rows, setRows] = useState([]);
   // const [campaignrows, setCampaignRows] = useState([]);
@@ -35,11 +35,11 @@ function PageTopBrandsCampaigns({ analyticsData,rows, setRows ,campaignrows, set
     }
   }, [brands, analyticsData]);
 
-  
+
   useEffect(() => {
     if (allcampaign && analyticsData?.campaignIDs) {
       const topcampaignforpage = mergeArraysforCampaigns(analyticsData?.campaignIDs, allcampaign);
-      
+
       // Ensure postcount is numeric
       const sortedData = [...topcampaignforpage].sort((a, b) => {
         // Handle cases where postcount might be null or undefined
@@ -50,7 +50,7 @@ function PageTopBrandsCampaigns({ analyticsData,rows, setRows ,campaignrows, set
       });
       // console.log(sortedData,"campaign data");
       setCampaignRows(sortedData);
-     }
+    }
   }, [allcampaign, analyticsData]);
 
   const mergeArraysforCampaigns = (analyticsArray, allcampaign) => {
@@ -96,9 +96,9 @@ function PageTopBrandsCampaigns({ analyticsData,rows, setRows ,campaignrows, set
   };
 
   return (
-    <div  style={{cursor:'pointer'}} className="row">
+    <div style={{ cursor: 'pointer' }} className="row">
       <Leaderboard />
-      <TopBrands rows={rows} setRows={setRows} setAllRows={setAllRows} setRequestedData={setRequestedData}/>
+      <TopBrands rows={rows} setRows={setRows} setAllRows={setAllRows} setRequestedData={setRequestedData} />
       <TopCampaigninPages
         rows={campaignrows}
         setRows={setCampaignRows}

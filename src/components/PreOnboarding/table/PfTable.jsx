@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const PfTable = ({ UserDetails }) => {
-    console.log("pf section")
+    // console.log("pf section")
     let salary = UserDetails?.salary;
     let basicSalary = salary * 0.6;
     let HRA = basicSalary * 0.3;

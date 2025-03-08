@@ -29,7 +29,7 @@ import MyTemplate2 from "./Template2";
 import MyTemplate3 from "./Template3";
 import MyTemplate4 from "./Template4";
 import MyTemplate5 from "./Template5";
-import {baseUrl} from '../../../../utils/config'
+import { baseUrl } from '../../../../utils/config'
 import FormContainer from "../../FormContainer";
 
 const images = [
@@ -87,7 +87,7 @@ const Backup_WFHSalary = () => {
     const fetchData = async () => {
       try {
         const res = await axios.get(
-          baseUrl+"get_all_wfh_users"
+          baseUrl + "get_all_wfh_users"
         );
         const data = res.data.data;
         const filteredUser = data.filter((d) => d.dept_id === department);
@@ -95,7 +95,7 @@ const Backup_WFHSalary = () => {
           const firstUser = filteredUser[0];
           setUserName(firstUser);
         } else {
-          console.log("No users found for the selected department.");
+          // console.log("No users found for the selected department.");
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -107,19 +107,19 @@ const Backup_WFHSalary = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_all_departments")
+      .get(baseUrl + "get_all_departments")
       .then((res) => {
         getDepartmentData(res.data);
       });
   }, []);
 
   useEffect(() => {
-    axios.get(`${baseUrl}`+`get_all_users`).then((res) => {
+    axios.get(`${baseUrl}` + `get_all_users`).then((res) => {
       getUsersData(res.data.data);
     });
     if (department) {
       axios
-        .get(`${baseUrl}`+`getuserdeptwise/${department}`)
+        .get(`${baseUrl}` + `getuserdeptwise/${department}`)
         .then((res) => {
           setDepartmentWise(res.data);
         });
@@ -142,7 +142,7 @@ const Backup_WFHSalary = () => {
     };
     axios
       .post(
-        baseUrl+"get_salary_by_id_month_year",
+        baseUrl + "get_salary_by_id_month_year",
         payload
       )
       .then((res) => {
@@ -160,7 +160,7 @@ const Backup_WFHSalary = () => {
     formData.append("id", data.user_id);
     formData.append("invoice_template_no", selectedTemplate);
 
-    axios.put(`${baseUrl}`+`userupdate`, formData, {
+    axios.put(`${baseUrl}` + `userupdate`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -182,7 +182,7 @@ const Backup_WFHSalary = () => {
 
   const handleAttendence = () => {
     axios
-      .post(baseUrl+"attendencemastpost", {
+      .post(baseUrl + "attendencemastpost", {
         dept: department,
         user_id: userName.user_id,
         noOfabsent: 0,
@@ -328,11 +328,11 @@ const Backup_WFHSalary = () => {
   //Send to finance
   function handleSendToFinance(e, row) {
     e.preventDefault();
-    axios.post(`${baseUrl}`+`finance`, {
+    axios.post(`${baseUrl}` + `finance`, {
       attendence_id: row.attendence_id,
     });
 
-    axios.put(`${baseUrl}`+`updatesalary`, {
+    axios.put(`${baseUrl}` + `updatesalary`, {
       attendence_id: row.attendence_id,
       sendToFinance: 1,
     });
@@ -874,9 +874,8 @@ const Backup_WFHSalary = () => {
               <div>
                 ScreenSort :
                 <img
-                  src={`${baseUrl+"user_images/"}${
-                    rowDataModal?.screenshot
-                  }`}
+                  src={`${baseUrl + "user_images/"}${rowDataModal?.screenshot
+                    }`}
                   alt="Snap"
                 />
               </div>

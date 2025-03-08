@@ -31,7 +31,7 @@ const ScrapReusable = ({ isModalOpenSend, onClose, rowData, getData }) => {
       getData();
       onClose();
       toastAlert("Status Updated");
-    } catch {}
+    } catch { }
   };
 
   return (

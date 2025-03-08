@@ -13,14 +13,14 @@ const CustomerDocumentOverview = () => {
   const [documents, setDocuments] = useState([]);
   const [filteredDocuments, setFilteredDocuments] = useState([]);
 
-console.log(documents);
+  console.log(documents);
 
   // const storedToken = sessionStorage.getItem("token");
   // const decodedToken = jwtDecode(storedToken);
   // const userID = decodedToken.id;
 
   function getDocuments() {
-   axios.get(baseUrl + "get_all_customer_document").then((res) => {
+    axios.get(baseUrl + "get_all_customer_document").then((res) => {
       console.log(res.data.data);
       setDocuments(res.data.data);
       setFilteredDocuments(res.data.data);
@@ -62,7 +62,7 @@ console.log(documents);
     },
     {
       name: "Doc File",
-      selector: (row) =><img style={{height:"80px" , width:"80px"}} target='blank' src={row.doc_upload}  alt="" /> ,
+      selector: (row) => <img style={{ height: "80px", width: "80px" }} target='blank' src={row.doc_upload} alt="" />,
       sortable: true,
     },
     {
@@ -79,7 +79,7 @@ console.log(documents);
       name: "Action",
       cell: (row) => (
         <>
-          
+
           <Link to={`/admin/customer-document-update/${row._id}`}>
             <button
               title="Edit"
@@ -103,16 +103,16 @@ console.log(documents);
   return (
     <>
 
-        <Link to={`/admin/customer-document-master`}>
+      <Link to={`/admin/customer-document-master`}>
         <button
           title="Add"
           className="btn btn-outline-primary"
-          style={{marginBottom:'10px'}}
+          style={{ marginBottom: '10px' }}
         >
-        Add Document
+          Add Document
         </button>
       </Link>
-      
+
       <div className="card">
         <div className="data_tbl table-responsive">
           <DataTable

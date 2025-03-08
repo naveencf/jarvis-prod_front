@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import LeadHeader from "./LeadHeader";
-import {baseUrl} from '../../utils/config'
+import { baseUrl } from '../../utils/config'
 
 export const UserContext = createContext();
 
@@ -17,10 +17,10 @@ function LeadApp({ children }) {
     (async () => {
       try {
         const leadres = await axios.get(
-          baseUrl+"get_all_leads"
+          baseUrl + "get_all_leads"
         );
         const userres = await axios.get(
-          baseUrl+"get_all_users"
+          baseUrl + "get_all_users"
         );
         ftrse = [];
         leadres.data.map((ele) => {
@@ -43,7 +43,7 @@ function LeadApp({ children }) {
       }
     })();
     if (reload) {
-      console.log("datalead updated");
+      // console.log("datalead updated");
     }
   }, [reload]);
 

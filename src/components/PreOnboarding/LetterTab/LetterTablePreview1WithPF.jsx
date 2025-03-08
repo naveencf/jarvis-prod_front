@@ -44,10 +44,10 @@ const LetterTablePreview1WithPF = ({ UserDetails }) => {
   const TotalEarnings =
     salary >= 20500
       ? Number(basicsal) +
-        Number(HRA) +
-        Number(AdvanceBonus) +
-        Number(monthEncash) +
-        Number(specialAllowance)
+      Number(HRA) +
+      Number(AdvanceBonus) +
+      Number(monthEncash) +
+      Number(specialAllowance)
       : Number(basicsal) + Number(AdvanceBonus) + Number(monthEncash);
 
   const TotalCTC =

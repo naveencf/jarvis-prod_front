@@ -10,7 +10,7 @@ import { setShowRightSlidder } from '../../Store/PageMaster';
 // import { calculatePrice, parseRange } from './helper';
 // import { getPriceDetail } from './downloadExcel';
 import Swal from 'sweetalert2';
-import {calculatePrice, parseRange } from '../plan-making/helper';
+import { calculatePrice, parseRange } from '../plan-making/helper';
 import { getPriceDetail } from '../plan-making/downloadExcel';
 
 const RightDrawerBeta = ({
@@ -156,7 +156,7 @@ const RightDrawerBeta = ({
 
     // Prepare the plan data to send
     const planxData = updatedSelectedRows.map((row) => {
-      const { _id, page_price_list, page_name, rate_type, m_story_price, m_post_price, followers_count,platform_name ,platform_id} = row;
+      const { _id, page_price_list, page_name, rate_type, m_story_price, m_post_price, followers_count, platform_name, platform_id } = row;
 
       const isFixedRate = rate_type === 'fixed';
 
@@ -168,9 +168,9 @@ const RightDrawerBeta = ({
         story_price: getPrice('story'),
         post_count: Number(updatedPostValues[_id]) || 0,
         story_count: Number(updatedStoryValues[_id]) || 0,
-        platform_name:platform_name,
-        platform_id:platform_id,
-        page_id:_id
+        platform_name: platform_name,
+        platform_id: platform_id,
+        page_id: _id
       };
     });
     // Send plan details and update the state
@@ -403,7 +403,7 @@ const RightDrawerBeta = ({
                     className="filter-input form-control"
                     value={minFollowers || ''}
                     onChange={(e) => setMinFollowers(e.target.value)}
-                    // onBlur={handleFollowersBlur}
+                  // onBlur={handleFollowersBlur}
                   />
                   <p>{formatNumber(minFollowers)}</p>
                 </div>
@@ -414,7 +414,7 @@ const RightDrawerBeta = ({
                     className="filter-input form-control"
                     value={maxFollowers || ''}
                     onChange={(e) => setMaxFollowers(e.target.value)}
-                    // onBlur={handleFollowersBlur}
+                  // onBlur={handleFollowersBlur}
                   />
                   <p>{formatNumber(maxFollowers)}</p>
                 </div>

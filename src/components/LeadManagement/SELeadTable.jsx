@@ -77,7 +77,7 @@ function SELeadTable(props) {
           // Save the arguments to resolve or reject the promise later
           setPromiseArguments({ resolve, reject, newRow, oldRow });
         } else {
-          resolve(oldRow); 
+          resolve(oldRow);
         }
       }),
     []
@@ -86,7 +86,7 @@ function SELeadTable(props) {
   const handleNo = () => {
     const { oldRow, resolve } = promiseArguments;
     setInputValue("");
-    resolve(oldRow); 
+    resolve(oldRow);
     setPromiseArguments(null);
   };
 

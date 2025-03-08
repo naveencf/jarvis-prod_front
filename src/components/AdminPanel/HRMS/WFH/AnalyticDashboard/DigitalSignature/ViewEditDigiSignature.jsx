@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Modal from "react-modal";
-import DigitalSignature from "../../../DigitalSignature/DigitalSignature";
-import getDecodedToken from "../../../../utils/DecodedToken";
 import axios from "axios";
-import {baseUrl} from '../../../../utils/config'
+import { baseUrl } from "../../../../../../utils/config";
+import getDecodedToken from "../../../../../../utils/DecodedToken";
+import DigitalSignature from "../../../../../DigitalSignature/DigitalSignature";
 
 const ViewEditDigiSignature = () => {
   const token = getDecodedToken();
@@ -22,7 +22,7 @@ const ViewEditDigiSignature = () => {
   const gettingData = async () => {
     try {
       const response = await axios.get(
-        `${baseUrl}`+`get_single_user/${loginUserId}`
+        `${baseUrl}` + `get_single_user/${loginUserId}`
       );
       const DSImage = await response?.data?.digital_signature_image_url;
       setDigitalSignatureImage(DSImage);

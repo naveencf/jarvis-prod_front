@@ -9,7 +9,7 @@ const handleEdit = async (row, setEditFlag) => {
   try {
     await edit(payload).unwrap();
     setEditFlag(false);
-  } catch (error) {}
+  } catch (error) { }
 };
 export const ViewBrandCategoryColumns = [
   {

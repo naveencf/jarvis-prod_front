@@ -163,7 +163,7 @@ const UserResponsbility = () => {
             />
           </>
         )}
-        {/* {console.log("responsibitlity", responsibility)} */}
+        {/* {// console.log("responsibitlity", responsibility)} */}
         {/* <FieldContainer
           label="Responsibility"
           Tag="select"

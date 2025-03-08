@@ -16,9 +16,9 @@ const AssetSingleuserOverview = ({
   newAssetRequestData,
   newRequestAPIRender,
 }) => {
-  const {  getAssetDataContext, toastAlert, toastError } =
+  const { getAssetDataContext, toastAlert, toastError } =
     useGlobalContext();
-  const { userID,userContextData } = useAPIGlobalContext();
+  const { userID, userContextData } = useAPIGlobalContext();
   const [reasonData, setReasonData] = useState([]);
   const [reason, setReason] = useState("");
   const [assetsName, setAssetName] = useState("");
@@ -421,10 +421,10 @@ const AssetSingleuserOverview = ({
                 <button
                   onClick={() => handleUpdateNewAssetRow(row)}
                   className="dropdown-item "
-                  // type="button"
-                  // data-toggle="modal"
-                  // data-target="#sidebar-right"
-                  // size="small"
+                // type="button"
+                // data-toggle="modal"
+                // data-target="#sidebar-right"
+                // size="small"
                 >
                   Edit
                 </button>
@@ -750,7 +750,7 @@ const AssetSingleuserOverview = ({
                 type="button"
                 className="btn btn-primary"
                 onClick={handleSubmit}
-                // data-dismiss="modal"
+              // data-dismiss="modal"
               >
                 Save changes
               </button>

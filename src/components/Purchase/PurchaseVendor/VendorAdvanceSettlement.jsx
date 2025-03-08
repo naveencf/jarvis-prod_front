@@ -53,7 +53,7 @@ function VendorAdvanceSettlement({ vendorDetail, vendorId, formData, handleClose
 
         try {
             const response = await advancedPaymentSettlement({ settlementData: payload, vendorObjId: vendorId });
-            console.log("Settlement Response:", response);
+            // console.log("Settlement Response:", response);
             handleCloseDialog()
             toastAlert("Advanced updated successfully!");
         } catch (err) {

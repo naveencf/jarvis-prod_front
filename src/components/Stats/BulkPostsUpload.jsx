@@ -87,7 +87,7 @@ export default function BulkPostsUpload({
   const checkfieldname = (data) => {
     for (let i = 0; i < fieldname.length; i++) {
       if (!data.hasOwnProperty(fieldname[i])) {
-        console.log("uniqueData");
+        // console.log("uniqueData");
 
         setAlerttemp(true);
         // setAlert(true);
@@ -148,7 +148,7 @@ export default function BulkPostsUpload({
     if (tempEmailIdObject?.user_email_id) {
       emailTo = tempEmailIdObject?.user_email_id;
     }
-    // console.log("object");
+    // // console.log("object");
     const shortcodes = bulklead
       .map((row) => {
         // Assuming link format is something like "https://instagram.com/p/shortcode" or "https://instagram.com/reel/shortcode" with or without additional parameters
@@ -191,7 +191,7 @@ export default function BulkPostsUpload({
         // setReloadOnInterval(shortcodes.length);
       })
       .catch((error) => {
-        // console.log("fhdjsdgjghjhsgdhjfg");
+        // // console.log("fhdjsdgjghjhsgdhjfg");
         console.error(error);
         alert(error);
         return;

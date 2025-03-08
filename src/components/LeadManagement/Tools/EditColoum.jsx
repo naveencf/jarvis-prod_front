@@ -35,7 +35,7 @@ export const columns = [
           className="textPrimary"
           onClick={handleEditClick(id)}
           color="inherit"
-          // color="primary"
+        // color="primary"
         />,
         <GridActionsCellItem
           icon={<DeleteIcon />}

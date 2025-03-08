@@ -265,7 +265,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           setPriceTypeList(res?.data?.data);
         })
         .catch((err) => {
-          console.log("Error:", err);
+          // console.log("Error:", err);
         });
     }
   }, [platformId]);
@@ -328,7 +328,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then((res) => {
         const data = [res.data.data];
-        console.log("data", data);
+        // console.log("data", data);
         setPagePriceList(res.data.data.page_price_list);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
@@ -537,7 +537,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
 
         axios
           .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => {})
+          .then(() => { })
           .catch((err) => {
             console.log(err);
           });

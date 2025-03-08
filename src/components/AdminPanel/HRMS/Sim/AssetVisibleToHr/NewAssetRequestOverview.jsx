@@ -53,7 +53,7 @@ const NewAssetRequestOverview = ({ newAssetData, handleRelodenewData }) => {
     try {
       const res = await axios.get(baseUrl + "get_all_sims");
       setSelectedAsset(res.data.data.filter((d) => d.sim_id == assetsName));
-    } catch {}
+    } catch { }
   };
 
   useEffect(() => {
@@ -159,7 +159,7 @@ const NewAssetRequestOverview = ({ newAssetData, handleRelodenewData }) => {
     {
       name: "Detail",
       cell: (row) => (
-        <div style={{ maxHeight: "100px", overflowY: "auto" ,margin:"5px"}}>
+        <div style={{ maxHeight: "100px", overflowY: "auto", margin: "5px" }}>
           {row.detail}
         </div>
       ),
@@ -199,12 +199,12 @@ const NewAssetRequestOverview = ({ newAssetData, handleRelodenewData }) => {
     (newAssetData[0]?.asset_request_status === "Rejected" ||
       newAssetData[0]?.asset_request_status === "ApprovedByManager") && {
       name: "Reject Reason",
-        cell: (row) =>(
+      cell: (row) => (
         <div style={{ maxHeight: "100px", overflowY: "auto" }}> {row.reject_reason}</div>
-       ),
+      ),
       sortable: true,
       width: "200px",
-      
+
     },
 
     (newAssetData[0]?.asset_request_status === "ApprovedByManager" ||

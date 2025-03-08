@@ -10,7 +10,7 @@ import AssignLeadHeader from "./Tools/AssignLeadHeader";
 import CountButton from "./Tools/CountButton";
 
 function LeadManagement() {
-  // console.log("1");
+  // // console.log("1");
   const { datalead, se, reload } = useContext(UserContext);
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [hmdata, setHmdata] = useState(false);

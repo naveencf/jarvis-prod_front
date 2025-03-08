@@ -21,7 +21,7 @@ const WhatsappAPI = () => {
       );
 
       if (response.status === 200) {
-        console.log("API response", response.data);
+        // console.log("API response", response.data);
       } else {
         console.error("API request failed with status", response.status);
       }

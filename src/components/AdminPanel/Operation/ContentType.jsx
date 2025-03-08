@@ -159,7 +159,7 @@ export default function ContentType() {
       axios
         .delete(`${url}/${itemToDeleteId}`)
         .then(() => {
-          console.log("Data deleted successfully");
+          // console.log("Data deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting data:", error);

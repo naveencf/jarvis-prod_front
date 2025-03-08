@@ -20,8 +20,8 @@ const style = {
   p: 1,
 };
 
-const ExePageDetailes = ({ data, activeAccordion, getAssignment,selectedCampaign }) => {
-  console.log(selectedCampaign,"page saim");
+const ExePageDetailes = ({ data, activeAccordion, getAssignment, selectedCampaign }) => {
+  console.log(selectedCampaign, "page saim");
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [singlePhase, setSinglePhase] = useState([]);
@@ -387,7 +387,7 @@ const ExePageDetailes = ({ data, activeAccordion, getAssignment,selectedCampaign
             console.error("Error fetching page details:", error);
           }
         } else {
-          console.log("No match found or invalid shortcode.");
+          // console.log("No match found or invalid shortcode.");
         }
       }
     };
@@ -413,13 +413,13 @@ const ExePageDetailes = ({ data, activeAccordion, getAssignment,selectedCampaign
 
   const getSelectPage = async () => {
     const newPlan = await axios.get(
-      `${baseUrl}`+`campaignplan/${selection?.campaignId}`
+      `${baseUrl}` + `campaignplan/${selection?.campaignId}`
     );
     const x = newPlan.data.data.filter((page) => {
       if (
-       ( page.replacement_status == "pending" ||
-        page.replacement_status == "replacement" ||
-        page.replacement_status == "inactive") && (page.delete_status=='inactive')
+        (page.replacement_status == "pending" ||
+          page.replacement_status == "replacement" ||
+          page.replacement_status == "inactive") && (page.delete_status == 'inactive')
       ) {
       }
       return page;
@@ -590,11 +590,11 @@ const ExePageDetailes = ({ data, activeAccordion, getAssignment,selectedCampaign
         </Modal>
       </>
       <>
-      <ReplacePagesModalExe
-            open={isModalOpen}
-            handleClose={handleCloseModal}
-            selectedCampaign={selectedCampaign}
-          />
+        <ReplacePagesModalExe
+          open={isModalOpen}
+          handleClose={handleCloseModal}
+          selectedCampaign={selectedCampaign}
+        />
       </>
     </>
   );

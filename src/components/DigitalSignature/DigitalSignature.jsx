@@ -19,7 +19,7 @@ const DigitalSignature = ({
     signature.clear();
   };
 
-  console.log(offetLetterAcceptanceDate , 'dddkddkdkd')
+  console.log(offetLetterAcceptanceDate, 'dddkddkdkd')
 
   const handleGenerate = async () => {
     setIsSubmitting(true);

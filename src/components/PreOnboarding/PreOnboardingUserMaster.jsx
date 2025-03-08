@@ -889,10 +889,10 @@ const PreOnboardingUserMaster = () => {
     //     password: password,
     //   })
     //   .then((res) => {
-    //     console.log("Email sent successfully:", res.data);
+    //     // console.log("Email sent successfully:", res.data);
     //   })
     //   .catch((error) => {
-    //     console.log("Failed to send email:", error);
+    //     // console.log("Failed to send email:", error);
     //   });
     // whatsappApi.callWhatsAPI("CF_Document_upload", "9826116769", username, [
     //   username,
@@ -975,7 +975,7 @@ const PreOnboardingUserMaster = () => {
     const detailToUpdate = updatedEducationDetails[index];
 
     if (name === "percentage" && value > 100) {
-      return console.log("Can't input value greater than 100");
+      return // console.log("Can't input value greater than 100");
     }
 
     detailToUpdate[name] = value;
@@ -1449,8 +1449,8 @@ const PreOnboardingUserMaster = () => {
                     //   activeTab == 3 ? "sidebar_item_active" : ""
                     // }`}
                     className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
-                        ? "sidebar_item_active"
-                        : ""
+                      ? "sidebar_item_active"
+                      : ""
                       }`}
                     id="sidebarPolicyBox"
                     // style={{
@@ -1576,8 +1576,8 @@ const PreOnboardingUserMaster = () => {
                     {/* )} */}
                     <div
                       className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
-                          ? "sidebar_item_active"
-                          : ""
+                        ? "sidebar_item_active"
+                        : ""
                         }`}
                       id="sidebarPolicyBox"
                       onClick={() => setActiveTab(3)}

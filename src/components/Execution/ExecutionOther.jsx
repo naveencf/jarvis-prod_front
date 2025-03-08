@@ -330,7 +330,7 @@ function ExecutionOther() {
         const filterVendorId = res.data.body.filter(
           (check) => check.vendor_id !== "8"
         );
-        // console.log("filtervendorid",filterVendorId);
+        // // console.log("filtervendorid",filterVendorId);
         setAlldata(filterVendorId);
         setLoading(false);
         // let tempdata = alldata.filter((ele) => {
@@ -376,7 +376,7 @@ function ExecutionOther() {
       .writeText(copyData)
       .then(() => {
         // Data successfully copied to the clipboard
-        console.log("Copied to clipboard: ", copyData);
+        // console.log("Copied to clipboard: ", copyData);
       })
       .catch((err) => {
         // Handle errors

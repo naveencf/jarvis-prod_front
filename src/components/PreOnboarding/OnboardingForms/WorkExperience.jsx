@@ -22,7 +22,7 @@ const initialSection = {
 };
 
 const WorkExperience = ({ userID }) => {
-  const {toastAlert} = useGlobalContext()
+  const { toastAlert } = useGlobalContext()
   const [workExperienceData, setWorkExperienceData] = useState([initialSection]);
 
   const getWorkExperienceData = async () => {
@@ -41,12 +41,12 @@ const WorkExperience = ({ userID }) => {
 
   // Handle field change
   const handleFieldChange = (index, fieldName, value) => {
-    const updatedSections = workExperienceData.map((section, i) => 
+    const updatedSections = workExperienceData.map((section, i) =>
       i === index ? { ...section, [fieldName]: value } : section
     );
     setWorkExperienceData(updatedSections);
   };
-  
+
 
   // Handle submission
   const handleSubmit = async (e) => {
@@ -74,7 +74,7 @@ const WorkExperience = ({ userID }) => {
 
         await axios.put(baseUrl + "update_user_experience", payload);
       }
-      console.log("Work experience data successfully updated.");
+      // console.log("Work experience data successfully updated.");
     } catch (error) {
       console.error("Error updating work experience details:", error);
     }
@@ -87,7 +87,7 @@ const WorkExperience = ({ userID }) => {
   const handleAddSection = () => {
     setWorkExperienceData((prevData) => [...prevData, { ...initialSection }]);
   };
-  
+
 
   // Remove a section
   const handleRemoveSection = async (index) => {
@@ -110,7 +110,7 @@ const WorkExperience = ({ userID }) => {
   return (
     <div className="board_form board_form_flex">
       <h2>
-        Work Experience 
+        Work Experience
       </h2>
       {workExperienceData.map((section, index) => (
         <div key={index} className="board_form_flex">
@@ -225,8 +225,8 @@ const WorkExperience = ({ userID }) => {
       ))}
 
       {/* Add Button */}
-      <div className="mb-1 d-flex" style={{justifyContent:'space-between'}}>
-        
+      <div className="mb-1 d-flex" style={{ justifyContent: 'space-between' }}>
+
         <button
           type="button"
           className="btn cmnbtn btn-primary mr-5 "
@@ -235,7 +235,7 @@ const WorkExperience = ({ userID }) => {
           Save Work Experience
         </button>
         <button type="button" className="btn btn-warning cmnbtn" onClick={handleAddSection}>
-        <IoAddCircleOutline />
+          <IoAddCircleOutline />
         </button>
       </div>
     </div>

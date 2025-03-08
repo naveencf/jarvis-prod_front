@@ -275,11 +275,11 @@ const HrVisibleToHrOverview = ({ hrOverviewData, hardRender }) => {
             <>
               {row.img1 !==
                 "https://storage.googleapis.com/dev-backend-bucket/" ||
-              row.img2 !==
+                row.img2 !==
                 "https://storage.googleapis.com/dev-backend-bucket/" ||
-              row.img3 !==
+                row.img3 !==
                 "https://storage.googleapis.com/dev-backend-bucket/" ||
-              row.img4 !==
+                row.img4 !==
                 "https://storage.googleapis.com/dev-backend-bucket/" ? (
                 <button
                   className="btn btn-outline-black icon-1 btn-sm"
@@ -324,7 +324,7 @@ const HrVisibleToHrOverview = ({ hrOverviewData, hardRender }) => {
           {row.invoiceCopy && (
             <>
               {row.invoiceCopy !==
-              "https://storage.googleapis.com/dev-backend-bucket/" ? (
+                "https://storage.googleapis.com/dev-backend-bucket/" ? (
                 <img
                   onClick={() => handleInvoiceImageClick(row.invoiceCopy)}
                   style={{ width: "50px", height: "40px", borderRadius: "5px" }}
@@ -348,7 +348,7 @@ const HrVisibleToHrOverview = ({ hrOverviewData, hardRender }) => {
           {row.invoiceCopy && (
             <>
               {row.invoiceCopy !==
-              "https://storage.googleapis.com/dev-backend-bucket/" ? (
+                "https://storage.googleapis.com/dev-backend-bucket/" ? (
                 <a
                   style={{ cursor: "pointer" }}
                   target="blank"
@@ -841,8 +841,8 @@ const HrVisibleToHrOverview = ({ hrOverviewData, hardRender }) => {
               !showAssetsImage.img1.endsWith("bucket2/") && (
                 <div
                   className="col-xl-3 col-lg-3 col-md-6 col-sm-12 col-12"
-                  // onMouseEnter={handleMouseEnter}
-                  // onMouseLeave={handleMouseLeave}
+                // onMouseEnter={handleMouseEnter}
+                // onMouseLeave={handleMouseLeave}
                 >
                   <div className="summary_card">
                     <div className="summary_cardtitle"></div>

@@ -21,7 +21,7 @@ const FilterWisePageOverview = ({
   vendorData,
 }) => {
   // const { userContextData } = useContext(AppContext);
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
   const handleExport = () => {
     const formattedData = newFilterData?.map((row, index) => {
@@ -45,12 +45,12 @@ const FilterWisePageOverview = ({
         row.page_mast_status == 0
           ? "Active"
           : row.page_mast_status == 1
-          ? "Inactive"
-          : row.page_mast_status == 2
-          ? "Delete"
-          : row.page_mast_status == 3
-          ? "Semiactive"
-          : "Unknown";
+            ? "Inactive"
+            : row.page_mast_status == 2
+              ? "Delete"
+              : row.page_mast_status == 3
+                ? "Semiactive"
+                : "Unknown";
 
       return {
         "S.No": index + 1,
@@ -228,12 +228,12 @@ const FilterWisePageOverview = ({
                 option === 0
                   ? "Active"
                   : option === 1
-                  ? "Inactive"
-                  : option === 2
-                  ? "Delete"
-                  : option === 3
-                  ? "Semiactive"
-                  : "Unknown";
+                    ? "Inactive"
+                    : option === 2
+                      ? "Delete"
+                      : option === 3
+                        ? "Semiactive"
+                        : "Unknown";
               return `${name} (${count})`;
             }}
             style={{ width: 270 }}
@@ -343,9 +343,8 @@ const FilterWisePageOverview = ({
               const count = vendorTypes?.filter(
                 (d) => d?.page_category_id === option
               ).length;
-              return `${
-                category?.page_category || "Unknown Category"
-              } (${count})`;
+              return `${category?.page_category || "Unknown Category"
+                } (${count})`;
             }}
             renderInput={(params) => (
               <TextField
@@ -385,9 +384,8 @@ const FilterWisePageOverview = ({
               const count = vendorTypes?.filter(
                 (d) => d?.page_profile_type_id === option
               ).length;
-              return `${
-                category?.profile_type || "Unknown Profile"
-              } (${count})`;
+              return `${category?.profile_type || "Unknown Profile"
+                } (${count})`;
             }}
             renderInput={(params) => (
               <TextField

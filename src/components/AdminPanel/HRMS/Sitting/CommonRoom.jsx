@@ -18,7 +18,7 @@ import { baseUrl } from "../../../../utils/config";
 import axios from "axios";
 
 const CommonRoom = () => {
-  const [totalSittingCount, setTotalSittingCount] = useState([]);
+  const [totalSittingCount, setTotalSittingCount] = useState({});
   const [selectedShift, setSelectedShift] = useState(1); // Default shift
 
   const totalSittingDataCount = async () => {
@@ -36,34 +36,99 @@ const CommonRoom = () => {
 
   return (
     <div className="card">
-      <div className="card">
-        <div className="card-header">
-          <div className="titleCard w-100">
-            <div className="titleCardImg bgPrimary border-0">
-              <i className="bi bi-pc-display-horizontal"></i>
+      <div className="d-flex">
+        <div className="card col-4">
+          <div className="card-header">
+            <div className="titleCard w-100">
+              <div className="titleCardImg bgPrimary border-0">
+                <i className="bi bi-pc-display-horizontal"></i>
+              </div>
+              <div className="titleCardText w-75">
+                <h2 className="colorPrimary">All Rooms </h2>
+                <h3>Total Seats: {totalSittingCount?.total?.total}</h3>
+              </div>
             </div>
-            <div className="titleCardText w-75">
-              <h2 className="colorPrimary">All Rooms</h2>
-              <h3>Total Seats: {totalSittingCount?.total}</h3>
+          </div>
+          <div className="card-body">
+            <div className="timeDataCardInfo">
+              <ul>
+                <li>
+                  <span>Total Assigned</span>
+                  <div className="growthBadge growthSuccess">
+                    {totalSittingCount?.total?.allocated}
+                  </div>
+                </li>
+                <li>
+                  <span>Total Not Assigned</span>
+                  <div className="growthBadge growthWarning">
+                    {totalSittingCount?.total?.not_allocated}
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-        <div className="card-body">
-          <div className="timeDataCardInfo">
-            <ul>
-              <li>
-                <span>Total Assigned</span>
-                <div className="growthBadge growthSuccess">
-                  {totalSittingCount?.allocated}
-                </div>
-              </li>
-              <li>
-                <span>Total Not Assigned</span>
-                <div className="growthBadge growthWarning">
-                  {totalSittingCount?.not_allocated}
-                </div>
-              </li>
-            </ul>
+
+        <div className="card col-4">
+          <div className="card-header">
+            <div className="titleCard w-100">
+              <div className="titleCardImg bgPrimary border-0">
+                <i className="bi bi-pc-display-horizontal"></i>
+              </div>
+              <div className="titleCardText w-75">
+                <h2 className="colorPrimary">All Rooms (Day Shift)</h2>
+                <h3>Total Seats: {totalSittingCount?.shift_1?.total}</h3>
+              </div>
+            </div>
+          </div>
+          <div className="card-body">
+            <div className="timeDataCardInfo">
+              <ul>
+                <li>
+                  <span>Total Assigned</span>
+                  <div className="growthBadge growthSuccess">
+                    {totalSittingCount?.shift_1?.allocated}
+                  </div>
+                </li>
+                <li>
+                  <span>Total Not Assigned</span>
+                  <div className="growthBadge growthWarning">
+                    {totalSittingCount?.shift_1?.not_allocated}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="card col-4">
+          <div className="card-header">
+            <div className="titleCard w-100">
+              <div className="titleCardImg bgPrimary border-0">
+                <i className="bi bi-pc-display-horizontal"></i>
+              </div>
+              <div className="titleCardText w-75">
+                <h2 className="colorPrimary">All Rooms (Night Shift)</h2>
+                <h3>Total Seats: {totalSittingCount?.shift_2?.total}</h3>
+              </div>
+            </div>
+          </div>
+          <div className="card-body">
+            <div className="timeDataCardInfo">
+              <ul>
+                <li>
+                  <span>Total Assigned</span>
+                  <div className="growthBadge growthSuccess">
+                    {totalSittingCount?.shift_2?.allocated}
+                  </div>
+                </li>
+                <li>
+                  <span>Total Not Assigned</span>
+                  <div className="growthBadge growthWarning">
+                    {totalSittingCount?.shift_2?.not_allocated}
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

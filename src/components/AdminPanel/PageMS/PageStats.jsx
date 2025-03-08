@@ -23,7 +23,7 @@ import { baseUrl } from "../../../utils/config";
 
 export default function PageStats() {
   const navitage = useNavigate();
-  const { data: cities, isLoading: citiesLoading,isError: citiesError } = useGetAllCitiesQuery();  
+  const { data: cities, isLoading: citiesLoading, isError: citiesError } = useGetAllCitiesQuery();
   const [reachImageURL, setReachImageURL] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
   const token = sessionStorage.getItem("token");
@@ -59,7 +59,7 @@ export default function PageStats() {
       reader.readAsDataURL(file);
     }
   };
-  
+
   useEffect(() => {
     if (cities) {
       setCopyCities(cities);
@@ -83,8 +83,8 @@ export default function PageStats() {
     mode: "onChange",
   });
 
-  const reachValue = watch("reach"); 
-  const impressionValue = watch("impressions"); 
+  const reachValue = watch("reach");
+  const impressionValue = watch("impressions");
 
   useEffect(() => {
     let citiesArr = cities?.filter(
@@ -134,7 +134,7 @@ export default function PageStats() {
   // useEffect(() => {
   function CheckValidation() {
     let err;
-    console.log("come to error");
+    // console.log("come to error");
     for (const key in errors) {
       if (Object.hasOwnProperty.call(errors, key)) {
         const element = errors[key];
@@ -188,7 +188,7 @@ export default function PageStats() {
   const [updatePageState] = useUpdatePageStateMutation();
 
   useEffect(() => {
-    // console.log("come here");
+    // // console.log("come here");
     if (pageStateData) {
       setReachImageURL(pageStateData?.reach_image_url);
       setImpressionImageURL(pageStateData?.impression_image_url);
@@ -394,24 +394,24 @@ export default function PageStats() {
     return result?.toISOString().split("T")[0];
   }
 
-  const handleModalImage = (imageUrl) =>{
+  const handleModalImage = (imageUrl) => {
     setModalImage(imageUrl)
   }
 
   const addNewCity = (e) => {
     e.preventDefault();
-    axios.post(`${baseUrl}add_city`,{
+    axios.post(`${baseUrl}add_city`, {
       city_name: newCity
     })
-    .then((res)=>{
-      toastAlert('City added')
-      setNewCity('')
-    })
-    .catch((error) => {
-      if (error.response.data.error && error.response.data.error.includes('E11000')) {
-        toastError('City already exists');
-      }
-    });
+      .then((res) => {
+        toastAlert('City added')
+        setNewCity('')
+      })
+      .catch((error) => {
+        if (error.response.data.error && error.response.data.error.includes('E11000')) {
+          toastError('City already exists');
+        }
+      });
   }
 
   return (
@@ -562,8 +562,8 @@ export default function PageStats() {
                               className="profile-holder-1"
                               src={reachImageURL}
                               alt="Selected"
-                              style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer' }}
-                              onClick={()=>handleModalImage(reachImageURL)}
+                              style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                              onClick={() => handleModalImage(reachImageURL)}
                               data-toggle="modal" data-target="#myModal"
                             />
                           )}
@@ -587,7 +587,7 @@ export default function PageStats() {
                         <h4 className="modal-title"></h4>
                       </div>
                       <div className="modal-body">
-                        <img src={modalImage} style={{height:'50%',width:'90%'}} />
+                        <img src={modalImage} style={{ height: '50%', width: '90%' }} />
                       </div>
                       <div className="modal-footer">
                         <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
@@ -644,8 +644,8 @@ export default function PageStats() {
                                 className="profile-holder-1"
                                 src={impressionImageURL}
                                 alt="Selected"
-                                style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer' }}
-                                onClick={()=>handleModalImage(impressionImageURL)}
+                                style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                                onClick={() => handleModalImage(impressionImageURL)}
                                 data-toggle="modal" data-target="#myModal"
                               />
                             )}
@@ -713,8 +713,8 @@ export default function PageStats() {
                               className="profile-holder-1"
                               src={engagementImageURL}
                               alt="Selected"
-                              style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer' }}
-                              onClick={()=>handleModalImage(engagementImageURL)}
+                              style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                              onClick={() => handleModalImage(engagementImageURL)}
                               data-toggle="modal" data-target="#myModal"
                             />
                           )}
@@ -779,8 +779,8 @@ export default function PageStats() {
                               className="profile-holder-1"
                               src={storyViewImageURL}
                               alt="Selected"
-                              style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer' }}
-                              onClick={()=>handleModalImage(storyViewImageURL)}
+                              style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                              onClick={() => handleModalImage(storyViewImageURL)}
                               data-toggle="modal" data-target="#myModal"
                             />
                           )}
@@ -828,9 +828,9 @@ export default function PageStats() {
           <div className="card">
             <div className="card-header">
               <h5 className="card-title">City</h5>
-              Add New City:- 
-              <input type="text" value={newCity} className="form-control" onChange={(e)=>setNewCity(e.target.value)} style={{maxWidth:'20%'}} />
-              <button className="btn btn-success" disabled={!newCity} onClick={addNewCity} style={{borderRadius:'15%'}}>Add</button>
+              Add New City:-
+              <input type="text" value={newCity} className="form-control" onChange={(e) => setNewCity(e.target.value)} style={{ maxWidth: '20%' }} />
+              <button className="btn btn-success" disabled={!newCity} onClick={addNewCity} style={{ borderRadius: '15%' }}>Add</button>
             </div>
             <div className="card-body pb8">
               {cities && (
@@ -848,7 +848,7 @@ export default function PageStats() {
                                 render={({ field }) => (
                                   <Autocomplete
                                     {...field}
-                                    options={copyCities? copyCities: []}
+                                    options={copyCities ? copyCities : []}
                                     getOptionLabel={(option) =>
                                       option.city_name || ""
                                     }
@@ -929,8 +929,8 @@ export default function PageStats() {
                               className="profile-holder-1 mt-4"
                               src={cityImageURL}
                               alt="Selected"
-                              style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer' }}
-                              onClick={()=>handleModalImage(cityImageURL)}
+                              style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                              onClick={() => handleModalImage(cityImageURL)}
                               data-toggle="modal" data-target="#myModal"
                             />
                           )}
@@ -1048,8 +1048,8 @@ export default function PageStats() {
                             className="profile-holder-1 mt-4"
                             src={countryImageURL}
                             alt="Selected"
-                            style={{ maxWidth: "50px", maxHeight: "50px", cursor:'pointer'}}
-                            onClick={()=>handleModalImage(countryImageURL)}
+                            style={{ maxWidth: "50px", maxHeight: "50px", cursor: 'pointer' }}
+                            onClick={() => handleModalImage(countryImageURL)}
                             data-toggle="modal" data-target="#myModal"
                           />
                         )}

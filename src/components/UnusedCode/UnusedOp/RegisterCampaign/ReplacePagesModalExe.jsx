@@ -16,7 +16,7 @@ const style = {
   p: 4,
 };
 
-const ReplacePagesModalExe = ({ open, handleClose ,selectedCampaign}) => {
+const ReplacePagesModalExe = ({ open, handleClose, selectedCampaign }) => {
   const [remainingPages, setRemainingPages] = useState([]);
   const [selectedPages, setSelectedPages] = useState([]);
   console.log(selectedPages, "new value in array");
@@ -37,7 +37,7 @@ const ReplacePagesModalExe = ({ open, handleClose ,selectedCampaign}) => {
 
   const handleSubmit = async () => {
 
-    console.log("handle submit repalce ");
+    // console.log("handle submit repalce ");
     handleClose();
   };
 
@@ -81,14 +81,14 @@ const ReplacePagesModalExe = ({ open, handleClose ,selectedCampaign}) => {
                 <Box key={pageId}>
                   {selectedPage && (
                     <>
-                       <TextField
-                       label="Page"
-                       value={selectedPage?.page_name}
-                       />
-                        <TextField
-                       label="Follower Count"
-                       value={selectedPage?.follower_count}
-                       />
+                      <TextField
+                        label="Page"
+                        value={selectedPage?.page_name}
+                      />
+                      <TextField
+                        label="Follower Count"
+                        value={selectedPage?.follower_count}
+                      />
                     </>
                   )}
 

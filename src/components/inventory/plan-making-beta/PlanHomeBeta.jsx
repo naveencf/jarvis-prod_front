@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 import PlanPricing from '../plan-making/PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import {  useGlobalContext } from '../../../Context/Context';
+import { useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
@@ -116,7 +116,7 @@ function PlanHomeBeta() {
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
 
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
   const userID = decodedToken.id;
 
@@ -596,8 +596,8 @@ function PlanHomeBeta() {
     handleEditClick,
   });
   const finalPlanList = filteredPlans.length ? filteredPlans : planRows?.reverse();
-  const dateWiseFilteredData =   filteredPlanRows?.reverse();
- 
+  const dateWiseFilteredData = filteredPlanRows?.reverse();
+
   useEffect(() => {
     if (inputValue <= 100) {
       setSuggestions(generateSuggestions(inputValue));
@@ -665,8 +665,8 @@ function PlanHomeBeta() {
                   <TextField
                     {...params}
                     label="Account Name *"
-                    // error={!!errors.accountName}
-                    // helperText={errors.accountName}
+                  // error={!!errors.accountName}
+                  // helperText={errors.accountName}
                   />
                 )}
               />
@@ -686,8 +686,8 @@ function PlanHomeBeta() {
                     brandId: '',
                   }))
                 }
-                // error={!!errors.accountName}
-                // helperText={errors.accountName}
+              // error={!!errors.accountName}
+              // helperText={errors.accountName}
               />
             )}
             {planDetails.accountTypeName && (
@@ -827,10 +827,10 @@ function PlanHomeBeta() {
           <div className="data_tbl thm_table table-responsive">
             {activeTab === 'Tab1' && <View isLoading={loading} columns={columns} data={finalPlanList} pagination={[100, 200]} tableName={'PlanMakingDetails'} version={1} />}
             {/* {activeTab === 'Tab3' && <PlanPricing />} */}
-            {activeTab ==='Tab3' && <HighestPlanRequest planRows={planRows}/>}
+            {activeTab === 'Tab3' && <HighestPlanRequest planRows={planRows} />}
             {activeTab === 'Tab2' && (
               <div>
-                <DateWiseFilter planRows={planRows}  setFilteredPlanRows={setFilteredPlanRows}/>
+                <DateWiseFilter planRows={planRows} setFilteredPlanRows={setFilteredPlanRows} />
                 <View isLoading={loading} columns={columns} data={dateWiseFilteredData} pagination={[100, 200]} tableName={'PlanMakingDetails'} version={1} />
               </div>
             )}

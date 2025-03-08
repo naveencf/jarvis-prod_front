@@ -219,20 +219,20 @@ const UpdateDocument = () => {
         className={`documentarea ${normalUserLayout && "documentareaLight"}`}
       >
         <div className="document_box master-card-css">
-        <div className="form-heading">
-        <img className="img-bg" src={titleimg} alt="" width={160} />
-          <div className="form_heading_title">
-          <h1>Documents</h1>
-            <div className="pack">
-            <i className="bi bi-house"></i> {activeLink.slice(1).charAt(0).toUpperCase()+ activeLink.slice(2)}
+          <div className="form-heading">
+            <img className="img-bg" src={titleimg} alt="" width={160} />
+            <div className="form_heading_title">
+              <h1>Documents</h1>
+              <div className="pack">
+                <i className="bi bi-house"></i> {activeLink.slice(1).charAt(0).toUpperCase() + activeLink.slice(2)}
+              </div>
             </div>
-          </div>
-          {/* <Link to={`/admin/kra/${userId}`}>
+            {/* <Link to={`/admin/kra/${userId}`}>
             <button type="button" className="btn btn-outline-primary btn-sm">
               KRA
             </button>
           </Link> */}
-        </div>
+          </div>
           {/* <select
             onChange={(e) => handleFilterChange(e.target.value)}
             className="form-select"
@@ -245,97 +245,95 @@ const UpdateDocument = () => {
           <div className="card">
             <div className="card-header">
 
-<div className="pack" >
+              <div className="pack" >
 
-          <Select
-              style={{width:"300px"}}
-            value={mandatoryOptions.find(
-              (option) => option.value === mandatoryFilter
-            )}
-            onChange={(selectedOption) => {
-              setMandatoryFillter(selectedOption.value);
-            }}
-            options={mandatoryOptions}
-          />
-</div>
+                <Select
+                  style={{ width: "300px" }}
+                  value={mandatoryOptions.find(
+                    (option) => option.value === mandatoryFilter
+                  )}
+                  onChange={(selectedOption) => {
+                    setMandatoryFillter(selectedOption.value);
+                  }}
+                  options={mandatoryOptions}
+                />
+              </div>
 
             </div>
             <div className="card-body body-padding">
 
-          <div
-            className={`docTable ${
-              normalUserLayout && "docTableLight"
-            } table-responsive`}
-          >
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Document Type</th>
-                  <th scope="col">Period (Days)</th>
-                  {/* <th scope="col">Time</th> */}
-                  <th scope="col">Upload</th>
-                  <th scope="col" className="text-center">
-                    Status
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {documentData.map((item) => (
-                  <tr key={item._id}>
-                    <td scope="row">
-                      {item.document.doc_type}
-                      {item.document.isRequired &&
-                        item.document.job_type.includes(user.job_type) && (
-                          <span style={{ color: "red" }}> (Mandatory)</span>
-                        )}
-                    </td>
-                    <td>{item.document.period} days</td>
-                    {/* <td>1 Day</td> */}
-                    <td>
-                      <div className="uploadDocBtn " >
-                        <span style={{display:"flex",justifyContent:"center",alignItems:"center",flexDirection:"row",gap:"10px"}}>
-                        Upload  <i className="bi bi-cloud-arrow-up" />
-                        </span>
-                        <input
-                          type="file"
-                          onChange={(e) =>
-                            handleFileUpload(e.target.files[0], item._id)
-                          }
-                        />
-                      </div>
-                    </td>
-                    <td>
-                      <div className="docStatus" >
-                        <span
-                          className={`warning_badges 
+              <div
+                className={`docTable ${normalUserLayout && "docTableLight"
+                  } table-responsive`}
+              >
+                <table className="table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Document Type</th>
+                      <th scope="col">Period (Days)</th>
+                      {/* <th scope="col">Time</th> */}
+                      <th scope="col">Upload</th>
+                      <th scope="col" className="text-center">
+                        Status
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {documentData.map((item) => (
+                      <tr key={item._id}>
+                        <td scope="row">
+                          {item.document.doc_type}
+                          {item.document.isRequired &&
+                            item.document.job_type.includes(user.job_type) && (
+                              <span style={{ color: "red" }}> (Mandatory)</span>
+                            )}
+                        </td>
+                        <td>{item.document.period} days</td>
+                        {/* <td>1 Day</td> */}
+                        <td>
+                          <div className="uploadDocBtn " >
+                            <span style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", gap: "10px" }}>
+                              Upload  <i className="bi bi-cloud-arrow-up" />
+                            </span>
+                            <input
+                              type="file"
+                              onChange={(e) =>
+                                handleFileUpload(e.target.files[0], item._id)
+                              }
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div className="docStatus" >
+                            <span
+                              className={`warning_badges 
                         ${item.status == "" && "not_uploaded"}
-                        ${
-                          item.status == "Document Uploaded" &&
-                          "document_uploaded"
-                        }
+                        ${item.status == "Document Uploaded" &&
+                                "document_uploaded"
+                                }
                         ${item.status == "Verification Pending" && "pending"}
                         ${item.status == "Approved" && "approve"}
                         ${item.status == "Rejected" && "reject"}
                         `}
-                        style={{zIndex:"0"}}>
-                          <h4>
-                            {item.status == "" && "Not Uploaded"}
-                            {item.status !== "" && item.status}
-                          </h4>
-                          {item.status == "Rejected" && (
-                            <i
-                              className="bi bi-exclamation-circle-fill"
-                              title={item.reject_reason}
-                            />
-                          )}
-                        </span>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                              style={{ zIndex: "0" }}>
+                              <h4>
+                                {item.status == "" && "Not Uploaded"}
+                                {item.status !== "" && item.status}
+                              </h4>
+                              {item.status == "Rejected" && (
+                                <i
+                                  className="bi bi-exclamation-circle-fill"
+                                  title={item.reject_reason}
+                                />
+                              )}
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 

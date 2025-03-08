@@ -37,13 +37,13 @@ function SEAssignLeadHeader({
   // let n = input;
   const checkinputvalidtaion = () => {
     if (inputValue == "") {
-      console.log("working");
+      // console.log("working");
       tj = 4;
       setAlert(true);
       return false;
     } else if (N == 0) {
       tj = 3;
-      console.log("emp catch and tj = 1");
+      // console.log("emp catch and tj = 1");
       setAlert(true);
       return false;
     }
@@ -56,7 +56,7 @@ function SEAssignLeadHeader({
       if (checkinputvalidtaion()) {
         N = rowSelectionModel.length;
         for (let i = 0; i < N; i++) {
-          console.log("put api will hit here" + i);
+          // console.log("put api will hit here" + i);
         }
         setTransfer(!transfer);
         setRowSelectionModel([]);
@@ -67,7 +67,7 @@ function SEAssignLeadHeader({
     if (checkinputvalidtaion()) {
       N = rowSelectionModel.length;
       for (let i = 0; i < N; i++) {
-        console.log("put api will hit here" + i);
+        // console.log("put api will hit here" + i);
       }
       // setInput(0);
       setRowSelectionModel([]);

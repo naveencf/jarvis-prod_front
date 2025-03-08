@@ -88,10 +88,10 @@ const UserSingleTab4 = ({ user, id, getData }) => {
             password: user.user_login_password,
           })
           .then((res) => {
-            console.log("Email sent successfully:", res.data);
+            // console.log("Email sent successfully:", res.data);
           })
           .catch((error) => {
-            console.log("Failed to send email:", error);
+            // console.log("Failed to send email:", error);
           });
       });
   };

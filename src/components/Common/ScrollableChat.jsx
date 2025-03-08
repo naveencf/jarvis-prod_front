@@ -35,22 +35,22 @@ const ScrollableChat = (props) => {
           <div style={{ display: "flex" }} key={message?._id}>
             {(isSameSender(dataChat, message, index, loginObjId) ||
               isLastMessage(dataChat, index, loginObjId)) && (
-              <Tooltip
-                label={message?.sender?.name}
-                placement="bottom-start"
-                hasArrow
-              >
-                <Avatar
-                  mt="20px"
-                  mr="1"
-                  size="xs"
-                  className="chakra-avatar css-212wue"
-                  cursor="pointer"
-                  name={message?.sender?.name}
-                  src={message?.sender?.image}
-                />
-              </Tooltip>
-            )}
+                <Tooltip
+                  label={message?.sender?.name}
+                  placement="bottom-start"
+                  hasArrow
+                >
+                  <Avatar
+                    mt="20px"
+                    mr="1"
+                    size="xs"
+                    className="chakra-avatar css-212wue"
+                    cursor="pointer"
+                    name={message?.sender?.name}
+                    src={message?.sender?.image}
+                  />
+                </Tooltip>
+              )}
             <span
               style={{
                 backgroundColor:

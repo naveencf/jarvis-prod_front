@@ -71,54 +71,54 @@ function ManagerTarget() {
     ],
   };
 
-//   useEffect(() => {
-//     axios
-//       .post("https://insights.ist:8080/api/interpretortodayworked", {
-//         userID: userID,
-//       })
-//       .then((res) => {
-//         if (res.data.data.todayPostCount.length > 0) {
-//           setTodayPostCount(res.data.data.todayPostCount[0]?.recordsCount);
-//         }
-//         if (res.data.data.todayStoryCount.length > 0) {
-//           setTodayStoryCount(res.data.data.todayStoryCount[0]?.recordsCount);
-//         }
-//       });
+  //   useEffect(() => {
+  //     axios
+  //       .post("https://insights.ist:8080/api/interpretortodayworked", {
+  //         userID: userID,
+  //       })
+  //       .then((res) => {
+  //         if (res.data.data.todayPostCount.length > 0) {
+  //           setTodayPostCount(res.data.data.todayPostCount[0]?.recordsCount);
+  //         }
+  //         if (res.data.data.todayStoryCount.length > 0) {
+  //           setTodayStoryCount(res.data.data.todayStoryCount[0]?.recordsCount);
+  //         }
+  //       });
 
-//     axios
-//       .post("https://insights.ist:8080/api/interpretorweekworked", {
-//         userID: userID,
-//       })
-//       .then((res) => {
-//         if (res.data.data.lastWeekPostCount.length > 0) {
-//           setLastWeekPostCount(
-//             res.data.data.lastWeekPostCount[0]?.recordsCount
-//           );
-//         }
-//         if (res.data.data.lastWeekStoryCount.length > 0) {
-//           setLastWeekStoryCount(
-//             res.data.data.lastWeekStoryCount[0]?.recordsCount
-//           );
-//         }
-//         //console.log(res.data.data);
-//       });
-//     axios
-//       .post("https://insights.ist:8080/api/interpretormonthworked", {
-//         userID: userID,
-//       })
-//       .then((res) => {
-//         if (res.data.data.lastMonthPostCount.length > 0) {
-//           setLastMonthPostCount(
-//             res.data.data.lastMonthPostCount[0]?.recordsCount
-//           );
-//         }
-//         if (res.data.data.lastMonthStoryCount.length > 0) {
-//           setLastMonthStoryCount(
-//             res.data.data.lastMonthStoryCount[0]?.recordsCount
-//           );
-//         }
-//       });
-//   }, []);
+  //     axios
+  //       .post("https://insights.ist:8080/api/interpretorweekworked", {
+  //         userID: userID,
+  //       })
+  //       .then((res) => {
+  //         if (res.data.data.lastWeekPostCount.length > 0) {
+  //           setLastWeekPostCount(
+  //             res.data.data.lastWeekPostCount[0]?.recordsCount
+  //           );
+  //         }
+  //         if (res.data.data.lastWeekStoryCount.length > 0) {
+  //           setLastWeekStoryCount(
+  //             res.data.data.lastWeekStoryCount[0]?.recordsCount
+  //           );
+  //         }
+  //         //console.log(res.data.data);
+  //       });
+  //     axios
+  //       .post("https://insights.ist:8080/api/interpretormonthworked", {
+  //         userID: userID,
+  //       })
+  //       .then((res) => {
+  //         if (res.data.data.lastMonthPostCount.length > 0) {
+  //           setLastMonthPostCount(
+  //             res.data.data.lastMonthPostCount[0]?.recordsCount
+  //           );
+  //         }
+  //         if (res.data.data.lastMonthStoryCount.length > 0) {
+  //           setLastMonthStoryCount(
+  //             res.data.data.lastMonthStoryCount[0]?.recordsCount
+  //           );
+  //         }
+  //       });
+  //   }, []);
 
 
   return (
@@ -192,7 +192,7 @@ function ManagerTarget() {
                 </div>
                 <div className="selDecBoxHeadTitle">
                   <h2>Monthly Target</h2>
-                  <h3>{lastWeekPostCount+lastWeekStoryCount}</h3>
+                  <h3>{lastWeekPostCount + lastWeekStoryCount}</h3>
                 </div>
               </div>
               <div className="selDecBoxContent">
@@ -234,7 +234,7 @@ function ManagerTarget() {
                 </div>
                 <div className="selDecBoxHeadTitle">
                   <h2>Quaterly Target</h2>
-                  <h3>{lastMonthStoryCount+lastMonthPostCount}</h3>
+                  <h3>{lastMonthStoryCount + lastMonthPostCount}</h3>
                 </div>
               </div>
               <div className="selDecBoxContent">

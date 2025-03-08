@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import WFHDUsersGrapf from "./WFHDUsersGraph";
 import UserCountInCards from "./UserCountInCards";
-import SalaryDetailsInLineChart from "./SalaryDetailsInLineChart";
 import BirthdayAndWorkAniCard from "./BirthdayAndWorkAniCard";
 import NewJoineeAndExitUsers from "./NewJoineeAndExitUsers";
 import UserCountWithLPA from "./UserCountWithLPA";
@@ -11,9 +10,9 @@ import { Link } from "react-router-dom";
 import Modal from "react-modal";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import axios from "axios";
-import FormContainer from "../../FormContainer";
-import { baseUrl } from "../../../../utils/config";
-
+import FormContainer from "../../../FormContainer";
+import { baseUrl } from "../../../../../utils/config";
+import SalaryDetailsInLineChart from "./SalaryDetailsInLineChart";
 
 const AnalyticDashboard = () => {
   const [OpenBonus, setHandleOpenExitEmp] = useState(false);

@@ -10,7 +10,7 @@ const AlertOrderSuccessful = () => {
   async function getData() {
     try {
       const res = await axios.get(
-        baseUrl+"get_all_orderreqdata"
+        baseUrl + "get_all_orderreqdata"
       );
       setData(res.data.data);
       console.log(res.data.data);

@@ -29,7 +29,7 @@ import CampaignExecution from "../Operation/Execution/CampaignExecution";
 import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
 import SittingRoomWise from "./HRMS/Sitting/SittingRoomWise";
 // import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
-import UserLoginHistory from'./HRMS/User/UserDashboard/LoginHistory/UserLoginHistory'
+import UserLoginHistory from "./HRMS/User/UserDashboard/LoginHistory/UserLoginHistory";
 
 import CommonRoom from "./HRMS/Sitting/CommonRoom";
 import { useAPIGlobalContext } from "./APIContext/APIContext";
@@ -235,9 +235,15 @@ const SarcasmCategory = lazy(() =>
 // const CreaterDashboard = lazy(() =>
 //   import("./RegisterCampaign/CreaterDashboard")
 // );
-const BillingOverview = lazy(() => import("./WFH/Billing/BillingOverview"));
-const BillingMast = lazy(() => import("./WFH/Billing/BillingMast"));
-const BillingUpdate = lazy(() => import("./WFH/Billing/BillingUpdate"));
+const BillingOverview = lazy(() =>
+  import("./HRMS/WFH/AnalyticDashboard/Billing/BillingOverview")
+);
+const BillingMast = lazy(() =>
+  import("./HRMS/WFH/AnalyticDashboard/Billing/BillingMast")
+);
+const BillingUpdate = lazy(() =>
+  import("./HRMS/WFH/AnalyticDashboard/Billing/BillingUpdate")
+);
 const AccountsOverviewWFH = lazy(() =>
   import("./AccountsDepartment/AccountsOverviewWFH")
 );
@@ -401,7 +407,7 @@ const WFHTemplateOverview = lazy(() =>
   import("./WFH/WFHSingleUser/WFHTemplateOverview")
 );
 const ViewEditDigiSignature = lazy(() =>
-  import("./WFH/DigitalSignature/ViewEditDigiSignature")
+  import("./HRMS/WFH/AnalyticDashboard/DigitalSignature/ViewEditDigiSignature")
 );
 // const PlancreationNew = lazy(() =>
 //   import("./RegisterCampaign/PlancreationNew")
@@ -785,8 +791,9 @@ const ViewInvoiceRequest = lazy(() =>
   import("./Sales/Invoice/ViewInvoiceRequest")
 );
 const AnalyticDashboard = lazy(() =>
-  import("./WFH/AnalyticDashboard/AnalyticDashboard")
+  import("./HRMS/WFH/AnalyticDashboard/AnalyticDashboard")
 );
+
 const CommunityManager = lazy(() =>
   import("../SuperTracker/CommunityManagement/CommunityManager")
 );

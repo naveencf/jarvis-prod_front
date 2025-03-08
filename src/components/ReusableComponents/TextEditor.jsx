@@ -51,7 +51,7 @@ const TextEditor = ({ value, onChange }) => {
   // Debounce function to prevent excessive state updates
   const debouncedOnChange = useCallback(
     debounce((content) => {
-      console.log("Updating content:", content);
+      // console.log("Updating content:", content);
       onChange(content);
     }, 1500),
     [onChange]

@@ -154,7 +154,7 @@ export default function FinanceWFHDashboard() {
   const handleDownloadIPayoutReleased = async () => {
     try {
       await downloadSelectedInvoices(rowForPayment);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const handleUTRupload = async (e, row) => {
@@ -513,13 +513,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-                .filter((item) => item.status_ === 0)
-                .indexOf(params.row)
+              .filter((item) => item.status_ === 0)
+              .indexOf(params.row)
             : activeAccordionIndex == 1
-            ? filterData
+              ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-            : filterData
+              : filterData
                 .filter((item) => item.status_ === 2)
                 .indexOf(params.row);
         return <div>{rowIndex + 1}</div>;
@@ -575,13 +575,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-                .filter((item) => item.status_ === 0)
-                .indexOf(params.row)
+              .filter((item) => item.status_ === 0)
+              .indexOf(params.row)
             : activeAccordionIndex == 1
-            ? filterData
+              ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-            : filterData
+              : filterData
                 ?.filter(
                   (item) => item.attendence_status_flow == "Payment Failed"
                 )
@@ -756,8 +756,8 @@ export default function FinanceWFHDashboard() {
                   params.row.utr
                     ? params.row.utr
                     : params.row.utr || rowUTR.row?.id === params.row.id
-                    ? rowUTR.value
-                    : ""
+                      ? rowUTR.value
+                      : ""
                 }
                 disabled={params.row.utr}
                 type="text"
@@ -1387,11 +1387,11 @@ export default function FinanceWFHDashboard() {
                       departmentFilter === ""
                         ? { value: "", label: "All" }
                         : {
-                            value: departmentFilter,
-                            label: departmentData.find(
-                              (dept) => dept.dept_id === departmentFilter
-                            )?.dept_name,
-                          }
+                          value: departmentFilter,
+                          label: departmentData.find(
+                            (dept) => dept.dept_id === departmentFilter
+                          )?.dept_name,
+                        }
                     }
                     onChange={(selectedOption) => {
                       const selectedValue = selectedOption
@@ -1486,9 +1486,8 @@ export default function FinanceWFHDashboard() {
       <div className="tab">
         {accordionButtons.map((button, index) => (
           <div
-            className={`named-tab ${
-              activeAccordionIndex === index ? "active-tab" : ""
-            }`}
+            className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
+              }`}
             onClick={() => {
               handleAccordionButtonClick(index);
             }}
@@ -1500,9 +1499,8 @@ export default function FinanceWFHDashboard() {
 
       <div className="card">
         <div
-          className={`${
-            activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
-          }`}
+          className={`${activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
+            }`}
         >
           {activeAccordionIndex === 1 && (
             <div className="card-header">
@@ -1611,7 +1609,7 @@ export default function FinanceWFHDashboard() {
                     <button
                       type="submit"
                       className="btn btn-primary"
-                      // onClick={handlePayOut}
+                    // onClick={handlePayOut}
                     >
                       Pay
                     </button>

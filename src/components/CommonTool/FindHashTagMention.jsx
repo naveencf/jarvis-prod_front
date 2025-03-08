@@ -34,7 +34,7 @@ function FindHashTagMention() {
 
   const hashmapwithmention = new Map();
   const handleallpost = () => {
-    // //console.log("look complete data");
+    // //// console.log("look complete data");
     if (allpost.length > 0) {
       setShowDataGrid(true);
       return;
@@ -51,7 +51,7 @@ function FindHashTagMention() {
   //         status: 1,
   //       })
   //       .then(() => {
-  //         //console.log("Blacklist Hashtags added");
+  //         //// console.log("Blacklist Hashtags added");
   //       });
   //     // Introduce a delay between requests
   //     await new Promise((resolve) => setTimeout(resolve, delayBetweenRequests));
@@ -307,11 +307,11 @@ function FindHashTagMention() {
   };
 
   const handleCheckBox = () => {
-    //console.log("work", rowSelectionModel);
+    //// console.log("work", rowSelectionModel);
   };
 
   const callbotxforinterpretor = () => {
-    //console.log("BotX for interpretor called");
+    //// console.log("BotX for interpretor called");
     universalarray = rows;
     // //console.log(universalarray);
     for (let i = 0; i < universalarray.length; i++) {
@@ -348,7 +348,7 @@ function FindHashTagMention() {
                 pastComment: tempstringtonum,
               })
               .then(() => {
-                //console.log("BotX filled data");
+                //// console.log("BotX filled data");
               });
           }
         }
@@ -377,7 +377,7 @@ function FindHashTagMention() {
                   interpretor_date: date,
                 })
                 .then(() => {
-                  //console.log("BotX filled data");
+                  //// console.log("BotX filled data");
                 });
             }
           }

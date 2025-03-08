@@ -73,21 +73,21 @@ export default function SuperTrackerDialog({ open, setOpen, selectedRows }) {
       sortable: true,
       valueGetter: (params) => {
         if (params.row.tracking) {
-          // //console.log("found")
+          // //// console.log("found")
           return 1;
           // return <Badge color="success" variant="dot" />;
         } else {
-          // //console.log("first",params.row._id)
+          // //// console.log("first",params.row._id)
           return 0;
         }
       },
       renderCell: (params) => {
         if (params.row.tracking) {
-          //console.log("found")
+          //// console.log("found")
           // return 1
           return <Badge color="success" variant="dot" />;
         } else {
-          //console.log("first",params.row._id)
+          //// console.log("first",params.row._id)
           return <Badge color="error" variant="dot" />;
         }
       },
@@ -126,10 +126,10 @@ export default function SuperTrackerDialog({ open, setOpen, selectedRows }) {
           pages: pageNames,
         }
       );
-      // console.log("API response:", response.data);
-     if(response.status == 200){
-      alert("Super tracker saved successfully.")
-     }
+      // // console.log("API response:", response.data);
+      if (response.status == 200) {
+        alert("Super tracker saved successfully.")
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
     }

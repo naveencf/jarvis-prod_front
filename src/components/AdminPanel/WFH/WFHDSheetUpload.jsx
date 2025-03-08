@@ -70,12 +70,12 @@ export default function WFHDSheetUpload({
     setAlerttemp(false);
   };
 
-  const fieldname = ["S.No", "user_name","user_id", "total_days", "absent_days", "salary", "bonus" ,"arrear_from_last_month","salary_deduction"];
+  const fieldname = ["S.No", "user_name", "user_id", "total_days", "absent_days", "salary", "bonus", "arrear_from_last_month", "salary_deduction"];
 
   const checkfieldname = (data) => {
     for (let i = 1; i < fieldname.length; i++) {
       if (!data.hasOwnProperty(fieldname[i])) {
-        console.log("Missing Field:", fieldname[i]);
+        // console.log("Missing Field:", fieldname[i]);
         setAlerttemp(true);
         return false;
       } else {
@@ -103,7 +103,7 @@ export default function WFHDSheetUpload({
       const response = await axios.post(`${baseUrl}add_attendance_with_excel`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      console.log("Response:", response.data);
+      // console.log("Response:", response.data);
       handleClose()
     } catch (error) {
       console.error("Error uploading file:", error);
@@ -124,7 +124,7 @@ export default function WFHDSheetUpload({
     { field: "total_days", headerName: "Total Days", type: "text" },
     { field: "absent_days", headerName: "Absent Days", type: "text" },
     { field: "bonus", headerName: "Bonus", type: "text" },
-    { field: "arrear_from_last_month", headerName: "Arrear From Last Month",width: 200, type: "text" },
+    { field: "arrear_from_last_month", headerName: "Arrear From Last Month", width: 200, type: "text" },
     { field: "salary_deduction", headerName: "Deduction", type: "text" },
   ];
 
@@ -138,12 +138,12 @@ export default function WFHDSheetUpload({
         variant="standard"
         type="file"
       /> */}
-         <FieldContainer
-            label="Upload Salary Sheet"
-            type="file"
-            onChange={handleClickOpen}
-            accept=".xlsx, .xls"
-          />
+      <FieldContainer
+        label="Upload Salary Sheet"
+        type="file"
+        onChange={handleClickOpen}
+        accept=".xlsx, .xls"
+      />
 
       <Dialog
         maxWidth="md"

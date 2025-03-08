@@ -21,7 +21,7 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
   const [totalStoryPerPage, setStoryPerPage] = useState(0);
   const [filteredData, setFilteredData] = useState(payload);
 
-  
+
 
   useEffect(() => {
     const updatedCatNameLengths = {};
@@ -54,10 +54,10 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
 
   const handleSelectedRowData = (catName) => {
     const filteredRows = payload.filter((e) => {
-      if(!catName){
+      if (!catName) {
         return e
-      }else return e.cat_name === catName
-      
+      } else return e.cat_name === catName
+
     });
     setFilteredData(filteredRows);
 
@@ -149,17 +149,17 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
     }, {});
 
     const overviewData = [
-        ["", "", "Proposal"],
-        ["Sno.", "Description", "Platform", "Count", "Deliverables", "Cost"],
+      ["", "", "Proposal"],
+      ["Sno.", "Description", "Platform", "Count", "Deliverables", "Cost"],
     ];
 
     catNames.forEach((catName, index) => {
-        overviewData.push([index + 1, catName, "Instagram", catNameCounts[catName] || 0, "", ""]);
+      overviewData.push([index + 1, catName, "Instagram", catNameCounts[catName] || 0, "", ""]);
     });
 
     overviewData.push(
-        ["", "", "GST (18%)", "",""],
-        ["", "Total", "", summaryData.lent]
+      ["", "", "GST (18%)", "", ""],
+      ["", "Total", "", summaryData.lent]
     );
 
     const overviewWorksheet = XLSX.utils.aoa_to_sheet(overviewData);
@@ -213,23 +213,23 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
   return (
     <>
       {payload?.length > 0 && (
-        <Box sx={{ height: `${drawer === true ?"100%":"700px"}`, width:`${drawer === true ? "100%":"40%"}`,border:"1px solid var(--gray-200)",overflow:"hidden",borderRadius:"12px" }}>
-          <Paper elevation={1} sx={{ mb: 1, height: "130px", width: "100%" ,background:"var(--body-bg)"}}>
+        <Box sx={{ height: `${drawer === true ? "100%" : "700px"}`, width: `${drawer === true ? "100%" : "40%"}`, border: "1px solid var(--gray-200)", overflow: "hidden", borderRadius: "12px" }}>
+          <Paper elevation={1} sx={{ mb: 1, height: "130px", width: "100%", background: "var(--body-bg)" }}>
             <h5
-              
-              style={{ textAlign: "center", padding: "10px" ,color:"var(--gray-700)"}}
+
+              style={{ textAlign: "center", padding: "10px", color: "var(--gray-700)" }}
             >
               Summary
             </h5>
-            
+
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
                 gap: 1,
                 mt: 2,
-                background:"var(--white)",
-                color:"var(--gray-500)",
+                background: "var(--white)",
+                color: "var(--gray-500)",
               }}
             >
               <Typography variant="6"> Pages: {summaryData.lent}</Typography>
@@ -244,29 +244,29 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
               </Typography>
             </Box>
             <Box className="sb gap4 pb-2">
-              <div className="pack" style={{display:"flex",flexDirection:"row",alignItems:"center"}}>
-              
+              <div className="pack" style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
 
-              <button
-                onClick={downloadExcel}
-                variant="text"
-                color="success"
-                title="Download Excel"
-                className="btn btn-outline-success icon-1 p-1 "
+
+                <button
+                  onClick={downloadExcel}
+                  variant="text"
+                  color="success"
+                  title="Download Excel"
+                  className="btn btn-outline-success icon-1 p-1 "
                 >
-                <SiMicrosoftexcel />
-              </button>
-              <button
-            onClick={() => generatePDF(filteredData)}
-            variant="text"
-            color="error"
-            title="Download Pdf"
-            className="btn btn-outline-danger icon-1 p-1 "
-            
-            >
-            <PictureAsPdfIcon />
-          </button>
-            </div>
+                  <SiMicrosoftexcel />
+                </button>
+                <button
+                  onClick={() => generatePDF(filteredData)}
+                  variant="text"
+                  color="error"
+                  title="Download Pdf"
+                  className="btn btn-outline-danger icon-1 p-1 "
+
+                >
+                  <PictureAsPdfIcon />
+                </button>
+              </div>
               {/* <Button
                 onMouseEnter={downloadExcel} 
                 variant="contained"
@@ -302,10 +302,10 @@ const SummaryDetails = ({ payload, campName, generatePdf, drawer }) => {
             </div>
           </Box>
 
-          <Box className="mb-2"  sx={{display:"flex",justifyContent:"space-between",padding:"5px",background:"var(--body-bg)"}}>
-            <div sx={{ fontSize:"14px"}}style={{color:"var(--gray-500)"}}>Followers: {totalFollowerCount}</div>
-            <div sx={{ fontSize:"14px"}}style={{color:"var(--gray-500)"}}>Posts: {totalPostPerPage}</div>
-            <div sx={{ fontSize:"14px"}}style={{color:"var(--gray-500)"}}>Stories: {totalStoryPerPage}</div>
+          <Box className="mb-2" sx={{ display: "flex", justifyContent: "space-between", padding: "5px", background: "var(--body-bg)" }}>
+            <div sx={{ fontSize: "14px" }} style={{ color: "var(--gray-500)" }}>Followers: {totalFollowerCount}</div>
+            <div sx={{ fontSize: "14px" }} style={{ color: "var(--gray-500)" }}>Posts: {totalPostPerPage}</div>
+            <div sx={{ fontSize: "14px" }} style={{ color: "var(--gray-500)" }}>Stories: {totalStoryPerPage}</div>
           </Box>
           <DataGrid
             rows={filteredData ? filteredData : payload}

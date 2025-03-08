@@ -11,15 +11,15 @@ import {
 } from "../../../Store/reduxBaseURL";
 import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import {
-    useGetAllPageCategoryQuery,
-    useGetOwnershipTypeQuery,   
-  } from "../../../Store/PageBaseURL";
+  useGetAllPageCategoryQuery,
+  useGetOwnershipTypeQuery,
+} from "../../../Store/PageBaseURL";
 
-function VendorPages({ vendorDetails , tab1 }) {
-  console.log(tab1 , 'lalithellow')
+function VendorPages({ vendorDetails, tab1 }) {
+  console.log(tab1, 'lalithellow')
   const { data: platData } = useGetPmsPlatformQuery();
   const { data: pageCate } = useGetAllPageCategoryQuery();
-  const {data:ownership}=useGetOwnershipTypeQuery();
+  const { data: ownership } = useGetOwnershipTypeQuery();
   const token = sessionStorage.getItem("token");
   const cat = pageCate?.data;
   const platformData = platData?.data;
@@ -30,27 +30,27 @@ function VendorPages({ vendorDetails , tab1 }) {
   const vendorData = vendor?.data;
   useEffect(() => {
     axios
-    .get(
-      baseUrl + 
-      `v1/vendor_wise_page_master_data/${tab1 === 'tab1' ? vendorDetails?.vendor_id : vendorDetails?._id}`, 
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json", // Adjust content type as needed
-        },
-      }
-    )
-    .then((res) => {
-      setVendorPages(res.data.data);
-    })
-    .catch((error) => {
-      console.error("Error fetching vendor pages:", error);
-    });
-  
-      axios.get(baseUrl + "get_all_users").then((res) => {
-        setUser(res.data.data);
-
+      .get(
+        baseUrl +
+        `v1/vendor_wise_page_master_data/${tab1 === 'tab1' ? vendorDetails?.vendor_id : vendorDetails?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Adjust content type as needed
+          },
+        }
+      )
+      .then((res) => {
+        setVendorPages(res.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching vendor pages:", error);
       });
+
+    axios.get(baseUrl + "get_all_users").then((res) => {
+      setUser(res.data.data);
+
+    });
 
 
 
@@ -86,31 +86,32 @@ function VendorPages({ vendorDetails , tab1 }) {
       width: 200,
       valueGetter: (params) => (params.row.status == 1 ? "Active" : "Inactive"),
     },
-    { field: "ownership_type", headerName: "Ownership", width: 200,
-      valueGetter:({row})=>(row.ownership_type?ownership?.find(item=>item._id==row.ownership_type)?.company_type_name:"")
-     },
+    {
+      field: "ownership_type", headerName: "Ownership", width: 200,
+      valueGetter: ({ row }) => (row.ownership_type ? ownership?.find(item => item._id == row.ownership_type)?.company_type_name : "")
+    },
 
     {
       field: "platform_id",
       headerName: "Platform",
-        renderCell: (params) => {
-          let name = platformData?.find(
-            (item) => item?._id == params.row.platform_id
-          )?.platform_name;
-          return <div>{name}</div>;
-        },
+      renderCell: (params) => {
+        let name = platformData?.find(
+          (item) => item?._id == params.row.platform_id
+        )?.platform_name;
+        return <div>{name}</div>;
+      },
       width: 200,
     },
     {
       field: "page_catg_id",
       headerName: "Category",
       width: 200,
-        renderCell: (params) => {
-          let name = cat?.find(
-            (item) => item?._id == params.row?.page_category_id
-          )?.category_name;
-          return <div>{name}</div>;
-        },
+      renderCell: (params) => {
+        let name = cat?.find(
+          (item) => item?._id == params.row?.page_category_id
+        )?.category_name;
+        return <div>{name}</div>;
+      },
     },
     {
       field: "followers_count",
@@ -136,12 +137,12 @@ function VendorPages({ vendorDetails , tab1 }) {
       headerName: "Active Platform",
       width: 200,
 
-        valueGetter: (params) => {
-          let data = platformData?.filter((item) => {
-            return params?.row?.platform_active_on?.includes(item?._id);
-          });
-          return data?.map((item) => item?.platform_name).join(", ");
-        },
+      valueGetter: (params) => {
+        let data = platformData?.filter((item) => {
+          return params?.row?.platform_active_on?.includes(item?._id);
+        });
+        return data?.map((item) => item?.platform_name).join(", ");
+      },
     },
     {
       field: "tags_page_category",

@@ -58,7 +58,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const [selectedFileName, setSelectedFileName] = useState('');
   const [selectedPaymentType, setSelectedPaymentType] = useState("payment");
 
-  console.log(vendorDetail, "vendorDetail")
+  // console.log(vendorDetail, "vendorDetail")
 
   useEffect(() => {
     if (vendorDetail) {
@@ -138,7 +138,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
   useEffect(() => {
     if (vendorDetail && vendorDetail.request_id && vendorBankDetail) {
-      // console.log("Editing Request", vendorDetail);
+      // // console.log("Editing Request", vendorDetail);
 
       // Find matching bank index
       const bankIndex = vendorBankDetail.findIndex((bank) =>
@@ -168,7 +168,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       }
     }
     else {
-      console.log("Adding Request");
+      // console.log("Adding Request");
       // setSelectedBankIndex(""); // Reset when adding a new request
     }
   }, [vendorDetail, vendorBankDetail]);
@@ -390,6 +390,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     // if (paymentType = "advance") {
     //   paymentType = "advanced"
     // }
+    // console.log(paymentType, "paymentType")
     setSelectedPaymentType(paymentType);
     setFormData((prev) => {
       const updatedData = { ...prev, payment_type: paymentType };
@@ -526,7 +527,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
           </Stack>
 
-          {selectedPaymentType === "advanced" || selectedPaymentType === "upfront" &&
+          {(selectedPaymentType === "advanced" || selectedPaymentType === "upfront") &&
             <VendorAdavanceRequest formData={formData} setFormData={setFormData} vendorId={vendorDetail._id} />
           }
           <Stack direction="row" spacing={2}>

@@ -4,17 +4,17 @@ import { Modal, Button } from "react-bootstrap";
 import { baseUrl } from "../../../utils/config";
 
 const ExpenseExcelData = ({ show, handleClose, data }) => {
-  console.log(data,"data excel ");
+  console.log(data, "data excel ");
 
 
 
-  const handleAccept = ()=>{
-    if(data.length > 0){
+  const handleAccept = () => {
+    if (data.length > 0) {
       // for(let i = 0; i< data.length; i++){
-        const res = axios.post(`${baseUrl}add_multiple_expense`,data) 
+      const res = axios.post(`${baseUrl}add_multiple_expense`, data)
       // }
     }
-    console.log("n ew");
+    // console.log("n ew");
   }
   return (
     <Modal show={show} onHide={handleClose} size="lg" centered>

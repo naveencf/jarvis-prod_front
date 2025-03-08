@@ -33,7 +33,7 @@ const WFHDBankUpdate = () => {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [upi, setUpi] = useState("");
-  const [ctc , setCTC] = useState(0)
+  const [ctc, setCTC] = useState(0)
   //--------------------Address Info State End
 
   const [isRequired, setIsRequired] = useState({
@@ -85,8 +85,8 @@ const WFHDBankUpdate = () => {
       setCTC(ctc)
     });
   }, []);
- 
-console.log(ctc)
+
+  console.log(ctc)
   const handleSubmit = async () => {
     if (bankName == "") {
       setIsRequired((perv) => ({ ...perv, bankName: true }));
@@ -97,7 +97,7 @@ console.log(ctc)
     if (IFSC == "") {
       setIsRequired((perv) => ({ ...perv, IFSC: true }));
     }
-    
+
     if (beneficiary == "") {
       setIsRequired((perv) => ({ ...perv, beneficiary: true }));
     }
@@ -115,7 +115,7 @@ console.log(ctc)
     } else if (!IFSC || IFSC == "") {
       return toastError("Please fill all Required field");
     }
- 
+
     if (ctc >= 100000 && panNo === "") {
       return toastError("Pan No is required because CTC is greater than or equal to 100000");
     }
@@ -139,7 +139,7 @@ console.log(ctc)
     } catch (error) {
       console.error("Error submitting documents", error);
     } finally {
-      console.log("");
+      // console.log("");
     }
   };
   const handlePANChange = (e) => {

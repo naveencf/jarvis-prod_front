@@ -12,7 +12,7 @@ const DisputeReason = ({ data, setIsPreviewModalOpen, handleSubmit }) => {
 
   const d = new Date();
   const currentDate = DateISOtoNormal(d.toISOString());
-  console.log("dispute date", currentDate);
+  // console.log("dispute date", currentDate);
   const handleSubmitDispute = async (e) => {
     e.preventDefault();
     try {

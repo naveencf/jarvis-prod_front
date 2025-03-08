@@ -81,7 +81,7 @@ export default function SubCategoryMaster() {
           toastAlert("Add successfully");
         }
         postData.sub_category_name = "";
-        console.log("Data saved:", response.data);
+        // console.log("Data saved:", response.data);
         setIsModalOpen(false);
         getData();
       })
@@ -134,7 +134,7 @@ export default function SubCategoryMaster() {
         getData();
         setReload(!reload);
       });
-    console.log("put data");
+    // console.log("put data");
   };
 
   const handleEditClick = (id, row) => () => {
@@ -160,7 +160,7 @@ export default function SubCategoryMaster() {
         .delete(`${baseUrl}` + `projectxSubCategory/${itemToDeleteId}`)
         .then(() => {
           getData();
-          console.log("Data deleted successfully");
+          // console.log("Data deleted successfully");
         })
         .catch((error) => {
           console.error("Error deleting data:", error);

@@ -76,7 +76,7 @@ const PhaseCreation = () => {
   //fetching data for the single plan
   const getPageData = async () => {
     const pageD = await axios.get(
-      `${baseUrl}`+`campaignplan/${id}`
+      `${baseUrl}` + `campaignplan/${id}`
     );
 
     const x = pageD.data.data
@@ -101,7 +101,7 @@ const PhaseCreation = () => {
 
   const getPhaseData = async () => {
     const data = await axios.get(
-      `${baseUrl}`+`campaignphase/${id}`
+      `${baseUrl}` + `campaignphase/${id}`
     );
     setAllPhaseData(data?.data?.result);
   };
@@ -499,8 +499,8 @@ const PhaseCreation = () => {
             >
               <AccordionSummary
                 expandIcon={<GridExpandMoreIcon />}
-                // aria-controls={`panel${index}bh-content`}
-                // id={`panel${index}bh-header`}
+              // aria-controls={`panel${index}bh-content`}
+              // id={`panel${index}bh-header`}
               >
                 <Typography>{`Phase ${index + 1}`}</Typography>
               </AccordionSummary>

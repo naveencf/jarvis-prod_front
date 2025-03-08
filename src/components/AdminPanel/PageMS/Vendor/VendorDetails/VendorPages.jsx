@@ -50,7 +50,7 @@ function VendorPages({ vendorDetails, tab1 }) {
       setUser(res.data.data);
     });
   }, []);
-  console.log("vendorpages called")
+  // console.log("vendorpages called")
   const dataGridcolumns = [
     {
       field: "S.NO",

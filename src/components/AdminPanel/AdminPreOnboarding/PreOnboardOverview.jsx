@@ -25,7 +25,7 @@ const PreOnboardOverview = () => {
       setDatas(onboarddata);
       setFilterData(onboarddata);
     } catch (error) {
-      console.log("Error fething Data", error);
+      // console.log("Error fething Data", error);
     } finally {
       setLoading(false);
     }

@@ -40,10 +40,10 @@ export default function ExecutionRejected() {
         axios
           .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
           .then((res) => {
-            console.log("this is res data", res.data);
+            // console.log("this is res data", res.data);
             if (res.data[26].view_value == 1) {
               setContextData(true);
-              console.log("this is trye value");
+              // console.log("this is trye value");
             }
             console.log(res.data[26].view_value);
           });
@@ -145,57 +145,57 @@ export default function ExecutionRejected() {
 
     contextData
       ? {
-          field: "actions",
-          type: "actions",
-          headerName: "Actions",
-          width: 300,
-          cellClassName: "actions",
-          getActions: (params) => {
-            const id = params.row._id;
-            return [
-              <div
-                className="icon-1"
-                key={id}
-                onClick={() => handleClickOpenPaymentDetailDialog(params.row)}
-                title="Payment Details"
-              >
-                <GridActionsCellItem
-                  icon={<PointOfSaleTwoToneIcon />}
-                  color="inherit"
-                />
-              </div>,
-              <Link key={id} to={`/admin/exeexecution/${id}`}>
-                <div className="icon-1">
-                  <GridActionsCellItem
-                    icon={<ListAltOutlinedIcon />}
-                    label="Delete"
-                    color="inherit"
-                    title="Record Service Detail"
-                  />
-                </div>
-              </Link>,
-            ];
-          },
-        }
-      : {
-          field: "actions",
-          type: "actions",
-          headerName: "Actions",
-          width: 300,
-          cellClassName: "actions",
-          getActions: (params) => {
-            const { id } = params;
-            return [
-              <Link key={id} to={`/admin/exeexecution/${id}`}>
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 300,
+        cellClassName: "actions",
+        getActions: (params) => {
+          const id = params.row._id;
+          return [
+            <div
+              className="icon-1"
+              key={id}
+              onClick={() => handleClickOpenPaymentDetailDialog(params.row)}
+              title="Payment Details"
+            >
+              <GridActionsCellItem
+                icon={<PointOfSaleTwoToneIcon />}
+                color="inherit"
+              />
+            </div>,
+            <Link key={id} to={`/admin/exeexecution/${id}`}>
+              <div className="icon-1">
                 <GridActionsCellItem
                   icon={<ListAltOutlinedIcon />}
                   label="Delete"
                   color="inherit"
+                  title="Record Service Detail"
                 />
-              </Link>,
-            ];
-          },
+              </div>
+            </Link>,
+          ];
         },
+      }
+      : {
+        field: "actions",
+        type: "actions",
+        headerName: "Actions",
+        width: 300,
+        cellClassName: "actions",
+        getActions: (params) => {
+          const { id } = params;
+          return [
+            <Link key={id} to={`/admin/exeexecution/${id}`}>
+              <GridActionsCellItem
+                icon={<ListAltOutlinedIcon />}
+                label="Delete"
+                color="inherit"
+              />
+            </Link>,
+          ];
+        },
+      },
   ];
 
   return (

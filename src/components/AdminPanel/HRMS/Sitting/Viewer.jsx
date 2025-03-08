@@ -20,6 +20,7 @@ import { FileArrowDown, FileXls, FloppyDisk } from "@phosphor-icons/react";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import { baseUrl } from "../../../../utils/config";
 import UnassignedUsersList from "./UnassignedUsersList";
+import Loader from "../../../Finance/Loader/Loader";
 
 const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
   const [image, setImage] = useState(null);
@@ -60,6 +61,8 @@ const Viewer = ({
   const [chairSVG, setChairSVG] = useState(null);
   const [layouts, setLayouts] = useState({});
   const [id, setID] = useState("");
+
+  const [isLoading, setIsLoading] = useState(true);
 
   const [showChairsWithNames, setShowChairsWithNames] = useState(true);
   const [matchData, setMatchData] = useState("");
@@ -119,14 +122,9 @@ const Viewer = ({
   // Fetch room layouts from API
   const fetchLayouts = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(baseUrl + "get_all_arrangement");
 
-      // console.log(response.data, "repose data");
-      // //recent un-assigned user list data
-      // const UnAssignedData = response.data.reduce((acc, layout) => {
-      //   acc[layout.roomName] = layout; // Group by room name
-      //   return acc;
-      // }, {});
       setUnListData(response.data);
 
       const shiftWiseData = response.data.filter(
@@ -143,9 +141,12 @@ const Viewer = ({
       );
       setMatchData(matchedData);
       setID(matchedData ? matchedData._id : "");
+      setIsLoading(false);
     } catch (error) {
       console.error("Error fetching layouts:", error);
       alert("Failed to load layouts.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -195,11 +196,11 @@ const Viewer = ({
     try {
       const updatedData = {
         _id: id,
-        elements, // Pass the updated elements array
+        elements,
       };
       await axios.put(`${baseUrl}update_sitting_arrangement`, updatedData);
       alert("Layout updated successfully.");
-      setSelectedEmployee(null); // Reset dropdown value after save
+      setSelectedEmployee(null);
       setSelectedId(null);
       totalSittingDataCount();
       fetchAllocationCounts();
@@ -238,7 +239,6 @@ const Viewer = ({
   const [multiSelectEnabled, setMultiSelectEnabled] = useState(false);
   const [selectedChairs, setSelectedChairs] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
-
   // Function to handle chair selection
   const handleCheckboxChairSelection = (chair) => {
     if (!multiSelectEnabled) {
@@ -294,7 +294,7 @@ const Viewer = ({
     const assignedUserIds = selectedEmployees.map((emp) => emp.user_id);
 
     // Dynamically update `unassigned_user` for ALL affected rooms
-    const updatedRooms = Object.values(layouts).map((room) => {
+    const updatedRooms = Object.values(unListData).map((room) => {
       const updatedUnassignedUsers = room.unassigned_user.filter(
         (user) => !assignedUserIds.includes(user.user_id) // Remove assigned users from unassigned list
       );
@@ -332,16 +332,6 @@ const Viewer = ({
       console.error("Error assigning users:", error);
       alert("Failed to assign users.");
     }
-  };
-
-  // Function to update selected employees array
-  const updateEmployeeSelection = (chairs) => {
-    const employees = chairs.map((chair) => ({
-      name: chair.employee,
-      id: chair.user_id,
-    }));
-
-    setSelectedEmployees(employees);
   };
 
   const handleNotAssigned = async () => {
@@ -452,6 +442,9 @@ const Viewer = ({
         <div className="card-body roomLayoutCardIn roomCard row">
           <div className="roomLayoutCardLeft col">
             <h4>{shift == 1 ? "Day Shift" : "Night Shift"}</h4>
+            {/* {isLoading ? (
+              <Loader />
+            ) : ( */}
             <div className="floorStage floor">
               <Stage
                 width={820}
@@ -466,7 +459,8 @@ const Viewer = ({
                       height={480}
                     />
                   )}
-                  {chairSVG &&
+                  {layouts &&
+                    chairSVG &&
                     elements?.map((el) => (
                       <Path
                         key={el.id}
@@ -581,130 +575,10 @@ const Viewer = ({
                         </>
                       );
                     })}
-
-                  {/* {hoveredElement?.user_id ? (
-                    (() => {
-                      const matchedUser = userContextData?.find(
-                        (user) => user?.user_id === hoveredElement.user_id
-                      );
-                      if (!matchedUser) return null;
-
-                      const defaultX = 100;
-                      const defaultY = 100;
-
-                      return (
-                        <>
-                          <Rect
-                            x={800} // Fixed x position for the top-right corner
-                            y={10} // Fixed y position for the top-right corner
-                            width={200}
-                            height={120}
-                            fill="white"
-                            shadowBlur={5}
-                            cornerRadius={5}
-                            stroke="black"
-                          />
-                          {matchedUser.image_url &&
-                          matchedUser.image_url !==
-                            "https://storage.googleapis.com/node-prod-bucket/" ? (
-                            <AvatarImage
-                              url={matchedUser.image_url}
-                              x={920} // Adjusted to align inside the card
-                              y={20} // Adjusted to align inside the card
-                              width={50}
-                              height={50}
-                              style={{
-                                border: "2px solid orange",
-                                borderRadius: "50%",
-                              }}
-                            />
-                          ) : (
-                            <>
-                              <Circle
-                                x={945} // Center position for the fallback icon
-                                y={45}
-                                radius={25} // Circle radius
-                                fill="light-grey"
-                              />
-                              <Text
-                                text="👤"
-                                fontSize={30}
-                                fill="white"
-                                x={940 - 10}
-                                y={45 - 10}
-                              />
-                            </>
-                          )}
-                          <Text
-                            text={`Employee: ${matchedUser.user_name || "N/A"}`}
-                            fontSize={12}
-                            fontStyle="bold"
-                            x={860}
-                            y={80}
-                            fill="black"
-                          />
-                          <Text
-                            text={`Designation: ${
-                              matchedUser.designation_name || "N/A"
-                            }`}
-                            fontSize={12}
-                            fontStyle="bold"
-                            x={860}
-                            y={95}
-                            fill="black"
-                          />
-                          <Text
-                            text={`Department: ${
-                              matchedUser.department_name || "N/A"
-                            }`}
-                            fontSize={12}
-                            fontStyle="bold"
-                            x={860}
-                            y={110}
-                            fill="black"
-                          />
-                        </>
-                      );
-                    })()
-                  ) : (
-                    <Text
-                      text=""
-                      fontSize={14}
-                      x={(hoveredElement?.x ?? 100) - 20}
-                      y={(hoveredElement?.y ?? 100) - 25}
-                      fill="gray"
-                    />
-                  )} */}
                 </Layer>
-                {/* {hoveredElement && (
-                      <div className="roomTooltip">
-                        {hoveredElement.image && (
-                          <AvatarImage
-                            url={hoveredElement.image}
-                            x={hoveredElement.x - 0}
-                            y={hoveredElement.y - 65}
-                            width={50}
-                            height={50}
-                            style={{
-                              border: "2px solid orange",
-                              borderRadius: "50%", // Optional for rounded borders
-                            }}
-                          />
-                        )}
-                        <Text
-                          text={
-                            hoveredElement.employee
-                              ? hoveredElement.employee
-                              : "Not assigned"
-                          }
-                          fontSize={16}
-                          x={hoveredElement.x - 20}
-                          y={hoveredElement.y - 25} // Position above avatar
-                        />
-                      </div>
-                    )} */}
               </Stage>
             </div>
+            {/* )} */}
             <div className="ml-4">
               <Stage
                 width={300}

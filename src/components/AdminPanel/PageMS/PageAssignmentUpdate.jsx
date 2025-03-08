@@ -22,7 +22,7 @@ export default function PageAssignmentUpdate({ open, onClose, row }) {
   const token = sessionStorage.getItem('token');
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
 
- 
+
 
   const handleSubmit = () => {
     const selectedSubCategoryIds = subCategorys.map((sub) => sub.value);

@@ -239,7 +239,7 @@ const CommunityPageView = () => {
             creatorDetail={creatorDetail}
             setCreatorDetail={setCreatorDetail}
           />
-        <MultipleWhatsappLinks creatorDetail={creatorDetail}/>
+          <MultipleWhatsappLinks creatorDetail={creatorDetail} />
           <div className="card">
             <div className="card-header ">
               <Stack className="w-100"
@@ -255,7 +255,7 @@ const CommunityPageView = () => {
                     color="primary"
                     label={`Store-Post : ${formatNumber(
                       analyticsData?.paidPostInfoObj?.totalPost +
-                        analyticsData?.unPaidPostInfoObj?.totalPost
+                      analyticsData?.unPaidPostInfoObj?.totalPost
                     )}
                    `}
                   />
@@ -265,7 +265,7 @@ const CommunityPageView = () => {
                     label={`Post / Day : ${formatNumber(
                       (analyticsData?.paidPostInfoObj?.totalPost +
                         analyticsData?.unPaidPostInfoObj?.totalPost) /
-                        analyticsData?.noOfDays
+                      analyticsData?.noOfDays
                     )}`}
                   />
                 </Stack>
@@ -437,8 +437,8 @@ const CommunityPageView = () => {
             creatorProgress={creatorProgress}
             setCreatorProgress={setCreatorProgress}
           />
-       
-         
+
+
           <Stack direction="row">
             {inhousePosts.length > 0 && (
               <PostGrid

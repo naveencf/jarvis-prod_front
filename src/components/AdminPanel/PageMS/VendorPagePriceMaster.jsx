@@ -100,7 +100,7 @@ export default function VendorPagePriceMaster() {
       })
       .then((res) => {
         if (res.status === 200) {
-          if(vendorMast_name?.length > 0){
+          if (vendorMast_name?.length > 0) {
             return Navigate(`/admin/pms-vendor-overview`);
           }
           Navigate("/admin/pms-vendor-page-price-overview");
@@ -160,7 +160,7 @@ export default function VendorPagePriceMaster() {
             Owner Vendor <sup style={{ color: "red" }}>*</sup>
           </label>
           <Select
-          isDisabled={vendorMast_name?.length > 0}
+            isDisabled={vendorMast_name?.length > 0}
             options={vendorList.map((option) => ({
               value: option.vendorMast_id,
               label: option.vendorMast_name,

@@ -14,7 +14,7 @@ const PageOwnership = () => {
   const [pageId, setPageId] = useState("");
   const [ownerVendorId, setOwnerVendorId] = useState("");
   const [sharingPer, setSharingPer] = useState("");
-  const [ownerships, setOwnerships] = useState(""); 
+  const [ownerships, setOwnerships] = useState("");
   const [description, setDescription] = useState("");
   const [data, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
@@ -35,7 +35,7 @@ const PageOwnership = () => {
       .then((res) => {
         setFilterData(res.data.data);
         setData(res.data.data);
-        // console.log("dddddddd",res.data.data)
+        // // console.log("dddddddd",res.data.data)
       });
   };
 
@@ -43,12 +43,12 @@ const PageOwnership = () => {
     getData();
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const result = data.filter((d) => {
-       return d.ownership_type?.toLowerCase().includes(search.toLowerCase());
-     });
-     setFilterData(result);
-   }, [search]);
+      return d.ownership_type?.toLowerCase().includes(search.toLowerCase());
+    });
+    setFilterData(result);
+  }, [search]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,15 +60,15 @@ const PageOwnership = () => {
       sharing_per: sharingPer,
       created_by: userID
     })
-    .then(() => {
-      toastAlert("Submitted");
-      setOwnerships("");
-      setDescription("");
-      setPageId("");
-      setOwnerVendorId("");
-      setSharingPer("");
-      getData();
-    });
+      .then(() => {
+        toastAlert("Submitted");
+        setOwnerships("");
+        setDescription("");
+        setPageId("");
+        setOwnerVendorId("");
+        setSharingPer("");
+        getData();
+      });
   };
 
 
@@ -78,26 +78,26 @@ const PageOwnership = () => {
       selector: (row, index) => <div>{index + 1}</div>,
       sortable: true,
     },
-    
+
     {
       name: "Ownership",
-      selector: (row) => row.ownership_type, 
+      selector: (row) => row.ownership_type,
     },
     {
       name: "Description",
-      selector: (row) => row.description, 
+      selector: (row) => row.description,
     },
     {
       name: "PageMast Id",
-      selector: (row) => row.pageMast_id, 
+      selector: (row) => row.pageMast_id,
     },
     {
       name: "VendorMast Id",
-      selector: (row) => row.vendorMast_id, 
+      selector: (row) => row.vendorMast_id,
     },
     {
       name: "Sharing Per",
-      selector: (row) => row.sharing_per, 
+      selector: (row) => row.sharing_per,
     },
     {
       name: "Action",
@@ -112,7 +112,7 @@ const PageOwnership = () => {
             <FaEdit />{" "}
           </button>
           <DeleteButton
-            endpoint="deletePageOwner" 
+            endpoint="deletePageOwner"
             id={row._id}
             getData={getData}
           />
@@ -123,50 +123,50 @@ const PageOwnership = () => {
 
   const handleRowData = (row) => {
     setRowData(row);
-    setOwnerUpdate(row.ownership_type); 
+    setOwnerUpdate(row.ownership_type);
     setDescriptionUpdate(row.description);
     setPageIdUpdate(row.pageMast_id);
     setOwnerVendorIdUpdate(row.vendorMast_id);
     setSharingPerUpdate(row.sharing_per);
-};
+  };
 
   const handleModalUpdate = () => {
     if (ownerUpdate === "") {
       toastError("Ownership is required");
       return;
-    }else if (pageIdUpdate === "") {
+    } else if (pageIdUpdate === "") {
       toastError("Page ID is required");
       return;
     }
     else if (ownerVendorIdUpdate === "") {
       toastError("Vendor ID is required");
       return;
-    }else if (sharingPerUpdate === "") {
+    } else if (sharingPerUpdate === "") {
       toastError("Sharing Per is required");
       return;
     }
 
-    axios.put(baseUrl + `updatePageOwner/${rowData._id}`, { 
-      ownership_type: ownerUpdate, 
+    axios.put(baseUrl + `updatePageOwner/${rowData._id}`, {
+      ownership_type: ownerUpdate,
       description: descriptionUpdate,
       pageMast_id: pageIdUpdate,
       vendorMast_id: ownerVendorIdUpdate,
       sharing_per: sharingPerUpdate,
       updated_by: userID
     })
-    .then(() => {
-      toastAlert("Successfully Update");
-      getData();
-      setOwnerUpdate("");
-      setDescriptionUpdate("");
-      setPageIdUpdate("");
-      setOwnerVendorIdUpdate("");
-      setSharingPerUpdate("");
+      .then(() => {
+        toastAlert("Successfully Update");
+        getData();
+        setOwnerUpdate("");
+        setDescriptionUpdate("");
+        setPageIdUpdate("");
+        setOwnerVendorIdUpdate("");
+        setSharingPerUpdate("");
 
-    });
+      });
   };
 
-  const hanleSetSharingPer = (e,setState) => {
+  const hanleSetSharingPer = (e, setState) => {
     if (e.target.value < 0) {
       setSharingPer(0);
     } else if (e.target.value > 100) {
@@ -197,13 +197,13 @@ const PageOwnership = () => {
         />
         <FieldContainer
           label="Page ID *"
-          value={pageId} 
+          value={pageId}
           required={true}
           onChange={(e) => setPageId(e.target.value)}
         />
         <FieldContainer
           label="Owner Vendor ID *"
-          value={ownerVendorId} 
+          value={ownerVendorId}
           required={true}
           onChange={(e) => setOwnerVendorId(e.target.value)}
         />
@@ -212,15 +212,15 @@ const PageOwnership = () => {
           type="number"
           value={sharingPer}
           required={true}
-          onChange={e=>hanleSetSharingPer(e,setSharingPer)}
+          onChange={e => hanleSetSharingPer(e, setSharingPer)}
         />
       </FormContainer>
 
-    
+
       <div className="card">
         <div className="data_tbl table-responsive">
           <DataTable
-            title="Ownership Overview" 
+            title="Ownership Overview"
             columns={columns}
             data={filterData}
             fixedHeader
@@ -263,38 +263,38 @@ const PageOwnership = () => {
                 onChange={(e) => setDescriptionUpdate(e.target.value)}
               />
 
-               <FieldContainer
+              <FieldContainer
                 label="Page ID *"
                 value={pageIdUpdate}
                 required={true}
                 onChange={(e) => setPageIdUpdate(e.target.value)}
               />
 
-               <FieldContainer
+              <FieldContainer
                 label="Vendor ID *"
                 value={ownerVendorIdUpdate}
                 required={true}
                 onChange={(e) => setOwnerVendorIdUpdate(e.target.value)}
               />
 
-               <FieldContainer
+              <FieldContainer
                 label="Sharing Per *"
                 type="number"
                 value={sharingPerUpdate}
                 required={true}
-                onChange={(e) => hanleSetSharingPer(e,setSharingPerUpdate)}
+                onChange={(e) => hanleSetSharingPer(e, setSharingPerUpdate)}
               />
-              
+
             </div>
             <div className="modal-footer">
-              <button type="button" 
-                className="btn btn-primary" 
+              <button type="button"
+                className="btn btn-primary"
                 data-dismiss="modal"
               >Close</button>
-              <button type="button" 
-                className="btn btn-success" 
+              <button type="button"
+                className="btn btn-success"
                 onClick={handleModalUpdate}
-                data-dismiss={`${ownerUpdate ==="" || pageIdUpdate=== "" || ownerVendorIdUpdate== "" || sharingPerUpdate == "" ?"": 'modal'}`}
+                data-dismiss={`${ownerUpdate === "" || pageIdUpdate === "" || ownerVendorIdUpdate == "" || sharingPerUpdate == "" ? "" : 'modal'}`}
               >Update</button>
             </div>
           </div>

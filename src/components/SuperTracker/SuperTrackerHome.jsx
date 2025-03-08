@@ -44,7 +44,7 @@ function SuperTrackerHome() {
       if (res.status === 200) {
         setRows(res.data.data);
         setPages(res.data.data);
-         console.log(res.data.data);
+        console.log(res.data.data);
       } else {
         alert("There is some error while fetching data.");
       }
@@ -107,14 +107,14 @@ function SuperTrackerHome() {
   ];
 
   const handleCheckBox = () => {
-    console.log("work", rowSelectionModel);
+    // console.log("work", rowSelectionModel);
   };
 
   const handleFileUpload = (event) => {
     setRowSelectionModel([]);
     const file = event.target.files[0];
     const reader = new FileReader();
-    // console.log("first");
+    // // console.log("first");
 
     reader.onload = (e) => {
       const data = new Uint8Array(e.target.result);
@@ -189,7 +189,7 @@ function SuperTrackerHome() {
             id="upload-excel"
             type="file"
             onChange={handleFileUpload}
-            // label='upload only in single column without header'
+          // label='upload only in single column without header'
           />
           <label htmlFor="upload-excel">
             <Button variant="contained" color="primary" component="span">
@@ -235,7 +235,7 @@ function SuperTrackerHome() {
                 setRowSelectionModel(newRowSelectionModel);
               }}
               rowSelectionModel={rowSelectionModel}
-              // isRowSelectable={(params)=> params.row?.supertracker_page ?false:true}
+            // isRowSelectable={(params)=> params.row?.supertracker_page ?false:true}
             />
           ) : (
             <LogoLoader />

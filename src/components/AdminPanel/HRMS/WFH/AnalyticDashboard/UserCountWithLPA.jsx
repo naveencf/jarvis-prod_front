@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import ReactApexChart from "react-apexcharts";
-import { baseUrl } from "../../../../utils/config";
+import { baseUrl } from "../../../../../utils/config";
 
 function UserCountWithLPA() {
   const [graphData, setGraphData] = useState([]);

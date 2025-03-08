@@ -110,10 +110,10 @@ export default function PMSplatformPriceTypeMast() {
 
   const handleModalUpdate = () => {
     // console.log(priceTypeId, "priceTypeId");
-    if (priceTypeId == null ) {
+    if (priceTypeId == null) {
       toastError("Please select the value");
       return;
-    }else if (Platform == null) {
+    } else if (Platform == null) {
       toastError("Please select the value");
       return;
     }

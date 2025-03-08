@@ -6,7 +6,7 @@ import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 
 import { useGlobalContext } from "../../../Context/Context";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from '../../../utils/config'
 import TextEditor from "../../ReusableComponents/TextEditor";
 
 const CocUpdate = () => {
@@ -21,7 +21,7 @@ const CocUpdate = () => {
 
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`newcoc/${id}`)
+      .get(`${baseUrl}` + `newcoc/${id}`)
       .then((res) => {
         const fetchedData = res.data.data;
         setCocContent(fetchedData.coc_content)
@@ -30,8 +30,8 @@ const CocUpdate = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-     console.log( 'console here')
-    await axios.put(`${baseUrl}`+`newcoc/`, {
+    console.log('console here')
+    await axios.put(`${baseUrl}` + `newcoc/`, {
       _id: id,
       updated_by: loginUserId,
       coc_content: cocContent
