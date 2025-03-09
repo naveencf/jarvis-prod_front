@@ -320,12 +320,31 @@ const CreateSalesAccount = () => {
       showCol: true,
     },
   ];
+  // useEffect(() => {
+  //   async function getData() {
+  //     const response = await axios.get(`${baseUrl}get_all_sales_users_list`);
+  //     const accOwnderData = response.data;
+  //     setAccOwnerNameData(accOwnderData);
+  //     setSelectedOwner(loginUserId);
+  //   }
+  //   getData();
+  // }, []);
+  // token
   useEffect(() => {
     async function getData() {
-      const response = await axios.get(`${baseUrl}get_all_sales_users_list`);
-      const accOwnderData = response.data;
-      setAccOwnerNameData(accOwnderData);
-      setSelectedOwner(loginUserId);
+      try {
+        const token = sessionStorage.getItem("token"); // Assuming token is stored in sessionStorage
+        const response = await axios.get(`${baseUrl}get_all_sales_users_list`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add token to headers
+          },
+        });
+        const accOwnderData = response.data;
+        setAccOwnerNameData(accOwnderData);
+        setSelectedOwner(loginUserId);
+      } catch (error) {
+        console.error("Error fetching sales users list:", error);
+      }
     }
     getData();
   }, []);
