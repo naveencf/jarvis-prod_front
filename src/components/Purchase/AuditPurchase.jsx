@@ -68,10 +68,7 @@ const AuditPurchase = () => {
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const { data: vendorsList, isLoading: vendorsLoading } =
-    useGetVendorsWithSearchQuery(
-      vendorSearchQuery.length >= 4 ? vendorSearchQuery : ""
-    );
+  const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsWithSearchQuery(vendorSearchQuery.length >= 4 ? vendorSearchQuery : "");
   const page_id = useRef(null);
   const token = getDecodedToken();
   const {
@@ -129,7 +126,7 @@ const AuditPurchase = () => {
       handledataUpdate(item);
     });
   };
-  console.log("ve", selectedVendorId);
+ 
   const handleRefetchPrice = async () => {
     const sCodes = selectedData.map(({ shortCode }) => shortCode);
     let payload = {};
@@ -1364,7 +1361,7 @@ const AuditPurchase = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
 
       {phaseList?.length > 1 && (
         <PhaseTab
@@ -1379,7 +1376,8 @@ const AuditPurchase = () => {
           selectedPlan={selectedPlan}
           PlanData={campaignPlanData}
         />
-      )}
+      )
+      }
 
       <View
         version={1}
