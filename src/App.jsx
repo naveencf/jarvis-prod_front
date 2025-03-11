@@ -753,11 +753,19 @@ function App() {
         <Route
           path="/sales-account-info/:id"
           element={
-            <AppProvider>
-              <APIContext>
-                <AccountInfo />
-              </APIContext>
-            </AppProvider>
+            <Suspense
+              fallback={
+                <div>
+                  <Loader />
+                </div>
+              }
+            >
+              <AppProvider>
+                <APIContext>
+                  <AccountInfo />
+                </APIContext>
+              </AppProvider>
+            </Suspense>
           }
         />
         <Route
