@@ -30,12 +30,14 @@ import { UserSwitch } from "@phosphor-icons/react";
 import TransferAccount from "./TransferAccount.jsx";
 
 const SalesAccountOverview = () => {
+  const { userContextData, contextData } = useAPIGlobalContext();
   let loginUserId;
   const navigate = useNavigate();
   const token = getDecodedToken();
   const loginUserRole = token.role_id;
-
-  const { userContextData, contextData } = useAPIGlobalContext();
+  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
+    loginUserId = token.id;
+  }
 
   const [filteredData, setFilteredData] = useState([]);
   const [filteredDataBtn, setFilteredDataBtn] = useState(false);
@@ -154,6 +156,7 @@ const SalesAccountOverview = () => {
   };
 
   const {
+    refetch: refetchAccount,
     data: allAccount,
     error: allAccountError,
     isLoading: allAccountLoading,
@@ -232,10 +235,15 @@ const SalesAccountOverview = () => {
       width: 100,
     },
     {
-      key: "created_by_name",
+      key: "account_owner_name",
       name: "Sales Executive Name",
       width: 100,
       sortable: true,
+    },
+    {
+      key: "created_by_name",
+      name: "Account Owner Name",
+      width: 100,
     },
     {
       key: "totalSaleBookingCounts",
@@ -524,6 +532,8 @@ const SalesAccountOverview = () => {
         account_Owner={modalData?.account_owner_id}
         id={modalData?._id}
         accountData={modalData}
+        setModalIsOpen={setModalIsOpen}
+        refetchAccount={refetchAccount}
       />
     ),
   };

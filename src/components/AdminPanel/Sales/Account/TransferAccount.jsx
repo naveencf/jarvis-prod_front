@@ -7,7 +7,13 @@ import CustomSelect from "../../../ReusableComponents/CustomSelect.jsx";
 import { useGlobalContext } from "../../../../Context/Context.jsx";
 import getDecodedToken from "../../../../utils/DecodedToken.js";
 
-const TransferAccount = ({ account_Owner, id, accountData }) => {
+const TransferAccount = ({
+  account_Owner,
+  id,
+  accountData,
+  setModalIsOpen,
+  refetchAccount,
+}) => {
   const [accountOwner, setAccountOwner] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
   const loginUserId = getDecodedToken().id;
@@ -41,6 +47,8 @@ const TransferAccount = ({ account_Owner, id, accountData }) => {
         new Error(res.error);
       } else {
         toastAlert("Account Updated Successfully");
+        refetchAccount();
+        setModalIsOpen(false);
       }
     } catch (error) {
       toastError("Failed to update Account");
@@ -50,8 +58,16 @@ const TransferAccount = ({ account_Owner, id, accountData }) => {
   return (
     <>
       <div className="card">
-        <div className="card-title">
+        <div className="card-title sb">
           <h3>Transfer OwnerShip of {accountData?.account_name} Account</h3>
+          <button
+            className="icon-1"
+            onClick={() => {
+              setModalIsOpen(false);
+            }}
+          >
+            <i className="bi bi-x"></i>
+          </button>
         </div>
         <div className="card-body">
           <div className="row">
