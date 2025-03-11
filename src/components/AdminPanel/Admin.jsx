@@ -40,6 +40,7 @@ const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
 const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
+const PurchaseReport = lazy(()=> import("../Purchase/purchase-report/PurchaseReport"))
 const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
@@ -2356,6 +2357,7 @@ const Admin = () => {
                       element={<CampaignExecution />}
                     />
                     <Route path="/audit-purchase" element={<AuditPurchase />} />
+                    <Route path="/purchase-report" element={<PurchaseReport />} />
                     <Route
                       path="/purchase-dashboard"
                       element={<PurchaseDashboard />}

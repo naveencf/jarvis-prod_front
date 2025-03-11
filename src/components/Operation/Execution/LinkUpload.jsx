@@ -55,7 +55,7 @@ const LinkUpload = ({
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
   const [serviceName, setServiceName] = useState("");
-  const [vendorSearchQuery, setVendorSearchQuery] = useState("")
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const platformID = useRef(null);
   const selectedCampaign = useRef("");
 
@@ -68,9 +68,9 @@ const LinkUpload = ({
   }, [vendor]);
 
   useEffect(() => {
-    if (selectedPlan) {
-      setRecord(0);
-    } else setRecord(3);
+    if (selectedPlan == 0 || selectedPlan == null || selectedPlan == "null") {
+      setRecord(3);
+    } else setRecord(0);
   }, [selectedPlan]);
 
   const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
@@ -193,7 +193,6 @@ const LinkUpload = ({
         type: "story",
       },
     ];
-
     const result = [];
 
     for (const url of urls) {
@@ -418,7 +417,11 @@ const LinkUpload = ({
   return (
     <div className="card">
       <div className="card-header">
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 0 && "header-active"}`}
             onClick={() => {
@@ -446,7 +449,11 @@ const LinkUpload = ({
         >
           Add Vendor Links{" "}
         </div>
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 1 && "header-active"}`}
             onClick={() => {
@@ -456,7 +463,11 @@ const LinkUpload = ({
             Update Vendor{" "}
           </div>
         )}
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 2 && "header-active"}`}
             onClick={() => {

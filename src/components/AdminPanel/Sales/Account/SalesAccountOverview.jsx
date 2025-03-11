@@ -25,17 +25,18 @@ import {
 import ShareIncentive from "./ShareIncentive";
 import PieGraph from "./PieGraph";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
-import FormContainer from "../../FormContainer";
+import FormContainer from "../../FormContainer.jsx";
+import { UserSwitch } from "@phosphor-icons/react";
+import TransferAccount from "./TransferAccount.jsx";
 
 const SalesAccountOverview = () => {
   let loginUserId;
   const navigate = useNavigate();
   const token = getDecodedToken();
   const loginUserRole = token.role_id;
+
   const { userContextData, contextData } = useAPIGlobalContext();
-  if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
-    loginUserId = token.id;
-  }
+
   const [filteredData, setFilteredData] = useState([]);
   const [filteredDataBtn, setFilteredDataBtn] = useState(false);
   const [activeText, setActiveText] = useState("0");
@@ -47,7 +48,6 @@ const SalesAccountOverview = () => {
   const [toDate, setToDate] = useState("");
   const [combinedData, setCombinedFilter] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
-
   let [modalHandler, setModalHandler] = useState("SalesAccountPOC");
 
   const dateFilterArray = [
@@ -178,16 +178,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-      allAccountError.error ||
-      "An error occurred"
+        allAccountError.error ||
+        "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-      allBrandCatTypeError.error ||
-      "An error occurred"
+        allBrandCatTypeError.error ||
+        "An error occurred"
     );
   }
 
@@ -246,14 +246,14 @@ const SalesAccountOverview = () => {
     {
       key: "campaignAmount",
       name: "Campaign Amount Total",
-      renderRowCell: (row) => row?.campaignAmount.toFixed(2),
+      renderRowCell: (row) => row?.campaignAmount?.toFixed(2),
       width: 100,
       sortable: true,
     },
     {
       key: "totalOutstanding",
       name: "Total Outstanding Amount",
-      renderRowCell: (row) => row?.totalOutstanding.toFixed(2),
+      renderRowCell: (row) => row?.totalOutstanding?.toFixed(2),
       width: 100,
       sortable: true,
     },
@@ -264,8 +264,8 @@ const SalesAccountOverview = () => {
         if (row?.campaignAmount && row?.totalSaleBookingCounts) {
           const result = row.campaignAmount / row.totalSaleBookingCounts;
           return Number.isInteger(result)
-            ? result.toString()
-            : result.toFixed(2);
+            ? result?.toString()
+            : result?.toFixed(2);
         }
         return 0;
       },
@@ -449,6 +449,20 @@ const SalesAccountOverview = () => {
           >
             <i className="bi bi-arrow-up-right"></i>
           </button>
+          {contextData?.find((data) => data?._id == 64)?.view_value == 1 && (
+            <button
+              className="icon-1"
+              title="Transfer Account Owner"
+              onClick={() => {
+                console.log(row);
+                setModalIsOpen(true);
+                setModalHandler("AccountTransfer");
+                setModalData(row);
+              }}
+            >
+              <UserSwitch />
+            </button>
+          )}
         </div>
       ),
       width: 100,
@@ -503,6 +517,13 @@ const SalesAccountOverview = () => {
       <ShareIncentive
         closeModal={handleCloseModal}
         accountInfo={selectedData}
+      />
+    ),
+    AccountTransfer: (
+      <TransferAccount
+        account_Owner={modalData?.account_owner_id}
+        id={modalData?._id}
+        accountData={modalData}
       />
     ),
   };
@@ -727,7 +748,7 @@ const SalesAccountOverview = () => {
                 onClick={() =>
                   navigate("/admin/create-sales-booking", {
                     state: {
-                      account_data: row,
+                      account_data: selectedData[0],
                     },
                   })
                 }
