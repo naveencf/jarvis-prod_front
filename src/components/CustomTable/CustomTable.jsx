@@ -97,21 +97,20 @@ const CustomTable = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-      columnsheader
-        .map((column) => column.key)
-        .some((key) =>
-          item[key]
-            ?.toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
-    )
+        columnsheader
+          .map((column) => column.key)
+          .some((key) =>
+            item[key]
+              ?.toString()
+              .toLowerCase()
+              .includes(searchQuery.toLowerCase())
+          )
+      )
     : unSortedData;
 
   // const tabledata = pagination
   //   ? filteredData?.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
   //   : unSortedData;
-
   const filterFunctions = {
     none: () => true,
 
@@ -264,9 +263,9 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage
-        )
+            (currentPage - 1) * itemsPerPage,
+            currentPage * itemsPerPage
+          )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
@@ -374,11 +373,11 @@ const CustomTable = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-          apiColumns[index]?.visibility === undefined ||
+            apiColumns[index]?.visibility === undefined ||
             apiColumns[index]?.visibility === null
-            ? true
-            : apiColumns[index]?.visibility
-        )
+              ? true
+              : apiColumns[index]?.visibility
+          )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(
@@ -678,6 +677,7 @@ const CustomTable = ({
           tableName={tableName}
           loginUserId={loginUserId}
           fetchCreatedTable={fetchCreatedTable}
+          searchQuery={searchQuery}
         />
       </div>
 

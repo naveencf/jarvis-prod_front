@@ -1,54 +1,67 @@
-import { useState, useEffect } from 'react';
-import { FaEdit } from 'react-icons/fa';
-import DeleteButton from '../DeleteButton';
-import { Link } from 'react-router-dom';
-import { Box, Grid, Skeleton } from '@mui/material';
-import View from '../Sales/Account/View/View';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import Brightness6Icon from '@mui/icons-material/Brightness6';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import HouseSidingIcon from '@mui/icons-material/HouseSiding';
-import { City } from '@phosphor-icons/react';
-import { setRowData, setShowBankDetailsModal, setShowWhatsappModal } from '../../Store/PageOverview';
-import { useDispatch } from 'react-redux';
-import VendorWhatsappLinkModla from './VendorWhatsappLinkModla';
-import OpenWithIcon from '@mui/icons-material/OpenWith';
-import VendorPageModal from './VendorPageModal';
-import { useGetAllVendorQuery, useGetAllVendorTypeQuery, useGetPmsPayCycleQuery, useGetPmsPaymentMethodQuery, useGetPmsPlatformQuery } from '../../Store/reduxBaseURL';
-import VendorBankDetailModal from './VendorBankDetailModal';
-import VendorDetails from './Vendor/VendorDetails';
-import { useGetAllPageListQuery, useGetCountDocumentsQuery } from '../../Store/PageBaseURL';
-import jwtDecode from 'jwt-decode';
-import axios from 'axios';
-import { baseUrl } from '../../../utils/config';
-import formatString from '../Operation/CampaignMaster/WordCapital';
-import UploadBulkVendorPages from './Vendor/BulkVendor/UploadBulkVendorPages';
-import { constant } from '../../../utils/constants';
-import VendorMPriceModal from './VendorMPriceModal';
-import { formatNumber } from '../../../utils/formatNumber';
-import CustomTableV2 from '../../CustomTable_v2/CustomTableV2';
-import VendorDocCount from './Vendor/VendorDocCount';
+import { useState, useEffect } from "react";
+import { FaEdit } from "react-icons/fa";
+import DeleteButton from "../DeleteButton";
+import { Link } from "react-router-dom";
+import { Box, Grid, Skeleton } from "@mui/material";
+import View from "../Sales/Account/View/View";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import Brightness6Icon from "@mui/icons-material/Brightness6";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import HouseSidingIcon from "@mui/icons-material/HouseSiding";
+import { City } from "@phosphor-icons/react";
+import {
+  setRowData,
+  setShowBankDetailsModal,
+  setShowWhatsappModal,
+} from "../../Store/PageOverview";
+import { useDispatch } from "react-redux";
+import VendorWhatsappLinkModla from "./VendorWhatsappLinkModla";
+import OpenWithIcon from "@mui/icons-material/OpenWith";
+import VendorPageModal from "./VendorPageModal";
+import {
+  useGetAllVendorQuery,
+  useGetAllVendorTypeQuery,
+  useGetPmsPayCycleQuery,
+  useGetPmsPaymentMethodQuery,
+  useGetPmsPlatformQuery,
+} from "../../Store/reduxBaseURL";
+import VendorBankDetailModal from "./VendorBankDetailModal";
+import VendorDetails from "./Vendor/VendorDetails";
+import {
+  useGetAllPageListQuery,
+  useGetCountDocumentsQuery,
+} from "../../Store/PageBaseURL";
+import jwtDecode from "jwt-decode";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import formatString from "../Operation/CampaignMaster/WordCapital";
+import UploadBulkVendorPages from "./Vendor/BulkVendor/UploadBulkVendorPages";
+import { constant } from "../../../utils/constants";
+import VendorMPriceModal from "./VendorMPriceModal";
+import { formatNumber } from "../../../utils/formatNumber";
+import CustomTableV2 from "../../CustomTable_v2/CustomTableV2";
+import VendorDocCount from "./Vendor/VendorDocCount";
 
 const VendorOverview = () => {
-  const storedToken = sessionStorage.getItem('token');
+  const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
 
   const [vendorDetails, setVendorDetails] = useState(null);
   const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
-  const [rowVendor, setRowVendor] = useState('');
+  const [rowVendor, setRowVendor] = useState("");
   const [filterData, setFilterData] = useState([]);
   const [pageData, setPageData] = useState([]);
-  const token = sessionStorage.getItem('token');
-  const [activeTab, setActiveTab] = useState('Tab1');
+  const token = sessionStorage.getItem("token");
+  const [activeTab, setActiveTab] = useState("Tab1");
   const [tabFilterData, setTabFilterData] = useState([]);
   const [categoryCounts, setCategoryCounts] = useState({});
   const [platformCounts, setPlatformCounts] = useState([]);
   const [stateDataS, setStateDataS] = useState([]);
   const [cityDataS, setCityDataS] = useState([]);
   const [vendorDocsCountData, setVendorDocsCountData] = useState([]);
-  const [pageQuery, setPageQuery] = useState('');
+  const [pageQuery, setPageQuery] = useState("");
   // const { data: pageList } = useGetAllPageListQuery();
   const [getRowData, setGetRowData] = useState([]);
 
@@ -63,7 +76,11 @@ const VendorOverview = () => {
   const [closedByCount, setClosedByCount] = useState([]);
 
   const cycleData = cycle?.data;
-  const { data: vendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery();
+  const {
+    data: vendorData,
+    isLoading: loading,
+    refetch: refetchVendor,
+  } = useGetAllVendorQuery();
   // const { data: vendorData, isLoading: loading, refetch: refetchVendor } = useGetAllVendorQuery({ page: 2, limit: 20, search: '' });
   const handleUpdateVendorMPrice = (row) => {
     setOpenUpdateVendorMPrice(true);
@@ -117,16 +134,19 @@ const VendorOverview = () => {
     try {
       let result;
 
-      result = await axios.get(`${baseUrl}v1/vendor_wise_page_master_data/${data._id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      result = await axios.get(
+        `${baseUrl}v1/vendor_wise_page_master_data/${data._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       setPageData(result.data.data);
     } catch (error) {
-      console.error('Error fetching vendor pages:', error);
+      console.error("Error fetching vendor pages:", error);
     }
   };
 
@@ -178,14 +198,14 @@ const VendorOverview = () => {
 
   const columns = [
     {
-      key: 'S.No',
-      name: 'S.No',
+      key: "S.No",
+      name: "S.No",
       renderRowCell: (row, index) => index + 1,
       width: 50,
     },
     {
-      key: 'page_name',
-      name: 'Page Name',
+      key: "page_name",
+      name: "Page Name",
       renderRowCell: (row) => (
         <a href={row.page_link} target="blank">
           {formatString(row.page_name)}
@@ -195,8 +215,8 @@ const VendorOverview = () => {
     },
 
     {
-      key: 'followers',
-      name: 'Followers',
+      key: "followers",
+      name: "Followers",
       // renderRowCell: (row) => row.followers_count,
       renderRowCell: (row) => {
         let followerCount = Math.max(0, row?.followers_count || 0);
@@ -211,66 +231,78 @@ const VendorOverview = () => {
     //   width: 200,
     // },
     {
-      key: 'Post Price',
-      name: 'Post Price',
+      key: "Post Price",
+      name: "Post Price",
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
+        const postData = row?.page_price_list?.find(
+          (item) => item?.instagram_post !== undefined
+        );
         const postPrice = postData ? postData.instagram_post : 0;
         return postPrice > 0 ? Number(postPrice) : 0;
       },
       compare: true,
     },
     {
-      key: 'Story Price',
-      name: 'Story Price',
+      key: "Story Price",
+      name: "Story Price",
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
+        const storyData = row?.page_price_list?.find(
+          (item) => item?.instagram_story !== undefined
+        );
         const storyPrice = storyData ? storyData.instagram_story : 0;
         return storyPrice > 0 ? Number(storyPrice) : 0;
       },
       compare: true,
     },
     {
-      key: 'Both Price',
-      name: 'Both Price',
+      key: "Both Price",
+      name: "Both Price",
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
+        const bothData = row?.page_price_list?.find(
+          (item) => item?.instagram_both !== undefined
+        );
         const bothPrice = bothData ? bothData.instagram_both : 0;
         return bothPrice;
       },
       compare: true,
     },
     {
-      key: 'm_story_price',
-      name: 'M Story',
+      key: "m_story_price",
+      name: "M Story",
       width: 200,
       renderRowCell: (row) => {
-        const storyData = row?.page_price_list?.find((item) => item?.instagram_m_story !== undefined);
+        const storyData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_story !== undefined
+        );
         const storyPrice = storyData ? storyData.instagram_m_story : 0;
         return storyPrice;
       },
       compare: true,
     },
     {
-      key: 'm_post_price',
-      name: 'M Post',
+      key: "m_post_price",
+      name: "M Post",
       width: 200,
       renderRowCell: (row) => {
-        const postData = row?.page_price_list?.find((item) => item?.instagram_m_post !== undefined);
+        const postData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_post !== undefined
+        );
         const postPrice = postData ? postData.instagram_m_post : 0;
         return postPrice;
       },
       compare: true,
     },
     {
-      key: 'm_both_price',
-      name: 'M Both',
+      key: "m_both_price",
+      name: "M Both",
       width: 200,
       renderRowCell: (row) => {
-        const bothData = row?.page_price_list?.find((item) => item?.instagram_m_both !== undefined);
+        const bothData = row?.page_price_list?.find(
+          (item) => item?.instagram_m_both !== undefined
+        );
         const bothPrice = bothData ? bothData.instagram_m_both : 0;
         return bothPrice;
       },
@@ -280,19 +312,26 @@ const VendorOverview = () => {
 
   const dataGridcolumns = [
     {
-      key: 'sno',
-      name: 'S.NO',
+      key: "sno",
+      name: "S.NO",
       width: 80,
       renderRowCell: (row, index) => {
         return index + 1;
       },
     },
     {
-      key: 'vendorPercentage',
-      name: 'Vendor %',
+      key: "vendorPercentage",
+      name: "Vendor %",
       width: 150,
       renderRowCell: (row) => {
-        const fields = ['vendor_name', 'email', 'mobile', 'home_address', 'payment_method', 'Pincode'];
+        const fields = [
+          "vendor_name",
+          "email",
+          "mobile",
+          "home_address",
+          "payment_method",
+          "Pincode",
+        ];
         const totalFields = fields?.length;
         let filledFields = 0;
 
@@ -305,51 +344,58 @@ const VendorOverview = () => {
         const percentage = (filledFields / totalFields) * 100;
 
         if (percentage === 100) {
-          return 'Full';
+          return "Full";
         } else if (percentage > 50) {
-          return 'More than Partial';
+          return "More than Partial";
         } else {
-          return 'Less than Partial';
+          return "Less than Partial";
         }
       },
     },
     {
-      key: 'vendor_name',
-      name: 'Vendor Name',
+      key: "vendor_name",
+      name: "Vendor Name",
       width: 200,
       // editable: true,
       renderRowCell: (row) => {
         return (
-          <div onClick={() => handleClickVendorName(row)} className="link-primary cursor-pointer text-truncate">
+          <div
+            onClick={() => handleClickVendorName(row)}
+            className="link-primary cursor-pointer text-truncate"
+          >
             {formatString(row.vendor_name)}
           </div>
         );
       },
     },
     {
-      key: 'Price_Update',
-      name: 'Price Update',
+      key: "Price_Update",
+      name: "Price Update",
       renderRowCell: (row) => {
         return (
           <div>
             {
-              <button title="Price Update" onClick={() => handleUpdateVendorMPrice(row)} className="btn cmnbtn btn_sm btn-outline-primary">
+              <button
+                title="Price Update"
+                onClick={() => handleUpdateVendorMPrice(row)}
+                className="btn cmnbtn btn_sm btn-outline-primary"
+              >
                 Price Update
               </button>
             }
           </div>
         );
       },
-      width: '20%',
+      width: "20%",
     },
     {
-      key: 'vendor_category',
-      name: 'Vendor Category.',
+      key: "vendor_category",
+      name: "Vendor Category.",
       width: 150,
     },
     {
-      key: 'primary_page',
-      name: 'Primary Page',
+      key: "primary_page",
+      name: "Primary Page",
       width: 200,
       renderRowCell: (row) => {
         // let name = pageList?.data?.find(
@@ -360,11 +406,17 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'page_count',
-      name: 'Page Count',
+      key: "page_count",
+      name: "Page Count",
       renderRowCell: (row) => {
         return (
-          <button title="Page Count" className="btn btn-outline-primary btn-sm user-button" onClick={() => showPagesOfVendor(row)} data-toggle="modal" data-target="#myModal">
+          <button
+            title="Page Count"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={() => showPagesOfVendor(row)}
+            data-toggle="modal"
+            data-target="#myModal"
+          >
             {row.page_count}
             {/* <OpenWithIcon /> */}
           </button>
@@ -372,110 +424,130 @@ const VendorOverview = () => {
       },
     },
     {
-      key: 'mobile',
-      name: 'Mobile',
+      key: "mobile",
+      name: "Mobile",
       width: 200,
       editable: true,
     },
     {
-      key: 'email',
-      name: 'Email',
+      key: "email",
+      name: "Email",
       width: 200,
       editable: true,
     },
     {
-      key: 'Pincode',
-      name: 'Home Pincode',
+      key: "Pincode",
+      name: "Home Pincode",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_city',
-      name: 'Home City',
+      key: "home_city",
+      name: "Home City",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_state',
-      name: 'Home State',
+      key: "home_state",
+      name: "Home State",
       width: 200,
       editable: true,
     },
     {
-      key: 'home_address',
-      name: 'Home Address',
+      key: "home_address",
+      name: "Home Address",
       width: 200,
       editable: true,
     },
     {
-      key: 'vendor_type',
-      name: 'Vendor Type',
+      key: "vendor_type",
+      name: "Vendor Type",
       renderRowCell: (row) => {
-        return typeData?.find((item) => item?._id == row?.vendor_type)?.type_name;
+        return typeData?.find((item) => item?._id == row?.vendor_type)
+          ?.type_name;
       },
       width: 200,
       editable: true,
     },
     {
-      key: 'vendor_platform',
-      name: 'Platform',
+      key: "vendor_platform1",
+      name: "Platform",
+      compare: true,
       renderRowCell: (row) => {
-        const fun = platformData?.find((item) => item?._id == row?.vendor_platform)?.platform_name;
+        const fun = platformData?.find(
+          (item) => item?._id == row?.vendor_platform
+        )?.platform_name;
         return formatString(fun);
       },
       width: 200,
       editable: true,
     },
     {
-      key: 'pay_cycle',
-      name: 'Cycle',
+      key: "pay_cycle",
+      name: "Cycle",
       width: 200,
       renderRowCell: (row) => {
-        return cycleData?.find((item) => item?._id == row?.pay_cycle)?.cycle_name;
+        return cycleData?.find((item) => item?._id == row?.pay_cycle)
+          ?.cycle_name;
       },
 
       editable: true,
     },
     {
-      key: 'Bank Details',
-      name: 'Bank Details',
+      key: "Bank Details",
+      name: "Bank Details",
       width: 200,
       renderRowCell: (row) => {
         return (
-          <button title="Bank Details" className="btn btn-outline-primary btn-sm user-button" onClick={handleOpenBankDetailsModal(row)}>
+          <button
+            title="Bank Details"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={handleOpenBankDetailsModal(row)}
+          >
             <OpenWithIcon />
           </button>
         );
       },
     },
     {
-      key: 'whatsapp_link',
-      name: 'Whatsapp Link',
+      key: "whatsapp_link",
+      name: "Whatsapp Link",
       width: 200,
       renderRowCell: (row) => {
         return (
-          <button title="Whatsapp Link" className="btn btn-outline-primary btn-sm user-button" onClick={handleOpenWhatsappModal(row)}>
+          <button
+            title="Whatsapp Link"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={handleOpenWhatsappModal(row)}
+          >
             <OpenWithIcon />
           </button>
         );
       },
     },
     {
-      key: 'action',
-      name: 'Action',
+      key: "action",
+      name: "Action",
       width: 200,
       renderRowCell: (row) => (
         <>
           {/* {contextData && ( */}
           <Link to={`/admin/pms-vendor-master/${row._id}`}>
-            <button title="Edit" className="btn btn-outline-primary btn-sm user-button">
-              <FaEdit />{' '}
+            <button
+              title="Edit"
+              className="btn btn-outline-primary btn-sm user-button"
+            >
+              <FaEdit />{" "}
             </button>
           </Link>
           {/* )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
-              <DeleteButton endpoint="v1/vendor" id={row._id} getData={getData} />
+              <DeleteButton
+                endpoint="v1/vendor"
+                id={row._id}
+                getData={getData}
+              />
             </div>
           )}
         </>
@@ -495,7 +567,7 @@ const VendorOverview = () => {
         const response = await axios.get(`${baseUrl}v1/get_vendor_counts`);
         setClosedByCount(response.data.data.pageClosedBYCounts);
       } catch (error) {
-        console.error('Error fetching vendor counts:', error.message);
+        console.error("Error fetching vendor counts:", error.message);
       }
     };
 
@@ -535,48 +607,60 @@ const VendorOverview = () => {
         }
       }
     }
-    const platformCountsArray = Object.keys(platformCountsMap).map((platformId) => ({
-      platform_id: platformId,
-      platform_name: platformCountsMap[platformId].platform_name,
-      count: platformCountsMap[platformId].count,
-    }));
+    const platformCountsArray = Object.keys(platformCountsMap).map(
+      (platformId) => ({
+        platform_id: platformId,
+        platform_name: platformCountsMap[platformId].platform_name,
+        count: platformCountsMap[platformId].count,
+      })
+    );
     setPlatformCounts(platformCountsArray);
   }, [tabFilterData, platformData]);
 
   const vendorWithNoMobileNum = () => {
-    const vendorwithnomobilenum = tabFilterData.filter((item) => item.mobile == 0);
+    const vendorwithnomobilenum = tabFilterData.filter(
+      (item) => item.mobile == 0
+    );
     setFilterData(vendorwithnomobilenum);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithNoEmail = () => {
-    const vendorwithnoemail = tabFilterData.filter((item) => item.email == '');
+    const vendorwithnoemail = tabFilterData.filter((item) => item.email == "");
     setFilterData(vendorwithnoemail);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithNoPages = () => {
-    const vendorwithnopages = tabFilterData.filter((item) => item.page_count == 0);
+    const vendorwithnopages = tabFilterData.filter(
+      (item) => item.page_count == 0
+    );
     setFilterData(vendorwithnopages);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithCategories = (category) => {
-    const vendorwithcategories = tabFilterData.filter((item) => item.vendor_category == category);
+    const vendorwithcategories = tabFilterData.filter(
+      (item) => item.vendor_category == category
+    );
     setFilterData(vendorwithcategories);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorWithPlatforms = (platform) => {
-    const vendorwithplatforms = tabFilterData.filter((item) => item.vendor_platform == platform);
+    const vendorwithplatforms = tabFilterData.filter(
+      (item) => item.vendor_platform == platform
+    );
     setFilterData(vendorwithplatforms);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   const vendorClosedBy = (closeby) => {
-    const vendorclosedby = tabFilterData.filter((item) => item.closed_by == closeby);
+    const vendorclosedby = tabFilterData.filter(
+      (item) => item.closed_by == closeby
+    );
     setFilterData(vendorclosedby);
-    setActiveTab('Tab1');
+    setActiveTab("Tab1");
   };
   useEffect(() => {
     if (vendorDocsCountData?.length) {
       setFilterData(vendorDocsCountData);
-      setActiveTab('Tab1');
+      setActiveTab("Tab1");
     }
   }, [vendorDocsCountData]);
 
@@ -585,12 +669,18 @@ const VendorOverview = () => {
   };
   return (
     <>
-      <VendorMPriceModal open={openUpdateVendorMPrice} onClose={handleCloseVendorMPriceModal} rowData={rowVendor} />
+      <VendorMPriceModal
+        open={openUpdateVendorMPrice}
+        onClose={handleCloseVendorMPriceModal}
+        rowData={rowVendor}
+      />
       <div className="modal fade" id="myModal" role="dialog">
-        <div className="modal-dialog" style={{ maxWidth: '40%' }}>
+        <div className="modal-dialog" style={{ maxWidth: "40%" }}>
           <div className="modal-content">
             <div className="modal-header">
-              <h4 className="modal-title">Vendor Pages - {formatString(pageData[0]?.vendor_name)}</h4>
+              <h4 className="modal-title">
+                Vendor Pages - {formatString(pageData[0]?.vendor_name)}
+              </h4>
               <button type="button" className="close" data-dismiss="modal">
                 &times;
               </button>
@@ -601,11 +691,15 @@ const VendorOverview = () => {
                 data={pageData}
                 // isLoading={false}
                 // title={"Vendor-Pages"}
-                tableName={'Vendor-Pages : Price'}
+                tableName={"Vendor-Pages : Price"}
               />
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-default" data-dismiss="modal">
+              <button
+                type="button"
+                className="btn btn-default"
+                data-dismiss="modal"
+              >
                 Close
               </button>
             </div>
@@ -614,56 +708,84 @@ const VendorOverview = () => {
       </div>
 
       <div className="tabs">
-        <button className={activeTab === 'Tab1' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab1')}>
+        <button
+          className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab1")}
+        >
           Overview
         </button>
-        <button className={activeTab === 'Tab2' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab2')}>
+        <button
+          className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab2")}
+        >
           Statistics
         </button>
-        <button className={activeTab === 'Tab3' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab3')}>
+        <button
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
+        >
           State/City Wise
         </button>
       </div>
 
       <div className="content">
-        {activeTab === 'Tab1' && (
+        {activeTab === "Tab1" && (
           <div>
             {filterData && (
               <div className="card">
-                {vendorDetails && <VendorDetails vendorDetails={vendorDetails} setVendorDetails={setVendorDetails} />}
+                {vendorDetails && (
+                  <VendorDetails
+                    vendorDetails={vendorDetails}
+                    setVendorDetails={setVendorDetails}
+                  />
+                )}
                 <VendorWhatsappLinkModla />
                 <div className="card-header flexCenterBetween">
                   <h5 className="card-title">Vendor : {vendorData?.length}</h5>
                   <div className="flexCenter colGap8">
-                    <Link to={`/admin/pms-vendor-master`} className="btn cmnbtn btn_sm btn-outline-primary">
+                    <Link
+                      to={`/admin/pms-vendor-master`}
+                      className="btn cmnbtn btn_sm btn-outline-primary"
+                    >
                       Add Vendor <i className="fa fa-plus" />
                     </Link>
-                    <Link to={`/admin/pms-page-overview`} className="btn cmnbtn btn_sm btn-outline-primary">
+                    <Link
+                      to={`/admin/pms-page-overview`}
+                      className="btn cmnbtn btn_sm btn-outline-primary"
+                    >
                       Page <KeyboardArrowRightIcon />
                     </Link>
                   </div>
                 </div>
                 <div className="data_tbl thm_table table-responsive card-body p0">
                   {loading ? (
-                    <Box mt={2} ml={2} mb={3} sx={{ width: '95%' }}>
-                      <Grid container spacing={{ xs: 1, md: 10 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                    <Box mt={2} ml={2} mb={3} sx={{ width: "95%" }}>
+                      <Grid
+                        container
+                        spacing={{ xs: 1, md: 10 }}
+                        columns={{ xs: 4, sm: 8, md: 12 }}
+                      >
                         {Array.from(Array(5)).map((_, index) => (
                           <Grid item md={1} key={index}>
                             <Skeleton
                               sx={{
-                                width: '100%',
+                                width: "100%",
                               }}
                             />
                           </Grid>
                         ))}
                       </Grid>
-                      <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
+                      <Grid
+                        container
+                        spacing={{ xs: 2, md: 3 }}
+                        columns={{ xs: 4, sm: 8, md: 12 }}
+                      >
                         {Array.from(Array(30)).map((_, index) => (
                           <Grid item xs={2} sm={2} md={2} key={index}>
                             <Skeleton
                               animation="wave"
                               sx={{
-                                width: '100%',
+                                width: "100%",
                               }}
                             />
                           </Grid>
@@ -671,7 +793,17 @@ const VendorOverview = () => {
                       </Grid>
                     </Box>
                   ) : (
-                    <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} />
+                    <View
+                      version={1}
+                      columns={dataGridcolumns}
+                      data={filterData}
+                      isLoading={false}
+                      title="Vendor Overview"
+                      rowSelectable={true}
+                      pagination={[100, 200, 1000]}
+                      tableName="Vendor Overview"
+                      selectedData={setGetRowData}
+                    />
                   )}
                   {/* <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} exportData={ExportData} /> */}
                 </div>
@@ -682,7 +814,7 @@ const VendorOverview = () => {
             )}
           </div>
         )}
-        {activeTab === 'Tab2' && (
+        {activeTab === "Tab2" && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -691,8 +823,15 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {Object.entries(categoryCounts).map(([category, count]) => (
-                    <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12" key={Math.random()}>
-                      <div className="card" key={category} onClick={() => vendorWithCategories(category)}>
+                    <div
+                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                      key={Math.random()}
+                    >
+                      <div
+                        className="card"
+                        key={category}
+                        onClick={() => vendorWithCategories(category)}
+                      >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
                             <span>
@@ -722,7 +861,12 @@ const VendorOverview = () => {
                     </div>
                     <div>
                       <h6 className="colorMedium">Vendor with 0 pages</h6>
-                      <h6 className="mt4 fs_16">{tabFilterData.filter((item) => item.page_count == 0)?.length}</h6>
+                      <h6 className="mt4 fs_16">
+                        {
+                          tabFilterData.filter((item) => item.page_count == 0)
+                            ?.length
+                        }
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -736,8 +880,15 @@ const VendorOverview = () => {
                       </span>
                     </div>
                     <div>
-                      <h6 className="colorMedium">Vendor with no mobile number</h6>
-                      <h6 className="mt4 fs_16">{tabFilterData.filter((item) => item.mobile == 0)?.length}</h6>
+                      <h6 className="colorMedium">
+                        Vendor with no mobile number
+                      </h6>
+                      <h6 className="mt4 fs_16">
+                        {
+                          tabFilterData.filter((item) => item.mobile == 0)
+                            ?.length
+                        }
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -752,7 +903,12 @@ const VendorOverview = () => {
                     </div>
                     <div>
                       <h6 className="colorMedium">Vendor with no email id</h6>
-                      <h6 className="mt4 fs_16">{tabFilterData.filter((item) => item.email == '')?.length}</h6>
+                      <h6 className="mt4 fs_16">
+                        {
+                          tabFilterData.filter((item) => item.email == "")
+                            ?.length
+                        }
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -766,8 +922,15 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {platformCounts.map((item, index) => (
-                    <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12" key={index}>
-                      <div className="card" key={index} onClick={() => vendorWithPlatforms(item.platform_id)}>
+                    <div
+                      className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
+                      key={index}
+                    >
+                      <div
+                        className="card"
+                        key={index}
+                        onClick={() => vendorWithPlatforms(item.platform_id)}
+                      >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
                             <span>
@@ -775,7 +938,9 @@ const VendorOverview = () => {
                             </span>
                           </div>
                           <div>
-                            <h6 className="colorMedium">{item.platform_name}</h6>
+                            <h6 className="colorMedium">
+                              {item.platform_name}
+                            </h6>
                             <h6 className="mt4 fs_16">{item.count}</h6>
                           </div>
                         </div>
@@ -785,7 +950,10 @@ const VendorOverview = () => {
                 </div>
               </div>
             </div>
-            <VendorDocCount documents={vendordocumentCount} setVendorDocsCountData={setVendorDocsCountData} />
+            <VendorDocCount
+              documents={vendordocumentCount}
+              setVendorDocsCountData={setVendorDocsCountData}
+            />
             <div className="card">
               <div className="card-header">
                 <h5 className="card-title">Vendor Closed By</h5>
@@ -793,8 +961,15 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {closedByCount.map((item, index) => (
-                    <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12" key={index}>
-                      <div className="card" key={index} onClick={() => vendorClosedBy(item.closed_by)}>
+                    <div
+                      className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
+                      key={index}
+                    >
+                      <div
+                        className="card"
+                        key={index}
+                        onClick={() => vendorClosedBy(item.closed_by)}
+                      >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
                             <span>
@@ -815,7 +990,7 @@ const VendorOverview = () => {
             </div>
           </div>
         )}
-        {activeTab === 'Tab3' && (
+        {activeTab === "Tab3" && (
           <div className="vendor-container">
             <div className="card">
               <div className="card-header">
@@ -824,11 +999,14 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {Object.entries(stateDataS).map(([state, data]) => (
-                    <div key={state} className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                    <div
+                      key={state}
+                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    >
                       <div
                         className="card"
                         key={state}
-                      // onClick={() => vendorWithCategories(state)}
+                        // onClick={() => vendorWithCategories(state)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -855,11 +1033,14 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {Object.entries(cityDataS).map(([city, data]) => (
-                    <div key={city} className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                    <div
+                      key={city}
+                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                    >
                       <div
                         className="card"
                         key={city}
-                      // onClick={() => vendorWithCategories(city)}
+                        // onClick={() => vendorWithCategories(city)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">

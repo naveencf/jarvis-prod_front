@@ -46,6 +46,8 @@ const WFHDOverview = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [searchFilter, setSearchFilter] = useState([]);
 
+  const [monthlyGrossSalary, setMonthlyGrossSalary] = useState("");
+
   const [username, setUserName] = useState("");
   const [usercontact, setUserContact] = useState("");
   const [separationReasonGet, setSeparationReasonGet] = useState([]);
@@ -124,6 +126,7 @@ const WFHDOverview = () => {
       current_state: currentState,
       current_pin_code: currentpin,
       job_type: "WFO",
+      salary: monthlyGrossSalary,
       user_login_password: password,
     });
     axios.post(baseUrl + "add_send_user_mail", {
@@ -143,7 +146,6 @@ const WFHDOverview = () => {
     setIsApplicable("");
     handleCloseModalInHouse();
   };
-  console.log(email, "email is here");
 
   // ----------------------------------------------------------------
   //Scrap Asset section Start
@@ -835,19 +837,21 @@ const WFHDOverview = () => {
                   deptData === ""
                     ? { value: "", label: "All" }
                     : {
-                      value: deptData,
-                      label: departmentData.find(
-                        (user) => user.dept_id === deptData
-                      )
-                        ? `${departmentData.find(
+                        value: deptData,
+                        label: departmentData.find(
                           (user) => user.dept_id === deptData
-                        ).dept_name
-                        } (${departmentData.find(
-                          (user) => user.dept_id === deptData
-                        ).user_count
-                        })`
-                        : "",
-                    }
+                        )
+                          ? `${
+                              departmentData.find(
+                                (user) => user.dept_id === deptData
+                              ).dept_name
+                            } (${
+                              departmentData.find(
+                                (user) => user.dept_id === deptData
+                              ).user_count
+                            })`
+                          : "",
+                      }
                 }
                 onChange={(e) => {
                   const val = e.value;
@@ -1037,13 +1041,13 @@ const WFHDOverview = () => {
                 {(separationStatus === "On Long Leave" ||
                   separationStatus === "Subatical" ||
                   separationStatus === "Suspended") && (
-                    <FieldContainer
-                      label="Reinstated Date"
-                      type="date"
-                      value={separationReinstateDate}
-                      onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                    />
-                  )}
+                  <FieldContainer
+                    label="Reinstated Date"
+                    type="date"
+                    value={separationReinstateDate}
+                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                  />
+                )}
                 {separationStatus == "Resign Accepted" && (
                   <input
                     label="Last Working Day"
@@ -1138,6 +1142,17 @@ const WFHDOverview = () => {
               onChange={(e) => setSwitchStatus(e)}
             />
           </div>
+          <div className="form-group col-12 p0">
+            <FieldContainer
+              label="Monthly Gross Salary"
+              type="number"
+              astric
+              fieldGrid={12}
+              required={false}
+              value={monthlyGrossSalary}
+              onChange={(e) => setMonthlyGrossSalary(e.target.value)}
+            />
+          </div>
 
           <div className="form-group col-12">
             <label className="form-label">
@@ -1166,7 +1181,12 @@ const WFHDOverview = () => {
             />
           </div>
           <button
-            disabled={!isApplicable || !joiningDate}
+            disabled={
+              !isApplicable ||
+              !joiningDate ||
+              !monthlyGrossSalary ||
+              !switchStatus
+            }
             className="btn btn-primary ml-2"
             onClick={handleOnbaordingInHouse}
           >

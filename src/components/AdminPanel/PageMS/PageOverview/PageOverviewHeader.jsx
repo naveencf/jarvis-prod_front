@@ -52,6 +52,7 @@ function PageOverviewHeader({
   setFilterFollowers,
   selectedData,
   setSelectedData,
+  activeTabName = (val) => val,
 }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -81,6 +82,10 @@ function PageOverviewHeader({
   const [activeTab, setActiveTab] = useState("instagram");
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 5;
+
+  useEffect(() => {
+    activeTabName(activeTab);
+  }, [activeTab]);
 
   const handleCloseDisabled = () => setOpenDisabledPages(false);
 

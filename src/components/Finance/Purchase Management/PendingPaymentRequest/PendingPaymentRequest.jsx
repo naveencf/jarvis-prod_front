@@ -418,7 +418,7 @@ export default function PendingPaymentRequest() {
         setVendorNameList([]);
     }
   }, [activeAccordionIndex, data]);
-
+ 
   useEffect(() => {
     if (activeAccordionIndex === 0 && data?.length) {
       const uniqueVendorNames = [...new Set(data?.map((d) => d?.vendor_name))];

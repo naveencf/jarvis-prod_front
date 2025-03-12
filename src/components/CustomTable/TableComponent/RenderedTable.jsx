@@ -49,6 +49,7 @@ const RenderedTable = ({
   setOldSortKey,
   sortKey,
   fetchCreatedTable,
+  searchQuery,
 }) => {
   const [preventSelect, setPreventSelect] = useState(false);
   const [editflag, setEditFlag] = useState(false);
@@ -188,11 +189,14 @@ const RenderedTable = ({
       }
     });
   };
-
   const handleSelectAll = (e) => {
     setSelectAll(e.target.checked);
     if (e.target.checked) {
-      setSelectedRowsIndex(data?.map((_, index) => index));
+      setSelectedRowsIndex(
+        !!searchQuery
+          ? sortedData?.map((_, index) => index)
+          : data?.map((_, index) => index)
+      );
     } else {
       setSelectedRowsIndex([]);
     }

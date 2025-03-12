@@ -61,6 +61,15 @@ const OperationApi = createApi({
         body: data,
       }),
     }),
+
+    BulkCampaignUpdate: builder.mutation({
+      query: (data) => ({
+        url: `v1/purchase/bulk_campaign_update`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+
     updatePhaseDate: builder.mutation({
       query: (data) => ({
         url: `v1/operation/update_phase_date`,
@@ -146,6 +155,7 @@ export const {
   useAddStoryDataMutation,
   useAddMultipleServiceMutation,
   useGetDeleteStoryDataQuery,
+  useBulkCampaignUpdateMutation,
 } = OperationApi;
 
 export default OperationApi;

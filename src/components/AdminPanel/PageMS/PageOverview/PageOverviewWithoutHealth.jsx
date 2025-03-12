@@ -1,29 +1,42 @@
-import React, { useState } from 'react';
-import View from '../../Sales/Account/View/View';
+import React, { useState } from "react";
+import View from "../../Sales/Account/View/View";
 // import CustomTable from "../../../CustomTable/CustomTable";
-import jwtDecode from 'jwt-decode';
+import jwtDecode from "jwt-decode";
 import {
   useGetAllPageListQuery,
   // useGetAllPageCategoryQuery,
   // useGetAllPageSubCategoryQuery,
   // useGetAllProfileListQuery,
-} from '../../../Store/PageBaseURL';
-import SkeletonLoader from '../../../CustomTable/TableComponent/SkeletonLoader';
+} from "../../../Store/PageBaseURL";
+import SkeletonLoader from "../../../CustomTable/TableComponent/SkeletonLoader";
 // import {
 //   useGetAllVendorQuery,
 //   useGetPmsPlatformQuery,
 // } from '../../../Store/reduxBaseURL';
 // import axios from 'axios';
 // import { baseUrl } from '../../../../utils/config';
-import PageOverviewHeader from './PageOverviewHeader';
-import { useEffect } from 'react';
+import PageOverviewHeader from "./PageOverviewHeader";
+import { useEffect } from "react";
 // import CustomTableV2 from '../../../CustomTable_v2/CustomTableV2';
-import CustomTable from '../../../CustomTable/CustomTable';
+import CustomTable from "../../../CustomTable/CustomTable";
 // import SarcasmNetwork from '../SarcasmNetwork';
 
-function PageOverviewWithoutHealth({ setPlanFormName, columns, pagequery, setPagequery, categoryFilter, setCategoryFilter, activenessFilter, setActivenessFilter, filterFollowers, setFilterFollowers, latestPageObject }) {
-  const token = sessionStorage.getItem('token');
-  const [activeTab, setActiveTab] = useState('Tab0');
+function PageOverviewWithoutHealth({
+  setPlanFormName,
+  columns,
+  pagequery,
+  setPagequery,
+  categoryFilter,
+  setCategoryFilter,
+  activenessFilter,
+  setActivenessFilter,
+  filterFollowers,
+  setFilterFollowers,
+  latestPageObject,
+}) {
+  const token = sessionStorage.getItem("token");
+  const [activeTab, setActiveTab] = useState("");
+  console.log(activeTab, "activeddd");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");
@@ -65,14 +78,27 @@ function PageOverviewWithoutHealth({ setPlanFormName, columns, pagequery, setPag
     }
   }, [pageList]);
   useEffect(() => {
-    if (latestPageObject.page_name !== '') {
+    if (latestPageObject.page_name !== "") {
       refetchPageList();
     }
   }, [latestPageObject]);
 
   return (
     <div className="card">
-      <PageOverviewHeader setPlanFormName={setPlanFormName} selectedData={selectedData} setSelectedData={setSelectedData} onFilterChange={handleFilterChange} pagequery={pagequery} categoryFilter={categoryFilter} setCategoryFilter={setCategoryFilter} activenessFilter={activenessFilter} setActivenessFilter={setActivenessFilter} filterFollowers={filterFollowers} setFilterFollowers={setFilterFollowers} />
+      <PageOverviewHeader
+        setPlanFormName={setPlanFormName}
+        selectedData={selectedData}
+        setSelectedData={setSelectedData}
+        onFilterChange={handleFilterChange}
+        pagequery={pagequery}
+        categoryFilter={categoryFilter}
+        setCategoryFilter={setCategoryFilter}
+        activenessFilter={activenessFilter}
+        setActivenessFilter={setActivenessFilter}
+        filterFollowers={filterFollowers}
+        setFilterFollowers={setFilterFollowers}
+        activeTabName={setActiveTab}
+      />
       {/* <div className="tabs">
         <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab0')}>
           Instagram
@@ -104,7 +130,7 @@ function PageOverviewWithoutHealth({ setPlanFormName, columns, pagequery, setPag
               selectedData={setSelectedData}
               Pagination={[100, 200, 1000]}
               rowSelectable={true}
-              tableName={'PageOverview_without_health'}
+              tableName={`PageOverview_without_health_${activeTab}`}
             />
           )}
           {/* <button

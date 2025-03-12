@@ -22,14 +22,20 @@ const initialSection = {
 };
 
 const WorkExperience = ({ userID }) => {
-  const { toastAlert } = useGlobalContext()
-  const [workExperienceData, setWorkExperienceData] = useState([initialSection]);
+  const { toastAlert } = useGlobalContext();
+  const [workExperienceData, setWorkExperienceData] = useState([
+    initialSection,
+  ]);
 
   const getWorkExperienceData = async () => {
     try {
-      const response = await axios.get(`${baseUrl}get_single_user_experience/${userID}`);
-      console.log(response.data.data, 'Fetched work experience data');
-      setWorkExperienceData(response.data.data.length ? response.data.data : [initialSection]);
+      const response = await axios.get(
+        `${baseUrl}get_single_user_experience/${userID}`
+      );
+      console.log(response.data.data, "Fetched work experience data");
+      setWorkExperienceData(
+        response.data.data.length ? response.data.data : [initialSection]
+      );
     } catch (error) {
       console.error("Error fetching work experience data:", error);
     }
@@ -46,7 +52,6 @@ const WorkExperience = ({ userID }) => {
     );
     setWorkExperienceData(updatedSections);
   };
-
 
   // Handle submission
   const handleSubmit = async (e) => {
@@ -74,7 +79,8 @@ const WorkExperience = ({ userID }) => {
 
         await axios.put(baseUrl + "update_user_experience", payload);
       }
-      // console.log("Work experience data successfully updated.");
+      toastAlert("Work experience successfully updated.");
+      console.log("Work experience data successfully updated.");
     } catch (error) {
       console.error("Error updating work experience details:", error);
     }
@@ -88,14 +94,14 @@ const WorkExperience = ({ userID }) => {
     setWorkExperienceData((prevData) => [...prevData, { ...initialSection }]);
   };
 
-
   // Remove a section
   const handleRemoveSection = async (index) => {
     const itemToRemove = workExperienceData[index];
     if (itemToRemove && itemToRemove.user_experience_id) {
       try {
         await axios.delete(
-          `${baseUrl}` + `delete_user_experience/${itemToRemove.user_experience_id}`
+          `${baseUrl}` +
+            `delete_user_experience/${itemToRemove.user_experience_id}`
         );
         toastAlert("Details Deleted");
       } catch (error) {
@@ -109,10 +115,8 @@ const WorkExperience = ({ userID }) => {
 
   return (
     <div className="board_form board_form_flex">
-      <h2>
-        Work Experience
-      </h2>
-      {workExperienceData.map((section, index) => (
+      <h2>Work Experience</h2>
+      {workExperienceData?.map((section, index) => (
         <div key={index} className="board_form_flex">
           {/* Organization Section */}
           <h3>Organization Details</h3>
@@ -120,7 +124,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="Name of the Organization"
               value={section.name_of_organization}
-              onChange={(e) => handleFieldChange(index, "name_of_organization", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "name_of_organization", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -129,7 +135,13 @@ const WorkExperience = ({ userID }) => {
               label="From Date"
               type="date"
               value={section.period_of_service_from}
-              onChange={(e) => handleFieldChange(index, "period_of_service_from", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(
+                  index,
+                  "period_of_service_from",
+                  e.target.value
+                )
+              }
               fullWidth
             />
           </div>
@@ -138,7 +150,9 @@ const WorkExperience = ({ userID }) => {
               label="To Date"
               type="date"
               value={section.period_of_service_to}
-              onChange={(e) => handleFieldChange(index, "period_of_service_to", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "period_of_service_to", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -146,7 +160,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="Designation"
               value={section.designation}
-              onChange={(e) => handleFieldChange(index, "designation", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "designation", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -155,7 +171,9 @@ const WorkExperience = ({ userID }) => {
               label="Gross Salary"
               type="number"
               value={section.gross_salary}
-              onChange={(e) => handleFieldChange(index, "gross_salary", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "gross_salary", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -166,7 +184,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="Manager Name"
               value={section.manager_name}
-              onChange={(e) => handleFieldChange(index, "manager_name", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "manager_name", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -174,7 +194,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="Manager Contact No."
               value={section.manager_phone}
-              onChange={(e) => handleFieldChange(index, "manager_phone", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "manager_phone", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -182,7 +204,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="Manager Email ID"
               value={section.manager_email_id}
-              onChange={(e) => handleFieldChange(index, "manager_email_id", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "manager_email_id", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -193,7 +217,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="HR Name"
               value={section.hr_name}
-              onChange={(e) => handleFieldChange(index, "hr_name", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "hr_name", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -201,7 +227,9 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="HR Contact No."
               value={section.hr_phone}
-              onChange={(e) => handleFieldChange(index, "hr_phone", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "hr_phone", e.target.value)
+              }
               fullWidth
             />
           </div>
@@ -209,14 +237,19 @@ const WorkExperience = ({ userID }) => {
             <TextField
               label="HR Email ID"
               value={section.hr_email_id}
-              onChange={(e) => handleFieldChange(index, "hr_email_id", e.target.value)}
+              onChange={(e) =>
+                handleFieldChange(index, "hr_email_id", e.target.value)
+              }
               fullWidth
             />
           </div>
 
           {/* Remove Button */}
           {workExperienceData.length > 1 && (
-            <IconButton className="btn-icon" onClick={() => handleRemoveSection(index)}>
+            <IconButton
+              className="btn-icon"
+              onClick={() => handleRemoveSection(index)}
+            >
               <DeleteIcon />
             </IconButton>
           )}
@@ -225,8 +258,7 @@ const WorkExperience = ({ userID }) => {
       ))}
 
       {/* Add Button */}
-      <div className="mb-1 d-flex" style={{ justifyContent: 'space-between' }}>
-
+      <div className="mb-1 d-flex" style={{ justifyContent: "space-between" }}>
         <button
           type="button"
           className="btn cmnbtn btn-primary mr-5 "
@@ -234,7 +266,11 @@ const WorkExperience = ({ userID }) => {
         >
           Save Work Experience
         </button>
-        <button type="button" className="btn btn-warning cmnbtn" onClick={handleAddSection}>
+        <button
+          type="button"
+          className="btn btn-warning cmnbtn"
+          onClick={handleAddSection}
+        >
           <IoAddCircleOutline />
         </button>
       </div>
