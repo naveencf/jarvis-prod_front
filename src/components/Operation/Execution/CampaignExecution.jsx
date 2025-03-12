@@ -8,6 +8,7 @@ import React, {
 import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
+  useBulkCampaignUpdateMutation,
   useGetAllPagessByPlatformQuery,
   useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
@@ -45,6 +46,7 @@ import StringLengthLimiter from "../../../utils/StringLengthLimiter.js";
 import Carousel from "/copy.png";
 import Reel from "/reel.png";
 import Image from "/more.png";
+import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -1332,6 +1334,14 @@ const CampaignExecution = () => {
           setToggleModal={setToggleModal}
         />
       );
+    else if (name == "bulkUpload")
+      return (
+        <BulkCampaignUpdate
+          selectedData={selectedData}
+          refetchPlanData={refetchPlanData}
+          setToggleModal={setToggleModal}
+        />
+      );
     return null;
   }
   return (
@@ -1393,6 +1403,7 @@ const CampaignExecution = () => {
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
       <LinkUpload
+        selectedData={selectedData}
         phaseList={phaseList}
         token={token}
         refetchPlanData={refetchPlanData}
@@ -1438,6 +1449,22 @@ const CampaignExecution = () => {
           <div className="d-flex sb w-100">
             <div></div>
             <div className="d-flex">
+              {selectedData.length > 0 && (
+                <button
+                  title="Bulk Upload"
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    selectedData.length === 0
+                      ? "btn-outline-primary"
+                      : "btn-primary"
+                  }`}
+                  onClick={() => {
+                    setModalName("bulkUpload");
+                    setToggleModal(true);
+                  }}
+                >
+                  Bulk Upload
+                </button>
+              )}
               {phaseWiseData?.length > 0 && (
                 <button
                   title="Upload Audited Data"

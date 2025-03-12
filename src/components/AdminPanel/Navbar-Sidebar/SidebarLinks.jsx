@@ -2157,14 +2157,14 @@ const SidebarLinks = () => {
                 <NavLink className="collapse-item" to="/admin/vendor_outstanding">
                   <i className="bi bi-dot"></i>Vendor Overview
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/finance-purchasemanagement-pendingpaymentrequest">
+                <NavLink className="collapse-item" to="/admin/finance-pruchasemanagement-pendingpaymentrequest">
                   <i className="bi bi-dot"></i>Vendor Payment Request
                 </NavLink>
               </div>
             </div>
           </li>
-
-          {/* <li className="nav-item">
+{/* 
+          <li className="nav-item">
             <Link
               className="nav-link nav-btn collapsed"
               data-toggle="collapse"

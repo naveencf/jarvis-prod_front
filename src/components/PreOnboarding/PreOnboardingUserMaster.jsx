@@ -58,11 +58,10 @@ import Slider from "react-slick";
 import OnboardingBankDetails from "./OnboardingForms/OnboardingBankDetails";
 import OtherDetails from "./OnboardingForms/OtherDetails";
 import IdentityDetails from "./OnboardingForms/IdentityDetails";
-import WorkExperience from "../AdminPanel/HRMS/User/WorkExperienceSingleUser";
 import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
 import { useGlobalContext } from "../../Context/Context";
 import JobSection from "./OnboardingForms/JobSection";
-
+import WorkExperience from "./OnboardingForms/WorkExperience";
 
 var settings = {
   arrows: false,
@@ -175,7 +174,7 @@ const educationFieldLabels = {
 };
 
 const PreOnboardingUserMaster = () => {
-  const [workExperiences, setWorkExperiences] = useState('')
+  const [workExperiences, setWorkExperiences] = useState("");
   const [isShowRocket, setIsShowRocket] = useState(false);
   const [isTourOpen, setIsTourOpen] = useState(false);
   const whatsappApi = WhatsappAPI();
@@ -329,7 +328,7 @@ const PreOnboardingUserMaster = () => {
 
   const [showMandotaryPer, setShowMandotaryPer] = useState(0);
   const [showNonMandotaryPer, setShowNonMandotaryPer] = useState(0);
-  const [alternateContact, setAlternateContact] = useState(0)
+  const [alternateContact, setAlternateContact] = useState(0);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -576,7 +575,7 @@ const PreOnboardingUserMaster = () => {
         department_name,
         cast_type,
         work_experience,
-        emergency_contact2
+        emergency_contact2,
       } = fetchedData;
       setDesignation(designation_name);
       setAllUserData(fetchedData);
@@ -605,7 +604,7 @@ const PreOnboardingUserMaster = () => {
       setMaritalStatus(MartialStatus);
       setDateOfBirth(DOB?.split("T")?.[0]);
       setDateOfMarriage(DateOfMarriage);
-      setWorkExperiences(work_experience)
+      setWorkExperiences(work_experience);
       setSpouseName(spouse_name);
       {
         tenth_marksheet_validate !== "" &&
@@ -652,7 +651,7 @@ const PreOnboardingUserMaster = () => {
       setcurrentCity(current_city);
       setcurrentState(current_state);
       setcurrentPincode(current_pin_code);
-      setAlternateContact(alternate_contact)
+      setAlternateContact(alternate_contact);
       setEmergencyContact(emergency_contact1);
       setEmergencyContact2(emergency_contact2);
       setGetProfile(image_url);
@@ -713,8 +712,7 @@ const PreOnboardingUserMaster = () => {
       return toastError("Emergency Number 1 is Required");
     } else if (!emergencyContact2 || emergencyContact2 == "") {
       return toastError("Emergency Number 2 is Required");
-    }
-    else if (!currentAddress || currentAddress == "") {
+    } else if (!currentAddress || currentAddress == "") {
       return toastError("Current address is Required");
     } else if (!currentState || currentState == "") {
       return toastError("Current State is Required");
@@ -975,7 +973,7 @@ const PreOnboardingUserMaster = () => {
     const detailToUpdate = updatedEducationDetails[index];
 
     if (name === "percentage" && value > 100) {
-      return // console.log("Can't input value greater than 100");
+      return; // console.log("Can't input value greater than 100");
     }
 
     detailToUpdate[name] = value;
@@ -1350,8 +1348,9 @@ const PreOnboardingUserMaster = () => {
               <div className="sidebar_wrapper_in">
                 <div className="sidebar_items sidebar_items_desktop">
                   <div
-                    className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
-                      }`}
+                    className={`sidebar_itembox ${
+                      activeTab == 1 ? "sidebar_item_active" : ""
+                    }`}
                     id="sidebarFormBox"
                     onClick={() => setActiveTab(1)}
                   >
@@ -1372,8 +1371,9 @@ const PreOnboardingUserMaster = () => {
                     </div>
                   </div>
                   <div
-                    className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
-                      }`}
+                    className={`sidebar_itembox sidebar_itemboxCol ${
+                      activeTab == 2 ? "sidebar_item_active" : ""
+                    }`}
                     id="sidebarDocumentBox"
                     onClick={() => setActiveTab(2)}
                   >
@@ -1409,8 +1409,9 @@ const PreOnboardingUserMaster = () => {
                   </div>
                   {/* {allUserData.offer_letter_send && ( */}
                   <div
-                    className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
-                      }`}
+                    className={`sidebar_itembox ${
+                      activeTab === 5 ? "sidebar_item_active" : ""
+                    }`}
                     id="sidebarLetterBox"
                     onClick={() => setActiveTab(5)}
                   >
@@ -1448,10 +1449,11 @@ const PreOnboardingUserMaster = () => {
                     // className={`sidebar_itembox  ${
                     //   activeTab == 3 ? "sidebar_item_active" : ""
                     // }`}
-                    className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
-                      ? "sidebar_item_active"
-                      : ""
-                      }`}
+                    className={`sidebar_itembox ${
+                      activeTab === 3 && documentPercentage < 90
+                        ? "sidebar_item_active"
+                        : ""
+                    }`}
                     id="sidebarPolicyBox"
                     // style={{
                     //   pointerEvents: documentPercentage < 90 ? "none" : "auto",
@@ -1478,8 +1480,9 @@ const PreOnboardingUserMaster = () => {
                     </h2>
                   </div>
                   <div
-                    className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
-                      }`}
+                    className={`sidebar_itembox ${
+                      activeTab == 4 ? "sidebar_item_active" : ""
+                    }`}
                     id="sidebarFaqBox"
                     onClick={() => setActiveTab(4)}
                   >
@@ -1498,8 +1501,9 @@ const PreOnboardingUserMaster = () => {
                 <div className="sidebar_items_mobile">
                   <Slider {...settings}>
                     <div
-                      className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
-                        }`}
+                      className={`sidebar_itembox ${
+                        activeTab == 1 ? "sidebar_item_active" : ""
+                      }`}
                       id="sidebarFormBox"
                       onClick={() => setActiveTab(1)}
                     >
@@ -1521,8 +1525,9 @@ const PreOnboardingUserMaster = () => {
                       </div>
                     </div>
                     <div
-                      className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
-                        }`}
+                      className={`sidebar_itembox sidebar_itemboxCol ${
+                        activeTab == 2 ? "sidebar_item_active" : ""
+                      }`}
                       id="sidebarDocumentBox"
                       onClick={() => setActiveTab(2)}
                     >
@@ -1557,8 +1562,9 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* {allUserData.offer_letter_send && ( */}
                     <div
-                      className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
-                        }`}
+                      className={`sidebar_itembox ${
+                        activeTab === 5 ? "sidebar_item_active" : ""
+                      }`}
                       id="sidebarLetterBox"
                       onClick={() => setActiveTab(5)}
                     >
@@ -1575,10 +1581,11 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* )} */}
                     <div
-                      className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
-                        ? "sidebar_item_active"
-                        : ""
-                        }`}
+                      className={`sidebar_itembox ${
+                        activeTab === 3 && documentPercentage < 90
+                          ? "sidebar_item_active"
+                          : ""
+                      }`}
                       id="sidebarPolicyBox"
                       onClick={() => setActiveTab(3)}
                     >
@@ -1601,8 +1608,9 @@ const PreOnboardingUserMaster = () => {
                       </h2>
                     </div>
                     <div
-                      className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
-                        }`}
+                      className={`sidebar_itembox ${
+                        activeTab == 4 ? "sidebar_item_active" : ""
+                      }`}
                       id="sidebarFaqBox"
                       onClick={() => setActiveTab(4)}
                     >
@@ -1623,7 +1631,7 @@ const PreOnboardingUserMaster = () => {
             </div>
             <div className="page_area">
               <div className="dashboard_body">
-                <div className="dashboard_body_inner profileTabContentArea" >
+                <div className="dashboard_body_inner profileTabContentArea">
                   {activeTab == 0 && (
                     <div className="welcome_board">
                       <div className="welcome_board_heading">
@@ -1729,7 +1737,9 @@ const PreOnboardingUserMaster = () => {
                               <div className="form-group">
                                 <ContactNumber
                                   label="Alternate Contact"
-                                  setParentComponentContact={setAlternateContact}
+                                  setParentComponentContact={
+                                    setAlternateContact
+                                  }
                                   parentComponentContact={alternateContact}
                                 />
                               </div>
@@ -1980,8 +1990,6 @@ const PreOnboardingUserMaster = () => {
                                   </>
                                 )}
                               </div>
-
-
                             </div>
                             <IdentityDetails />
                             <div className="board_form board_form_flex">
@@ -2146,14 +2154,20 @@ const PreOnboardingUserMaster = () => {
                                   variant="outlined"
                                   fullWidth
                                   value={workExperiences}
-                                  onChange={(e) => setWorkExperiences(e.target.value)}
+                                  onChange={(e) =>
+                                    setWorkExperiences(e.target.value)
+                                  }
                                 >
                                   <MenuItem value="Fresher">Fresher</MenuItem>
-                                  <MenuItem value="Experience">Experience</MenuItem>
+                                  <MenuItem value="Experience">
+                                    Experience
+                                  </MenuItem>
                                 </TextField>
                               </div>
                             </div>
-                            {workExperiences == "Experience" && (<WorkExperience userID={id} />)}
+                            {workExperiences == "Experience" && (
+                              <WorkExperience userID={id} />
+                            )}
                             <div className="board_form board_form_flex">
                               <h2>Family Details</h2>
                               <FamilyFields
@@ -2170,7 +2184,6 @@ const PreOnboardingUserMaster = () => {
                                 }
                               />
                             </div>
-
                           </div>
                           <div className="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <div className="form-group ml-auto mr-auto text-center">

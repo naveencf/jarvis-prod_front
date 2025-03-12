@@ -12,9 +12,13 @@ import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
 import {
   useAddServiceMutation,
   useGetVendorsQuery,
+  useRefetchPostPriceMutation,
 } from "../../Store/API/Purchase/DirectPurchaseApi";
 import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi.js";
+import { Select } from "antd";
+import { Campaign } from "@mui/icons-material";
+import { ArrowClockwise } from "@phosphor-icons/react";
 
 const LinkUpload = ({
   phaseList,
@@ -31,6 +35,7 @@ const LinkUpload = ({
   setModalData,
   setToggleModal,
   setSelectedPlan,
+  selectedData,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
@@ -104,6 +109,15 @@ const LinkUpload = ({
   ] = useUpdateVendorMutation();
 
   const [
+    fetchPricing,
+    {
+      error: fetchPricingError,
+      isLoading: fetchPricingLoading,
+      isSuccess: fetchPricingSuccess,
+    },
+  ] = useRefetchPostPriceMutation();
+
+  const [
     uploadPlanData,
     {
       data: uploadData,
@@ -133,6 +147,27 @@ const LinkUpload = ({
     );
     return uniqueLinks;
   };
+
+  async function handleFetchPricing() {
+    try {
+      let payload;
+      if (selectedData.length > 0) {
+        payload = {
+          shortCodes: selectedData?.map((data) => data.shortCode),
+        };
+      } else {
+        payload = {
+          campaignId: selectedPlan,
+        };
+      }
+      let res = await fetchPricing(payload).unwrap();
+      if (res.error) throw new Error(res.error);
+      await refetchPlanData();
+      toastAlert("Pricing Fetched");
+    } catch (err) {
+      toastError("Error Fetching Pricing");
+    }
+  }
 
   const extractShortCodes = () => {
     const uniqueLinks = filterDuplicateLinks();
@@ -655,6 +690,20 @@ const LinkUpload = ({
               }}
             >
               Add Story
+            </button>
+          )}
+          {record == 0 && (
+            <button
+              className="btn cmnbtn btn-primary mt-4 ml-3"
+              onClick={() => handleFetchPricing()}
+            >
+              {selectedData.length > 0
+                ? "Fetch price of selected links"
+                : "Fetch price of all links"}
+
+              <ArrowClockwise
+                className={fetchPricingLoading && "animate_rotate"}
+              />
             </button>
           )}
           <button
