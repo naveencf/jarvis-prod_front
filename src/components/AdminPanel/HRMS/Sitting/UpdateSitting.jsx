@@ -10,7 +10,7 @@ import {
 } from "react-konva";
 import Select from "react-select";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Slider from "react-slick"; // Import Slider
 import "slick-carousel/slick/slick.css"; // Import Slick CSS
 import "slick-carousel/slick/slick-theme.css"; // Import Slick Theme CSS
@@ -77,9 +77,10 @@ const AvatarImage = ({ url, x, y, width = 50, height = 50 }) => {
 
 const UpdateSitting = ({
   roomNameCard,
-  totalSittingDataCount,
-  fetchAllocationCounts,
+  // totalSittingDataCount,
+  // fetchAllocationCounts,
 }) => {
+  const { shift } = useParams();
   const { usersDataContext } = useGlobalContext();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [elements, setElements] = useState([]);
@@ -95,7 +96,6 @@ const UpdateSitting = ({
   const [matchData, setMatchData] = useState("");
 
   const [roomWiseCount, setRoomWiseCount] = useState([]);
-  console.log(roomWiseCount, "room wise count");
 
   const [selectedEmployee, setSelectedEmployee] = useState(null); // Track selected dropdown value
   // const userData = usersDataContext.filter(
@@ -138,13 +138,21 @@ const UpdateSitting = ({
     axios
       .get(baseUrl + "get_all_arrangement")
       .then((response) => {
-        const layoutsData = response?.data?.reduce((acc, layout) => {
+        // const layoutsData = response?.data?.reduce((acc, layout) => {
+        //   acc[layout.roomName] = layout; // Group by room name
+        //   return acc;
+        // }, {});
+        const shiftWiseData = response.data.filter(
+          (res) => res.shift_id == shift
+        );
+        const layoutsData = shiftWiseData.reduce((acc, layout) => {
           acc[layout.roomName] = layout; // Group by room name
           return acc;
         }, {});
+
         setLayouts(layoutsData);
 
-        const matchedData = response.data?.find(
+        const matchedData = shiftWiseData?.find(
           (d) => d.roomName === selectedRoom
         );
         setMatchData(matchedData);
@@ -175,7 +183,6 @@ const UpdateSitting = ({
   };
 
   const updateAssignment = async () => {
-    console.log(elements, "update elelment");
     try {
       const updatedData = {
         _id: id,
@@ -185,8 +192,8 @@ const UpdateSitting = ({
       alert("Layout updated successfully.");
       setSelectedEmployee(null);
       setSelectedId(null);
-      totalSittingDataCount();
-      fetchAllocationCounts();
+      // totalSittingDataCount();
+      // fetchAllocationCounts();
     } catch (error) {
       console.error("Error updating layout:", error);
       alert("Failed to update layout.");
@@ -336,8 +343,8 @@ const UpdateSitting = ({
                             selectedId === el.id
                               ? "green"
                               : el.employee
-                                ? "white"
-                                : "white"
+                              ? "white"
+                              : "white"
                           }
                           stroke={selectedId === el.id ? "green" : "black"}
                           strokeWidth={selectedId === el.id ? 2 : 1}

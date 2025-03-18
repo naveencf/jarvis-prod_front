@@ -156,7 +156,7 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                 ) : (
                     <>
                         <button className="btn cmnbtn btn_sm btn-outline-secondary m-1" onClick={handleBackButton}>
-                        < ArrowBackIcon/>  Category Overview
+                            < ArrowBackIcon />  Category Overview
                         </button>
                         {!recordsLoading ? (
                             <View
@@ -180,7 +180,27 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
             >
-                <Box sx={style}>
+                <Box
+                    sx={{
+                        ...style,
+                        maxHeight: "80vh", // Limit the height of the modal
+                        overflowY: "auto", // Enable vertical scrolling
+                        overflowX: "hidden", // Prevent horizontal scrolling
+                    }}
+                >
+                    <button
+                        className="btn cmnbtn btn_sm btn-primary "
+                        onClick={handleClose}
+                        style={{
+                            position: "absolute",
+                            top: "0px",
+                            right: "10px",
+                            margin: "5px"
+                        }}
+                    >
+                        X
+                    </button>
+
                     <table className="table">
                         <thead>
                             <tr>
@@ -219,6 +239,7 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
                     </table>
                 </Box>
             </Modal>
+
         </div>
     );
 };

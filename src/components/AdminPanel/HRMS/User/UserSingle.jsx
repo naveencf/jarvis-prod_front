@@ -101,7 +101,7 @@ const UserSingle = () => {
         user_id: id,
       })
       .then((res) => {
-        const response = res.data.data;
+        const response = res?.data.data;
         setSalaryData(response);
         setSalaryFilterData(response);
         console.log(response, "response here salary");

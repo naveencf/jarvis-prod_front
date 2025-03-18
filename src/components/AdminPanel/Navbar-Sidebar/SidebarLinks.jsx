@@ -667,13 +667,21 @@ const SidebarLinks = () => {
                   <div className="internal   collapse-inner">
                     {contextData &&
                       contextData[5] &&
-                      contextData[5].view_value === 1 && (
-                        <NavLink
+                      contextData[5].view_value === 1 && (<>
+                          <NavLink
                           className="collapse-item"
                           to="/admin/product-overview"
                         >
                           <i className="bi bi-dot"></i> Product
                         </NavLink>
+                          <NavLink
+                          className="collapse-item"
+                          to="/admin/new-pantry-user"
+                        >
+                          <i className="bi bi-dot"></i> New Pantry User
+                        </NavLink>
+                      </>
+                    
                       )}
 
                     {contextData &&
@@ -2163,7 +2171,9 @@ const SidebarLinks = () => {
               </div>
             </div>
           </li>
+
 {/* 
+
           <li className="nav-item">
             <Link
               className="nav-link nav-btn collapsed"
@@ -2196,7 +2206,11 @@ const SidebarLinks = () => {
 
               </div>
             </div>
+
+          </li>
+
           </li> */}
+
         </>
       )}
 

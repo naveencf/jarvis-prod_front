@@ -6,8 +6,8 @@ import "./onboardcss/onboard_responsive.css";
 import "./onboardcss/onboard_animate.min.css";
 import welcomeImage from "../../assets/imgs/other/welcome.png";
 import { useNavigate } from "react-router-dom";
-import { TextField } from "@mui/material";
-import { MenuItem } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import Autocomplete from "@mui/material/Autocomplete";
 import Tour from "reactour";
 import Swal from "sweetalert2";
@@ -1152,24 +1152,7 @@ const PreOnboardingUserMaster = () => {
     });
     CloseImageSelector();
     gettingData();
-    // setTimeout(() => {
-    //   gettingData();
-    // }, 3000);
   };
-
-  // const handleCOC = async () => {
-  //   const formData = new FormData();
-  //   formData.append("user_id", id);
-  //   formData.append("coc_flag", true);
-
-  //   await axios.put(`${baseUrl}` + `update_user`, formData, {
-  //     headers: {
-  //       "Content-Type": "multipart/form-data",
-  //     },
-  //   });
-  //   toastAlert("Success");
-  //   gettingData();
-  // };
 
   const handleGetOnboard = async () => {
     await axios.put(`${baseUrl}` + `update_user`, {
@@ -1202,18 +1185,7 @@ const PreOnboardingUserMaster = () => {
       selector: "#sidebarFaqBox",
       content: "Here you can look for FAQ's",
     },
-    // {
-    //   selector: ".user_logout",
-    //   content: "From here you can logout",
-    // },
   ];
-
-  const today = new Date();
-  const dd = String(today.getDate()).padStart(2, "0");
-  const mm = String(today.getMonth()).padStart(2, "0");
-  const yyyy = today.getFullYear();
-
-  const formattedDate = dd + "-" + mm + "-" + yyyy;
 
   return (
     <>
@@ -1426,25 +1398,6 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     <h2 className="letter_tab_name">Offer Letter</h2>
                   </div>
-                  {/* <div
-                    className={`sidebar_itembox ${
-                      activeTab === 6 ? "sidebar_item_active" : ""
-                    }`}
-                    id="sidebarLetterBox"
-                    onClick={() => setActiveTab(6)}
-                  >
-                    <div className="progress-circle progressing pp-26">
-                      <div className="progress-circle-border">
-                        <div className="left-half-circle" />
-                        <div className="right-half-circle" />
-                      </div>
-                      <div className="progress-circle-content">
-                        <i className="bi bi-file-earmark-text" />
-                      </div>
-                    </div>
-                    <h2 className="letter_tab_name">NDA</h2>
-                  </div> */}
-                  {/* )} */}
                   <div
                     // className={`sidebar_itembox  ${
                     //   activeTab == 3 ? "sidebar_item_active" : ""

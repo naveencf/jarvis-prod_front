@@ -36,7 +36,7 @@ function PageOverviewWithoutHealth({
 }) {
   const token = sessionStorage.getItem("token");
   const [activeTab, setActiveTab] = useState("");
-  console.log(activeTab, "activeddd");
+
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");

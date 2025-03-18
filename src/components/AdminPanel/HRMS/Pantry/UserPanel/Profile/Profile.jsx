@@ -57,6 +57,29 @@ const Profile = () => {
     setDocumentData(response.data.data);
   }
 
+  const [previewImage, setPreviewImage] = useState(
+    userData?.image_url || "imageTest1"
+  ); // Default image
+
+  // Update preview image when userData changes (e.g., after upload)
+  useEffect(() => {
+    setPreviewImage(userData?.image_url || "imageTest1");
+  }, [userData]);
+
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setProfileUpdate(file);
+
+      // Show preview of selected file
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   useEffect(() => {
     getDocuments();
   }, [loginUserId]);
@@ -117,13 +140,13 @@ const Profile = () => {
     responsibilityAPI();
   }, [loginUserId]);
 
-  const handleProfileUpdate = () => {
+  const handleProfileUpdate = async () => {
     const formData = new FormData();
     formData.append("user_id", loginUserId);
     formData.append("image", profileUpdate);
 
     setLoading(true);
-    axios
+    await axios
       .put(`${baseUrl}update_user`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -160,32 +183,20 @@ const Profile = () => {
           <div className="profileCardRow">
             <div className="profileCardImgCol">
               <div className="profileCardImg">
-                {userData?.image_url == null ? (
-                  <img src="imageTest1" alt="user" />
-                ) : (
-                  <img src={userData.image_url} alt="user" />
-                )}
+                <img src={previewImage} alt="user" />
 
                 <div className="profileCardImgAction">
                   <div className="profileCardImgEdit">
                     <input
                       type="file"
                       className="custom_file_input"
-                      onChange={(e) => setProfileUpdate(e.target.files[0])}
+                      onChange={handleFileSelect}
                     />
                     <span>
                       <Pencil />
                     </span>
                   </div>
                   <div className="profileCardImgSave">
-                    {/* <button
-                      className="btn"
-                      title="save profile"
-                      type="file"
-                      onClick={() => handleProfileUpdate()}
-                    >
-                      <Check />
-                    </button> */}
                     <button
                       className="btn"
                       title="Save profile"

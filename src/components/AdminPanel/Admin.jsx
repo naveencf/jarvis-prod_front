@@ -1,8 +1,6 @@
-import axios from "axios";
 import jwtDecode from "jwt-decode";
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
-import { baseUrl } from "../../utils/config";
 import Loader from "../Finance/Loader/Loader";
 import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
 import Profile from "./HRMS/Pantry/UserPanel/Profile/Profile";
@@ -36,11 +34,13 @@ import { useAPIGlobalContext } from "./APIContext/APIContext";
 import OperationDashboard from "../UnusedCode/UnusedOp/OperationDashboard/OperationDashboard";
 // import OperationDashboard from "../UnusedCode/Plan/OperationDashboard/OperationDashboard";
 import Ledger from "../Purchase/PurchaseVendor/Ledger";
+import HomePantry from "../NewPantry/HomePantry";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
 const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
-const PurchaseReport = lazy(()=> import("../Purchase/purchase-report/PurchaseReport"))
+
+const PurchaseReport = lazy(() => import("../Purchase/purchase-report/PurchaseReport"))
 const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
@@ -921,8 +921,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1199,6 +1199,10 @@ const Admin = () => {
                             path="/product-update"
                             element={<ProductUpdate />}
                           />
+                          <Route
+                            path="/new-pantry-user"
+                            element={<HomePantry />}
+                          />
                         </>
                       )}
                     {/* {contextData &&
@@ -1261,7 +1265,7 @@ const Admin = () => {
                       contextData[7].view_value === 1 && (
                         <>
                           <Route
-                            path="/sitting-overview"
+                            path="/sitting-overview/:shift"
                             element={<SittingOverview />}
                           />
                         </>
@@ -2358,6 +2362,10 @@ const Admin = () => {
                     />
                     <Route path="/audit-purchase" element={<AuditPurchase />} />
                     <Route path="/purchase-report" element={<PurchaseReport />} />
+                    <Route
+                      path="/purchase-report"
+                      element={<PurchaseReport />}
+                    />
                     <Route
                       path="/purchase-dashboard"
                       element={<PurchaseDashboard />}

@@ -1,1341 +1,2215 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import jwtDecode from "jwt-decode";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
-import { FaEdit } from "react-icons/fa";
-import DeleteButton from "../DeleteButton";
-import { Link, useNavigate } from "react-router-dom";
-import { Avatar, Box, Typography } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
-import PriceCheckIcon from "@mui/icons-material/PriceCheck";
-import jwtDecode from "jwt-decode";
-import { useDispatch, useSelector } from "react-redux";
-import { addRow } from "../../Store/Executon-Slice";
-import View from "../Sales/Account/View/View";
-
-import DateFormattingComponent from "../../DateFormator/DateFormared";
-import TagCategoryListModal from "./TagCategoryListModal";
-import VendorNotAssignedModal from "./VendorNotAssignedModal";
+import SalesSidebarLinks from "./SalesSidebarLinks";
 import {
-  useGetAllPageListQuery,
-  useGetPageStateQuery,
-} from "../../Store/PageBaseURL";
-import { setStatsUpdate } from "../../Store/PageMaster";
-import PageDetail from "./PageOverview/PageDetail";
-import formatString from "../Operation/CampaignMaster/WordCapital";
-import { AppContext, useGlobalContext } from "../../../Context/Context";
-import PageClosedByDetails from "./Page/PageClosedByDetails";
-import VendorDetails from "./Vendor/VendorDetails";
+  Gauge,
+  IdentificationBadge,
+  House,
+  Laptop,
+  CurrencyInr,
+  FolderSimpleStar,
+  UserRectangle,
+  Files,
+  MaskHappy,
+} from "@phosphor-icons/react";
+import { constant } from "../../../utils/constants";
+import ExenseManagement from "./ExenseManagementSidebarLinks";
+import { RiOrganizationChart } from "react-icons/ri";
+import OperationSidebarLinks from "./OperationSidebarLinks";
+// import { useGlobalContext } from "../../../Context/Context";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
-import { formatNumber } from "../../../utils/formatNumber";
-import PriceModal from "./PageOverview/PriceModal";
-import FollowerLogsModal from "./FollowerLogsModal";
-import PriceLogs from "./PriceLogs";
-import WhatsapplinksModel from "./PageOverview/WhatsapplinksModel";
-import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth";
-import StatsOfOverview from "./PageOverview/StatsOfOverview";
-import PageEdit from "./PageEdit";
-import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
-const PageOverviewNew = () => {
-  const { toastAlert, toastError } = useGlobalContext();
+const SidebarLinks = () => {
+  // const [contextData, setData] = useState([]);
+
+  const { loginUserData: jobType, contextData } = useAPIGlobalContext();
+  // const [jobType, setJobtype] = useState("");
+  const [allCount, setAllCount] = useState();
+  const [ownCount, setOwnCount] = useState();
+  const [otherCount, setOtherCount] = useState();
+
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  const token = sessionStorage.getItem("token");
+  const RoleId = decodedToken.role_id;
+  const deptId = decodedToken.dept_id;
+  const job_type = decodedToken.job_type;
 
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // useEffect(() => {
+  //   if (userID && contextData.length === 0) {
+  //     // axios
+  //     //   .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
+  //     //   .then((res) => {
+  //     //     setData(res.data);
+  //     //   });
+  //     // axios.get(`${baseUrl}` + `get_single_user/${userID}`).then((res) => {
+  //     //   setJobtype(res.data.job_type);
+  //     // });
+  //   }
+  // }, [userID]);
 
-  const [vendorDetails, setVendorDetails] = useState(null);
-  const [activeTab, setActiveTab] = useState("Tab0");
-  const [user, setUser] = useState();
-  const [progress, setProgress] = useState(10);
-  const [showPriceModal, setShowPriceModal] = useState(false);
+  // useEffect(() => {
+  //   const formData = new URLSearchParams();
+  //   formData.append("loggedin_user_id", 36);
+  //   axios
+  //     .post(
+  //       "https://purchase.creativefuel.io/webservices/RestController.php?view=inventoryDataList",
+  //       formData,
+  //       {
+  //         headers: {
+  //           "Content-Type": "application/x-www-form-urlencoded",
+  //         },
+  //       }
+  //     )
+  //     .then((res) => {
+  //       const filterVendorId = res.data.body.filter(
+  //         (check) => check.vendor_id == "8"
+  //       ).length;
+  //       setOwnCount(filterVendorId);
+  //       const filterVendorId1 = res.data.body.length;
+  //       setAllCount(filterVendorId1);
+  //       const filterVendorId2 = res.data.body.filter(
+  //         (check) => check.vendor_id !== "8"
+  //       ).length;
+  //       setOtherCount(filterVendorId2);
+  //     });
+  // }, []);
 
-  const [selectedRow, setSelectedRow] = useState([]);
-  // const [categoryData, setCategoryData] = useState([]);
-  const [newFilterData, setNewFilterData] = useState([]);
-  const [waData, setWaData] = useState(null);
+  const isUserManagementVisible = [0, 1, 2, 6, 16, 23].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isWFHVisible = [17, 19].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isPantryManagementVisible = [5, 8, 9].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isOnboardingVisible = [18, 20, 21].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isLeadManagementVisible = [22].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isExecutionVisible = [24, 31, 32, 34, 46].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isInstaApiVisible = [25].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isWFHDManager = [37].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isWFHDHRPayrollManager = [38].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isAssetNotifierVisible = [40].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isTaskManagment = [43].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isPHPFinance = [44].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isOpration = [42].some((index) => contextData[index]?.view_value === 1);
+  const isCustomer = [50].some((index) => contextData[index]?.view_value === 1);
+  const isPageManagement = [51].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const isSales = [52].some((index) => contextData[index]?.view_value === 1);
+  const isAssets = [53].some((index) => contextData[index]?.view_value === 1);
+  const isExenseManagement = [54].some(
+    (index) => contextData[index]?.view_value === 1
+  );
 
-  const [allVendorWhats, setAllVendorWhats] = useState([]);
-  const [platformName, setPlanFormName] = useState("");
-  // const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
-  // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
-  const [openFollowerModal, setOpenFollowerModal] = useState(false);
-  const [rowDataFollower, setRowDataFollower] = useState("");
-  const [pagequery, setPagequery] = useState("");
-  const [editMode, setEditMode] = useState(false);
-  const [editID, setEditID] = useState(null);
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [activenessFilter, setActivenessFilter] = useState(null);
-  const [filterFollowers, setFilterFollowers] = useState(null);
-  const [latestPageObject, setLatestPageObject] = useState({});
-
-  const {
-    data: pageList,
-    refetch: refetchPageList,
-    isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({
-    decodedToken,
-    userID,
-    pagequery,
-  });
-  const { data: pageStates, isLoading: isPagestatLoading } =
-    useGetPageStateQuery();
-
-  useEffect(() => {
-    if (activeTab == "Tab1") {
-      pageHealthToggleCheck();
-    }
-  }, [activeTab]);
-  function pageHealthToggleCheck() {
-    // if (showPageHealthColumn) {
-    const data = pageList?.map((item) => {
-      const matchingState = pageStates?.find(
-        (state) => state?.page_master_id === item?._id
-      );
-      if (matchingState) {
-        // console.log(matchingState, 'matchingState', item);
-      }
-      return {
-        ...item,
-        pageId: matchingState?._id,
-        ...matchingState,
-        _id: item?._id,
-      };
-    });
-
-    setNewFilterData(data);
-  }
-
-  const handleSetState = () => {
-    dispatch(addRow(false));
-    dispatch(setStatsUpdate(false));
-  };
-  const handleUpdateRowClick = async (row) => {
-    dispatch(setStatsUpdate(true));
-  };
-
-  const handleHistoryRowClick = (row) => {
-    navigate(`/admin/exe-history/${row._id}`, {
-      state: row.pageMast_id,
-    });
-  };
-
-  const handlePriceClick = (row) => {
-    return function () {
-      // console.log(row?.page_price_list
-      //   ,'nnnn');
-      setSelectedRow(row?.page_price_list);
-      setShowPriceModal(true);
-    };
-  };
-
-  const handleFollowerLogs = (row) => {
-    setOpenFollowerModal(true);
-    setRowDataFollower(row);
-  };
-  const handleCloseFollowerModal = () => {
-    setOpenFollowerModal(false);
-  };
-  const [openPriceLogModal, setOpenPriceLogModal] = useState(false);
-  const [rowDataPriceLog, setRowDataPriceLog] = useState("");
-
-  const handlePriceLogs = (row) => {
-    setOpenPriceLogModal(true);
-    setRowDataPriceLog(row);
-  };
-  const handleClosePriceModal = () => {
-    setOpenPriceLogModal(false);
-  };
-
-  const handlewhatsAppData = (row) => {
-    setWaData(row);
-  };
-  const deletePhpData = async (row) => {
-    await axios.delete(baseUrl + `node_data_to_php_delete_page`, {
-      p_id: row.p_id,
-    });
-  };
-
-  const handleUpadteFollowers = async (row) => {
-    const payload = {
-      creators: [row.page_name],
-      department: "65c38781c52b3515f77b0815",
-      userId: 111111,
-    };
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6InRlc3RpbmciLCJpYXQiOjE3MDczMTIwODB9.ytDpwGbG8dc9jjfDasL_PI5IEhKSQ1wXIFAN-2QLrT8";
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
-    try {
-      const result = await axios.post(
-        `https://insights.ist:8080/api/v1/creators_details_v3`,
-        payload,
-        { headers }
-      );
-      const followerData = result?.data?.data?.[0]?.creatorDetails?.followers;
-      if (followerData) {
-        const updateRes = await axios.put(
-          `${baseUrl}v1/pageMaster/${row._id}`,
-          { followers_count: followerData, vendor_id: row.vendor_id },
-          { headers }
-        );
-        setLatestPageObject(updateRes.data.data);
-      } else {
-        console.error("No follower data found for this creator.");
-      }
-    } catch (error) {
-      if (error.response) {
-        console.error("Error response:", error.response.data.message);
-        toastError(error.response.data.message);
-      } else {
-        console.error("Error fetching followers:", error.message);
-        toastError("An error occurred while fetching the followers.");
-      }
-    }
-  };
-
-  const editInNewTab = (_id) => {
-    // window.open(`/admin/pms-page-edit/${_id}`, "_blank");
-    // sessionStorage.setItem("token", storedToken);
-    setEditMode(true);
-    setEditID(_id);
-  };
-  const handleEditClose = () => {
-    setEditMode(false);
-    setEditID(null);
-  };
-  // console.log(vendorData,"vendorData")
-  const dataSecondGridColumns = [
-    {
-      key: "page_name",
-      name: "User Name",
-      width: 200,
-
-      renderRowCell: (row) => {
-        let name = row.page_name;
-        return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={row.page_link}
-            className="link-primary"
-          >
-            {formatString(name)}
-          </a>
-        );
-      },
-    },
-    {
-      key: "Add",
-      name: "Add",
-      width: 130,
-      renderRowCell: (row) => {
-        const totalPercentage = row.totalPercentage;
-        return (
-          <>
-            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleSetState()}
-              >
-                Add Stats
-              </button>
-            </Link>
-          </>
-        );
-      },
-    },
-    {
-      key: "history",
-      width: 150,
-      name: "History",
-      renderRowCell: (row) => {
-        return (
-          <button
-            type="button"
-            className="btn cmnbtn btn_sm btn-outline-primary"
-            onClick={() => handleHistoryRowClick(row)}
-          >
-            See History
-          </button>
-        );
-      },
-    },
-    {
-      key: "statsUpdate",
-      width: 150,
-      name: "Stats Update",
-      renderRowCell: (row) => {
-        return (
-          row?.pageId && (
-            <Link
-              to={{
-                pathname: `/admin/pageStats/${row.pageId}`,
-                state: { update: true },
-              }}
-            >
-              <button
-                type="button"
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                onClick={handleUpdateRowClick}
-              >
-                Update
-              </button>
-            </Link>
-          )
-        );
-      },
-    },
-    {
-      key: "Age_13_17_percent",
-      width: 150,
-      name: "Age 13-17 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_13_17_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_18_24_percent",
-      width: 150,
-      name: "Age 18-24 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_18_24_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_25_34_percent",
-      width: 150,
-      name: "Age 25-34 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_25_34_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_35_44_percent",
-      width: 150,
-      name: "Age 35-44 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_35_44_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_45_54_percent",
-      width: 150,
-      name: "Age 45-54 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_45_54_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_55_64_percent",
-      width: 150,
-      name: "Age 55-64 %",
-      renderRowCell: (row) => {
-        let data = row?.Age_55_64_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "Age_65_plus_percent",
-      width: 150,
-      name: "Age 65+ %",
-      renderRowCell: (row) => {
-        let data = row?.Age_65_plus_percent;
-        return +data ? data + "%" : "NA";
-      },
-    },
-
-    {
-      key: "city1_name",
-      width: 150,
-      name: "City 1 and %",
-      renderRowCell: (row) => {
-        let data = row?.city1_name;
-        let percentage = row?.percentage_city1_name;
-        return data ? data + ` (${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city2_name",
-      width: 150,
-      name: "City 2 and %",
-      renderRowCell: (row) => {
-        let data = row?.city2_name;
-        let percentage = row?.percentage_city2_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city3_name",
-      width: 150,
-      name: "City 3 and %",
-      renderRowCell: (row) => {
-        let data = row?.city3_name;
-        let percentage = row?.percentage_city3_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city4_name",
-      width: 150,
-      name: "City 4 and %",
-      renderRowCell: (row) => {
-        let data = row?.city4_name;
-        let percentage = row?.percentage_city4_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city5_name",
-      width: 150,
-      name: "City 5 and %",
-      renderRowCell: (row) => {
-        let data = row?.city5_name;
-        let percentage = row?.percentage_city5_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "city_image_url",
-      width: 150,
-      name: "City Image",
-      renderRowCell: (row) => {
-        let data = row?.city_image_url;
-        return data ? (
-          <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "country1_name",
-      width: 150,
-      name: "Country 1  and %",
-      renderRowCell: (row) => {
-        let data = row?.country1_name;
-        let percentage = row?.percentage_country1_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country2_name",
-      width: 150,
-      name: "Country 2 and %",
-      renderRowCell: (row) => {
-        let data = row?.country2_name;
-        let percentage = row?.percentage_country2_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country3_name",
-      width: 150,
-      name: "Country 3 and %",
-      renderRowCell: (row) => {
-        let data = row?.country3_name;
-        let percentage = row?.percentage_country3_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country4_name",
-      width: 150,
-      name: "Country 4 and %",
-      renderRowCell: (row) => {
-        let data = row?.country4_name;
-        let percentage = row?.percentage_country4_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country5_name",
-      width: 150,
-      name: "Country 5 and %",
-      renderRowCell: (row) => {
-        let data = row?.country5_name;
-        let percentage = row?.percentage_country5_name;
-        return data ? data + `(${percentage}%)` : "NA";
-      },
-    },
-    {
-      key: "country_image_url",
-      width: 150,
-      name: "Country Image",
-      renderRowCell: (row) => {
-        let data = row?.country_image_url;
-        return data ? (
-          <a href={data} target="_blank" rel="noopener noreferrer">
-            <img src={data} style={{ width: "50px", height: "50px" }} />
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "createdAt",
-      width: 150,
-      name: "Creation Date",
-      renderRowCell: (row) => {
-        let data = row?.createdAt;
-        return data
-          ? Intl.DateTimeFormat("en-GB").format(new Date(data))
-          : "NA";
-      },
-    },
-
-    {
-      key: "engagement",
-      width: 150,
-      name: "Engagement",
-      renderRowCell: (row) => {
-        let data = row?.engagement;
-        let dataimg = row?.engagement_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "impression",
-      width: 150,
-      name: "Impression",
-      renderRowCell: (row) => {
-        let data = row?.impression;
-        let dataimg = row?.impression_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-            {/* <img src={data} style={{ width: "50px", height: "50px" }} /> */}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "female_percent",
-      width: 150,
-      name: "Female Percentage",
-      renderRowCell: (row) => {
-        let data = row?.female_percent;
-        return data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "male_percent",
-      width: 150,
-      name: "Male Percentage",
-      renderRowCell: (row) => {
-        let data = row?.male_percent;
-        return data ? data + "%" : "NA";
-      },
-    },
-    {
-      key: "profile_visit",
-      width: 150,
-      name: "Profile Visit",
-      renderRowCell: (row) => {
-        let data = row?.profile_visit;
-        return data ? data : "NA";
-      },
-    },
-    {
-      key: "reach",
-      width: 150,
-      name: "Reach",
-      renderRowCell: (row) => {
-        let data = row?.reach;
-        let dataimg = row?.reach_image_url;
-        return data ? (
-          <a href={dataimg} target="_blank" rel="noopener noreferrer">
-            {data}
-          </a>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      key: "start_date",
-      width: 150,
-      name: "Start Date",
-      renderRowCell: (row) => {
-        let data = row?.start_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
-      },
-    },
-    {
-      key: "endDate",
-      width: 150,
-      name: "End Date",
-      renderRowCell: (row) => {
-        let data = row?.end_date;
-        return data ? <DateFormattingComponent date={data} /> : "NA";
-      },
-    },
-    {
-      key: "story_view",
-      width: 150,
-      name: "Story View",
-      renderRowCell: (row) => {
-        let data = row?.story_view;
-        return data ? data : "NA";
-      },
-    },
-    {
-      key: "story_view_image_url",
-      width: 150,
-      name: "Story View Image",
-      renderRowCell: (row) => {
-        let data = row?.story_view_image_url;
-        return data ? (
-          <img src={data} style={{ width: "50px", height: "50px" }} />
-        ) : (
-          "NA"
-        );
-      },
-    },
-  ];
-
-  const handleClickVendorName = (params) => {
-    setVendorDetails(params);
-  };
-  const getPriceDetail = (priceDetails, key) => {
-    const keyType = key.split("_")[1];
-
-    const detail = priceDetails?.find((item) => {
-      return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
-    });
-
-    return detail
-      ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
-      : 0;
-  };
-  function capitalizeFirstLetter(str) {
-    if (!str) return "";
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
-  const dataGridcolumns = [
-    {
-      key: "S.NO",
-      name: "S.no",
-      renderRowCell: (row, index) => index + 1,
-      width: 80,
-      showCol: true,
-    },
-    {
-      key: "page_name",
-      name: "User Name",
-      width: 200,
-
-      renderRowCell: (row) => {
-        let name = row.page_name;
-        return (
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href={row.page_link}
-            className="link-primary"
-          >
-            {capitalizeFirstLetter(name)}
-          </a>
-        );
-      },
-    },
-    {
-      key: "page_activeness",
-      name: "Activeness",
-      width: 80,
-      renderRowCell: (row) => {
-        return formatString(row?.page_activeness);
-      },
-    },
-    {
-      key: "createdAt",
-      name: "Register Date",
-      renderRowCell: (row) => {
-        const date = new Date(row.createdAt).toLocaleDateString("en-CA");
-        return <div style={{ cursor: "pointer" }}>{date}</div>;
-      },
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: "createdAt1",
-      name: "Register Time",
-      renderRowCell: (row) => {
-        const time = new Date(row.createdAt).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        return <div style={{ cursor: "pointer" }}>{time}</div>;
-      },
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: "followers_count",
-      name: "Followers",
-      width: 200,
-      renderRowCell: (row) => {
-        return row.followers_count;
-      },
-    },
-    {
-      key: "max_cost_price",
-      name: "Max Cost Price",
-      renderRowCell: (row) => {
-        const rateType = row?.rate_type;
-        const priceList = row?.page_price_list || [];
-        const followerCount = Math.max(0, row?.followers_count || 0);
-
-        // Extract all prices from priceList excluding 'instagram_both'
-        const prices = priceList.flatMap((item) =>
-          Object.entries(item)
-            .filter(([key]) => key !== "instagram_both") // Exclude 'instagram_both'
-            .map(([, value]) => Number(value) || 0)
-        );
-
-        // Calculate the maximum price in the list
-        const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
-
-        if (rateType === "Variable") {
-          // Calculate the average story price based on follower count
-          const maxVariablePrice = maxPrice; // Maximum price among variable prices
-          const tempmaxVariablePrice = followerCount
-            ? Math.floor(maxVariablePrice / (followerCount / 1000000))
-            : 0;
-
-          // Return the higher value between tempmaxVariablePrice and maxPrice
-          return Math.max(tempmaxVariablePrice, maxPrice);
-        }
-
-        // Default behavior for non-Variable rate types
-        return maxPrice;
-      },
-      width: 150,
-      showCol: true,
-      compare: true,
-    },
-    {
-      key: "link",
-      name: "Link",
-      width: 80,
-      renderRowCell: (row) => {
-        return row.page_link ? row.page_link : "NA";
-      },
-      compare: true,
-    },
-    {
-      key: "Bio",
-      name: "Bio",
-      width: 80,
-      renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
-    },
-    {
-      key: "Logo",
-      name: "Logo",
-      width: 150,
-      renderRowCell: (row) => {
-        const name = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.page_name}.jpeg`;
-        return (
-          <div className="profile-sec sb">
-            <div className="profile-img">
-              <img src={name} alt={row.page_name} width={40} />
-            </div>
-          </div>
-        );
-      },
-    },
-    {
-      key: "WA Links",
-      name: "WA Links",
-      width: 100,
-
-      renderRowCell: (row) => {
-        let name = allVendorWhats?.filter(
-          (item) => item?.vendor_id == row?.vendor_id
-        );
-        let countName = name?.length;
-        return (
-          <div
-            data-toggle="modal"
-            data-target="#waModal"
-            onClick={() => handlewhatsAppData(row)}
-            // onClick={<WhatsapplinksModel data={row} />}
-            style={{ cursor: "pointer" }}
-          >
-            {countName}
-          </div>
-        );
-      },
-    },
-    {
-      key: "average_post_price",
-      name: "Average Post Price",
-      renderRowCell: (row) => {
-        const mPostPrice = row?.page_price_list;
-        const postDetail = mPostPrice?.find(
-          (item) => item.instagram_post !== undefined
-        );
-        const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
-        let followerCount = Math.max(0, row?.followers_count || 0);
-
-        // Calculate the average price only if followerCount is greater than zero
-        const averagePostPrice = followerCount
-          ? Math.floor(postPrice / (followerCount / 1000000))
-          : 0;
-
-        return Number(averagePostPrice);
-      },
-      width: 150,
-      showCol: true,
-      compare: true,
-    },
-    {
-      key: "average_story_price",
-      name: "Average Story Price",
-      renderRowCell: (row) => {
-        const mStoryPrice = row?.page_price_list;
-        const postDetail = mStoryPrice?.find(
-          (item) => item.instagram_story !== undefined
-        );
-        const storyPrice = postDetail?.instagram_story || 0;
-        let followerCount = Math.max(0, row?.followers_count || 0);
-        const averageStoryPrice = followerCount
-          ? Math.floor(storyPrice / (followerCount / 1000000))
-          : 0;
-
-        return Number(averageStoryPrice);
-      },
-      width: 150,
-      showCol: true,
-      compare: true,
-    },
-
-    {
-      key: "preference_level",
-      name: "Level",
-      width: 200,
-      renderRowCell: (row) => {
-        return formatString(row.preference_level);
-      },
-    },
-
-    {
-      key: "content_creation",
-      name: "Content Creation",
-      renderRowCell: (row) => {
-        return row.content_creation != 0 ? row.content_creation : "";
-      },
-      width: 200,
-    },
-    {
-      key: "ownership_type",
-      name: "Ownership",
-      width: 200,
-    },
-    {
-      key: "page_layer",
-      name: "Page Layer",
-      renderRowCell: (row) => {
-        switch (row.page_layer) {
-          case 0:
-            return "Inventory Pages";
-          case 1:
-            return "Sarcasm Network";
-          case 2:
-            return "Own Pages";
-          case 3:
-            return "Advance Pages";
-          case 4:
-            return "Top Used Pages";
-          default:
-            return "Unknown";
-        }
-      },
-      width: 200,
-    },
-
-    {
-      key: "platform_name",
-      name: "Platform",
-      renderRowCell: (row) => {
-        return formatString(row.platform_name);
-      },
-
-      width: 200,
-    },
-    {
-      key: "page_category_name",
-      name: "Category",
-      width: 200,
-      renderRowCell: (row) => {
-        return formatString(row.page_category_name);
-      },
-    },
-    {
-      key: "page_sub_category_name",
-      name: "Sub Category",
-      width: 200,
-      renderRowCell: (row) => {
-        return formatString(row.page_sub_category_name);
-      },
-    },
-    {
-      key: "followers_count",
-      name: "M Followers",
-      width: 200,
-      renderRowCell: (row) => {
-        let followerCount = Math.max(0, row?.followers_count || 0);
-        return formatNumber(followerCount);
-      },
-    },
-
-    {
-      key: "vendor_name",
-      name: "Vendor Name",
-      width: 200,
-      // editable: true,
-      renderRowCell: (row) => {
-        return (
-          <div
-            onClick={() => handleClickVendorName(row)}
-            className="link-primary cursor-pointer text-truncate"
-          >
-            {formatString(row?.vendor_name || "Not Available")}
-          </div>
-        );
-      },
-    },
-
-    {
-      key: "page_closed_by",
-      name: "Closed By",
-      width: 200,
-      renderRowCell: (row) => {
-        let name = user?.find(
-          (item) => item?.user_id == row?.page_closed_by
-        )?.user_name;
-        return <div>{name ?? "NA"}</div>;
-      },
-    },
-    {
-      key: "page_name_type",
-      name: "Name Type",
-      width: 200,
-      renderRowCell: (row) => {
-        return row.page_name_type != 0 ? row.page_name_type : "";
-      },
-    },
-    { key: "rate_type", name: "Rate Type", width: 200 },
-    platformName !== "twitter" &&
-      platformName !== "thread" &&
-      platformName !== "youtube" && {
-        key: "Post Price",
-        name: "Post Price",
-        width: 200,
-        renderRowCell: (row) => {
-          const postPrice = getPriceDetail(
-            row?.page_price_list,
-            "platform_post"
-          );
-          // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-          // const postPrice = postData ? postData.instagram_post : 0;
-          return postPrice > 0 ? Number(postPrice) : 0;
-        },
-        compare: true,
-      },
-    platformName === "youtube" && {
-      key: "Youtube Short Price",
-      name: "Youtube Short Price",
-      width: 200,
-      renderRowCell: (row) => {
-        const postPrice = getPriceDetail(row?.page_price_list, "platform_post");
-        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-        // const postPrice = postData ? postData.instagram_post : 0;
-        return postPrice > 0 ? Number(postPrice) : 0;
-      },
-      compare: true,
-    },
-    platformName === "youtube" && {
-      key: "Youtube Video Price",
-      name: "Youtube Video Price",
-      width: 200,
-      renderRowCell: (row) => {
-        const storyPrice = getPriceDetail(
-          row?.page_price_list,
-          "platform_story"
-        );
-        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-        // const postPrice = postData ? postData.instagram_post : 0;
-        return storyPrice > 0 ? Number(storyPrice) : 0;
-      },
-      compare: true,
-    },
-    platformName === "twitter" && {
-      key: "xtweet Price",
-      name: "X-tweet Price",
-      width: 200,
-      renderRowCell: (row) => {
-        const storyPrice = getPriceDetail(
-          row?.page_price_list,
-          "platform_post"
-        );
-        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-        // const postPrice = postData ? postData.instagram_post : 0;
-        return storyPrice > 0 ? Number(storyPrice) : 0;
-      },
-      compare: true,
-    },
-    platformName === "thread" && {
-      key: "thred-tweet Price",
-      name: "Thread-tweet Price",
-      width: 200,
-      renderRowCell: (row) => {
-        const storyPrice = getPriceDetail(
-          row?.page_price_list,
-          "platform_post"
-        );
-        // const postData = row?.page_price_list?.find((item) => item?.instagram_post !== undefined);
-        // const postPrice = postData ? postData.instagram_post : 0;
-        return storyPrice > 0 ? Number(storyPrice) : 0;
-      },
-      compare: true,
-    },
-    platformName !== "youtube" &&
-      platformName !== "twitter" &&
-      platformName !== "thread" && {
-        key: "Reel Price",
-        name: "Reel Price",
-        width: 200,
-        renderRowCell: (row) => {
-          const reelData = row?.page_price_list?.find(
-            (item) => item?.instagram_reel !== undefined
-          );
-          const reelPrice = reelData ? reelData.instagram_reel : 0;
-          return reelPrice > 0 ? Number(reelPrice) : 0;
-        },
-        compare: true,
-      },
-    platformName !== "youtube" &&
-      platformName !== "twitter" &&
-      platformName !== "thread" && {
-        key: "Story Price",
-        name: "Story Price",
-        width: 200,
-        renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(
-            row?.page_price_list,
-            "platform_story"
-          );
-
-          // const storyData = row?.page_price_list?.find((item) => item?.instagram_story !== undefined);
-          // const storyPrice = storyData ? storyData.instagram_story : 0;
-          return storyPrice > 0 ? Number(storyPrice) : 0;
-        },
-        compare: true,
-      },
-    platformName !== "youtube" &&
-      platformName !== "twitter" &&
-      platformName !== "thread" && {
-        key: "Both Price",
-        name: "Both Price",
-        width: 200,
-        renderRowCell: (row) => {
-          const bothData = row?.page_price_list?.find(
-            (item) => item?.instagram_both !== undefined
-          );
-          const bothPrice = bothData ? bothData.instagram_both : 0;
-          return bothPrice;
-        },
-        compare: true,
-      },
-
-    // {
-    //   key: 'ownership_type',
-    //   name: 'Ownership',
-    //   width: 200,
-
-    // },
-    {
-      key: "page_price_multiple",
-      name: "Price",
-      width: 200,
-      renderRowCell: (row) => {
-        return (
-          <div>
-            {
-              <button
-                title="Price"
-                onClick={handlePriceClick(row)}
-                className="btn btn-outline-primary btn-sm user-button"
-              >
-                <PriceCheckIcon />
-              </button>
-            }
-          </div>
-        );
-      },
-    },
-    {
-      key: "follower logs",
-      name: "Follower Logs",
-      width: 200,
-      renderRowCell: (row) => {
-        return (
-          <div>
-            {
-              <button
-                title="Follower Logs"
-                onClick={() => handleFollowerLogs(row)}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
-                Follower Logs
-              </button>
-            }
-          </div>
-        );
-      },
-    },
-    {
-      key: "Price_logs",
-      name: "Price Logs",
-      width: 200,
-      renderRowCell: (row) => {
-        return (
-          <div>
-            {
-              <button
-                title="Price Logs"
-                onClick={() => handlePriceLogs(row)}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
-                Price Logs
-              </button>
-            }
-          </div>
-        );
-      },
-    },
-    {
-      key: "Action",
-      name: "Action",
-      width: 500,
-      renderRowCell: (row) => (
-        <div className="flexCenter colGap8">
-          <button
-            title="Edit"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={() => editInNewTab(row._id)}
-          >
-            <FaEdit />{" "}
-          </button>
-          {decodedToken.role_id == 1 && (
-            <div onClick={() => deletePhpData(row)}>
-              <DeleteButton
-                endpoint="v1/pageMaster"
-                id={row._id}
-                getData={refetchPageList}
-              />
-            </div>
-          )}
-          <button
-            title="Update Followers"
-            className="btn btn-outline-primary  user-button"
-            onClick={() => handleUpadteFollowers(row)}
-          >
-            Update Followers
-          </button>
-        </div>
-      ),
-    },
-  ];
-
+  const hrms = [6, 20, 37, 38, 53, 5, 8, 9, 18, 20, 21].some(
+    (index) => contextData[index]?.view_value === 1
+  );
+  const activelink = useLocation().pathname;
   return (
     <>
-      <PriceModal
-        setShowPriceModal={setShowPriceModal}
-        selectedRow={selectedRow}
-        showPriceModal={showPriceModal}
-      />
-      {!editMode ? (
-        <>
-          {waData && (
-            <WhatsapplinksModel waData={waData} setWaData={setWaData} />
-          )}
-          <FollowerLogsModal
-            open={openFollowerModal}
-            onClose={handleCloseFollowerModal}
-            rowData={rowDataFollower}
-          />
-          <PriceLogs
-            open={openPriceLogModal}
-            onClose={handleClosePriceModal}
-            rowData={rowDataPriceLog}
-          />
-          <div className="tabs">
-            {vendorDetails && (
-              <VendorDetails
-                vendorDetails={vendorDetails}
-                setVendorDetails={setVendorDetails}
-                tab1={"tab1"}
-              />
-            )}
-            <button
-              className={
-                activeTab === "Tab0" ? "active btn btn-primary" : "btn"
-              }
-              onClick={() => setActiveTab("Tab0")}
-            >
-              Overview
-            </button>
-            <button
-              className={
-                activeTab === "Tab5" ? "active btn btn-primary" : "btn"
-              }
-              onClick={() => setActiveTab("Tab5")}
-            >
-              Statistics
-            </button>
-            <button
-              className={
-                activeTab === "Tab3" ? "active btn btn-primary" : "btn"
-              }
-              onClick={() => setActiveTab("Tab3")}
-            >
-              Category Wise
-            </button>
-            <button
-              className={
-                activeTab === "Tab4" ? "active btn btn-primary" : "btn"
-              }
-              onClick={() => setActiveTab("Tab4")}
-            >
-              Page Added Details
-            </button>
+      {deptId !== 36 && (
+        <li className="nav-item nav-item-single">
+          <Link
+            className={`nav-btn nav-link ${activelink === "/admin" ? "active" : ""
+              }`}
+            to="/admin"
+          >
+            <i className="ph">
+              <Gauge weight="duotone" />
+            </i>
+            <span>Dashboard</span>
+          </Link>
+        </li>
+      )}
 
-            <button
-              className={
-                activeTab === "Tab1" ? "active btn btn-primary" : "btn"
-              }
-              onClick={() => setActiveTab("Tab1")}
-            >
-              Page Health
-            </button>
-          </div>
+      {/* USER MANAGEMENT */}
+      {isUserManagementVisible && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapseTwo"
+            aria-expanded="true"
+            aria-controls="collapseTwo"
+          >
+            <i className="ph">
+              <IdentificationBadge weight="duotone" />
+            </i>
+            <span>User Management</span>
+          </Link>
+          <div
+            id="collapseTwo"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className="collapse-inner internal">
+              {contextData &&
+                contextData[0] &&
+                contextData[0].view_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/users-dashboard"
+                  >
+                    <i className="bi bi-dot"></i> User Dashboard
+                  </NavLink>
+                )}
+              {contextData &&
+                contextData[0] &&
+                contextData[0].view_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to={`/admin/user-overview/${"Active"}`}
+                  >
+                    <i className="bi bi-dot"></i> User
+                  </NavLink>
+                )}
 
-          <div className="content">
-            {activeTab === "Tab0" && (
-              <>
-                <PageOverviewWithoutHealth
-                  columns={dataGridcolumns}
-                  latestPageObject={latestPageObject}
-                  pagequery={pagequery}
-                  setPagequery={setPagequery}
-                  categoryFilter={categoryFilter}
-                  setCategoryFilter={setCategoryFilter}
-                  activenessFilter={activenessFilter}
-                  setActivenessFilter={setActivenessFilter}
-                  filterFollowers={filterFollowers}
-                  setFilterFollowers={setFilterFollowers}
-                  setPlanFormName={setPlanFormName}
-                />
-              </>
-            )}
-            {activeTab === "Tab1" && (
-              <div className="">
-                <div className="card">
-                  <div className="card-body p0">
-                    <div className="data_tbl thm_table table-responsive">
-                      {isPageListLoading ? (
-                        <Box
-                          sx={{
-                            textAlign: "center",
-                            position: "relative",
-                            margin: "auto",
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <CircularProgress
-                            variant="determinate"
-                            value={progress}
-                          />
-                          <Box
-                            sx={{
-                              top: 0,
-                              left: 0,
-                              bottom: 0,
-                              right: 0,
-                              position: "absolute",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              component="div"
-                              color="text-primary"
-                            >
-                              {`${Math.round(progress)}%`}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      ) : (
-                        <View
-                          version={1}
-                          columns={[...dataSecondGridColumns]}
-                          data={newFilterData}
-                          isLoading={false}
-                          title={"Page Health"}
-                          rowSelectable={true}
-                          pagination={[100, 200, 1000]}
-                          tableName={"Page Health"}
-                        />
-                      )}
+              {/* Asset Management here  */}
+              {/* {isAssets && (
+                <li className="nav-item">
+                  <a
+                    className="nav-btn nav-link collapsed"
+                    data-toggle="collapse"
+                    data-target="#collapsInnerOneModifyTwo"
+                    aria-expanded="true"
+                    aria-controls="collapsInnerOneModifyTwo"
+                  >
+                    <i className="ph">
+                      <FolderSimpleStar weight="duotone" />
+                    </i>
+                    <span>Assets</span>
+                  </a>
+                  <div
+                    id="collapsInnerOneModifyTwo"
+                    className="collapse-inner"
+                    aria-labelledby="headingTwoOne"
+                  >
+                    <div className="internal collapse-inner">
+                      
                     </div>
                   </div>
-                </div>
+                </li>
+              )} */}
 
-                <TagCategoryListModal />
-                <VendorNotAssignedModal />
-                <PageDetail />
-              </div>
+              {/* <NavLink
+                className="collapse-item"
+                to="/admin/only-pre-onboard-user-data"
+              >
+                Pre Onboarding
+              </NavLink> */}
+
+              {contextData &&
+                contextData[21] &&
+                contextData[21].view_value === 1 && (
+                  <NavLink className="collapse-item" to="/admin/user-directory">
+                    <i className="bi bi-dot"></i> User Directory
+                  </NavLink>
+                )}
+
+              {/* {contextData &&
+                contextData[1] &&
+                contextData[1].view_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/user-respons-overivew"
+                  >
+                    <i className="bi bi-dot"></i> User Responsibility
+                  </NavLink>
+                )} */}
+              {/* {contextData &&
+                contextData[2] &&
+                contextData[2].view_value === 1 && (
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/object-overview"
+                  >
+                    <i className="bi bi-dot"></i> Object
+                  </Link>
+                )} */}
+
+              {/* {contextData &&
+                contextData[16] &&
+                contextData[16].view_value === 1 && (
+                  <>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/responsibility-overview"
+                    >
+                      <i className="bi bi-dot"></i> Responsibility Register
+                    </NavLink>
+                  </>
+                )} */}
+
+              {/* <Link className="collapse-item" to="/admin/jobType">
+                <i className="bi bi-dot"></i> Job Type
+              </Link> */}
+              {/* <Link className="collapse-item" to="/sim-overview">
+                Asset Management
+              </NavLink> */}
+              {/* <NavLink className="collapse-item" to="/admin/user-graph">
+                <i className="bi bi-dot"></i> User Graphs
+              </NavLink> */}
+              {/* <NavLink
+                className="collapse-item"
+                to="/admin/email-template-overview"
+              >
+                <i className="bi bi-dot"></i> Email Templates
+              </NavLink> */}
+            </div>
+          </div>
+        </li>
+      )}
+      {/* USER MANAGEMENT */}
+
+      {/*WFHD USER */}
+      {job_type == "WFHD" && RoleId == 4 && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapseFourddnm"
+            aria-expanded="true"
+            aria-controls="collapseFourddnm"
+          >
+            <i className="bi bi-person-gear" />
+            <span>Payout</span>
+          </Link>
+
+          <div
+            id="collapseFourddnm"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className=" collapse-inner internal">
+              {/* <NavLink
+                className="collapse-item"
+                to="/admin/view-edit-digital-signature"
+              >
+                Digital Signature
+              </NavLink>
+
+              <NavLink className="collapse-item" to="/admin/wfh-template-overview">
+                Change/View Template
+              </NavLink> */}
+
+              <NavLink className="collapse-item" to="/admin/wfh-single-user">
+                <i className="bi bi-dot"></i> Payout Summary
+              </NavLink>
+              <NavLink className="collapse-item" to="/admin/user-summary">
+                <i className="bi bi-dot"></i> User Summary
+              </NavLink>
+
+              {/* <NavLink
+                className="collapse-item"
+                to="/admin/dispute-overview"
+                state={{ id: userID }}
+              >
+                Dispute Summary
+              </NavLink> */}
+            </div>
+          </div>
+        </li>
+      )}
+      {/* WFHD USER */}
+
+      {/* PAYOUT HR / MANAGER ACCOUNTS */}
+      {/* {(isWFHDManager || isWFHDHRPayrollManager) && (
+        <li className="nav-item">
+          <a
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapsInnerOneModify"
+            aria-expanded="true"
+            aria-controls="collapsInnerOneModify"
+          >
+            <i className="ph">
+              <House weight="duotone" />
+            </i>
+            <span>{RoleId == 2 ? "Team" : "HR"}</span>
+          </a>
+          <div
+            id="collapsInnerOneModify"
+            className="collapse"
+            aria-labelledby="headingTwo"
+          >
+           
+
+            {isAssetNotifierVisible && (
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseEight"
+                  aria-expanded="true"
+                  aria-controls="collapseEight"
+                >
+                  <i className="bi bi-dash"></i>
+                  <span>Asset Notifier</span>
+                </Link>
+                <div
+                  id="collapseEight"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <NavLink className="collapse-item" to="/admin/self-audit">
+                      <i className="bi bi-dot"></i> Audit asset
+                    </NavLink>
+                  </div>
+                </div>
+              </li>
             )}
-            {activeTab === "Tab3" && (
-              <CategoryWisePageOverviewNew dataTable={dataGridcolumns} />
+
+          </div>
+        </li>
+      )} */}
+      {/* PREONBOARDING START*/}
+
+      {/* This is testing sidebar links  */}
+
+      {hrms && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapsInnerexehr"
+            aria-expanded="true"
+            aria-controls="collapsInnerOneModifyTwo"
+          >
+            <i className="ph">
+              <Laptop weight="duotone" />
+            </i>
+            <span>HRMS</span>
+          </Link>
+          <div
+            id="collapsInnerexehr"
+            className="collapse"
+            aria-labelledby="headingTwoOne"
+          >
+            <div className="collapse-inner internal">
+              <>
+                {contextData &&
+                  contextData[6] &&
+                  contextData[6].view_value === 1 && (
+                    <NavLink className="collapse-item" to="/admin/common-room">
+                      <i className="bi bi-dash"></i> Sitting Arrangment
+                    </NavLink>
+                  )}
+              </>
+            </div>
+            {(isWFHDManager || isWFHDHRPayrollManager) && (
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseFourcc"
+                  aria-expanded="true"
+                  aria-controls="collapseFourcc"
+                >
+                  <i className="bi bi-dash"></i>
+                  <span>Payout</span>
+                </Link>
+                <div
+                  id="collapseFourcc"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    {RoleId !== constant.CONST_MANAGER_ROLE && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/wfhd-analytic-dashbaord"
+                      >
+                        <i className="bi bi-dot"></i> WFHD Dashboard
+                      </NavLink>
+                    )}
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/billing-overview"
+                    >
+                      <i className="bi bi-dot"></i> Billing Header Overview
+                    </NavLink>
+                    {RoleId === constant.CONST_MANAGER_ROLE &&
+                      isWFHDManager && (
+                        <NavLink
+                          className="collapse-item"
+                          to="/admin/wfhd-register"
+                        >
+                          <i className="bi bi-dot"></i> Add Buddy
+                        </NavLink>
+                      )}
+                    {RoleId === constant.CONST_MANAGER_ROLE &&
+                      isWFHDManager && (
+                        <NavLink
+                          className="collapse-item"
+                          to="/admin/wfhd-overview"
+                        >
+                          <i className="bi bi-dot"></i> My Team
+                        </NavLink>
+                      )}
+                    {/* {isWFHDHRPayrollManager && (
+                  <NavLink className="collapse-item" to="/admin/salaryWFH">
+                    <i className="bi bi-dot"></i> Payout Summary
+                  </NavLink>
+                )} */}
+
+                    {/* {RoleId === constant.CONST_MANAGER_ROLE && isWFHDManager && (
+                  // <>
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/attendence-mast"
+                  >
+                    <i className="bi bi-dot"></i> Create Attendance
+                  </NavLink>
+                )} */}
+                    {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/dispute-overview"
+                      >
+                        <i className="bi bi-dot"></i>Dispute Summary
+                      </NavLink> */}
+                    {/* <NavLink className="collapse-item" to="/admin/total-NDG">
+                        <i className="bi bi-dot"></i> Total & NDG
+                      </NavLink> */}
+                    {/* </> */}
+                    {/* )} */}
+
+                    {RoleId == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/hr-template-overview"
+                      >
+                        <i className="bi bi-dot"></i> Invoice Template Summary
+                      </NavLink>
+                    )}
+                  </div>
+                </div>
+              </li>
             )}
-            {activeTab === "Tab4" && <PageClosedByDetails />}
-            {activeTab === "Tab5" && (
-              <StatsOfOverview dataGridcolumns={dataGridcolumns} />
+            {contextData &&
+              contextData[20] &&
+              contextData[20].insert_value === 1 && (
+                <li className="nav-item">
+                  <a
+                    className="nav-btn nav-link collapsed"
+                    data-toggle="collapse"
+                    data-target="#collapsInnerOne"
+                    aria-expanded="true"
+                    aria-controls="collapsInnerOne"
+                  >
+                    <i className="bi bi-dash"></i>
+                    <span>Announcement</span>
+                  </a>
+                  <div
+                    id="collapsInnerOne"
+                    className="collapse"
+                    aria-labelledby="headingX"
+                  >
+                    <div className="internal collapse-inner">
+                      {contextData &&
+                        contextData[20] &&
+                        contextData[20].insert_value === 1 && (
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/announcement-post"
+                          >
+                            <i className="bi bi-dot"></i> Announcement Post
+                          </NavLink>
+                        )}
+                      {contextData &&
+                        contextData[21] &&
+                        contextData[21].view_value === 1 && (
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/announcement-view"
+                          >
+                            <i className="bi bi-dot"></i> Announcement View
+                          </NavLink>
+                        )}
+                    </div>
+                  </div>
+                </li>
+              )}
+            {isOnboardingVisible && (
+              <li className="nav-item">
+                <a
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerOn"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerOn"
+                >
+                  <i className="bi bi-dash"></i>
+                  <span>Onboarding</span>
+                </a>
+                <div
+                  id="collapsInnerOn"
+                  className="collapse"
+                  aria-labelledby="headingOk"
+                >
+                  <div className="internal collapse-inner">
+                    {contextData &&
+                      contextData[18] &&
+                      contextData[18].view_value === 1 && (
+                        <NavLink
+                          className="collapse-item"
+                          to="/admin/pre-onboarding"
+                        >
+                          <i className="bi bi-dot"></i> Add Pre Onboarding
+                        </NavLink>
+                      )}
+
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboarding-overview"
+                      >
+                        <i className="bi bi-dot"></i> Overview
+                      </NavLink>
+                    )}
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboard-extend-date-overview"
+                      >
+                        <i className="bi bi-dot"></i> Extend Date Overview
+                      </NavLink>
+                    )}
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboard-coc-master"
+                      >
+                        <i className="bi bi-dot"></i> Coc Master
+                      </NavLink>
+                    )}
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboard-coc-overview"
+                      >
+                        <i className="bi bi-dot"></i> Coc Overview
+                      </NavLink>
+                    )}
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboard-user-login-history"
+                      >
+                        <i className="bi bi-dot"></i> Login History
+                      </NavLink>
+                    )}
+                    {contextData && contextData[18]?.view_value == 1 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/pre-onboard-all-notifications"
+                      >
+                        <i className="bi bi-dot"></i> All Notifications
+                      </NavLink>
+                    )}
+
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/preonboarding-documents-overview"
+                    >
+                      <i className="bi bi-dot"></i> Documents
+                    </NavLink>
+                  </div>
+                </div>
+              </li>
+            )}
+            {isPantryManagementVisible && (
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseThree"
+                  aria-expanded="true"
+                  aria-controls="collapseThree"
+                >
+                  <i className="bi bi-dash"></i>
+                  <span>Pantry Management</span>
+                </Link>
+                <div
+                  id="collapseThree"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="internal   collapse-inner">
+                    {contextData &&
+                      contextData[5] &&
+                      contextData[5].view_value === 1 && (<>
+                          <NavLink
+                          className="collapse-item"
+                          to="/admin/product-overview"
+                        >
+                          <i className="bi bi-dot"></i> Product
+                        </NavLink>
+                          <NavLink
+                          className="collapse-item"
+                          to="/admin/new-pantry-user"
+                        >
+                          <i className="bi bi-dot"></i> New Pantry User
+                        </NavLink>
+                      </>
+                    
+                      )}
+
+                    {contextData &&
+                      contextData[8] &&
+                      contextData[8].view_value === 1 && (
+                        <NavLink className="collapse-item" to="/pantry-user">
+                          <i className="bi bi-dot"></i> Pantry User
+                        </NavLink>
+                      )}
+                    {contextData &&
+                      contextData[9] &&
+                      contextData[9].view_value === 1 && (
+                        <NavLink
+                          className="collapse-item"
+                          to="/pantry-delivery"
+                        >
+                          <i className="bi bi-dot"></i> Pantry Delivery
+                        </NavLink>
+                      )}
+                  </div>
+                </div>
+              </li>
+            )}
+            {isAssets && (
+              <li className="nav-item">
+                <a
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerAsset"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerAsset"
+                >
+                  {/* <i className="ph">
+                  <FolderSimpleStar weight="duotone" />
+                </i> */}
+                  <i className="bi bi-dash"></i>
+                  <span>Assets</span>
+                </a>
+                <div
+                  id="collapsInnerAsset"
+                  className="collapse"
+                  aria-labelledby="headingX"
+                >
+                  <div className="internal collapse-inner">
+                    {RoleId == 5 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-dashboard"
+                      >
+                        <i className="bi bi-dot"></i> Dashboard
+                      </NavLink>
+                    )}
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/asset-single-user"
+                    >
+                      <i className="bi bi-dot"></i> My Asset
+                    </NavLink>
+                    {(RoleId == 5 || RoleId == 1) && (
+                      <NavLink
+                        className="collapse-item"
+                        to={`/sim-overview/${0}`}
+                      >
+                        <i className="bi bi-dot"></i> Asset Management
+                      </NavLink>
+                    )}
+                    {(RoleId == 5 || RoleId == 1) && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-visible-to-hr"
+                      >
+                        <i className="bi bi-dot"></i> Asset's Request
+                      </NavLink>
+                    )}
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/asset-visible-to-taged-person"
+                    >
+                      <i className="bi bi-dot"></i> Tagged Asset
+                    </NavLink>
+                    {RoleId == 2 && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-manager"
+                      >
+                        <i className="bi bi-dot"></i> Asset Request Approvel
+                      </NavLink>
+                    )}
+                    {(RoleId == 5 || RoleId == 1) && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-repair-return-summary"
+                      >
+                        <i className="bi bi-dot"></i> Return Summary
+                      </NavLink>
+                    )}
+                    {(RoleId == 5 || RoleId == 1) && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-repair-summary"
+                      >
+                        <i className="bi bi-dot"></i> Repair Summary
+                      </NavLink>
+                    )}
+                    {(RoleId == 5 || RoleId == 1) && (
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/asset-vendor-summary"
+                      >
+                        <i className="bi bi-dot"></i> Vendor Summary
+                      </NavLink>
+                    )}
+                  </div>
+                </div>
+              </li>
             )}
           </div>
-        </>
-      ) : (
-        <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />
+        </li>
       )}
+
+      {/* PAYOUT HR / MANAGER ACCOUNTS  END*/}
+
+      {/* OPERATIONS */}
+      {isOpration && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapsInnerexeop"
+            aria-expanded="true"
+            aria-controls="collapsInnerOneModifyTwo"
+          >
+            <i className="ph">
+              <Laptop weight="duotone" />
+            </i>
+            <span>Operation</span>
+          </Link>
+          <div
+            id="collapsInnerexeop"
+            className="collapse"
+            aria-labelledby="headingTwoOne"
+          >
+            <div className="collapse-inner internal">
+              {contextData &&
+                contextData[34] &&
+                contextData[34].view_value === 1 && (
+                  <>
+                    {/* <NavLink
+                      className="collapse-item"
+                      to="/admin/exeoperation/master"
+                    >
+                      <i className="bi bi-dot"></i>
+                      Masters
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/op-registered-campaign"
+                    >
+                      <i className="bi bi-dot"></i>
+                      Regsiter Campaign
+                    </NavLink> */}
+                    {/* <NavLink
+                      className="collapse-item"
+                      to="/admin/op-plan-creation"
+                    >
+                      <i className="bi bi-dot"></i>
+                      Plan Creation
+                    </NavLink> 
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/calender"
+                    >
+                      <i className="bi bi-dot"></i>
+                      Phase Creation
+                    </NavLink> */}
+
+                    <OperationSidebarLinks />
+
+                    {/* <NavLink
+                      className="collapse-item"
+                      to="/admin/op-campaign-executions"
+                    >
+                      <i className="bi bi-dot"></i>
+                      Camp Execution
+
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/campaign_executions"
+                    >
+                      <i className="bi bi-dot"></i>
+                      New Camp Execution
+                    </NavLink>
+
+                    </NavLink> */}
+                  </>
+                )}
+            </div>
+
+            {contextData &&
+              contextData[24] &&
+              contextData[24].view_value === 1 && (
+                <li className="nav-item">
+                  <a
+                    className="nav-btn nav-link collapsed"
+                    data-toggle="collapse"
+                    data-target="#collapsInnerOne"
+                    aria-expanded="true"
+                    aria-controls="collapsInnerOne"
+                  >
+                    <i className="bi bi-dash"></i>
+                    {/* <i className="bi bi-person-gear" /> */}
+                    <span>Execution</span>
+                  </a>
+                  <div
+                    id="collapsInnerOne"
+                    className="collapse"
+                    aria-labelledby="headingTwo"
+                  // data-parent="#accordionSidebar"
+                  >
+                    <div className="internal collapse-inner">
+                      <NavLink className="collapse-item" to="/admin/execution">
+                        <i className="bi bi-dot"></i> Dashboard
+                      </NavLink>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/pending"
+                      >
+                        <i className="bi bi-dot"></i> Pending
+                      </NavLink>{" "}
+                      {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/done"
+                      >
+                        <i className="bi bi-dot"></i> Executed
+                      </NavLink>{" "} */}
+                      {/* <NavLink
+                          className="collapse-item"
+                          to="/admin/exeexecution/accepted"
+                        >
+                          In Progress
+                        </NavLink>{" "} */}
+                      {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/rejected"
+                      >
+                        <i className="bi bi-dot"></i> Rejected
+                      </NavLink> */}
+                    </div>
+                  </div>
+                </li>
+              )}
+          </div>
+        </li>
+      )}
+      {/* {isOpration && (
+        <li className="nav-item">
+          <a
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapsInnerOneModifyTwo"
+            aria-expanded="true"
+            aria-controls="collapsInnerOneModifyTwo"
+          >
+            <i className="ph">
+              <Laptop weight="duotone" />
+            </i>
+
+            <span>Inventory</span>
+          </a>
+          <div
+            id="collapsInnerOneModifyTwo"
+            className="collapse"
+            aria-labelledby="headingTwoOne"
+          >
+            {contextData &&
+              contextData[34] &&
+              contextData[34].view_value === 1 && (
+                <li className="nav-item">
+                  <a
+                    className="nav-btn nav-link collapsed"
+                    data-toggle="collapse"
+                    data-target="#collapsInnerOneThree"
+                    aria-expanded="true"
+                    aria-controls="collapsInnerOneThree"
+                  >
+                    <i className="bi bi-dash"></i>
+                    <span>Inventory</span>
+                  </a>
+                  <div
+                    id="collapsInnerOneThree"
+                    className="collapse"
+                    aria-labelledby="headingTwo"
+                  >
+                    <div className="internal collapse-inner">
+                      {/* <NavLink className="collapse-item" to="/admin/exeinventory">
+                          Dashboard
+                        </NavLink> 
+                      <NavLink className="collapse-item" to="/admin/cityMsater">
+                        <i className="bi bi-dot"></i> City Mast
+                      </NavLink>{" "}
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/PagePerformanceAnalytics"
+                      >
+                        <i className="bi bi-dot"></i> Analytics
+                      </NavLink>{" "}
+                      <NavLink
+                        to="/admin/exeexecution/dashboard"
+                        className="collapse-item"
+                      >
+                        <i className="bi bi-dot"></i> Dashboard
+                      </NavLink>
+                      <NavLink
+                        to="/admin/exeexecution/PagePerformanceDashboard"
+                        className="collapse-item"
+                      >
+                        <i className="bi bi-dot"></i> Page Performance Dashboard
+                      </NavLink>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/allpagesdetail"
+                      >
+                        <i className="bi bi-dot"></i> All Pages Detailed
+                      </NavLink>{" "}
+                      {/* <NavLink
+                        to="/admin/exeexecution/dashboard"
+                        className="collapse-item"
+                      >
+                        Dashboard
+                      </NavLink> 
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/all"
+                      >
+                        <i className="bi bi-dot"></i> All ({allCount})
+                      </NavLink>{" "}
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/own"
+                      >
+                        <i className="bi bi-dot"></i> Own ({ownCount})
+                      </NavLink>{" "}
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/exeexecution/other"
+                      >
+                        <i className="bi bi-dot"></i> Other ({otherCount})
+                      </NavLink>
+                    </div>
+                  </div>
+                </li>
+              )}
+
+            {/* {isExecutionVisible && (
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseSeven"
+                  aria-expanded="true"
+                  aria-controls="collapseSeven"
+                >
+                  <i className="bi bi-dash"></i>
+                  <span>Plan & Operation</span>
+                </Link>
+                <div
+                  id="collapseSeven"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="collapse-inner">
+                    
+                    {contextData &&
+                      contextData[24] &&
+                      contextData[24].view_value === 1 && (
+                        <li className="nav-item">
+                          <Link
+                            className="nav-btn nav-link collapsed"
+                            data-toggle="collapse"
+                            data-target="#collapsInnerTwoCamp"
+                            aria-expanded="true"
+                            aria-controls="collapsInnerTwoCamp"
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span>Campaign</span>
+                          </Link>
+                          <div
+                            id="collapsInnerTwoCamp"
+                            className="collapse"
+                            aria-labelledby="headingTwo"
+                            
+                          >
+                            <div className="internal collapse-inner">
+                              <>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/operation-dashboards"
+                                >
+                                  <i className="bi bi-dot"></i> Dashboards
+                                </NavLink>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/operation-campaigns"
+                                >
+                                  <i className="bi bi-dot"></i> Campaign Masters
+                                </NavLink>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/operation-contents"
+                                >
+                                  <i className="bi bi-dot"></i> Contents
+                                </NavLink>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/experties-overview"
+                                >
+                                  <i className="bi bi-dot"></i> Expert
+                                </NavLink>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/registered-campaign"
+                                >
+                                  <i className="bi bi-dot"></i> Registered
+                                  Campaign
+                                </NavLink>
+
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/checkPageFollowers"
+                                >
+                                  <i className="bi bi-dot"></i> Check Page
+                                  Follower
+                                </NavLink>
+                              </>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                    {contextData &&
+                      contextData[45] &&
+                      contextData[45].view_value === 1 && (
+                        <li className="nav-item">
+                          <NavLink
+                            className="nav-btn nav-link collapsed"
+                            to="/admin/create-plan"
+                            
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span>Create Plan </span>
+                          </NavLink>
+                        </li>
+                      )}
+                    {contextData &&
+                      contextData[45] &&
+                      contextData[45].view_value === 1 && (
+                        <li className="nav-item">
+                          <NavLink
+                            className="nav-btn nav-link collapsed"
+                            to="/admin/tempexcusion"
+                            
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span> Temp. Execution</span>
+                          </NavLink>
+                        </li>
+                      )}
+                    {contextData &&
+                      contextData[45] &&
+                      contextData[45].view_value === 1 && (
+                        <li className="nav-item">
+                          <NavLink
+                            className="nav-btn nav-link collapsed"
+                            to="/admin/operation/case-study"
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span>Case Study </span>
+                          </NavLink>
+                        </li>
+                      )}
+                    {contextData &&
+                      contextData[31] &&
+                      contextData[31].view_value === 1 && (
+                        <li className="nav-item">
+                          <Link
+                            className="nav-btn nav-link collapsed"
+                            data-toggle="collapse"
+                            data-target="#collapsInnerTwo"
+                            aria-expanded="true"
+                            aria-controls="collapsInnerTwo"
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span>Content Creation </span>
+                          </Link>
+                          <div
+                            id="collapsInnerTwo"
+                            className="collapse"
+                            aria-labelledby="headingTwo"
+                            
+                          >
+                            <div className="internal collapse-inner">
+                              <>
+                                
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/createrdashboard"
+                                >
+                                  <i className="bi bi-dot"></i> Creator
+                                  Dashborad
+                                </NavLink>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/excusionCampaign"
+                                >
+                                  <i className="bi bi-dot"></i> Execution
+                                  Campaign
+                                </NavLink>
+                              </>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                    {contextData &&
+                      contextData[32] &&
+                      contextData[32].view_value === 1 && (
+                        <li className="nav-item">
+                          <Link
+                            className="nav-btn nav-link collapsed"
+                            data-toggle="collapse"
+                            data-target="#collapsInnerThree"
+                            aria-expanded="true"
+                            aria-controls="collapsInnerThree"
+                          >
+                            <i className="bi bi-dash"></i>
+                            <span>Content Creation Admin</span>
+                          </Link>
+                          <div
+                            id="collapsInnerThree"
+                            className="collapse"
+                            aria-labelledby="headingTwo"
+                            
+                          >
+                            <div className="internal collapse-inner">
+                              <>
+                                <NavLink
+                                  className="collapse-item"
+                                  to="/admin/campaign-admin"
+                                >
+                                  <i className="bi bi-dot"></i> Campaign Admin
+                                </NavLink>
+                              </>
+                            </div>
+                          </div>
+                        </li>
+                      )}
+                  </div>
+                </div>
+              </li>
+            )} 
+          </div>
+        </li>
+      )} */}
+      {/* {isLeadManagementVisible && (
+        <li className="nav-item">
+          <NavLink
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapseSix"
+            aria-expanded="true"
+            aria-controls="collapseSix"
+          >
+            <i className="bi bi-person-gear" />
+            <span>Lead Management</span>
+          </NavLink>
+          <div
+            id="collapseSix"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className="collapse-inner">
+              {contextData &&
+                contextData[22] &&
+                contextData[22].view_value === 1 && (
+                  <NavLink className="collapse-item" to="/admin/explore-leads">
+                    Explore Leads
+                  </NavLink>
+                )}
+            </div>
+          </div>
+        </li>
+      )}  */}
+      {/* OPERATIONS */}
+
+      {/* FINANCE */}
+      {isPHPFinance && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#collapseNine"
+            aria-expanded="true"
+            aria-controls="collapseNine"
+          >
+            <i className="ph">
+              <CurrencyInr weight="duotone" />
+            </i>
+            <span>Finance</span>
+          </Link>
+          <div
+            id="collapseNine"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className="collapse-inner">
+              <li className="nav-item">
+                {/* <NavLink
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerEightFinanceEditDashboard"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerEightFinanceEditDashboard"
+                >
+                  <span>Dashboard</span>
+                </NavLink> */}
+                {/* <div
+                  id="collapsInnerEightFinanceEditDashboard"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  // data-parent="#accordionSidebar"
+                > */}
+                <div className="internal collapse-inner">
+                  <>
+                    <li className="nav-item">
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-dashboard"
+                      >
+                        {/* <i className="bi bi-dash"></i> */}
+                        <i className="bi bi-dot"></i>
+                        <span>Dashboard</span>
+                      </NavLink>
+                    </li>
+                  </>
+                </div>
+                {/* </div> */}
+
+                <Link
+                  className={`nav-btn nav-link ${deptId == 36 ? "" : "collapsed"
+                    }`}
+                  data-toggle="collapse"
+                  data-target="#collapsInnerEightFinanceEdit"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerEightFinanceEdit"
+                >
+                  {/* <i className="bi bi-dash"></i> */}
+                  <span>Sales</span>
+                </Link>
+
+                <div
+                  id="collapsInnerEightFinanceEdit"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                // data-parent="#accordionSidebar"
+                >
+                  <div className="collapse-inner">
+                    <>
+                      <li className="nav-item">
+                        {/* <a
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerOneFinance"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerOneFinance"
+                        >
+                          <i className="bi bi-dash"></i>
+                          <span>Payment Update</span>
+                        </a> */}
+                        {/* <div
+                          id="collapsInnerOneFinance"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+                        > */}
+                        <div className="internal collapse-inner">
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/finance-alltransactions"
+                          >
+                            <i className="bi bi-dot"></i>
+                            Dashboard
+                          </NavLink>
+                          {/* <NavLink
+                              className="collapse-item"
+                              to="/admin/finance-pending-sales-approval"
+                            >
+                              <i className="bi bi-dot"></i> Pending for approval
+                            </NavLink> */}
+                          {/* <NavLink
+                              className="collapse-item"
+                              to="/admin/finance-paymentmode"
+                            >
+                              <i className="bi bi-dot"></i> Payment Mode
+                            </NavLink> */}
+                          {/* <NavLink
+                              className="collapse-item"
+                              to="/admin/finance-pendingapproveupdate"
+                            >
+                              <i className="bi bi-dot"></i> Pending Approval
+                            </NavLink> */}
+                        </div>
+                        {/* </div> */}
+                      </li>
+
+                      {/* <li className="nav-item">
+                        <a
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerOneFinanceSecound"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerOneFinanceSecound"
+                        >
+                     
+                          <i className="bi bi-dash"></i>
+                          <span>Payment Refund</span>
+                        </a>
+                        <div
+                          id="collapsInnerOneFinanceSecound"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+  
+                        >
+                          <div className="internal collapse-inner">
+                            <NavLink
+                              className="collapse-item"
+                              to="/admin/finance-pendingapproverefund"
+                            >
+                              <i className="bi bi-dot"></i> Pending Approval
+                              Refund
+                            </NavLink>
+                            <NavLink
+                              className="collapse-item"
+                              to="/admin/finance-pendingrequests"
+                            >
+                              <i className="bi bi-dot"></i> All Refund Request
+                            </NavLink>
+                          </div>
+                        </div>
+                      </li> */}
+
+                      <li className="nav-item">
+                        {/* <NavLink
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerThree"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerThree"
+                        >
+                          <i className="bi bi-dash"></i>
+                          <span>Outstanding</span>
+                        </NavLink> */}
+                        {/* <div
+                          id="collapsInnerThree"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+                          // data-parent="#accordionSidebar"
+                        >
+                          <div className="internal collapse-inner"> */}
+                        <>
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/finance-balancepayment"
+                          >
+                            <i className="bi bi-dot"></i> Outstanding
+                          </NavLink>
+                        </>
+                        {/* </div>
+                        </div> */}
+                      </li>
+                      {/* 
+                      <li className="nav-item">
+                        <Link
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerFourFinance"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerFourFinance"
+                        >
+                          <i className="bi bi-dash"></i>
+                          <span>Incentive Payment</span>
+                        </Link>
+                        <div
+                          id="collapsInnerFourFinance"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+                        >
+                          <div className="internal collapse-inner">
+                            <>
+                              <NavLink
+                                className="collapse-item"
+                                to="/admin/finance-incentive-parent"
+                              >
+                                <i className="bi bi-dot"></i>Incentive
+                              </NavLink>
+                            </>
+                          </div>
+                        </div>
+                      </li> */}
+
+                      {/* <li className="nav-item">
+                        <NavLink
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerFiveFinance"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerFiveFinance"
+                        >
+                          <i className="bi bi-dash"></i>
+                          <span>Invoice</span>
+                        </NavLink>
+                        <div
+                          id="collapsInnerFiveFinance"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+                          // data-parent="#accordionSidebar"
+                        >
+                          <div className="internal collapse-inner">
+                            <>
+                              <NavLink
+                                className="collapse-item"
+                                to="/admin/finance-pendinginvoice"
+                              >
+                                <i className="bi bi-dot"></i> Pending Invoice
+                                Creation
+                              </NavLink>
+                              <NavLink
+                                className="collapse-item"
+                                to="/admin/finance-createdinvoice"
+                              >
+                                <i className="bi bi-dot"></i> Invoice Created
+                              </NavLink>
+                              {/* <NavLink
+                                className="collapse-item"
+                                to="/admin/finance-invoice"
+                              >
+                                <i className="bi bi-dot"></i> Invoice
+                              </NavLink> */}
+                      {/* </>
+                          </div>
+                        </div>
+                      </li> */}
+                      {/* <li className="nav-item">
+                        <NavLink
+                          className="collapse-item"
+                          to="/admin/finance-invoice"
+                        >
+                          <i className="bi bi-dot"></i> Invoice
+                        </NavLink>
+                      </li> */}
+                      {/* <li className="nav-item">
+                        <Link
+                          className="nav-btn nav-link collapsed"
+                          data-toggle="collapse"
+                          data-target="#collapsInnerSevenFinance"
+                          aria-expanded="true"
+                          aria-controls="collapsInnerSevenFinance"
+                        >
+                          <i className="bi bi-dash"></i>
+                          <span>TDS</span>
+                        </Link>
+                        <div
+                          id="collapsInnerSevenFinance"
+                          className="collapse"
+                          aria-labelledby="headingTwo"
+                          // data-parent="#accordionSidebar"
+                        >
+                          <div className="internal collapse-inner">
+                            <>
+                              <NavLink
+                                className="collapse-item"
+                                to="/admin/finance-salebooking"
+                              >
+                                <i className="bi bi-dot"></i> Sales Booking
+                              </NavLink>
+
+                            
+                            </>
+                          </div>
+                        </div>
+                      </li> */}
+                    </>
+                  </div>
+                </div>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerEightFinance"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerEightFinance"
+                >
+                  {/* <i className="bi bi-dash"></i> */}
+                  <span>Purchase </span>
+                </Link>
+                <div
+                  id="collapsInnerEightFinance"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                // data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-pruchasemanagement-alltransaction"
+                      >
+                        <i className="bi bi-dot"></i> Purchase Dashboard
+                      </NavLink>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-pruchasemanagement-pendingpaymentrequest"
+                      >
+                        <i className="bi bi-dot"></i>
+                        Pending Payment Request
+                      </NavLink>{" "}
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/payment-mode-master"
+                      >
+                        {/* <i className="bi bi-dot"></i> */}
+                        Payment Mode Master
+                      </NavLink>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/purchase-transaction"
+                      >
+                        <i className="bi bi-dot"></i>Recent Transaction
+                      </NavLink>
+                      {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/payment-GST_hold"
+                      >
+                        <i className="bi bi-dot"></i> GST Hold
+                      </NavLink> */}
+                      {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-pruchasemanagement-paymentdone"
+                      >
+                        <i className="bi bi-dot"></i> Payment Done
+                      </NavLink> */}
+                      {/* <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-pruchasemanagement-discardpayment"
+                      >
+                        <i className="bi bi-dot"></i> Discard Payment
+                      </NavLink> */}
+                    </>
+                  </div>
+                </div>
+              </li>
+
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerEightFinancePayout"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerEightFinancePayout"
+                >
+                  {/* <i className="bi bi-dash"></i> */}
+                  <span>WFHD</span>
+                </Link>
+                <div
+                  id="collapsInnerEightFinancePayout"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                // data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/accounts-finance-dashboard"
+                      >
+                        <i className="bi bi-dot"></i>
+                        Payout Summary
+                      </NavLink>
+
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/accounts-finance-overview"
+                      >
+                        <i className="bi bi-dot"></i>
+                        Account Overview
+                      </NavLink>
+                    </>
+                  </div>
+                </div>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-btn nav-link collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapsInnerEightFinanceTask"
+                  aria-expanded="true"
+                  aria-controls="collapsInnerEightFinanceTask"
+                >
+                  {/* <i className="bi bi-dash"></i> */}
+                  <span>Task</span>
+                </Link>
+                <div
+                  id="collapsInnerEightFinanceTask"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                // data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <>
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-task-pending"
+                      >
+                        <i className="bi bi-dot"></i>
+                        Pending
+                      </NavLink>
+
+                      <NavLink
+                        className="collapse-item"
+                        to="/admin/finance-task-done/type"
+                      >
+                        <i className="bi bi-dot"></i>
+                        Done
+                      </NavLink>
+                    </>
+                  </div>
+                </div>
+              </li>
+              {/* <li className="nav-item">
+                <>
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/finance-gst-nongst-incentive-report"
+                  >
+                    <i className="bi bi-dash"></i> Incentive Report
+                  </NavLink>
+                </>
+              </li> */}
+            </div>
+          </div>
+        </li>
+      )}
+
+      {/* FINANCE */}
+
+      {/* Asset Management here  */}
+
+      {/* {isTaskManagment && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#taskmanagement"
+            aria-expanded="true"
+            aria-controls="taskmanagement"
+          >
+            <i className="ph">
+              <FolderSimpleStar weight="duotone" />
+            </i>
+            <span>Task Management</span>
+          </Link>
+          <div
+            id="taskmanagement"
+            className="collapse"
+            aria-labelledby="headingTwo"
+          >
+            <div className="internal   collapse-inner">
+              <>
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/task-status-dept-wise-overview"
+                >
+                  <i className="bi bi-dot"></i> Task Status
+                </NavLink>
+              </>
+            </div>
+          </div>
+        </li>
+      )} */}
+
+      {/* {isCustomer && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#customer"
+            aria-expanded="true"
+            aria-controls="customer"
+          >
+            <i className="ph">
+              <UserRectangle weight="duotone" />
+            </i>
+            <span>Customer</span>
+          </Link>
+          <div
+            id="customer"
+            className="collapse"
+            aria-labelledby="headingTwo"
+          // data-parent="#accordionSidebar"
+          >
+            <div className="internal collapse-inner">
+              <>
+                {/* <NavLink className="collapse-item" to="/admin/account-type">
+                  <i className="bi bi-dot"></i> Account Type
+                </NavLink> 
+
+                <NavLink className="collapse-item" to="/admin/account-master">
+                  <i className="bi bi-dot"></i> Brand Name Type
+                </NavLink>
+
+                <NavLink className="collapse-item" to="/admin/ownership-master">
+                  <i className="bi bi-dot"></i> Ownership Type
+                </NavLink>
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/ops-customer-overview"
+                >
+                  <i className="bi bi-dot"></i> Account Overview
+                </NavLink>
+                {/* <NavLink className="collapse-item" to="/admin/ops-customer-update">
+                <i className="bi bi-dot"></i> Ops Customer Update
+              </NavLink> 
+
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/customer-cont-overview"
+                >
+                  <i className="bi bi-dot"></i> Contact
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/ops-doc-mast">
+                  <i className="bi bi-dot"></i> Doc Master
+                </NavLink>
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/customer-document-overview"
+                >
+                  <i className="bi bi-dot"></i> Document Overview
+                </NavLink>
+                {/* <NavLink className="collapse-item" to="/admin/customer-doc-master">
+                <i className="bi bi-dot"></i> Customer Document
+              </NavLink> 
+              </>
+            </div>
+          </div>
+        </li>
+      )} */}
+
+      {isPageManagement && (
+        <li className="nav-item">
+          <Link
+            className="nav-link nav-btn collapsed"
+            data-toggle="collapse"
+            data-target="#collapseTwom8"
+            aria-expanded="true"
+            aria-controls="collapseTwom8"
+          >
+            <i className="ph">
+              <Files weight="duotone" />
+            </i>
+            <span>Inventory</span>
+          </Link>
+          <div
+            id="collapseTwom8"
+            className="collapse"
+            aria-labelledby="headingTwo"
+            data-parent="#accordionSidebar"
+          >
+            <div className="internal collapse-inner">
+              {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pms-inventory-dashboard"
+                >
+                  <i className="bi bi-dot"></i>Dashboard
+                </NavLink>
+              )}
+              <NavLink
+                className="collapse-item"
+                to="/admin/pms-vendor-overview"
+              >
+                <i className="bi bi-dot"></i>Vendor
+              </NavLink>
+              <NavLink className="collapse-item" to="/admin/pms-page-overview">
+                <i className="bi bi-dot"></i>Page
+              </NavLink>
+              {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
+                contextData &&
+                contextData[4] &&
+                contextData[4].insert_value === 1 ? (
+                <NavLink className="collapse-item" to="/admin/pms-plan-making">
+                  <i className="bi bi-dot"></i>Plan X
+                </NavLink>
+              ) : (
+                ""
+              )}
+              {/* Plan X Beta */}
+              {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
+                contextData &&
+                contextData[4] &&
+                contextData[4].insert_value === 1 ? (
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/pms-plan-making-beta"
+                >
+                  <i className="bi bi-dot"></i>Plan X Beta
+                </NavLink>
+              ) : (
+                ""
+              )}
+              {/* {decodedToken.role_id == constant.CONST_ADMIN_ROLE && ( */}
+              <NavLink
+                className="collapse-item"
+                to="/admin/pms-bulk-vendor-overview"
+              >
+                <i className="bi bi-dot"></i>Bulk Vendor
+              </NavLink>
+              {/* )} */}
+              {/* {contextData &&
+              contextData[0] &&
+              contextData[0].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-vendor-type">
+                  <i className="bi bi-dot"></i>Vendor Type
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[0] &&
+              contextData[0].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-page-category">
+                  <i className="bi bi-dot"></i> Page Category
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[0] &&
+              contextData[0].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-profile-type">
+                  <i className="bi bi-dot"></i> Profile Type
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[0] &&
+              contextData[0].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-page-ownership">
+                  <i className="bi bi-dot"></i> Page Ownership
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[21] &&
+              contextData[21].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-platform">
+                  <i className="bi bi-dot"></i> Platform
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[1] &&
+              contextData[1].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-pay-method">
+                  <i className="bi bi-dot"></i> Payment Method
+                </NavLink>
+              )} */}
+              {/* {contextData &&
+              contextData[2] &&
+              contextData[2].view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pms-pay-cycle">
+                  <i className="bi bi-dot"></i> Payment Cycle
+                </NavLink>
+              )} */}
+
+              {/* {contextData &&
+              contextData[6] &&
+              contextData[6].view_value === 1 && (
+                <Link className="collapse-item" to="/admin/pms-group-link-type">
+                  <i className="bi bi-dot"></i> Group Link Type
+                </Link>
+              )} */}
+              {/* {contextData &&
+              contextData[6] &&
+              contextData[6].view_value === 1 && (
+                <Link className="collapse-item" to="/admin/pms-price-type">
+                  <i className="bi bi-dot"></i> Price
+                </Link>
+              )} */}
+              {/* {contextData &&
+              contextData[6] &&
+              contextData[6].view_value === 1 && (
+                <Link
+                  className="collapse-item"
+                  to="/admin/pms-platform-price-type"
+                >
+                  <i className="bi bi-dot"></i>Platform Price
+                </Link>
+              )} */}
+              {/* {contextData &&
+              contextData[6] &&
+              contextData[6].view_value === 1 && (
+                <Link
+                  className="collapse-item"
+                  to="/admin/pms-vendor-page-price-overview"
+                >
+                  <i className="bi bi-dot"></i> Vendor Page Price Overview
+                </Link>
+              )} */}
+
+              {/* <Link className="collapse-item" to="/admin/pms-vendor-overview">
+              <i className="bi bi-dot"></i> Vendor Overview
+            </Link> */}
+              {/* <Link className="collapse-item" to="/admin/pms-vendor-group-link">
+              <i className="bi bi-dot"></i>Vendor Group Link
+            </Link> */}
+              {/* <Link className="collapse-item" to="/admin/pms-page-overview">
+              <i className="bi bi-dot"></i> Page Overview
+            </Link> */}
+            </div>
+          </div>
+        </li>
+      )}
+
+      {isSales && <SalesSidebarLinks />}
+      {/* {isExenseManagement && <ExenseManagement />} */}
+      {isInstaApiVisible && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#cummunity"
+            aria-expanded="true"
+            aria-controls="cummunity"
+          >
+            <i className="ph">
+              <UserRectangle weight="duotone" />
+            </i>
+            <span>Community</span>
+          </Link>
+          <div
+            id="cummunity"
+            className="collapse"
+            aria-labelledby="headingFive"
+          // data-parent="#accordionSidebar"
+          >
+            <div className="internal collapse-inner">
+              {contextData &&
+                contextData[0] &&
+                (contextData[0]?.view_value === 1 ||
+                  contextData[61]?.view_value === 1) && (
+                  <>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/instaapi/community"
+                    >
+                      <i className="bi bi-dot"></i> Community-Overview
+                    </NavLink>
+                  </>
+                )}
+              <NavLink
+                className="collapse-item"
+                to="/admin/instaapi/community/manager"
+              >
+                <i className="bi bi-dot"></i> Community-Manager
+              </NavLink>
+              <NavLink
+                className="collapse-item"
+                to="/instaapi/community/learning"
+              >
+                <i className="bi bi-dot"></i> Learning
+              </NavLink>
+            </div>
+          </div>
+        </li>
+      )}
+      {contextData && contextData[29] && contextData[29]?.view_value === 1 && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#sarcasm"
+            aria-expanded="false"
+            aria-controls="sarcasm"
+          // to="/admin/sarcasm"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Sarcasm</span>
+          </Link>
+          <div
+            id="sarcasm"
+            className="collapse"
+            aria-labelledby="headingSarcasm"
+          >
+            <div className="internal collapse-inner">
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/post-content"
+              >
+                <i className="bi bi-dot"></i> Post Content
+              </NavLink>
+
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/sarcasm-category"
+              >
+                <i className="bi bi-dot"></i> Category Management
+              </NavLink>
+              <NavLink
+                className="collapse-item"
+                to="/admin/sarcasm/sarcasm-blog"
+              >
+                <i className="bi bi-dot"></i> Blog Management
+              </NavLink>
+            </div>
+          </div>
+        </li>
+      )}
+      {contextData && contextData[54] && contextData[54]?.view_value === 1 && (
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#statics"
+            aria-expanded="false"
+            aria-controls="statics"
+            to="/admin/statics"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Stats</span>
+          </Link>
+        </li>
+      )}
+      {contextData && contextData[64] && contextData[64]?.view_value === 1 && (
+        <>
+          <li className="nav-item">
+            <Link
+              className="nav-link nav-btn collapsed"
+              data-toggle="collapse"
+              data-target="#collapsePurchase"
+              aria-expanded="true"
+              aria-controls="collapsePurchase"
+            >
+              <i className="ph">
+                <Files weight="duotone" />
+              </i>
+              <span>Purchase</span>
+            </Link>
+            <div
+              id="collapsePurchase"
+              className="collapse"
+              aria-labelledby="headingTwo"
+              data-parent="#accordionSidebar"
+            >
+              <div className="internal collapse-inner">
+                <NavLink className="collapse-item" to="/admin/purchase-dashboard">
+                  <i className="bi bi-dot"></i>Dashboard
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/audit-purchase">
+                  <i className="bi bi-dot"></i>Audit Purchase
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/record-purchase">
+                  <i className="bi bi-dot"></i>Record Purchase
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/purchase-transaction">
+                  <i className="bi bi-dot"></i>Recent Transaction
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/vendor_outstanding">
+                  <i className="bi bi-dot"></i>Vendor Overview
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/finance-pruchasemanagement-pendingpaymentrequest">
+                  <i className="bi bi-dot"></i>Vendor Payment Request
+                </NavLink>
+              </div>
+            </div>
+          </li>
+
+          <li className="nav-item">
+            <Link
+              className="nav-link nav-btn collapsed"
+              data-toggle="collapse"
+              data-target="#collapseRecord"
+              aria-expanded="true"
+              aria-controls="collapseRecord"
+            >
+              <i className="ph">
+                <Files weight="duotone" />
+              </i>
+              <span>Record</span>
+            </Link>
+            <div
+              id="collapseRecord"
+              className="collapse"
+              aria-labelledby="headingTwo"
+              data-parent="#accordionSidebar"
+            >
+              <div className="internal collapse-inner">
+                <NavLink className="collapse-item" to="/admin/purchase-report">
+                  <i className="bi bi-dot"></i>Purchase
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/audit-purchase">
+                  <i className="bi bi-dot"></i>Sales
+                </NavLink>
+                <NavLink className="collapse-item" to="/admin/record-purchase">
+                  <i className="bi bi-dot"></i>Finance
+                </NavLink>
+
+              </div>
+            </div>
+          </li>
+        </>
+      )}
+
     </>
   );
 };
 
-export default PageOverviewNew;
+export default SidebarLinks;

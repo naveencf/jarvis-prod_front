@@ -349,6 +349,7 @@ function PageOverviewHeader({
   const handleTabClick = (tab) => {
     setActiveTab(tab.platform_name);
     localStorage.setItem("activeTab", tab.platform_name);
+    setPlanFormName(tab.platform_name);
   };
 
   // useEffect(() => {
