@@ -36,6 +36,8 @@ import Swal from "sweetalert2";
 import { TextField } from "@mui/material";
 import { useGetPmsPlatformQuery } from "../Store/reduxBaseURL";
 import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
+import { Spinner } from "react-bootstrap";
+import formatString from "../../utils/formatString";
 
 const AuditPurchase = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -44,6 +46,7 @@ const AuditPurchase = () => {
   const [phaseList, setPhaseList] = useState([]);
   const [vendorName, setVendorName] = useState("");
   const [toggleModal, setToggleModal] = useState(false);
+  const [priceUpdateLoading, setPriceUpdateLoading] = useState(false)
   const [modalData, setModalData] = useState({});
   const [pageName, setPageName] = useState({ page_name: "" });
   const [activeTab, setActiveTab] = useState("tab1");
@@ -123,11 +126,18 @@ const AuditPurchase = () => {
       ) {
         return;
       }
+      if (item.status !== 'audited' && item.status !== 'pending') {
+        handledataUpdate(item);
+      } else {
+        // Otherwise, proceed with the update
+        toastAlert("Cannot Update the price for the status ", item.status);
+      }
       handledataUpdate(item);
     });
   };
 
   const handleRefetchPrice = async () => {
+    setPriceUpdateLoading(true)
     const sCodes = selectedData.map(({ shortCode }) => shortCode);
     let payload = {};
     if (selectedData.length) {
@@ -143,8 +153,9 @@ const AuditPurchase = () => {
       const res = await refetchPlanData();
       if (res.isSuccess && res.data) {
         setCampainPlanData(res.data);
+        setPriceUpdateLoading(false)
+        toastAlert(response?.data?.message);
       }
-      console.log("Success:", response);
     } catch (err) {
       console.error("Failed to fetch price:", err);
     }
@@ -1215,12 +1226,19 @@ const AuditPurchase = () => {
                   <button
                     className="btn btn-primary btn-sm cmnbtn"
                     onClick={handleRefetchPrice}
+                    disabled={!campaignPlanData?.length > 0}
                   >
-                    Update Price
+                    Fetch price of all links
+                    <ArrowClockwise
+                      className={priceUpdateLoading && "animate_rotate"}
+                    />
                   </button>
                 </div>
               </>
             )}
+
+
+
 
             {currentTab === "Tab2" && (
               <div className="col-lg-6 col-md-6 col-12">
@@ -1241,7 +1259,7 @@ const AuditPurchase = () => {
                     <Autocomplete
                       fullWidth
                       options={vendorsList}
-                      getOptionLabel={(option) => option.vendor_name}
+                      getOptionLabel={(option) => formatString(option.vendor_name)}
                       value={
                         vendorsList?.find(
                           (item) => item._id === selectedVendorId
@@ -1326,8 +1344,12 @@ const AuditPurchase = () => {
                       <button
                         className="btn btn-primary btn-sm cmnbtn"
                         onClick={handleRefetchPrice}
+                        disabled={!campaignPlanData?.length > 0}
                       >
-                        Update Price
+                        Fetch price of all links
+                        <ArrowClockwise
+                          className={priceUpdateLoading && "animate_rotate"}
+                        />
                       </button>
                     </div>
                   </>

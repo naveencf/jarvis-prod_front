@@ -2172,8 +2172,6 @@ const SidebarLinks = () => {
             </div>
           </li>
 
-{/* 
-
           <li className="nav-item">
             <Link
               className="nav-link nav-btn collapsed"
@@ -2206,11 +2204,7 @@ const SidebarLinks = () => {
 
               </div>
             </div>
-
           </li>
-
-          </li> */}
-
         </>
       )}
 
