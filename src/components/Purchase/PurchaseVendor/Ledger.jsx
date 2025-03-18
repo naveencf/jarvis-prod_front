@@ -11,6 +11,7 @@ import View from "../../AdminPanel/Sales/Account/View/View";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import formatString from "../../../utils/formatString";
 import { FilterDrama } from "@mui/icons-material";
+import { formatDateTime } from "../../../utils/formatDateTime";
 
 const Ledger = () => {
   const { id } = useParams();
@@ -237,7 +238,7 @@ const Ledger = () => {
       width: 100,
     },
   ];
- 
+
   return (
     <div className="ledgerStatementDoc">
       <div className="tabs">
@@ -272,6 +273,9 @@ const Ledger = () => {
                 <h4>
                   Vendor Category: {formatString(vendorDetail?.vendor_category)}
                 </h4>
+                {vendorDetail?.recent_purchase_date && <h4>
+                  Purchase Date : {formatDateTime(vendorDetail?.recent_purchase_date)}
+                </h4>}
               </div>
             </div>
             <div className="stats">

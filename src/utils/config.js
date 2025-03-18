@@ -1,6 +1,6 @@
 
 export const baseUrl = "https://jarvis.work:8080/api/"; // for production
-// export const baseUrl = "http://35.226.216.249:8080/api/"; // for development
+// export const baseUrl = "http://35.226.216.249:8080/api/"; // for development 
 // export const baseUrl = "http://192.168.29.104:8080/api/"; // for aman
 // export const baseUrl = "http://172.17.3.110:8080/api/"; // for aman
 // export const baseUrl = "http://35.226.216.249:8080/api/"; // for development
@@ -11,4 +11,3 @@ export const phpBaseUrl =
   "https://purchase.creativefuel.io/webservices/RestController.php"; // for production php
 // ("https://purchase.creativefuel.io/webservices/RestController.php"); // for production php
 // export const phpBaseUrl = 'https://ptest.creativefuel.io/webservices/RestController.php'; // for production php
-// {incentive_request_status:1,incentive_request_id:1}

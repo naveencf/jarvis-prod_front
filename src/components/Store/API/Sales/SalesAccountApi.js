@@ -11,6 +11,12 @@ const SalesAccountApi = createApi({
       keepUnusedDataFor: 0,
     }),
 
+    getSalesUsers: builder.query({
+      query: () => "get_all_sales_users_list",
+      transformResponse: (response) => response,
+      keepUnusedDataFor: 0,
+    }),
+
     getSingleAccount: builder.query({
       query: (id) => `accounts/get_single_account/${id}`,
       transformResponse: (response) => response.data,
@@ -48,10 +54,42 @@ const SalesAccountApi = createApi({
     }),
 
     editAccount: builder.mutation({
-      query: ({ id, ...updatedAccount }) => ({
-        url: `accounts/edit_account/${id}`,
+      query: (data) => ({
+        url: `accounts/edit_account/${data.get("id")}`,
         method: "PUT",
-        body: updatedAccount,
+        body: data,
+      }),
+      onQueryStarted: async (
+        { id, ...updatedAccount },
+        { dispatch, queryFulfilled }
+      ) => {
+        try {
+          const { data: returnedAccount } = await queryFulfilled;
+
+          dispatch(
+            SalesAccountApi.util.updateQueryData(
+              "getAllAccount",
+              undefined,
+              (draft) => {
+                const accountIndex = draft.findIndex(
+                  (account) => account._id === id
+                );
+                if (accountIndex !== -1) {
+                  draft[accountIndex] = returnedAccount.data.accountMaster; // Update the object in its current position
+                }
+              }
+            )
+          );
+        } catch (error) {
+          console.error("Failed to edit account:", error);
+        }
+      },
+    }),
+    editAccountOwner: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `accounts/account_owner_change/${id}`,
+        method: "PUT",
+        body: data,
       }),
       onQueryStarted: async (
         { id, ...updatedAccount },
@@ -99,10 +137,12 @@ const SalesAccountApi = createApi({
 
 export const {
   useGetAllAccountQuery,
+  useGetSalesUsersQuery,
   useGetSingleAccountQuery,
   useGetSingleAccountSalesBookingQuery,
   useAddAccountMutation,
   useEditAccountMutation,
+  useEditAccountOwnerMutation,
   useUpdateImageMutation,
   useDeleteAccountMutation,
 } = SalesAccountApi;

@@ -81,7 +81,7 @@ const UserSingleWFHDSalaryTab = ({
 
   useEffect(() => {
     const result = salaryData?.filter((d) => {
-      return d.billing_header_name.toLowerCase().match(search.toLowerCase());
+      return d.billing_header_name?.toLowerCase()?.match(search?.toLowerCase());
     });
     setSalaryFilterData(result);
   }, [search]);

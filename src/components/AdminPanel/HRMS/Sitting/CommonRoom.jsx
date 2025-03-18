@@ -136,7 +136,7 @@ const CommonRoom = () => {
       {/* Shift Selection Buttons */}
       <div className="card-header flexCenterBetween">
         <h5 className="card-title">Creativefuel (Indore)</h5>
-        <Link to={"/admin/sitting-overview"}>
+        <Link to={`/admin/sitting-overview/${selectedShift}`}>
           <button className="btn cmnbtn btn_sm btn-primary">
             Customize Rooms
           </button>

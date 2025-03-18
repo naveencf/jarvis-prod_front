@@ -12,9 +12,13 @@ import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
 import {
   useAddServiceMutation,
   useGetVendorsQuery,
+  useRefetchPostPriceMutation,
 } from "../../Store/API/Purchase/DirectPurchaseApi";
 import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi.js";
+import { Select } from "antd";
+import { Campaign } from "@mui/icons-material";
+import { ArrowClockwise } from "@phosphor-icons/react";
 
 const LinkUpload = ({
   phaseList,
@@ -31,6 +35,7 @@ const LinkUpload = ({
   setModalData,
   setToggleModal,
   setSelectedPlan,
+  selectedData,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
@@ -55,7 +60,7 @@ const LinkUpload = ({
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
   const [serviceName, setServiceName] = useState("");
-  const [vendorSearchQuery, setVendorSearchQuery] = useState("")
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const platformID = useRef(null);
   const selectedCampaign = useRef("");
 
@@ -68,9 +73,9 @@ const LinkUpload = ({
   }, [vendor]);
 
   useEffect(() => {
-    if (selectedPlan) {
-      setRecord(0);
-    } else setRecord(3);
+    if (selectedPlan == 0 || selectedPlan == null || selectedPlan == "null") {
+      setRecord(3);
+    } else setRecord(0);
   }, [selectedPlan]);
 
   const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
@@ -104,6 +109,15 @@ const LinkUpload = ({
   ] = useUpdateVendorMutation();
 
   const [
+    fetchPricing,
+    {
+      error: fetchPricingError,
+      isLoading: fetchPricingLoading,
+      isSuccess: fetchPricingSuccess,
+    },
+  ] = useRefetchPostPriceMutation();
+
+  const [
     uploadPlanData,
     {
       data: uploadData,
@@ -133,6 +147,27 @@ const LinkUpload = ({
     );
     return uniqueLinks;
   };
+
+  async function handleFetchPricing() {
+    try {
+      let payload;
+      if (selectedData.length > 0) {
+        payload = {
+          shortCodes: selectedData?.map((data) => data.shortCode),
+        };
+      } else {
+        payload = {
+          campaignId: selectedPlan,
+        };
+      }
+      let res = await fetchPricing(payload).unwrap();
+      if (res.error) throw new Error(res.error);
+      await refetchPlanData();
+      toastAlert("Pricing Fetched");
+    } catch (err) {
+      toastError("Error Fetching Pricing");
+    }
+  }
 
   const extractShortCodes = () => {
     const uniqueLinks = filterDuplicateLinks();
@@ -193,7 +228,6 @@ const LinkUpload = ({
         type: "story",
       },
     ];
-
     const result = [];
 
     for (const url of urls) {
@@ -418,7 +452,11 @@ const LinkUpload = ({
   return (
     <div className="card">
       <div className="card-header">
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 0 && "header-active"}`}
             onClick={() => {
@@ -446,7 +484,11 @@ const LinkUpload = ({
         >
           Add Vendor Links{" "}
         </div>
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 1 && "header-active"}`}
             onClick={() => {
@@ -456,7 +498,11 @@ const LinkUpload = ({
             Update Vendor{" "}
           </div>
         )}
-        {selectedPlan != 0 && (
+        {!(
+          selectedPlan == 0 ||
+          selectedPlan == null ||
+          selectedPlan == "null"
+        ) && (
           <div
             className={`pointer header-tab ${record == 2 && "header-active"}`}
             onClick={() => {
@@ -644,6 +690,20 @@ const LinkUpload = ({
               }}
             >
               Add Story
+            </button>
+          )}
+          {record == 0 && (
+            <button
+              className="btn cmnbtn btn-primary mt-4 ml-3"
+              onClick={() => handleFetchPricing()}
+            >
+              {selectedData.length > 0
+                ? "Fetch price of selected links"
+                : "Fetch price of all links"}
+
+              <ArrowClockwise
+                className={fetchPricingLoading && "animate_rotate"}
+              />
             </button>
           )}
           <button

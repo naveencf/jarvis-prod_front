@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 // import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
@@ -26,6 +26,7 @@ import Calendar from "./Calender";
 import {
   useGetVendorsWithSearchQuery,
   useRecordPurchaseMutation,
+  useRefetchPostPriceMutation,
   useUpdatePurchasedStatusDataMutation,
   useUpdatePurchasedStatusVendorMutation,
 } from "../Store/API/Purchase/DirectPurchaseApi";
@@ -59,15 +60,15 @@ const AuditPurchase = () => {
   const [endDate, setEndDate] = useState(null);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [vendorNumericId, setVendorNumericId] = useState(null);
-  const [vendorSearchQuery, setVendorSearchQuery] = useState("")
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const maxTabs = useRef(4);
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
-   const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsWithSearchQuery(vendorSearchQuery.length >= 4 ? vendorSearchQuery:"" );
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsWithSearchQuery(vendorSearchQuery);
   const page_id = useRef(null);
   const token = getDecodedToken();
   const {
@@ -75,7 +76,6 @@ const AuditPurchase = () => {
     isFetching: fetchingCampaignList,
     isLoading: loadingCampaignList,
   } = useGetAllExeCampaignsQuery();
-
   const {
     data: allPages,
     isLoading: allPagesLoading,
@@ -87,6 +87,8 @@ const AuditPurchase = () => {
     isLoading: pmsPlatformLoading,
     isFetching: pmsPlatformFetching,
   } = useGetPmsPlatformQuery();
+
+  const [refetchPostPrice, { data, error }] = useRefetchPostPriceMutation();
 
   const [updatePurchasedStatus] = useUpdatePurchasedStatusDataMutation();
   const [getPostDetailsBasedOnFilter] =
@@ -123,6 +125,29 @@ const AuditPurchase = () => {
       }
       handledataUpdate(item);
     });
+  };
+
+  const handleRefetchPrice = async () => {
+    const sCodes = selectedData.map(({ shortCode }) => shortCode);
+    let payload = {};
+    if (selectedData.length) {
+      payload = { shortCodes: sCodes };
+    } else if (selectedPlan && currentTab === "Tab1") {
+      payload = { campaignId: selectedPlan };
+    } else if (selectedVendorId) {
+      payload = { vendorId: selectedVendorId };
+    }
+
+    try {
+      const response = await refetchPostPrice(payload);
+      const res = await refetchPlanData();
+      if (res.isSuccess && res.data) {
+        setCampainPlanData(res.data);
+      }
+      console.log("Success:", response);
+    } catch (err) {
+      console.error("Failed to fetch price:", err);
+    }
   };
 
   const fetchFilteredPosts = async () => {
@@ -166,7 +191,8 @@ const AuditPurchase = () => {
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
   } = useGetPlanByIdQuery(selectedPlan, { skip: !selectedPlan });
-  const [recordPurchase, { Success: recordPurcaseSuccess }] = useRecordPurchaseMutation()
+  const [recordPurchase, { Success: recordPurcaseSuccess }] =
+    useRecordPurchaseMutation();
   // const [updateData, { isLoading, isSuccess }] = usePostDataUpdaxpteMutation();
 
   // const {
@@ -213,7 +239,7 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row,) {
+  async function handledataUpdate(row) {
     // console.log('row', row);
     const followerCount = row?.owner_info?.followers
       ? row.owner_info.followers / 1000000
@@ -227,7 +253,7 @@ const AuditPurchase = () => {
             ? price
             : row.amount,
         shortCode: row.shortCode,
-        audit_status: row.audit_status
+        audit_status: row.audit_status,
       });
       if (res.error) throw new Error(res.error);
       const response = await refetchPlanData();
@@ -240,9 +266,7 @@ const AuditPurchase = () => {
       toastError("Error while Uploading");
     }
   }
-  console.log("selectedData", selectedData);
   const handleUpdateStatus = async (vendorId) => {
-
     if (selectedData.length !== 1) {
       Swal.fire({
         title: "Invalid Selection!",
@@ -339,7 +363,7 @@ const AuditPurchase = () => {
 
   useEffect(() => {
     if (selectedPlan == null) {
-      setCampainPlanData([])
+      setCampainPlanData([]);
     }
     if (
       selectedVendorId ||
@@ -417,7 +441,7 @@ const AuditPurchase = () => {
     setcurrentTab(tab);
     switch (tab) {
       case "Tab1":
-        setCampainPlanData([])
+        setCampainPlanData([]);
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
@@ -425,7 +449,7 @@ const AuditPurchase = () => {
         // setShortCodes([]);
         break;
       case "Tab2":
-        setCampainPlanData([])
+        setCampainPlanData([]);
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
@@ -434,7 +458,7 @@ const AuditPurchase = () => {
         // setSelectedVendorId(null);
         break;
       case "Tab3":
-        setCampainPlanData([])
+        setCampainPlanData([]);
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
@@ -445,7 +469,7 @@ const AuditPurchase = () => {
         // setSelectedPlan(null);
         break;
       case "Tab4":
-        setCampainPlanData([])
+        setCampainPlanData([]);
         setStartDate(null);
         setEndDate(null);
         // setShortCodes([]);
@@ -513,24 +537,8 @@ const AuditPurchase = () => {
         handelchange,
         column
       ) => {
-        // if (!platformName || allPagesFetching || allPagesLoading)
-        //   return <p>Please select the platform</p>;
         return (
           <div style={{ position: "relative", width: "100%" }}>
-            {/* <input
-              className="form-control"
-              type="text"
-              placeholder={row?.page_name}
-              value={row?.owner_info?.username}
-              onChange={(e) => {
-                const data = {
-                  ...row?.owner_info,
-                  username: e.target.value,
-                };
-
-                handelchange({ owner_info: data }, index, column, true);
-              }}
-            /> */}
             <Autocomplete
               options={
                 Array.isArray(allPages?.pageData)
@@ -540,7 +548,6 @@ const AuditPurchase = () => {
                   : []
               }
               getOptionLabel={(option) => option.page_name || ""}
-              // getOptionKey={(option) => option.page_name}
               renderInput={(params) => {
                 return (
                   <TextField {...params} label="Page Name" variant="outlined" />
@@ -649,41 +656,12 @@ const AuditPurchase = () => {
       width: 300,
       editable: true,
     },
-    // {
-    //   name: "Plan ID",
-    //   key: "campaignId",
-    //   width: 100,
-    // },
-    // {
-    //   name: "Request ID",
-    //   key: "requestId",
-    //   width: 100,
-    // },
-    // {
-    //   name: "Created At",
-    //   key: "createdAt",
-    //   width: 150,
-    // },
-    // {
-    //   name: "Updated At",
-    //   key: "updatedAt",
-    //   width: 150,
-    // },
 
     {
       name: "Amount",
       key: "amount",
       editable: true,
-      // customEditElement:(
-      //   row,
-      //   index,
-      //   setEditFlag,
-      //   editflag,
-      //   handelchange,
-      //   column
-      // )=>{
 
-      // }
       width: 100,
     },
     {
@@ -698,34 +676,14 @@ const AuditPurchase = () => {
       width: 100,
       editable: true,
     },
-    // {
-    //   name: "Is Paid Partnership",
-    //   key: "is_paid_partnership",
-    //   width: 150,
-    //   editable: true,
-    // },
+
     {
       name: "Like Count",
       key: "like_count",
       width: 100,
       editable: true,
     },
-    // {
-    //   name: "Location",
-    //   key: "location",
-    //   width: 150,
-    //   editable: true,
-    // },
-    // {
-    //   name: "Music Info",
-    //   key: "music_info",
-    //   width: 150,
-    // },
-    // {
-    //   name: "Phase Name",
-    //   key: "phaseName",
-    //   width: 150,
-    // },
+
     {
       name: "Play Count",
       key: "play_count",
@@ -816,11 +774,7 @@ const AuditPurchase = () => {
       },
       editable: true,
     },
-    // {
-    //   name: "Post Type Decision",
-    //   key: "postTypeDecision",
-    //   width: 150,
-    // },
+
     {
       name: "Posted On",
       key: "postedOn1",
@@ -863,46 +817,6 @@ const AuditPurchase = () => {
       editable: true,
       compare: true,
     },
-    // {
-    //   name: "Sponsored",
-    //   key: "sponsored",
-    //   customEditElement: (
-    //     row,
-    //     index,
-    //     setEditFlag,
-    //     editflag,
-    //     handelchange,
-    //     column
-    //   ) => {
-    //     return (
-    //       <div className="row" style={{ width: "300px", display: "flex" }}>
-    //         <CustomSelect
-    //           fieldGrid={12}
-    //           dataArray={[
-    //             { sponsored: true, label: "Yes" },
-    //             { sponsored: false, label: "No" },
-    //           ]}
-    //           optionId={"sponsored"}
-    //           optionLabel={"label"}
-    //           selectedId={row?.sponsored}
-    //           setSelectedId={(val) => {
-    //             const data = {
-    //               sponsored: val,
-    //             };
-    //             handelchange(data, index, column, true);
-    //           }}
-    //         />
-    //       </div>
-    //     );
-    //   },
-    //   width: 100,
-    //   editable: true,
-    // },
-    // {
-    //   name: "Tagged Users",
-    //   key: "tagged_users",
-    //   width: 150,
-    // },
 
     {
       name: "Audit Status",
@@ -977,24 +891,6 @@ const AuditPurchase = () => {
           );
 
         return (
-          // <div className="row" style={{ width: "300px", display: "flex" }}>
-          //   <CustomSelect
-          //     fieldGrid={12}
-          //     dataArray={[
-          //       { audit_status: "pending" },
-          //       { audit_status: "audited" },
-          //     ]}
-          //     optionId={"audit_status"}
-          //     optionLabel={"audit_status"}
-          //     selectedId={row?.audit_status}
-          //     setSelectedId={(val) => {
-          //       const data = {
-          //         audit_status: val,
-          //       };
-          //       handelchange(data, index, column, true);
-          //     }}
-          //   />
-          // </div>
           <button
             className="btn btn-primary btn-sm cmnbtn"
             onClick={() => {
@@ -1043,16 +939,18 @@ const AuditPurchase = () => {
             <i className="bi bi-eye"></i>
           </button>
 
-          {editflag === index && contextData && contextData[66]?.view_value == 1 && (
-            <button
-              className="btn btn-sm cmnbtn btn-primary"
-              onClick={() => handledataUpdate(row)}
-              title="Save"
-              disabled={row.audit_status !== "purchased"}
-            >
-              save
-            </button>
-          )}
+          {editflag === index &&
+            contextData &&
+            contextData[66]?.view_value == 1 && (
+              <button
+                className="btn btn-sm cmnbtn btn-primary"
+                onClick={() => handledataUpdate(row)}
+                title="Save"
+                disabled={row.audit_status !== "purchased"}
+              >
+                save
+              </button>
+            )}
         </div>
       ),
     },
@@ -1079,17 +977,6 @@ const AuditPurchase = () => {
     },
   ];
 
-  // function disableAuditUpload() {
-  //   if (activeTab === "all") return true;
-  //   const phaseData = PlanData?.filter((data) => data.phaseDate === activeTab);
-  //   const hasPending = phaseData?.some(
-  //     (data) => data.audit_status === "pending"
-  //   );
-  //   const allPurchased = phaseData?.every(
-  //     (data) => data.audit_status === "purchased"
-  //   );
-  //   return hasPending || allPurchased;
-  // }
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1167,6 +1054,23 @@ const AuditPurchase = () => {
     }
     return null;
   }
+  const debounce = (callback, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+  const debouncedSetSearchQuery = useCallback(
+    debounce((query) => {
+      console.log("Searching for:", query);
+      setVendorSearchQuery(query);
+    }, 500),
+    []
+  );
+
   const phaseWiseData = useMemo(() => {
     const phasedData = campaignPlanData?.filter((data) => {
       if (activeTab === "all") {
@@ -1259,17 +1163,33 @@ const AuditPurchase = () => {
         <div className="card-body">
           <div className="row">
             {selectedData?.length ? (
-              <CustomSelect
-                label="Update Vendor"
-                fieldGrid={6}
-                dataArray={vendorsList}
-                optionId="vendor_id"
-                optionLabel="vendor_name"
-                selectedId={selectedVendorId}
-                setSelectedId={(id) => {
-                  handleUpdateStatus(id);
-                }}
-              />
+              <div className="col-lg-6 col-md-6 col-12">
+                <div className="form-group">
+                  <label>Update Vendor</label>
+
+                  <Autocomplete
+                    fullWidth
+                    options={vendorsList}
+                    getOptionLabel={(option) => option.vendor_name}
+                    value={vendorsList?.find((item) => item.vendor_id === selectedVendorId) || null}
+                    onChange={(event, newValue) => {
+                      if (newValue) {
+                        handleUpdateStatus(newValue.vendor_id);
+                      } else {
+                        handleUpdateStatus(null);
+                      }
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Update Vendor"
+                        variant="outlined"
+                        onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+                      />
+                    )}
+                  />
+                </div>
+              </div>
             ) : (
               ""
             )}
@@ -1289,6 +1209,19 @@ const AuditPurchase = () => {
               />
             )}
 
+            {currentTab === "Tab1" && (
+              <>
+                <div className="col-12 mb16">
+                  <button
+                    className="btn btn-primary btn-sm cmnbtn"
+                    onClick={handleRefetchPrice}
+                  >
+                    Update Price
+                  </button>
+                </div>
+              </>
+            )}
+
             {currentTab === "Tab2" && (
               <div className="col-lg-6 col-md-6 col-12">
                 <Calendar
@@ -1302,21 +1235,37 @@ const AuditPurchase = () => {
 
             {currentTab === "Tab3" && (
               <>
-                <div className="col-lg-6 col-md-6 col-12 p0">
-                  <CustomSelect
-                    label="Select Vendor"
-                    fieldGrid={12}
-                    dataArray={vendorsList}
-                    optionId="_id"
-                    optionLabel="vendor_name"
-                    selectedId={selectedVendorId}
-                    setSelectedId={(id) => {
-                      setSelectedVendorId(id);
-                      setVendorNumericId(vendorsList.find((item) => item._id == id).vendor_id)
-                    }}
-                    setSearchQuery={setVendorSearchQuery}
-
-                  />
+                <div className="col-lg-6 col-md-6 col-12">
+                  <div className="form-group">
+                    <label>Select Vendor</label>
+                    <Autocomplete
+                      fullWidth
+                      options={vendorsList}
+                      getOptionLabel={(option) => option.vendor_name}
+                      value={
+                        vendorsList?.find(
+                          (item) => item._id === selectedVendorId
+                        ) || null
+                      }
+                      onChange={(event, newValue) => {
+                        if (newValue) {
+                          setSelectedVendorId(newValue._id);
+                          setVendorNumericId(newValue.vendor_id);
+                        } else {
+                          setSelectedVendorId(null);
+                          setVendorNumericId(null);
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select Vendor"
+                          variant="outlined"
+                          onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+                        />
+                      )}
+                    />
+                  </div>
                 </div>
 
                 <div className="col-lg-6 col-md-6 col-12 p0">
@@ -1357,20 +1306,6 @@ const AuditPurchase = () => {
                           />
                         </div>
                       </div>
-                      {/* <div className="col">
-                        <div className="form-group">
-                          <label className="form-label">
-                            Price per Million
-                          </label>
-                          <input
-                            type="number"
-                            className="form-control"
-                            value={pricePerMillion}
-                            onChange={(e) => setPricePerMillion(e.target.value)}
-                            placeholder="Enter price per million"
-                          />
-                        </div>
-                      </div> */}
                       <div className="col-md-1">
                         <button
                           className="btn cmnbtn btn-primary mt28 w-100"
@@ -1384,6 +1319,19 @@ const AuditPurchase = () => {
                     ""
                   )}
                 </div>
+
+                {currentTab === "Tab3" && (
+                  <>
+                    <div className="col-12 mb16">
+                      <button
+                        className="btn btn-primary btn-sm cmnbtn"
+                        onClick={handleRefetchPrice}
+                      >
+                        Update Price
+                      </button>
+                    </div>
+                  </>
+                )}
 
                 <div className="col-lg-12 col-md-12 col-12">
                   <LinkUploadAudit
@@ -1407,7 +1355,9 @@ const AuditPurchase = () => {
                 {campaignPlanData?.length > 0 && (
                   <button
                     title="Upload Audited Data"
-                    className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                    className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload()
+                      ? "btn-outline-primary"
+                      : "btn-primary"
                       }`}
                     onClick={handleAuditedDataUpload}
                     disabled={disableAuditUpload()}
@@ -1441,7 +1391,7 @@ const AuditPurchase = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div >
 
       {phaseList?.length > 1 && (
         <PhaseTab
@@ -1456,7 +1406,8 @@ const AuditPurchase = () => {
           selectedPlan={selectedPlan}
           PlanData={campaignPlanData}
         />
-      )}
+      )
+      }
 
       <View
         version={1}
@@ -1471,16 +1422,6 @@ const AuditPurchase = () => {
         pagination={[50, 100, 200]}
         addHtml={
           <div className="flexCenterBetween colGap8 ml-auto">
-            {/* {activeTab !== "all" && selectedPlan && (
-              <button
-                title="Upload Audited Data"
-                className={`cmnbtn btn btn_sm btn-outline-primary`}
-                onClick={handleAuditedDataUpload}
-                disabled={disableAuditUpload() || AuditedUploading}
-              >
-                Submit
-              </button>
-            )} */}
             <button
               title="Reload Data"
               className={`icon-1 btn_sm btn-outline-primary  ${fetchingPlanData && "animate_rotate"

@@ -476,7 +476,7 @@ const Viewer = ({
                             : selectedId === el.id
                             ? "green"
                             : el.employee
-                            ? "grey"
+                            ? "lightgrey"
                             : "white"
                         }
                         stroke={
@@ -501,77 +501,108 @@ const Viewer = ({
 
                   {showChairsWithNames &&
                     elements?.map((el) => {
+                      console.log(el.seat_no, "okokook");
+
                       const matchedUser = userContextData?.find(
                         (user) => user?.user_id === el.user_id
                       );
-
-                      if (!matchedUser) return null; // Skip if no user found
 
                       // Treat 180° as 0°
                       const correctedRotation =
                         el.rotation === 180 ? 0 : el.rotation;
 
-                      // Default text position
+                      // Default text position for user name
                       let textX = el.x;
                       let textY = el.y;
-                      let textRotation = correctedRotation; // Use corrected rotation value
+                      let textRotation = correctedRotation;
 
                       switch (el.rotation) {
-                        case 0: // Normal position (above chair)
+                        case 0:
                           textY = el.y + 55;
                           break;
-                        case 90: // Rotated right (text to the right)
+                        case 90:
                           textX = el.x - 55;
                           textY = el.y;
                           break;
-                        case 180: // Rotated right (text to the right)
+                        case 180:
                           textX = el.x - 40;
                           textY = el.y - 52;
                           break;
-                        case 270: // Rotated left (text to the left)
+                        case 270:
                           textX = el.x + 60;
                           textY = el.y;
                           break;
-                        case 450: // Rotated left (text to the left)
+                        case 450:
                           textX = el.x - 55;
                           textY = el.y;
                           break;
                         default:
-                          textY = el.y - 15; // Fallback
+                          textY = el.y - 15;
+                      }
+
+                      // Sitting number positioning
+                      let numberX = el.x;
+                      let numberY = el.y;
+
+                      switch (el.rotation) {
+                        case 0:
+                          numberY = el.y + 57;
+                          break;
+                        case 90:
+                          numberX = el.x - 36;
+                          numberY = el.y + 56;
+                          break;
+                        case 180:
+                          numberX = el.x - 35;
+                          numberY = el.y + 19;
+                          break;
+                        case 270:
+                          numberX = el.x + 2;
+                          numberY = el.y + 21;
+                          break;
+                        case 450:
+                          numberX = el.x - 36;
+                          numberY = el.y + 57;
+                          break;
+                        default:
+                          numberY = el.y + 15;
                       }
 
                       return (
                         <>
-                          {/* {matchedUser.image_url &&
-                            matchedUser.image_url !==
-                              "https://storage.googleapis.com/node-prod-bucket/" ? (
-                              <AvatarImage
-                                url={matchedUser.image_url}
-                                x={textX - 15}
-                                y={textY + 5}
-                                width={30}
-                                height={30}
-                                style={{
-                                  border: "2px solid orange",
-                                  borderRadius: "50%",
-                                }}
-                              />
-                            ) : null} */}
-
+                          {/* Always Render Seat Number */}
                           <Text
-                            key={el.id}
-                            text={matchedUser.user_name || "N/A"}
-                            fontSize={9}
+                            key={`${el.id}-offset`}
+                            text={`${el.seat_no || ""}`} // Show seat_no even if user is not assigned
+                            fontSize={12}
                             fontStyle="bold"
-                            x={textX}
-                            y={textY}
-                            fill="black"
+                            x={numberX}
+                            y={numberY}
+                            fill="blue"
                             align="center"
-                            width={60}
-                            rotation={textRotation} // Apply corrected rotation
-                            offsetX={10} // Center adjustment
-                            offsetY={10}
+                            width={50}
+                            rotation={0}
+                            offsetX={8}
+                            offsetY={44}
                           />
+
+                          {/* Only Render User Name if Assigned */}
+                          {matchedUser && (
+                            <Text
+                              key={el.id}
+                              text={matchedUser.user_name || "N/A"}
+                              fontSize={9}
+                              fontStyle="bold"
+                              x={textX}
+                              y={textY}
+                              fill="black"
+                              align="center"
+                              width={60}
+                              rotation={textRotation}
+                              offsetX={10}
+                              offsetY={10}
+                            />
+                          )}
                         </>
                       );
                     })}

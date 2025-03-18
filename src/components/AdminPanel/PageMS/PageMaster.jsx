@@ -140,15 +140,13 @@ const PageMaster = () => {
   const [rowCount, setRowCount] = useState([
     { page_price_type_name: "", page_price_type_id: "", price: "" },
   ]);
-
+  console.log(rowCount,'rowCount');
+  
   const dispatch = useDispatch();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const { data: profileData } = useGetAllProfileListQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data || [];
-  console.log(platformData, 'platformData');
-
-
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
@@ -432,6 +430,10 @@ const PageMaster = () => {
         return { [item.page_price_type_name]: Number(item.price) };
       }),
     };
+    console.log(rowCount.map((item) => {
+      return { [item.page_price_type_name]: Number(item.price) };
+    }),'saim');
+    
 
     // return;
     setFormLoading(true);
@@ -640,7 +642,7 @@ const PageMaster = () => {
   };
 
   const setPageNameFun = async (e) => {
-    setPageName(e);
+    setPageName(e.toLowerCase().trim());
   };
 
   const checkPageExistence = async (name) => {

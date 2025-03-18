@@ -328,7 +328,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       })
       .then((res) => {
         const data = [res.data.data];
-        // console.log("data", data);
         setPagePriceList(res.data.data.page_price_list);
         setTempID(data[0]?.temp_vendor_id);
         setPlatformId(data[0].platform_id);
@@ -465,7 +464,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       rate_type: rateType || "",
       updated_by: userID,
       engagment_rate: engagment || 0,
-      multi_page_names: multiplePage,
+      multi_page_names: multiplePage.filter((i) => i !== ""),
       variable_type: rateType == "Variable" ? variableType.value : null,
 
       platform_name: platformData
@@ -614,6 +613,10 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     setOwnerType(selectedOption.value);
   };
 
+  const handleMultiplePage = (e) => {
+    let value = e.target.value.replace(/, ?/g, "\n");
+    setMultipalPage(value.split("\n"));
+  };
   return (
     <>
       <PageAddMasterModal />
@@ -1026,20 +1029,6 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         required={false}
         onChange={(e) => setBio(e.target.value)}
       />
-
-      <FieldContainer
-        label="Description"
-        value={description}
-        required={false}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <FieldContainer
-        label="Bio"
-        value={bio}
-        required={false}
-        onChange={(e) => setBio(e.target.value)}
-      />
-
       <div className="col-md-6 p0 mb16">
         <FieldContainer
           label="Engagement Rate"
@@ -1058,8 +1047,8 @@ const Page = ({ pageMast_id, handleEditClose }) => {
           required
           Tag="textarea"
           type="text"
-          onChange={(e) => setMultipalPage(e.target.value.split("\n"))} // Split by new lines
-          value={multiplePage.join("\n")} // Convert array back to string for display
+          onChange={handleMultiplePage}
+          value={multiplePage.join("\n")}
         />
         {multiplePage.length > 0 &&
           multiplePage.some((item) => item.trim() !== "") && (

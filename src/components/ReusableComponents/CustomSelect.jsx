@@ -99,12 +99,13 @@ const CustomSelect = ({
   useEffect(() => {
     const handler = setTimeout(() => {
       setSearchQuery(inputValue);
-    }, 300); // 300ms delay
+    }, 300); 
 
     return () => {
-      clearTimeout(handler); // Clear timeout on every new keystroke
+      clearTimeout(handler);
     };
-  }, [inputValue, setSearchQuery]);
+  }, [inputValue]);
+
   return (
     <div className={`form-group col-${fieldGrid}`}>
       <label className="form-label">

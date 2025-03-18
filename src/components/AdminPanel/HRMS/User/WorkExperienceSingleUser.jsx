@@ -2,15 +2,22 @@ import React from "react";
 // import DateFormattingComponent from "../../../DateFormator/DateFormared";
 import DateFormattingComponent from "../../../DateFormator/DateFormared";
 
-
 const WorkExperience = ({ workExperience }) => {
   return (
     <>
-      {workExperience.map((user) => (
-        <div className="profileInfo_area" style={{border:'1px solid',padding:'15px',borderRadius:"15px",marginTop:'5px'}}>
+      {workExperience?.map((user) => (
+        <div
+          className="profileInfo_area"
+          style={{
+            border: "1px solid",
+            padding: "15px",
+            borderRadius: "15px",
+            marginTop: "5px",
+          }}
+        >
           <div className="row profileInfo_row pt-0">
             <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <h4>Organization Details</h4>
+              <h4>Organization Details</h4>
               <div className="profileInfo_box">
                 <h3>Name of organization</h3>
                 <h4>{user.name_of_organization}</h4>
@@ -49,7 +56,7 @@ const WorkExperience = ({ workExperience }) => {
           </div>
           <div className="row profileInfo_row pt-0">
             <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <h4>Details of Reporting Manager</h4>
+              <h4>Details of Reporting Manager</h4>
               <div className="profileInfo_box">
                 <h3>Manager Name</h3>
                 <h4>{user.manager_name}</h4>
@@ -68,10 +75,10 @@ const WorkExperience = ({ workExperience }) => {
               </div>
             </div>
           </div>
-          
+
           <div className="row profileInfo_row pt-0">
             <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                <h4>Details of HR</h4>
+              <h4>Details of HR</h4>
               <div className="profileInfo_box">
                 <h3>HR Name</h3>
                 <h4>{user.hr_name}</h4>
