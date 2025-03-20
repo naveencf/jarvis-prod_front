@@ -21,6 +21,7 @@ import { RiOrganizationChart } from "react-icons/ri";
 import OperationSidebarLinks from "./OperationSidebarLinks";
 // import { useGlobalContext } from "../../../Context/Context";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
+import context from "react-bootstrap/esm/AccordionContext";
 
 const SidebarLinks = () => {
   // const [contextData, setData] = useState([]);
@@ -129,7 +130,6 @@ const SidebarLinks = () => {
     (index) => contextData[index]?.view_value === 1
   );
   const activelink = useLocation().pathname;
-
   return (
     <>
       {deptId !== 36 && (
@@ -2221,7 +2221,7 @@ const SidebarLinks = () => {
               >
                 <i className="bi bi-lightning"></i>
                 <span>Boosting</span>
-              </Link>
+              </Link> 
               <div
                 id="collapseBoosting"
                 className="collapse"
@@ -2241,7 +2241,7 @@ const SidebarLinks = () => {
           }
         </>
       )}
-      {/* {contextData && contextData[54] && contextData[54]?.view_value === 1 && ( */}
+      {contextData && contextData[15] && contextData[15]?.view_value === 1 && (
       <li className="nav-item">
         <Link
           className="nav-btn nav-link collapsed"
@@ -2257,7 +2257,7 @@ const SidebarLinks = () => {
           <span>Pantry</span>
         </Link>
       </li>
-      {/* )} */}
+      )}
     </>
   );
 };

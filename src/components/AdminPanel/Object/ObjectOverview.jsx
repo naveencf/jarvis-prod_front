@@ -86,15 +86,6 @@ const ObjectOverview = () => {
                 </button>
               </Link>
             )}
-          {contextData &&
-            contextData[2] &&
-            contextData[2].delete_flag_value === 1 && (
-              <DeleteButton
-                endpoint="obj_delete"
-                id={row.obj_id}
-                getData={getData}
-              />
-            )}
         </>
       ),
       allowOverflow: true,

@@ -276,28 +276,29 @@ const AuditPurchase = () => {
       toastError("Error while Uploading");
     }
   }
+  console.log("selectedData", selectedData);
   const handleUpdateStatus = async (vendorId) => {
-    if (selectedData.length !== 1) {
+    let uniqueVendor = new Set(selectedData.map(item => item.vendor_name)).size === 1;
+    if (!uniqueVendor) {
       Swal.fire({
         title: "Invalid Selection!",
-        text: "Please select only one vendor to update.",
+        text: "Please select one vendor at a time.",
         icon: "warning",
       });
       return;
     }
 
-    const selectedItem = selectedData[0];
-
-    if (selectedItem.audit_status !== "purchased") {
+    const allPurchased = selectedData.every((item) => item.audit_status === "purchased");
+    if (!allPurchased) {
       Swal.fire({
         title: "Action Denied!",
-        text: "The selected vendor does not have 'purchased' status.",
+        text: "All selected vendors must have 'purchased' status.",
         icon: "warning",
       });
       return;
     }
 
-    const sCodes = selectedItem.shortCode;
+    const shortCode = selectedData.map((item) => item.shortCode);
 
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -311,17 +312,17 @@ const AuditPurchase = () => {
     if (result.isConfirmed) {
       try {
         const response = await updatePurchasedStatusVendor({
-          shortCodes: [sCodes],
+          shortCodes: shortCode,
           vendor_id: vendorId,
           userId: token.id,
         });
 
-        // Success alert
         if (response?.data?.success) {
-          const response = await refetchPlanData();
-          if (response.isSuccess && response.data) {
-            setCampainPlanData(response.data);
+          const refetchResponse = await refetchPlanData();
+          if (refetchResponse.isSuccess && refetchResponse.data) {
+            setCampainPlanData(refetchResponse.data);
           }
+
           Swal.fire({
             title: "Updated!",
             text: "Vendor status has been updated successfully.",
@@ -330,8 +331,6 @@ const AuditPurchase = () => {
         }
       } catch (error) {
         console.error("Error updating vendor status:", error);
-
-        // Error alert
         Swal.fire({
           title: "Error!",
           text: "Something went wrong while updating the vendor status.",
@@ -340,6 +339,7 @@ const AuditPurchase = () => {
       }
     }
   };
+
 
   useEffect(() => {
     if (duplicateMsg) {

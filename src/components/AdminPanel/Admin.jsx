@@ -2384,13 +2384,13 @@ const Admin = () => {
                   {/* {contextData &&
                       contextData[29] &&
                       contextData[29]?.view_value === 1 && ( */}
-                  {/* <>
+                  <>
                     <Route
                       path="/pantry"
                       element={<PantryUserDashboard />}
                     />
 
-                  </> */}
+                  </>
                   {/* )} */}
                   <Route path="**" element={<ErrorPage />} />
                 </Routes>
