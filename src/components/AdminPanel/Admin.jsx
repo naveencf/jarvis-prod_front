@@ -35,6 +35,7 @@ import OperationDashboard from "../UnusedCode/UnusedOp/OperationDashboard/Operat
 // import OperationDashboard from "../UnusedCode/Plan/OperationDashboard/OperationDashboard";
 import Ledger from "../Purchase/PurchaseVendor/Ledger";
 import HomePantry from "../NewPantry/HomePantry";
+import PantryUserDashboard from "../Pantry/PantryUserDashboard";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
@@ -833,6 +834,8 @@ const AllAssignedCategory = lazy(() =>
   import("../SuperTracker/CommunityManagement/AllAssignedCategory")
 );
 const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
+const PageAddition = lazy(() => import("../Boosting/PageAddition"))
+const RecenltyBoosted = lazy(() => import("../Boosting/RecenltyBoosted"))
 
 const Admin = () => {
   // const [contextData, setData] = useState([]);
@@ -2345,6 +2348,7 @@ const Admin = () => {
                         </>
                       )}
                     {/* Sarcasm End */}
+
                     {/* Post stats from Insights */}
                     {contextData &&
                       contextData[54] &&
@@ -2370,7 +2374,24 @@ const Admin = () => {
                       path="/purchase-dashboard"
                       element={<PurchaseDashboard />}
                     />
+
+                    {/* Boosting Start */}
+                    <Route path="/page-addition" element={<PageAddition />} />
+                    <Route path="/recently-boosted" element={<RecenltyBoosted />} />
+                    {/* Boosting End */}
                   </Route>
+                  {/* Pantry */}
+                  {/* {contextData &&
+                      contextData[29] &&
+                      contextData[29]?.view_value === 1 && ( */}
+                  {/* <>
+                    <Route
+                      path="/pantry"
+                      element={<PantryUserDashboard />}
+                    />
+
+                  </> */}
+                  {/* )} */}
                   <Route path="**" element={<ErrorPage />} />
                 </Routes>
               </div>

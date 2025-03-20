@@ -419,6 +419,7 @@ const VendorOverview = () => {
       name: "Mobile",
       width: 200,
       editable: true,
+      // compare:true
     },
     {
       key: "email",

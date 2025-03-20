@@ -32,7 +32,7 @@ const CustomSelect = ({
   if (multiple) {
     const selection = selectedId?.map((id) => ({
       value: id,
-      label: formatString(findOptionLabelById(id)),
+      label: typeof findOptionLabelById(id) === "string" ? formatString(findOptionLabelById(id)) : findOptionLabelById(id),
     }));
     valueProp = isAllSelected ? [selectAllOption, ...selection] : selection;
   } else {
@@ -42,7 +42,8 @@ const CustomSelect = ({
     if (selectedOption) {
       valueProp = {
         value: selectedId,
-        label: formatString(findOptionLabelById(selectedId)),
+        // label: formatString(findOptionLabelById(selectedId)),
+        label: typeof findOptionLabelById(selectedId) === "string" ? formatString(findOptionLabelById(selectedId)) : findOptionLabelById(selectedId),
       };
     } else {
       valueProp = null;
@@ -52,10 +53,10 @@ const CustomSelect = ({
   const handleChange = (selectedOptions, action_meta) => {
     if (multiple) {
       if (!selectedOptions) {
-        setSelectedId([]); 
+        setSelectedId([]);
         return;
       }
-  
+
       if (
         selectedOptions?.some((option) => option.value === selectAllOption.value)
       ) {
@@ -80,31 +81,32 @@ const CustomSelect = ({
       }
     } else {
       if (!selectedOptions) {
-        setSelectedId(null);  
+        setSelectedId(null);
         return;
       }
       setSelectedId(selectedOptions?.value);
     }
   };
-  
+
 
   const options = dataArray?.map((option) => ({
     value: option[optionId],
-    label: formatString(option[optionLabel]),
+    label: typeof option[optionLabel] === "string" ? formatString(option[optionLabel]) : option[optionLabel],
+
   }));
 
   if (multiple) {
     options?.unshift(selectAllOption);
   }
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchQuery(inputValue);
-    }, 300); 
+  // useEffect(() => {
+  //   const handler = setTimeout(() => {
+  //     setSearchQuery(inputValue);
+  //   }, 300);
 
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [inputValue]);
+  //   return () => {
+  //     clearTimeout(handler);
+  //   };
+  // }, [inputValue]);
 
   return (
     <div className={`form-group col-${fieldGrid}`}>
@@ -119,7 +121,7 @@ const CustomSelect = ({
         required={required}
         isDisabled={disabled}
         isMulti={multiple}
-        isClearable={true}  
+        isClearable={true}
         onInputChange={(value) => setInputValue(value)}
       />
     </div>

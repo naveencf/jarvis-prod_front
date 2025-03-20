@@ -49,7 +49,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     no_of_post: "",
     page_list: [],
     page_name: "",
-    page_id: null,
+    // page_id: null,
     // accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
     // branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
     // vpa: vendorBankDetail[selectedBankIndex]?.vpa,

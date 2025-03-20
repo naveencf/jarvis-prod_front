@@ -182,18 +182,42 @@ const UpdateSitting = ({
     setSelectedRoom(roomName);
   };
 
+  // const updateAssignment = async () => {
+  //   try {
+  //     const updatedData = {
+  //       _id: id,
+  //       elements: elements,
+  //     };
+  //     await axios.put(baseUrl + "update_sitting_arrangement", updatedData);
+  //     alert("Layout updated successfully.");
+  //     setSelectedEmployee(null);
+  //     setSelectedId(null);
+  //     // totalSittingDataCount();
+  //     // fetchAllocationCounts();
+  //   } catch (error) {
+  //     console.error("Error updating layout:", error);
+  //     alert("Failed to update layout.");
+  //   }
+  // };
   const updateAssignment = async () => {
     try {
+      // Ensure elements exist before making the API call
+      if (!elements || elements.length === 0) {
+        alert("No elements to update.");
+        return;
+      }
+
       const updatedData = {
-        _id: id,
-        elements: elements,
+        _id: id, // Assuming `id` is already defined in scope
+        elements: elements, // Use the current state of `elements`
       };
+
       await axios.put(baseUrl + "update_sitting_arrangement", updatedData);
       alert("Layout updated successfully.");
+
+      // Reset selections (if needed)
       setSelectedEmployee(null);
       setSelectedId(null);
-      // totalSittingDataCount();
-      // fetchAllocationCounts();
     } catch (error) {
       console.error("Error updating layout:", error);
       alert("Failed to update layout.");
@@ -340,10 +364,17 @@ const UpdateSitting = ({
                           scale={{ x: el.width / 125, y: el.height / 115 }}
                           rotation={el.rotation}
                           fill={
+                            // selectedChairs.some((chair) => chair.id === el.id)
+                            //   ? "blue" // Highlight selected chairs in multi-select mode
+                            //   : selectedId === el.id
+                            //   ? "green"
+                            //   : el.employee
+                            //   ? "lightgrey"
+                            //   : "white"
                             selectedId === el.id
                               ? "green"
                               : el.employee
-                              ? "white"
+                              ? "lightgrey"
                               : "white"
                           }
                           stroke={selectedId === el.id ? "green" : "black"}
