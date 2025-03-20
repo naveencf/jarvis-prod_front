@@ -491,6 +491,48 @@ const PurchaseTransactions = () => {
         },
 
 
+        //         {
+        //             key: "ref",
+        //             name: "Reference Number",
+        //             width: 250,
+        //             renderRowCell: (row) => {
+        //                 const handleCopy = () => {
+        //                     const {
+        //                         bankTransactionReferenceId,
+        //                         payment_amount,
+        //                         payment_date,
+        //                         account_no, finance_remark
+        //                     } = row;
+        //                     const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
+        //                     // Create the message
+        //                     // no. ${account_no?.slice(-4)}
+        //                     const message = `
+        //     Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account  on ${payment_date}.
+        //     The reference ID for this transaction is ${bankTransactionReferenceId}.
+        //     ${finance_remark}
+
+        // `;
+        //                     navigator.clipboard
+        //                         .writeText(message)
+        //                         .then(() => toastAlert("Copied to clipboard!"))
+        //                         .catch((err) => console.error("Failed to copy text:", err));
+        //                 };
+
+        //                 return (
+        //                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        //                         <span>{row.bankTransactionReferenceId}</span>
+        //                         {!row.bankTransactionReferenceId == "" ? (
+        //                             <ContentCopyIcon
+        //                                 style={{ cursor: "pointer", color: "gray" }}
+        //                                 onClick={handleCopy}
+        //                             />
+        //                         ) : (
+        //                             ""
+        //                         )}
+        //                     </div>
+        //                 );
+        //             },
+        //         },
         {
             key: "ref",
             name: "Reference Number",
@@ -501,18 +543,28 @@ const PurchaseTransactions = () => {
                         bankTransactionReferenceId,
                         payment_amount,
                         payment_date,
-                        account_no, finance_remark
+                        finance_remark
                     } = row;
-                    const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
-                    // Create the message
-                    // no. ${account_no?.slice(-4)}
-                    const message = `
-    Amount of ₹${payment_amount}/- has been released from CreativeFuel to your bank account  on ${payment_date}.
-    The reference ID for this transaction is ${bankTransactionReferenceId}.
 
-    ${finance_remark}
-    Thank you for doing business with us.
-`;
+                    if (!payment_date) return;
+
+                    // Convert UTC date to IST
+                    const dateObj = new Date(payment_date);
+                    const istOffset = 5.5 * 60 * 60 * 1000; // IST Offset in milliseconds
+                    const istDate = new Date(dateObj.getTime() + istOffset);
+
+                    // Format Date and Time
+                    const formattedDate = istDate.toISOString().split("T")[0]; // YYYY-MM-DD
+                    const formattedTime = istDate.toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                        timeZone: "Asia/Kolkata" // Ensuring IST timezone
+                    });
+
+                    // Properly formatted message with alignment
+                    const message = `Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account on ${formattedDate} at ${formattedTime} IST.\nThe reference ID for this transaction is ${bankTransactionReferenceId}.\n${finance_remark ? finance_remark : ""}`.trim();
+
                     navigator.clipboard
                         .writeText(message)
                         .then(() => toastAlert("Copied to clipboard!"))
@@ -522,18 +574,19 @@ const PurchaseTransactions = () => {
                 return (
                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                         <span>{row.bankTransactionReferenceId}</span>
-                        {!row.bankTransactionReferenceId == "" ? (
+                        {row.bankTransactionReferenceId ? (
                             <ContentCopyIcon
                                 style={{ cursor: "pointer", color: "gray" }}
                                 onClick={handleCopy}
                             />
-                        ) : (
-                            ""
-                        )}
+                        ) : null}
                     </div>
                 );
             },
         },
+
+
+
     ];
 
     return (
