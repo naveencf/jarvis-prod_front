@@ -94,15 +94,15 @@ const AuditPurchase = () => {
   const [refetchPostPrice, { data, error }] = useRefetchPostPriceMutation();
 
   const [updatePurchasedStatus] = useUpdatePurchasedStatusDataMutation();
-  const [getPostDetailsBasedOnFilter] =
+  const [getPostDetailsBasedOnFilter, { isLoading: isFetchingPostDetails }] =
     useGetPostDetailsBasedOnFilterMutation();
+
   const [updatePurchasedStatusVendor, { isLoading, isError, isSuccess }] =
     useUpdatePurchasedStatusVendorMutation();
 
   const handleSelection = (newSelectedData) => {
     setSelectedData(newSelectedData);
   };
-
   const [price, setPrice] = useState("");
   const [pricePerMillion, setPricePerMillion] = useState("");
 
@@ -126,13 +126,12 @@ const AuditPurchase = () => {
       ) {
         return;
       }
-      if (item.status !== 'audited' && item.status !== 'pending') {
+      if (item.audit_status === 'audited' || item.audit_status === 'pending') {
         handledataUpdate(item);
       } else {
-        // Otherwise, proceed with the update
-        toastAlert("Cannot Update the price for the status ", item.status);
+        toastError("Cannot Update the price for the status " + item.audit_status);
       }
-      handledataUpdate(item);
+      // handledataUpdate(item);
     });
   };
 
@@ -173,8 +172,8 @@ const AuditPurchase = () => {
             ? {
               ...(selectedVendorId && { vendorId: selectedVendorId }),
               ...(shortCodes?.length && { shortCodes: sCodes }),
-              ...(startDate && { startDate }),
-              ...(endDate && { endDate }),
+              ...(startDate && endDate && { startDate: startDate, endDate: endDate }),
+              // ...(endDate && { endDate }),
               ...(selectedPlan && { campaignId: selectedPlan }),
             }
             : {};
@@ -186,7 +185,7 @@ const AuditPurchase = () => {
           return {};
       }
     })();
-
+    if (Object.keys(payload).length === 0) return;
     try {
       const response = await getPostDetailsBasedOnFilter(payload);
       setCampainPlanData(response.data.data);
@@ -267,7 +266,7 @@ const AuditPurchase = () => {
         audit_status: row.audit_status,
       });
       if (res.error) throw new Error(res.error);
-      const response = await refetchPlanData();
+      const response = await fetchFilteredPosts();
       if (response.isSuccess && response.data) {
         setCampainPlanData(response.data);
       }
@@ -348,6 +347,7 @@ const AuditPurchase = () => {
       setModalName("duplicacyModal");
     }
   }, [duplicateMsg]);
+
   useEffect(() => {
     // creating unique phase list
     // const cachedData = JSON.parse(localStorage.getItem("tab"));
@@ -371,7 +371,7 @@ const AuditPurchase = () => {
     }
     // fetchFilteredPosts()
   }, [selectedPlan, fetchingPlanData]);
-
+  // console.log("fetchingPlanData",fetchingPlanData);
   useEffect(() => {
     if (selectedPlan == null) {
       setCampainPlanData([]);
@@ -456,6 +456,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
+        setSelectedData([])
         // setSelectedVendorId(null);
         // setShortCodes([]);
         break;
@@ -464,6 +465,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
+        setSelectedData([])
         // setShortCodes([]);
         // setSelectedPlan(null);
         // setSelectedVendorId(null);
@@ -473,6 +475,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
+        setSelectedData([])
         // setShortCodes([]);
         // setStartDate(null);
         // setEndDate(null);
@@ -483,6 +486,7 @@ const AuditPurchase = () => {
         setCampainPlanData([]);
         setStartDate(null);
         setEndDate(null);
+        setSelectedData([])
         // setShortCodes([]);
         // setSelectedPlan(null);
         break;
@@ -503,7 +507,7 @@ const AuditPurchase = () => {
       key: "platform_name",
       editable: true,
       renderRowCell: (row) => {
-        return row.platform_name;
+        return formatString(row?.platform_name)
       },
       customEditElement: (
         row,
@@ -537,7 +541,7 @@ const AuditPurchase = () => {
       key: "page_name",
       name: "Page Name",
       width: 200,
-      renderRowCell: (row) => row?.owner_info?.username,
+      renderRowCell: (row) => formatString(row?.owner_info?.username),
       compare: true,
       editable: true,
       customEditElement: (
@@ -623,13 +627,14 @@ const AuditPurchase = () => {
     {
       name: "Campaign name",
       key: "campaign_name",
-      renderRowCell: (row) => row?.campaign_name,
+      renderRowCell: (row) => formatString(row?.campaign_name),
       width: 100,
       compare: true,
     },
     {
       name: "Vendor Name",
       key: "vendor_name",
+      renderRowCell: (row) => formatString(row?.vendor_name),
       customEditElement: (
         row,
         index,
@@ -672,7 +677,7 @@ const AuditPurchase = () => {
       name: "Amount",
       key: "amount",
       editable: true,
-
+      getTotal: true,
       width: 100,
     },
     {
@@ -680,6 +685,8 @@ const AuditPurchase = () => {
       key: "accessibility_caption",
       width: 150,
       editable: true,
+      renderRowCell: (row) => formatString(row?.accessibility_caption),
+
     },
     {
       name: "Comment Count",
@@ -877,7 +884,7 @@ const AuditPurchase = () => {
                   : "btn btn-sm cmnbtn btn-primary"
                 }`}
             >
-              {row.audit_status}
+              {formatString(row.audit_status)}
             </button>
           );
       },
@@ -957,7 +964,7 @@ const AuditPurchase = () => {
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => handledataUpdate(row)}
                 title="Save"
-                disabled={row.audit_status !== "purchased"}
+              // disabled={row.audit_status !== "purchased"}
               >
                 save
               </button>
@@ -1082,15 +1089,15 @@ const AuditPurchase = () => {
     []
   );
 
-  const phaseWiseData = useMemo(() => {
-    const phasedData = campaignPlanData?.filter((data) => {
-      if (activeTab === "all") {
-        return true;
-      }
-      return data.phaseDate === activeTab;
-    });
-    return phasedData;
-  }, [campaignPlanData, activeTab, fetchingPlanData, loadingPlanData]);
+  // const phaseWiseData = useMemo(() => {
+  //   const phasedData = campaignPlanData?.filter((data) => {
+  //     if (activeTab === "all") {
+  //       return true;
+  //     }
+  //     return data.phaseDate === activeTab;
+  //   });
+  //   return phasedData;
+  // }, [campaignPlanData, activeTab, fetchingPlanData, loadingPlanData]);
 
   // // console.log("PlanData", PlanData);
   return (
@@ -1434,13 +1441,14 @@ const AuditPurchase = () => {
       <View
         version={1}
         data={campaignPlanData}
+        showTotal={true}
         // data={phaseWiseData}
         columns={columns}
         title={`Records`}
         rowSelectable={true}
         selectedData={handleSelection}
         tableName={"PlanX-execution"}
-        isLoading={loadingPlanData || fetchingPlanData}
+        isLoading={isFetchingPostDetails || loadingPlanData || fetchingPlanData}
         pagination={[50, 100, 200]}
         addHtml={
           <div className="flexCenterBetween colGap8 ml-auto">

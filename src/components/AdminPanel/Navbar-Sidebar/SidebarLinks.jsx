@@ -129,6 +129,7 @@ const SidebarLinks = () => {
     (index) => contextData[index]?.view_value === 1
   );
   const activelink = useLocation().pathname;
+
   return (
     <>
       {deptId !== 36 && (
@@ -668,20 +669,20 @@ const SidebarLinks = () => {
                     {contextData &&
                       contextData[5] &&
                       contextData[5].view_value === 1 && (<>
-                          <NavLink
+                        <NavLink
                           className="collapse-item"
                           to="/admin/product-overview"
                         >
                           <i className="bi bi-dot"></i> Product
                         </NavLink>
-                          <NavLink
+                        <NavLink
                           className="collapse-item"
                           to="/admin/new-pantry-user"
                         >
                           <i className="bi bi-dot"></i> New Pantry User
                         </NavLink>
                       </>
-                    
+
                       )}
 
                     {contextData &&
@@ -2172,42 +2173,91 @@ const SidebarLinks = () => {
             </div>
           </li>
 
-          <li className="nav-item">
-            <Link
-              className="nav-link nav-btn collapsed"
-              data-toggle="collapse"
-              data-target="#collapseRecord"
-              aria-expanded="true"
-              aria-controls="collapseRecord"
-            >
-              <i className="ph">
-                <Files weight="duotone" />
-              </i>
-              <span>Record</span>
-            </Link>
-            <div
-              id="collapseRecord"
-              className="collapse"
-              aria-labelledby="headingTwo"
-              data-parent="#accordionSidebar"
-            >
-              <div className="internal collapse-inner">
-                <NavLink className="collapse-item" to="/admin/purchase-report">
-                  <i className="bi bi-dot"></i>Purchase
-                </NavLink>
-                <NavLink className="collapse-item" to="/admin/audit-purchase">
-                  <i className="bi bi-dot"></i>Sales
-                </NavLink>
-                <NavLink className="collapse-item" to="/admin/record-purchase">
-                  <i className="bi bi-dot"></i>Finance
-                </NavLink>
+          {contextData &&
+            contextData[68] &&
+            contextData[68].view_value === 1 && <li className="nav-item">
+              <Link
+                className="nav-link nav-btn collapsed"
+                data-toggle="collapse"
+                data-target="#collapseRecord"
+                aria-expanded="true"
+                aria-controls="collapseRecord"
+              >
+                <i className="ph">
+                  <Files weight="duotone" />
+                </i>
+                <span>Report</span>
+              </Link>
+              <div
+                id="collapseRecord"
+                className="collapse"
+                aria-labelledby="headingTwo"
+                data-parent="#accordionSidebar"
+              >
+                <div className="internal collapse-inner">
+                  <NavLink className="collapse-item" to="/admin/purchase-report">
+                    <i className="bi bi-dot"></i>Purchase
+                  </NavLink>
+                  <NavLink className="collapse-item" to="/admin/audit-purchase">
+                    <i className="bi bi-dot"></i>Sales
+                  </NavLink>
+                  <NavLink className="collapse-item" to="/admin/record-purchase">
+                    <i className="bi bi-dot"></i>Finance
+                  </NavLink>
 
+                </div>
               </div>
-            </div>
-          </li>
+            </li>}
+
+          {contextData &&
+            contextData[69] &&
+            contextData[69].view_value === 1 && <li className="nav-item">
+              <Link
+                className="nav-link nav-btn collapsed"
+                data-toggle="collapse"
+                data-target="#collapseBoosting"
+                aria-expanded="true"
+                aria-controls="collapseBoosting"
+              >
+                <i className="bi bi-lightning"></i>
+                <span>Boosting</span>
+              </Link>
+              <div
+                id="collapseBoosting"
+                className="collapse"
+                aria-labelledby="headingBoosting"
+                data-parent="#accordionSidebar"
+              >
+                <div className="internal collapse-inner">
+                  <NavLink className="collapse-item" to="/admin/page-addition">
+                    <i className="bi bi-plus-circle"></i> Page Add
+                  </NavLink>
+                  <NavLink className="collapse-item" to="/admin/recently-boosted">
+                    <i className="bi bi-graph-up"></i> Recently Boosted
+                  </NavLink>
+                </div>
+              </div>
+            </li>
+          }
         </>
       )}
-
+      {/* {contextData && contextData[54] && contextData[54]?.view_value === 1 && ( */}
+      <li className="nav-item">
+        <Link
+          className="nav-btn nav-link collapsed"
+          data-toggle="collapse"
+          data-target="#statics"
+          aria-expanded="false"
+          aria-controls="statics"
+          to="/admin/pantry"
+        >
+          <i className="ph">
+            <MaskHappy size={32} />
+          </i>
+          <span>Pantry</span>
+        </Link>
+      </li>
+      {/* )} */}
     </>
   );
 };

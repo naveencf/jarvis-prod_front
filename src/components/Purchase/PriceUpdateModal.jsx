@@ -13,6 +13,7 @@ const PriceUpdateModal = ({ selectedData, price, pricePerMillion, onConfirm, onC
                             <th>Vendor Name</th>
                             <th>Short Code</th>
                             <th>Amount</th>
+                            <th>Page Name</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,11 +24,12 @@ const PriceUpdateModal = ({ selectedData, price, pricePerMillion, onConfirm, onC
                                 ? "Follower Not Available"
                                 : calculatedPrice;
 
-                            return (
+                            return (    
                                 <tr key={index}>
-                                    <td>{item.vendor_name}</td>
-                                    <td>{item.shortCode}</td>
+                                    <td>{item?.vendor_name}</td>
+                                    <td>{item?.shortCode}</td>
                                     <td>{price !== ""? price: displayPrice}</td>
+                                    <td>{item?.page_name}</td>
                                 </tr>
                             );
                         })}

@@ -292,7 +292,7 @@ const CampaignExecution = () => {
   //     handlePriceUpdate(selectedPrice);
   //   }
   // }, [selectedPrice]);
-
+console.log("PlanData",PlanData);
   async function handlePriceUpdate(row) {
     try {
       const key = [
