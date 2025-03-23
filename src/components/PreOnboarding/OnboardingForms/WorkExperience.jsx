@@ -20,7 +20,6 @@ const initialSection = {
   hr_phone: "",
   hr_email_id: "",
 };
-
 const WorkExperience = ({ userID }) => {
   const { toastAlert } = useGlobalContext();
   const [workExperienceData, setWorkExperienceData] = useState([
@@ -58,6 +57,8 @@ const WorkExperience = ({ userID }) => {
     e.preventDefault();
     try {
       for (const elements of workExperienceData) {
+        console.log(elements.manager_email_id, "dddd");
+
         const payload = {
           user_id: userID,
           name_of_organization: elements.name_of_organization,
@@ -66,10 +67,10 @@ const WorkExperience = ({ userID }) => {
           designation: elements.designation,
           gross_salary: elements.gross_salary,
           manager_name: elements.manager_name,
-          manager_email: elements.manager_email_id,
+          manager_email_id: elements.manager_email_id,
           manager_phone: elements.manager_phone,
           hr_name: elements.hr_name,
-          hr_email: elements.hr_email_id,
+          hr_email_id: elements.hr_email_id,
           hr_phone: elements.hr_phone,
         };
 

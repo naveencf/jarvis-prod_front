@@ -198,7 +198,7 @@ const MultipleService = ({ setToggleModal, setModalData }) => {
                       value={campData[index].amount}
                       onChange={(e) => {
                         const data = [...campData];
-                        data[index].amount = e.target.value;
+                        data[index].amount = Number(e.target.value);
                         setCampData(data);
                         const validate = [...isValid.campData];
                         validate[index].amount = e.target.value < 0;
@@ -225,6 +225,12 @@ const MultipleService = ({ setToggleModal, setModalData }) => {
                 </div>
               );
             })}
+            <div className="col-md-12" style={{ color: "Green" }}>
+              Total :{" "}
+              {campData.reduce((acc, item) => {
+                return acc + item.amount;
+              }, 0)}
+            </div>
             <div className="sb w-100 m-2">
               <button
                 className="btn btn-primary cmnbtn btn-sm l-3 mt-4"

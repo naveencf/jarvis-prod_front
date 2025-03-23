@@ -1,48 +1,201 @@
+
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
+import { baseUrl, socketBaseUrl } from "../../utils/config";
+import jwtDecode from "jwt-decode";
+import { useEditPantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
+import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
+import axios from "axios";
+import { useLocation } from "react-router-dom";
 
-// const socket = io("http://localhost:5000"); // Replace with your backend URL
+function PantryUserDashboard() {
+    const location = useLocation();
+    const isPantryRoute = location.pathname.includes("pantry");
+    const socket = io(socketBaseUrl); // Replace with your backend URL
+    const storedToken = sessionStorage.getItem("token");
+    const decodedToken = jwtDecode(storedToken);
+    const userID = decodedToken.id;
+    const userName = decodedToken.name;
+    const departmentID = decodedToken.dept_id;
 
-export default function PantryUserDashboard() {
-    const [messages, setMessages] = useState([]);
+    const [order, setOrder] = useState([]);
+    const [recentOrder, setRecentOrder] = useState([]);
     const [input, setInput] = useState("");
+    const [orderDialog, setOrderDialog] = useState(false);
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false); // New state for disabling buttons
+
+    const fetchOrders = async () => {
+        const token = sessionStorage.getItem("token");
+        try {
+            const response = await axios.get(
+                `${socketBaseUrl}/api/pentry/order_request?order_taken_by=${userID}&&limit=10`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log(response.data, "response.data");
+            setRecentOrder(response.data.data); // assuming response.data.data contains the orders array
+        } catch (err) {
+            console.error("Error fetching orders:", err);
+        }
+    };
+
+    useEffect(() => {
+        fetchOrders();
+    }, []);
+
+    const alertSound = new Audio("https://www.myinstants.com/media/sounds/alarm.mp3"); // Replace with your sound file
 
     useEffect(() => {
         // Listening for messages from server
-        socket.on("message", (message) => {
-            setMessages((prev) => [...prev, message]);
-        });
-
-        return () => {
-            socket.off("message"); // Clean up listener on unmount
-        };
+        if (isPantryRoute) {
+            socket.on("orderGenerated", (message) => {
+                setOrder(message);
+                console.log("event trigger", message);
+                setOrderDialog(true);
+                alertSound.play();
+            });
+            return () => {
+                socket.off("orderGenerated");
+                $("#newOrderModal").off("hidden.bs.modal"); // Cleanup modal event listener
+            };
+        }
     }, []);
 
-    const sendMessage = () => {
-        if (input.trim()) {
-            socket.emit("message", input); // Sending message to server
-            setInput("");
+    const handleOrderDeliveredCancelled = async (orderDetail, status) => {
+        // Disable the button while processing
+        setIsButtonDisabled(true);
+        const payload = {
+            order_status: status,
+            order_taken_by: userID,
+        };
+        console.log(orderDetail, "orderDetail");
+        const token = sessionStorage.getItem("token");
+
+        try {
+            const res = await axios.put(
+                `${socketBaseUrl}/api/pentry/accept_order_request/${orderDetail._id}`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            if (res.status === 200) {
+                // Assuming handleClose is defined somewhere in your component
+                handleClose && handleClose();
+                fetchOrders();
+                console.log("Updated Pantry:", res.data);
+            }
+        } catch (err) {
+            console.error("Update Error:", err);
+        } finally {
+            // Re-enable the button after the request completes
+            setIsButtonDisabled(false);
         }
     };
 
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-2">Socket.io Chat</h2>
-            <div className="border p-2 h-40 overflow-y-auto mb-2">
-                {messages.map((msg, index) => (
-                    <p key={index} className="text-sm p-1 bg-gray-200 rounded my-1">{msg}</p>
-                ))}
+        <>
+            <div className="hkWrapper">
+                <div className="hkHeader">
+                    <div className="hkTitle">
+                        <div className="hkImg">
+                            <img src="https://storage.googleapis.com/node-dev-bucket/1737022468468.jpg" alt="User" />
+                        </div>
+                        <div className="hkName">
+                            <h2>{userName}</h2>
+                            <h4>
+                                <span>Emp ID : </span>{userID}
+                            </h4>
+                        </div>
+                    </div>
+                    <div className="hkAction">
+                        <div className="statusToggle">
+                            <button
+                                type="button"
+                                className="btn btn-lg btn-toggle"
+                                data-toggle="button"
+                                aria-pressed="false"
+                                autoComplete="off"
+                            >
+                                <div className="switch"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div className="orderWrapper">
+                    <div className="orderItemsListing">
+                        {recentOrder.map((orderDetail) => (
+                            <div className="orderItem" key={orderDetail._id}>
+                                <div className="orderUserInfo">
+                                    <div className="orderUser">
+                                        <div className="orderUserImg">
+                                            <img src="https://storage.googleapis.com/node-dev-bucket/1737022468468.jpg" alt="Order" />
+                                        </div>
+                                        <div className="orderUserName">
+                                            <h2>{orderDetail?.user_name}</h2>
+                                            <ul>
+                                                <li>
+                                                    <span>Room : </span>{orderDetail?.room_id}
+                                                </li>
+                                                <li>
+                                                    <span>Seat : </span>{orderDetail?.seat_id}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div className="orderId">
+                                        <h4>
+                                            <span>Order ID </span>{orderDetail?.order_id}
+                                        </h4>
+                                    </div>
+                                </div>
+
+                                <div className="orderRemark">
+                                    <p>{orderDetail?.remark}</p>
+                                </div>
+                                <div className="orderAction">
+                                    {orderDetail?.order_status === 1 && (
+                                        <button
+                                            className="btn cmnbtn btn_sm btn-success"
+                                            disabled={isButtonDisabled}
+                                            onClick={() => handleOrderDeliveredCancelled(orderDetail, 3)}
+                                        >
+                                            Delivered
+                                        </button>
+                                    )}
+                                    {orderDetail?.order_status === 1 && (
+                                        <button
+                                            className="btn cmnbtn btn_sm btn-danger"
+                                            disabled={isButtonDisabled}
+                                            onClick={() => handleOrderDeliveredCancelled(orderDetail, 4)}
+                                        >
+                                            Cancel
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-            <div className="flex gap-2">
-                <input
-                    type="text"
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    className="border p-2 flex-1 rounded"
-                    placeholder="Type a message..."
+            {orderDialog && (
+                <OrderDialogforHouseKeeping
+                    alertSound={alertSound}
+                    order={order}
+                    setOrder={setOrder}
+                    orderDialog={orderDialog}
+                    setOrderDialog={setOrderDialog}
+                    fetchOrders={fetchOrders}
                 />
-                <button onClick={sendMessage} className="bg-blue-500 text-white p-2 rounded">Send</button>
-            </div>
-        </div>
+            )}
+        </>
     );
 }
+
+export default PantryUserDashboard;
+3

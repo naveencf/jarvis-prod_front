@@ -46,7 +46,7 @@ const AuditPurchase = () => {
   const [phaseList, setPhaseList] = useState([]);
   const [vendorName, setVendorName] = useState("");
   const [toggleModal, setToggleModal] = useState(false);
-  const [priceUpdateLoading, setPriceUpdateLoading] = useState(false)
+  const [priceUpdateLoading, setPriceUpdateLoading] = useState(false);
   const [modalData, setModalData] = useState({});
   const [pageName, setPageName] = useState({ page_name: "" });
   const [activeTab, setActiveTab] = useState("tab1");
@@ -71,7 +71,8 @@ const AuditPurchase = () => {
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
   const [activeTabIndex, setActiveTabIndex] = useState(0);
-  const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsWithSearchQuery(vendorSearchQuery);
+  const { data: vendorsList, isLoading: vendorsLoading } =
+    useGetVendorsWithSearchQuery(vendorSearchQuery);
   const page_id = useRef(null);
   const token = getDecodedToken();
   const {
@@ -126,17 +127,19 @@ const AuditPurchase = () => {
       ) {
         return;
       }
-      if (item.audit_status === 'audited' || item.audit_status === 'pending') {
+      if (item.audit_status === "audited" || item.audit_status === "pending") {
         handledataUpdate(item);
       } else {
-        toastError("Cannot Update the price for the status " + item.audit_status);
+        toastError(
+          "Cannot Update the price for the status " + item.audit_status
+        );
       }
       // handledataUpdate(item);
     });
   };
 
   const handleRefetchPrice = async () => {
-    setPriceUpdateLoading(true)
+    setPriceUpdateLoading(true);
     const sCodes = selectedData.map(({ shortCode }) => shortCode);
     let payload = {};
     if (selectedData.length) {
@@ -149,9 +152,9 @@ const AuditPurchase = () => {
 
     try {
       const response = await refetchPostPrice(payload);
-      const res = await refetchPlanData();
-      if (res.isSuccess && res.data) {
-        setCampainPlanData(res.data);
+      const res = await fetchFilteredPosts();
+       if (res?.data?.success && res?.data?.data?.length) {
+        setCampainPlanData(res.data.data);
         setPriceUpdateLoading(false)
         toastAlert(response?.data?.message);
       }
@@ -170,12 +173,13 @@ const AuditPurchase = () => {
           return selectedVendorId &&
             (shortCodes?.length || (startDate && endDate) || selectedPlan)
             ? {
-              ...(selectedVendorId && { vendorId: selectedVendorId }),
-              ...(shortCodes?.length && { shortCodes: sCodes }),
-              ...(startDate && endDate && { startDate: startDate, endDate: endDate }),
-              // ...(endDate && { endDate }),
-              ...(selectedPlan && { campaignId: selectedPlan }),
-            }
+                ...(selectedVendorId && { vendorId: selectedVendorId }),
+                ...(shortCodes?.length && { shortCodes: sCodes }),
+                ...(startDate &&
+                  endDate && { startDate: startDate, endDate: endDate }),
+                // ...(endDate && { endDate }),
+                ...(selectedPlan && { campaignId: selectedPlan }),
+              }
             : {};
         case "Tab2":
           return startDate && endDate ? { startDate, endDate } : {};
@@ -189,6 +193,7 @@ const AuditPurchase = () => {
     try {
       const response = await getPostDetailsBasedOnFilter(payload);
       setCampainPlanData(response.data.data);
+      return response;
     } catch (error) {
       console.error("Error fetching posts:", error);
     }
@@ -200,7 +205,7 @@ const AuditPurchase = () => {
     isFetching: fetchingPlanData,
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
-  } = useGetPlanByIdQuery(selectedPlan, { skip: !selectedPlan });
+  } = useGetPlanByIdQuery({ id: selectedPlan }, { skip: !selectedPlan });
   const [recordPurchase, { Success: recordPurcaseSuccess }] =
     useRecordPurchaseMutation();
   // const [updateData, { isLoading, isSuccess }] = usePostDataUpdaxpteMutation();
@@ -260,25 +265,28 @@ const AuditPurchase = () => {
         amount: priceMillionWise
           ? Math.floor(priceMillionWise)
           : price
-            ? price
-            : row.amount,
+          ? price
+          : row.amount,
         shortCode: row.shortCode,
         audit_status: row.audit_status,
+        createdBy: token.id
       });
       if (res.error) throw new Error(res.error);
       const response = await fetchFilteredPosts();
       if (response.isSuccess && response.data) {
         setCampainPlanData(response.data);
       }
-      toastAlert("Data Updated with amount " + row.amount);
+      // toastAlert("Data Updated with amount " + row.amount);
+      toastAlert(res?.data?.message);
       setToggleModal(false);
     } catch (err) {
+      console.log(err);
       toastError("Error while Uploading");
     }
   }
-  console.log("selectedData", selectedData);
   const handleUpdateStatus = async (vendorId) => {
-    let uniqueVendor = new Set(selectedData.map(item => item.vendor_name)).size === 1;
+    let uniqueVendor =
+      new Set(selectedData.map((item) => item.vendor_name)).size === 1;
     if (!uniqueVendor) {
       Swal.fire({
         title: "Invalid Selection!",
@@ -288,7 +296,9 @@ const AuditPurchase = () => {
       return;
     }
 
-    const allPurchased = selectedData.every((item) => item.audit_status === "purchased");
+    const allPurchased = selectedData.every(
+      (item) => item.audit_status === "purchased"
+    );
     if (!allPurchased) {
       Swal.fire({
         title: "Action Denied!",
@@ -339,7 +349,6 @@ const AuditPurchase = () => {
       }
     }
   };
-
 
   useEffect(() => {
     if (duplicateMsg) {
@@ -425,7 +434,8 @@ const AuditPurchase = () => {
 
       const res = await recordPurchase(data);
       if (res.error) throw new Error(res.error);
-      const response = await refetchPlanData();
+      // const response = await refetchPlanData();
+      const response = await fetchFilteredPosts();
       if (response.isSuccess && response.data) {
         setCampainPlanData(response.data);
       }
@@ -456,7 +466,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
-        setSelectedData([])
+        setSelectedData([]);
         // setSelectedVendorId(null);
         // setShortCodes([]);
         break;
@@ -465,7 +475,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
-        setSelectedData([])
+        setSelectedData([]);
         // setShortCodes([]);
         // setSelectedPlan(null);
         // setSelectedVendorId(null);
@@ -475,7 +485,7 @@ const AuditPurchase = () => {
         setSelectedPlan(null);
         setStartDate(null);
         setEndDate(null);
-        setSelectedData([])
+        setSelectedData([]);
         // setShortCodes([]);
         // setStartDate(null);
         // setEndDate(null);
@@ -486,7 +496,7 @@ const AuditPurchase = () => {
         setCampainPlanData([]);
         setStartDate(null);
         setEndDate(null);
-        setSelectedData([])
+        setSelectedData([]);
         // setShortCodes([]);
         // setSelectedPlan(null);
         break;
@@ -507,7 +517,7 @@ const AuditPurchase = () => {
       key: "platform_name",
       editable: true,
       renderRowCell: (row) => {
-        return formatString(row?.platform_name)
+        return formatString(row?.platform_name);
       },
       customEditElement: (
         row,
@@ -558,8 +568,8 @@ const AuditPurchase = () => {
               options={
                 Array.isArray(allPages?.pageData)
                   ? allPages.pageData?.filter(
-                    (data) => data?.temp_vendor_id === vendorName
-                  )
+                      (data) => data?.temp_vendor_id === vendorName
+                    )
                   : []
               }
               getOptionLabel={(option) => option.page_name || ""}
@@ -649,20 +659,21 @@ const AuditPurchase = () => {
             <CustomSelect
               fieldGrid={12}
               dataArray={vendorsList}
-              optionId={"_id"}
+              optionId={"vendor_id"}
               optionLabel={"vendor_name"}
-              selectedId={row?.vendorId}
+              selectedId={row?.vendor_id}
               setSelectedId={(name) => {
                 const vendorDetail = vendorsList.find(
-                  (item) => item._id === name
+                  (item) => item.vendor_id === name
                 );
-                page_id.current = vendorDetail._id;
+
                 const vendorData = {
-                  vendorId: vendorDetail._id,
                   vendor_id: vendorDetail.vendor_id,
                   vendor_name: vendorDetail.vendor_name,
                 };
+
                 setVendorName(vendorDetail.temp_vendor_id);
+
                 handelchange(vendorData, index, column, true);
               }}
             />
@@ -686,7 +697,6 @@ const AuditPurchase = () => {
       width: 150,
       editable: true,
       renderRowCell: (row) => formatString(row?.accessibility_caption),
-
     },
     {
       name: "Comment Count",
@@ -868,8 +878,8 @@ const AuditPurchase = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                        ? "pending"
-                        : row.audit_status,
+                      ? "pending"
+                      : row.audit_status,
                 };
                 handledataUpdate({
                   ...row,
@@ -877,12 +887,13 @@ const AuditPurchase = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${row.audit_status === "pending"
-                ? "btn btn-sm cmnbtn btn-primary"
-                : row.audit_status !== "audited"
+              className={`pointer badge ${
+                row.audit_status === "pending"
+                  ? "btn btn-sm cmnbtn btn-primary"
+                  : row.audit_status !== "audited"
                   ? "bg-success"
                   : "btn btn-sm cmnbtn btn-primary"
-                }`}
+              }`}
             >
               {formatString(row.audit_status)}
             </button>
@@ -924,13 +935,13 @@ const AuditPurchase = () => {
         );
       },
       colorRow: (row) => {
-        if (!row?.owner_info?.username) return "#ff00009c";
-        return row.audit_status !== "pending"
-          ? "#c4fac4"
-          : row.amoumt == 0 || row.vendor_name == ""
-            ? "#ffff008c"
-            : "";
-      },
+        if (!row?.owner_info?.username) return "#ff00009c"; // Red for missing username
+        if (row.audit_status === "purchased") return "#c4fac4"; // Green for purchased
+        if (row.audit_status === "audited") return "#FFA500"; // Orange for audited
+        if (row.amount == 0 || row.vendor_name == "") return "#ffff008c"; // Yellow for empty amount or vendor
+        return ""; // Default (no color)
+      }
+
     },
     {
       name: "Action",
@@ -964,7 +975,7 @@ const AuditPurchase = () => {
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => handledataUpdate(row)}
                 title="Save"
-              // disabled={row.audit_status !== "purchased"}
+                // disabled={row.audit_status !== "purchased"}
               >
                 save
               </button>
@@ -1043,7 +1054,7 @@ const AuditPurchase = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-              modalData?.data?.data?.requestStatsUpdate?.length ? (
+            modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1189,7 +1200,11 @@ const AuditPurchase = () => {
                     fullWidth
                     options={vendorsList}
                     getOptionLabel={(option) => option.vendor_name}
-                    value={vendorsList?.find((item) => item.vendor_id === selectedVendorId) || null}
+                    value={
+                      vendorsList?.find(
+                        (item) => item.vendor_id === selectedVendorId
+                      ) || null
+                    }
                     onChange={(event, newValue) => {
                       if (newValue) {
                         handleUpdateStatus(newValue.vendor_id);
@@ -1202,7 +1217,9 @@ const AuditPurchase = () => {
                         {...params}
                         label="Update Vendor"
                         variant="outlined"
-                        onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+                        onChange={(e) =>
+                          debouncedSetSearchQuery(e.target.value)
+                        }
                       />
                     )}
                   />
@@ -1244,9 +1261,6 @@ const AuditPurchase = () => {
               </>
             )}
 
-
-
-
             {currentTab === "Tab2" && (
               <div className="col-lg-6 col-md-6 col-12">
                 <Calendar
@@ -1266,7 +1280,9 @@ const AuditPurchase = () => {
                     <Autocomplete
                       fullWidth
                       options={vendorsList}
-                      getOptionLabel={(option) => formatString(option.vendor_name)}
+                      getOptionLabel={(option) =>
+                        formatString(option.vendor_name)
+                      }
                       value={
                         vendorsList?.find(
                           (item) => item._id === selectedVendorId
@@ -1286,7 +1302,9 @@ const AuditPurchase = () => {
                           {...params}
                           label="Select Vendor"
                           variant="outlined"
-                          onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+                          onChange={(e) =>
+                            debouncedSetSearchQuery(e.target.value)
+                          }
                         />
                       )}
                     />
@@ -1316,10 +1334,10 @@ const AuditPurchase = () => {
                   />
                 </div>
 
-                <div className="col-lg-12 col-md-12 col-12">
-                  {selectedData?.length && currentTab === "Tab3" ? (
+                {selectedData?.length && currentTab === "Tab3" ? (
+                  <div className="col-lg-6 col-md-6 col-12">
                     <div className="row">
-                      <div className="col-md-11">
+                      <div className="col-md-10">
                         <div className="form-group">
                           <label className="form-label">Price</label>
                           <input
@@ -1331,7 +1349,7 @@ const AuditPurchase = () => {
                           />
                         </div>
                       </div>
-                      <div className="col-md-1">
+                      <div className="col-md-2 pl-0">
                         <button
                           className="btn cmnbtn btn-primary mt28 w-100"
                           onClick={handleSave}
@@ -1340,26 +1358,24 @@ const AuditPurchase = () => {
                         </button>
                       </div>
                     </div>
-                  ) : (
-                    ""
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  ""
+                )}
 
                 {currentTab === "Tab3" && (
-                  <>
-                    <div className="col-12 mb16">
-                      <button
-                        className="btn btn-primary btn-sm cmnbtn"
-                        onClick={handleRefetchPrice}
-                        disabled={!campaignPlanData?.length > 0}
-                      >
-                        Fetch price of all links
-                        <ArrowClockwise
-                          className={priceUpdateLoading && "animate_rotate"}
-                        />
-                      </button>
-                    </div>
-                  </>
+                  <div className="col-lg-6 col-md-6 col-12">
+                    <button
+                      className="btn btn-primary btn-sm cmnbtn mt28"
+                      onClick={handleRefetchPrice}
+                      disabled={!campaignPlanData?.length > 0}
+                    >
+                      Fetch price of all links
+                      <ArrowClockwise
+                        className={priceUpdateLoading && "animate_rotate"}
+                      />
+                    </button>
+                  </div>
                 )}
 
                 <div className="col-lg-12 col-md-12 col-12">
@@ -1382,17 +1398,20 @@ const AuditPurchase = () => {
                   />
                 </div>
                 {campaignPlanData?.length > 0 && (
-                  <button
-                    title="Upload Audited Data"
-                    className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload()
-                      ? "btn-outline-primary"
-                      : "btn-primary"
+                  <div className="col-12 mb16">
+                    <button
+                      title="Upload Audited Data"
+                      className={`cmnbtn btn btn-sm ${
+                        disableAuditUpload()
+                          ? "btn-outline-primary"
+                          : "btn-primary"
                       }`}
-                    onClick={handleAuditedDataUpload}
-                    disabled={disableAuditUpload()}
-                  >
-                    Record Purchase
-                  </button>
+                      onClick={handleAuditedDataUpload}
+                      disabled={disableAuditUpload()}
+                    >
+                      Record Purchase
+                    </button>
+                  </div>
                 )}
               </>
             )}
@@ -1420,7 +1439,7 @@ const AuditPurchase = () => {
             </div>
           </div>
         </div>
-      </div >
+      </div>
 
       {phaseList?.length > 1 && (
         <PhaseTab
@@ -1435,8 +1454,7 @@ const AuditPurchase = () => {
           selectedPlan={selectedPlan}
           PlanData={campaignPlanData}
         />
-      )
-      }
+      )}
 
       <View
         version={1}
@@ -1454,8 +1472,9 @@ const AuditPurchase = () => {
           <div className="flexCenterBetween colGap8 ml-auto">
             <button
               title="Reload Data"
-              className={`icon-1 btn_sm btn-outline-primary  ${fetchingPlanData && "animate_rotate"
-                }`}
+              className={`icon-1 btn_sm btn-outline-primary  ${
+                fetchingPlanData && "animate_rotate"
+              }`}
               onClick={refetchPlanData}
             >
               <ArrowClockwise />

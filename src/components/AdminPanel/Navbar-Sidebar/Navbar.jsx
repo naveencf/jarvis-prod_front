@@ -81,19 +81,6 @@ const Navbar = () => {
     navigate("/login");
   };
 
-  // const getAdjustment = async () => {
-  //   try {
-  //     const res = await axios.get(
-  //       baseUrl + `sales/user_adjustment_incentive_amount/${loginUserId}`,
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-  //         },
-  //       }
-  //     );
-  //     setAdjustment(res?.data?.data?.adjustment_incentive_amount);
-  //   } catch (error) {}
-  // };
 
   // Check if the current route contains the word 'sales'
   const isSalesRoute = location.pathname.includes("sales");

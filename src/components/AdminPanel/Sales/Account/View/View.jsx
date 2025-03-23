@@ -18,6 +18,11 @@ const View = ({
   version = 0,
   exportData,
   getFilteredData,
+  cloudPagination = false,
+  pageNavigator = {
+    prev: {},
+    next: {},
+  },
 }) => {
   const Version = useCallback(!version ? CustomTableV2 : CustomTable, [
     version,
@@ -36,6 +41,9 @@ const View = ({
         selectedData={selectedData}
         showTotal={showTotal}
         exportData={exportData}
+        getFilteredData={getFilteredData}
+        cloudPagination={cloudPagination}
+        pageNavigator={pageNavigator}
       />
     </CustomTableWrapper>
   );

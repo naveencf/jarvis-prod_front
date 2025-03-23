@@ -3,7 +3,7 @@ export const debounce = (func, delay) => {
   return (...args) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
-      func(...args);
+      func.apply(this, arguments);
     }, delay);
   };
 };

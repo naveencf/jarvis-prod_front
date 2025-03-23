@@ -104,7 +104,6 @@ const UserSingle = () => {
         const response = res?.data.data;
         setSalaryData(response);
         setSalaryFilterData(response);
-        console.log(response, "response here salary");
       })
       .catch((e) => console.error("come to error"));
   }, [id]);

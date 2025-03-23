@@ -20,11 +20,20 @@ const OperationApi = createApi({
     }),
 
     getPlanById: builder.query({
-      query: (id) =>
+      query: ({ id, vendorId, startDate, endDate }) =>
         `v1/operation/get_post_details_by_campaign${
           id == 0 || id == null || id == "null" ? "" : `/${id}`
-        }`,
+        }${
+          vendorId
+            ? `?vendorId=${vendorId}&start_date=${startDate}&end_date=${endDate}`
+            : ""
+        }
+        `,
+
       transformResponse: (response) => response?.data,
+      providesTags: (result, error, arg) => [
+        { type: "Plan", id: arg.id || "LIST" },
+      ],
     }),
     getDeleteStoryData: builder.query({
       query: (id) => `v1/operation/exclude_story_from_post_link/${id}`,

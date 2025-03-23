@@ -10,6 +10,8 @@ const PaginationComp = ({
   originalData,
   columnsheader,
   isPagination,
+  cloudPagination,
+  pageNavigator,
 }) => {
   useEffect(() => {
     setCurrentPage(1);
@@ -30,10 +32,15 @@ const PaginationComp = ({
                       ))} */}
             <button
               className="prev-button"
-              onClick={() =>
-                setCurrentPage(currentPage > 1 ? currentPage - 1 : currentPage)
-              }
-              disabled={currentPage === 1}
+              {...(cloudPagination
+                ? pageNavigator["prev"] // user defined event
+                : {
+                    onClick: () =>
+                      setCurrentPage(
+                        currentPage > 1 ? currentPage - 1 : currentPage
+                      ),
+                    disabled: currentPage === 1,
+                  })}
             >
               <svg
                 fill="var(--medium)"
@@ -55,14 +62,18 @@ const PaginationComp = ({
 
             <button
               className="next-button"
-              onClick={() =>
-                setCurrentPage(
-                  currentPage < Math.ceil(data.length / itemsPerPage)
-                    ? currentPage + 1
-                    : currentPage
-                )
-              }
-              disabled={currentPage === Math.ceil(data?.length / itemsPerPage)}
+              {...(cloudPagination
+                ? pageNavigator["next"]
+                : {
+                    onClick: () =>
+                      setCurrentPage(
+                        currentPage < Math.ceil(data.length / itemsPerPage)
+                          ? currentPage + 1
+                          : currentPage
+                      ),
+                    disabled:
+                      currentPage === Math.ceil(data?.length / itemsPerPage),
+                  })}
             >
               <svg
                 fill="var(--medium)"

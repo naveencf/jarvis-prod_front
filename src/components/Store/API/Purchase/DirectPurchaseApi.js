@@ -47,10 +47,10 @@ const DirectPurchaseApi = createApi({
       }),
     }),
     updatePurchasedStatusData: builder.mutation({
-      query: ({ amount, shortCode, audit_status }) => ({
+      query: ({ amount, shortCode, audit_status,createdBy }) => ({
         url: `v1/purchase/update_purchased_status_data`,
         method: "PUT",
-        body: { amount, shortCode, audit_status },
+        body: { amount, shortCode, audit_status,createdBy },
       }),
     }),
     updatePurchasedStatusVendor: builder.mutation({

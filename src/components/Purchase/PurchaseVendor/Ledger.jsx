@@ -122,6 +122,12 @@ const Ledger = () => {
       renderRowCell: (row) => formatDate(row?.createdAt),
       width: 120,
     },
+    {
+      key: "Narration",
+      name: "Narration",
+      // renderRowCell: (row) => row?.no_of_post,
+      width: 150,
+    },
     { key: "campaign_name", name: "Campaign Name", width: 120 },
     { key: "transaction_type_status", name: "Status", width: 100 },
     {
@@ -181,6 +187,7 @@ const Ledger = () => {
       renderRowCell: (row) => row?.no_of_post,
       width: 150,
     },
+
     {
       key: "vendor_name",
       name: "Vendor Name",

@@ -6,6 +6,7 @@ import jwtDecode from "jwt-decode";
 import { BsFillEyeFill } from "react-icons/bs";
 import Select from "react-select";
 import { baseUrl } from "../../../../utils/config";
+import imageTest1 from "../../../../assets/img/product/Avtrar1.png";
 
 const UserOverview = () => {
   const [search, setSearch] = useState("");
@@ -120,6 +121,7 @@ const UserOverview = () => {
             .map((detail) => {
               return (
                 <>
+                  {console.log(detail.image_url, "clg hai")}
                   <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
                     <div className="summary_card">
                       <div className="summary_cardtitle">
@@ -141,12 +143,22 @@ const UserOverview = () => {
                         <div className="summary_cardrow flex-column">
                           <div className="summary_box text-center ml-auto mr-auto">
                             <img
-                              src={detail.image_url}
-                              width="80px"
-                              height="80px"
-                              style={{ borderRadius: "50%" }}
+                              src={
+                                detail.image_url &&
+                                detail.image_url !==
+                                  "https://storage.googleapis.com/node-prod-bucket/"
+                                  ? detail.image_url
+                                  : "https://cdn.vectorstock.com/i/500p/82/99/no-image-available-like-missing-picture-vector-43938299.jpg"
+                              }
+                              alt="no image"
+                              style={{
+                                borderRadius: "50%",
+                                height: "80px",
+                                width: "80px",
+                              }}
                             />
                           </div>
+
                           <div className="summary_box col">
                             <h3>{detail.user_name}</h3>
                           </div>

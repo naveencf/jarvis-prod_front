@@ -8,16 +8,12 @@ import FormContainer from "../../FormContainer";
 import { baseUrl } from "../../../../utils/config";
 import BirthdayAndWorkAniverseryWFO from "./UserDashboard/BirthdayAndWorkAniverseryWFO";
 import NewJoineeAndExitUsersWFO from "./UserDashboard/NewJoineeAndExitUsersWFO";
-import DepartmentWiseMaleFemaleCountWFO from './UserDashboard/DepartmentWiseMaleFemaleCountWFO'
+import DepartmentWiseMaleFemaleCountWFO from "./UserDashboard/DepartmentWiseMaleFemaleCountWFO";
 import UserCountWithLPAWFO from "./UserCountWithLPAWFO";
-import AgeGrafWFO from './UserDashboard/AgeWiseGrafWFO'
+import AgeGrafWFO from "./UserDashboard/AgeWiseGrafWFO";
 import MonthWiseJoinee from "./UserDashboard/MonthWiseJoinee";
 
-
-
-
-
- const UserDashPieChart = lazy(() => import("./UserDashPieChart"));
+const UserDashPieChart = lazy(() => import("./UserDashPieChart"));
 
 const UserDashboard = () => {
   const [userData, setUserData] = useState([]);
@@ -25,6 +21,8 @@ const UserDashboard = () => {
   const [wFOCount, setWFOCount] = useState([]);
   const [wfhdCount, setWfhdCount] = useState([]);
   const [wFhCount, setWFhCount] = useState([]);
+  const [botUserCount, setBotUserCount] = useState([]);
+  console.log(botUserCount, "botusercount");
   const [activeUserCount, setActiveUserCount] = useState([]);
   const [exitUserCount, setExiteUserCount] = useState([]);
 
@@ -49,6 +47,7 @@ const UserDashboard = () => {
         ]);
 
         const data = usersRes.data.data;
+        console.log(data, "datais here");
         setUserData(data.filter((d) => d.user_status === "Active"));
         setWFOCount(
           data.filter((d) => d.job_type === "WFO" && d.user_status === "Active")
@@ -63,6 +62,9 @@ const UserDashboard = () => {
         );
         setWFhCount(
           data.filter((d) => d.job_type === "WFH" && d.user_status === "Active")
+        );
+        setBotUserCount(
+          data.filter((d) => d.role_id === 7 && d.user_status === "Active")
         );
         setActiveUserCount(data.filter((d) => d.user_status === "Active"));
         setExiteUserCount(data.filter((d) => d.user_status === "Exit"));
@@ -139,7 +141,12 @@ const UserDashboard = () => {
     ],
   };
 
-  const pieChartData = [wFOCount.length, wFhCount.length, wfhdCount.length];
+  const pieChartData = [
+    wFOCount.length,
+    wFhCount.length,
+    wfhdCount.length,
+    botUserCount.length,
+  ];
 
   // Helper function to render cards
   const renderCard = (title, count, link, icon) => (
@@ -171,9 +178,24 @@ const UserDashboard = () => {
         <div className="action_title">
           <FormContainer mainTitle="User Dashboard" link="/" />
         </div>
-        <Link to="/admin/user-login-history">
-          <button className="btn btn-primary btn-sm">Login History</button>
-        </Link>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <Link to="/admin/user-login-history">
+              <button className="btn btn-primary btn-sm">Login History</button>
+            </Link>
+          </div>
+          <div>
+            <h4 className="badge badge-warning">
+              Bot Users: {botUserCount.length}
+            </h4>
+          </div>
+        </div>
       </div>
 
       {/* User Cards */}

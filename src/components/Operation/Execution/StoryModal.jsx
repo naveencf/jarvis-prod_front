@@ -49,7 +49,9 @@ const StoryModal = ({ record, setToggleModal, selectedPlan }) => {
     isFetching: fetchingPlanData,
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
-  } = useGetPlanByIdQuery(record === 3 ? selectedCampaign : selectedPlan);
+  } = useGetPlanByIdQuery(
+    record === 3 ? { id: selectedCampaign } : { id: selectedPlan }
+  );
 
   async function handlesStoryUplaods() {
     try {
@@ -176,6 +178,7 @@ const StoryModal = ({ record, setToggleModal, selectedPlan }) => {
 
             <button
               className="btn cmnbtn btn-primary mt-4 ml-3"
+              disabled={storyloading}
               onClick={() => handlesStoryUplaods()}
             >
               Add Story

@@ -6,6 +6,8 @@ export const baseUrl = "https://jarvis.work:8080/api/"; // for production
 // export const baseUrl = "https://jarvis.work:8080/api/"; // for aman
 export const insightsBaseUrl = "https://insights.ist:8080/api/"; // for insights production
 // export const insightsBaseUrl = "http://localhost:8080/api/"; // for insights production
+export const socketBaseUrl = "http://35.238.166.189:8080"; // for aman
+// export const socketBaseUrl = "http://192.168.29.104:8080"; // for aman
 export const phpBaseUrl =
   "https://purchase.creativefuel.io/webservices/RestController.php"; // for production php
 // ("https://purchase.creativefuel.io/webservices/RestController.php"); // for production php

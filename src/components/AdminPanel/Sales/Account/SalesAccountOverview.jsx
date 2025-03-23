@@ -28,6 +28,7 @@ import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import FormContainer from "../../FormContainer.jsx";
 import { UserSwitch } from "@phosphor-icons/react";
 import TransferAccount from "./TransferAccount.jsx";
+import { all } from "axios";
 
 const SalesAccountOverview = () => {
   const { userContextData, contextData } = useAPIGlobalContext();
@@ -537,7 +538,21 @@ const SalesAccountOverview = () => {
       />
     ),
   };
+  useEffect(() => {
+    const localData = JSON.parse(localStorage.getItem("accFilter"));
+    if (allAccount?.length > 0) {
+      const key = Object.keys(localData)[0];
+      const data = localData[key];
 
+      filterEngine(
+        key === "0"
+          ? allAccount
+          : allAccount?.filter((account) => account[data?.type] == 0),
+        data?.isRemove ? "remove" : "",
+        String(key)
+      );
+    }
+  }, [allAccountLoading]);
   return (
     <div>
       <Modal
@@ -672,6 +687,7 @@ const SalesAccountOverview = () => {
                     className="card p16 hov-pointer"
                     onClick={() => {
                       filterEngine(allAccount, "remove", "0");
+                      addLocal("0", { isRemove: true, type: "all", key: "0" });
                     }}
                   >
                     <h6 className="colorMedium ">Total Accounts</h6>
@@ -689,6 +705,11 @@ const SalesAccountOverview = () => {
                         "",
                         "1"
                       );
+                      addLocal("1", {
+                        isRemove: false,
+                        type: "totalSaleBookingCounts",
+                        key: "1",
+                      });
                     }}
                   >
                     <h6 className="colorMedium">
@@ -714,6 +735,11 @@ const SalesAccountOverview = () => {
                         "",
                         "2"
                       );
+                      addLocal("2", {
+                        isRemove: false,
+                        type: "paidAmount",
+                        key: "2",
+                      });
                     }}
                   >
                     <h6 className="colorMedium">
@@ -772,5 +798,9 @@ const SalesAccountOverview = () => {
     </div>
   );
 };
+
+function addLocal(key, data) {
+  localStorage.setItem("accFilter", JSON.stringify({ [key]: data }));
+}
 
 export default SalesAccountOverview;

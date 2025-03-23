@@ -48,6 +48,9 @@ const Profile = () => {
   };
   const accordionButtons = ["About", "Profile", "Job", "Document", "Assets"];
 
+  const [error, setError] = useState("");
+  const MAX_FILE_SIZE = 500 * 1024; // 500KB
+
   // Document Information Tab-------------------Start------------------------------------
   const [documentData, setDocumentData] = useState([]);
   async function getDocuments() {
@@ -66,19 +69,64 @@ const Profile = () => {
     setPreviewImage(userData?.image_url || "imageTest1");
   }, [userData]);
 
-  const handleFileSelect = (event) => {
+  const handleFileSelect = async (event) => {
     const file = event.target.files[0];
-    if (file) {
-      setProfileUpdate(file);
 
-      // Show preview of selected file
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        setError("Image size is too large. Compressing...");
+        try {
+          const options = {
+            maxSizeMB: 0.4, // Compress to ~400KB
+            maxWidthOrHeight: 800, // Resize if needed
+            useWebWorker: true, // Use web workers for performance
+          };
+
+          const compressedFile = await imageCompression(file, options);
+
+          if (compressedFile.size > MAX_FILE_SIZE) {
+            setError(
+              "Compressed image is still too large. Please use a smaller file."
+            );
+            return;
+          }
+
+          setProfileUpdate(compressedFile);
+          setError(""); // Clear error message
+
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setPreviewImage(reader.result);
+          };
+          reader.readAsDataURL(compressedFile);
+        } catch (err) {
+          setError("compress image. less then 500kb");
+        }
+      } else {
+        setProfileUpdate(file);
+        setError("");
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewImage(reader.result);
+        };
+        reader.readAsDataURL(file);
+      }
     }
   };
+  // const handleFileSelect = (event) => {
+  //   const file = event.target.files[0];
+  //   if (file) {
+  //     setProfileUpdate(file);
+
+  //     // Show preview of selected file
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setPreviewImage(reader.result);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
 
   useEffect(() => {
     getDocuments();
@@ -211,6 +259,14 @@ const Profile = () => {
                     </button>
                   </div>
                 </div>
+                {error && (
+                  <p
+                    style={{ fontSize: "12px", color: "red" }}
+                    className="error-message"
+                  >
+                    {error}
+                  </p>
+                )}
               </div>
             </div>
             <div className="profileCardDtlCol">
