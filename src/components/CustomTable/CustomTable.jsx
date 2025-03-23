@@ -27,6 +27,11 @@ const CustomTable = ({
   exportData = (tool) => {
     return true;
   },
+  cloudPagination = false,
+  pageNavigator = {
+    prev: {},
+    next: {},
+  },
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -691,6 +696,8 @@ const CustomTable = ({
         originalData={data}
         columnsheader={columnsheader}
         isPagination={Pagination}
+        cloudPagination={cloudPagination}
+        pageNavigator={pageNavigator}
       />
     </div>
   );

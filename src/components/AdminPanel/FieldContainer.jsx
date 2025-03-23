@@ -59,6 +59,12 @@ const FieldContainer = ({
           min={min}
           onBlur={onBlur}
           ref={refer}
+          onWheel={(e) => {
+            if (type === "number") {
+              e.target.blur();
+              setTimeout(() => e.target.focus(), 0); // Optional: Refocus if needed
+            }
+          }}
         >
           {children}
         </Tag>

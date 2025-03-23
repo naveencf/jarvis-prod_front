@@ -140,8 +140,8 @@ const PageMaster = () => {
   const [rowCount, setRowCount] = useState([
     { page_price_type_name: "", page_price_type_id: "", price: "" },
   ]);
-  console.log(rowCount,'rowCount');
-  
+  console.log(rowCount, 'rowCount');
+
   const dispatch = useDispatch();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
   const { data: profileData } = useGetAllProfileListQuery();
@@ -188,6 +188,7 @@ const PageMaster = () => {
     if (username !== "") {
       setPageName(username)
     }
+
   }, []);
 
   useEffect(() => {
@@ -210,6 +211,21 @@ const PageMaster = () => {
       // // console.log("Condition not met");                                                                                  
     }
   }, [platformPriceData, isPriceLoading]);
+
+  useEffect(() => {
+    if (rowCount.every(row => row.page_price_type_id)) return;
+
+    const defaultOption = filterPriceTypeList.find(option => option.name.includes("_post"));
+    if (!defaultOption) return;
+
+    const updatedRowCount = rowCount.map(row =>
+      row.page_price_type_id
+        ? row
+        : { ...row, page_price_type_id: defaultOption._id, page_price_type_name: defaultOption.name }
+    );
+
+    setRowCount(updatedRowCount);
+  }, [filterPriceTypeList]);
 
   const PageLevels = [
     { value: "high", label: "Level 1 (High)", index: 0 },
@@ -278,7 +294,8 @@ const PageMaster = () => {
     setPrimary(selectedOption);
   };
 
-  const handleSubmit = async (e) => {
+
+   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (pageName === "") {
@@ -377,6 +394,26 @@ const PageMaster = () => {
       return toastError("Price Sould not be zero");
     }
 
+    let pagePriceList = rowCount.map((item) => ({
+      [item.page_price_type_name]: Number(item.price),
+    }));
+    
+     const postPriceItems = rowCount.filter((item) => item.page_price_type_name === "instagram_post");
+    
+    if (postPriceItems?.length > 0) {
+      postPriceItems.forEach((postItem) => {
+        const postPrice = Number(postItem.price);
+    
+         if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_carousel"))) {
+          pagePriceList.push({ instagram_carousel: postPrice });
+        }
+    
+         if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_reel"))) {
+          pagePriceList.push({ instagram_reel: postPrice });
+        }
+      });
+    }
+
     const payload = {
       page_name: pageName,
       page_link: link,
@@ -426,14 +463,9 @@ const PageMaster = () => {
       page_language_name: languageId.map((item) => item?.label),
       primary_page: primary.value,
       primary_page_name: pageName,
-      page_price_list: rowCount.map((item) => {
-        return { [item.page_price_type_name]: Number(item.price) };
-      }),
+      page_price_list: pagePriceList
     };
-    console.log(rowCount.map((item) => {
-      return { [item.page_price_type_name]: Number(item.price) };
-    }),'saim');
-    
+
 
     // return;
     setFormLoading(true);
@@ -519,9 +551,11 @@ const PageMaster = () => {
     const newRowCount = [...rowCount];
     newRowCount[index].page_price_type_id = e.value;
     newRowCount[index].page_price_type_name = e.label;
+    console.log("newRowCount", newRowCount);
     setRowCount(newRowCount);
   };
 
+  console.log("rowCount----", rowCount);
   //Milion convert format function
   const formatNumber = (value) => {
     if (value >= 1000000) {
@@ -582,6 +616,8 @@ const PageMaster = () => {
     };
     fetchData();
   }, [vendorId]);
+
+
 
   const goBack = () => {
     navigate(-1);
@@ -1510,14 +1546,21 @@ const PageMaster = () => {
                         }))}
                         required={true}
                         value={{
-                          label: priceTypeList?.find(
-                            (role) =>
-                              role._id === rowCount[index]?.page_price_type_id
-                          )?.name,
-                          value: rowCount[index]?.page_price_type_id,
+                          label:
+                            priceTypeList?.find(
+                              (role) =>
+                                role._id === rowCount[index]?.page_price_type_id
+                            )?.name ||
+                            filterPriceTypeList.find((option) => option.name.includes("_post"))
+                              ?.name,
+                          value:
+                            rowCount[index]?.page_price_type_id ||
+                            filterPriceTypeList.find((option) => option.name.includes("_post"))
+                              ?._id,
                         }}
                         onChange={(e) => handlePriceTypeChange(e, index)}
                       />
+
                     </div>
                   </div>
                 </div>

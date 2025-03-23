@@ -1,6 +1,6 @@
 import jwtDecode from "jwt-decode";
 import React, { lazy, Suspense, useEffect, useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Loader from "../Finance/Loader/Loader";
 import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey";
 import Profile from "./HRMS/Pantry/UserPanel/Profile/Profile";
@@ -840,19 +840,12 @@ const RecenltyBoosted = lazy(() => import("../Boosting/RecenltyBoosted"))
 const Admin = () => {
   // const [contextData, setData] = useState([]);
   const { contextData } = useAPIGlobalContext();
+  const location = useLocation();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  // useEffect(() => {
-  //   if (userID && contextData.length === 0) {
-  //     axios
-  //       .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
-  //       .then((res) => {
-  //         setData(res.data);
-  //       });
-  //   }
-  // }, [userID]);
 
+  const isPantryRoute = location.pathname.includes("pantry");
   return (
     <>
       <Suspense
@@ -862,7 +855,9 @@ const Admin = () => {
           </div>
         }
       >
-        <div id="wrapper">
+
+        <div id="wrapper" className={isPantryRoute ? "hkDashboard" : ""}>
+
           <div id="content-wrapper" className="d-flex flex-column">
             <div id="content">
               <div className="page_content">

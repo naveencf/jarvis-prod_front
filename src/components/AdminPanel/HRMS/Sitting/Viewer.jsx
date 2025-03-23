@@ -71,6 +71,12 @@ const Viewer = ({
 
   const [unassignedUsersList, setUnassignedUsersList] = useState([]);
   const [unListData, setUnListData] = useState({});
+  console.log(elements, "elements hhh");
+  const allElements = Array.isArray(unListData)
+    ? unListData.flatMap((item) => item.elements || []) // Ensure elements exist
+    : [];
+
+  console.log(allElements, "Merged elements array");
 
   const totalSeats = elements.length;
   const assignedSeats = elements.filter((el) => el.employee).length;
@@ -501,8 +507,6 @@ const Viewer = ({
 
                   {showChairsWithNames &&
                     elements?.map((el) => {
-                      console.log(el.seat_no, "okokook");
-
                       const matchedUser = userContextData?.find(
                         (user) => user?.user_id === el.user_id
                       );
@@ -574,7 +578,7 @@ const Viewer = ({
                           <Text
                             key={`${el.id}-offset`}
                             text={`${el.seat_no || ""}`} // Show seat_no even if user is not assigned
-                            fontSize={12}
+                            fontSize={11}
                             fontStyle="bold"
                             x={numberX}
                             y={numberY}
@@ -758,7 +762,7 @@ const Viewer = ({
                       ...userData
                         ?.filter(
                           (option) =>
-                            !elements.some(
+                            !allElements.some(
                               (el) => el.user_id === option.user_id
                             )
                         )

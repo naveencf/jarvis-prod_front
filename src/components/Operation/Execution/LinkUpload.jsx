@@ -73,6 +73,14 @@ const LinkUpload = ({
   }, [vendor]);
 
   useEffect(() => {
+    console.log(selectedData);
+    if (record == 1) {
+      let data = selectedData.map((data) => data.ref_link);
+      setLinks(data.join("\n"));
+    }
+  }, [selectedData]);
+
+  useEffect(() => {
     if (selectedPlan == 0 || selectedPlan == null || selectedPlan == "null") {
       setRecord(3);
     } else setRecord(0);

@@ -64,6 +64,9 @@ const CampaignExecution = () => {
   const [platformName, setPlatformName] = useState("");
   const [pageName, setPageName] = useState({ page_name: "" });
   const [selectedPrice, setSelectedPrice] = useState("");
+  const [selectedVendor, setSelectedVendor] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const maxTabs = useRef(4);
   const removeStory = useRef(null);
   const [visibleTabs, setVisibleTabs] = useState(
@@ -103,7 +106,15 @@ const CampaignExecution = () => {
     isFetching: fetchingPlanData,
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
-  } = useGetPlanByIdQuery(selectedPlan);
+  } = useGetPlanByIdQuery(
+    {
+      id: selectedPlan,
+      vendorId: selectedVendor,
+      startDate,
+      endDate,
+    },
+    { skip: selectedVendor && !(startDate && endDate) }
+  );
 
   const [updateData, { isLoading, isSuccess }] = usePostDataUpdateMutation();
   const [uploadAudetedData, { isLoading: AuditedUploading }] =
@@ -181,6 +192,7 @@ const CampaignExecution = () => {
     formData.append("_id", row._id);
     formData.append("postedOn", row.postedOn);
     formData.append("phaseDate", row.phaseDate);
+    formData.append("campaignId", row.campaignId);
 
     if (vendorName) {
       formData.append(
@@ -292,7 +304,6 @@ const CampaignExecution = () => {
   //     handlePriceUpdate(selectedPrice);
   //   }
   // }, [selectedPrice]);
-console.log("PlanData",PlanData);
   async function handlePriceUpdate(row) {
     try {
       const key = [
@@ -683,10 +694,11 @@ console.log("PlanData",PlanData);
         handelchange,
         column
       ) => {
-        if (row.amount < 1 || row.vendor_name == "" || row.campaignId == null) {
+        if (row.amount < 0 || row.vendor_name == "" || row.campaignId == null) {
           return (
             <p>
-              Amount should be greater than 0 and select the vendor for the page
+              Amount should be greater than or equal to 0 and select the vendor
+              for the page
             </p>
           );
         } else
@@ -694,15 +706,15 @@ console.log("PlanData",PlanData);
             <button
               title={
                 row.audit_status === "purchased" ||
-                row.amount < 1 ||
+                row.amount < 0 ||
                 row?.vendor_name == "" ||
                 row?.campaignId == null
-                  ? "Amount should be greater than 0 and select the vendor for the page or this link is not present in any campaign"
+                  ? "Amount should be greater than or equal to 0 and select the vendor for the page or this link is not present in any campaign"
                   : ""
               }
               disabled={
                 row.audit_status === "purchased" ||
-                row.amount < 1 ||
+                row.amount < 0 ||
                 row?.vendor_name == "" ||
                 row?.campaignId == null
               }
@@ -774,7 +786,7 @@ console.log("PlanData",PlanData);
           // </div>
           <button
             disabled={
-              row.amount < 1 || row.vendor_name == "" || row.campaignId == null
+              row.amount < 0 || row.vendor_name == "" || row.campaignId == null
             }
             className="btn btn-primary btn-sm cmnbtn"
             onClick={() => {
@@ -804,13 +816,10 @@ console.log("PlanData",PlanData);
       },
     },
     {
-      key: "campaignId",
+      key: "campaign_name",
       name: "Campaign Name",
       width: 150,
       editable: true,
-      renderRowCell: (row) =>
-        campaignList?.find((item) => item._id === row.campaignId)
-          ?.exe_campaign_name,
       customEditElement: (
         row,
         index,
@@ -829,6 +838,8 @@ console.log("PlanData",PlanData);
             setSelectedId={(val) => {
               const data = {
                 campaignId: val,
+                campaign_name: campaignList.find((item) => item._id === val)
+                  ?.exe_campaign_name,
               };
               handelchange(data, index, column, true);
             }}
@@ -1399,6 +1410,45 @@ console.log("PlanData",PlanData);
             }}
             label={"Plans"}
           />
+          <CustomSelect
+            fieldGrid={6}
+            dataArray={vendorsList}
+            optionId={"_id"}
+            optionLabel={"vendor_name"}
+            selectedId={selectedVendor}
+            setSelectedId={setSelectedVendor}
+            label={"Vendor"}
+          />
+          <FieldContainer
+            fieldGrid={6}
+            type="date"
+            value={startDate}
+            onChange={(e) => {
+              setStartDate(e.target.value);
+            }}
+            label="Start Date"
+          />
+          <FieldContainer
+            fieldGrid={6}
+            type="date"
+            value={endDate}
+            onChange={(e) => {
+              setEndDate(e.target.value);
+            }}
+            label="End Date"
+          />
+
+          <button
+            className="btn cmnbtn btn-primary mt-4"
+            onClick={async () => {
+              setSelectedVendor("");
+              setStartDate("");
+              setEndDate("");
+              setSelectedPlan((prev) => prev);
+            }}
+          >
+            Clear
+          </button>
         </div>
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}

@@ -182,7 +182,6 @@ const VendorMaster = () => {
   const [busiTypeData, setBusiTypeData] = useState([]);
   const { userContextData, contextData } = useAPIGlobalContext();
 
-
   // const isAssets = [53].some((index) => ApiContextData[index]?.view_value === 1);
 
   useEffect(() => {
@@ -279,14 +278,14 @@ const VendorMaster = () => {
   };
 
   const handleIFSCChange = (e, i) => {
-    const ifscValue = e.target.value.toUpperCase();
+    const ifscValue = e.target.value.toUpperCase().replace(/\s/g, ""); // Remove spaces
     const updatedRows = [...bankRows];
     updatedRows[i].ifsc = ifscValue;
     setBankRows(updatedRows);
   };
 
   const handlePANChange = (e, i) => {
-    const panValue = e.target.value.toUpperCase();
+    const panValue = e.target.value.toUpperCase().replace(/\s/g, "");
     if (panValue.length <= 10) {
       const updatedRows = [...bankRows];
       updatedRows[i].pan_card = panValue;
@@ -1376,10 +1375,10 @@ const VendorMaster = () => {
                   maxLength={4}
                   fieldGrid={4}
                   onChange={handleCompPincode}
-                // onChange={(e) => {
-                //   if (isNaN(e.target.value)) return;
-                //   setCompPin(e.target.value);
-                // }}
+                  // onChange={(e) => {
+                  //   if (isNaN(e.target.value)) return;
+                  //   setCompPin(e.target.value);
+                  // }}
                 />
               </div>
             </>
@@ -1856,16 +1855,16 @@ const VendorMaster = () => {
 
                 {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
                   bankRows[i].payment_method == "666856624366007df1dfacc8") && (
-                    <FieldContainer
-                      label={"Registered Mobile Number"}
-                      value={bankRows[i].registered_number}
-                      required={false}
-                      fieldGrid={4}
-                      type="number"
-                      onChange={(e) => handleRegisteredMobileChange(e, i)}
-                      disabled={row.is_verified} // Disable if _id exists
-                    />
-                  )}
+                  <FieldContainer
+                    label={"Registered Mobile Number"}
+                    value={bankRows[i].registered_number}
+                    required={false}
+                    fieldGrid={4}
+                    type="number"
+                    onChange={(e) => handleRegisteredMobileChange(e, i)}
+                    disabled={row.is_verified} // Disable if _id exists
+                  />
+                )}
                 <Divider sx={{ mb: 2 }} />
                 {i > 0 && (
                   <IconButton

@@ -41,8 +41,11 @@ const BulkCampaignUpdate = ({
   return (
     <>
       <div className="card" style={{ width: "500px", height: "500px" }}>
-        <div className="card-header">
+        <div className="card-header sb">
           <h5>Bulk Campaign Update</h5>
+          <button className="icon-1" onClick={() => setToggleModal(false)}>
+            x
+          </button>
         </div>
         <div className="card-body ">
           <div className="row">
