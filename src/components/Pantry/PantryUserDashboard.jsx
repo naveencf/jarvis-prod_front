@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { baseUrl, socketBaseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
-import { useEditPantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
+import { useCreatePantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
 import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -11,17 +11,26 @@ import { useLocation } from "react-router-dom";
 function PantryUserDashboard() {
     const location = useLocation();
     const isPantryRoute = location.pathname.includes("pantry");
-    const socket = io(socketBaseUrl); // Replace with your backend URL
+    // const socket = io(socketBaseUrl); // Replace with your backend URL
+    const socket = io("https://jarvis.work:8080", {
+        transports: ["websocket"], // Force websocket, avoid polling
+        withCredentials: true
+    });
     const storedToken = sessionStorage.getItem("token");
     const decodedToken = jwtDecode(storedToken);
     const userID = decodedToken.id;
     const userName = decodedToken.name;
     const departmentID = decodedToken.dept_id;
+    // Using the query hook to fetch pantry data
+    const { data: pantryData, error, isLoading } = useGetPantryByIdQuery();
+    // Using the mutation hook to create a new pantry
+    const [createPantry, { isLoading: isCreating, error: createError }] = useCreatePantryMutation();
 
     const [order, setOrder] = useState([]);
     const [recentOrder, setRecentOrder] = useState([]);
     const [input, setInput] = useState("");
     const [orderDialog, setOrderDialog] = useState(false);
+    const [houseKeepingOnlineStatus, setHouseKeepingOnlineStatus] = useState(false);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false); // New state for disabling buttons
 
     const fetchOrders = async () => {
@@ -35,7 +44,7 @@ function PantryUserDashboard() {
                     },
                 }
             );
-            console.log(response.data, "response.data");
+            // console.log(response.data, "response.data");
             setRecentOrder(response.data.data); // assuming response.data.data contains the orders array
         } catch (err) {
             console.error("Error fetching orders:", err);
@@ -45,7 +54,36 @@ function PantryUserDashboard() {
     useEffect(() => {
         fetchOrders();
     }, []);
+    useEffect(() => {
+        houseKeepingUserStatus();
+    }, [pantryData]);
 
+    const houseKeepingUserStatus = () => {
+        console.log(pantryData, "pantryData")
+        if (pantryData && pantryData.length > 0) {
+            const userOnline = pantryData?.staff_online.find((item) => item.user_id == userID);
+            if (userOnline) {
+                setHouseKeepingOnlineStatus(true);
+            }
+        }
+    };
+
+    const handleOnlineStatus = async () => {
+        try {
+            const newPantry = {
+                user_id: userID,
+                pentry_id: "67dc90e83d75e8c544242ad8",
+                ...(houseKeepingOnlineStatus ? { status: 0 } : {}),
+
+                // add other fields as needed
+            };
+            // The unwrap() method returns a promise that resolves with the actual response or rejects with an error.
+            const response = await createPantry(newPantry).unwrap();
+            console.log("Pantry created successfully:", response);
+        } catch (err) {
+            console.error("Error creating pantry:", err);
+        }
+    };
     const alertSound = new Audio("https://www.myinstants.com/media/sounds/alarm.mp3"); // Replace with your sound file
 
     useEffect(() => {
@@ -117,10 +155,11 @@ function PantryUserDashboard() {
                         <div className="statusToggle">
                             <button
                                 type="button"
-                                className="btn btn-lg btn-toggle"
+                                className={`btn btn-lg btn-toggle ${houseKeepingOnlineStatus ? 'active' : ''}`}
                                 data-toggle="button"
-                                aria-pressed="false"
+                                aria-pressed={houseKeepingOnlineStatus}
                                 autoComplete="off"
+                                onClick={() => handleOnlineStatus()}
                             >
                                 <div className="switch"></div>
                             </button>

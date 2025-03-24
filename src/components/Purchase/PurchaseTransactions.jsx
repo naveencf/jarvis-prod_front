@@ -464,6 +464,14 @@ const PurchaseTransactions = () => {
                 return row.finance_remark;
             },
         },
+        {
+            key: "request_by",
+            name: "Requested by",
+            width: 150,
+            renderRowCell: (row) => {
+                return row.request_by;
+            },
+        },
 
         {
             key: "request_amount",

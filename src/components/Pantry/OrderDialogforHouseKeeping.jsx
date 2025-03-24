@@ -9,7 +9,7 @@ import Slide from '@mui/material/Slide';
 import { useEffect } from 'react';
 import io from "socket.io-client";
 import jwtDecode from 'jwt-decode';
-import { useEditPantryMutation } from '../Store/API/Pantry/PantryApi';
+// import { useEditPantryMutation } from '../Store/API/Pantry/PantryApi';
 import formatString from '../../utils/formatString';
 import { socketBaseUrl } from '../../utils/config';
 import axios from 'axios';
@@ -27,7 +27,7 @@ export default function OrderDialogforHouseKeeping({ alertSound, order, setOrder
     const userID = decodedToken.id;
 
 
-    const [editPantry, { isLoading, error }] = useEditPantryMutation();
+    // const [editPantry, { isLoading, error }] = useEditPantryMutation();
     const handleClickOpen = () => {
         setOpen(true);
 

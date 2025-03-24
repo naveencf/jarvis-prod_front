@@ -182,16 +182,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-        allAccountError.error ||
-        "An error occurred"
+      allAccountError.error ||
+      "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-        allBrandCatTypeError.error ||
-        "An error occurred"
+      allBrandCatTypeError.error ||
+      "An error occurred"
     );
   }
 
@@ -540,7 +540,7 @@ const SalesAccountOverview = () => {
   };
   useEffect(() => {
     const localData = JSON.parse(localStorage.getItem("accFilter"));
-    if (allAccount?.length > 0) {
+    if (localData && allAccount && allAccount?.length > 0) {
       const key = Object.keys(localData)[0];
       const data = localData[key];
 
