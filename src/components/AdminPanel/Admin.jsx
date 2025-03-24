@@ -835,7 +835,8 @@ const AllAssignedCategory = lazy(() =>
 );
 const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
 const PageAddition = lazy(() => import("../Boosting/PageAddition"))
-const RecenltyBoosted = lazy(() => import("../Boosting/RecenltyBoosted"))
+const RecentlyBoosted = lazy(() => import("../Boosting/RecentlyBoosted"))
+const DefaultService = lazy(() => import("../Boosting/DefaultService"))
 
 const Admin = () => {
   // const [contextData, setData] = useState([]);
@@ -2372,7 +2373,8 @@ const Admin = () => {
 
                     {/* Boosting Start */}
                     <Route path="/page-addition" element={<PageAddition />} />
-                    <Route path="/recently-boosted" element={<RecenltyBoosted />} />
+                    <Route path="/recently-boosted" element={<RecentlyBoosted />} />
+                    <Route path="/default-service" element={<DefaultService />} />
                     {/* Boosting End */}
                   </Route>
                   {/* Pantry */}

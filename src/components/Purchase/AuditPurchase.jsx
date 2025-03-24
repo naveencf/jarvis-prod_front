@@ -39,6 +39,7 @@ import { useGetPmsPlatformQuery } from "../Store/reduxBaseURL";
 import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
 import { Spinner } from "react-bootstrap";
 import formatString from "../../utils/formatString";
+import { utcToIst } from "../../utils/helper";
 
 const AuditPurchase = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -59,9 +60,9 @@ const AuditPurchase = () => {
   const [links, setLinks] = useState("");
   const [phaseDate, setPhaseDate] = useState("");
   const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [shortCodes, setShortCodes] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
-  const [endDate, setEndDate] = useState(null);
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [vendorNumericId, setVendorNumericId] = useState(null);
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
@@ -473,16 +474,7 @@ const AuditPurchase = () => {
     return allPurchased;
   }
 
-  function utcToIst(utcDate) {
-    let date = new Date(utcDate);
-    date.setHours(date.getHours() + 5, date.getMinutes() + 30); // IST is UTC +5:30
 
-    let day = String(date.getDate()).padStart(2, "0");
-    let month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    let year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  }
 
   async function handleAuditedDataUpload() {
     try {
