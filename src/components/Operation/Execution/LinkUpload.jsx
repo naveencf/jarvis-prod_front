@@ -21,6 +21,7 @@ import { Campaign } from "@mui/icons-material";
 import { ArrowClockwise } from "@phosphor-icons/react";
 
 const LinkUpload = ({
+  setType,
   phaseList,
   token,
   refetchPlanData,
@@ -51,6 +52,7 @@ const LinkUpload = ({
     amount: false,
     service_description: false,
   });
+  const [functionLoading, setFunctionLoading] = useState(false);
   const [shortCodes, setShortCodes] = useState([]);
   const [record, setRecord] = useState(0);
   const updatevendorTab = useRef(false);
@@ -62,7 +64,7 @@ const LinkUpload = ({
   const [serviceName, setServiceName] = useState("");
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const platformID = useRef(null);
-  const selectedCampaign = useRef("");
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   useEffect(() => {
     if (vendor) {
@@ -222,7 +224,7 @@ const LinkUpload = ({
       {
         name: "Facebook",
         regex: /https?:\/\/www\.facebook\.com\/share\/(?:p\/)?([a-zA-Z0-9]+)/,
-        type: "share",
+        type: "post",
       },
       {
         name: "Facebook",
@@ -258,13 +260,14 @@ const LinkUpload = ({
   }
 
   async function handleUpload() {
+    setFunctionLoading(true);
     let otherData = {
       createdBy: token.id,
       phaseDate: phaseDate,
       campaignId: selectedPlan,
       campaign_name: campaignsNameWiseData?.find(
         (data) => data._id == selectedPlan
-      ).exe_campaign_name,
+      )?.exe_campaign_name,
       postData: otherPlatform,
     };
     if (record == 3) {
@@ -335,10 +338,10 @@ const LinkUpload = ({
             shortCodes: shortCodes,
             department: token.dept_id,
             userId: token.id,
-            campaignId: selectedPlan,
+            campaignId: selectedCampaign,
             campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedPlan
-            ).exe_campaign_name,
+              (data) => data._id == selectedCampaign
+            )?.exe_campaign_name,
           };
 
     let arrData = shortCodes.length + otherPlatform.length;
@@ -412,8 +415,12 @@ const LinkUpload = ({
       toastAlert("Plan Uploaded");
     } catch (err) {
       toastError("Error Uploading");
+    } finally {
+      setFunctionLoading(false);
     }
   }
+
+  console.log("shortCodes", functionLoading);
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);
@@ -668,9 +675,7 @@ const LinkUpload = ({
               optionId={"_id"}
               optionLabel={"exe_campaign_name"}
               selectedId={selectedCampaign}
-              setSelectedId={(value) => {
-                selectedCampaign.current = value;
-              }}
+              setSelectedId={setSelectedCampaign}
             />
           )}
           {record != 2 && record != 3 && (
@@ -689,16 +694,30 @@ const LinkUpload = ({
             </div>
           )}
           {(record == 0 || record == 3) && (
-            <button
-              className="btn cmnbtn btn-primary mt-4 ml-3"
-              onClick={() => {
-                setToggleModal(true);
-                setModalName("storyPost");
-                setModalData(record);
-              }}
-            >
-              Add Story
-            </button>
+            <>
+              <button
+                className="btn cmnbtn btn-primary mt-4 ml-3"
+                onClick={() => {
+                  setToggleModal(true);
+                  setModalName("storyPost");
+                  setModalData(record);
+                  setType("single");
+                }}
+              >
+                Add Story
+              </button>
+              <button
+                className="btn cmnbtn btn-primary mt-4 ml-3"
+                onClick={() => {
+                  setToggleModal(true);
+                  setModalName("storyPost");
+                  setModalData(record);
+                  setType("multiple");
+                }}
+              >
+                Add Multiple Story
+              </button>
+            </>
           )}
           {record == 0 && (
             <button
@@ -717,12 +736,12 @@ const LinkUpload = ({
           <button
             className="cmnbtn btn-primary mt-4 ml-3"
             disabled={
-              record != 2
+              (record != 2
                 ? notnewLine ||
                   !shortCodes.length ||
                   uploadLoading ||
                   vendorLoading
-                : false || serviceLoading || vendorLoading
+                : false || serviceLoading || vendorLoading) || functionLoading
             }
             onClick={() => handleUpload()}
           >

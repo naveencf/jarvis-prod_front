@@ -43,7 +43,6 @@ const VendorOutstandingOverview = () => {
                     );
                     if (res.status === 200) {
                         setVendorData(res.data.data);
-                        console.log(res.data.data, "res.data.data");
                     }
                 }
             } catch (error) {

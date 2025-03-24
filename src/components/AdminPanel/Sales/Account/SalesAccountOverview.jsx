@@ -539,11 +539,14 @@ const SalesAccountOverview = () => {
     ),
   };
   useEffect(() => {
-    const localData = JSON.parse(localStorage.getItem("accFilter"));
-    if (localData && allAccount && allAccount?.length > 0) {
-      const key = Object.keys(localData)[0];
+    const localData = JSON.parse(localStorage.getItem("accFilter")) || {};
+    if (Object.keys(localData).length == 0) {
+      filterEngine(allAccount, "remove", "0");
+      return;
+    }
+    if (allAccount?.length > 0) {
+      const key = Object?.keys(localData)[0];
       const data = localData[key];
-
       filterEngine(
         key === "0"
           ? allAccount
