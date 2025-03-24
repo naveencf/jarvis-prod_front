@@ -70,3 +70,14 @@ export const IsApplicableData = [
   { label: "IN Hand", value: "in_hand" },
   { label: "ESIC", value: "esic" },
 ];
+
+export function utcToIst(utcDate) {
+  let date = new Date(utcDate);
+  date.setHours(date.getHours() + 5, date.getMinutes() + 30); // IST is UTC +5:30
+
+  let day = String(date.getDate()).padStart(2, "0");
+  let month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  let year = date.getFullYear();
+
+  return `${day}/${month}/${year}`;
+}

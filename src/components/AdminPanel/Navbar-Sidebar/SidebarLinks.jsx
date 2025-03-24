@@ -2235,6 +2235,9 @@ const SidebarLinks = () => {
                   <NavLink className="collapse-item" to="/admin/recently-boosted">
                     <i className="bi bi-graph-up"></i> Recently Boosted
                   </NavLink>
+                  <NavLink className="collapse-item" to="/admin/default-service">
+                    <i className="bi bi-box"></i> Default Service
+                  </NavLink>
                 </div>
               </div>
             </li>

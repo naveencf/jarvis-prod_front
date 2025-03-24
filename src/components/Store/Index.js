@@ -38,7 +38,8 @@ const store = configureStore({
     [PurchaseRequestPaymentApi.reducerPath]: PurchaseRequestPaymentApi.reducer,
     [DirectPurchaseApi.reducerPath]: DirectPurchaseApi.reducer,
     [PantryApi.reducerPath]: PantryApi.reducer,
-    [BoostingApi.reducerPath]: DirectPurchaseApi.reducer,
+    [BoostingApi.reducerPath]: BoostingApi.reducer,
+
 
     executon,
     PageOverview,
