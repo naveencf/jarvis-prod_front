@@ -6,33 +6,24 @@ const PantryApi = createApi({
     baseQuery: authBaseQuery,
     endpoints: (builder) => ({
         getPantryById: builder.query({
-            query: (id) => `pantry/order_request/${id}`,
+            query: (id) => `v1/cf_pentry_status`,
             transformResponse: (response) => response.data,
             keepUnusedDataFor: 0,
         }),
-
-        editPantry: builder.mutation({
-            query: ({ id, ...updatedPantry }) => ({
-                url: `pentry/accept_order_request/${id}`,
-                method: "PUT",
-                body: updatedPantry,
+        createPantry: builder.mutation({
+            query: (userStatus) => ({
+                url: `v1/add_user_to_online`,
+                method: "POST",
+                body: userStatus,
             }),
             keepUnusedDataFor: 0,
-        }),
-
-        deletePantry: builder.mutation({
-            query: (id) => ({
-                url: `pantry/delete_pantry_overview_list/${id}`,
-                method: "DELETE",
-            }),
         }),
     }),
 });
 
 export const {
     useGetPantryByIdQuery,
-    useEditPantryMutation,
-    useDeletePantryMutation,
+    useCreatePantryMutation,
 } = PantryApi;
 
 export default PantryApi;
