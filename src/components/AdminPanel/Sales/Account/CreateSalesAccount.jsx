@@ -52,6 +52,7 @@ import CreateBrand from "./CreateBrand";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import AccountSubmitDialog from "./AccountSubmitDialog";
 import { Pencil } from "@phosphor-icons/react";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const socialOptions = [
   { value: "instagram", label: "Instagram" },
@@ -62,6 +63,7 @@ const socialOptions = [
 
 const CreateSalesAccount = () => {
   const { id } = useParams();
+  const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
   const normalToken = sessionStorage.getItem("token");
   const navigate = useNavigate();
@@ -158,6 +160,9 @@ const CreateSalesAccount = () => {
   const [accountMasterData, setAccountMasterData] = useState();
   const [isBrandModal, setIsBrandModal] = useState(false);
   const [gstDetails, setGstDetails] = useState();
+
+  const isAdmin =
+    contextData?.find((data) => data?._id == 64)?.view_value !== 1;
   const [pocs, setPocs] = useState([
     {
       contact_name: "",
@@ -233,7 +238,7 @@ const CreateSalesAccount = () => {
     try {
       await editDep(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const handleEdit = async (row, setEditFlag) => {
     const payload = {
@@ -243,7 +248,7 @@ const CreateSalesAccount = () => {
     try {
       await edit(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const ViewBrandCategoryColumns = [
     {
@@ -341,7 +346,7 @@ const CreateSalesAccount = () => {
         });
         const accOwnderData = response.data;
         setAccOwnerNameData(accOwnderData);
-        setSelectedOwner(loginUserId);
+        if (!isAdmin && id == 0) setSelectedOwner(loginUserId);
       } catch (error) {
         console.error("Error fetching sales users list:", error);
       }
@@ -598,9 +603,9 @@ const CreateSalesAccount = () => {
     const invalidField = Object.keys(validation).find(
       (key) => !validation[key]
     );
-    if (invalidField) {
-      scrollToField(invalidField);
-    }
+    // if (invalidField) {
+    //   scrollToField(invalidField);
+    // }
     // isValidPoc.map((poc) => {
     //   let invalidField = Object.keys(poc).find((key) => !poc[key]);
     //   return object.values(pocValidation).every((value) => value);
@@ -1237,13 +1242,13 @@ const CreateSalesAccount = () => {
                     setSelectedId={setSelectedBrand}
                     required
                     astric
-                  // disabled={
-                  //   allAccountTypes?.find(
-                  //     (data) => data._id === selectedAccountType
-                  //   )?.account_type_name !== "Agency"
-                  //     ? false
-                  //     : true
-                  // }
+                    // disabled={
+                    //   allAccountTypes?.find(
+                    //     (data) => data._id === selectedAccountType
+                    //   )?.account_type_name !== "Agency"
+                    //     ? false
+                    //     : true
+                    // }
                   />
                   <span className="form-error">
                     Brand name & Account name can be different eg: Brand Name:
@@ -1727,8 +1732,8 @@ const CreateSalesAccount = () => {
                 ? "Submit"
                 : "Save"
               : id == 0
-                ? "Submitting..."
-                : "Saving..."}
+              ? "Submitting..."
+              : "Saving..."}
           </button>
           <button
             className="btn cmnbtn btn-warning"

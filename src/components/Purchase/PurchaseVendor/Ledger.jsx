@@ -12,6 +12,8 @@ import CustomSelect from "../../ReusableComponents/CustomSelect";
 import formatString from "../../../utils/formatString";
 import { FilterDrama } from "@mui/icons-material";
 import { formatDateTime } from "../../../utils/formatDateTime";
+import axios from "axios";
+import { phpBaseUrl } from "../../../utils/config";
 
 const Ledger = () => {
   const { id } = useParams();
@@ -62,6 +64,8 @@ const Ledger = () => {
   const [selectedPaymentYear, setSelectedPaymentYear] = useState(
     financialYears[1]?.value
   );
+  const [vendorPhpDetail, setVendorPhpDetail] = useState('');
+
   // const [filteredData, setFilterdData] = useState([]);
   const [dateRange, setDateRange] = useState(selectedYear);
   const {
@@ -89,6 +93,26 @@ const Ledger = () => {
   useEffect(() => {
     setDateRange(selectedYear);
   }, [selectedYear]);
+  const actualOutstanding = Number(vendorDetail?.totalAmount ?? 0) +
+    Number(vendorDetail?.vendor_outstandings ?? 0) -
+    Number(
+      vendorDetail?.vendor_total_remaining_advance_amount ??
+      0
+    ) + Number(vendorPhpDetail[0]?.outstanding)
+  useEffect(() => {
+    if (vendorDetail?.vendor_id) {
+      axios
+        .post(phpBaseUrl + `?view=getvendorDataListvid`, {
+          vendor_id: vendorDetail?.vendor_id,
+        })
+        .then((res) => {
+          if (res.status == 200) {
+            setVendorPhpDetail(res.data.body);
+            // console.log(res.data.body, 'vendorDetail', vendorDetail);
+          }
+        });
+    }
+  }, [vendorDetail])
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading ledger data.</p>;
@@ -101,7 +125,7 @@ const Ledger = () => {
     (sum, { Credit_amt }) => sum + (Number(Credit_amt) || 0),
     0
   );
-  let runningBalance = totalCredit - totalDebit;
+  let runningBalance = totalDebit - totalCredit;
 
   const columns = [
     {
@@ -135,12 +159,14 @@ const Ledger = () => {
       name: "Credit",
       renderRowCell: (row) => (Number(row.Credit_amt) || 0).toFixed(2),
       width: 80,
+      getTotal: true,
     },
     {
       key: "Debit_amt",
       name: "Debit",
       renderRowCell: (row) => (Number(row.Debit_amt) || 0).toFixed(2),
       width: 80,
+      getTotal: true,
     },
     {
       key: "balance",
@@ -288,54 +314,57 @@ const Ledger = () => {
             <div className="stats">
               <div className="statsBox">
                 <h4>Total Debited Amount</h4>
-                <h2>₹ {totalDebit}</h2>
+                <h2>₹ {totalDebit?.toLocaleString()}</h2>
               </div>
               <div className="statsBox">
                 <h4>Total Credit Amount</h4>
-                <h2>₹ {totalCredit}</h2>
+                <h2>₹ {totalCredit?.toLocaleString()}</h2>
               </div>
               <div className="statsBox">
                 <h4>Balance Amount</h4>
-                <h2>₹ {runningBalance}</h2>
+                <h2>₹ {runningBalance?.toLocaleString()}</h2>
               </div>
             </div>
           </div>
           <div className="statementDocBody card-body">
             <div className="p16">
               <div className="row">
-                <div className="col-md-3 col-sm-6 col-12">
+                <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
-                    <h6 className="colorMedium">Audit Pending Outstanding</h6>
-                    <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount}</h6>
+                    <h6 className="colorMedium">Audit Pending</h6>
+                    <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount?.toLocaleString()}</h6>
                   </div>
                 </div>
-                <div className="col-md-3 col-sm-6 col-12">
+                <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
                     <h6 className="colorMedium">Outstanding:</h6>
                     <h6 className="mt8 fs_16">
-                      ₹ {vendorDetail?.vendor_outstandings}
+                      ₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}
                     </h6>
                   </div>
                 </div>
-                <div className="col-md-3 col-sm-6 col-12">
+                <div className="col">
+                  <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
+                    <h6 className="colorMedium">Php Outstanding:</h6>
+                    <h6 className="mt8 fs_16">
+                      ₹ {Number(vendorPhpDetail[0]?.outstanding)?.toLocaleString()}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgInfoLight">
                     <h6 className="colorMedium">Total Remaining Advance</h6>
                     <h6 className="mt8 fs_16">
-                      ₹ {vendorDetail?.vendor_total_remaining_advance_amount}
+                      ₹ {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}
                     </h6>
                   </div>
                 </div>
-                <div className="col-md-3 col-sm-6 col-12">
+                <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgDangerLight">
                     <h6 className="colorMedium">Actual Outstanding</h6>
                     <h6 className="mt8 fs_16">
                       ₹
-                      {Number(vendorDetail?.totalAmount ?? 0) +
-                        Number(vendorDetail?.vendor_outstandings ?? 0) -
-                        Number(
-                          vendorDetail?.vendor_total_remaining_advance_amount ??
-                          0
-                        )}
+                      {actualOutstanding?.toLocaleString()}
                     </h6>
                   </div>
                 </div>
@@ -371,6 +400,7 @@ const Ledger = () => {
             <div className="table-responsive noCardHeader">
               <View
                 columns={columns}
+                showTotal={true}
                 data={filteredData}
                 isLoading={isLoading}
                 tableName={"Op_executions"}

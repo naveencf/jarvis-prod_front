@@ -6,6 +6,7 @@ import {
   useGetPlanByIdQuery,
   useGetPostDetailsBasedOnFilterMutation,
   usePostDataUpdateMutation,
+  useUpdateMultipleAuditStatusMutation,
   useVendorDataQuery,
 } from "../Store/API/Operation/OperationApi";
 import View from "../AdminPanel/Sales/Account/View/View";
@@ -104,6 +105,13 @@ const AuditPurchase = () => {
   const handleSelection = (newSelectedData) => {
     setSelectedData(newSelectedData);
   };
+
+  const [
+    bulkAudit,
+    { isLoading: bulkAuditLoading, isSuccess: bulkAuditSuccess },
+  ] = useUpdateMultipleAuditStatusMutation();
+
+
   const [price, setPrice] = useState("");
   const [pricePerMillion, setPricePerMillion] = useState("");
 
@@ -138,6 +146,50 @@ const AuditPurchase = () => {
     });
   };
 
+  function checkAbletoAudit() {
+    return selectedData.every(
+      (data) =>
+        data.amount > 0 &&
+        !!data.vendor_name &&
+        data.audit_status !== "purchased"
+    );
+  }
+
+  async function handleBulkAudit() {
+    if (selectedData.length === 0) {
+      toastError("Please select the data to update");
+      return;
+    }
+    try {
+      if (selectedData.some((data) => data.audit_status === "purchased")) {
+        toastError("You have selected purchased data");
+        return;
+      }
+      if (!checkAbletoAudit()) {
+        toastError(
+          "Please fill the amount and vendor name for all the selected data or you have selected purchased data"
+        );
+        return;
+      }
+      const data = {
+        audit_status: "audited",
+        shortCodes: selectedData.map((data) => data.shortCode),
+      };
+
+      const res = await bulkAudit(data);
+      if (res.error) throw new Error(res.error);
+      const response = await fetchFilteredPosts();
+      if (response.isSuccess && response.data) {
+        setCampainPlanData(response.data);
+        toastAlert("Status Updated");
+      }
+
+    } catch (err) {
+      toastError("Error Uploading Data");
+    }
+  }
+
+
   const handleRefetchPrice = async () => {
     setPriceUpdateLoading(true);
     const sCodes = selectedData.map(({ shortCode }) => shortCode);
@@ -149,7 +201,7 @@ const AuditPurchase = () => {
     } else if (selectedVendorId) {
       payload = { vendorId: selectedVendorId };
     }
-
+    
     try {
       const response = await refetchPostPrice(payload);
       const res = await fetchFilteredPosts();
@@ -254,6 +306,8 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
+
+
   async function handledataUpdate(row) {
     // console.log('row', row);
     const followerCount = row?.owner_info?.followers
@@ -282,6 +336,12 @@ const AuditPurchase = () => {
     } catch (err) {
       console.log(err);
       toastError("Error while Uploading");
+    }
+  }
+  const fetchPlanData = async()=> {
+    const response = await fetchFilteredPosts();
+    if (response.isSuccess && response.data) {
+      setCampainPlanData(response.data);
     }
   }
   const handleUpdateStatus = async (vendorId) => {
@@ -602,7 +662,7 @@ const AuditPurchase = () => {
     {
       name: "Phase Date",
       key: "phaseDate1",
-      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, ""),
+      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
       width: 100,
       compare: true,
     },
@@ -666,14 +726,11 @@ const AuditPurchase = () => {
                 const vendorDetail = vendorsList.find(
                   (item) => item.vendor_id === name
                 );
-
                 const vendorData = {
                   vendor_id: vendorDetail.vendor_id,
                   vendor_name: vendorDetail.vendor_name,
                 };
-
                 setVendorName(vendorDetail.temp_vendor_id);
-
                 handelchange(vendorData, index, column, true);
               }}
             />
@@ -681,7 +738,7 @@ const AuditPurchase = () => {
         );
       },
       width: 300,
-      editable: true,
+      editable: false,
     },
 
     {
@@ -699,21 +756,19 @@ const AuditPurchase = () => {
       renderRowCell: (row) => formatString(row?.accessibility_caption),
     },
     {
-      name: "Comment Count",
+      name: "Comment",
       key: "comment_count",
       width: 100,
       editable: true,
     },
-
     {
-      name: "Like Count",
+      name: "Like",
       key: "like_count",
       width: 100,
       editable: true,
     },
-
     {
-      name: "Play Count",
+      name: "Views",
       key: "play_count",
       renderRowCell: (row) => {
         return row.play_count;
@@ -847,7 +902,7 @@ const AuditPurchase = () => {
     },
 
     {
-      name: "Audit Status",
+      name: "Purchased Status",
       key: "audit_status",
       editable: true,
       renderRowCell: (
@@ -899,7 +954,7 @@ const AuditPurchase = () => {
             </button>
           );
       },
-      width: 300,
+      width: 120,
       customEditElement: (
         row,
         index,
@@ -1191,8 +1246,7 @@ const AuditPurchase = () => {
         </div>
         <div className="card-body">
           <div className="row">
-            {selectedData?.length ? (
-              <div className="col-lg-6 col-md-6 col-12">
+            {               <div className="col-lg-6 col-md-6 col-12">
                 <div className="form-group">
                   <label>Update Vendor</label>
 
@@ -1212,6 +1266,7 @@ const AuditPurchase = () => {
                         handleUpdateStatus(null);
                       }
                     }}
+                    disabled={!selectedData?.length}
                     renderInput={(params) => (
                       <TextField
                         {...params}
@@ -1225,9 +1280,7 @@ const AuditPurchase = () => {
                   />
                 </div>
               </div>
-            ) : (
-              ""
-            )}
+           }
 
             {currentTab === "Tab1" && (
               <CustomSelect
@@ -1475,10 +1528,20 @@ const AuditPurchase = () => {
               className={`icon-1 btn_sm btn-outline-primary  ${
                 fetchingPlanData && "animate_rotate"
               }`}
-              onClick={refetchPlanData}
+              onClick={fetchPlanData}
             >
               <ArrowClockwise />
             </button>
+            <button
+                title="audit"
+                className={`cmnbtn btn btn-sm btn-outline-primary`}
+                onClick={() => {
+                  handleBulkAudit();
+                }}
+                disabled={bulkAuditLoading}
+              >
+                Audit
+              </button>
           </div>
         }
       />

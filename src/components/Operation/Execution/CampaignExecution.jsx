@@ -47,6 +47,7 @@ import Carousel from "/copy.png";
 import Reel from "/reel.png";
 import Image from "/more.png";
 import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
+import { render } from "react-dom";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -67,7 +68,9 @@ const CampaignExecution = () => {
   const [selectedVendor, setSelectedVendor] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [type, setType] = useState("single");
   const maxTabs = useRef(4);
+
   const removeStory = useRef(null);
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
@@ -413,6 +416,12 @@ const CampaignExecution = () => {
     return date.toISOString(); // Returns ISO UTC string
   }
   let columns = [
+    {
+      name: "Sr.No",
+      key: "Sr.No",
+      renderRowCell: (row, index) => index + 1,
+      width: 50,
+    },
     {
       key: "ref_link",
       name: "Link",
@@ -1336,6 +1345,7 @@ const CampaignExecution = () => {
           record={modalData}
           setToggleModal={setToggleModal}
           selectedPlan={selectedPlan}
+          type={type}
         />
       );
     } else if (name == "multipleService")
@@ -1453,6 +1463,8 @@ const CampaignExecution = () => {
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
       <LinkUpload
+        setType={setType}
+        type={type}
         selectedData={selectedData}
         phaseList={phaseList}
         token={token}
@@ -1491,7 +1503,7 @@ const CampaignExecution = () => {
         data={phaseWiseData}
         columns={columns}
         title={`Records`}
-        tableName={"PlanX-execution"}
+        tableName={"Campaign-execution"}
         isLoading={loadingPlanData || fetchingPlanData}
         pagination={[50, 100, 200]}
         selectedData={(data) => setSelectedData(data)}
