@@ -112,7 +112,6 @@ const AuditPurchase = () => {
     { isLoading: bulkAuditLoading, isSuccess: bulkAuditSuccess },
   ] = useUpdateMultipleAuditStatusMutation();
 
-
   const [price, setPrice] = useState("");
   const [pricePerMillion, setPricePerMillion] = useState("");
 
@@ -184,12 +183,10 @@ const AuditPurchase = () => {
         setCampainPlanData(response.data);
         toastAlert("Status Updated");
       }
-
     } catch (err) {
       toastError("Error Uploading Data");
     }
   }
-
 
   const handleRefetchPrice = async () => {
     setPriceUpdateLoading(true);
@@ -202,13 +199,13 @@ const AuditPurchase = () => {
     } else if (selectedVendorId) {
       payload = { vendorId: selectedVendorId };
     }
-    
+
     try {
       const response = await refetchPostPrice(payload);
       const res = await fetchFilteredPosts();
-       if (res?.data?.success && res?.data?.data?.length) {
+      if (res?.data?.success && res?.data?.data?.length) {
         setCampainPlanData(res.data.data);
-        setPriceUpdateLoading(false)
+        setPriceUpdateLoading(false);
         toastAlert(response?.data?.message);
       }
     } catch (err) {
@@ -307,8 +304,6 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
-
-
   async function handledataUpdate(row) {
     // console.log('row', row);
     const followerCount = row?.owner_info?.followers
@@ -324,7 +319,7 @@ const AuditPurchase = () => {
           : row.amount,
         shortCode: row.shortCode,
         audit_status: row.audit_status,
-        createdBy: token.id
+        createdBy: token.id,
       });
       if (res.error) throw new Error(res.error);
       const response = await fetchFilteredPosts();
@@ -339,12 +334,12 @@ const AuditPurchase = () => {
       toastError("Error while Uploading");
     }
   }
-  const fetchPlanData = async()=> {
+  const fetchPlanData = async () => {
     const response = await fetchFilteredPosts();
     if (response.isSuccess && response.data) {
       setCampainPlanData(response.data);
     }
-  }
+  };
   const handleUpdateStatus = async (vendorId) => {
     let uniqueVendor =
       new Set(selectedData.map((item) => item.vendor_name)).size === 1;
@@ -473,8 +468,6 @@ const AuditPurchase = () => {
     );
     return allPurchased;
   }
-
-
 
   async function handleAuditedDataUpload() {
     try {
@@ -654,7 +647,8 @@ const AuditPurchase = () => {
     {
       name: "Phase Date",
       key: "phaseDate1",
-      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
+      renderRowCell: (row) =>
+        formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
       width: 100,
       compare: true,
     },
@@ -831,7 +825,7 @@ const AuditPurchase = () => {
               fieldGrid={12}
               dataArray={[
                 { postType: "REEL" },
-                { postType: "COROUSEL" },
+                { postType: "CAROUSEL" },
                 { postType: "IMAGE" },
               ]}
               optionId={"postType"}
@@ -987,8 +981,7 @@ const AuditPurchase = () => {
         if (row.audit_status === "audited") return "#FFA500"; // Orange for audited
         if (row.amount == 0 || row.vendor_name == "") return "#ffff008c"; // Yellow for empty amount or vendor
         return ""; // Default (no color)
-      }
-
+      },
     },
     {
       name: "Action",
@@ -1238,7 +1231,8 @@ const AuditPurchase = () => {
         </div>
         <div className="card-body">
           <div className="row">
-            {               <div className="col-lg-6 col-md-6 col-12">
+            {
+              <div className="col-lg-6 col-md-6 col-12">
                 <div className="form-group">
                   <label>Update Vendor</label>
 
@@ -1272,7 +1266,7 @@ const AuditPurchase = () => {
                   />
                 </div>
               </div>
-           }
+            }
 
             {currentTab === "Tab1" && (
               <CustomSelect
@@ -1525,15 +1519,15 @@ const AuditPurchase = () => {
               <ArrowClockwise />
             </button>
             <button
-                title="audit"
-                className={`cmnbtn btn btn-sm btn-outline-primary`}
-                onClick={() => {
-                  handleBulkAudit();
-                }}
-                disabled={bulkAuditLoading}
-              >
-                Audit
-              </button>
+              title="audit"
+              className={`cmnbtn btn btn-sm btn-outline-primary`}
+              onClick={() => {
+                handleBulkAudit();
+              }}
+              disabled={bulkAuditLoading}
+            >
+              Audit
+            </button>
           </div>
         }
       />
