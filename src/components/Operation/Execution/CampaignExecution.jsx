@@ -859,7 +859,8 @@ const CampaignExecution = () => {
     {
       name: "Phase Date",
       key: "phaseDate1",
-      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, ""),
+      renderRowCell: (row) =>
+        formatDate(row.phaseDate)?.replace(/T.*Z/, "").trim(),
       width: 100,
       compare: true,
     },
@@ -1098,7 +1099,7 @@ const CampaignExecution = () => {
               fieldGrid={12}
               dataArray={[
                 { postType: "REEL" },
-                { postType: "COROUSEL" },
+                { postType: "CAROUSEL" },
                 { postType: "IMAGE" },
               ]}
               optionId={"postType"}
