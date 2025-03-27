@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
-import { baseUrl, socketBaseUrl } from "../../utils/config";
+import { baseUrl, socketBaseUrl, socketUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
 import { useCreatePantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
 import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
@@ -12,10 +12,14 @@ function PantryUserDashboard() {
     const location = useLocation();
     const isPantryRoute = location.pathname.includes("pantry");
     // const socket = io(socketBaseUrl); // Replace with your backend URL
-    const socket = io("https://jarvis.work:8080", {
+
+    const socket = io(socketUrl, {
         transports: ["websocket"], // Force websocket, avoid polling
-        withCredentials: true
+        withCredentials: true,
+        reconnectionAttempts: 5,
+        timeout: 5000,
     });
+
     const storedToken = sessionStorage.getItem("token");
     const decodedToken = jwtDecode(storedToken);
     const userID = decodedToken.id;

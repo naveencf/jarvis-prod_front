@@ -45,6 +45,8 @@ const Learning = lazy(() =>
 );
 const ErrorPage = lazy(() => import("./ErrorPage"));
 import { AppProvider } from "./Context/Context";
+import ScrollBlocker from "./components/inventory/plan-making/ScrollBlocker";
+import PreventBackNavigation from "./utils/PreventBackNavigation";
 
 const Protected = lazy(() => import("./Login/Protected"));
 const Home = lazy(() => import("./components/Home"));
@@ -267,10 +269,11 @@ function App() {
   //     navigate("/login");
   //   }
   // }, [navigate, pathName]);
-
+ 
   return (
     <>
       {/* <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div> */}
+      <PreventBackNavigation />
 
       {/* <Notification /> */}
 

@@ -48,6 +48,7 @@ const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
 const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
+const RecordCampaign = lazy(()=> import(("../AdminPanel/Operation/RecordCampaign/RecordCampaign")))
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./HRMS/User/UserMaster"));
 const UserView = lazy(() => import("./HRMS/User/UserView"));
@@ -1559,6 +1560,7 @@ const Admin = () => {
                       element={<OperationContents />}
                     /> */}
                     <Route path="/calender" element={<CalenderCreation />} />
+                    <Route path="/record-campaign" element={<RecordCampaign />} />
                     <Route
                       path="/campaign_execution"
                       element={<OperationShortcodeUpdater />}
@@ -2361,7 +2363,7 @@ const Admin = () => {
                       path="/record-purchase"
                       element={<CampaignExecution />}
                     />
-                    <Route path="/audit-purchase" element={<AuditPurchase />} />
+                    <Route path="/purchased-record" element={<AuditPurchase />} />
                     <Route
                       path="/purchase-report"
                       element={<PurchaseReport />}

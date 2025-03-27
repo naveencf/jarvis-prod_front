@@ -4,23 +4,23 @@ import {
   usePlanDataUploadMutation,
   usePlanDataUploadPlatformWiseMutation,
   useUpdateVendorMutation,
-} from "../../Store/API/Operation/OperationApi";
-import FieldContainer from "../../AdminPanel/FieldContainer";
-import CustomSelect from "../../ReusableComponents/CustomSelect";
-import { useGlobalContext } from "../../../Context/Context";
-import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
+} from "../../../Store/API/Operation/OperationApi";
+import FieldContainer from "../../../AdminPanel/FieldContainer";
+import { useGetPmsPlatformQuery } from "../../../Store/reduxBaseURL";
 import {
   useAddServiceMutation,
   useGetVendorsQuery,
   useRefetchPostPriceMutation,
-} from "../../Store/API/Purchase/DirectPurchaseApi";
-import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
-import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi.js";
+} from "../../../Store/API/Purchase/DirectPurchaseApi";
+import { useAPIGlobalContext } from "../../../AdminPanel/APIContext/APIContext";
+import { useGetExeCampaignsNameWiseDataQuery } from "../../../Store/API/Sales/ExecutionCampaignApi.js";
 import { Select } from "antd";
 import { Campaign } from "@mui/icons-material";
 import { ArrowClockwise } from "@phosphor-icons/react";
+import CustomSelect from "../../../ReusableComponents/CustomSelect.jsx";
+import { useGlobalContext } from "../../../../Context/Context.jsx";
 
-const LinkUpload = ({
+const LinkUploadOperation = ({
   setType,
   phaseList,
   token,
@@ -37,16 +37,11 @@ const LinkUpload = ({
   setToggleModal,
   setSelectedPlan,
   selectedData,
-  startDate,
-  endDate,
-  setStartDate,
-  setEndDate,
-  selectedVendor,
-  setSelectedVendor,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
   const { userContextData } = useAPIGlobalContext();
+
   const [isValid, setIsValid] = useState({
     shortCodes: false,
     department: false,
@@ -180,6 +175,7 @@ const LinkUpload = ({
       await refetchPlanData();
       toastAlert("Pricing Fetched");
     } catch (err) {
+      console.log(err);
       toastError("Error Fetching Pricing");
     }
   }
@@ -486,7 +482,7 @@ const LinkUpload = ({
             Record Links
           </div>
         )}
-        <div
+        {/* <div
           className={`pointer header-tab ${record == 3 && "header-active"}`}
           onClick={() => {
             setRecord(3);
@@ -531,16 +527,7 @@ const LinkUpload = ({
           >
             Service{" "}
           </div>
-        )}
-
-        <div
-          className={`pointer header-tab ${record == 4 && "header-active"}`}
-          onClick={() => {
-            setRecord(4);
-          }}
-        >
-          Vendor Wise Data{" "}
-        </div>
+        )} */}
       </div>
       <div className="card-body">
         <div className="row mb-3">
@@ -567,11 +554,11 @@ const LinkUpload = ({
                 fieldGrid={12}
                 label={"Vendor"}
                 dataArray={vendorListData}
-                optionId={record === 4 ? "_id" : "vendor_id"}
+                optionId={"vendor_id"}
                 optionLabel={"vendor_name"}
-                selectedId={record === 4 ? selectedVendor : vendor}
+                selectedId={vendor}
                 setSelectedId={(value) => {
-                  record == 4 ? setSelectedVendor(value) : setVendor(value);
+                  setVendor(value);
                   setIsValid((prev) => ({ ...prev, vendor: false }));
                 }}
               />
@@ -617,82 +604,7 @@ const LinkUpload = ({
               )}
             </>
           )}
-          {record == 2 && (
-            <>
-              <div className="col-md-6">
-                <CustomSelect
-                  fieldGrid={12}
-                  label="Service Name"
-                  dataArray={[
-                    { lable: "Comments", value: "Comments" },
-                    { lable: "Edit", value: "Edit" },
-                    { lable: "Video", value: "Video" },
-                    { lable: "Tweeter Trends", value: "Tweeter Trends" },
-                    { lable: "Others", value: "Others" },
-                  ]}
-                  optionId={"value"}
-                  optionLabel={"lable"}
-                  selectedId={serviceName}
-                  setSelectedId={(value) => {
-                    setServiceName(value);
-                    setIsValid((prev) => ({
-                      ...prev,
-                      service_description: false,
-                    }));
-                  }}
-                />
-                {isValid?.service_description && (
-                  <p className="form-error">Please select the service</p>
-                )}
-              </div>
-              <div className="col-md-4">
-                <FieldContainer
-                  fieldGrid={12}
-                  label="Amount"
-                  type="number"
-                  value={amount}
-                  onChange={(e) => {
-                    setAmount(e.target.value);
-                    setIsValid((prev) => ({ ...prev, amount: false }));
-                  }}
-                />
-                {isValid?.amount && (
-                  <p className="form-error">Please enter amount </p>
-                )}
-              </div>
-              <div className="col-md-4">
-                <FieldContainer
-                  fieldGrid={12}
-                  label="Upload File"
-                  type="file"
-                  onChange={(e) => {
-                    setFile(e.target.files[0]);
-                  }}
-                />
-              </div>
-              <button
-                className="btn cmnbtn btn-primary mt-4 ml-3"
-                onClick={() => {
-                  setToggleModal(true);
-                  setModalName("multipleService");
-                }}
-              >
-                Add Multiple Service
-              </button>
-            </>
-          )}
-          {record == 3 && campaignsNameWiseData?.length > 0 && (
-            <CustomSelect
-              fieldGrid={6}
-              label={"Campaign"}
-              dataArray={campaignsNameWiseData}
-              optionId={"_id"}
-              optionLabel={"exe_campaign_name"}
-              selectedId={selectedCampaign}
-              setSelectedId={setSelectedCampaign}
-            />
-          )}
-          {record != 2 && record != 3 && record != 4 && (
+          {record != 2 && record != 3 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -733,7 +645,7 @@ const LinkUpload = ({
               </button>
             </>
           )}
-          {record == 0 && (
+          {/* {record == 0 && (
             <button
               className="btn cmnbtn btn-primary mt-4 ml-3"
               onClick={() => handleFetchPricing()}
@@ -746,29 +658,7 @@ const LinkUpload = ({
                 className={fetchPricingLoading && "animate_rotate"}
               />
             </button>
-          )}
-          {record == 4 && (
-            <>
-              <FieldContainer
-                fieldGrid={6}
-                type="date"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                }}
-                label="Start Date"
-              />
-              <FieldContainer
-                fieldGrid={6}
-                type="date"
-                value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                }}
-                label="End Date"
-              />
-            </>
-          )}
+          )} */}
           <button
             className="cmnbtn btn-primary mt-4 ml-3"
             disabled={
@@ -792,4 +682,4 @@ const LinkUpload = ({
     </div>
   );
 };
-export default LinkUpload;
+export default LinkUploadOperation;
