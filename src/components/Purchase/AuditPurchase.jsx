@@ -223,13 +223,13 @@ const AuditPurchase = () => {
           return selectedVendorId &&
             (shortCodes?.length || (startDate && endDate) || selectedPlan)
             ? {
-                ...(selectedVendorId && { vendorId: selectedVendorId }),
-                ...(shortCodes?.length && { shortCodes: sCodes }),
-                ...(startDate &&
-                  endDate && { startDate: startDate, endDate: endDate }),
-                // ...(endDate && { endDate }),
-                ...(selectedPlan && { campaignId: selectedPlan }),
-              }
+              ...(selectedVendorId && { vendorId: selectedVendorId }),
+              ...(shortCodes?.length && { shortCodes: sCodes }),
+              ...(startDate &&
+                endDate && { startDate: startDate, endDate: endDate }),
+              // ...(endDate && { endDate }),
+              ...(selectedPlan && { campaignId: selectedPlan }),
+            }
             : {};
         case "Tab2":
           return startDate && endDate ? { startDate, endDate } : {};
@@ -315,11 +315,11 @@ const AuditPurchase = () => {
         amount: priceMillionWise
           ? Math.floor(priceMillionWise)
           : price
-          ? price
-          : row.amount,
+            ? Number(price)
+            : Number(row.amount),
         shortCode: row.shortCode,
         audit_status: row.audit_status,
-        createdBy: token.id,
+        updatedBy: token.id,
       });
       if (res.error) throw new Error(res.error);
       const response = await fetchFilteredPosts();
@@ -613,8 +613,8 @@ const AuditPurchase = () => {
               options={
                 Array.isArray(allPages?.pageData)
                   ? allPages.pageData?.filter(
-                      (data) => data?.temp_vendor_id === vendorName
-                    )
+                    (data) => data?.temp_vendor_id === vendorName
+                  )
                   : []
               }
               getOptionLabel={(option) => option.page_name || ""}
@@ -919,8 +919,8 @@ const AuditPurchase = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                      ? "pending"
-                      : row.audit_status,
+                        ? "pending"
+                        : row.audit_status,
                 };
                 handledataUpdate({
                   ...row,
@@ -928,13 +928,12 @@ const AuditPurchase = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${
-                row.audit_status === "pending"
-                  ? "btn btn-sm cmnbtn btn-primary"
-                  : row.audit_status !== "audited"
+              className={`pointer badge ${row.audit_status === "pending"
+                ? "btn btn-sm cmnbtn btn-primary"
+                : row.audit_status !== "audited"
                   ? "bg-success"
                   : "btn btn-sm cmnbtn btn-primary"
-              }`}
+                }`}
             >
               {formatString(row.audit_status)}
             </button>
@@ -1015,7 +1014,7 @@ const AuditPurchase = () => {
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => handledataUpdate(row)}
                 title="Save"
-                // disabled={row.audit_status !== "purchased"}
+              // disabled={row.audit_status !== "purchased"}
               >
                 save
               </button>
@@ -1094,7 +1093,7 @@ const AuditPurchase = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-            modalData?.data?.data?.requestStatsUpdate?.length ? (
+              modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1440,11 +1439,10 @@ const AuditPurchase = () => {
                   <div className="col-12 mb16">
                     <button
                       title="Upload Audited Data"
-                      className={`cmnbtn btn btn-sm ${
-                        disableAuditUpload()
-                          ? "btn-outline-primary"
-                          : "btn-primary"
-                      }`}
+                      className={`cmnbtn btn btn-sm ${disableAuditUpload()
+                        ? "btn-outline-primary"
+                        : "btn-primary"
+                        }`}
                       onClick={handleAuditedDataUpload}
                       disabled={disableAuditUpload()}
                     >
@@ -1511,9 +1509,8 @@ const AuditPurchase = () => {
           <div className="flexCenterBetween colGap8 ml-auto">
             <button
               title="Reload Data"
-              className={`icon-1 btn_sm btn-outline-primary  ${
-                fetchingPlanData && "animate_rotate"
-              }`}
+              className={`icon-1 btn_sm btn-outline-primary  ${fetchingPlanData && "animate_rotate"
+                }`}
               onClick={fetchPlanData}
             >
               <ArrowClockwise />
