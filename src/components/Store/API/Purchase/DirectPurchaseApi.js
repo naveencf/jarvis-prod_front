@@ -47,10 +47,17 @@ const DirectPurchaseApi = createApi({
       }),
     }),
     updatePurchasedStatusData: builder.mutation({
-      query: ({ amount, shortCode, audit_status, updatedBy }) => ({
+      query: ({ amount, shortCode, updatedBy, pageName, campaignId, platform_id, phaseDate, platform_name }) => ({
         url: `v1/purchase/update_purchased_status_data`,
         method: "PUT",
-        body: { amount, shortCode, audit_status, updatedBy },
+        body: { amount, shortCode, updatedBy, pageName, campaignId, platform_id, phaseDate, platform_name },
+      }),
+    }),
+    updateMultiplePurchasedStatusData: builder.mutation({
+      query: ({ amount, shortCodes, updatedBy }) => ({
+        url: `v1/purchase/update_purchased_status_multiple_data`,
+        method: "PUT",
+        body: { amount, shortCodes, updatedBy },
       }),
     }),
     updatePurchasedStatusVendor: builder.mutation({
@@ -92,7 +99,7 @@ const DirectPurchaseApi = createApi({
   }),
 });
 
-export const { useGetVendorsQuery, useGetVendorsWithSearchQuery, useAddServiceMutation, useAuditReportMutation, useRefetchPostPriceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
+export const { useGetVendorsQuery, useGetVendorsWithSearchQuery, useAddServiceMutation, useAuditReportMutation, useRefetchPostPriceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdateMultiplePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
   useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery, useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;

@@ -1,9 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { baseUrl } from '../../../../utils/config';
+import authBaseQuery from '../../../../utils/authBaseQuery';
 
 const BoostingApi = createApi({
     reducerPath: 'boostingApi',
-    baseQuery: fetchBaseQuery({ baseUrl }),
+    baseQuery: authBaseQuery,
     endpoints: (builder) => ({
         // Create a new boosting creator
         createItem: builder.mutation({
@@ -72,6 +73,14 @@ const BoostingApi = createApi({
             }),
             transformResponse: (response) => response?.boostingPosts,
         }),
+        // Edit a boosting creator by ID
+        editBoostingCreator: builder.mutation({
+            query: ({ id, updatedData }) => ({
+                url: `/v1/edit_boosting_creator/${id}`,
+                method: "PUT",
+                body: updatedData
+            })
+        })
     }),
 
 });
@@ -84,8 +93,9 @@ export const {
     useGetInstaBoostingDefaultServicesQuery,
     useGetSingleInstaBoostingDefaultServiceQuery,
     useEditInstaBoostingDefaultServiceMutation,
-    useDeleteBoostingCreatorMutation, 
-    useGetInstaBoostingDataQuery
+    useDeleteBoostingCreatorMutation,
+    useGetInstaBoostingDataQuery,
+     useEditBoostingCreatorMutation
 } = BoostingApi;
 
 export default BoostingApi;

@@ -13,6 +13,7 @@ import View from "../AdminPanel/Sales/Account/View/View";
 import CustomSelect from "../ReusableComponents/CustomSelect";
 import getDecodedToken from "../../utils/DecodedToken";
 import { useGlobalContext } from "../../Context/Context";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Modal from "react-modal";
 import { formatDate } from "../../utils/formatDate";
 import { useGetAllExeCampaignsQuery } from "../Store/API/Sales/ExecutionCampaignApi";
@@ -20,7 +21,7 @@ import { ArrowClockwise } from "@phosphor-icons/react";
 import PageEdit from "../AdminPanel/PageMS/PageEdit";
 import FieldContainer from "../AdminPanel/FieldContainer";
 import PhaseTab from "../Operation/Execution/PhaseTab";
-import { Autocomplete } from "@mui/lab";
+import { Autocomplete } from "@mui/material";
 import AuditedDataView from "../Operation/Execution/AuditedDataView";
 import DuplicayModal from "../Operation/Execution/DuplicayModal";
 import Calendar from "./Calender";
@@ -28,6 +29,7 @@ import {
   useGetVendorsWithSearchQuery,
   useRecordPurchaseMutation,
   useRefetchPostPriceMutation,
+  useUpdateMultiplePurchasedStatusDataMutation,
   useUpdatePurchasedStatusDataMutation,
   useUpdatePurchasedStatusVendorMutation,
 } from "../Store/API/Purchase/DirectPurchaseApi";
@@ -40,6 +42,10 @@ import { useAPIGlobalContext } from "../AdminPanel/APIContext/APIContext";
 import { Spinner } from "react-bootstrap";
 import formatString from "../../utils/formatString";
 import { utcToIst } from "../../utils/helper";
+import formatDataObject from "../../utils/formatDataObject";
+import dayjs from "dayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 const AuditPurchase = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -58,7 +64,6 @@ const AuditPurchase = () => {
   const [modalName, setModalName] = useState("");
   const [duplicateMsg, setDuplicateMsg] = useState(false);
   const [links, setLinks] = useState("");
-  const [phaseDate, setPhaseDate] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [shortCodes, setShortCodes] = useState([]);
@@ -67,8 +72,12 @@ const AuditPurchase = () => {
   const [vendorNumericId, setVendorNumericId] = useState(null);
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [campaignId, setCampaingnId] = useState('')
+  const [phaseDate, setPhaseDate] = useState(null)
 
   const maxTabs = useRef(4);
+  const prevPlatformName = useRef("");
+
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
@@ -87,7 +96,8 @@ const AuditPurchase = () => {
     isLoading: allPagesLoading,
     isFetching: allPagesFetching,
   } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
-
+  const [updateData,] = usePostDataUpdateMutation();
+  // { isLoading, isSuccess }
   const {
     data: pmsPlatform,
     isLoading: pmsPlatformLoading,
@@ -96,10 +106,10 @@ const AuditPurchase = () => {
 
   const [refetchPostPrice, { data, error }] = useRefetchPostPriceMutation();
 
-  const [updatePurchasedStatus] = useUpdatePurchasedStatusDataMutation();
+  const [updatePurchasedStatus, { isLoading: isUpdatingPurchasedStatus }] = useUpdatePurchasedStatusDataMutation();
+  const [updatePurchasedStatusMultiple, { isLoading: isUpdatingPurchasedStatusMultiple }] = useUpdateMultiplePurchasedStatusDataMutation();
   const [getPostDetailsBasedOnFilter, { isLoading: isFetchingPostDetails }] =
     useGetPostDetailsBasedOnFilterMutation();
-
   const [updatePurchasedStatusVendor, { isLoading, isError, isSuccess }] =
     useUpdatePurchasedStatusVendorMutation();
 
@@ -121,30 +131,116 @@ const AuditPurchase = () => {
   //     selectedData.map((item)=> (handledataUpdate(item)))
   //     // console.log("Price per Million:", pricePerMillion);
   // };
+  // async function handledataUpdate(row, setEditFlag) {
+  //   const data = columns.reduce((acc, col) => {
+  //     if (
+  //       col.key !== "Sr.No" &&
+  //       col.key !== "action" &&
+  //       col.key !== "postedOn1" &&
+  //       col.key !== "phaseDate1" &&
+  //       col.key != "postLinks" &&
+  //       col.key !== "pageedits" &&
+  //       col.key !== "postStatus"
+  //     ) {
+  //       acc[col.key] = row[col.key];
+  //     }
+  //     return acc;
+  //   }, {});
+
+  //   const formData = new FormData();
+  //   formData.append("sponsored", true);
+  //   formData.append("_id", row._id);
+  //   formData.append("postedOn", row.postedOn);
+  //   formData.append("phaseDate", row.phaseDate);
+  //   formData.append("campaignId", row.campaignId);
+
+  //   if (vendorName) {
+  //     formData.append(
+  //       "vendor_id",
+  //       vendorsList?.find((item) => item.vendor_name === row.vendor_name)
+  //         ?.vendor_id
+  //     );
+  //     formData.append(
+  //       "vendorId",
+  //       vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
+  //     );
+  //   }
+
+  //   Object.entries(data).forEach(([key, value]) => {
+  //     if (value !== null && value !== undefined) {
+  //       if (key === "postImage") {
+  //         formData.append("image", value);
+  //       } else formData.append(key, value);
+  //       if (!pageName) {
+  //         formData.delete("page_name");
+  //       }
+  //     }
+  //   });
+
+  //   try {
+  //     const res = await updateData(formatDataObject(formData));
+  //     if (res?.error) throw new Error(res.error);
+  //     await refetchPlanData();
+
+  //     toastAlert("Data Updated with amount " + row.amount);
+  //     setToggleModal(false);
+  //     setEditFlag && setEditFlag(false);
+  //     setVendorName("");
+  //     setPageName("");
+  //   } catch (err) {
+  //     toastError("Error while Uploading");
+  //   }
+  // }
 
   const handleSave = () => {
     setShowModal(true);
   };
 
-  const handleConfirmUpdate = () => {
-    setShowModal(false);
-    selectedData.forEach((item) => {
-      if (
-        pricePerMillion &&
-        (!item?.owner_info?.followers || pricePerMillion === "")
-      ) {
+  const handleConfirmUpdate = async () => {
+    try {
+      setShowModal(false);
+
+      if (!selectedData || selectedData.length === 0) {
+        toastError("No data selected for updating.");
         return;
       }
-      if (item.audit_status === "audited" || item.audit_status === "pending") {
-        handledataUpdate(item);
-      } else {
-        toastError(
-          "Cannot Update the price for the status " + item.audit_status
-        );
+
+      const shortCodes = selectedData.map((data) => data.shortCode);
+      if (shortCodes.length === 0) {
+        toastError("No valid short codes found for updating.");
+        return;
       }
-      // handledataUpdate(item);
-    });
+      const isAllPurchased = selectedData.every((item) => item.audit_status === "purchased");
+      if (!isAllPurchased) {
+        toastError("Only purchased items can be updated.");
+        return;
+      }
+
+      const payload = {
+        amount: Number(price) || 0,
+        shortCodes,
+        updatedBy: token.id,
+      };
+
+      const res = await updatePurchasedStatusMultiple(payload);
+      if (res?.error) throw new Error(res.error);
+
+      // Fetch updated campaign data
+      const response = await fetchFilteredPosts();
+      if (response?.isSuccess && response?.data) {
+        setCampainPlanData(response.data);
+      }
+
+      setPrice(null);
+      setToggleModal(false);
+      toastAlert(res?.data?.message || "Data updated successfully!");
+
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toastError(`Update failed: ${error.message || "Something went wrong."}`);
+    }
   };
+
 
   function checkAbletoAudit() {
     return selectedData.every(
@@ -310,28 +406,101 @@ const AuditPurchase = () => {
       ? row.owner_info.followers / 1000000
       : 0;
     const priceMillionWise = followerCount * pricePerMillion;
-    try {
-      const res = await updatePurchasedStatus({
-        amount: priceMillionWise
-          ? Math.floor(priceMillionWise)
-          : price
-            ? Number(price)
-            : Number(row.amount),
-        shortCode: row.shortCode,
-        audit_status: row.audit_status,
-        updatedBy: token.id,
-      });
-      if (res.error) throw new Error(res.error);
-      const response = await fetchFilteredPosts();
-      if (response.isSuccess && response.data) {
-        setCampainPlanData(response.data);
+    if (row.audit_status === "purchased") {
+      try {
+        const payload = {
+          amount: priceMillionWise
+            ? Math.floor(priceMillionWise)
+            : price
+              ? Number(price)
+              : null,
+          shortCode: row.shortCode,
+          pageName: pageName?.page_name,
+          updatedBy: token.id,
+          campaignId: campaignId,
+          platform_name: platformName,
+          phaseDate: phaseDate
+        };
+
+        const filteredPayload = Object.fromEntries(
+          Object.entries(payload).filter(([_, v]) => v != null && v !== "")
+        );
+        const res = await updatePurchasedStatus(filteredPayload);
+        if (res.error) throw new Error(res.error);
+        const response = await fetchFilteredPosts();
+        if (response.isSuccess && response.data) {
+          setCampainPlanData(response.data);
+        }
+        setPrice(null)
+        // toastAlert("Data Updated with amount " + row.amount);
+        toastAlert(res?.data?.message);
+        setToggleModal(false);
+
+      } catch (err) {
+        toastError("Error while Uploading");
       }
-      // toastAlert("Data Updated with amount " + row.amount);
-      toastAlert(res?.data?.message);
-      setToggleModal(false);
-    } catch (err) {
-      console.log(err);
-      toastError("Error while Uploading");
+    } else {
+      const data = columns.reduce((acc, col) => {
+        if (
+          col.key !== "Sr.No" &&
+          col.key !== "action" &&
+          col.key !== "postedOn1" &&
+          col.key !== "phaseDate1" &&
+          col.key != "postLinks" &&
+          col.key !== "pageedits" &&
+          col.key !== "postStatus"
+        ) {
+          acc[col.key] = row[col.key];
+        }
+        return acc;
+      }, {});
+
+      const formData = new FormData();
+      formData.append("sponsored", true);
+      formData.append("_id", row._id);
+      formData.append("postedOn", row.postedOn);
+      formData.append("phaseDate", row.phaseDate);
+      formData.append("campaignId", row.campaignId);
+
+      if (vendorName) {
+        formData.append(
+          "vendor_id",
+          vendorsList?.find((item) => item.vendor_name === row.vendor_name)
+            ?.vendor_id
+        );
+        formData.append(
+          "vendorId",
+          vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
+        );
+      }
+
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== null && value !== undefined) {
+          if (key === "postImage") {
+            formData.append("image", value);
+          } else formData.append(key, value);
+          if (!pageName) {
+            formData.delete("page_name");
+          }
+        }
+      });
+
+      try {
+        const res = await updateData(formatDataObject(formData));
+        if (res?.error) throw new Error(res.error);
+        const response = await fetchFilteredPosts();
+        if (response.isSuccess && response.data) {
+          setCampainPlanData(response.data);
+        }
+        toastAlert("Data Updated successfully ");
+
+        setToggleModal(false);
+        // setEditFlag && setEditFlag(false);
+        setVendorName("");
+        setPageName("");
+      } catch (err) {
+        toastError("Error while Uploading");
+      }
     }
   }
   const fetchPlanData = async () => {
@@ -581,6 +750,7 @@ const AuditPurchase = () => {
             optionLabel={"platform_name"}
             selectedId={row?.platform_name}
             setSelectedId={(val) => {
+              prevPlatformName.current = row?.platform_name;
               setPlatformName(val);
               const data = {
                 platform_name: val,
@@ -618,22 +788,26 @@ const AuditPurchase = () => {
                   : []
               }
               getOptionLabel={(option) => option.page_name || ""}
-              renderInput={(params) => {
-                return (
-                  <TextField {...params} label="Page Name" variant="outlined" />
-                );
-              }}
-              value={pageName}
+              isOptionEqualToValue={(option, value) => option?._id === value?._id}
+              renderInput={(params) => (
+                <TextField {...params} label="Page Name" variant="outlined" />
+              )}
+              value={
+                pageName && pageName.page_name
+                  ? allPages?.pageData?.find((data) => data.page_name === pageName.page_name) || null
+                  : null
+              }
               onChange={(event, newValue) => {
-                page_id.current = newValue?._id;
-                setPageName(newValue);
+                page_id.current = newValue?._id || null;
+                setPageName(newValue || null);
                 const data = {
-                  page_name: newValue?.page_name,
+                  page_name: newValue?.page_name || "",
                 };
-                setVendorName(newValue?.page_name);
+                setVendorName(newValue?.page_name || "");
                 handelchange(data, index, column, true);
               }}
             />
+
           </div>
         );
       },
@@ -647,10 +821,25 @@ const AuditPurchase = () => {
     {
       name: "Phase Date",
       key: "phaseDate1",
-      renderRowCell: (row) =>
-        formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
-      width: 100,
+      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
+      width: 200,
       compare: true,
+      editable: true,
+      customEditElement: (row) => {
+        return (
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label="Phase Date"
+              value={phaseDate ? phaseDate : dayjs(row.phaseDate)}
+              onChange={(newValue) => setPhaseDate(newValue)}
+              maxDate={dayjs()}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+              format="DD/MM/YYYY"
+            />
+          </LocalizationProvider>
+
+        )
+      }
     },
     {
       name: "Post Links",
@@ -681,11 +870,37 @@ const AuditPurchase = () => {
       width: 100,
     },
     {
-      name: "Campaign name",
       key: "campaign_name",
-      renderRowCell: (row) => formatString(row?.campaign_name),
-      width: 100,
-      compare: true,
+      name: "Campaign Name",
+      width: 150,
+      editable: true,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        return (
+          <CustomSelect
+            fieldGrid={12}
+            dataArray={campaignList}
+            optionId={"_id"}
+            optionLabel={"exe_campaign_name"}
+            selectedId={row?.campaignId}
+            setSelectedId={(val) => {
+              const data = {
+                campaignId: val,
+                campaign_name: campaignList.find((item) => item._id === val)
+                  ?.exe_campaign_name,
+              };
+              setCampaingnId(data.campaignId)
+              handelchange(data, index, column, true);
+            }}
+          />
+        );
+      },
     },
     {
       name: "Vendor Name",
@@ -708,6 +923,7 @@ const AuditPurchase = () => {
               optionId={"vendor_id"}
               optionLabel={"vendor_name"}
               selectedId={row?.vendor_id}
+              disabled={true}
               setSelectedId={(name) => {
                 const vendorDetail = vendorsList.find(
                   (item) => item.vendor_id === name
@@ -724,7 +940,7 @@ const AuditPurchase = () => {
         );
       },
       width: 300,
-      editable: false,
+      editable: true,
     },
 
     {
@@ -732,7 +948,29 @@ const AuditPurchase = () => {
       key: "amount",
       editable: true,
       getTotal: true,
-      width: 100,
+      customEditElement: (
+        row,
+        index,
+        setEditFlag,
+        editflag,
+        handelchange,
+        column
+      ) => {
+        return (
+          <div className="row" style={{ width: "300px", display: "flex" }}>
+            <FieldContainer
+              fieldGrid={12}
+              type="number"
+              value={price}
+              onChange={(e) => {
+                handelchange(e, index, column, false);
+                setPrice(e.target.value)
+              }}
+            />
+          </div>
+        );
+      },
+      width: 150,
     },
     {
       name: "Accessibility Caption",
@@ -1014,6 +1252,7 @@ const AuditPurchase = () => {
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => handledataUpdate(row)}
                 title="Save"
+                disabled={isUpdatingPurchasedStatus}
               // disabled={row.audit_status !== "purchased"}
               >
                 save
@@ -1084,7 +1323,7 @@ const AuditPurchase = () => {
       return (
         <>
           <button
-            className=" icon-1"
+            className="icon-1"
             onClick={() => {
               setToggleModal(false);
             }}
@@ -1133,7 +1372,6 @@ const AuditPurchase = () => {
   };
   const debouncedSetSearchQuery = useCallback(
     debounce((query) => {
-      console.log("Searching for:", query);
       setVendorSearchQuery(query);
     }, 500),
     []
@@ -1230,41 +1468,40 @@ const AuditPurchase = () => {
         </div>
         <div className="card-body">
           <div className="row">
-            {
-              <div className="col-lg-6 col-md-6 col-12">
-                <div className="form-group">
-                  <label>Update Vendor</label>
+            {<div className="col-lg-6 col-md-6 col-12">
+              <div className="form-group">
+                <label>Update Vendor</label>
 
-                  <Autocomplete
-                    fullWidth
-                    options={vendorsList}
-                    getOptionLabel={(option) => option.vendor_name}
-                    value={
-                      vendorsList?.find(
-                        (item) => item.vendor_id === selectedVendorId
-                      ) || null
+                <Autocomplete
+                  fullWidth
+                  options={vendorsList}
+                  getOptionLabel={(option) => option.vendor_name}
+                  value={
+                    vendorsList?.find(
+                      (item) => item.vendor_id === selectedVendorId
+                    ) || null
+                  }
+                  onChange={(event, newValue) => {
+                    if (newValue) {
+                      handleUpdateStatus(newValue.vendor_id);
+                    } else {
+                      handleUpdateStatus(null);
                     }
-                    onChange={(event, newValue) => {
-                      if (newValue) {
-                        handleUpdateStatus(newValue.vendor_id);
-                      } else {
-                        handleUpdateStatus(null);
+                  }}
+                  disabled={!selectedData?.length}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Update Vendor"
+                      variant="outlined"
+                      onChange={(e) =>
+                        debouncedSetSearchQuery(e.target.value)
                       }
-                    }}
-                    disabled={!selectedData?.length}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Update Vendor"
-                        variant="outlined"
-                        onChange={(e) =>
-                          debouncedSetSearchQuery(e.target.value)
-                        }
-                      />
-                    )}
-                  />
-                </div>
+                    />
+                  )}
+                />
               </div>
+            </div>
             }
 
             {currentTab === "Tab1" && (
@@ -1292,7 +1529,7 @@ const AuditPurchase = () => {
                   >
                     Fetch price of all links
                     <ArrowClockwise
-                      className={priceUpdateLoading && "animate_rotate"}
+                      className={priceUpdateLoading ? "animate_rotate" : ""}
                     />
                   </button>
                 </div>

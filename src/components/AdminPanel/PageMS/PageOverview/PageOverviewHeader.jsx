@@ -6,6 +6,7 @@ import {
   Breadcrumbs,
   Box,
   Modal,
+  Button,
 } from "@mui/material";
 import jwtDecode from "jwt-decode";
 import {
@@ -274,6 +275,29 @@ function PageOverviewHeader({
     return null;
   };
 
+  const handleAddInventory = async (id, page_name) => {
+    try {
+      const response = await axios.put(
+        `${baseUrl}v1/convert_disable_page_to_enable_in_page_master`,
+        {
+          id,
+          page_name,
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("Page enabled successfully:", response.data);
+      } else {
+        console.warn("Unexpected response:", response);
+      }
+    } catch (error) {
+      console.error(
+        "Error enabling page:",
+        error.response?.data || error.message
+      );
+    }
+  };
+
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -290,6 +314,31 @@ function PageOverviewHeader({
       key: "page_category_name",
       name: "Category",
       width: 200,
+    },
+    {
+      key: "platform_name",
+      name: "Platform Name",
+      width: 200,
+    },
+    {
+      key: "vendor_name",
+      name: "Vendor",
+      width: 200,
+    },
+    {
+      key: "add_inventory",
+      name: "Add Inventory",
+      renderRowCell: (row) => (
+        <Button
+          variant="outlined"
+          className="btn cmnbtn btn_sm btn-outline-primary"
+          onClick={() => handleAddInventory(row._id, row.page_name)}
+        >
+          Add Inventory
+        </Button>
+      ),
+      width: 100,
+      sortable: true,
     },
     // {
     //   key: 'followers_count',

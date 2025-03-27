@@ -189,6 +189,8 @@ const PreOnboardingUserMaster = () => {
   const [cocData, setCocData] = useState([]);
 
   const [allUserData, setAllUserData] = useState([]);
+  const currentDate = new Date().toISOString().split("T")[0];
+
   const [username, setUserName] = useState("");
 
   const [email, setEmail] = useState("");
@@ -1380,24 +1382,26 @@ const PreOnboardingUserMaster = () => {
                     </div>
                   </div>
                   {/* {allUserData.offer_letter_send && ( */}
-                  <div
-                    className={`sidebar_itembox ${
-                      activeTab === 5 ? "sidebar_item_active" : ""
-                    }`}
-                    id="sidebarLetterBox"
-                    onClick={() => setActiveTab(5)}
-                  >
-                    <div className="progress-circle progressing pp-26">
-                      <div className="progress-circle-border">
-                        <div className="left-half-circle" />
-                        <div className="right-half-circle" />
+                  {allUserData.joining_date <= currentDate && (
+                    <div
+                      className={`sidebar_itembox ${
+                        activeTab === 5 ? "sidebar_item_active" : ""
+                      }`}
+                      id="sidebarLetterBox"
+                      onClick={() => setActiveTab(5)}
+                    >
+                      <div className="progress-circle progressing pp-26">
+                        <div className="progress-circle-border">
+                          <div className="left-half-circle" />
+                          <div className="right-half-circle" />
+                        </div>
+                        <div className="progress-circle-content">
+                          <i className="bi bi-file-earmark-text" />
+                        </div>
                       </div>
-                      <div className="progress-circle-content">
-                        <i className="bi bi-file-earmark-text" />
-                      </div>
+                      <h2 className="letter_tab_name">Offer Letter</h2>
                     </div>
-                    <h2 className="letter_tab_name">Offer Letter</h2>
-                  </div>
+                  )}
                   <div
                     // className={`sidebar_itembox  ${
                     //   activeTab == 3 ? "sidebar_item_active" : ""

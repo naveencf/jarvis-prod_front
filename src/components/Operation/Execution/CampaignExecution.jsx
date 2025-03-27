@@ -48,6 +48,7 @@ import Reel from "/reel.png";
 import Image from "/more.png";
 import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
 import { render } from "react-dom";
+import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -657,7 +658,7 @@ const CampaignExecution = () => {
           </button>
 
           {editflag === index && (
-            <>
+          <>
               <button
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => {
@@ -860,7 +861,9 @@ const CampaignExecution = () => {
       name: "Phase Date",
       key: "phaseDate1",
       renderRowCell: (row) =>
-        formatDate(row.phaseDate)?.replace(/T.*Z/, "").trim(),
+        ConvertDateToOpposite(
+          formatDate(row.phaseDate)?.replace(/T.*Z/, "").trim()
+        ),
       width: 100,
       compare: true,
     },
@@ -1140,7 +1143,7 @@ const CampaignExecution = () => {
         handelchange,
         column
       ) => {
-        return utcToIst(row.postedOn);
+        return ConvertDateToOpposite(utcToIst(row.postedOn));
       },
       customEditElement: (
         row,
@@ -1464,6 +1467,12 @@ const CampaignExecution = () => {
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
       <LinkUpload
+        startDate={startDate}
+        endDate={endDate}
+        selectedVendor={selectedVendor}
+        setStartDate={setStartDate}
+        setEndDate={setEndDate}
+        setSelectedVendor={setSelectedVendor}
         setType={setType}
         type={type}
         selectedData={selectedData}

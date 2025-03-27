@@ -84,7 +84,7 @@ const Ledger = () => {
     if (selectedMonths?.length) {
       return ledgerData.filter((item) => {
         const transactionMonth = item?.Trans_date?.split("-")?.[1];
-        return transactionMonth && selectedMonths?.includes(transactionMonth);
+        return transactionMonth && selectedMonths?.includes(transactionMonth) && !item?.is_deleted;
       });
     }
     return ledgerData;
@@ -153,6 +153,7 @@ const Ledger = () => {
       width: 150,
     },
     { key: "campaign_name", name: "Campaign Name", width: 120 },
+    { key: "created_by_name", name: "Created By", width: 120 },
     { key: "transaction_type_status", name: "Status", width: 100 },
     {
       key: "Credit_amt",

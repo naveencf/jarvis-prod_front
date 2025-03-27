@@ -91,12 +91,17 @@ export const PageBaseURL = createApi({
 
     //Page ALl Pages
     getAllPageList: builder.query({
-      query: ({ decodedToken, userID, pagequery }) => {
+      query: ({ decodedToken, userID, pagequery ,limit, page}) => {
         const isAdmin = decodedToken?.role_id === 1;
+        let queryParams = pagequery ? `${pagequery}` : "";
 
+        // Append limit & page only if they are provided (not undefined or null)
+        if (limit !== undefined) queryParams += `&limit=${limit}`;
+        if (page !== undefined) queryParams += `&page=${page}`;
+    
         return isAdmin
           ? {
-            url: `v1/get_all_pages?${pagequery}`, // Admin: GET request
+            url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
             method: 'GET',
           }
           : {

@@ -348,6 +348,7 @@ const CreateSalesAccount = () => {
         // console.log(accOwnderData, "accOwnderData");
         setAccOwnerNameData(accOwnderData);
         if (id == 0) setSelectedOwner(loginUserId);
+        // if(!isAdmin && id !== 0) setSelectedOwner(singleAccountData.account)
       } catch (error) {
         console.error("Error fetching sales users list:", error);
       }

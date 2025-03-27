@@ -32,17 +32,17 @@ const MonthWiseSalesView = () => {
       width: 100,
     },
     {
-      key: "totalCampaignWithNonGstAmount",
-      name: "Total Sale Booking Amount",
-      renderRowCell: (row) => Number(row.totalCampaignWithNonGstAmount),
+      key: "totalBaseAmount",
+      name: "Sale Booking Amount",
+      renderRowCell: (row) => Number(row.totalBaseAmount),
       compare: true,
 
       width: 100,
     },
     {
-      key: "totalApprovedAmount",
-      name: "Total Recived Amount",
-      renderRowCell: (row) => Number(row.totalApprovedAmount),
+      key: "totalCampaignWithNonGstAmount",
+      name: "Non-Gst Booking Amount",
+      renderRowCell: (row) => Number(row.totalCampaignWithNonGstAmount),
       compare: true,
       width: 100,
     },
