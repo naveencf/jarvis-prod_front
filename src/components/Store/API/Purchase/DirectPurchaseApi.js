@@ -47,10 +47,10 @@ const DirectPurchaseApi = createApi({
       }),
     }),
     updatePurchasedStatusData: builder.mutation({
-      query: ({ amount, shortCode, audit_status,createdBy }) => ({
+      query: ({ amount, shortCode, audit_status, updatedBy }) => ({
         url: `v1/purchase/update_purchased_status_data`,
         method: "PUT",
-        body: { amount, shortCode, audit_status,createdBy },
+        body: { amount, shortCode, audit_status, updatedBy },
       }),
     }),
     updatePurchasedStatusVendor: builder.mutation({
@@ -92,7 +92,7 @@ const DirectPurchaseApi = createApi({
   }),
 });
 
-export const { useGetVendorsQuery,useGetVendorsWithSearchQuery, useAddServiceMutation, useAuditReportMutation, useRefetchPostPriceMutation ,useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
+export const { useGetVendorsQuery, useGetVendorsWithSearchQuery, useAddServiceMutation, useAuditReportMutation, useRefetchPostPriceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
   useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery, useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;
