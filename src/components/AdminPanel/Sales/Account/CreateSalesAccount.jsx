@@ -478,7 +478,7 @@ const CreateSalesAccount = () => {
   }, [accountId, singlePoc, singleAccountDocuments]);
 
   useEffect(() => {
-    setAccountName(gstDetails?.legal_name?.value);
+    // setAccountName(gstDetails?.legal_name?.value);
     if (gstDetails?.constitution?.value === "Private Limited Company") {
       setSelectedCompanyType("6655bd2f0f9216140c64f94b");
     }
@@ -597,7 +597,11 @@ const CreateSalesAccount = () => {
     //   contact_name: poc.contact_name,
     //   contact_no: poc.contact_no,
     // }));
-
+    console.log(accountName,
+      selectedAccountType,
+      selectedCompanyType,
+      selectedCategory,
+      selectedOwner,)
     setIsValid(validation);
     // setIsValIDPoc(pocValidation);
 
@@ -637,7 +641,9 @@ const CreateSalesAccount = () => {
   };
 
   const handleSubmitWithValidation = (e) => {
+    console.log("first", validateForm())
     if (validateForm()) {
+      console.log("second")
       handleSubmit(e);
     }
   };
