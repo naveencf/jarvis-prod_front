@@ -57,7 +57,9 @@ const PageOverviewNew = () => {
   const [waData, setWaData] = useState(null);
 
   const [allVendorWhats, setAllVendorWhats] = useState([]);
-  const [platformName, setPlanFormName] = useState(localStorage.getItem("activeTab"));
+  const [platformName, setPlanFormName] = useState(
+    localStorage.getItem("activeTab")
+  );
   // const [selectedPriceType, setSelectedPriceType] = useState(''); // Holds the selected price type
   // const [inputPrice, setInputPrice] = useState(''); // Holds the input price
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
@@ -70,7 +72,6 @@ const PageOverviewNew = () => {
   const [filterFollowers, setFilterFollowers] = useState(null);
   const [latestPageObject, setLatestPageObject] = useState({});
   const [pageColumns, setPageColumns] = useState([]);
-
 
   const {
     data: pageList,
@@ -89,9 +90,7 @@ const PageOverviewNew = () => {
       pageHealthToggleCheck();
     }
   }, [activeTab]);
- 
 
-  
   function pageHealthToggleCheck() {
     // if (showPageHealthColumn) {
     const data = pageList?.map((item) => {
@@ -618,7 +617,7 @@ const PageOverviewNew = () => {
       },
     },
   ];
- 
+
   const handleClickVendorName = (params) => {
     setVendorDetails(params);
   };
@@ -1174,116 +1173,146 @@ const PageOverviewNew = () => {
       ),
     },
   ];
-  
-   useEffect(() => {
+
+  useEffect(() => {
     let updatedColumns = [];
-  
-    if (platformName !== "twitter" && platformName !== "thread" && platformName !== "youtube") {
-       updatedColumns.push({
+
+    if (
+      platformName !== "twitter" &&
+      platformName !== "thread" &&
+      platformName !== "youtube"
+    ) {
+      updatedColumns.push({
         key: "Post Price",
         name: "Post Price",
         width: 200,
         renderRowCell: (row) => {
-          const postPrice = getPriceDetail(row?.page_price_list, "platform_post");
+          const postPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_post"
+          );
           return postPrice > 0 ? Number(postPrice) : 0;
         },
         compare: true,
       });
     }
-  
+
     if (platformName === "youtube") {
       updatedColumns.push({
         key: "Youtube Short Price",
         name: "Youtube Short Price",
         width: 200,
         renderRowCell: (row) => {
-          const postPrice = getPriceDetail(row?.page_price_list, "platform_post");
+          const postPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_post"
+          );
           return postPrice > 0 ? Number(postPrice) : 0;
         },
         compare: true,
       });
-  
+
       updatedColumns.push({
         key: "Youtube Video Price",
         name: "Youtube Video Price",
         width: 200,
         renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(row?.page_price_list, "platform_story");
+          const storyPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_story"
+          );
           return storyPrice > 0 ? Number(storyPrice) : 0;
         },
         compare: true,
       });
     }
-  
+
     if (platformName === "twitter") {
       updatedColumns.push({
         key: "xtweet Price",
         name: "X-tweet Price",
         width: 200,
         renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(row?.page_price_list, "platform_post");
+          const storyPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_post"
+          );
           return storyPrice > 0 ? Number(storyPrice) : 0;
         },
         compare: true,
       });
     }
-  
+
     if (platformName === "thread") {
       updatedColumns.push({
         key: "thred-tweet Price",
         name: "Thread-tweet Price",
         width: 200,
         renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(row?.page_price_list, "platform_post");
+          const storyPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_post"
+          );
           return storyPrice > 0 ? Number(storyPrice) : 0;
         },
         compare: true,
       });
     }
-  
-    if (platformName !== "youtube" && platformName !== "twitter" && platformName !== "thread") {
+
+    if (
+      platformName !== "youtube" &&
+      platformName !== "twitter" &&
+      platformName !== "thread"
+    ) {
       updatedColumns.push({
         key: "Reel Price",
         name: "Reel Price",
         width: 200,
         renderRowCell: (row) => {
-          const reelData = row?.page_price_list?.find((item) => item?.instagram_reel !== undefined);
+          const reelData = row?.page_price_list?.find(
+            (item) => item?.instagram_reel !== undefined
+          );
           const reelPrice = reelData ? reelData.instagram_reel : 0;
           return reelPrice > 0 ? Number(reelPrice) : 0;
         },
         compare: true,
       });
-  
+
       updatedColumns.push({
         key: "Story Price",
         name: "Story Price",
         width: 200,
         renderRowCell: (row) => {
-          const storyPrice = getPriceDetail(row?.page_price_list, "platform_story");
+          const storyPrice = getPriceDetail(
+            row?.page_price_list,
+            "platform_story"
+          );
           return storyPrice > 0 ? Number(storyPrice) : 0;
         },
         compare: true,
       });
-  
+
       updatedColumns.push({
         key: "Both Price",
         name: "Both Price",
         width: 200,
         renderRowCell: (row) => {
-          const bothData = row?.page_price_list?.find((item) => item?.instagram_both !== undefined);
+          const bothData = row?.page_price_list?.find(
+            (item) => item?.instagram_both !== undefined
+          );
           const bothPrice = bothData ? bothData.instagram_both : 0;
           return bothPrice;
         },
         compare: true,
       });
     }
-  
+
     // setDataGridColumns(updatedColumns);
-     // updatedColumns.map((item) => dataGridcolumns.push(item))
-    setPageColumns(()=> [...dataGridcolumns, ...updatedColumns])
+    // updatedColumns.map((item) => dataGridcolumns.push(item))
+    setPageColumns(() => [...dataGridcolumns, ...updatedColumns]);
     // dataGridcolumns.push(updatedColumns)
-  }, [platformName]); 
-   return (
+  }, [platformName]);
+  return (
     <>
       <PriceModal
         setShowPriceModal={setShowPriceModal}

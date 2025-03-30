@@ -56,7 +56,7 @@ import StatsOfOverview from "./PageOverview/StatsOfOverview";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 const PageOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
-  const { userContextData } = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext();
 
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -95,7 +95,7 @@ const PageOverview = () => {
   const [openFollowerModal, setOpenFollowerModal] = useState(false);
   const [rowDataFollower, setRowDataFollower] = useState("");
   const [localPriceData, setLocalPriceData] = useState(null);
-  const [pagequery, setpagequery] = useState("")
+  const [pagequery, setpagequery] = useState("");
 
   const { data: linkType } = useGetVendorWhatsappLinkTypeQuery();
   const { data: platData } = useGetPmsPlatformQuery();
@@ -859,7 +859,7 @@ const PageOverview = () => {
         );
       },
     },
-  ]
+  ];
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -900,7 +900,9 @@ const PageOverview = () => {
       key: "page_activeness",
       name: "Activeness",
       width: 80,
-      renderRowCell: (row) => { return formatString(row?.page_activeness) },
+      renderRowCell: (row) => {
+        return formatString(row?.page_activeness);
+      },
     },
     {
       key: "page_name",
@@ -930,13 +932,7 @@ const PageOverview = () => {
         return (
           <div className="profile-sec sb">
             <div className="profile-img">
-
-              <img
-
-                src={name}
-                alt={row.page_name}
-                width={40}
-              />
+              <img src={name} alt={row.page_name} width={40} />
             </div>
           </div>
         );
@@ -946,7 +942,9 @@ const PageOverview = () => {
       key: "preference_level",
       name: "Level",
       width: 200,
-      renderRowCell: (row) => { return formatString(row.preference_level) }
+      renderRowCell: (row) => {
+        return formatString(row.preference_level);
+      },
       // // editable: true,
       // customEditElement: (
       //   row,
@@ -989,7 +987,9 @@ const PageOverview = () => {
     {
       key: "platform_name",
       name: "Platform",
-      renderRowCell: (row) => { return formatString(row.platform_name) },
+      renderRowCell: (row) => {
+        return formatString(row.platform_name);
+      },
 
       width: 200,
     },
@@ -997,7 +997,9 @@ const PageOverview = () => {
       key: "page_category_name",
       name: "Category",
       width: 200,
-      renderRowCell: (row) => { return formatString(row.page_category_name) }
+      renderRowCell: (row) => {
+        return formatString(row.page_category_name);
+      },
 
       // compare: true,
       // renderRowCell: (row) => {
@@ -1040,7 +1042,9 @@ const PageOverview = () => {
       key: "page_sub_category_name",
       name: "Sub Category",
       width: 200,
-      renderRowCell: (row) => { return formatString(row.page_sub_category_name) },
+      renderRowCell: (row) => {
+        return formatString(row.page_sub_category_name);
+      },
 
       // compare: true,
     },
@@ -1048,8 +1052,9 @@ const PageOverview = () => {
       key: "followers_count",
       name: "Followers",
       width: 200,
-      renderRowCell: (row) => { return formatNumber(row.followers_count) }
-
+      renderRowCell: (row) => {
+        return formatNumber(row.followers_count);
+      },
     },
     {
       key: "vendor_id",
@@ -1232,8 +1237,6 @@ const PageOverview = () => {
         </div>
       ),
     },
-
-
   ];
 
   const handleLevelChange = async (event, setEditFlag, row) => {
@@ -1405,9 +1408,7 @@ const PageOverview = () => {
       <div className="content">
         {activeTab === "Tab0" && (
           <>
-
             <PageOverviewWithoutHealth columns={dataGridcolumns} />
-
           </>
         )}
         {activeTab === "Tab1" && (

@@ -20,21 +20,26 @@ const OperationApi = createApi({
     }),
 
     getPlanById: builder.query({
-      query: ({ id, vendorId, startDate, endDate }) =>
-        `v1/operation/get_post_details_by_campaign${
-          id == 0 || id == null || id == "null" ? "" : `/${id}`
-        }${
-          vendorId
-            ? `?vendorId=${vendorId}&start_date=${startDate}&end_date=${endDate}`
-            : ""
+      query: ({ id, vendorId, startDate, endDate }) => {
+        let url = `v1/operation/get_post_details_by_campaign`;
+        if (id && id !== 0 && id !== "null") {
+          url += `/${id}`;
         }
-        `,
-
+        if (vendorId || startDate || endDate) {
+          const params = new URLSearchParams();
+          if (vendorId) params.append("vendorId", vendorId);
+          if (startDate) params.append("startDate", startDate);
+          if (endDate) params.append("endDate", endDate);
+          url += `?${params.toString()}`;
+        }
+        return url;
+      },
       transformResponse: (response) => response?.data,
       providesTags: (result, error, arg) => [
         { type: "Plan", id: arg.id || "LIST" },
       ],
     }),
+
     getDeleteStoryData: builder.query({
       query: (id) => `v1/operation/exclude_story_from_post_link/${id}`,
     }),
