@@ -23,13 +23,15 @@ const Ledger = () => {
       { label: `2023-2024`, value: `startDate=2023-04-01&endDate=2024-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
-        value: `startDate=${currentYear - 1
-          }-04-01&endDate=${currentYear}-03-31`,
+        value: `startDate=${
+          currentYear - 1
+        }-04-01&endDate=${currentYear}-03-31`,
       },
       {
         label: `${currentYear}-${currentYear + 1}`,
-        value: `startDate=${currentYear}-04-01&endDate=${currentYear + 1
-          }-03-31`,
+        value: `startDate=${currentYear}-04-01&endDate=${
+          currentYear + 1
+        }-03-31`,
       },
     ];
   };
@@ -64,7 +66,7 @@ const Ledger = () => {
   const [selectedPaymentYear, setSelectedPaymentYear] = useState(
     financialYears[1]?.value
   );
-  const [vendorPhpDetail, setVendorPhpDetail] = useState('');
+  const [vendorPhpDetail, setVendorPhpDetail] = useState("");
 
   // const [filteredData, setFilterdData] = useState([]);
   const [dateRange, setDateRange] = useState(selectedYear);
@@ -84,7 +86,11 @@ const Ledger = () => {
     if (selectedMonths?.length) {
       return ledgerData.filter((item) => {
         const transactionMonth = item?.Trans_date?.split("-")?.[1];
-        return transactionMonth && selectedMonths?.includes(transactionMonth) && !item?.is_deleted;
+        return (
+          transactionMonth &&
+          selectedMonths?.includes(transactionMonth) &&
+          !item?.is_deleted
+        );
       });
     }
     return ledgerData;
@@ -93,12 +99,11 @@ const Ledger = () => {
   useEffect(() => {
     setDateRange(selectedYear);
   }, [selectedYear]);
-  const actualOutstanding = Number(vendorDetail?.totalAmount ?? 0) +
+  const actualOutstanding =
+    Number(vendorDetail?.totalAmount ?? 0) +
     Number(vendorDetail?.vendor_outstandings ?? 0) -
-    Number(
-      vendorDetail?.vendor_total_remaining_advance_amount ??
-      0
-    ) + Number(vendorPhpDetail[0]?.outstanding)
+    Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0) +
+    Number(vendorPhpDetail[0]?.outstanding);
   useEffect(() => {
     if (vendorDetail?.vendor_id) {
       axios
@@ -112,7 +117,7 @@ const Ledger = () => {
           }
         });
     }
-  }, [vendorDetail])
+  }, [vendorDetail]);
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading ledger data.</p>;
@@ -173,7 +178,9 @@ const Ledger = () => {
       key: "balance",
       name: "Balance",
       renderRowCell: (row, index) => {
-        if (index === 0) runningBalance = (Number(row.Credit_amt)) - (Number(row.Debit_amt) || 0);
+        if (index === 0)
+          runningBalance =
+            Number(row.Credit_amt) - (Number(row.Debit_amt) || 0);
         else
           runningBalance +=
             (Number(row.Credit_amt) || 0) - (Number(row.Debit_amt) || 0);
@@ -307,9 +314,12 @@ const Ledger = () => {
                 <h4>
                   Vendor Category: {formatString(vendorDetail?.vendor_category)}
                 </h4>
-                {vendorDetail?.recent_purchase_date && <h4>
-                  Purchase Date : {formatDateTime(vendorDetail?.recent_purchase_date)}
-                </h4>}
+                {vendorDetail?.recent_purchase_date && (
+                  <h4>
+                    Purchase Date :{" "}
+                    {formatDateTime(vendorDetail?.recent_purchase_date)}
+                  </h4>
+                )}
               </div>
             </div>
             <div className="stats">
@@ -333,7 +343,9 @@ const Ledger = () => {
                 <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
                     <h6 className="colorMedium">Audit Pending</h6>
-                    <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount?.toLocaleString()}</h6>
+                    <h6 className="mt8 fs_16">
+                      ₹ {vendorData?.totalAmount?.toLocaleString()}
+                    </h6>
                   </div>
                 </div>
                 <div className="col">
@@ -345,10 +357,16 @@ const Ledger = () => {
                   </div>
                 </div>
                 <div className="col">
-                  <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
+                  <div
+                    className="card p16 shadow-none border-0 m0"
+                    style={{ backgroundColor: "lightsteelblue" }}
+                  >
                     <h6 className="colorMedium">Php Outstanding:</h6>
                     <h6 className="mt8 fs_16">
-                      ₹ {Number(vendorPhpDetail[0]?.outstanding)?.toLocaleString()}
+                      ₹{" "}
+                      {Number(
+                        vendorPhpDetail[0]?.outstanding
+                      )?.toLocaleString()}
                     </h6>
                   </div>
                 </div>
@@ -356,7 +374,8 @@ const Ledger = () => {
                   <div className="card p16 shadow-none border-0 m0 bgInfoLight">
                     <h6 className="colorMedium">Total Remaining Advance</h6>
                     <h6 className="mt8 fs_16">
-                      ₹ {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}
+                      ₹{" "}
+                      {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}
                     </h6>
                   </div>
                 </div>
@@ -364,8 +383,7 @@ const Ledger = () => {
                   <div className="card p16 shadow-none border-0 m0 bgDangerLight">
                     <h6 className="colorMedium">Actual Outstanding</h6>
                     <h6 className="mt8 fs_16">
-                      ₹
-                      {actualOutstanding?.toLocaleString()}
+                      ₹{actualOutstanding?.toLocaleString()}
                     </h6>
                   </div>
                 </div>

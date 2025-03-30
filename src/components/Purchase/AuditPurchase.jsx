@@ -59,7 +59,7 @@ const AuditPurchase = () => {
   const [pageName, setPageName] = useState({ page_name: "" });
   const [activeTab, setActiveTab] = useState("tab1");
   const [currentTab, setcurrentTab] = useState("Tab1");
-  const [platformName, setPlatformName] = useState("");
+  const [platform, setPlatform] = useState("");
   const [campaignPlanData, setCampainPlanData] = useState();
   const [modalName, setModalName] = useState("");
   const [duplicateMsg, setDuplicateMsg] = useState(false);
@@ -95,7 +95,7 @@ const AuditPurchase = () => {
     data: allPages,
     isLoading: allPagesLoading,
     isFetching: allPagesFetching,
-  } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
+  } = useGetAllPagessByPlatformQuery(platform?.platform_name, { skip: !platform?.platform_name });
   const [updateData,] = usePostDataUpdateMutation();
   // { isLoading, isSuccess }
   const {
@@ -418,7 +418,8 @@ const AuditPurchase = () => {
           pageName: pageName?.page_name,
           updatedBy: token.id,
           campaignId: campaignId,
-          platform_name: platformName,
+          platform_name: platform?.platform_name,
+          platform_id: platform?._id,
           phaseDate: phaseDate
         };
 
@@ -454,13 +455,14 @@ const AuditPurchase = () => {
         }
         return acc;
       }, {});
-
+      console.log("rowwwww-----", row);
       const formData = new FormData();
       formData.append("sponsored", true);
       formData.append("_id", row._id);
       formData.append("postedOn", row.postedOn);
       formData.append("phaseDate", row.phaseDate);
       formData.append("campaignId", row.campaignId);
+      formData.append("platform_id", platform._id);
 
       if (vendorName) {
         formData.append(
@@ -493,7 +495,7 @@ const AuditPurchase = () => {
           setCampainPlanData(response.data);
         }
         toastAlert("Data Updated successfully ");
-
+        setPrice(null)
         setToggleModal(false);
         // setEditFlag && setEditFlag(false);
         setVendorName("");
@@ -552,6 +554,16 @@ const AuditPurchase = () => {
           userId: token.id,
         });
 
+        if (response?.error) {
+          console.error("Error updating vendor status:", response.error);
+          Swal.fire({
+            title: "Error!",
+            text: response.error.data.message || "Something went wrong while updating the vendor status.",
+            icon: "error",
+          });
+          return;
+        }
+
         if (response?.data?.success) {
           const refetchResponse = await refetchPlanData();
           if (refetchResponse.isSuccess && refetchResponse.data) {
@@ -565,15 +577,16 @@ const AuditPurchase = () => {
           });
         }
       } catch (error) {
-        console.error("Error updating vendor status:", error);
+        console.error("Unexpected Error:", error);
         Swal.fire({
           title: "Error!",
-          text: "Something went wrong while updating the vendor status.",
+          text: "An unexpected error occurred while updating the vendor status.",
           icon: "error",
         });
       }
     }
   };
+
 
   useEffect(() => {
     if (duplicateMsg) {
@@ -741,21 +754,29 @@ const AuditPurchase = () => {
         handelchange,
         column
       ) => {
-        setPlatformName(row.platform_name);
+        console.log("row,,,",row)
+        // setPlatformName(row.platform_name);
         return (
           <CustomSelect
             fieldGrid={12}
             dataArray={pmsPlatform.data || []}
-            optionId={"platform_name"}
+            optionId={"_id"}
             optionLabel={"platform_name"}
-            selectedId={row?.platform_name}
+            selectedId={platform?._id} 
             setSelectedId={(val) => {
-              prevPlatformName.current = row?.platform_name;
-              setPlatformName(val);
-              const data = {
-                platform_name: val,
+              const selectedOption = pmsPlatform.data.find(option => option._id === val);
+              if (!selectedOption) return;
+
+              const selectedData = {
+                _id: selectedOption._id,
+                platform_name: selectedOption.platform_name
               };
-              handelchange(data, index, column, true);
+              const platformData = {
+                platform_name: selectedOption.platform_name
+              }
+              prevPlatformName.current = row?.platform_name;
+              setPlatform(selectedData); 
+              handelchange(platformData, index, column, true);
             }}
           />
         );

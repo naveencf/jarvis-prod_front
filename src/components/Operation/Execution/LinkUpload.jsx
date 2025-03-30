@@ -21,6 +21,9 @@ import { Campaign } from "@mui/icons-material";
 import { ArrowClockwise } from "@phosphor-icons/react";
 
 const LinkUpload = ({
+  setLinkData,
+  setActTab,
+  handleFilterLinks,
   setType,
   phaseList,
   token,
@@ -71,6 +74,12 @@ const LinkUpload = ({
   const platformID = useRef(null);
   const [selectedCampaign, setSelectedCampaign] = useState(null);
 
+  // useEffect(() => {
+  //   if (record == 5 && shortCodes.length > 0) {
+  //     handleFilterLinks(shortCodes,record);
+  //   }
+  // }, [shortCodes]);
+
   useEffect(() => {
     if (vendor) {
       platformID.current = vendorListData?.find(
@@ -80,8 +89,7 @@ const LinkUpload = ({
   }, [vendor]);
 
   useEffect(() => {
-    console.log(selectedData);
-    if (record == 1) {
+    if (record == 1 || record == 5) {
       let data = selectedData.map((data) => data.ref_link);
       setLinks(data.join("\n"));
     }
@@ -425,7 +433,6 @@ const LinkUpload = ({
     }
   }
 
-  console.log("shortCodes", functionLoading);
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);
@@ -433,23 +440,26 @@ const LinkUpload = ({
 
   function CheckDuplicateInPlan() {
     const duplicate = PlanData?.filter((data) => {
-      return shortCodes.some((item) => item?.shortCode === data?.shortCode);
+      return shortCodes?.some((item) => item?.shortCode === data?.shortCode);
     });
 
-    const LinksArray = links.trim().split("\n");
+    const LinksArray = Array.from(new Set((links || "").trim().split("\n")));
+
     let duplicateShortCodes = [];
     let NewShortCodes = [];
     let duplicateLinks = "";
     let NewLinks = "";
     if (duplicate?.length > 0) {
       duplicateShortCodes = duplicate.map((data) => data.shortCode);
-      NewShortCodes = shortCodes.filter(
-        (code) => !duplicateShortCodes.includes(code)
-      );
+      const duplicateShortCodesSet = new Set(duplicateShortCodes);
+      NewShortCodes =
+        shortCodes?.filter(
+          (code) => !duplicateShortCodesSet.has(code.shortCode)
+        ) || [];
       const matchedLinks = [];
       const unmatchedLinks = [];
       LinksArray.forEach((link) => {
-        const isMatched = duplicateShortCodes.some((shortcode) =>
+        const isMatched = Array.from(duplicateShortCodesSet).some((shortcode) =>
           link.includes(shortcode)
         );
         isMatched ? matchedLinks.push(link) : unmatchedLinks.push(link);
@@ -541,27 +551,37 @@ const LinkUpload = ({
         >
           Vendor Wise Data{" "}
         </div>
+        <div
+          className={`pointer header-tab ${record == 5 && "header-active"}`}
+          onClick={() => {
+            setRecord(5);
+          }}
+        >
+          Filter by links
+        </div>
       </div>
       <div className="card-body">
         <div className="row mb-3">
-          <div className="col-md-6">
-            <textarea
-              className="text-area"
-              placeholder={
-                record !== 2
-                  ? `Please enter the insta links here. Each link should start from a new line. \nexample: \nhttps://www.instagram.com/reel/abc123 \nhttps://www.instagram.com/p/def456sbhv`
-                  : "Please enter the link here"
-              }
-              value={links}
-              onChange={(e) => setLinks(e.target.value)}
-            />
-            {notnewLine && (
-              <p className="form-error">
-                Please start each link from a new line
-              </p>
-            )}
-          </div>
-          {vendorListData?.length > 0 && record != 0 && (
+          {record != 4 && (
+            <div className={record == 5 ? "col-md-12" : "col-md-6"}>
+              <textarea
+                className="text-area"
+                placeholder={
+                  record !== 2
+                    ? `Please enter the insta links here. Each link should start from a new line. \nexample: \nhttps://www.instagram.com/reel/abc123 \nhttps://www.instagram.com/p/def456sbhv`
+                    : "Please enter the link here"
+                }
+                value={links}
+                onChange={(e) => setLinks(e.target.value)}
+              />
+              {notnewLine && (
+                <p className="form-error">
+                  Please start each link from a new line
+                </p>
+              )}
+            </div>
+          )}
+          {vendorListData?.length > 0 && record != 0 && record != 5 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -692,7 +712,7 @@ const LinkUpload = ({
               setSelectedId={setSelectedCampaign}
             />
           )}
-          {record != 2 && record != 3 && record != 4 && (
+          {record != 2 && record != 3 && record != 4 && record != 5 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -772,20 +792,52 @@ const LinkUpload = ({
           <button
             className="cmnbtn btn-primary mt-4 ml-3"
             disabled={
-              (record != 2
-                ? notnewLine ||
-                  !shortCodes.length ||
-                  uploadLoading ||
-                  vendorLoading
-                : false || serviceLoading || vendorLoading) || functionLoading
+              record == 4
+                ? false
+                : (record != 2
+                    ? notnewLine ||
+                      !shortCodes.length ||
+                      uploadLoading ||
+                      vendorLoading
+                    : false || serviceLoading || vendorLoading) ||
+                  functionLoading
             }
-            onClick={() => handleUpload()}
+            onClick={
+              record == 5
+                ? () => {
+                    handleFilterLinks(shortCodes, record);
+                  }
+                : record == 4
+                ? () => {
+                    setSelectedVendor("");
+                    setStartDate("");
+                    setEndDate("");
+                    setSelectedPlan((prev) => prev);
+                  }
+                : () => {
+                    handleUpload();
+                  }
+            }
           >
-            {record == 2
+            {record == 5
+              ? "Search"
+              : record == 4
+              ? "clear"
+              : record == 2
               ? "Add Service"
               : record == 0 || record == 3
               ? "Record"
               : "Update Vendor"}
+          </button>
+          <button
+            className="btn-primary cmnbtn mt-4 ml-3"
+            onClick={() => {
+              setLinkData("");
+              setActTab(null);
+            }}
+          >
+            {" "}
+            Clear
           </button>
         </div>
       </div>

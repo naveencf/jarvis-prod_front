@@ -12,6 +12,7 @@ import {
   useGetAllPagessByPlatformQuery,
   useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
+  useGetPostDetailsBasedOnFilterMutation,
   usePostDataUpdateMutation,
   useUpdateMultipleAuditStatusMutation,
   useUpdatePriceforPostMutation,
@@ -49,6 +50,7 @@ import Image from "/more.png";
 import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
 import { render } from "react-dom";
 import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
+import { Link } from "react-router-dom";
 
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -70,7 +72,10 @@ const CampaignExecution = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState("single");
+  const [actTab, setActTab] = useState("all");
+  const [linkData, setLinkData] = useState([]);
   const maxTabs = useRef(4);
+  const memoValue = useRef(null);
 
   const removeStory = useRef(null);
   const [visibleTabs, setVisibleTabs] = useState(
@@ -110,15 +115,12 @@ const CampaignExecution = () => {
     isFetching: fetchingPlanData,
     isSuccess: successPlanData,
     isLoading: loadingPlanData,
-  } = useGetPlanByIdQuery(
-    {
-      id: selectedPlan,
-      vendorId: selectedVendor,
-      startDate,
-      endDate,
-    },
-    { skip: selectedVendor && !(startDate && endDate) }
-  );
+  } = useGetPlanByIdQuery({
+    id: selectedPlan,
+    vendorId: selectedVendor,
+    startDate,
+    endDate,
+  });
 
   const [updateData, { isLoading, isSuccess }] = usePostDataUpdateMutation();
   const [uploadAudetedData, { isLoading: AuditedUploading }] =
@@ -136,6 +138,36 @@ const CampaignExecution = () => {
   } = useGetDeleteStoryDataQuery(removeStory.current, {
     skip: !removeStory.current,
   });
+
+  const [
+    getDataByFilter,
+    { isLoading: filterLoading, isSuccess: filterSuccess },
+  ] = useGetPostDetailsBasedOnFilterMutation();
+
+  async function handleFilterLinks(codes, tab) {
+    setActTab(!memoValue?.current?.tab ? tab : memoValue?.current?.tab);
+    try {
+      const data = {
+        shortCodes:
+          memoValue?.current?.codes?.length > 0
+            ? memoValue?.current?.codes?.map((code) => code.shortCode)
+            : codes.map((code) => code.shortCode),
+      };
+      const res = await getDataByFilter(data);
+      if (codes?.length > 0 && tab == 5)
+        memoValue.current = { codes: codes, tab: tab };
+      if (res.error) throw new Error(res.error);
+      setLinkData(res.data.data);
+      toastAlert("Data Fetched");
+    } catch (err) {
+      toastError("Error while fetching data", err);
+    }
+  }
+  useEffect(() => {
+    setLinkData([]);
+    setActTab("");
+  }, [selectedPlan]);
+
   useEffect(() => {
     if (deleteStorySuccess) {
       toastAlert("Story Deleted");
@@ -197,6 +229,7 @@ const CampaignExecution = () => {
     formData.append("postedOn", row.postedOn);
     formData.append("phaseDate", row.phaseDate);
     formData.append("campaignId", row.campaignId);
+    row?.platform_id && formData.append("platform_id", row?.platform_id);
 
     if (vendorName) {
       formData.append(
@@ -259,20 +292,35 @@ const CampaignExecution = () => {
       }
     }
     if (selectedPlan && successPlanData) {
-      const uniqPhaseList = PlanData?.reduce((acc, curr) => {
-        if (!acc.some((item) => item.value === curr.phaseDate)) {
-          acc.push({
-            value: curr.phaseDate,
-            label: formatDate(curr?.phaseDate)?.replace(/T.*Z/, ""),
-          });
-        }
-        return acc;
-      }, []);
+      let uniqPhaseList = [];
+      if (actTab != 5) {
+        uniqPhaseList = PlanData?.reduce((acc, curr) => {
+          if (!acc.some((item) => item.value === curr.phaseDate)) {
+            acc.push({
+              value: curr.phaseDate,
+              label: formatDate(curr?.phaseDate)?.replace(/T.*Z/, ""),
+            });
+          }
+          return acc;
+        }, []);
+      } else {
+        uniqPhaseList = linkData?.reduce((acc, curr) => {
+          if (!acc.some((item) => item.value === curr.phaseDate)) {
+            acc.push({
+              value: curr.phaseDate,
+
+              label: formatDate(curr?.phaseDate)?.replace(/T.*Z/, ""),
+            });
+          }
+          return acc;
+        }, []);
+      }
+
       setPhaseList(uniqPhaseList);
     } else {
       setPhaseList([]);
     }
-  }, [selectedPlan, fetchingPlanData]);
+  }, [selectedPlan, fetchingPlanData, linkData]);
 
   function utcToIst(utcDate) {
     let date = new Date(utcDate);
@@ -284,6 +332,7 @@ const CampaignExecution = () => {
 
     return `${day}/${month}/${year}`;
   }
+
   function checkAbletoAudit() {
     return selectedData.every(
       (data) =>
@@ -292,16 +341,24 @@ const CampaignExecution = () => {
         data.audit_status !== "purchased"
     );
   }
-
   const phaseWiseData = useMemo(() => {
-    const phasedData = PlanData?.filter((data) => {
-      if (activeTab === "all") {
-        return true;
-      }
-      return data.phaseDate === activeTab;
-    });
+    let phasedData = [];
+    if (actTab != 5)
+      phasedData = PlanData?.filter((data) => {
+        if (activeTab === "all") {
+          return true;
+        }
+        return data.phaseDate === activeTab;
+      });
+    else
+      phasedData = linkData?.filter((data) => {
+        if (activeTab === "all") {
+          return true;
+        }
+        return data.phaseDate === activeTab;
+      });
     return phasedData;
-  }, [PlanData, activeTab, fetchingPlanData, loadingPlanData]);
+  }, [PlanData, activeTab, fetchingPlanData, loadingPlanData, linkData]);
 
   // useEffect(() => {
   //   if (selectedPrice) {
@@ -380,7 +437,8 @@ const CampaignExecution = () => {
 
       const res = await bulkAudit(data);
       if (res.error) throw new Error(res.error);
-      await refetchPlanData();
+      if (actTab == 5) handleFilterLinks();
+      else await refetchPlanData();
 
       toastAlert("Status Updated");
     } catch (err) {
@@ -464,6 +522,9 @@ const CampaignExecution = () => {
               setPlatformName(val);
               const data = {
                 platform_name: val,
+                platform_id: pmsPlatform.data.find(
+                  (item) => item.platform_name === val
+                )?._id,
               };
               handelchange(data, index, column, true);
             }}
@@ -617,6 +678,7 @@ const CampaignExecution = () => {
       key: "amount",
       editable: true,
       width: 100,
+      getTotal: true,
     },
     {
       name: "Fetch Price",
@@ -658,7 +720,7 @@ const CampaignExecution = () => {
           </button>
 
           {editflag === index && (
-          <>
+            <>
               <button
                 className="btn btn-sm cmnbtn btn-primary"
                 onClick={() => {
@@ -1424,7 +1486,7 @@ const CampaignExecution = () => {
             }}
             label={"Plans"}
           />
-          <CustomSelect
+          {/* <CustomSelect
             fieldGrid={6}
             dataArray={vendorsList}
             optionId={"_id"}
@@ -1450,11 +1512,11 @@ const CampaignExecution = () => {
               setEndDate(e.target.value);
             }}
             label="End Date"
-          />
+          /> */}
 
-          <button
+          {/* <button
             className="btn cmnbtn btn-primary mt-4"
-            onClick={async () => {
+            onClick={() => {
               setSelectedVendor("");
               setStartDate("");
               setEndDate("");
@@ -1462,11 +1524,14 @@ const CampaignExecution = () => {
             }}
           >
             Clear
-          </button>
+          </button> */}
         </div>
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
       <LinkUpload
+        setLinkData={setLinkData}
+        setActTab={setActTab}
+        handleFilterLinks={handleFilterLinks}
         startDate={startDate}
         endDate={endDate}
         selectedVendor={selectedVendor}
@@ -1514,9 +1579,10 @@ const CampaignExecution = () => {
         columns={columns}
         title={`Records`}
         tableName={"Campaign-execution"}
-        isLoading={loadingPlanData || fetchingPlanData}
+        isLoading={loadingPlanData || fetchingPlanData || filterLoading}
         pagination={[50, 100, 200]}
         selectedData={(data) => setSelectedData(data)}
+        showTotal={true}
         addHtml={
           <div className="d-flex sb w-100">
             <div></div>
@@ -1554,7 +1620,7 @@ const CampaignExecution = () => {
                 className={`mr-3 icon-1 btn-outline-primary  ${
                   fetchingPlanData && "animate_rotate"
                 }`}
-                onClick={refetchPlanData}
+                onClick={actTab == 5 ? handleFilterLinks : refetchPlanData}
               >
                 <ArrowClockwise />
               </button>

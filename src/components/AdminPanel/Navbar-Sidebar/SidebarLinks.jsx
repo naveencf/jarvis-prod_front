@@ -135,8 +135,9 @@ const SidebarLinks = () => {
       {deptId !== 36 && (
         <li className="nav-item nav-item-single">
           <Link
-            className={`nav-btn nav-link ${activelink === "/admin" ? "active" : ""
-              }`}
+            className={`nav-btn nav-link ${
+              activelink === "/admin" ? "active" : ""
+            }`}
             to="/admin"
           >
             <i className="ph">
@@ -668,21 +669,21 @@ const SidebarLinks = () => {
                   <div className="internal   collapse-inner">
                     {contextData &&
                       contextData[5] &&
-                      contextData[5].view_value === 1 && (<>
-                        <NavLink
-                          className="collapse-item"
-                          to="/admin/product-overview"
-                        >
-                          <i className="bi bi-dot"></i> Product
-                        </NavLink>
-                        <NavLink
-                          className="collapse-item"
-                          to="/admin/new-pantry-user"
-                        >
-                          <i className="bi bi-dot"></i> New Pantry User
-                        </NavLink>
-                      </>
-
+                      contextData[5].view_value === 1 && (
+                        <>
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/product-overview"
+                          >
+                            <i className="bi bi-dot"></i> Product
+                          </NavLink>
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/new-pantry-user"
+                          >
+                            <i className="bi bi-dot"></i> New Pantry User
+                          </NavLink>
+                        </>
                       )}
 
                     {contextData &&
@@ -901,7 +902,7 @@ const SidebarLinks = () => {
                     id="collapsInnerOne"
                     className="collapse"
                     aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
+                    // data-parent="#accordionSidebar"
                   >
                     <div className="internal collapse-inner">
                       <NavLink className="collapse-item" to="/admin/execution">
@@ -1333,8 +1334,9 @@ const SidebarLinks = () => {
                 {/* </div> */}
 
                 <Link
-                  className={`nav-btn nav-link ${deptId == 36 ? "" : "collapsed"
-                    }`}
+                  className={`nav-btn nav-link ${
+                    deptId == 36 ? "" : "collapsed"
+                  }`}
                   data-toggle="collapse"
                   data-target="#collapsInnerEightFinanceEdit"
                   aria-expanded="true"
@@ -1348,7 +1350,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceEdit"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="collapse-inner">
                     <>
@@ -1594,7 +1596,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinance"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1662,7 +1664,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinancePayout"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1700,7 +1702,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceTask"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1881,9 +1883,9 @@ const SidebarLinks = () => {
                 <i className="bi bi-dot"></i>Page
               </NavLink>
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
-                contextData &&
-                contextData[4] &&
-                contextData[4].insert_value === 1 ? (
+              contextData &&
+              contextData[4] &&
+              contextData[4].insert_value === 1 ? (
                 <NavLink className="collapse-item" to="/admin/pms-plan-making">
                   <i className="bi bi-dot"></i>Plan X
                 </NavLink>
@@ -1892,9 +1894,9 @@ const SidebarLinks = () => {
               )}
               {/* Plan X Beta */}
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
-                contextData &&
-                contextData[4] &&
-                contextData[4].insert_value === 1 ? (
+              contextData &&
+              contextData[4] &&
+              contextData[4].insert_value === 1 ? (
                 <NavLink
                   className="collapse-item"
                   to="/admin/pms-plan-making-beta"
@@ -2036,7 +2038,7 @@ const SidebarLinks = () => {
             id="cummunity"
             className="collapse"
             aria-labelledby="headingFive"
-          // data-parent="#accordionSidebar"
+            // data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
               {contextData &&
@@ -2076,7 +2078,7 @@ const SidebarLinks = () => {
             data-target="#sarcasm"
             aria-expanded="false"
             aria-controls="sarcasm"
-          // to="/admin/sarcasm"
+            // to="/admin/sarcasm"
           >
             <i className="ph">
               <MaskHappy size={32} />
@@ -2151,7 +2153,10 @@ const SidebarLinks = () => {
               data-parent="#accordionSidebar"
             >
               <div className="internal collapse-inner">
-                <NavLink className="collapse-item" to="/admin/purchase-dashboard">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase-dashboard"
+                >
                   <i className="bi bi-dot"></i>Dashboard
                 </NavLink>
                 <NavLink className="collapse-item" to="/admin/purchased-record">
@@ -2160,13 +2165,22 @@ const SidebarLinks = () => {
                 <NavLink className="collapse-item" to="/admin/record-purchase">
                   <i className="bi bi-dot"></i>Record Purchase
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/purchase-transaction">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase-transaction"
+                >
                   <i className="bi bi-dot"></i>Recent Transaction
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/vendor_outstanding">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/vendor_outstanding"
+                >
                   <i className="bi bi-dot"></i>Vendor Overview
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/finance-pruchasemanagement-pendingpaymentrequest">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/finance-pruchasemanagement-pendingpaymentrequest"
+                >
                   <i className="bi bi-dot"></i>Vendor Payment Request
                 </NavLink>
               </div>
@@ -2175,91 +2189,108 @@ const SidebarLinks = () => {
 
           {contextData &&
             contextData[68] &&
-            contextData[68].view_value === 1 && <li className="nav-item">
-              <Link
-                className="nav-link nav-btn collapsed"
-                data-toggle="collapse"
-                data-target="#collapseRecord"
-                aria-expanded="true"
-                aria-controls="collapseRecord"
-              >
-                <i className="ph">
-                  <Files weight="duotone" />
-                </i>
-                <span>Report</span>
-              </Link>
-              <div
-                id="collapseRecord"
-                className="collapse"
-                aria-labelledby="headingTwo"
-                data-parent="#accordionSidebar"
-              >
-                <div className="internal collapse-inner">
-                  <NavLink className="collapse-item" to="/admin/purchase-report">
-                    <i className="bi bi-dot"></i>Purchase
-                  </NavLink>
-                  <NavLink className="collapse-item" to="/admin/audit-purchase">
-                    <i className="bi bi-dot"></i>Sales
-                  </NavLink>
-                  <NavLink className="collapse-item" to="/admin/record-purchase">
-                    <i className="bi bi-dot"></i>Finance
-                  </NavLink>
-
+            contextData[68].view_value === 1 && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link nav-btn collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseRecord"
+                  aria-expanded="true"
+                  aria-controls="collapseRecord"
+                >
+                  <i className="ph">
+                    <Files weight="duotone" />
+                  </i>
+                  <span>Report</span>
+                </Link>
+                <div
+                  id="collapseRecord"
+                  className="collapse"
+                  aria-labelledby="headingTwo"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/purchase-report"
+                    >
+                      <i className="bi bi-dot"></i>Purchase
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/audit-purchase"
+                    >
+                      <i className="bi bi-dot"></i>Sales
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/record-purchase"
+                    >
+                      <i className="bi bi-dot"></i>Finance
+                    </NavLink>
+                  </div>
                 </div>
-              </div>
-            </li>}
+              </li>
+            )}
 
           {contextData &&
             contextData[69] &&
-            contextData[69].view_value === 1 && <li className="nav-item">
-              <Link
-                className="nav-link nav-btn collapsed"
-                data-toggle="collapse"
-                data-target="#collapseBoosting"
-                aria-expanded="true"
-                aria-controls="collapseBoosting"
-              >
-                <i className="bi bi-lightning"></i>
-                <span>Boosting</span>
-              </Link> 
-              <div
-                id="collapseBoosting"
-                className="collapse"
-                aria-labelledby="headingBoosting"
-                data-parent="#accordionSidebar"
-              >
-                <div className="internal collapse-inner">
-                  <NavLink className="collapse-item" to="/admin/page-addition">
-                    <i className="bi bi-plus-circle"></i> Page Add
-                  </NavLink>
-                  <NavLink className="collapse-item" to="/admin/recently-boosted">
-                    <i className="bi bi-graph-up"></i> Recently Boosted
-                  </NavLink>
-                  <NavLink className="collapse-item" to="/admin/default-service">
+            contextData[69].view_value === 1 && (
+              <li className="nav-item">
+                <Link
+                  className="nav-link nav-btn collapsed"
+                  data-toggle="collapse"
+                  data-target="#collapseBoosting"
+                  aria-expanded="true"
+                  aria-controls="collapseBoosting"
+                >
+                  <i className="bi bi-lightning"></i>
+                  <span>Boosting</span>
+                </Link>
+                <div
+                  id="collapseBoosting"
+                  className="collapse"
+                  aria-labelledby="headingBoosting"
+                  data-parent="#accordionSidebar"
+                >
+                  <div className="internal collapse-inner">
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/page-addition"
+                    >
+                      <i className="bi bi-plus-circle"></i> Page Add
+                    </NavLink>
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/recently-boosted"
+                    >
+                      <i className="bi bi-graph-up"></i> Recently Boosted
+                    </NavLink>
+                    {/* <NavLink className="collapse-item" to="/admin/default-service">
                     <i className="bi bi-box"></i> Default Service
-                  </NavLink>
+                  </NavLink> */}
+                  </div>
                 </div>
-              </div>
-            </li>
-          }
+              </li>
+            )}
         </>
       )}
       {contextData && contextData[15] && contextData[15]?.view_value === 1 && (
-      <li className="nav-item">
-        <Link
-          className="nav-btn nav-link collapsed"
-          data-toggle="collapse"
-          data-target="#statics"
-          aria-expanded="false"
-          aria-controls="statics"
-          to="/admin/pantry"
-        >
-          <i className="ph">
-            <MaskHappy size={32} />
-          </i>
-          <span>Pantry</span>
-        </Link>
-      </li>
+        <li className="nav-item">
+          <Link
+            className="nav-btn nav-link collapsed"
+            data-toggle="collapse"
+            data-target="#statics"
+            aria-expanded="false"
+            aria-controls="statics"
+            to="/admin/pantry"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Pantry</span>
+          </Link>
+        </li>
       )}
     </>
   );
