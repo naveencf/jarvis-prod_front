@@ -6,18 +6,18 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import PersonIcon from "@mui/icons-material/Person";
-import { Stack, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+import { Stack, MenuItem, Select, FormControl, InputLabel, Typography } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useEffect } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
 import pdfImg from "../../../pdf-file.png";
 import ImageView from "../../../ImageView";
 
-export default function ReadableList({ rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex }) {
+export default function ReadableList({ extractedData, rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex, openImageDialog, setOpenImageDialog }) {
   const { toastAlert, toastError } = useGlobalContext();
   const [openDialog, setOpenDialog] = useState(false);
-  const [openImageDialog, setOpenImageDialog] = useState(false);
-  const [viewImgSrc, setViewImgSrc] = useState('');
+  // const [openImageDialog, setOpenImageDialog] = useState(true);
+  const [viewImgSrc, setViewImgSrc] = useState(rowData.invoice_file_url);
 
   useEffect(() => {
     if (vendorBankDetail.length > 0) {
@@ -74,36 +74,15 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
             ))}
           </Select>
         </FormControl>
-        {/* Invoice Image Section */}
-        <div style={{}}>
-          {rowData?.invoice_file_url ? (
-            rowData?.invoice_file_url.split(".").pop().toLowerCase() === "pdf" ? (
-              <img
-                onClick={() => {
-                  setOpenImageDialog(true);
-                  setViewImgSrc(rowData.invoice_file_url);
-                }}
-                src={pdfImg}
-                style={{ width: "40px", height: "40px", cursor: "pointer" }}
-                title="PDF Preview"
-              />
-            ) : (
-              <img
-                onClick={() => {
-                  setOpenImageDialog(true);
-                  setViewImgSrc(rowData.invoice_file_url);
-                }}
-                src={rowData.invoice_file_url}
-                alt="Invoice"
-                style={{ width: "100px", height: "100px", cursor: "pointer" }}
-              />
-            )
-          ) : (
-            "No Image"
-          )}
-        </div>
+
+        <Stack >
+
+        </Stack>
       </Stack>
-      {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />}
+      <Stack >
+
+        {/* {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />} */}
+      </Stack>
       <Stack direction="row" spacing={2}>
 
 
@@ -117,6 +96,11 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
             </ListItemAvatar>
             <ListItemText primary={rowData.vendor_name} secondary="Vendor Name" />
           </ListItem>
+          {extractedData && extractedData != {} && extractedData.vendorName && extractedData.vendorName?.toLowerCase() != rowData.vendor_name?.toLowerCase() && (
+            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
+              Vendor Name on Invoice : {extractedData.vendorName}
+            </Typography>
+          )}
           <ListItem>
             <ListItemAvatar>
               <Avatar>
@@ -125,6 +109,11 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
             </ListItemAvatar>
             <ListItemText primary={vendorBankDetail[selectedBankIndex]?.account_number} secondary="Account No." />
           </ListItem>
+          {extractedData && extractedData != {} && extractedData.accountNumber && extractedData.accountNumber != vendorBankDetail[selectedBankIndex]?.account_number && (
+            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
+              Account Number in Invoice : {extractedData.accountNumber}
+            </Typography>
+          )}
         </List>
 
         {/* Bank details */}
@@ -145,6 +134,11 @@ export default function ReadableList({ rowData, vendorBankDetail, selectedBankIn
             </ListItemAvatar>
             <ListItemText primary={`IFSC : ${vendorBankDetail[selectedBankIndex]?.ifsc || "NA"}`} secondary={`Bank : ${vendorBankDetail[selectedBankIndex]?.bank_name || "NA"}`} />
           </ListItem>
+          {extractedData && extractedData != {} && extractedData.ifscCode && extractedData.ifscCode != vendorBankDetail[selectedBankIndex]?.ifsc && (
+            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
+              IFSC differ from Invoice : {extractedData.ifscCode}
+            </Typography>
+          )}
         </List>
       </Stack>
 

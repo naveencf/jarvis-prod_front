@@ -702,42 +702,42 @@ const PageOverviewNew = () => {
         return row.followers_count;
       },
     },
-    {
-      key: "max_cost_price",
-      name: "Max Cost Price",
-      renderRowCell: (row) => {
-        const rateType = row?.rate_type;
-        const priceList = row?.page_price_list || [];
-        const followerCount = Math.max(0, row?.followers_count || 0);
+    // {
+    //   key: "max_cost_price",
+    //   name: "Max Cost Price",
+    //   renderRowCell: (row) => {
+    //     const rateType = row?.rate_type;
+    //     const priceList = row?.page_price_list || [];
+    //     const followerCount = Math.max(0, row?.followers_count || 0);
 
-        // Extract all prices from priceList excluding 'instagram_both'
-        const prices = priceList.flatMap((item) =>
-          Object.entries(item)
-            .filter(([key]) => key !== "instagram_both") // Exclude 'instagram_both'
-            .map(([, value]) => Number(value) || 0)
-        );
+    //     // Extract all prices from priceList excluding 'instagram_both'
+    //     const prices = priceList?.flatMap((item) =>
+    //       Object.entries(item)
+    //         .filter(([key]) => key !== "instagram_both") // Exclude 'instagram_both'
+    //         .map(([, value]) => Number(value) || 0)
+    //     );
 
-        // Calculate the maximum price in the list
-        const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
+    //     // Calculate the maximum price in the list
+    //     const maxPrice = prices.length > 0 ? Math.max(...prices) : 0;
 
-        if (rateType === "Variable") {
-          // Calculate the average story price based on follower count
-          const maxVariablePrice = maxPrice; // Maximum price among variable prices
-          const tempmaxVariablePrice = followerCount
-            ? Math.floor(maxVariablePrice / (followerCount / 1000000))
-            : 0;
+    //     if (rateType === "Variable") {
+    //       // Calculate the average story price based on follower count
+    //       const maxVariablePrice = maxPrice; // Maximum price among variable prices
+    //       const tempmaxVariablePrice = followerCount
+    //         ? Math.floor(maxVariablePrice / (followerCount / 1000000))
+    //         : 0;
 
-          // Return the higher value between tempmaxVariablePrice and maxPrice
-          return Math.max(tempmaxVariablePrice, maxPrice);
-        }
+    //       // Return the higher value between tempmaxVariablePrice and maxPrice
+    //       return Math.max(tempmaxVariablePrice, maxPrice);
+    //     }
 
-        // Default behavior for non-Variable rate types
-        return maxPrice;
-      },
-      width: 150,
-      showCol: true,
-      compare: true,
-    },
+    //     // Default behavior for non-Variable rate types
+    //     return maxPrice;
+    //   },
+    //   width: 150,
+    //   showCol: true,
+    //   compare: true,
+    // },
     {
       key: "link",
       name: "Link",
@@ -817,6 +817,7 @@ const PageOverviewNew = () => {
       key: "average_story_price",
       name: "Average Story Price",
       renderRowCell: (row) => {
+        // console.log(row.page_name, "fghj", row.page_price_list)
         const mStoryPrice = row?.page_price_list;
         const postDetail = mStoryPrice?.find(
           (item) => item.instagram_story !== undefined

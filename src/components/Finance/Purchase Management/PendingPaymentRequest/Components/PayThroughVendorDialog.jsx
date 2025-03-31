@@ -92,11 +92,11 @@ const PayThroughVendorDialog = (props) => {
         // clientReferenceId: selectedRow?.request_id,
         payeeName: extractPayeeName(selectedRow?.vendor_name,),
         ...(gatewayPaymentMode !== "UPI" && {
-          accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
-          branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
+          accountNumber: vendorBankDetail[selectedBankIndex]?.account_number.trim(),
+          branchCode: vendorBankDetail[selectedBankIndex]?.ifsc?.trim(),
         }),
         ...(gatewayPaymentMode === "UPI" && {
-          vpa: vendorBankDetail[selectedBankIndex]?.upi_id,
+          vpa: vendorBankDetail[selectedBankIndex]?.upi_id.trim(),
         }),
         email: 'naveen@creativefuel.io',
         phone: "9109102483",
