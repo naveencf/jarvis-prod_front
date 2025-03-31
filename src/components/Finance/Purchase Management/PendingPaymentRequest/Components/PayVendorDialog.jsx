@@ -10,7 +10,8 @@ import {
   Divider,
   FormControlLabel,
   IconButton,
-  TextField,
+  Stack,
+  TextField, Typography
 } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { useState } from "react";
@@ -19,12 +20,15 @@ import { useEffect } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import axios from "axios";
-import { baseUrl, insightsBaseUrl } from "../../../../../utils/config";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../../../../utils/config";
 import ReadableList from "./ReadableList";
 import jwtDecode from "jwt-decode";
 import { useGlobalContext } from "../../../../../Context/Context";
 import PayThroughVendorDialog from "./PayThroughVendorDialog";
 import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useField/useField.utils";
+import ImageView from "../../../ImageView";
+import PDFExtractorForInvoice from "./PDFExtractorForInvoice";
+import { useGetVendorDocumentByVendorDetailQuery } from '../../../../Store/reduxBaseURL';
 
 function PayVendorDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -71,11 +75,47 @@ function PayVendorDialog(props) {
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
   const [preview, setPreview] = useState("");
   const [paymentIntiated, setPaymentIntiated] = useState(false);
-
+  const [vendorPhpDetail, setVendorPhpDetail] = useState('');
   const [paymentDate, setPaymentDate] = useState(
     dayjs(new Date()).add(5, "hours").add(30, "minutes").$d.toGMTString()
   );
+  const [openImageDialog, setOpenImageDialog] = useState(true);
+  const [isPDF, setIsPDF] = React.useState(false);
+  const [viewImgSrc, setViewImgSrc] = useState(rowData.invoice_file_url);
 
+  const [extractedData, setExtractedData] = useState({});
+
+  const { data: vendorDocuments, isLoading: isVendorDocumentsLoading } =
+    useGetVendorDocumentByVendorDetailQuery(vendorDetail?.vendor_obj_id);
+
+  useEffect(() => {
+    if (vendorDocuments && vendorDocuments.length > 0) {
+      const hasGST = vendorDocuments.find(
+        (doc) => doc.document_name === "GST" && doc.document_no !== ""
+      );
+
+      const panCard = vendorDocuments.find(
+        (doc) => doc.document_name === "Pan Card" && doc.document_no !== ""
+      );
+
+      let tdsPercentage = 20; // Default TDS if no documents available
+
+      if (hasGST) {
+        const seventhChar = hasGST.document_no.charAt(6).toUpperCase(); // Get 7th character of GST
+        tdsPercentage = seventhChar === "P" ? 1 : 2;
+      } else if (panCard) {
+        const fifthChar = panCard.document_no.charAt(4).toUpperCase(); // Get 5th character of PAN
+        tdsPercentage = (fifthChar === "F" || fifthChar === "C") ? 2 : 1;
+      }
+      setTDSPercentage(tdsPercentage);
+      console.log(`TDS Percentage: ${tdsPercentage}`);
+    }
+  }, [vendorDocuments]);
+
+  useEffect(() => {
+    let verify = viewImgSrc?.split(".")?.pop()?.toLowerCase() === "pdf";
+    setIsPDF(verify);
+  }, [viewImgSrc]);
   useEffect(() => {
     handleCalculatePaymentAmount();
     if (paymentAmout > 0 && paymentAmout <= 1000) {
@@ -116,24 +156,25 @@ function PayVendorDialog(props) {
       if (res.status == 200) {
         // console.log(res.data.data)
         setVendorDetail(res.data.data)
-
+        findPhpOutstanding(res.data.data)
       }
     });
+
   }, []);
 
-
-
-  // useEffect(() => {
-  //   const isTDSMandatory =
-  //     rowData?.totalFY > 100000 || rowData?.totalFY > 25000;
-  //   const isTDSDeducted = rowData?.TDSDeduction === "1";
-  //   setIsTDSMandatory(isTDSMandatory);
-  //   setIsTDSDeducted(isTDSDeducted);
-
-  //   if (isTDSMandatory && !isTDSDeducted) {
-  //     setTDSDeduction(true);
-  //   }
-  // }, [rowData]);
+  // console.log(venodrDocuments, "venodrDocuments", rowData)
+  const findPhpOutstanding = (vendorDetailfromphp) => {
+    axios
+      .post(phpBaseUrl + `?view=getvendorDataListvid`, {
+        vendor_id: vendorDetailfromphp?.vendor_id,
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          setVendorPhpDetail(res.data.body);
+          // console.log(res.data.body, 'vendorDetail', vendorDetail);
+        }
+      });
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -180,7 +221,8 @@ function PayVendorDialog(props) {
     phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
     phpFormData.append("tds_percentage", TDSPercentage);
     phpFormData.append("payment_getway_status", "SUCCESS");
-
+    phpFormData.append("accountNumber", rowData.accountNumber?.trim(),);
+    phpFormData.append("branchCode", rowData.branchCode?.trim());
     // phpFormData.append("getway_process_amt", paymentAmout);
 
     // payment_getway_status,
@@ -351,145 +393,178 @@ function PayVendorDialog(props) {
     }
 
   };
-  // console.log(rowData.outstandings, vendorDetail?.vendor_outstandings, "outstanding", vendorDetail, rowData)
+  // console.log("outstanding", vendorDetail, rowData)
   return (
     <div>
-      {/*Dialog Box */}
 
-      <Dialog open={payDialog} onClose={handleClosePayDialog}>
-        <DialogTitle>Vendor Payment</DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClosePayDialog}
-          sx={{
-            position: "absolute",
-            right: 8,
-            top: 8,
-            color: (theme) => theme.palette.grey[500],
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent>
-          <ReadableList rowData={rowData} vendorDetail={vendorDetail} vendorBankDetail={vendorBankDetail} selectedBankIndex={selectedBankIndex}
-            setSelectedBankIndex={setSelectedBankIndex} />
-          <Divider />
 
-          <div className="row gap-3">
-            <>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    onChange={handleTDSDeduction}
-                    checked={TDSDeduction}
-                    disabled={rowData?.tds_deduction > 0}
-                  />
-                }
-                label="TDS Deduction"
-              />
+      <Dialog open={payDialog} onClose={handleClosePayDialog}
+        maxWidth='xl' fullWidth
+      >
+        <Stack direction='row' spacing={2}>
+          <Stack minWidth='50%'>
 
-              {TDSDeduction && (
+            {openImageDialog &&
+              <>
+
+                {!isPDF ? (
+                  <img src={viewImgSrc} alt="img" />
+                ) : (
+                  <div style={{ width: "100%", height: "100vh", }}>
+                    <iframe
+                      // src={viewImgSrc}
+                      src={`${viewImgSrc}#toolbar=0&navpanes=0&scrollbar=0`}
+                      title="file"
+                      width="100%"
+                      height="100%"
+
+                    />
+                  </div>
+                )}
+              </>
+            }
+          </Stack>
+          <Stack>
+            <DialogTitle>Vendor Payment</DialogTitle>
+            {extractedData && extractedData != {} && !extractedData.isCorrect && (
+              <Typography variant="caption" color={extractedData.isCorrect ? "success" : "error"} sx={{ pt: 0 }}>
+                Check Company Detail or Spelling
+              </Typography>
+            )}
+            <IconButton
+              aria-label="close"
+              onClick={handleClosePayDialog}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500],
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+            <DialogContent>
+              <ReadableList extractedData={extractedData} rowData={rowData} vendorDetail={vendorDetail} vendorBankDetail={vendorBankDetail} selectedBankIndex={selectedBankIndex}
+                setSelectedBankIndex={setSelectedBankIndex} openImageDialog={openImageDialog} setOpenImageDialog={setOpenImageDialog} />
+              <Divider />
+
+
+
+              <div className="row gap-3">
                 <>
-                  <Autocomplete
-                    onChange={(e, value) => handleTdspercentageChange(e, value)}
-                    disablePortal
-                    className="col-md-3 mt-2"
-                    sx={{ maxWidth: "20%" }}
-                    value={TDSPercentage}
-                    id="combo-box-demo"
-                    options={[1, 2, 10]}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                      // label="TDS %"
-                      // placeholder="TDS %"
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        onChange={handleTDSDeduction}
+                        checked={TDSDeduction}
+                        disabled={rowData?.tds_deduction > 0}
                       />
-                    )}
-                    disable={true}
+                    }
+                    label="TDS Deduction"
                   />
-                  <TextField
-                    className="col-md-3 mt-2"
-                    value={TDSValue}
-                    autoFocus
-                    readOnly
-                    margin="dense"
-                    variant="outlined"
-                    id="name"
-                    label="TDS Amount"
-                    disable={true}
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                  />
-                  <TextField
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    className="col-md-3 mt-2"
-                    disable={true}
-                    autoFocus
-                    type="number"
-                    margin="dense"
-                    id="name"
-                    label=" Net Amount *"
-                    variant="outlined"
-                    fullWidth
-                    value={netAmount}
-                  />
-                </>
-              )}
-            </>
-          </div>
-          <div className="row gap-3">
-            <TextField
-              className="col"
-              value={`₹${rowData.request_amount}`}
-              autoFocus
-              margin="dense"
-              id="name"
-              sx={{ ml: 2 }}
-              // disabled
-              readOnly
-              label="Amount Requested"
-              type="text"
-              variant="standard"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <TextField
-              className="col"
-              value={`₹${rowData.outstandings - rowData.tds_deduction}`}
-              autoFocus
-              margin="dense"
-              id="name"
-              // disabled
-              readOnly
-              label="Balance Amount"
-              type="text"
-              variant="standard"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <TextField
-              className="col-md-4 me-3"
-              value={`₹${rowData.request_amount - rowData.gst_amount}`}
-              autoFocus
-              margin="dense"
-              id="name"
-              // disabled
-              readOnly
-              label="Base Amount"
-              type="text"
-              variant="standard"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-          </div>
 
-          {/* <div className="row">
+                  {TDSDeduction && (
+                    <>
+                      <Autocomplete
+                        onChange={(e, value) => handleTdspercentageChange(e, value)}
+                        disablePortal
+                        className="col-md-3 mt-2"
+                        sx={{ maxWidth: "20%" }}
+                        value={TDSPercentage}
+                        id="combo-box-demo"
+                        options={[1, 2, 10]}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                          // label="TDS %"
+                          // placeholder="TDS %"
+                          />
+                        )}
+                        disable={true}
+                      />
+                      <TextField
+                        className="col-md-3 mt-2"
+                        value={TDSValue}
+                        autoFocus
+                        readOnly
+                        margin="dense"
+                        variant="outlined"
+                        id="name"
+                        label="TDS Amount"
+                        disable={true}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                      <TextField
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        className="col-md-3 mt-2"
+                        disable={true}
+                        autoFocus
+                        type="number"
+                        margin="dense"
+                        id="name"
+                        label=" Net Amount *"
+                        variant="outlined"
+                        fullWidth
+                        value={netAmount}
+                      />
+                    </>
+                  )}
+                </>
+              </div>
+              <div className="row gap-3">
+                <TextField
+                  className="col"
+                  value={`₹${rowData.request_amount}`}
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  sx={{ ml: 2 }}
+                  // disabled
+                  readOnly
+                  label="Amount Requested"
+                  type="text"
+                  variant="standard"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <TextField
+                  className="col"
+                  value={`₹${rowData.outstandings - rowData.tds_deduction}`}
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  // disabled
+                  readOnly
+                  label="Balance Amount"
+                  type="text"
+                  variant="standard"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <TextField
+                  className="col-md-4 me-3"
+                  value={`₹${rowData.request_amount - rowData.gst_amount}`}
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  // disabled
+                  readOnly
+                  label="Base Amount"
+                  type="text"
+                  variant="standard"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </div>
+
+              {/* <div className="row">
             <FormControlLabel
               className="col-md-5"
               control={
@@ -514,97 +589,97 @@ function PayVendorDialog(props) {
               />
             )}
           </div> */}
-          <div className="row gap-3">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-                format="DD/MM/YYYY"
-                className="col mt-2"
-                defaultValue={dayjs()}
-                autoFocus
-                label="Payment Date "
-                onChange={(newValue) => {
-                  setPaymentDate(
-                    newValue.add(5, "hours").add(30, "minutes").$d.toGMTString()
-                  );
-                }}
-                disableFuture
-                views={["year", "month", "day"]}
-              />
-            </LocalizationProvider>
+              <div className="row gap-3">
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    format="DD/MM/YYYY"
+                    className="col mt-2"
+                    defaultValue={dayjs()}
+                    autoFocus
+                    label="Payment Date "
+                    onChange={(newValue) => {
+                      setPaymentDate(
+                        newValue.add(5, "hours").add(30, "minutes").$d.toGMTString()
+                      );
+                    }}
+                    disableFuture
+                    views={["year", "month", "day"]}
+                  />
+                </LocalizationProvider>
 
-            <Autocomplete
-              onChange={(e, value) => setPaymentMode(value || null)}
-              className="col mt-1"
-              id="combo-box-demo"
-              options={paymentModeData.map((item) => item.payment_mode)}
-              value={paymentMode}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Payment Mode *"
-                  placeholder="Payment Mode"
+                <Autocomplete
+                  onChange={(e, value) => setPaymentMode(value || null)}
+                  className="col mt-1"
+                  id="combo-box-demo"
+                  options={paymentModeData.map((item) => item.payment_mode)}
+                  value={paymentMode}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Payment Mode *"
+                      placeholder="Payment Mode"
+                    />
+                  )}
                 />
-              )}
-            />
-          </div>
-          <div className="row gap-3">
+              </div>
+              <div className="row gap-3">
 
-            <TextField
-              onChange={(e) => {
-                const currentValue = e.target.value;
+                <TextField
+                  onChange={(e) => {
+                    const currentValue = e.target.value;
 
-                // Ensure input is a valid number or empty
-                if (/^\d*$/.test(currentValue)) {
-                  if (currentValue === "") {
-                    setPaymentAmount(""); // Allow empty value
-                    setPaymentStatus("");
-                    setGatewayPaymentMode("");
-                  } else {
-                    const numericValue = Number(currentValue)
-                    const paymentProcessingAmount = Number(rowData?.proccessingAmount)
-                    // This will prevent negative outstanding and gst amount management in ledger
-                    if (numericValue + paymentProcessingAmount >= (vendorDetail?.vendor_outstandings * 1.18) && rowData?.payment_type == "payment") {
-                      // console.log(numericValue + paymentProcessingAmount, (vendorDetail?.vendor_outstandings * 1.18))
-                      toastError(
-                        "Payment Amount should be less than vendor total outstanding Amount or Pay Advance"
-                      );
-                      return;
-                    }
-                    if (numericValue + paymentProcessingAmount <= rowData.outstandings - rowData.tds_deduction) {
-                      setPaymentAmount(numericValue);
-
-                      // Set Gateway Payment Mode
-                      if (numericValue < 1000) {
-                        setGatewayPaymentMode("IMPS");
-                      }
-
-                      // Set Payment Status
-                      if (numericValue < Math.floor(netAmount)) {
-                        setPaymentStatus("Partial");
+                    // Ensure input is a valid number or empty
+                    if (/^\d*$/.test(currentValue)) {
+                      if (currentValue === "") {
+                        setPaymentAmount(""); // Allow empty value
+                        setPaymentStatus("");
+                        setGatewayPaymentMode("");
                       } else {
-                        setPaymentStatus("Full");
+                        const numericValue = Number(currentValue)
+                        const paymentProcessingAmount = Number(rowData?.proccessingAmount)
+                        // This will prevent negative outstanding and gst amount management in ledger
+                        if (numericValue + paymentProcessingAmount >= (Number(vendorDetail?.vendor_outstandings + Number(vendorPhpDetail[0]?.outstanding)) * 1.18) && rowData?.payment_type == "payment") {
+                          // console.log(numericValue + paymentProcessingAmount, (vendorDetail?.vendor_outstandings * 1.18))
+                          toastError(
+                            "Payment Amount should be less than vendor total outstanding Amount or Pay Advance"
+                          );
+                          return;
+                        }
+                        if (numericValue + paymentProcessingAmount <= rowData.outstandings - rowData.tds_deduction) {
+                          setPaymentAmount(numericValue);
+
+                          // Set Gateway Payment Mode
+                          if (numericValue < 1000) {
+                            setGatewayPaymentMode("IMPS");
+                          }
+
+                          // Set Payment Status
+                          if (numericValue < Math.floor(netAmount)) {
+                            setPaymentStatus("Partial");
+                          } else {
+                            setPaymentStatus("Full");
+                          }
+                        }
+                        else {
+                          toastError(
+                            "Payment Amount should be less than or equal to Remainning Amount"
+                          );
+                        }
                       }
                     }
-                    else {
-                      toastError(
-                        "Payment Amount should be less than or equal to Remainning Amount"
-                      );
-                    }
-                  }
-                }
-              }}
-              className="col"
-              autoFocus
-              type="number"
-              margin="dense"
-              id="name"
-              label="Paid Amount *"
-              variant="outlined"
-              fullWidth
-              value={paymentAmout === "" ? "" : (paymentAmout)}
-            />
+                  }}
+                  className="col"
+                  autoFocus
+                  type="number"
+                  margin="dense"
+                  id="name"
+                  label="Paid Amount *"
+                  variant="outlined"
+                  fullWidth
+                  value={paymentAmout === "" ? "" : (paymentAmout)}
+                />
 
-            {/* {TDSValue && (
+                {/* {TDSValue && (
               <TextField
                 // className="col"
                 // autoFocus
@@ -621,86 +696,91 @@ function PayVendorDialog(props) {
                 }}
               />
             )} */}
-          </div>
-          <div className="row gap-3">
-            <TextField
-              className="col mt-2"
-              onChange={(e, value) => setPaymentStatus(value)}
-              value={paymentStatus}
-              autoFocus
-              margin="dense"
-              id="name"
-              // sx={{ml:2}}
-              // disabled
-              readOnly
-              label="Payment Status"
-              type="text"
-              variant="standard"
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <TextField
-              onChange={(e) => setPayRemark(e.target.value)}
-              multiline
-              className="col mt-2"
-              autoFocus
-              margin="dense"
-              id="name"
-              label="Remark"
-              type="text"
-              variant="outlined"
-              fullWidth
-              value={payRemark}
-            />
-          </div>
-          <div className="row">
-            <div className="form-group mt-3">
-              <div className="row">
-                <label htmlFor="paymentProof">Payment Proof/ScreenShot</label>
-
-                <input
-                  type="file"
-                  className="form-control col-md-6"
-                  id="paymentProof"
-                  onChange={handleFileChange}
-                />
-                <Button
-                  variant="contained"
-                  className="col-md-5 ms-3"
-                  fullWidth
-                  onClick={openImgDialog}
-                >
-                  view image
-                </Button>
               </div>
-            </div>
-          </div>
-        </DialogContent>
-        <DialogActions>
-          {paymentMode != "PineLab" ? <Button
-            variant="contained"
-            // className="mx-2"
-            size="small"
-            onClick={(e) => handlePayVendorClick(e)}
-            disabled={!paymentMode || !paymentAmout || paymentIntiated}
-          >
-            Pay Vendor
-          </Button> :
-            <Button
-              // className="btn btn-success cmnbtn btn_sm ms-2"
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={handleOpenPayThroughVendor}
-              disabled={!paymentAmout > 0 || paymentIntiated}
-            >
-              Pay Through Gateway
-            </Button>}
-        </DialogActions>
+              <div className="row gap-3">
+                <TextField
+                  className="col mt-2"
+                  onChange={(e, value) => setPaymentStatus(value)}
+                  value={paymentStatus}
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  // sx={{ml:2}}
+                  // disabled
+                  readOnly
+                  label="Payment Status"
+                  type="text"
+                  variant="standard"
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+                <TextField
+                  onChange={(e) => setPayRemark(e.target.value)}
+                  multiline
+                  className="col mt-2"
+                  autoFocus
+                  margin="dense"
+                  id="name"
+                  label="Remark"
+                  type="text"
+                  variant="outlined"
+                  fullWidth
+                  value={payRemark}
+                />
+              </div>
+              <div className="row">
+                <div className="form-group mt-3">
+                  <div className="row">
+                    <label htmlFor="paymentProof">Payment Proof/ScreenShot</label>
+
+                    <input
+                      type="file"
+                      className="form-control col-md-6"
+                      id="paymentProof"
+                      onChange={handleFileChange}
+                    />
+                    <Button
+                      variant="contained"
+                      className="col-md-5 ms-3"
+                      fullWidth
+                      onClick={openImgDialog}
+                    >
+                      view image
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+
+
+              <PDFExtractorForInvoice file={viewImgSrc} setExtractedData={setExtractedData} />
+            </DialogContent>
+            <DialogActions>
+              {paymentMode != "PineLab" ? <Button
+                variant="contained"
+                // className="mx-2"
+                size="small"
+                onClick={(e) => handlePayVendorClick(e)}
+                disabled={!paymentMode || !paymentAmout || paymentIntiated}
+              >
+                Pay Vendor
+              </Button> :
+                <Button
+                  // className="btn btn-success cmnbtn btn_sm ms-2"
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={handleOpenPayThroughVendor}
+                  disabled={!paymentAmout > 0 || paymentIntiated}
+                >
+                  Pay Through Gateway
+                </Button>}
+            </DialogActions>
+          </Stack>
+
+        </Stack>
       </Dialog>
-
-
       {payThroughVendor && <PayThroughVendorDialog
         setPayThroughVendor={setPayThroughVendor}
         payThroughVendor={payThroughVendor}

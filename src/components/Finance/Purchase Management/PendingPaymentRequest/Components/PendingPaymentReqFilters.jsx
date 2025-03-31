@@ -19,7 +19,7 @@ const PendingPaymentReqFilters = (props) => {
   const [requestAmountFilter, setRequestAmountFilter] = useState("");
   const [requestedAmountField, setRequestedAmountField] = useState("");
   const [search, setSearch] = useState("");
- console.log("vendorList", vendorNameList);
+  //  console.log("vendorList", vendorNameList);
   const handleDateFilter = () => {
     const filterData = data?.filter((item) => {
       const date = new Date(item.request_date);

@@ -23,14 +23,9 @@ const VendorOutstandingOverview = () => {
     const [vendorDetail, setVendorDetail] = useState("");
     const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
 
-    // // Fetch data from Redux query
-    // const { data: vendorData, isLoading, refetch } = useGetAllVendorQuery({
-    //     search: searchTerm,
-    //     page,
-    //     limit,
-    // });
+
     useEffect(() => {
-        fetchVendors("abc");
+        fetchVendors("abh");
     }, []);
 
     // Debounced function to call the API

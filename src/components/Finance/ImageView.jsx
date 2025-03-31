@@ -48,6 +48,7 @@ export default function ImageView({
         open={open}
         fullWidth={fullWidth}
         maxWidth={maxWidth}
+      // sx={{ mr: 100 }}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           View
@@ -66,7 +67,7 @@ export default function ImageView({
         </IconButton>
         <DialogContent
           dividers
-          // sx={{width:"50vw",height:"auto"}}
+        // sx={{width:"50vw",height:"auto"}}
         >
           {!isPDF ? (
             <img src={viewImgSrc} alt="img" />
@@ -74,6 +75,7 @@ export default function ImageView({
             <div style={{ width: "100%", height: "80vh" }}>
               <iframe
                 src={viewImgSrc}
+                // src={`${viewImgSrc}#toolbar=0&navpanes=0&scrollbar=0`}
                 title="file"
                 width="100%"
                 height="100%"
