@@ -13,7 +13,7 @@ function PantryUserDashboard() {
     const isPantryRoute = location.pathname.includes("pantry");
     // const socket = io(socketBaseUrl); // Replace with your backend URL
 
-    const socket = io(socketUrl, {
+    const socket = io(socketBaseUrl, {
         transports: ["websocket"], // Force websocket, avoid polling
         withCredentials: true,
         reconnectionAttempts: 5,
