@@ -1372,7 +1372,7 @@ const VendorMaster = () => {
                   label="Company Pincode"
                   value={compPin}
                   required={false}
-                  maxLength={4}
+                  maxLength={6}
                   fieldGrid={4}
                   onChange={handleCompPincode}
                   // onChange={(e) => {

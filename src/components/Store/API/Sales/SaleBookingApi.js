@@ -123,6 +123,14 @@ const SaleBookingApi = createApi({
       },
     }),
 
+    editBookingIncentiveUpdate: builder.mutation({
+      query: (data) => ({
+        url: `sales/booking_incentive_update`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+
     deleteSaleBooking: builder.mutation({
       query: (id) => ({
         url: `sales/sales_booking/${id}`,
@@ -168,6 +176,7 @@ export const {
   useGetAllNewDeletedSaleQuery,
   useGetmonthwiseSaleBookingQuery,
   useLazyGetmonthwiseSaleBookingQuery,
+  useEditBookingIncentiveUpdateMutation,
 } = SaleBookingApi;
 
 export default SaleBookingApi;

@@ -66,10 +66,10 @@ const BoostingApi = createApi({
     }),
     // Fetch Instagram Boosting Data with Date Filter
     getInstaBoostingData: builder.query({
-      query: ({ startDate, endDate }) => ({
+      query: ({ startDate, endDate, creatorName }) => ({
         url: `/v1/get_instaboosting_data`,
         method: "GET",
-        params: { startDate, endDate },
+        params: { startDate, endDate, creatorName },
       }),
       transformResponse: (response) => response?.boostingPosts,
     }),
@@ -96,6 +96,13 @@ const BoostingApi = createApi({
         body: data,
       }),
     }),
+    creatorDecisionUpdate: builder.mutation({
+      query: ({ id, updatedData }) => ({
+        url: `/v1/update_selector_decision/${id}`,
+        method: "PUT",
+        body: updatedData,
+      }),
+    }),
   }),
 });
 
@@ -112,6 +119,7 @@ export const {
   useEditBoostingCreatorMutation,
   useReportPriceCardMutation,
   useCreatorAnalysisBoostingMutation,
+  useCreatorDecisionUpdateMutation,
 } = BoostingApi;
 
 export default BoostingApi;

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   Autocomplete,
   Button,
   Checkbox,
@@ -48,7 +49,7 @@ function PayVendorDialog(props) {
 
   } = props;
 
-
+  // getVendorFinancialDetail
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
@@ -84,10 +85,10 @@ function PayVendorDialog(props) {
   const [viewImgSrc, setViewImgSrc] = useState(rowData.invoice_file_url);
 
   const [extractedData, setExtractedData] = useState({});
-
+  // const { data: vendorInvoices, isLoading: requestLoading, } = useGetVendorFinancialDetail(vendorDetail?.vendor_obj_id);
+  // console.log(vendorInvoices, "vendorInvoices")
   const { data: vendorDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(vendorDetail?.vendor_obj_id);
-
   useEffect(() => {
     if (vendorDocuments && vendorDocuments.length > 0) {
       const hasGST = vendorDocuments.find(
@@ -426,11 +427,11 @@ function PayVendorDialog(props) {
           </Stack>
           <Stack>
             <DialogTitle>Vendor Payment</DialogTitle>
-            {extractedData && extractedData != {} && !extractedData.isCorrect && (
-              <Typography variant="caption" color={extractedData.isCorrect ? "success" : "error"} sx={{ pt: 0 }}>
-                Check Company Detail or Spelling
-              </Typography>
-            )}
+            {
+              extractedData && extractedData != {} && (
+                <Alert severity={extractedData?.isCorrect ? "success" : "warning"}>{extractedData?.isCorrect ? `Checked Creativefuel spell.` : `Check Company Detail or Spelling.`}</Alert>
+              )
+            }
             <IconButton
               aria-label="close"
               onClick={handleClosePayDialog}
@@ -777,10 +778,10 @@ function PayVendorDialog(props) {
                   Pay Through Gateway
                 </Button>}
             </DialogActions>
-          </Stack>
+          </Stack >
 
-        </Stack>
-      </Dialog>
+        </Stack >
+      </Dialog >
       {payThroughVendor && <PayThroughVendorDialog
         setPayThroughVendor={setPayThroughVendor}
         payThroughVendor={payThroughVendor}
@@ -808,9 +809,10 @@ function PayVendorDialog(props) {
         setSelectedBankIndex={setSelectedBankIndex}
         setRefetch={setRefetch}
         refetch={refetch}
-      />}
+      />
+      }
 
-    </div>
+    </div >
   );
 }
 

@@ -26,19 +26,19 @@ const CreatorAnalysisModel = ({ open, handleClose, creatorData }) => {
       name: "Total Spend",
       key: "totalSpend",
       width: 150,
-      renderRowCell: (row) => row.totalSpend.toFixed(2),
+      renderRowCell: (row) => row.totalSpend.toFixed(0),
     },
     {
       name: "Like Spend",
       key: "likesSpend",
       width: 150,
-      renderRowCell: (row) => row.likesSpend.toFixed(2),
+      renderRowCell: (row) => row.likesSpend.toFixed(0),
     },
     {
       name: "View Spend",
       key: "viewsSpend",
       width: 150,
-      renderRowCell: (row) => row.viewsSpend.toFixed(2),
+      renderRowCell: (row) => row.viewsSpend.toFixed(0),
     },
     {
       name: "Date",

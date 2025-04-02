@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import io from "socket.io-client";
-import { baseUrl, socketBaseUrl, socketUrl } from "../../utils/config";
+import { baseUrl, socketBaseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
 import { useCreatePantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
 import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
@@ -13,12 +13,14 @@ function PantryUserDashboard() {
     const isPantryRoute = location.pathname.includes("pantry");
     // const socket = io(socketBaseUrl); // Replace with your backend URL
 
+
     const socket = io(socketBaseUrl, {
         transports: ["websocket"], // Force websocket, avoid polling
         withCredentials: true,
         reconnectionAttempts: 5,
         timeout: 5000,
     });
+
 
     const storedToken = sessionStorage.getItem("token");
     const decodedToken = jwtDecode(storedToken);
@@ -91,6 +93,13 @@ function PantryUserDashboard() {
     const alertSound = new Audio("https://www.myinstants.com/media/sounds/alarm.mp3"); // Replace with your sound file
 
     useEffect(() => {
+        const socket = io(socketBaseUrl, {
+            transports: ["websocket"], // Force websocket, avoid polling
+            withCredentials: true,
+            reconnectionAttempts: 5,
+            timeout: 5000,
+        });
+
         // Listening for messages from server
         if (isPantryRoute) {
             socket.on("orderGenerated", (message) => {
@@ -241,4 +250,3 @@ function PantryUserDashboard() {
 }
 
 export default PantryUserDashboard;
-3

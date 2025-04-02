@@ -4,6 +4,7 @@ import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   useDeleteSaleBookingMutation,
+  useEditBookingIncentiveUpdateMutation,
   useGetAllSaleBookingQuery,
 } from "../../../Store/API/Sales/SaleBookingApi";
 import View from "../Account/View/View";
@@ -48,6 +49,8 @@ import {
 } from "../../../Store/API/Sales/salesCategoryApi";
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
 import { Badge } from "reactour";
+import { HandCoins } from "@phosphor-icons/react";
+import IncentiveModal from "./IncentiveModal.jsx";
 
 const ViewSaleBooking = () => {
   const token = getDecodedToken();
@@ -59,6 +62,7 @@ const ViewSaleBooking = () => {
   if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
+  const isAdmin = contextData?.find((data) => data?._id == 64)?.view_value == 1;
 
   const filterDate = useLocation().state;
   const [stats, setStats] = useState("");
@@ -257,6 +261,14 @@ const ViewSaleBooking = () => {
       }
       case "testModal": {
         return <ExecutionData selectedRowData={selectedRowData} />;
+      }
+      case "Incentive": {
+        return (
+          <IncentiveModal
+            closeModal={closeModal}
+            selectedRowData={selectedRowData}
+          />
+        );
       }
     }
   };
@@ -516,7 +528,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-            "uploaded" == row?.invoice_request_status ? (
+          "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -567,8 +579,9 @@ const ViewSaleBooking = () => {
       comapare: true,
       renderRowCell: (row) => (
         <span
-          className={`badge ${row.requested_amount ? "badge-success" : "badge-danger"
-            }`}
+          className={`badge ${
+            row.requested_amount ? "badge-success" : "badge-danger"
+          }`}
         >
           {row.requested_amount > 0 ? "Requested" : "Not Requested"}
         </span>
@@ -717,8 +730,9 @@ const ViewSaleBooking = () => {
       name: "GST Status",
       renderRowCell: (row) => (
         <span
-          className={`badge ${row.gst_status ? "badge-success" : "badge-danger"
-            }`}
+          className={`badge ${
+            row.gst_status ? "badge-success" : "badge-danger"
+          }`}
         >
           {row.gst_status ? "Applicable" : "Not Applicable"}
         </span>
@@ -829,14 +843,16 @@ const ViewSaleBooking = () => {
           {!row?.is_dummy_sale_booking && (
             <div className="flex-row">
               {/* {row.incentive_earning_status === "un-earned" &&  */}
-              {row.sale_booking_id > 2370 && <Link
-                title="Edit sale booking"
-                to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
-              >
-                <div className="icon-1">
-                  <i className="bi bi-pencil" />
-                </div>
-              </Link>}
+              {row.sale_booking_id > 2370 && (
+                <Link
+                  title="Edit sale booking"
+                  to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
+                >
+                  <div className="icon-1">
+                    <i className="bi bi-pencil" />
+                  </div>
+                </Link>
+              )}
               {/* } */}
 
               {loginUserRole == 1 && (
@@ -861,6 +877,18 @@ const ViewSaleBooking = () => {
                   }}
                 >
                   <i className="bi bi-credit-card-2-back" />
+                </button>
+              )}
+              {isAdmin && (
+                <button
+                  className="icon-1"
+                  onClick={() => {
+                    setModalName("Incentive");
+                    setSelectedRowData(row);
+                    setExecutionModal(true);
+                  }}
+                >
+                  <HandCoins />
                 </button>
               )}
             </div>

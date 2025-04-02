@@ -166,7 +166,7 @@ const PageAddition = () => {
   };
   return (
     <div>
-      {/* <Button
+      <Button
         variant="contained"
         className="mb-3"
         color="primary"
@@ -179,7 +179,7 @@ const PageAddition = () => {
         handleClose={handleCloseModal}
         selectedPage={selectedPage}
         refetch={refetch}
-      /> */}
+      />
       <CreatorAnalysisModel
         open={openCreatorModel}
         handleClose={handleCloseCreatorModal}

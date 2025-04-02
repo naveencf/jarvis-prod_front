@@ -829,16 +829,18 @@ const LinkUpload = ({
               ? "Record"
               : "Update Vendor"}
           </button>
-          <button
-            className="btn-primary cmnbtn mt-4 ml-3"
-            onClick={() => {
-              setLinkData("");
-              setActTab(null);
-            }}
-          >
-            {" "}
-            Clear
-          </button>
+          {record == 5 && (
+            <button
+              className="btn-primary cmnbtn mt-4 ml-3"
+              onClick={() => {
+                setLinkData("");
+                setActTab(null);
+              }}
+            >
+              {" "}
+              Clear
+            </button>
+          )}
         </div>
       </div>
     </div>

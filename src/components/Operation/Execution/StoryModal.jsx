@@ -135,7 +135,7 @@ const StoryModal = ({
           );
         }
         const res = await addStory(data);
-        if (res.error) throw new Error(res.error);
+        if (res.error) throw new Error(res.error.data.message);
         await refetchPlanData();
         resetAllFields();
         toastAlert("Story Added Successfully", "success");
@@ -171,7 +171,7 @@ const StoryModal = ({
           }
 
           const res = await addStory(data);
-          if (res.error) throw new Error(res.error);
+          if (res.error) throw new Error(res.error.data.message);
           setUploadProgress(Math.round(((i + 1) / storyEntries.length) * 100));
         }
         await refetchPlanData();
@@ -180,8 +180,12 @@ const StoryModal = ({
         setToggleModal(false);
       }
     } catch (error) {
-      toastError("Upload failed. Please check entries and try again.");
-      setIsUploading(false);
+      let errorMessage = "";
+      if (error) errorMessage = error;
+      toastError(
+        errorMessage?.message ||
+          "Upload failed. Please check entries and try again."
+      );
     } finally {
       setIsUploading(false);
     }

@@ -1587,22 +1587,21 @@ const CampaignExecution = () => {
           <div className="d-flex sb w-100">
             <div></div>
             <div className="d-flex">
-              {selectedData.length > 0 && (
-                <button
-                  title="Bulk Upload"
-                  className={`mr-3 cmnbtn btn btn-sm ${
-                    selectedData.length === 0
-                      ? "btn-outline-primary"
-                      : "btn-primary"
-                  }`}
-                  onClick={() => {
-                    setModalName("bulkUpload");
-                    setToggleModal(true);
-                  }}
-                >
-                  Bulk Upload
-                </button>
-              )}
+              <button
+                title="Bulk Upload"
+                disabled={selectedData.length === 0}
+                className={`mr-3 cmnbtn btn btn-sm ${
+                  selectedData.length === 0
+                    ? "btn-outline-primary"
+                    : "btn-primary"
+                }`}
+                onClick={() => {
+                  setModalName("bulkUpload");
+                  setToggleModal(true);
+                }}
+              >
+                Campaign Update
+              </button>
               {phaseWiseData?.length > 0 && (
                 <button
                   title="Upload Audited Data"

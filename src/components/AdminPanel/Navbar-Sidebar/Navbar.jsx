@@ -44,7 +44,7 @@ const Navbar = () => {
   const [badge, setBadge] = useState("");
   const [isActive, setIsActive] = useState(0);
   const { data } = useGlobalContext();
-  const { loginUserData } = useAPIGlobalContext();
+  const { loginUserData, contextData } = useAPIGlobalContext();
   const {
     data: adjustmentData,
     error: adjustmentError,
@@ -81,7 +81,6 @@ const Navbar = () => {
     navigate("/login");
   };
 
-
   // Check if the current route contains the word 'sales'
   const isSalesRoute = location.pathname.includes("sales");
 
@@ -89,8 +88,9 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
-        }`,
+          `sales/badges_sales_booking_data${
+            RoleID != 1 ? `?userId=${loginUserId}` : ""
+          }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -189,14 +189,16 @@ const Navbar = () => {
             </label>
           </li>
 
-          {/* {deptId == 36 && ( */}
-          {(deptId == 36 || RoleID == 1 || loginUserId == 229) &&
-            isSalesRoute &&
-            data[52]?.view_value == 1 && (
+          {/* {deptId == 36 && ( */ console.log(contextData)}
+          {(deptId == 36 ||
+            RoleID == 1 ||
+            loginUserId == 229 ||
+            contextData.find((item) => item?._id == 63)) &&
+            isSalesRoute && (
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -231,20 +233,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                userBadgeData?.totalUnEarnedOutstandingAmount
-                              ) || 0}
-                            </h4>
-                          </div>
-                          <div
-                            // class={`carousel-item  ${isActive === 1 ? "active" : ""
-                            //   } `}
-                            data-interval="1000"
-                          >
-                            <h4>
-                              Un-Billed Outstanding: ₹
-                              {formatNumber(
-                                userBadgeData?.totalUnEarnedOutstandingAmount -
-                                userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -254,6 +243,19 @@ const Navbar = () => {
                   </div>
                   <div className="navBadgeTxt">
                     {/* /* <h5>{badge}</h5> */}
+                    <div
+                      // class={`carousel-item  ${isActive === 1 ? "active" : ""
+                      //   } `}
+                      data-interval="1000"
+                    >
+                      <h4>
+                        Un-Billed Outstanding: ₹
+                        {formatNumber(
+                          userBadgeData?.totalUnEarnedOutstandingAmount -
+                            userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                        ) || 0}
+                      </h4>
+                    </div>
                     <Link to="/admin/view-Outstanding-details">
                       <div
                         id="carouselExampleSlidesOnly"

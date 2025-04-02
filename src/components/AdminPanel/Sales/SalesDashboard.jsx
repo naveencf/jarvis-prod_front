@@ -177,7 +177,6 @@ const SalesDashboard = () => {
         const formattedStartDate =
           activeCompetitions[0].start_date?.split("T")[0];
         const formattedEndDate = activeCompetitions[0].end_date?.split("T")[0];
-
         setStartDate(formattedStartDate);
         setEndDate(formattedEndDate);
       }
