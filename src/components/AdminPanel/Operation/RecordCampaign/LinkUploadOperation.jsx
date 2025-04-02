@@ -187,9 +187,9 @@ const LinkUploadOperation = ({
         const match = link.match(/\/(reel|p)\/([A-Za-z0-9-_]+)/);
         return match
           ? {
-              ref_link: link,
-              shortCode: match[2],
-            }
+            ref_link: link,
+            shortCode: match[2],
+          }
           : null;
       })
       .filter((code) => code !== null);
@@ -287,26 +287,26 @@ const LinkUploadOperation = ({
     let Data =
       record == 2
         ? {
-            vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
-            amount: amount,
-            service_description: serviceName,
-            ref_link: links,
-            campaignId: selectedPlan,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedPlan
-            ).exe_campaign_name,
-            createdBy: token.id,
-            record_purchase_by: token.id,
-            audit_by: token.id,
-            file: file,
-          }
+          vendor_id: vendor,
+          vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+            ?._id,
+          vendor_name: vendorListData?.find(
+            (data) => data.vendor_id == vendor
+          )?.vendor_name,
+          amount: amount,
+          service_description: serviceName,
+          ref_link: links,
+          campaignId: selectedPlan,
+          campaign_name: campaignsNameWiseData?.find(
+            (data) => data._id == selectedPlan
+          ).exe_campaign_name,
+          createdBy: token.id,
+          record_purchase_by: token.id,
+          audit_by: token.id,
+          file: file,
+        }
         : record == 0
-        ? {
+          ? {
             shortCodes: shortCodes,
             department: token.dept_id,
             userId: token.id,
@@ -314,63 +314,63 @@ const LinkUploadOperation = ({
             campaignId: selectedPlan,
             manager: selectedOpUser,
           }
-        : record == 1
-        ? {
-            dataToBeUpdate: {
-              record_purchase_by: token.id,
-            },
-            shortCodes: [
-              ...shortCodes.map((data) => data.shortCode),
-              ...otherPlatform.map((data) => data.shortCode),
-            ],
-            platform_name: pmsPlatformData?.data?.find(
-              (data) => data._id == platformID.current
-            ).platform_name,
-            vendor_id: vendor,
-            manager: selectedOpUser,
-          }
-        : {
-            vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
-            shortCodes: shortCodes,
-            department: token.dept_id,
-            userId: token.id,
-            campaignId: selectedCampaign,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedCampaign
-            )?.exe_campaign_name,
-          };
+          : record == 1
+            ? {
+              dataToBeUpdate: {
+                record_purchase_by: token.id,
+              },
+              shortCodes: [
+                ...shortCodes.map((data) => data.shortCode),
+                ...otherPlatform.map((data) => data.shortCode),
+              ],
+              platform_name: pmsPlatformData?.data?.find(
+                (data) => data._id == platformID.current
+              ).platform_name,
+              vendor_id: vendor,
+              manager: selectedOpUser,
+            }
+            : {
+              vendor_id: vendor,
+              vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+                ?._id,
+              vendor_name: vendorListData?.find(
+                (data) => data.vendor_id == vendor
+              )?.vendor_name,
+              shortCodes: shortCodes,
+              department: token.dept_id,
+              userId: token.id,
+              campaignId: selectedCampaign,
+              campaign_name: campaignsNameWiseData?.find(
+                (data) => data._id == selectedCampaign
+              )?.exe_campaign_name,
+            };
 
     let arrData = shortCodes.length + otherPlatform.length;
 
     let newIsValid =
       record == 2
         ? {
-            vendor: !vendor,
-            amount: !amount,
-            service_description: !serviceName,
-          }
+          vendor: !vendor,
+          amount: !amount,
+          service_description: !serviceName,
+        }
         : record == 0
-        ? {
+          ? {
             shortCodes: !(arrData > 0),
             department: !token.dept_id,
             userId: !token.id,
             phaseDate: !phaseDate,
             campaignId: !selectedPlan,
           }
-        : record == 1
-        ? {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          }
-        : {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          };
+          : record == 1
+            ? {
+              shortCodes: !(arrData > 0),
+              vendor: !vendor,
+            }
+            : {
+              shortCodes: !(arrData > 0),
+              vendor: !vendor,
+            };
 
     setIsValid(newIsValid);
 
@@ -392,8 +392,8 @@ const LinkUploadOperation = ({
         record == 2
           ? await uploadServiceData(serviceData)
           : record == 0 || record == 3
-          ? await uploadPlanData(Data)
-          : await updateVendor(Data);
+            ? await uploadPlanData(Data)
+            : await updateVendor(Data);
       if (res.error) throw new Error(res.error);
       await refetchPlanData();
       setLinks("");
@@ -467,21 +467,21 @@ const LinkUploadOperation = ({
 
   return (
     <div className="card">
-      <div className="card-header">
+      <div className="card-header" >
         {!(
           selectedPlan == 0 ||
           selectedPlan == null ||
           selectedPlan == "null"
         ) && (
-          <div
-            className={`pointer header-tab ${record == 0 && "header-active"}`}
-            onClick={() => {
-              setRecord(0);
-            }}
-          >
-            Record Links
-          </div>
-        )}
+            <div
+              className={`pointer header-tab ${record == 0 && "header-active"}`}
+              onClick={() => {
+                setRecord(0);
+              }}
+            >
+              Record Links
+            </div>
+          )}
         {/* <div
           className={`pointer header-tab ${record == 3 && "header-active"}`}
           onClick={() => {
@@ -664,9 +664,9 @@ const LinkUploadOperation = ({
             disabled={
               (record != 2
                 ? notnewLine ||
-                  !shortCodes.length ||
-                  uploadLoading ||
-                  vendorLoading
+                !shortCodes.length ||
+                uploadLoading ||
+                vendorLoading
                 : false || serviceLoading || vendorLoading) || functionLoading
             }
             onClick={() => handleUpload()}
@@ -674,8 +674,8 @@ const LinkUploadOperation = ({
             {record == 2
               ? "Add Service"
               : record == 0 || record == 3
-              ? "Record"
-              : "Update Vendor"}
+                ? "Record"
+                : "Update Vendor"}
           </button>
         </div>
       </div>

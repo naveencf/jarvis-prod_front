@@ -34,7 +34,7 @@ const DocumentUpload = ({
         console.error("API call error:", error);
         toastError("GST API failed", error.message);
       }
-    }, 2000),
+    }, 20000),
     [getGst, toastAlert, toastError]
   );
 

@@ -189,7 +189,6 @@ const Navbar = () => {
             </label>
           </li>
 
-          {/* {deptId == 36 && ( */ console.log(contextData)}
           {(deptId == 36 ||
             RoleID == 1 ||
             loginUserId == 229 ||

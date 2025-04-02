@@ -74,6 +74,7 @@ const CampaignExecution = () => {
   const [type, setType] = useState("single");
   const [actTab, setActTab] = useState("all");
   const [linkData, setLinkData] = useState([]);
+  const vendorList = useRef(null);
   const maxTabs = useRef(4);
   const memoValue = useRef(null);
 
@@ -257,7 +258,8 @@ const CampaignExecution = () => {
     try {
       const res = await updateData(formatDataObject(formData));
       if (res?.error) throw new Error(res.error);
-      await refetchPlanData();
+      if (actTab == 5) handleFilterLinks();
+      else await refetchPlanData();
 
       toastAlert("Data Updated with amount " + row.amount);
       setToggleModal(false);
@@ -448,20 +450,29 @@ const CampaignExecution = () => {
 
   async function handleAuditedDataUpload() {
     try {
-      const data = {
-        campaignId: selectedPlan,
-        userId: token.id,
-        phaseDate:
-          activeTab == "all"
-            ? phaseList?.length == 1
-              ? phaseList[0]?.value
-              : ""
-            : activeTab,
-      };
+      let data = {};
+      data =
+        selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+          ? {
+              userId: token.id,
+              isVendorWise: true,
+              vendor_id: vendorList.current,
+            }
+          : {
+              campaignId: selectedPlan,
+              userId: token.id,
+              phaseDate:
+                activeTab == "all"
+                  ? phaseList?.length == 1
+                    ? phaseList[0]?.value
+                    : ""
+                  : activeTab,
+            };
 
       const res = await uploadAudetedData(data);
       if (res.error) throw new Error(res.error);
-      await refetchPlanData();
+      if (actTab == 5) handleFilterLinks();
+      else await refetchPlanData();
       toastAlert("Data Uploaded");
     } catch (err) {
       toastError("Error Uploading Data");
@@ -1527,8 +1538,9 @@ const CampaignExecution = () => {
           </button> */}
         </div>
       </div>
-      {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
+      {/* {selectedData.length > 0 && <PostGenerator bulk={selectedData} />} */}
       <LinkUpload
+        vendorList={vendorList}
         setLinkData={setLinkData}
         setActTab={setActTab}
         handleFilterLinks={handleFilterLinks}
