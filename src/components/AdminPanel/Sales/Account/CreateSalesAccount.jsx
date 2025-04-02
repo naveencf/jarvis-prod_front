@@ -53,6 +53,7 @@ import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import AccountSubmitDialog from "./AccountSubmitDialog";
 import { Pencil } from "@phosphor-icons/react";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
+import { useGstDetailsMutation } from "../../../Store/API/Sales/GetGstDetailApi.js";
 
 const socialOptions = [
   { value: "instagram", label: "Instagram" },
@@ -72,6 +73,8 @@ const CreateSalesAccount = () => {
   const loginUserRole = token.role_id;
 
   const loginUserId = token.id;
+  const [getGst, { data: gstData, isLoading: gstLoading, error: gstError }] =
+    useGstDetailsMutation();
   const {
     data: allBrands,
     error: allBrandsError,
@@ -238,7 +241,7 @@ const CreateSalesAccount = () => {
     try {
       await editDep(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const handleEdit = async (row, setEditFlag) => {
     const payload = {
@@ -248,7 +251,7 @@ const CreateSalesAccount = () => {
     try {
       await edit(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const ViewBrandCategoryColumns = [
     {
@@ -345,7 +348,6 @@ const CreateSalesAccount = () => {
           },
         });
         const accOwnderData = response.data;
-        // console.log(accOwnderData, "accOwnderData");
         setAccOwnerNameData(accOwnderData);
         if (id == 0) setSelectedOwner(loginUserId);
         // if(!isAdmin && id !== 0) setSelectedOwner(singleAccountData.account)
@@ -355,7 +357,6 @@ const CreateSalesAccount = () => {
     }
     getData();
   }, []);
-  // console.log(selectedOwner, "selectedOwner", selectedOwner, loginUserId, isAdmin)
   const transformPlatformData = (data) => {
     return data.map((item) => ({
       platform: {
@@ -489,6 +490,25 @@ const CreateSalesAccount = () => {
     }
   }, [gstDetails]);
 
+  useEffect(() => {
+    if (documents.length > 0) {
+      const gstDoc = documents.find(
+        (doc) => doc.document_master_id === "665dbc0d1df407940c078fd5"
+      );
+
+      if (gstDoc?.document_no !== "")
+        getGst({
+          // flag: 1,
+          gstNo: gstDoc?.document_no,
+        })
+          .unwrap()
+          .then((res) => {
+            setAccountName(res.legal_name.value);
+            setGstDetails(res);
+          });
+    }
+  }, [documents]);
+
   const handleAddPoc = () => {
     setPocs([
       ...pocs,
@@ -598,11 +618,6 @@ const CreateSalesAccount = () => {
     //   contact_name: poc.contact_name,
     //   contact_no: poc.contact_no,
     // }));
-    console.log(accountName,
-      selectedAccountType,
-      selectedCompanyType,
-      selectedCategory,
-      selectedOwner,)
     setIsValid(validation);
     // setIsValIDPoc(pocValidation);
 
@@ -642,9 +657,7 @@ const CreateSalesAccount = () => {
   };
 
   const handleSubmitWithValidation = (e) => {
-    console.log("first", validateForm())
     if (validateForm()) {
-      console.log("second")
       handleSubmit(e);
     }
   };
@@ -1015,22 +1028,6 @@ const CreateSalesAccount = () => {
     loaderview = true;
   else loaderview = false;
 
-  console.log(
-    allAccountTypesLoading,
-    allCompanyTypeLoading,
-    allBrandCatTypeLoading,
-    allDocTypeLoading,
-    isCreateSalesLoading,
-    accountDataLoading,
-    editAccountLoading,
-    DocumentsLoading,
-    pocLoading,
-    editPocLoading,
-    editDocumentLoading,
-    allBrandsLoading,
-    allCompanyTypeLoading
-  );
-
   const handlePincode = (e, state) => {
     const { value } = e.target;
 
@@ -1100,6 +1097,7 @@ const CreateSalesAccount = () => {
       },
     },
   ];
+
   return (
     <div>
       {loaderview && <Loader />}
@@ -1250,13 +1248,13 @@ const CreateSalesAccount = () => {
                     setSelectedId={setSelectedBrand}
                     required
                     astric
-                  // disabled={
-                  //   allAccountTypes?.find(
-                  //     (data) => data._id === selectedAccountType
-                  //   )?.account_type_name !== "Agency"
-                  //     ? false
-                  //     : true
-                  // }
+                    // disabled={
+                    //   allAccountTypes?.find(
+                    //     (data) => data._id === selectedAccountType
+                    //   )?.account_type_name !== "Agency"
+                    //     ? false
+                    //     : true
+                    // }
                   />
                   <span className="form-error">
                     Brand name & Account name can be different eg: Brand Name:
@@ -1740,8 +1738,8 @@ const CreateSalesAccount = () => {
                 ? "Submit"
                 : "Save"
               : id == 0
-                ? "Submitting..."
-                : "Saving..."}
+              ? "Submitting..."
+              : "Saving..."}
           </button>
           <button
             className="btn cmnbtn btn-warning"

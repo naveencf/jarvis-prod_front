@@ -18,12 +18,21 @@ const PantryApi = createApi({
             }),
             keepUnusedDataFor: 0,
         }),
+        offlineFromPantry: builder.mutation({
+            query: (userDetail) => ({
+                url: `v1/user_offline`,
+                method: "POST",
+                body: userDetail,
+            }),
+            keepUnusedDataFor: 0,
+        }),
     }),
 });
 
 export const {
     useGetPantryByIdQuery,
     useCreatePantryMutation,
+    useOfflineFromPantryMutation,
 } = PantryApi;
 
 export default PantryApi;

@@ -46,6 +46,7 @@ const LinkUpload = ({
   setEndDate,
   selectedVendor,
   setSelectedVendor,
+  vendorList,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
@@ -196,7 +197,7 @@ const LinkUpload = ({
     const uniqueLinks = filterDuplicateLinks();
     const shortCodes = uniqueLinks
       .map((link) => {
-        const match = link.match(/\/(reel|p)\/([A-Za-z0-9-_]+)/);
+        const match = link.match(/\/(reel|p|share)\/([A-Za-z0-9-_]+)/);
         return match
           ? {
               ref_link: link,
@@ -433,6 +434,14 @@ const LinkUpload = ({
     }
   }
 
+  useEffect(() => {
+    if (record == 4)
+      vendorList.current = vendorListData?.find(
+        (item) => item._id == selectedVendor
+      )?.vendor_id;
+    else vendorList.current = null;
+  }, [selectedVendor]);
+
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);
@@ -547,6 +556,7 @@ const LinkUpload = ({
           className={`pointer header-tab ${record == 4 && "header-active"}`}
           onClick={() => {
             setRecord(4);
+            setActTab(4);
           }}
         >
           Vendor Wise Data{" "}

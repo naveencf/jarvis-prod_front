@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { baseUrl, socketBaseUrl } from "../../utils/config";
 import jwtDecode from "jwt-decode";
-import { useCreatePantryMutation, useGetPantryByIdQuery } from "../Store/API/Pantry/PantryApi";
+import { useCreatePantryMutation, useGetPantryByIdQuery, useOfflineFromPantryMutation } from "../Store/API/Pantry/PantryApi";
 import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
@@ -28,9 +28,10 @@ function PantryUserDashboard() {
     const userName = decodedToken.name;
     const departmentID = decodedToken.dept_id;
     // Using the query hook to fetch pantry data
-    const { data: pantryData, error, isLoading } = useGetPantryByIdQuery();
+    const { data: pantryData, } = useGetPantryByIdQuery();
     // Using the mutation hook to create a new pantry
     const [createPantry, { isLoading: isCreating, error: createError }] = useCreatePantryMutation();
+    const [offlineFromPantry] = useOfflineFromPantryMutation();
 
     const [order, setOrder] = useState([]);
     const [recentOrder, setRecentOrder] = useState([]);
@@ -56,7 +57,7 @@ function PantryUserDashboard() {
             console.error("Error fetching orders:", err);
         }
     };
-
+    console.log(houseKeepingOnlineStatus, "houseKeepingOnlineStatus")
     useEffect(() => {
         fetchOrders();
     }, []);
@@ -66,7 +67,7 @@ function PantryUserDashboard() {
 
     const houseKeepingUserStatus = () => {
         console.log(pantryData, "pantryData")
-        if (pantryData && pantryData.length > 0) {
+        if (pantryData) {
             const userOnline = pantryData?.staff_online.find((item) => item.user_id == userID);
             if (userOnline) {
                 setHouseKeepingOnlineStatus(true);
@@ -78,14 +79,32 @@ function PantryUserDashboard() {
         try {
             const newPantry = {
                 user_id: userID,
-                pentry_id: "67dc90e83d75e8c544242ad8",
+                pentry_id: pantryData?._id,
                 ...(houseKeepingOnlineStatus ? { status: 0 } : {}),
 
                 // add other fields as needed
             };
+            console.log(houseKeepingOnlineStatus, "houseKeepingOnlineStatus")
             // The unwrap() method returns a promise that resolves with the actual response or rejects with an error.
-            const response = await createPantry(newPantry).unwrap();
-            console.log("Pantry created successfully:", response);
+            if (houseKeepingOnlineStatus) {
+
+                const response = await offlineFromPantry(newPantry).unwrap();
+                if (response.success) {
+
+                    setHouseKeepingOnlineStatus(false);
+                }
+
+            } else {
+                const response = await createPantry(newPantry).unwrap();
+                console.log(response, "response")
+                if (response.success) {
+
+
+                    setHouseKeepingOnlineStatus(true);
+                }
+            }
+            console.log(houseKeepingOnlineStatus, "houseKeepingOnlineStatus - 2")
+            houseKeepingUserStatus();
         } catch (err) {
             console.error("Error creating pantry:", err);
         }
