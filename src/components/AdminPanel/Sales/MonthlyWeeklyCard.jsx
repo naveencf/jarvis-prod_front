@@ -48,7 +48,7 @@ const MonthlyWeeklyCard = ({
           month: monthName,
           startdate: new Date(
             pastMonthStart.getTime() -
-            pastMonthStart.getTimezoneOffset() * 60000
+              pastMonthStart.getTimezoneOffset() * 60000
           )
             .toISOString()
             .split("T")[0],
@@ -192,6 +192,21 @@ const MonthlyWeeklyCard = ({
                   renderGrowthBadge(
                     data?.totalCampaignAmount,
                     previousData?.totalCampaignAmount
+                  )}
+              </li>
+              <li>
+                <span>Average</span>{" "}
+                {data?.totalCampaignAmount && data?.totalSaleBookingCounts
+                  ? formatIndianNumber(
+                      Number(data?.totalCampaignAmount) /
+                        Number(data?.totalSaleBookingCounts)
+                    )
+                  : ""}
+                {title !== "Total" &&
+                  renderGrowthBadge(
+                    data?.totalCampaignAmount / data?.totalSaleBookingCounts,
+                    previousData?.totalCampaignAmount /
+                      previousData?.totalSaleBookingCounts
                   )}
               </li>
             </ul>

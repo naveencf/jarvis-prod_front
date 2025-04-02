@@ -182,16 +182,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-      allAccountError.error ||
-      "An error occurred"
+        allAccountError.error ||
+        "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-      allBrandCatTypeError.error ||
-      "An error occurred"
+        allBrandCatTypeError.error ||
+        "An error occurred"
     );
   }
 
@@ -218,6 +218,20 @@ const SalesAccountOverview = () => {
       width: 20,
       showCol: true,
       sortable: true,
+    },
+    {
+      key: "account_image_url",
+      name: "Logo",
+      renderRowCell: (row) => (
+        <img
+          className="icon-1"
+          src={row?.account_image_url}
+          alt="Logo"
+          style={{ width: "50px", height: "50px" }}
+        />
+      ),
+      width: 50,
+      showCol: true,
     },
     {
       key: "account_name",
@@ -627,7 +641,7 @@ const SalesAccountOverview = () => {
           <div className="card ">
             <div className="card-body row">
               <CustomSelect
-                label="Seclect Column"
+                label="Select Column"
                 fieldGrid={4}
                 dataArray={dateFilterArray}
                 optionId="value"

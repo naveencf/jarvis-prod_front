@@ -12,7 +12,13 @@ import {
 } from "../Store/API/Boosting/BoostingApi";
 import PurchaseTransactionFilter from "../Purchase/PurchaseTransactionFilter";
 
-const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
+const ReportPriceCard = ({
+  startDate,
+  endDate,
+  setStartDate,
+  setEndDate,
+  creatorName,
+}) => {
   const [sendData] = useReportPriceCardMutation();
   const [reportData, setReportData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -25,7 +31,11 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
     setError(null);
 
     try {
-      const response = await sendData({ startDate, endDate }).unwrap();
+      const response = await sendData({
+        startDate,
+        endDate,
+        creatorName,
+      }).unwrap();
       setReportData(response.data);
     } catch (error) {
       setError("Failed to fetch report data");
@@ -33,7 +43,7 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
     } finally {
       setLoading(false);
     }
-  }, [startDate, endDate, sendData]);
+  }, [startDate, endDate, sendData, creatorName]);
 
   // ✅ Fetch data when startDate or endDate changes (Debounced)
   useEffect(() => {
@@ -43,7 +53,6 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
 
     return () => clearTimeout(timeout);
   }, [startDate, endDate, fetchReportData]);
-  console.log(reportData, "report data");
   return (
     <>
       {loading && <CircularProgress size={24} />}
@@ -71,9 +80,9 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
                     className="card p16 shadow-none border-0 m0"
                     style={{ backgroundColor: "lightsteelblue" }}
                   >
-                    <h6 className="colorMedium">Total Spend:</h6>
+                    <h6 className="colorMedium">TotalSpend:</h6>
                     <h6 className="mt8 fs_16">
-                      ₹{reportData.totalSpend.toFixed(2)}
+                      ₹{reportData.totalSpend.toFixed(0)}
                     </h6>
                   </div>
                 </div>
@@ -81,7 +90,7 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
                   <div className="card p16 shadow-none border-0 m0 bgInfoLight">
                     <h6 className="colorMedium">Like Spend</h6>
                     <h6 className="mt8 fs_16">
-                      ₹ {reportData.likesSpend.toFixed(2)}
+                      ₹ {reportData.likesSpend.toFixed(0)}
                     </h6>
                   </div>
                 </div>
@@ -89,15 +98,48 @@ const ReportPriceCard = ({ startDate, endDate, setStartDate, setEndDate }) => {
                   <div className="card p16 shadow-none border-0 m0 bgDangerLight">
                     <h6 className="colorMedium">View Spend</h6>
                     <h6 className="mt8 fs_16">
-                      ₹{reportData.viewsSpend.toFixed(2)}
+                      ₹{reportData.viewsSpend.toFixed(0)}
                     </h6>
                   </div>
                 </div>
                 <div className="col">
                   <div className="card p16 shadow-none border-0 m0 bgTertiaryLight">
-                    <h6 className="colorMedium">Share Spend</h6>
+                    <h6 className="colorMedium">ShareSpend</h6>
                     <h6 className="mt8 fs_16">
-                      ₹{reportData.sharesSpend.toFixed(2)}
+                      ₹{reportData.sharesSpend.toFixed(0)}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    className="card p16 shadow-none border-0 m0"
+                    style={{ backgroundColor: "lightsteelblue" }}
+                  >
+                    <h6 className="colorMedium">DecisionPending</h6>
+                    <h6 className="mt8 fs_16">
+                      <div>{reportData.selector_decision_0}</div>
+                    </h6>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    className="card p16 shadow-none border-0 m0"
+                    style={{ backgroundColor: "lightsteelblue" }}
+                  >
+                    <h6 className="colorMedium">Paid</h6>
+                    <h6 className="mt8 fs_16">
+                      {reportData.selector_decision_1}
+                    </h6>
+                  </div>
+                </div>
+                <div className="col">
+                  <div
+                    className="card p16 shadow-none border-0 m0"
+                    style={{ backgroundColor: "lightsteelblue" }}
+                  >
+                    <h6 className="colorMedium">UnPaid</h6>
+                    <h6 className="mt8 fs_16">
+                      {reportData.selector_decision_2}
                     </h6>
                   </div>
                 </div>

@@ -6,12 +6,17 @@ import ListItemAvatar from "@mui/material/ListItemAvatar";
 import Avatar from "@mui/material/Avatar";
 import BeachAccessIcon from "@mui/icons-material/BeachAccess";
 import PersonIcon from "@mui/icons-material/Person";
-import { Stack, MenuItem, Select, FormControl, InputLabel, Typography } from "@mui/material";
+import { Stack, MenuItem, Select, FormControl, InputLabel, Typography, Alert } from "@mui/material";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useEffect } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
 import pdfImg from "../../../pdf-file.png";
 import ImageView from "../../../ImageView";
+
+{/* <Alert severity="success">This is a success Alert.</Alert>
+<Alert severity="info">This is an info Alert.</Alert>
+<Alert severity="warning">This is a warning Alert.</Alert>
+<Alert severity="error">This is an error Alert.</Alert> */}
 
 export default function ReadableList({ extractedData, rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex, openImageDialog, setOpenImageDialog }) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -96,11 +101,12 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
             </ListItemAvatar>
             <ListItemText primary={rowData.vendor_name} secondary="Vendor Name" />
           </ListItem>
-          {extractedData && extractedData != {} && extractedData.vendorName && extractedData.vendorName?.toLowerCase() != rowData.vendor_name?.toLowerCase() && (
-            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
-              Vendor Name on Invoice : {extractedData.vendorName}
-            </Typography>
-          )}
+          {extractedData && extractedData != {} && extractedData.vendorName &&
+            (
+              <Alert severity={extractedData.vendorName?.toLowerCase() == rowData.vendor_name?.toLowerCase() ? "success" : "warning"}>
+                {extractedData.vendorName?.toLowerCase() == rowData.vendor_name?.toLowerCase() ? `Vendor Name Matched with Invoice` : `Vendor Name in Invoice: ${extractedData.vendorName}`}
+              </Alert>
+            )}
           <ListItem>
             <ListItemAvatar>
               <Avatar>
@@ -109,10 +115,10 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
             </ListItemAvatar>
             <ListItemText primary={vendorBankDetail[selectedBankIndex]?.account_number} secondary="Account No." />
           </ListItem>
-          {extractedData && extractedData != {} && extractedData.accountNumber && extractedData.accountNumber != vendorBankDetail[selectedBankIndex]?.account_number && (
-            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
-              Account Number in Invoice : {extractedData.accountNumber}
-            </Typography>
+          {extractedData && extractedData != {} && extractedData.accountNumber && (
+
+            <Alert severity={extractedData.accountNumber == vendorBankDetail[selectedBankIndex]?.account_number ? "success" : 'error'}>{extractedData.accountNumber == vendorBankDetail[selectedBankIndex]?.account_number ? `Account Number Matched with Invoice` : `Account Number in Invoice : ${extractedData.accountNumber}`}</Alert>
+
           )}
         </List>
 
@@ -134,10 +140,9 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
             </ListItemAvatar>
             <ListItemText primary={`IFSC : ${vendorBankDetail[selectedBankIndex]?.ifsc || "NA"}`} secondary={`Bank : ${vendorBankDetail[selectedBankIndex]?.bank_name || "NA"}`} />
           </ListItem>
-          {extractedData && extractedData != {} && extractedData.ifscCode && extractedData.ifscCode != vendorBankDetail[selectedBankIndex]?.ifsc && (
-            <Typography variant="caption" color="error" sx={{ pt: 0 }}>
-              IFSC differ from Invoice : {extractedData.ifscCode}
-            </Typography>
+          {extractedData && extractedData != {} && extractedData.ifscCode && (
+
+            <Alert severity={extractedData.ifscCode == vendorBankDetail[selectedBankIndex]?.ifsc ? "success" : "error"}>{extractedData.ifscCode == vendorBankDetail[selectedBankIndex]?.ifsc ? `IFSC matched with Invoice` : `IFSC differ from Invoice : ${extractedData.ifscCode}`}</Alert>
           )}
         </List>
       </Stack>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Button, MenuItem, List, ListItem, ListItemText, Stack, Autocomplete, IconButton, Typography } from '@mui/material';
 import { Select, FormControl, InputLabel } from '@mui/material';
-import { useAddPurchaseMutation, useAdvancedPaymentSettlementMutation, useDeletePurchaseRequestMutation, useGetAdvancedPaymentQuery, useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
+import { useAddPurchaseMutation, useAdvancedPaymentSettlementMutation, useDeletePurchaseRequestMutation, useGetAdvancedPaymentQuery, useGetVendorFinancialDetailQuery, useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import { useEffect } from 'react';
 import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../utils/config';
 import axios from 'axios';
@@ -62,8 +62,11 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const [selectedPaymentType, setSelectedPaymentType] = useState("payment");
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [isPDF, setIsPDF] = React.useState(false);
-  const [mandateDocuments, setMandateDocuments] = React.useState(false);
-  // console.log(vendorDetail, "vendorDetail")
+  const [mandateDocuments, setMandateDocuments] = useState(false);
+  const [tdsDeductionMandatory, setTdsDeductionMandatory] = useState(false);
+  const { data: vendorInvoices, isLoading: invoicesLoading } = useGetVendorFinancialDetailQuery(vendorDetail._id);
+  console.log(vendorInvoices, "vendorInvoices")
+  console.log(venodrDocuments, "venodrDocuments", mandateDocuments)
   useEffect(() => {
     console.log(extractedData, "extractedData")
     if (extractedData.accountNumber && vendorBankDetail) {
@@ -73,6 +76,11 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setSelectedBankIndex(bankIndex);
     }
   }, [extractedData])
+  useEffect(() => {
+    if (vendorInvoices && vendorInvoices?.totalRequestedAmount >= 100000) {
+      setTdsDeductionMandatory(true);
+    }
+  }, [vendorInvoices])
   useEffect(() => {
     if (vendorDetail) {
 
@@ -263,8 +271,12 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // console.log(selectedFileName, "selectedFileName")
-    if (selectedFileName != "") {
+
+    if (tdsDeductionMandatory && !mandateDocuments) {
+      toastError("For tds GST or PAN required as Vendor Payment limit reached")
+      return;
+    }
+    else if (selectedFileName != "") {
       // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
         toastError("Invoice number is required.")
@@ -331,7 +343,11 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   };
   const handleEditSubmit = async (e) => {
     e.preventDefault();
-    if (selectedFileName != "") {
+    if (tdsDeductionMandatory && !mandateDocuments) {
+      toastError("For tds GST or PAN required as Vendor Payment limit reached")
+      return;
+    }
+    else if (selectedFileName != "") {
       // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
         toastError("Invoice number is required.")
