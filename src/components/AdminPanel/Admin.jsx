@@ -48,11 +48,11 @@ const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
 const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
-const RecordCampaign = lazy(()=> import(("../AdminPanel/Operation/RecordCampaign/RecordCampaign")))
+const RecordCampaign = lazy(() => import(("../AdminPanel/Operation/RecordCampaign/RecordCampaign")))
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./HRMS/User/UserMaster"));
 const UserView = lazy(() => import("./HRMS/User/UserView"));
-
+const VendorSalesOverview = lazy(() => import('./VendorSales/VendorSalesOverview'))
 const UserUpdate = lazy(() => import("./HRMS/User/UserUpdate"));
 
 const UserOverview = lazy(() => import("./HRMS/User/UserOverview"));
@@ -2346,6 +2346,12 @@ const Admin = () => {
                         </>
                       )}
                     {/* Sarcasm End */}
+
+                    {/*  Vendor Sales Start */}
+                    <Route
+                      path="vendor-sale-overview"
+                      element={<VendorSalesOverview />} />
+                    {/*  Vendor Sales End */}
 
                     {/* Post stats from Insights */}
                     {contextData &&

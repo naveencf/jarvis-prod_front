@@ -1348,8 +1348,9 @@ const SalaryWFH = () => {
                   ${data.deptCount == departmentdata?.length && "completed"} 
                   ${selectedCardIndex === index ? "selected" : ""}
                 ${getClassName(data, index, selectedCardIndex)}
-               ${currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
-                  } 
+               ${
+                 currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
+               } 
                 ${isFutureCard && "disabled"}`}
                 onClick={() => {
                   if (!isFutureCard) handleCardSelect(index, data);
@@ -1384,8 +1385,8 @@ const SalaryWFH = () => {
                   {data.deptCount == departmentdata?.length
                     ? "Completed"
                     : currentMonthNumber - 5 - index < 0
-                      ? "Upcoming"
-                      : "Pending"}
+                    ? "Upcoming"
+                    : "Pending"}
                   {/* {data.atdGenerated == 1
                   ? "Completed"
                   : currentMonthNumber - 4 - index < 0
@@ -1482,12 +1483,13 @@ const SalaryWFH = () => {
 
               return (
                 <div
-                  className={`card hover body-padding ${department === option.dept_id
-                    ? "btn-primary"
-                    : isDeptInSalary
+                  className={`card hover body-padding ${
+                    department === option.dept_id
+                      ? "btn-primary"
+                      : isDeptInSalary
                       ? "btn-success"
                       : "btn-outline-primary"
-                    }`}
+                  }`}
                   style={{
                     height: "100px",
                     minWidth: "300px",
@@ -2130,13 +2132,13 @@ const SalaryWFH = () => {
               {(separationStatus === "On Long Leave" ||
                 separationStatus === "Subatical" ||
                 separationStatus === "Suspended") && (
-                  <FieldContainer
-                    label="Reinstated Date"
-                    type="date"
-                    value={separationReinstateDate}
-                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                  />
-                )}
+                <FieldContainer
+                  label="Reinstated Date"
+                  type="date"
+                  value={separationReinstateDate}
+                  onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                />
+              )}
               {separationStatus == "Resign Accepted" && (
                 <input
                   label="Last Working Day"

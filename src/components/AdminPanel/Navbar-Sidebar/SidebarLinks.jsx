@@ -2129,6 +2129,37 @@ const SidebarLinks = () => {
           </Link>
         </li>
       )}
+      {contextData &&
+        contextData[70] &&
+        contextData[70].view_value === 1 && <>
+          <li className="nav-item">
+            <Link
+              className="nav-link nav-btn collapsed"
+              data-toggle="collapse"
+              data-target="#collapseVendorSales"
+              aria-expanded="true"
+              aria-controls="collapseVendorSales"
+            >
+              <i className="bi bi-cart"></i>
+              <span>Vendor Sales</span>
+            </Link>
+            <div
+              id="collapseVendorSales"
+              className="collapse"
+              aria-labelledby="headingVendorSales"
+              data-parent="#accordionSidebar"
+            >
+              <div className="internal collapse-inner">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/vendor-sale-overview"
+                >
+                  <i className="bi bi-dot"></i>Overview
+                </NavLink>
+              </div>
+            </div>
+          </li>
+        </>}
       {contextData && contextData[64] && contextData[64]?.view_value === 1 && (
         <>
           <li className="nav-item">
@@ -2157,17 +2188,11 @@ const SidebarLinks = () => {
                 >
                   <i className="bi bi-dot"></i>Dashboard
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/purchased-record">
-                  <i className="bi bi-dot"></i>Purchased Record
-                </NavLink>
                 <NavLink className="collapse-item" to="/admin/record-purchase">
                   <i className="bi bi-dot"></i>Record Purchase
                 </NavLink>
-                <NavLink
-                  className="collapse-item"
-                  to="/admin/purchase-transaction"
-                >
-                  <i className="bi bi-dot"></i>Recent Transaction
+                <NavLink className="collapse-item" to="/admin/purchased-record">
+                  <i className="bi bi-dot"></i>Purchased Data
                 </NavLink>
                 <NavLink
                   className="collapse-item"
@@ -2180,6 +2205,12 @@ const SidebarLinks = () => {
                   to="/admin/finance-pruchasemanagement-pendingpaymentrequest"
                 >
                   <i className="bi bi-dot"></i>Vendor Payment Request
+                </NavLink>
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase-transaction"
+                >
+                  <i className="bi bi-dot"></i>Recent Transaction
                 </NavLink>
               </div>
             </div>
@@ -2273,6 +2304,8 @@ const SidebarLinks = () => {
             )}
         </>
       )}
+
+
       {contextData && contextData[15] && contextData[15]?.view_value === 1 && (
         <li className="nav-item">
           <Link

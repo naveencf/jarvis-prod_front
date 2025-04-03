@@ -200,9 +200,9 @@ const LinkUpload = ({
         const match = link.match(/\/(reel|p|share)\/([A-Za-z0-9-_]+)/);
         return match
           ? {
-              ref_link: link,
-              shortCode: match[2],
-            }
+            ref_link: link,
+            shortCode: match[2],
+          }
           : null;
       })
       .filter((code) => code !== null);
@@ -300,26 +300,26 @@ const LinkUpload = ({
     let Data =
       record == 2
         ? {
-            vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
-            amount: amount,
-            service_description: serviceName,
-            ref_link: links,
-            campaignId: selectedPlan,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedPlan
-            ).exe_campaign_name,
-            createdBy: token.id,
-            record_purchase_by: token.id,
-            audit_by: token.id,
-            file: file,
-          }
+          vendor_id: vendor,
+          vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+            ?._id,
+          vendor_name: vendorListData?.find(
+            (data) => data.vendor_id == vendor
+          )?.vendor_name,
+          amount: amount,
+          service_description: serviceName,
+          ref_link: links,
+          campaignId: selectedPlan,
+          campaign_name: campaignsNameWiseData?.find(
+            (data) => data._id == selectedPlan
+          ).exe_campaign_name,
+          createdBy: token.id,
+          record_purchase_by: token.id,
+          audit_by: token.id,
+          file: file,
+        }
         : record == 0
-        ? {
+          ? {
             shortCodes: shortCodes,
             department: token.dept_id,
             userId: token.id,
@@ -327,63 +327,63 @@ const LinkUpload = ({
             campaignId: selectedPlan,
             manager: selectedOpUser,
           }
-        : record == 1
-        ? {
-            dataToBeUpdate: {
-              record_purchase_by: token.id,
-            },
-            shortCodes: [
-              ...shortCodes.map((data) => data.shortCode),
-              ...otherPlatform.map((data) => data.shortCode),
-            ],
-            platform_name: pmsPlatformData?.data?.find(
-              (data) => data._id == platformID.current
-            ).platform_name,
-            vendor_id: vendor,
-            manager: selectedOpUser,
-          }
-        : {
-            vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
-            shortCodes: shortCodes,
-            department: token.dept_id,
-            userId: token.id,
-            campaignId: selectedCampaign,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedCampaign
-            )?.exe_campaign_name,
-          };
+          : record == 1
+            ? {
+              dataToBeUpdate: {
+                record_purchase_by: token.id,
+              },
+              shortCodes: [
+                ...shortCodes.map((data) => data.shortCode),
+                ...otherPlatform.map((data) => data.shortCode),
+              ],
+              platform_name: pmsPlatformData?.data?.find(
+                (data) => data._id == platformID.current
+              ).platform_name,
+              vendor_id: vendor,
+              manager: selectedOpUser,
+            }
+            : {
+              vendor_id: vendor,
+              vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+                ?._id,
+              vendor_name: vendorListData?.find(
+                (data) => data.vendor_id == vendor
+              )?.vendor_name,
+              shortCodes: shortCodes,
+              department: token.dept_id,
+              userId: token.id,
+              campaignId: selectedCampaign,
+              campaign_name: campaignsNameWiseData?.find(
+                (data) => data._id == selectedCampaign
+              )?.exe_campaign_name,
+            };
 
     let arrData = shortCodes.length + otherPlatform.length;
 
     let newIsValid =
       record == 2
         ? {
-            vendor: !vendor,
-            amount: !amount,
-            service_description: !serviceName,
-          }
+          vendor: !vendor,
+          amount: !amount,
+          service_description: !serviceName,
+        }
         : record == 0
-        ? {
+          ? {
             shortCodes: !(arrData > 0),
             department: !token.dept_id,
             userId: !token.id,
             phaseDate: !phaseDate,
             campaignId: !selectedPlan,
           }
-        : record == 1
-        ? {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          }
-        : {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          };
+          : record == 1
+            ? {
+              shortCodes: !(arrData > 0),
+              vendor: !vendor,
+            }
+            : {
+              shortCodes: !(arrData > 0),
+              vendor: !vendor,
+            };
 
     setIsValid(newIsValid);
 
@@ -405,8 +405,8 @@ const LinkUpload = ({
         record == 2
           ? await uploadServiceData(serviceData)
           : record == 0 || record == 3
-          ? await uploadPlanData(Data)
-          : await updateVendor(Data);
+            ? await uploadPlanData(Data)
+            : await updateVendor(Data);
       if (res.error) throw new Error(res.error);
       await refetchPlanData();
       setLinks("");
@@ -496,15 +496,15 @@ const LinkUpload = ({
           selectedPlan == null ||
           selectedPlan == "null"
         ) && (
-          <div
-            className={`pointer header-tab ${record == 0 && "header-active"}`}
-            onClick={() => {
-              setRecord(0);
-            }}
-          >
-            Record Links
-          </div>
-        )}
+            <div
+              className={`pointer header-tab ${record == 0 && "header-active"}`}
+              onClick={() => {
+                setRecord(0);
+              }}
+            >
+              Record Links
+            </div>
+          )}
         <div
           className={`pointer header-tab ${record == 3 && "header-active"}`}
           onClick={() => {
@@ -528,29 +528,29 @@ const LinkUpload = ({
           selectedPlan == null ||
           selectedPlan == "null"
         ) && (
-          <div
-            className={`pointer header-tab ${record == 1 && "header-active"}`}
-            onClick={() => {
-              setRecord(1);
-            }}
-          >
-            Update Vendor{" "}
-          </div>
-        )}
+            <div
+              className={`pointer header-tab ${record == 1 && "header-active"}`}
+              onClick={() => {
+                setRecord(1);
+              }}
+            >
+              Update Vendor{" "}
+            </div>
+          )}
         {!(
           selectedPlan == 0 ||
           selectedPlan == null ||
           selectedPlan == "null"
         ) && (
-          <div
-            className={`pointer header-tab ${record == 2 && "header-active"}`}
-            onClick={() => {
-              setRecord(2);
-            }}
-          >
-            Service{" "}
-          </div>
-        )}
+            <div
+              className={`pointer header-tab ${record == 2 && "header-active"}`}
+              onClick={() => {
+                setRecord(2);
+              }}
+            >
+              Service{" "}
+            </div>
+          )}
 
         <div
           className={`pointer header-tab ${record == 4 && "header-active"}`}
@@ -805,26 +805,25 @@ const LinkUpload = ({
               record == 4
                 ? false
                 : (record != 2
-                    ? notnewLine ||
-                      !shortCodes.length ||
-                      uploadLoading ||
-                      vendorLoading
-                    : false || serviceLoading || vendorLoading) ||
-                  functionLoading
+                  ? notnewLine ||
+                  !shortCodes.length ||
+                  uploadLoading ||
+                  vendorLoading
+                  : false || serviceLoading || vendorLoading)
             }
             onClick={
               record == 5
                 ? () => {
-                    handleFilterLinks(shortCodes, record);
-                  }
+                  handleFilterLinks(shortCodes, record);
+                }
                 : record == 4
-                ? () => {
+                  ? () => {
                     setSelectedVendor("");
                     setStartDate("");
                     setEndDate("");
                     setSelectedPlan((prev) => prev);
                   }
-                : () => {
+                  : () => {
                     handleUpload();
                   }
             }
@@ -832,12 +831,19 @@ const LinkUpload = ({
             {record == 5
               ? "Search"
               : record == 4
-              ? "clear"
-              : record == 2
-              ? "Add Service"
-              : record == 0 || record == 3
-              ? "Record"
-              : "Update Vendor"}
+                ? "clear"
+                : record == 2
+                  ? <>
+                    {"Add Service"}
+                    {
+                      <ArrowClockwise
+                        className={serviceLoading && "animate_rotate"}
+                      />}
+
+                  </>
+                  : record == 0 || record == 3
+                    ? "Record"
+                    : "Update Vendor"}
           </button>
           {record == 5 && (
             <button

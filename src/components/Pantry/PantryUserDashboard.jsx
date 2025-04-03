@@ -146,7 +146,7 @@ function PantryUserDashboard() {
 
         try {
             const res = await axios.put(
-                `${socketBaseUrl}/api/pentry/accept_order_request/${orderDetail._id}`,
+                `${socketBaseUrl}/api/pentry/order_request/${orderDetail._id}`,
                 payload,
                 {
                     headers: {
@@ -156,7 +156,7 @@ function PantryUserDashboard() {
             );
             if (res.status === 200) {
                 // Assuming handleClose is defined somewhere in your component
-                handleClose && handleClose();
+                // handleClose && handleClose();
                 fetchOrders();
                 console.log("Updated Pantry:", res.data);
             }
