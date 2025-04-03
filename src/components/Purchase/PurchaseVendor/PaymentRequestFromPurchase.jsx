@@ -283,10 +283,10 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         return;
       }
       const dateError = validateDate(formData.invc_date);
-      if (dateError) {
-        toastError(dateError);
-        return;
-      }
+      // if (dateError) {
+      //   toastError(dateError);
+      //   return;
+      // }
     }
     // Ensure request amount is not 0
     else if (formData.request_amount === 0) {
