@@ -504,6 +504,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     setViewImgSrc(""); // Clear the invoice preview
     setOpenImageDialog(false); // Close the left side preview
     setSelectedFile('')
+    setReqestPaymentDialog(false)
   };
 
   return (

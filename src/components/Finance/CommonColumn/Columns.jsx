@@ -14,6 +14,7 @@ import {
 import { formatDate } from "../../../utils/formatDate";
 import { type } from "jquery";
 import { formatUTCDate } from "../../../utils/formatUTCDate";
+import formatString from "../../../utils/formatString";
 
 export const saleBookingCloseColumns = ({
   handleOpenVerifyDialog,
@@ -2741,7 +2742,7 @@ export const pendingPaymentRequestColumns = ({
       name: "Zoho Status",
       width: 130,
       renderRowCell: (row) => {
-        return <div>{row?.zoho_status === "1" ? "Uploaded" : "pending"}</div>;
+        return <div>{row?.zoho_status ? "Uploaded" : "pending"}</div>;
       },
     },
     {
@@ -2802,6 +2803,7 @@ export const pendingPaymentRequestColumns = ({
       key: "vendor_name",
       name: "Vendor Name",
       width: 200,
+      renderRowCell: (row) => formatString(row?.vendor_name),
       // renderRowCell: (row) => {
       //   return (
       //     <div style={{ display: "flex", alignItems: "center" }}>
@@ -2876,122 +2878,6 @@ export const pendingPaymentRequestColumns = ({
       },
     },
 
-    // {
-    //   key: "email",
-    //   name: "Email",
-    //   width: 150,
-    // },
-    // {
-    //   key: "page_name",
-    //   name: "Page Name",
-    //   width: 150,
-    // },
-    // {
-    //   key: "payment_cycle",
-    //   name: "Payment Cycle",
-    //   width: 150,
-    // },
-    // {
-    //   key: "total_paid",
-    //   name: "Total Paid",
-    //   width: 150,
-    //   renderRowCell: (row) => {
-    //     return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
-    //       .length > 0 ? (
-    //       <span>
-    //         <h6
-    //           onClick={() => handleOpenPaymentHistory(row, "TP")}
-    //           style={{ cursor: "pointer" }}
-    //           className="pointer lead  text-decoration-underline text-black-50"
-    //         >
-    //           {/* Total Paid */}
-    //           {nodeData
-    //             .filter(
-    //               (e) => e.vendor_name === row?.vendor_name && e.status == 1
-    //             )
-    //             .reduce((acc, item) => acc + +item.payment_amount, 0)}
-    //         </h6>
-    //       </span>
-    //     ) : (
-    //       <h6
-    //         style={{ cursor: "pointer" }}
-    //         className="pointer lead  text-decoration-underline text-black-50"
-    //       >
-    //         0
-    //       </h6>
-    //     );
-    //   },
-    // },
-    // {
-    //   key: "F.Y",
-    //   name: "F.Y",
-    //   width: 150,
-    //   renderRowCell: (row) => {
-    //     const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-    //     const currentYear = new Date().getFullYear();
-    //     const startDate = new Date(
-    //       `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-    //       }`
-    //     );
-    //     const endDate = new Date(
-    //       `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-    //       }`
-    //     );
-    //     const dataFY = nodeData?.filter((e) => {
-    //       const paymentDate = new Date(e.request_date);
-    //       return (
-    //         paymentDate >= startDate &&
-    //         paymentDate <= endDate &&
-    //         e.vendor_name === row?.vendor_name &&
-    //         e.status !== 0 &&
-    //         e.status !== 2 &&
-    //         e.status !== 3
-    //       );
-    //     });
-    //     return nodeData?.filter((e) => e.vendor_name === row?.vendor_name)
-    //       .length > 0 ? (
-    //       <h5
-    //         onClick={() => handleOpenPaymentHistory(row, "FY")}
-    //         style={{ cursor: "pointer" }}
-    //         className="pointer font-sm lead  text-decoration-underline text-black-50"
-    //       >
-    //         {/* Financial Year */}
-
-    //         {dataFY.reduce(
-    //           (acc, item) => acc + parseFloat(item.payment_amount),
-    //           0
-    //         )}
-    //       </h5>
-    //     ) : (
-    //       <h5
-    //         style={{ cursor: "pointer" }}
-    //         className="pointer font-sm lead  text-decoration-underline text-black-50"
-    //       >
-    //         0
-    //       </h5>
-    //     );
-    //   },
-    // },
-    // {
-    //   key: "pan_img",
-    //   name: "Pan Img",
-    //   renderRowCell: (row) => {
-    //     const ImgUrl = `https://purchase.creativefuel.io/${row?.pan_img}`;
-    //     return row?.pan_img.includes("uploads") ? (
-    //       <img
-    //         onClick={() => {
-    //           setOpenImageDialog(true);
-    //           setViewImgSrc(ImgUrl);
-    //         }}
-    //         src={ImgUrl}
-    //         alt="Pan"
-    //         style={{ width: "40px", height: "40px" }}
-    //       />
-    //     ) : (
-    //       "NA"
-    //     );
-    //   },
-    // },
     {
       key: "pan",
       name: "Pan",
@@ -3043,11 +2929,7 @@ export const pendingPaymentRequestColumns = ({
     {
       key: "gst_amount",
       name: "GST Amount",
-      // width: 150,
-      // getTotal: true,
-      // renderRowCell: (row) => {
-      //   return row?.gst_amount ? row?.gst_amount : "NA";
-      // },
+
     },
     {
       key: "outstandings",
@@ -3066,58 +2948,6 @@ export const pendingPaymentRequestColumns = ({
       //   return <p> &#8377; {row?.tds_deduction > "1" ? "Yes" : "No"}</p>;
       // },
     },
-    // {
-    //   key: "aging",
-    //   name: "Aging",
-    //   width: 150,
-    //   // valueGetter: (params) => {
-    //   //   const hours = calculateHours(params.row.request_date, new Date());
-    //   //   const days = Math.round(hours / 24);
-    //   //   // console.log(`Calculating aging for request_date ${params.row.request_date}: ${hours} hours, ${days} days`);
-    //   //   return `${days} Days`;
-    //   // },
-    //   renderRowCell: (row) => row?.aging + " Days",
-    // },
-    // {
-    //   field: "aging",
-    //   headerName: "Aging",
-    //   width: 150,
-
-    //   renderCell: (params) => {
-    //     // const paymentDate = nodeData.filter(
-    //     //   (dateData) => dateData.request_id === params.row.request_id
-    //     // );
-    //     return (
-    //       <p>
-    //         {" "}
-    //         {Math.round(
-    //           (
-    //             calculateHours(params.row.request_date, new Date()) / 24
-    //           ).toFixed(1)
-    //         )}
-    //         Days
-    //       </p>
-    //     );
-    //   },
-    // },
-    // {
-    //   key: "status",
-    //   name: "Status",
-    //   // width: 150,
-    //   renderRowCell: (row) => (
-    //     <div>
-    //       {row?.status === "0"
-    //         ? "Pending"
-    //         : row?.status === "1"
-    //           ? "Paid"
-    //           : row?.status === "2"
-    //             ? "Discard"
-    //             : row?.status === "3"
-    //               ? "Partial"
-    //               : ""}
-    //     </div>
-    //   ),
-    // },
     {
       key: "Action",
       name: "Action",

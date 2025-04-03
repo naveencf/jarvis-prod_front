@@ -118,7 +118,7 @@ const RecentlyBoosted = () => {
       ),
     },
     {
-      name: "Creator Decision",
+      name: "Selector Decision",
       key: "action",
       width: 100,
       renderRowCell: (row) => (
@@ -210,6 +210,11 @@ const RecentlyBoosted = () => {
       renderRowCell: (row) => row.orders.length,
     },
   ];
+
+  const uniqueBoostingPosts = Array.from(
+    new Map(boostingPosts?.map((cat) => [cat.creatorName, cat])).values()
+  );
+  console.log(uniqueBoostingPosts, "uniqboosting");
   return (
     <div>
       <div className="d-flex">
@@ -222,11 +227,10 @@ const RecentlyBoosted = () => {
         <Autocomplete
           sx={{ width: 200, mb: 2 }}
           id="combo-box-demo"
-          options={boostingPosts?.map((cat) => ({
-            label: cat.creatorName,
+          options={uniqueBoostingPosts.map((cat) => ({
+            label: formatString(cat.creatorName),
             value: cat.creatorName,
           }))}
-          // value={}
           onChange={(_, newValue) => {
             if (newValue) setCreatorName(newValue);
           }}

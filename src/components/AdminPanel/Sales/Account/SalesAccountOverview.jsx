@@ -220,6 +220,12 @@ const SalesAccountOverview = () => {
       sortable: true,
     },
     {
+      key: "brand_name",
+      name: "Brand Name",
+
+      width: 100,
+    },
+    {
       key: "account_image_url",
       name: "Logo",
       renderRowCell: (row) => (

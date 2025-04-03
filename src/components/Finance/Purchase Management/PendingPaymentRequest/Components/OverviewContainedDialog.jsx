@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 
 const OverviewContainedDialog = (props) => {
-  const { filterData, setOverviewDialog, overviewDialog, columns } = props;
+  const { filterData, setOverviewDialog, overviewDialog, columns, setFilterData, setFilterQuery } = props;
 
   const handleCloseOverview = () => {
     setOverviewDialog(false);
@@ -40,7 +40,7 @@ const OverviewContainedDialog = (props) => {
           dividers={true}
           sx={{ maxHeight: "80vh", overflowY: "auto" }}
         >
-          <Overview data={filterData} columns={columns} />
+          <Overview data={filterData} columns={columns} setFilterData={setFilterData} setOverviewDialog={setOverviewDialog} setFilterQuery={setFilterQuery} />
         </DialogContent>
       </Dialog>
     </div>

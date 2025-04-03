@@ -32,6 +32,13 @@ const PurchaseRequestPaymentApi = createApi({
             }),
             transformResponse: (response) => response.data, // Optional: transform the response
         }),
+        getPaymentRequestTransactions: builder.query({
+            query: ({ request_id }) => ({
+                url: `v1/vendor_payment_transactions?requestId=${request_id}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data, // Optional: transform the response
+        }),
         getVendorPaymentRequests: builder.query({
             query: (status) => ({
                 url: `v1/vendor_payment_request?${status}`,
@@ -115,6 +122,7 @@ export const {
     useAddPurchaseMutation,
     useGetVendorPaymentTransactionsQuery,
     useGetVendorPaymentRequestsQuery,
+    useGetPaymentRequestTransactionsQuery,
     useGetVendorFinancialDetailQuery,
     useUpdatePurchaseRequestMutation,
     useDeletePurchaseRequestMutation,

@@ -10,6 +10,7 @@ import ImageView from "../../../ImageView";
 import FormContainer from "../../../../AdminPanel/FormContainer";
 import UpdateIcon from '@mui/icons-material/Update';
 import { useGlobalContext } from "../../../../../Context/Context";
+import { useGetPaymentRequestTransactionsQuery } from "../../../../Store/API/Purchase/PurchaseRequestPaymentApi";
 
 const PaymentDoneTransactionList = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -19,8 +20,8 @@ const PaymentDoneTransactionList = () => {
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
-
   const { request_id } = useParams();
+  const { data, isLoading: transactionLoading, } = useGetPaymentRequestTransactionsQuery({ request_id });
 
   const handleSubmitTransactionData = () => {
     axios
@@ -61,9 +62,11 @@ const PaymentDoneTransactionList = () => {
   };
 
   useEffect(() => {
-    handleSubmitTransactionData();
+    if (data && data.length > 0) {
+      setTransactionData(data)
+    }
 
-  }, [request_id]);
+  }, [data]);
 
   const getStatusText = (status) => {
     switch (status) {
@@ -124,425 +127,232 @@ const PaymentDoneTransactionList = () => {
         return <div>{rowIndex + 1}</div>;
       },
     },
-    {
-      field: "invc_img",
-      headerName: "Invoice Image",
-      renderCell: (params) => {
-        if (!params.row.invc_img) {
-          return "No Image";
-        }
-        // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.invc_img
-          .split(".")
-          .pop()
-          .toLowerCase();
-        const isPdf = fileExtension === "pdf";
+    // {
+    //   field: "invc_img",
+    //   headerName: "Invoice Image",
+    //   // renderCell: (params) => {
+    //   //   if (!params.row.invc_img) {
+    //   //     return "No Image";
+    //   //   }
+    //   //   // Extract file extension and check if it's a PDF
+    //   //   const fileExtension = params.row.invc_img
+    //   //     .split(".")
+    //   //     .pop()
+    //   //     .toLowerCase();
+    //   //   const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
-        return isPdf ? (
-          <div
-            style={{ position: "relative", overflow: "hidden", height: "40px" }}
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-          >
-            <embed
-              allowFullScreen={true}
-              src={imgUrl}
-              title="PDF Viewer"
-              scrollbar="0"
-              type="application/pdf"
-              style={{
-                width: "80px",
-                height: "80px",
-                cursor: "pointer",
-                pointerEvents: "none",
-              }}
-            />
-          </div>
-        ) : (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={imgUrl}
-            alt="Invoice"
-            style={{ width: "80px", height: "80px" }}
-          />
-        );
-      },
-      width: 250,
-    },
-    {
-      field: "evidence",
-      headerName: "Payment Screenshot",
-      renderCell: (params) => {
-        if (!params.row.evidence) {
-          return "No Image";
-        }
-        // Extract file extension and check if it's a PDF
-        const fileExtension = params.row.evidence
-          .split(".")
-          .pop()
-          .toLowerCase();
-        const isPdf = fileExtension === "pdf";
+    //   //   const imgUrl = `https://purchase.creativefuel.io/${params.row.invc_img}`;
+    //   //   return isPdf ? (
+    //   //     <div
+    //   //       style={{ position: "relative", overflow: "hidden", height: "40px" }}
+    //   //       onClick={() => {
+    //   //         setOpenImageDialog(true);
+    //   //         setViewImgSrc(imgUrl);
+    //   //       }}
+    //   //     >
+    //   //       <embed
+    //   //         allowFullScreen={true}
+    //   //         src={imgUrl}
+    //   //         title="PDF Viewer"
+    //   //         scrollbar="0"
+    //   //         type="application/pdf"
+    //   //         style={{
+    //   //           width: "80px",
+    //   //           height: "80px",
+    //   //           cursor: "pointer",
+    //   //           pointerEvents: "none",
+    //   //         }}
+    //   //       />
+    //   //     </div>
+    //   //   ) : (
+    //   //     <img
+    //   //       onClick={() => {
+    //   //         setOpenImageDialog(true);
+    //   //         setViewImgSrc(imgUrl);
+    //   //       }}
+    //   //       src={imgUrl}
+    //   //       alt="Invoice"
+    //   //       style={{ width: "80px", height: "80px" }}
+    //   //     />
+    //   //   );
+    //   // },
+    //   width: 250,
+    // },
+    // {
+    //   field: "evidence",
+    //   headerName: "Payment Screenshot",
+    //   renderCell: (params) => {
+    //     if (!params.row.evidence) {
+    //       return "No Image";
+    //     }
+    //     // Extract file extension and check if it's a PDF
+    //     const fileExtension = params.row.evidence
+    //       .split(".")
+    //       .pop()
+    //       .toLowerCase();
+    //     const isPdf = fileExtension === "pdf";
 
-        const imgUrl = `https://purchase.creativefuel.io/${params.row.evidence}`;
+    //     const imgUrl = `https://purchase.creativefuel.io/${params.row.evidence}`;
 
-        return isPdf ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={imgUrl}
-            style={{ width: "40px", height: "40px" }}
-            title="PDF Preview"
-          />
-        ) : (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(imgUrl);
-            }}
-            src={imgUrl}
-            alt="Invoice"
-            style={{ width: "100px", height: "100px" }}
-          />
-        );
-      },
-      width: 130,
-    },
-    {
-      field: "request_date",
-      headerName: "Requested Date",
-      width: 150,
-      renderCell: (params) => {
-        new Date(params.row.request_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.request_date).toLocaleTimeString("en-IN");
-      },
-    },
+    //     return isPdf ? (
+    //       <img
+    //         onClick={() => {
+    //           setOpenImageDialog(true);
+    //           setViewImgSrc(imgUrl);
+    //         }}
+    //         src={imgUrl}
+    //         style={{ width: "40px", height: "40px" }}
+    //         title="PDF Preview"
+    //       />
+    //     ) : (
+    //       <img
+    //         onClick={() => {
+    //           setOpenImageDialog(true);
+    //           setViewImgSrc(imgUrl);
+    //         }}
+    //         src={imgUrl}
+    //         alt="Invoice"
+    //         style={{ width: "100px", height: "100px" }}
+    //       />
+    //     );
+    //   },
+    //   width: 130,
+    // },
+    // {
+    //   field: "request_date",
+    //   headerName: "Requested Date",
+    //  
+    //   renderCell: (params) => {
+    //     new Date(params.row.request_date).toLocaleDateString("en-IN") +
+    //       " " +
+    //       new Date(params.row.request_date).toLocaleTimeString("en-IN");
+    //   },
+    // },
     {
       field: "payment_date",
-      headerName: "Payment Date ",
-      width: 150,
+      headerName: "Payment Date",
       renderCell: (params) => {
-        new Date(params.row.payment_date).toLocaleDateString("en-IN") +
-          " " +
-          new Date(params.row.payment_date).toLocaleTimeString("en-IN");
+        return new Date(params.row.payment_date).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        });
       },
     },
-    {
-      field: "name",
-      headerName: "Requested By",
-      width: 150,
-      valueGetter: (params) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == params.row.request_id
-        );
-        return reminder.length;
-      },
-      renderCell: (params) => {
-        const reminder = phpRemainderData.filter(
-          (item) => item.request_id == params.row.request_id
-        );
 
-        return (
-          <>
-            <span>{params.row.name}</span> &nbsp;{" "}
-            <span>
-              {reminder.length > 0 ? (
-                <Badge badgeContent={reminder.length} color="primary">
-                  <NotificationsActiveTwoToneIcon
-                    onClick={() => handleRemainderModal(reminder)}
-                  />{" "}
-                </Badge>
-              ) : (
-                ""
-              )}
-            </span>
-          </>
-        );
-      },
+    // {
+    //   field: "requested_by",
+    //   headerName: "Requested By",
+    //  
+
+    // },
+    {
+      field: "payment_by",
+      headerName: "Payment By",
+
     },
     {
       field: "vendor_name",
       headerName: "Vendor Name",
       width: 200,
-      renderCell: (params) => {
-        return (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            {/* Hold for confirmation of sourabh sir */}
-            <Button
-              disabled={
-                params.row.payment_details
-                  ? !params.row.payment_details.length > 0
-                  : true
-              }
-              onClick={() => handleOpenBankDetail(params.row)}
-            >
-              <AccountBalanceIcon style={{ fontSize: "25px" }} />
-            </Button>
-            <div
-              style={{ cursor: "pointer", marginRight: "20px" }}
-              onClick={() => handleOpenSameVender(params.row.vendor_name)}
-            >
-              {params.row.vendor_name}
-            </div>
-          </div>
-        );
-      },
+      // renderCell: (params) => {
+      //   return (
+      //     <div style={{ display: "flex", alignItems: "center" }}>
+      //       {/* Hold for confirmation of sourabh sir */}
+      //       <Button
+      //         disabled={
+      //           params.row.payment_details
+      //             ? !params.row.payment_details.length > 0
+      //             : true
+      //         }
+      //         onClick={() => handleOpenBankDetail(params.row)}
+      //       >
+      //         <AccountBalanceIcon style={{ fontSize: "25px" }} />
+      //       </Button>
+      //       <div
+      //         style={{ cursor: "pointer", marginRight: "20px" }}
+      //         onClick={() => handleOpenSameVender(params.row.vendor_name)}
+      //       >
+      //         {params.row.vendor_name}
+      //       </div>
+      //     </div>
+      //   );
+      // },
     },
-    {
-      field: "page_name",
-      headerName: "Page Name",
-      width: 150,
-    },
+
     {
       field: "payment_getway_status",
-      headerName: "Payment Status",
-      width: 150,
-      renderCell: (params) => {
-        const tempRow = params?.row
-        return (
-          <Stack direction="row" spacing={1}>
-
-            <Chip label={params?.row?.payment_getway_status} color="success" />
-            {params?.row?.payment_getway_status == "SUCCESS" || params?.row?.payment_getway_status == "FAILED" || params?.row?.payment_getway_status == null ? "" :
-              <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
-            }
-
-          </Stack>
-        )
-      },
-    },
-    {
-      field: "total_paid",
-      headerName: "Total Paid",
-      width: 150,
-      valueGetter: (params) => {
-        const totalPaid = nodeData
-          .filter(
-            (e) => e.vendor_name === params.row.vendor_name && e.status == 1
-          )
-          .reduce((acc, item) => acc + +item.payment_amount, 0);
-        return totalPaid;
-      },
-      renderCell: (params) => {
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-          .length > 0 ? (
-          <span className="row ml-2 ">
-            <h5
-              onClick={() => handleOpenPaymentHistory(params.row, "TP")}
-              style={{ cursor: "pointer" }}
-              className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-            >
-              {/* Total Paid */}
-              {nodeData
-                .filter(
-                  (e) =>
-                    e.vendor_name === params.row.vendor_name && e.status == 1
-                )
-                .reduce((acc, item) => acc + +item.payment_amount, 0)}
-            </h5>
-          </span>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3 pointer font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      field: "F.Y",
-      headerName: "F.Y",
-      width: 150,
-      valueGetter: (params) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-        const dataFY = nodeData.filter((e) => {
-          const paymentDate = new Date(e.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2
-          );
-        });
-        const totalFY = dataFY.reduce(
-          (acc, item) => acc + parseFloat(item.payment_amount),
-          0
-        );
-        return totalFY;
-      },
-      renderCell: (params) => {
-        const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
-        const currentYear = new Date().getFullYear();
-        const startDate = new Date(
-          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
-          }`
-        );
-        const endDate = new Date(
-          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
-          }`
-        );
-        const dataFY = nodeData.filter((e) => {
-          const paymentDate = new Date(e.request_date);
-          return (
-            paymentDate >= startDate &&
-            paymentDate <= endDate &&
-            e.vendor_name === params.row.vendor_name &&
-            e.status !== 0 &&
-            e.status !== 2
-          );
-        });
-        return nodeData.filter((e) => e.vendor_name === params.row.vendor_name)
-          .length > 0 ? (
-          <h5
-            onClick={() => handleOpenPaymentHistory(params.row, "FY")}
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            {/* Financial Year */}
-
-            {dataFY.reduce(
-              (acc, item) => acc + parseFloat(item.payment_amount),
-              0
-            )}
-          </h5>
-        ) : (
-          <h5
-            style={{ cursor: "pointer" }}
-            className="fs-5 col-3  font-sm lead  text-decoration-underline text-black-50"
-          >
-            0
-          </h5>
-        );
-      },
-    },
-    {
-      field: "Pan Img",
-      headerName: "Pan Img",
-      valueGetter: (params) =>
-        params?.row?.pan_img?.includes("uploads") ? params?.row?.pan_img : "NA",
-      renderCell: (params) => {
-        const ImgUrl = `https://purchase.creativefuel.io/${params?.row?.pan_img}`;
-        return params?.row?.pan_img?.includes("uploads") ? (
-          <img
-            onClick={() => {
-              setOpenImageDialog(true);
-              setViewImgSrc(ImgUrl);
-            }}
-            src={ImgUrl}
-            alt="Pan"
-            style={{ width: "40px", height: "40px" }}
-          />
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "pan",
-      headerName: "PAN",
+      headerName: "Status",
       width: 200,
     },
     {
-      field: "gst",
-      headerName: "GST",
+      field: "request_amount",
+      headerName: "Request Amount",
       width: 200,
     },
     {
-      field: "remark_audit",
-      headerName: "Remark",
-      width: 150,
+      field: "invc_no",
+      headerName: "Invoice No.",
       renderCell: (params) => {
         return params.row.remark_audit;
       },
     },
+    // {
+    //   field: "priority",
+    //   headerName: "Priority",
+    //  
+    //   renderCell: (params) => {
+    //     return params.row.priority;
+    //   },
+    // },
     {
-      field: "priority",
-      headerName: "Priority",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.priority;
-      },
+      field: "accountNumber",
+      headerName: "Account No.",
+      // renderCell: (params) => {
+      //   return <p> &#8377; {params.row.request_amount}</p>;
+      // },
     },
     {
-      field: "request_amount",
-      headerName: "Requested Amount",
-      width: 150,
-      renderCell: (params) => {
-        return <p> &#8377; {params.row.request_amount}</p>;
-      },
+      field: "branchCode",
+      headerName: "IFSC",
+      width: 150
     },
-    {
-      field: "base_amount",
-      headerName: "Base Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.base_amount ? (
-          <p> &#8377; {params.row.base_amount}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "gst_amount",
-      headerName: "GST Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gst_amount ? (
-          <p>&#8377; {params.row.gst_amount}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "gst_hold_amount",
-      headerName: "GST Hold Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gst_hold_amount ? (
-          <p>&#8377; {params.row.gst_hold_amount}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
-    {
-      field: "tds_deduction",
-      headerName: "TDS Amount",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.tds_deduction ? (
-          <p>&#8377; {params.row.tds_deduction}</p>
-        ) : (
-          "NA"
-        );
-      },
-    },
+    // {
+    //   field: "gst_amount",
+    //   headerName: "GST Amount",
+    //   renderCell: (params) => {
+    //     return params.row.gst_amount ? (
+    //       <p>&#8377; {params.row.gst_amount}</p>
+    //     ) : (
+    //       "NA"
+    //     );
+    //   },
+    // },
+    // {
+    //   field: "gst_hold_amount",
+    //   headerName: "GST Hold Amount",
+    //   renderCell: (params) => {
+    //     return params.row.gst_hold_amount ? (
+    //       <p>&#8377; {params.row.gst_hold_amount}</p>
+    //     ) : (
+    //       "NA"
+    //     );
+    //   },
+    // },
+    // {
+    //   field: "tds_deduction",
+    //   headerName: "TDS Amount",
+    //   renderCell: (params) => {
+    //     return params.row.tds_deduction ? (
+    //       <p>&#8377; {params.row.tds_deduction}</p>
+    //     ) : (
+    //       "NA"
+    //     );
+    //   },
+    // },
     {
       field: "outstandings",
       headerName: "OutStanding ",
-      width: 150,
       renderCell: (params) => {
         return <p> &#8377; {params.row.outstandings}</p>;
       },
@@ -551,7 +361,6 @@ const PaymentDoneTransactionList = () => {
     {
       field: "payment_amount",
       headerName: "Payment Amount",
-      width: 150,
       // renderCell: (params) => {
       //   const paymentAmount = nodeData.filter(
       //     (e) => e.request_id == params.row.request_id
@@ -559,63 +368,43 @@ const PaymentDoneTransactionList = () => {
       //   return paymentAmount ? <p>&#8377; {paymentAmount}</p> : "NA";
       // },
     },
-    {
-      field: "payment_by",
-      headerName: "Payment By",
-      width: 150,
-      renderCell: (params) => <div>{params.row.payment_by}</div>,
-    },
-    {
-      field: "aging",
-      headerName: "Aging",
-      width: 150,
-      renderCell: (params) => {
-        return <p> {params.row.aging} Days</p>;
-      },
-    },
-    {
-      field: "Status",
-      headerName: "Status",
-      width: 150,
-      valueGetter: (params) => getStatusText(params.row.status),
-      renderCell: (params) => (
-        <div>
-          {params.row.status === "1"
-            ? "Paid"
-            : params.row.status === "2"
-              ? "Discard"
-              : params.row.status === "3"
-                ? "Partial"
-                : ""}
-        </div>
-      ),
-    },
+    // {
+    //   field: "payment_by",
+    //   headerName: "Payment By",
+    //   renderCell: (params) => <div>{params.row.payment_by}</div>,
+    // },
+    // {
+    //   field: "aging",
+    //   headerName: "Aging",
+    //   renderCell: (params) => {
+    //     return <p> {params.row.aging} Days</p>;
+    //   },
+    // },
+
     // {
     //   field: "Aging (in hours)",
     //   headerName: "Aging (in hours)",
-    //   width: 150,
+    //  
     //   renderCell: (params) => {
     //     return (
     //       <p> {calculateHours(params.row.request_date, new Date())} Hours</p>
     //     );
     //   },
     // },
-    {
-      field: "gstHold",
-      headerName: "GST Hold",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.gstHold == 1 ? "Yes" : "No";
-      },
-    },
-    {
-      field: "TDSDeduction",
-      headerName: "TDS Deduction",
-      width: 150,
-      renderCell: (params) => {
-        return params.row.TDSDeduction == 1 ? "Yes" : "No";
-      },
-    },
+    // {
+    //   field: "gstHold",
+    //   headerName: "GST Hold",
+    //   renderCell: (params) => {
+    //     return params.row.gstHold == 1 ? "Yes" : "No";
+    //   },
+    // },
+    // {
+    //   field: "tds_deduction",
+    //   headerName: "TDS ",
+    //   // renderCell: (params) => {
+    //   //   return params.row.TDSDeduction == 1 ? "Yes" : "No";
+    //   // },
+    // },
   ];
   return (
     <div>

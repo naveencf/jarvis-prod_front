@@ -7,7 +7,7 @@ import { baseUrl } from "../../../../utils/config";
 import { useGlobalContext } from "../../../../Context/Context";
 
 const UserAuthDetail = () => {
-  const { toastAlert } = useGlobalContext();
+  const { toastAlert, toastError } = useGlobalContext();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userId = decodedToken.id;
@@ -179,21 +179,63 @@ const UserAuthDetail = () => {
   ];
 
   function postData() {
-    for (const element of filterData) {
-      axios.put(baseUrl + "update_user_auth", {
-        auth_id: element.auth_id,
-        Juser_id: Number(id),
-        obj_id: element.obj_id,
-        insert: element.insert_value,
-        view: element.view_value,
-        update: element.update_value,
-        delete_flag: element.delete_flag_value,
-        Last_updated_by: userId,
-      });
+    // Filter only modified rows
+    const changedRows = filterData.filter((element, index) => {
+      const original = data[index]; // Get the original row
+
+      return (
+        element.insert_value !== original.insert_value ||
+        element.view_value !== original.view_value ||
+        element.update_value !== original.update_value ||
+        element.delete_flag_value !== original.delete_flag_value
+      );
+    });
+
+    // If no changes, exit early
+    if (changedRows.length === 0) {
+      toastError("No changes detected");
+      return;
     }
-    setIsSubmitted(true);
-    toastAlert("Updated Successfully");
+
+    // Send only changed rows
+    const bulkData = changedRows.map((element) => ({
+      auth_id: element.auth_id,
+      Juser_id: Number(id),
+      obj_id: element.obj_id,
+      insert: element.insert_value,
+      view: element.view_value,
+      update: element.update_value,
+      delete_flag: element.delete_flag_value,
+      Last_updated_by: userId,
+    }));
+
+    axios
+      .put(baseUrl + "update_user_auth_bulk", { data: bulkData })
+      .then(() => {
+        setIsSubmitted(true);
+        toastAlert("Updated Successfully");
+      })
+      .catch((error) => {
+        console.error("Error updating user auth:", error);
+      });
   }
+
+  // function postData() {
+  //   for (const element of filterData) {
+  //     axios.put(baseUrl + "update_user_auth", {
+  //       auth_id: element.auth_id,
+  //       Juser_id: Number(id),
+  //       obj_id: element.obj_id,
+  //       insert: element.insert_value,
+  //       view: element.view_value,
+  //       update: element.update_value,
+  //       delete_flag: element.delete_flag_value,
+  //       Last_updated_by: userId,
+  //     });
+  //   }
+  //   setIsSubmitted(true);
+  //   toastAlert("Updated Successfully");
+  // }
 
   if (isSubmitted) {
     return <Navigate to={`/admin/user-overview/${"Active"}`} />;

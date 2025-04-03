@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { Avatar } from "@mui/material";
 import {
   useGetLedgerQuery,
   useGetVendorAdvancedPaymentQuery,
@@ -14,6 +13,8 @@ import { FilterDrama } from "@mui/icons-material";
 import { formatDateTime } from "../../../utils/formatDateTime";
 import axios from "axios";
 import { phpBaseUrl } from "../../../utils/config";
+import VendorStatementComponent from "./VendorStatementComponent";
+import { AdvancedPaymentComponent } from "./AdvancedPaymentComponent";
 
 const Ledger = () => {
   const { id } = useParams();
@@ -23,15 +24,13 @@ const Ledger = () => {
       { label: `2023-2024`, value: `startDate=2023-04-01&endDate=2024-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
-        value: `startDate=${
-          currentYear - 1
-        }-04-01&endDate=${currentYear}-03-31`,
+        value: `startDate=${currentYear - 1
+          }-04-01&endDate=${currentYear}-03-31`,
       },
       {
         label: `${currentYear}-${currentYear + 1}`,
-        value: `startDate=${currentYear}-04-01&endDate=${
-          currentYear + 1
-        }-03-31`,
+        value: `startDate=${currentYear}-04-01&endDate=${currentYear + 1
+          }-03-31`,
       },
     ];
   };
@@ -287,7 +286,7 @@ const Ledger = () => {
           className={activeTab === "Tab1" ? "active btn btn-primary" : "btn"}
           onClick={() => setActiveTab("Tab1")}
         >
-          Overview
+          Ledger
         </button>
         <button
           className={activeTab === "Tab2" ? "active btn btn-primary" : "btn"}
@@ -295,171 +294,81 @@ const Ledger = () => {
         >
           Advance Payment
         </button>
+        <button
+          className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+          onClick={() => setActiveTab("Tab3")}
+        >
+          Sales Ledger
+        </button>
       </div>
+      <VendorStatementComponent
+        activeTab={activeTab}
+        vendorDetail={vendorDetail}
+        ledgerData={ledgerData}
+        totalDebit={totalDebit}
+        totalCredit={totalCredit}
+        runningBalance={runningBalance}
+        vendorData={vendorData}
+        vendorPhpDetail={vendorPhpDetail}
+        actualOutstanding={actualOutstanding}
+        financialYears={financialYears}
+        selectedYear={selectedYear}
+        setSelectedYear={setSelectedYear}
+        months={months}
+        selectedMonths={selectedMonths}
+        setSelectedMonths={setSelectedMonths}
+        columns={columns}
+        filteredData={filteredData}
+        isLoading={isLoading}
+      />
 
-      {activeTab === "Tab1" && (
-        <div className="statementDoc">
-          <div className="statementDocHeader">
-            <div className="vendorBox">
-              <div className="vendorImg">
-                <Avatar
-                  alt="Vendor"
-                  src={ledgerData[0]?.vendor_image || "vendor.jpg"}
-                />
-              </div>
-              <div className="vendorTitle">
-                <h2>
-                  {formatString(vendorDetail?.vendor_name) || "Vendor Name"}
-                </h2>
-                <h4>
-                  Vendor Category: {formatString(vendorDetail?.vendor_category)}
-                </h4>
-                {vendorDetail?.recent_purchase_date && (
-                  <h4>
-                    Purchase Date :{" "}
-                    {formatDateTime(vendorDetail?.recent_purchase_date)}
-                  </h4>
-                )}
+      <AdvancedPaymentComponent
+        activeTab={activeTab}
+        financialYears={financialYears}
+        selectedPaymentYear={selectedPaymentYear}
+        setSelectedPaymentYear={setSelectedPaymentYear}
+        advancedPaymentColumns={advancedPaymentColumns}
+        vendorAdvanced={vendorAdvanced}
+        isLoading={isLoading}
+      />
+      {activeTab === 'Tab3' && <div>
+        <div className="statementDocBody card-body p-3">
+          <div className="row">
+            <div className="col">
+              <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
+                <h6 className="colorMedium">Audit Pending</h6>
+                <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount?.toLocaleString()}</h6>
               </div>
             </div>
-            <div className="stats">
-              <div className="statsBox">
-                <h4>Total Debited Amount</h4>
-                <h2>₹ {totalDebit?.toLocaleString()}</h2>
-              </div>
-              <div className="statsBox">
-                <h4>Total Credit Amount</h4>
-                <h2>₹ {totalCredit?.toLocaleString()}</h2>
-              </div>
-              <div className="statsBox">
-                <h4>Balance Amount</h4>
-                <h2>₹ {runningBalance?.toLocaleString()}</h2>
+            <div className="col">
+              <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
+                <h6 className="colorMedium">Outstanding:</h6>
+                <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}</h6>
               </div>
             </div>
-          </div>
-          <div className="statementDocBody card-body">
-            <div className="p16">
-              <div className="row">
-                <div className="col">
-                  <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
-                    <h6 className="colorMedium">Audit Pending</h6>
-                    <h6 className="mt8 fs_16">
-                      ₹ {vendorData?.totalAmount?.toLocaleString()}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
-                    <h6 className="colorMedium">Outstanding:</h6>
-                    <h6 className="mt8 fs_16">
-                      ₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col">
-                  <div
-                    className="card p16 shadow-none border-0 m0"
-                    style={{ backgroundColor: "lightsteelblue" }}
-                  >
-                    <h6 className="colorMedium">Php Outstanding:</h6>
-                    <h6 className="mt8 fs_16">
-                      ₹{" "}
-                      {Number(
-                        vendorPhpDetail[0]?.outstanding
-                      )?.toLocaleString()}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="card p16 shadow-none border-0 m0 bgInfoLight">
-                    <h6 className="colorMedium">Total Remaining Advance</h6>
-                    <h6 className="mt8 fs_16">
-                      ₹{" "}
-                      {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}
-                    </h6>
-                  </div>
-                </div>
-                <div className="col">
-                  <div className="card p16 shadow-none border-0 m0 bgDangerLight">
-                    <h6 className="colorMedium">Actual Outstanding</h6>
-                    <h6 className="mt8 fs_16">
-                      ₹{actualOutstanding?.toLocaleString()}
-                    </h6>
-                  </div>
-                </div>
+            <div className="col">
+              <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
+                <h6 className="colorMedium">Php Outstanding:</h6>
+                <h6 className="mt8 fs_16">₹ {Number(vendorPhpDetail[0]?.outstanding)?.toLocaleString()}</h6>
               </div>
             </div>
-            <div className="pl8 pr8">
-              <div className="row">
-                <div className="col-md-6 col-12">
-                  <CustomSelect
-                    fieldGrid={12}
-                    label="Financial Year"
-                    dataArray={financialYears}
-                    optionId="value"
-                    optionLabel="label"
-                    selectedId={selectedYear}
-                    setSelectedId={setSelectedYear}
-                  />
-                </div>
-                <div className="col-md-6 col-12">
-                  <CustomSelect
-                    fieldGrid={12}
-                    label="Months"
-                    dataArray={months}
-                    optionId="value"
-                    optionLabel="label"
-                    selectedId={selectedMonths}
-                    setSelectedId={setSelectedMonths}
-                    multiple
-                  />
-                </div>
+            <div className="col">
+              <div className="card p16 shadow-none border-0 m0 bgInfoLight">
+                <h6 className="colorMedium">Total Remaining Advance</h6>
+                <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}</h6>
               </div>
             </div>
-            <div className="table-responsive noCardHeader">
-              <View
-                columns={columns}
-                showTotal={true}
-                data={filteredData}
-                isLoading={isLoading}
-                tableName={"Op_executions"}
-                pagination={[100, 200, 1000]}
-              />
+            <div className="col">
+              <div className="card p16 shadow-none border-0 m0 bgDangerLight">
+                <h6 className="colorMedium">Actual Outstanding</h6>
+                <h6 className="mt8 fs_16">₹{actualOutstanding?.toLocaleString()}</h6>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+          
 
-      {activeTab === "Tab2" && (
-        <div className="card noCardHeader">
-          <div className="card-body p0">
-            <div className="pl8 pr8 pt8">
-              <div className="row">
-                <div className="col-md-6 col-12">
-                  <CustomSelect
-                    fieldGrid={12}
-                    label="Advanced Payment Year"
-                    dataArray={financialYears}
-                    optionId="value"
-                    optionLabel="label"
-                    selectedId={selectedPaymentYear}
-                    setSelectedId={setSelectedPaymentYear}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className="table-responsive">
-              <View
-                columns={advancedPaymentColumns}
-                data={vendorAdvanced}
-                isLoading={isLoading}
-                tableName={"Op_executions"}
-                pagination={[100, 200, 1000]}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+         </div>
+      </div>}
     </div>
   );
 };
