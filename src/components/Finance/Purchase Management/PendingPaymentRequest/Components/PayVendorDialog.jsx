@@ -348,8 +348,8 @@ function PayVendorDialog(props) {
   };
 
   const handleOpenPayThroughVendor = () => {
-    if (paymentAmout >= 500000) {
-      toastAlert("You are allow to pay below 10,0000")
+    if (paymentAmout > 700000) {
+      toastAlert("You are allow to pay below 700,000")
       return;
     }
     // else if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
