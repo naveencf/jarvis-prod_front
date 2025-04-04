@@ -56,6 +56,7 @@ import IndianStatesMui from "../../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../../ReusableComponents/IndianCitiesMui";
 import { constant } from "../../../../utils/constants";
 import { FormatName } from "../../../../utils/FormatName";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const initialFamilyDetailsGroup = {
   Relation: "",
@@ -77,6 +78,7 @@ const initialEducationDetailsGroup = {
 };
 
 const UserMaster = () => {
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const whatsappApi = WhatsappAPI();
   const { toastAlert, toastError } = useGlobalContext();
   const [userResID, setUserResID] = useState("");
@@ -111,7 +113,7 @@ const UserMaster = () => {
   //--------------------Official Info State Start
   const [jobType, setJobType] = useState("");
   const [department, setDepartment] = useState("");
-  const [departmentdata, getDepartmentData] = useState([]);
+  const [departmentdata, getDepartmentData] = useState(DepartmentContext);
   const [subDepartmentData, setSubDepartmentData] = useState([]);
   const [subDepartment, setSubDeparment] = useState("");
   const [designation, setDesignation] = useState("");
@@ -191,7 +193,7 @@ const UserMaster = () => {
   const [isContactTouched1, setisContactTouched1] = useState(false);
   const [isIFSCTouched, setisIFSCTouched] = useState(false);
   const [isValidIFSC, setValidIFSC] = useState(false);
-  const [usersData, getUsersData] = useState([]);
+  // const [userContextData, getuserContextData] = useState(userContextData);
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -285,15 +287,15 @@ const UserMaster = () => {
       setRoles(constant.CONST_USER_ROLE);
     });
 
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      getDepartmentData(res.data);
-    });
+    // axios.get(baseUrl + "get_all_departments").then((res) => {
+    //   getDepartmentData(res.data);
+    // });
 
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      getUsersData(res.data.data);
-      // const userSitting = res.data.data.map((user) => user.sitting_id);
-      // setAllUsersSittings(userSitting);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    // getuserContextData(res.data.data);
+    // const userSitting = res.data.data.map((user) => user.sitting_id);
+    // setAllUsersSittings(userSitting);
+    // });
 
     // axios.get(baseUrl + "get_all_designations").then((res) => {
     //   setDesignationData(res.data.data);
@@ -339,10 +341,10 @@ const UserMaster = () => {
     }));
 
   const allUserData = () => {
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      const reportl1Email = res.data.data?.filter((d) => d.user_id == reportL1);
-      setReportL1Email(reportl1Email[0]?.user_email_id);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    const reportl1Email = userContextData?.filter((d) => d.user_id == reportL1);
+    setReportL1Email(reportl1Email[0]?.user_email_id);
+    // });
   };
   useEffect(() => {
     allUserData();
@@ -610,15 +612,15 @@ const UserMaster = () => {
     //offcial info payload End
 
     try {
-      const isLoginIdExists = usersData.some(
+      const isLoginIdExists = userContextData.some(
         (user) =>
           user.user_login_id?.toLocaleLowerCase() ===
           loginId?.toLocaleLowerCase()
       );
-      const contactNumberExists = usersData.some(
+      const contactNumberExists = userContextData.some(
         (user) => user.user_contact_no == personalContact
       );
-      const emailIdExists = usersData.some(
+      const emailIdExists = userContextData.some(
         (user) =>
           user.user_email_id?.toLocaleLowerCase() ==
           personalEmail?.toLocaleLowerCase()
@@ -1528,7 +1530,7 @@ const UserMaster = () => {
               value={personalContact}
               required={false}
               onChange={handlePersonalContactChange}
-            // onBlur={(e) => handleContentBlur(e, "personalContact")}
+              // onBlur={(e) => handleContentBlur(e, "personalContact")}
             />
             {(isContactTouched1 || personalContact.length >= 10) &&
               !isValidcontact1 && (
@@ -1581,7 +1583,7 @@ const UserMaster = () => {
               value={alternateContact}
               required={false}
               onChange={handleAlternateContactChange}
-            // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
+              // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
             />
             {(isAlternateTouched1 || alternateContact.length >= 10) &&
               !isValidcontact3 && (
@@ -1914,14 +1916,14 @@ const UserMaster = () => {
             </label>
             <Select
               className=""
-              options={usersData.map((option) => ({
+              options={userContextData.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL1,
                 label:
-                  usersData.find((user) => user.user_id === reportL1)
+                  userContextData.find((user) => user.user_id === reportL1)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -1953,14 +1955,14 @@ const UserMaster = () => {
             <label className="form-label">Report L2</label>
             <Select
               className=""
-              options={usersData.map((option) => ({
+              options={userContextData.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL2,
                 label:
-                  usersData.find((user) => user.user_id === reportL2)
+                  userContextData.find((user) => user.user_id === reportL2)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -1974,14 +1976,14 @@ const UserMaster = () => {
             <label className="form-label">Report L3</label>
             <Select
               className=""
-              options={usersData.map((option) => ({
+              options={userContextData.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL3,
                 label:
-                  usersData.find((user) => user.user_id === reportL3)
+                  userContextData.find((user) => user.user_id === reportL3)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -2000,9 +2002,9 @@ const UserMaster = () => {
               value={
                 selectedRole
                   ? {
-                    value: selectedRole.role_id,
-                    label: selectedRole.Role_name,
-                  }
+                      value: selectedRole.role_id,
+                      label: selectedRole.Role_name,
+                    }
                   : null
               }
               onChange={(e) => {
@@ -3092,20 +3094,21 @@ const UserMaster = () => {
         {accordionButtons.map((button, index) => (
           <div className="flex-row align-items-center w-100 gap-4" key={index}>
             <button
-              className={`tab ${activeAccordionIndex === index
-                ? "active"
-                : userResID !== ""
+              className={`tab ${
+                activeAccordionIndex === index
+                  ? "active"
+                  : userResID !== ""
                   ? "completed"
                   : "disabled"
-                }`}
+              }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               <div className="gap-1 flex-row">
                 {activeAccordionIndex === index
                   ? indicator.active
                   : userResID !== ""
-                    ? indicator.completed
-                    : indicator.disabled}
+                  ? indicator.completed
+                  : indicator.disabled}
                 <p>{button}</p>
               </div>
               {accordionButtonstitle[index]}
@@ -3125,8 +3128,9 @@ const UserMaster = () => {
                     fill-rule="evenodd"
                     clip-rule="evenodd"
                     d="M6.51171 4.43057C6.8262 4.161 7.29968 4.19743 7.56924 4.51192L13.5692 11.5119C13.81 11.7928 13.81 12.2072 13.5692 12.4881L7.56924 19.4881C7.29968 19.8026 6.8262 19.839 6.51171 19.5695C6.19721 19.2999 6.16079 18.8264 6.43036 18.5119L12.012 12L6.43036 5.48811C6.16079 5.17361 6.19721 4.70014 6.51171 4.43057ZM10.5119 4.43068C10.8264 4.16111 11.2999 4.19753 11.5694 4.51202L17.5694 11.512C17.8102 11.7929 17.8102 12.2073 17.5694 12.4882L11.5694 19.4882C11.2999 19.8027 10.8264 19.8391 10.5119 19.5696C10.1974 19.3 10.161 18.8265 10.4306 18.512L16.0122 12.0001L10.4306 5.48821C10.161 5.17372 10.1974 4.70024 10.5119 4.43068Z"
-                    fill={`${activeAccordionIndex === index ? "var(--primary)" : ""
-                      }`}
+                    fill={`${
+                      activeAccordionIndex === index ? "var(--primary)" : ""
+                    }`}
                   />
                 </g>
               </svg>

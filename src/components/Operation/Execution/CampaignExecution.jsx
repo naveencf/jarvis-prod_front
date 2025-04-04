@@ -25,7 +25,7 @@ import { useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import { formatDate } from "../../../utils/formatDate";
 import Modal from "react-modal";
-import { useGetAllExeCampaignsQuery } from "../../Store/API/Sales/ExecutionCampaignApi";
+import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import LinkUpload from "./LinkUpload";
 import PhaseTab from "./PhaseTab";
@@ -108,7 +108,7 @@ const CampaignExecution = () => {
     data: campaignList,
     isFetching: fetchingCampaignList,
     isLoading: loadingCampaignList,
-  } = useGetAllExeCampaignsQuery();
+  } = useGetExeCampaignsNameWiseDataQuery();
 
   const {
     refetch: refetchPlanData,
@@ -450,9 +450,30 @@ const CampaignExecution = () => {
 
   async function handleAuditedDataUpload() {
     try {
+      if (actTab == 5) {
+        if (selectedData.length > 1) {
+          toastError("Please select only one data to upload");
+          return;
+        }
+        if (selectedData.length == 0) {
+          toastError("Please select the data to upload");
+          return;
+        }
+        if (selectedData[0].audit_status == "pending") {
+          toastError("Please select the data which is audited");
+          return;
+        }
+      }
+
       let data = {};
       data =
-        selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+        actTab == 5 && selectedData.length === 1
+          ? {
+              userId: token.id,
+              shortCodes: selectedData.map((data) => data.shortCode),
+              campaignId: selectedData[0].campaignId,
+            }
+          : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
           ? {
               userId: token.id,
               isVendorWise: true,
@@ -498,7 +519,7 @@ const CampaignExecution = () => {
       renderRowCell: (row) => {
         return row?.ref_link.split("?")[0];
       },
-      width: 200,
+      width: 100,
     },
 
     {
@@ -542,7 +563,7 @@ const CampaignExecution = () => {
           />
         );
       },
-      width: 300,
+      width: 100,
     },
     {
       key: "post_dec",
@@ -608,13 +629,13 @@ const CampaignExecution = () => {
           </div>
         );
       },
-      width: 300,
+      width: 100,
       editable: true,
     },
     {
       key: "page_name",
       name: "Page Name",
-      width: 200,
+      width: 100,
       renderRowCell: (row) => row?.owner_info?.username,
       compare: true,
       editable: true,
@@ -828,7 +849,7 @@ const CampaignExecution = () => {
             </button>
           );
       },
-      width: 300,
+      width: 100,
       customEditElement: (
         row,
         index,
@@ -901,7 +922,7 @@ const CampaignExecution = () => {
     {
       key: "campaign_name",
       name: "Campaign Name",
-      width: 150,
+      width: 100,
       editable: true,
       customEditElement: (
         row,
@@ -1154,7 +1175,7 @@ const CampaignExecution = () => {
           </div>
         );
       },
-      width: 150,
+      width: 100,
       editable: true,
     },
     {

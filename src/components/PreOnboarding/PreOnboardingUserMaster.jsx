@@ -1382,7 +1382,7 @@ const PreOnboardingUserMaster = () => {
                     </div>
                   </div>
                   {/* {allUserData.offer_letter_send && ( */}
-                  {allUserData.joining_date >= currentDate && (
+                  {currentDate >= allUserData?.joining_date?.split("T")[0] && (
                     <div
                       className={`sidebar_itembox ${
                         activeTab === 5 ? "sidebar_item_active" : ""

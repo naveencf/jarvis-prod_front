@@ -7,54 +7,55 @@ import { BsFillEyeFill } from "react-icons/bs";
 import Select from "react-select";
 import { baseUrl } from "../../../../utils/config";
 import imageTest1 from "../../../../assets/img/product/Avtrar1.png";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const UserOverview = () => {
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const [search, setSearch] = useState("");
   const [datas, setDatas] = useState([]);
-  const [backupData, setBackupData] = useState([]);
+  // const [backupData, setBackupData] = useState([]);
   const [contextData, setData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  const [departmentData, setDepartmentData] = useState([]);
+  // const [departmentData, setDepartmentData] = useState([]);
 
-  const storedToken = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(storedToken);
-  const userID = decodedToken.id;
+  // const storedToken = sessionStorage.getItem("token");
+  // const decodedToken = jwtDecode(storedToken);
+  // const userID = decodedToken.id;
 
-  useEffect(() => {
-    if (userID && contextData.length === 0) {
-      axios.get(`${baseUrl}` + `userauth/${userID}`).then((res) => {
-        setData(res.data);
-      });
-    }
-  }, [userID]);
+  // useEffect(() => {
+  //   if (userID && contextData.length === 0) {
+  //     axios.get(`${baseUrl}` + `userauth/${userID}`).then((res) => {
+  //       setData(res.data);
+  //     });
+  //   }
+  // }, [userID]);
 
-  function getData() {
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      setDatas(res.data.data);
-      setBackupData(res.data.data);
-    });
-
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      setDepartmentData(res.data);
-    });
-  }
-  useEffect(() => {
-    getData();
-  }, []);
+  // function getData() {
+  //   axios.get(baseUrl + "get_all_users").then((res) => {
+  //     setDatas(res.data.data);
+  //     setBackupData(res.data.data);
+  //   });
+  //   axios.get(baseUrl + "get_all_departments").then((res) => {
+  //     setDepartmentData(res.data);
+  //   });
+  // }
+  // useEffect(() => {
+  //   getData();
+  // }, []);
 
   useEffect(() => {
     if (selectedDepartment === "") {
-      setDatas(backupData);
+      setDatas(userContextData);
     } else {
-      const filteredData = backupData.filter(
+      const filteredData = userContextData.filter(
         (item) => item.dept_id == selectedDepartment
       );
       setDatas(filteredData);
     }
-  }, [selectedDepartment]);
+  }, [selectedDepartment, userContextData]);
 
   useEffect(() => {
-    const result = datas.filter((d) => {
+    const result = userContextData.filter((d) => {
       return d.user_name.toLowerCase().match(search.toLowerCase());
     });
     setData(result);
@@ -80,14 +81,14 @@ const UserOverview = () => {
                 Department <sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
-                options={departmentData.map((option) => ({
+                options={DepartmentContext.map((option) => ({
                   value: option.dept_id,
                   label: `${option.dept_name}`,
                 }))}
                 value={{
                   value: selectedDepartment,
                   label:
-                    departmentData.find(
+                    DepartmentContext.find(
                       (user) => user.dept_id === selectedDepartment
                     )?.dept_name || "",
                 }}

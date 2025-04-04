@@ -14,13 +14,13 @@ export default function SubDepartmentOverview() {
   const [modalSearch, setModalSearch] = useState("");
   const [datas, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
-  const [allUserSubDepartment, setAllUserSubDepartment] = useState([]);
+  // const [allUserSubDepartment, setAllUserSubDepartment] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [selectedUserData, setSelectedUserData] = useState([]);
-  const [filterSubDepartmentData, setFilterSubDepartmentData] = useState([]);
-  const [departmentData, setDepartmentData] = useState([]);
-  const [subDepartmentData, setSubDeparmentData] = useState([]);
+  // const [filterSubDepartmentData, setFilterSubDepartmentData] = useState([]);
+  // const [departmentData, setDepartmentData] = useState([]);
+  // const [subDepartmentData, setSubDeparmentData] = useState([]);
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
@@ -33,9 +33,9 @@ export default function SubDepartmentOverview() {
     });
   }
   useEffect(() => {
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      setDepartmentData(res.data);
-    });
+    // axios.get(baseUrl + "get_all_departments").then((res) => {
+    //   setDepartmentData(res.data);
+    // });
     getData();
   }, []);
 

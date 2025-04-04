@@ -17,9 +17,14 @@ import { baseUrl } from "../../../../utils/config";
 import View from "../../Sales/Account/View/View";
 import { constant } from "../../../../utils/constants";
 import ReJoinReusable from "./ReJoinReusable";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
+import { useGetAllUsersDataQuery } from "../../../Store/API/HRMS/User";
 
 const UserOverview = () => {
+  // const { data: getAllUsersData } = useGetAllUsersDataQuery();
+  // console.log(getAllUsersData, "getALlusersdata");
   const { id } = useParams();
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const whatsappApi = WhatsappAPI();
   const { toastAlert } = useGlobalContext();
   const [activeButton, setActiveButton] = useState(2);
@@ -30,7 +35,6 @@ const UserOverview = () => {
   const [filterdata, setFilterData] = useState([]);
   const [isloading, setLoading] = useState(true);
   const [contextData, setData] = useState([]);
-  const [departmentData, setDepartmentData] = useState([]);
   const [transferResponsibilityData, setTransferResponsibilityData] = useState(
     []
   );
@@ -207,8 +211,9 @@ const UserOverview = () => {
   async function getData() {
     try {
       setLoadingUser(true);
-      const response = await axios.get(baseUrl + "get_all_users");
-      const data = response.data.data;
+      // const response = await axios.get(baseUrl + "get_all_users");
+      // const data = response.data.data;
+      const data = userContextData;
 
       setTransferToUser(data);
 
@@ -238,12 +243,6 @@ const UserOverview = () => {
       setLoadingUser(false);
     }
   }
-  const departmentAPI = () => {
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      setDepartmentData(res.data);
-      getData();
-    });
-  };
 
   // const handleDelete = (userId) => {
   //   const swalWithBootstrapButtons = Swal.mixin({
@@ -290,9 +289,8 @@ const UserOverview = () => {
   // };
 
   useEffect(() => {
-    departmentAPI();
     getData();
-  }, []);
+  }, [userContextData]);
 
   function convertDateToDDMMYYYY(dateString) {
     if (String(dateString).startsWith("0000-00-00")) {
@@ -359,7 +357,7 @@ const UserOverview = () => {
       key: "Major Department",
       name: "Major Department",
       renderRowCell: (row) => {
-        const department = departmentData.find(
+        const department = DepartmentContext.find(
           (d) => d.dept_id === row.dept_id
         );
         return department ? department.major_dept_name : "N/A";

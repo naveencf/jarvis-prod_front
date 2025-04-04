@@ -21,6 +21,7 @@ import DirectPurchaseApi from "./API/Purchase/DirectPurchaseApi";
 import { purchaseApi } from "../Purchase/api/purchaseApiSlice";
 import PantryApi from "./API/Pantry/PantryApi";
 import BoostingApi from "./API/Boosting/BoostingApi";
+import UsersApi from "./API/HRMS/User";
 
 const store = configureStore({
   reducer: {
@@ -39,7 +40,7 @@ const store = configureStore({
     [DirectPurchaseApi.reducerPath]: DirectPurchaseApi.reducer,
     [PantryApi.reducerPath]: PantryApi.reducer,
     [BoostingApi.reducerPath]: BoostingApi.reducer,
-
+    [UsersApi.reducerPath]: UsersApi.reducer,
 
     executon,
     PageOverview,
@@ -63,7 +64,8 @@ const store = configureStore({
       .concat(OutstandingNewApi.middleware)
       .concat(DirectPurchaseApi.middleware)
       .concat(PantryApi.middleware)
-      .concat(BoostingApi.middleware),
+      .concat(BoostingApi.middleware)
+      .concat(UsersApi.middleware),
 });
 setupListeners(store.dispatch);
 
