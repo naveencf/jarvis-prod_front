@@ -1342,7 +1342,7 @@ const CampaignExecution = () => {
     );
     return allPurchased;
   }
-
+console.log("campaignList",campaignList);
   const CampaignSelection = useMemo(
     () => [
       {
