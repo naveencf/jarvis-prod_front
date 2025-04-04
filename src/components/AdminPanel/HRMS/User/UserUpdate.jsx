@@ -33,6 +33,7 @@ import {
   stateAbbreviations,
 } from "../../../../utils/helper";
 import DocumentTab from "../../../PreOnboarding/DocumentTab";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const initialFamilyDetailsGroup = {
   relation: "",
@@ -92,6 +93,7 @@ const educationFieldLabels = {
 };
 
 const UserUpdate = () => {
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const whatsappApi = WhatsappAPI();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -150,10 +152,10 @@ const UserUpdate = () => {
   const [password, setPassword] = useState("");
   const [userStatus, setUserStatus] = useState("");
   const [joiningDate, setJoiningDate] = useState("");
-  const [sitting, setSitting] = useState();
-  const [sittingValue, setSittingValue] = useState({});
-  const [roomId, setRoomId] = useState("");
-  const [refrenceData, setRefrenceData] = useState([]);
+  // const [sitting, setSitting] = useState();
+  // const [sittingValue, setSittingValue] = useState({});
+  // const [roomId, setRoomId] = useState("");
+  // const [refrenceData, setRefrenceData] = useState([]);
 
   const [monthlyGrossSalary, setMonthlyGrossSalary] = useState("");
   const [ctc, setCTC] = useState(0);
@@ -229,7 +231,7 @@ const UserUpdate = () => {
   const [incomingUserStatus, setIncomingUserStatus] = useState("");
 
   const [otherDocuments, setOtherDocuments] = useState();
-  const [defaultSeatData, setDefaultSeatData] = useState([]);
+  // const [defaultSeatData, setDefaultSeatData] = useState([]);
 
   const statusData = ["Active", "Exit", "PreOnboard"];
   const maritialStatusData = ["Married", "Unmarried"];
@@ -352,28 +354,28 @@ const UserUpdate = () => {
     const GetAllData = async () => {
       const AllRolesResposne = await axios.get(baseUrl + "get_all_roles");
 
-      const AllDepartmentResponse = await axios.get(
-        baseUrl + "get_all_departments"
-      );
+      // const AllDepartmentResponse = await axios.get(
+      //   baseUrl + "get_all_departments"
+      // );
 
-      const RemainingSittingResponse = await axios.get(
-        baseUrl + "not_alloc_sitting"
-      );
+      // const RemainingSittingResponse = await axios.get(
+      //   baseUrl + "not_alloc_sitting"
+      // );
 
-      const AllSittingsResponse = await axios.get(baseUrl + "get_all_sittings");
+      // const AllSittingsResponse = await axios.get(baseUrl + "get_all_sittings");
 
-      const AllUsersResponse = await axios.get(baseUrl + "get_all_users");
+      // const AllUsersResponse = await axios.get(baseUrl + "get_all_users");
 
       const AllJobTypesResponse = await axios.get(
         baseUrl + "get_all_job_types"
       );
 
       getRoleData(AllRolesResposne.data.data);
-      getDepartmentData(AllDepartmentResponse.data);
+      // getDepartmentData(AllDepartmentResponse.data);
       setJobTypeData(AllJobTypesResponse.data.data);
-      getUsersData(AllUsersResponse.data.data);
-      setDefaultSeatData(AllSittingsResponse.data.data);
-      setRefrenceData(RemainingSittingResponse.data.data);
+      // getUsersData(AllUsersResponse.data.data);
+      // setDefaultSeatData(AllSittingsResponse.data.data);
+      // setRefrenceData(RemainingSittingResponse.data.data);
     };
     GetAllData();
   }, []);
@@ -555,8 +557,8 @@ const UserUpdate = () => {
       setIncomingPassword(user_login_password);
       setRoles(role_id);
       setDepartment(dept_id);
-      setSitting(sitting_id);
-      setRoomId(room_id);
+      // setSitting(sitting_id);
+      // setRoomId(room_id);
       setPersonalContact(PersonalNumber);
       setPersonalEmail(PersonalEmail);
       setJobType(job_type);
@@ -618,25 +620,25 @@ const UserUpdate = () => {
     getOtherDocument();
   }, [id]);
 
-  useEffect(() => {
-    const InitialSitting = defaultSeatData?.find(
-      (object) => object.sitting_id == sitting
-    );
+  // useEffect(() => {
+  //   const InitialSitting = defaultSeatData?.find(
+  //     (object) => object.sitting_id == sitting
+  //   );
 
-    setRefrenceData((prev) => [InitialSitting, ...prev]);
-  }, [defaultSeatData]);
+  //   setRefrenceData((prev) => [InitialSitting, ...prev]);
+  // }, [defaultSeatData]);
 
-  useEffect(() => {
-    const SelectedSitting = refrenceData?.find(
-      (object) => object?.sitting_id == sitting
-    );
-    const updatedSitting = {
-      value: SelectedSitting?.sitting_id,
-      label: `${SelectedSitting?.sitting_ref_no} | ${SelectedSitting?.sitting_area}`,
-    };
+  // useEffect(() => {
+  //   const SelectedSitting = refrenceData?.find(
+  //     (object) => object?.sitting_id == sitting
+  //   );
+  //   const updatedSitting = {
+  //     value: SelectedSitting?.sitting_id,
+  //     label: `${SelectedSitting?.sitting_ref_no} | ${SelectedSitting?.sitting_area}`,
+  //   };
 
-    setSittingValue(updatedSitting);
-  }, [sitting, refrenceData]);
+  //   setSittingValue(updatedSitting);
+  // }, [sitting, refrenceData]);
 
   function validateAndCorrectUserName(userName) {
     userName = userName.replace(/\s{2,}/g, " ").trim();
@@ -753,11 +755,12 @@ const UserUpdate = () => {
     formData.append("ctc", ctc);
     formData.append("user_credit_limit", Number(creditLimit));
 
-    formData.append("sitting_id", jobType === "WFH" ? 0 : Number(sitting));
-    formData.append(
-      "room_id",
-      jobType === "WFH" || jobType === "WFHD" ? "1" : 1 //roomId
-    );
+    formData.append("sitting_id", 0);
+    // formData.append(
+    //   "room_id",
+    //   jobType === "WFH" || jobType === "WFHD" ? "1" : 1 //roomId
+    // );
+    formData.append("room_id", 1);
     formData.append("joining_date", joiningDate);
     // formData.append("room_id", roomId);
     formData.append("att_status", "document_upload");
@@ -1576,14 +1579,14 @@ const UserUpdate = () => {
             </label>
             <Select
               className=""
-              options={departmentdata?.map((option) => ({
+              options={DepartmentContext?.map((option) => ({
                 value: option.dept_id,
                 label: `${option.dept_name}`,
               }))}
               value={{
                 value: department,
                 label:
-                  departmentdata.find((user) => user.dept_id === department)
+                  DepartmentContext.find((user) => user.dept_id === department)
                     ?.dept_name || "",
               }}
               onChange={(e) => {
@@ -1643,14 +1646,14 @@ const UserUpdate = () => {
             </label>
             <Select
               className=""
-              options={usersData?.map((option) => ({
+              options={userContextData?.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL1,
                 label:
-                  usersData.find((user) => user.user_id === reportL1)
+                  userContextData.find((user) => user.user_id === reportL1)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -1663,14 +1666,14 @@ const UserUpdate = () => {
             <label className="form-label">Report L2</label>
             <Select
               className=""
-              options={usersData?.map((option) => ({
+              options={userContextData?.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL2,
                 label:
-                  usersData.find((user) => user.user_id === reportL2)
+                  userContextData.find((user) => user.user_id === reportL2)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -1684,14 +1687,14 @@ const UserUpdate = () => {
             <label className="form-label">Report L3</label>
             <Select
               className=""
-              options={usersData?.map((option) => ({
+              options={userContextData?.map((option) => ({
                 value: option.user_id,
                 label: `${option.user_name}`,
               }))}
               value={{
                 value: reportL3,
                 label:
-                  usersData.find((user) => user.user_id === reportL3)
+                  userContextData.find((user) => user.user_id === reportL3)
                     ?.user_name || "",
               }}
               onChange={(e) => {
@@ -2184,7 +2187,7 @@ const UserUpdate = () => {
               }
             }}
 
-          // setBankAccountNumber(e.target.value)}
+            // setBankAccountNumber(e.target.value)}
           />
           <FieldContainer
             label="IFSC"
@@ -2555,14 +2558,15 @@ const UserUpdate = () => {
         {accordionButtons.map((button, index) => (
           <div className="flex-row align-items-center w-100 gap-4">
             <button
-              className={`tab ${activeAccordionIndex === index ? "active" : "disabled"
-                }`}
+              className={`tab ${
+                activeAccordionIndex === index ? "active" : "disabled"
+              }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               <div className="gap-1 flex-row">
                 {
                   indicator[
-                  activeAccordionIndex === index ? "active" : "disabled"
+                    activeAccordionIndex === index ? "active" : "disabled"
                   ]
                 }
                 <p>{button}</p>
@@ -2584,8 +2588,9 @@ const UserUpdate = () => {
                     fill-rule="evenodd"
                     clip-rule="evenodd"
                     d="M6.51171 4.43057C6.8262 4.161 7.29968 4.19743 7.56924 4.51192L13.5692 11.5119C13.81 11.7928 13.81 12.2072 13.5692 12.4881L7.56924 19.4881C7.29968 19.8026 6.8262 19.839 6.51171 19.5695C6.19721 19.2999 6.16079 18.8264 6.43036 18.5119L12.012 12L6.43036 5.48811C6.16079 5.17361 6.19721 4.70014 6.51171 4.43057ZM10.5119 4.43068C10.8264 4.16111 11.2999 4.19753 11.5694 4.51202L17.5694 11.512C17.8102 11.7929 17.8102 12.2073 17.5694 12.4882L11.5694 19.4882C11.2999 19.8027 10.8264 19.8391 10.5119 19.5696C10.1974 19.3 10.161 18.8265 10.4306 18.512L16.0122 12.0001L10.4306 5.48821C10.161 5.17372 10.1974 4.70024 10.5119 4.43068Z"
-                    fill={`${activeAccordionIndex === index ? "var(--primary)" : ""
-                      }`}
+                    fill={`${
+                      activeAccordionIndex === index ? "var(--primary)" : ""
+                    }`}
                   />
                 </g>
               </svg>

@@ -25,7 +25,6 @@ import errorIcon from "../../../assets/img/icon/error.png";
 function Dashboard() {
   const { RoleIDContext, loginUserData, contextData } = useAPIGlobalContext();
 
-
   const [renderCount, setRenderCount] = useState(0);
   const [allsimData, getAllSimData] = useState([]);
   const [logoBrandData, getLogoBrandData] = useState([]);
@@ -132,10 +131,10 @@ function Dashboard() {
           </Link> */}
         </div>
         <div className="row">
-          {contextData && contextData[8] && contextData[8].view_value === 1 && (
+          {/* {contextData && contextData[8] && contextData[8].view_value === 1 && (
             <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
               <div className="d_infocard card shadow">
-                {/* <Link to="/pantry-user"> */}
+
                 <div className="card-body">
                   <div className="d_infocard_txt">
                     <h3>Pantry</h3>
@@ -147,14 +146,12 @@ function Dashboard() {
                     </span>
                   </div>
                 </div>
-                {/* </Link> */}
               </div>
             </div>
-          )}
-          {contextData && contextData[9] && contextData[9].view_value === 1 && (
+          )} */}
+          {/* {contextData && contextData[9] && contextData[9].view_value === 1 && (
             <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
               <div className="d_infocard card shadow">
-                {/* <Link to="/pantry-delivery"> */}
                 <div className="card-body">
                   <div className="d_infocard_txt">
                     <h3>Pantry</h3>
@@ -166,16 +163,14 @@ function Dashboard() {
                     </span>
                   </div>
                 </div>
-                {/* </Link> */}
               </div>
             </div>
-          )}
-          {contextData &&
+          )} */}
+          {/* {contextData &&
             contextData[15] &&
             contextData[15].view_value === 1 && (
               <div className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12 d_infocard_col mb0">
                 <div className="d_infocard card shadow">
-                  {/* <Link to="/admin/pantry-home"> */}
                   <div className="card-body">
                     <div className="d_infocard_txt">
                       <h3>Pantry</h3>
@@ -187,10 +182,9 @@ function Dashboard() {
                       </span>
                     </div>
                   </div>
-                  {/* </Link> */}
                 </div>
               </div>
-            )}
+            )} */}
 
           {/* {contextData &&
             contextData[12] &&
@@ -398,7 +392,13 @@ function Dashboard() {
         </div> */}
 
         {/* Success Modal */}
-        <div className="modal fade statusModal" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div
+          className="modal fade statusModal"
+          id="successModal"
+          tabindex="-1"
+          aria-labelledby="successModalLabel"
+          aria-hidden="true"
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-body">
@@ -407,18 +407,32 @@ function Dashboard() {
                 </div>
                 <div className="statusModalText">
                   <h2>Success</h2>
-                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                  <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  </p>
                 </div>
               </div>
               <div className="modal-footer text-center">
-                <button type="button" className="btn cmnbtn btn-success" data-dismiss="modal">Done</button>
+                <button
+                  type="button"
+                  className="btn cmnbtn btn-success"
+                  data-dismiss="modal"
+                >
+                  Done
+                </button>
               </div>
             </div>
           </div>
         </div>
 
         {/* Error Modal */}
-        <div className="modal fade statusModal" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div
+          className="modal fade statusModal"
+          id="errorModal"
+          tabindex="-1"
+          aria-labelledby="errorModalLabel"
+          aria-hidden="true"
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-body">
@@ -427,16 +441,23 @@ function Dashboard() {
                 </div>
                 <div className="statusModalText">
                   <h2>Error !</h2>
-                  <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+                  <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                  </p>
                 </div>
               </div>
               <div className="modal-footer text-center">
-                <button type="button" className="btn cmnbtn btn-danger" data-dismiss="modal">Try again</button>
+                <button
+                  type="button"
+                  className="btn cmnbtn btn-danger"
+                  data-dismiss="modal"
+                >
+                  Try again
+                </button>
               </div>
             </div>
           </div>
         </div>
-
       </div>
       {/* <ChatApplication /> */}
     </>

@@ -16,7 +16,7 @@ import { useGlobalContext } from "../../Context/Context";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Modal from "react-modal";
 import { formatDate } from "../../utils/formatDate";
-import { useGetAllExeCampaignsQuery } from "../Store/API/Sales/ExecutionCampaignApi";
+import { useGetAllExeCampaignListQuery, useGetAllExeCampaignsQuery, useGetExeCampaignsNameWiseDataQuery } from "../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import PageEdit from "../AdminPanel/PageMS/PageEdit";
 import FieldContainer from "../AdminPanel/FieldContainer";
@@ -71,6 +71,7 @@ const AuditPurchase = () => {
   const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [vendorNumericId, setVendorNumericId] = useState(null);
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
+  const [campaignSearchQuery, setCampaignSearchQuery] = useState("")
   const [showModal, setShowModal] = useState(false);
   const [campaignId, setCampaingnId] = useState('')
   const [phaseDate, setPhaseDate] = useState(null)
@@ -90,7 +91,11 @@ const AuditPurchase = () => {
     data: campaignList,
     isFetching: fetchingCampaignList,
     isLoading: loadingCampaignList,
-  } = useGetAllExeCampaignsQuery();
+  } = useGetExeCampaignsNameWiseDataQuery({
+    search: campaignSearchQuery,
+    page: 1,
+    limit: 10
+  });
   const {
     data: allPages,
     isLoading: allPagesLoading,
@@ -754,7 +759,7 @@ const AuditPurchase = () => {
         handelchange,
         column
       ) => {
-        console.log("row,,,",row)
+        console.log("row,,,", row)
         // setPlatformName(row.platform_name);
         return (
           <CustomSelect
@@ -762,7 +767,7 @@ const AuditPurchase = () => {
             dataArray={pmsPlatform.data || []}
             optionId={"_id"}
             optionLabel={"platform_name"}
-            selectedId={platform?._id} 
+            selectedId={platform?._id}
             setSelectedId={(val) => {
               const selectedOption = pmsPlatform.data.find(option => option._id === val);
               if (!selectedOption) return;
@@ -775,7 +780,7 @@ const AuditPurchase = () => {
                 platform_name: selectedOption.platform_name
               }
               prevPlatformName.current = row?.platform_name;
-              setPlatform(selectedData); 
+              setPlatform(selectedData);
               handelchange(platformData, index, column, true);
             }}
           />
@@ -1391,13 +1396,20 @@ const AuditPurchase = () => {
       }, delay);
     };
   };
-  const debouncedSetSearchQuery = useCallback(
-    debounce((query) => {
-      setVendorSearchQuery(query);
-    }, 500),
-    []
-  );
+  const useDebouncedSetter = (setter, delay = 500) => {
+    console.log('setter', setter);
+    return useCallback(
+      debounce((value) => {
+        setter(value);
+      }, delay),
+      [setter, delay]
+    );
+  };
 
+  // Usage
+  const debouncedSetSearchQuery = useDebouncedSetter(setVendorSearchQuery);
+  const debouncedSetSearchQueryForCampName = useDebouncedSetter(setCampaignSearchQuery)
+  console.log("campQuery", campaignSearchQuery);
   // const phaseWiseData = useMemo(() => {
   //   const phasedData = campaignPlanData?.filter((data) => {
   //     if (activeTab === "all") {
@@ -1491,7 +1503,7 @@ const AuditPurchase = () => {
           <div className="row">
             {<div className="col-lg-6 col-md-6 col-12">
               <div className="form-group">
-                <label>Update Vendor</label>
+                {/* <label>Update Vendor</label> */}
 
                 <Autocomplete
                   fullWidth
@@ -1526,17 +1538,22 @@ const AuditPurchase = () => {
             }
 
             {currentTab === "Tab1" && (
-              <CustomSelect
-                fieldGrid={6}
-                dataArray={campaignList?.filter(
-                  (data) => data?.is_sale_booking_created
+              <Autocomplete
+                sx={{ gridColumn: 'span 6', width: "500px" }}
+                options={campaignList?.filter((data) => data?.is_sale_booking_created) || []}
+                getOptionLabel={(option) => option?.exe_campaign_name || ""}
+                value={campaignList?.find((data) => data._id === selectedPlan) || null}
+                onChange={(event, newValue) => setSelectedPlan(newValue?._id || null)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Plans"
+                    variant="outlined"
+                    onChange={(e) => debouncedSetSearchQueryForCampName(e.target.value)}
+                  />
                 )}
-                optionId="_id"
-                optionLabel="exe_campaign_name"
-                selectedId={selectedPlan}
-                setSelectedId={setSelectedPlan}
-                label="Plans"
-                isClearable={true}
+                isOptionEqualToValue={(option, value) => option._id === value?._id}
+                clearOnEscape
               />
             )}
 
@@ -1608,16 +1625,22 @@ const AuditPurchase = () => {
                 </div>
 
                 <div className="col-lg-6 col-md-6 col-12 p0">
-                  <CustomSelect
-                    fieldGrid={12}
-                    dataArray={campaignList?.filter(
-                      (data) => data?.is_sale_booking_created
+                  <Autocomplete
+                    sx={{ gridColumn: 'span 6' }}
+                    options={campaignList?.filter((data) => data?.is_sale_booking_created) || []}
+                    getOptionLabel={(option) => option?.exe_campaign_name || ""}
+                    value={campaignList?.find((data) => data._id === selectedPlan) || null}
+                    onChange={(event, newValue) => setSelectedPlan(newValue?._id || null)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Plans"
+                        variant="outlined"
+                        onChange={(e) => debouncedSetSearchQueryForCampName(e.target.value)}
+                      />
                     )}
-                    optionId="_id"
-                    optionLabel="exe_campaign_name"
-                    selectedId={selectedPlan}
-                    setSelectedId={setSelectedPlan}
-                    label="Plans"
+                    isOptionEqualToValue={(option, value) => option._id === value?._id}
+                    clearOnEscape
                   />
                 </div>
 

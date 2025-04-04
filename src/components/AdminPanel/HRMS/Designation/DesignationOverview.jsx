@@ -8,15 +8,17 @@ import Modal from "react-modal";
 import DeleteButton from "../../DeleteButton";
 import { baseUrl } from "../../../../utils/config";
 import FormContainer from "../../FormContainer";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const DesignationOverview = () => {
   // State variables
+  const { userContextData } = useAPIGlobalContext();
   const [search, setSearch] = useState("");
   const [modalSearch, setModalSearch] = useState("");
   const [data, setData] = useState([]);
   const [filterdata, setFilterData] = useState([]);
   const [contextData, setContextData] = useState([]);
-  const [allUserDesignation, setAllUserDesignation] = useState([]);
+  // const [allUserDesignation, setAllUserDesignation] = useState([]);
   const [selectedRow, setSelectedRow] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserData, setSelectedUserData] = useState([]);
@@ -39,9 +41,9 @@ const DesignationOverview = () => {
         });
     }
 
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      setAllUserDesignation(res.data.data);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    //   setAllUserDesignation(res.data.data);
+    // });
   }, [userID]);
 
   // Fetch all designations data
@@ -120,7 +122,7 @@ const DesignationOverview = () => {
       name: "Emp Count",
       width: "15%",
       cell: (row) => {
-        const count = allUserDesignation.filter(
+        const count = userContextData.filter(
           (data) => data.designation_name === row.desi_name
         ).length;
 
@@ -177,7 +179,7 @@ const DesignationOverview = () => {
   const handleRowClick = (row) => {
     setSelectedRow(row);
 
-    const filteredData = allUserDesignation.filter(
+    const filteredData = userContextData.filter(
       (data) => data.designation_name === row.desi_name
     );
 

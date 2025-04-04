@@ -2,6 +2,7 @@ import React from 'react';
 import { Avatar } from "@mui/material";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import CustomSelect from '../../ReusableComponents/CustomSelect';
+import formatString from '../../../utils/formatString';
 
 const VendorInfo = ({ vendorDetail, ledgerData }) => (
     <div className="vendorBox">
@@ -9,7 +10,7 @@ const VendorInfo = ({ vendorDetail, ledgerData }) => (
             <Avatar alt="Vendor" src={ledgerData[0]?.vendor_image || 'vendor.jpg'} />
         </div>
         <div className="vendorTitle">
-            <h2>{vendorDetail?.vendor_name || 'Vendor Name'}</h2>
+            <h2>{formatString(vendorDetail?.vendor_name) || 'Vendor Name'}</h2>
             <h4>Vendor Category: {vendorDetail?.vendor_category}</h4>
             {vendorDetail?.recent_purchase_date && (
                 <h4>Purchase Date: {vendorDetail.recent_purchase_date}</h4>

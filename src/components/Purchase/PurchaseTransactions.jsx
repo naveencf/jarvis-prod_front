@@ -20,6 +20,7 @@ import html2canvas from "html2canvas";
 import formatString from "../../utils/formatString";
 import { useGetVendorPaymentTransactionsQuery } from "../Store/API/Purchase/PurchaseRequestPaymentApi";
 import pdfImg from "../Finance/pdf-file.png";
+import { formatUTCDate } from "../../utils/formatUTCDate";
 
 const PurchaseTransactions = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -137,7 +138,7 @@ const PurchaseTransactions = () => {
     try {
       const payResponse = await axios.get(
         insightsBaseUrl +
-          `v1/check_payment_status?clientReferenceId=${row?.clientReferenceId}`,
+        `v1/check_payment_status?clientReferenceId=${row?.clientReferenceId}`,
         // paymentPayload,
         {
           headers: {
@@ -167,7 +168,7 @@ const PurchaseTransactions = () => {
     try {
       const payResponse = await axios.put(
         baseUrl +
-          `v1/vendor_payment_transactions_shared_SS/${row?.clientReferenceId}`,
+        `v1/vendor_payment_transactions_shared_SS/${row?.clientReferenceId}`,
         {
           is_shared_ss: true,
         },
@@ -350,45 +351,6 @@ const PurchaseTransactions = () => {
       width: 130,
     },
 
-    // {
-    //     key: "evidence_url",
-    //     name: "SS",
-    //     width: 150,
-    //     compare: true,
-    //     renderRowCell: (row) => {
-    //         const imgUrl = row.evidence_url;
-
-    //         return row.evidence_url ? (
-    //             <div>
-    //                 {/* Image with an onClick handler */}
-    //                 <img
-    //                     onClick={(e) => {
-    //                         // Prevent default behavior of the event
-    //                         e.preventDefault();
-
-    //                         // Open image dialog to view it
-    //                         // setOpenImageDialog(true);
-    //                         // setViewImgSrc(imgUrl);
-
-    //                         // Trigger download by creating an anchor tag dynamically
-    //                         const link = document.createElement("a");
-    //                         link.href = imgUrl;  // URL of the image
-    //                         link.target = "_blank";  // Open in a new tab if needed
-    //                         link.download = imgUrl.substring(imgUrl.lastIndexOf("/") + 1);  // Extract filename from URL
-    //                         document.body.appendChild(link);
-    //                         link.click();  // Simulate a click on the anchor link to start the download
-    //                         document.body.removeChild(link);  // Remove the link after clicking
-    //                     }}
-    //                     src={imgUrl}
-    //                     alt="payment screenshot"
-    //                     style={{ width: "50px", height: "50px" }}
-    //                 />
-    //             </div>
-    //         ) : (
-    //             ""
-    //         );
-    //     },
-    // }
 
     {
       key: "evidence_url",
@@ -423,6 +385,9 @@ const PurchaseTransactions = () => {
       key: "payment_date",
       name: "Payment Date ",
       width: 150,
+      renderRowCell: (row) => {
+        return formatUTCDate(row.payment_date)
+      }
     },
 
     {
@@ -450,8 +415,8 @@ const PurchaseTransactions = () => {
           <Stack direction="row" spacing={1}>
             <Chip label={row?.payment_getway_status} color="success" />
             {row?.payment_getway_status == "SUCCESS" ||
-            row?.payment_getway_status == "FAILED" ||
-            row?.payment_getway_status == null ? (
+              row?.payment_getway_status == "FAILED" ||
+              row?.payment_getway_status == null ? (
               ""
             ) : (
               <UpdateIcon onClick={() => handleStatusCheck(tempRow)} />
@@ -576,9 +541,8 @@ const PurchaseTransactions = () => {
 
           // Properly formatted message with alignment
           const message =
-            `Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account on ${formattedDate} at ${formattedTime} IST.\nThe reference ID for this transaction is ${bankTransactionReferenceId}.\n${
-              finance_remark ? finance_remark : ""
-            }`.trim();
+            `Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account on ${formattedDate} at ${formattedTime} IST.\nThe reference ID for this transaction is ${bankTransactionReferenceId}.\n${finance_remark ? finance_remark : ""
+              }`.trim();
 
           navigator.clipboard
             .writeText(message)
@@ -637,7 +601,7 @@ const PurchaseTransactions = () => {
               </>
             }
 
-            // selectedData={setSelectedRows}
+          // selectedData={setSelectedRows}
           />
           {openImageDialog && (
             <ImageView

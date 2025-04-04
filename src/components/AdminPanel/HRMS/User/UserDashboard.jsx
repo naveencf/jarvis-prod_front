@@ -12,17 +12,18 @@ import DepartmentWiseMaleFemaleCountWFO from "./UserDashboard/DepartmentWiseMale
 import UserCountWithLPAWFO from "./UserCountWithLPAWFO";
 import AgeGrafWFO from "./UserDashboard/AgeWiseGrafWFO";
 import MonthWiseJoinee from "./UserDashboard/MonthWiseJoinee";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const UserDashPieChart = lazy(() => import("./UserDashPieChart"));
 
 const UserDashboard = () => {
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const [userData, setUserData] = useState([]);
   const [departmentData, setDepartmentData] = useState([]);
   const [wFOCount, setWFOCount] = useState([]);
   const [wfhdCount, setWfhdCount] = useState([]);
   const [wFhCount, setWFhCount] = useState([]);
   const [botUserCount, setBotUserCount] = useState([]);
-  console.log(botUserCount, "botusercount");
   const [activeUserCount, setActiveUserCount] = useState([]);
   const [exitUserCount, setExiteUserCount] = useState([]);
 
@@ -41,19 +42,20 @@ const UserDashboard = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const [usersRes, departmentsRes] = await Promise.all([
-          axios.get(`${baseUrl}get_all_users`),
-          axios.get(`${baseUrl}get_all_departments`),
-        ]);
+        // const [usersRes, departmentsRes] = await Promise.all([
+        //   axios.get(`${baseUrl}get_all_users`),
+        //   axios.get(`${baseUrl}get_all_departments`),
+        // ]);
 
-        const data = usersRes.data.data;
-        console.log(data, "datais here");
-        setUserData(data.filter((d) => d.user_status === "Active"));
+        // const data = userContextData;
+        setUserData(userContextData.filter((d) => d.user_status === "Active"));
         setWFOCount(
-          data.filter((d) => d.job_type === "WFO" && d.user_status === "Active")
+          userContextData.filter(
+            (d) => d.job_type === "WFO" && d.user_status === "Active"
+          )
         );
         setWfhdCount(
-          data.filter(
+          userContextData.filter(
             (d) =>
               d.job_type === "WFHD" &&
               d.user_status === "Active" &&
@@ -61,21 +63,29 @@ const UserDashboard = () => {
           )
         );
         setWFhCount(
-          data.filter((d) => d.job_type === "WFH" && d.user_status === "Active")
+          userContextData.filter(
+            (d) => d.job_type === "WFH" && d.user_status === "Active"
+          )
         );
         setBotUserCount(
-          data.filter((d) => d.role_id === 7 && d.user_status === "Active")
+          userContextData.filter(
+            (d) => d.role_id === 7 && d.user_status === "Active"
+          )
         );
-        setActiveUserCount(data.filter((d) => d.user_status === "Active"));
-        setExiteUserCount(data.filter((d) => d.user_status === "Exit"));
-        setDepartmentData(departmentsRes.data);
+        setActiveUserCount(
+          userContextData.filter((d) => d.user_status === "Active")
+        );
+        setExiteUserCount(
+          userContextData.filter((d) => d.user_status === "Exit")
+        );
+        // setDepartmentData(departmentsRes.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [userContextData]);
 
   const [designationData, setDesignationData] = useState([]);
   const [subDepartmentData, setSubDeparmentData] = useState([]);
@@ -115,7 +125,7 @@ const UserDashboard = () => {
     {
       name: "Count",
       data: [
-        departmentData.length,
+        DepartmentContext.length,
         subDepartmentData.length,
         designationData.length,
         roleData.length,

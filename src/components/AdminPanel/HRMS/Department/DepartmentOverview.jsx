@@ -7,15 +7,17 @@ import Modal from "react-modal";
 import { baseUrl } from "../../../../utils/config";
 import DeleteButton from "../../DeleteButton";
 import FormContainer from "../../FormContainer";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const DepartmentOverview = () => {
+  const { userContextData } = useAPIGlobalContext();
   const [search, setSearch] = useState("");
   const [modalSearch, setModalSearch] = useState("");
 
   const [datas, setData] = useState([]);
   const [filterData, setFilterData] = useState([]);
   const [contextData, setDatas] = useState([]);
-  const [allUserDepartment, setAllUserDepartment] = useState([]);
+  // const [allUserDepartment, setAllUserDepartment] = useState([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
@@ -32,9 +34,9 @@ const DepartmentOverview = () => {
           setDatas(res.data);
         });
     }
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      setAllUserDepartment(res.data.data);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    //   setAllUserDepartment(res.data.data);
+    // });
   }, [userID]);
 
   function getData() {
@@ -78,7 +80,7 @@ const DepartmentOverview = () => {
       name: "Dept Count",
       width: "12%",
       cell: (row) => {
-        const count = allUserDepartment.filter(
+        const count = userContextData.filter(
           (data) => data.department_name === row.dept_name
         ).length;
         return (
@@ -179,7 +181,7 @@ const DepartmentOverview = () => {
   const handleRowClick = (row) => {
     setSelectedRow(row);
 
-    const filteredData = allUserDepartment.filter(
+    const filteredData = userContextData.filter(
       (data) => data.department_name === row.dept_name
     );
     setSelectedUserData(filteredData);

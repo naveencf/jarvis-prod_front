@@ -571,9 +571,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     (state) => state.pageMaster.showInfoModal
   );
 
-  const calculateFollowerCount = (index) => {
-    const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
-    return ((followCount / val) * (rowCount[index]?.price || 0)).toFixed(2);
+  const calculateFollowerCount = (price) => {
+    // const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
+    return (Math.floor((followCount / 1000000) * (price)));
   };
 
   const handleUpadteFollowers = async () => {

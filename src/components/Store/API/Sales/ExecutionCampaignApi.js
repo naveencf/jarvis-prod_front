@@ -78,10 +78,18 @@ const ExecutionCampaignApi = createApi({
     }),
 
     getExeCampaignsNameWiseData: builder.query({
-      query: (id) => `exe_campaign_name_wise${id ? `?userId=${id}` : ""}`,
+      query: ({ userId, search = "", page = 1, limit = 10 }) => {
+        const params = new URLSearchParams();
+
+        if (userId) params.append("userId", userId);
+        if (search) params.append("exe_campaign_name", search);
+        params.append("page", page);
+        params.append("limit", limit);
+
+        return `exe_campaign_name_wise?${params.toString()}`;
+      },
       transformResponse: (response) => response.data,
     }),
-
     getAllExeCampaignList: builder.query({
       query: (id) => `exe_campaign_wise_list/${id}`,
       transformResponse: (response) => response.data,
