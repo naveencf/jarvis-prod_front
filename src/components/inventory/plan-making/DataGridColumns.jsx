@@ -69,6 +69,7 @@ const DataGridColumns = ({
       },
       width: 200,
       showCol: true,
+      compare:true,
     },
 
     // {

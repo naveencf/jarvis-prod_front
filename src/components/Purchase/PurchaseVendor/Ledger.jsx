@@ -18,10 +18,14 @@ import { AdvancedPaymentComponent } from "./AdvancedPaymentComponent";
 
 const Ledger = () => {
   const { id } = useParams();
+
+
+  
   const getFinancialYears = () => {
     const currentYear = new Date().getFullYear();
     return [
       { label: `2023-2024`, value: `startDate=2023-04-01&endDate=2024-03-31` },
+      { label: `2021-2026`, value: `startDate=2021-04-01&endDate=2026-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
         value: `startDate=${currentYear - 1
@@ -98,11 +102,13 @@ const Ledger = () => {
   useEffect(() => {
     setDateRange(selectedYear);
   }, [selectedYear]);
+
   const actualOutstanding =
     Number(vendorDetail?.totalAmount ?? 0) +
     Number(vendorDetail?.vendor_outstandings ?? 0) -
     Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0) +
     Number(vendorPhpDetail[0]?.outstanding);
+    
   useEffect(() => {
     if (vendorDetail?.vendor_id) {
       axios

@@ -16,7 +16,7 @@ import { useGlobalContext } from "../../Context/Context";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Modal from "react-modal";
 import { formatDate } from "../../utils/formatDate";
-import { useGetAllExeCampaignListQuery, useGetAllExeCampaignsQuery, useGetExeCampaignsNameWiseDataQuery } from "../Store/API/Sales/ExecutionCampaignApi";
+import { useGetAllExeCampaignListQuery, useGetAllExeCampaignsQuery, useGetNewExeCampaignsNameWiseDataQuery } from "../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import PageEdit from "../AdminPanel/PageMS/PageEdit";
 import FieldContainer from "../AdminPanel/FieldContainer";
@@ -91,7 +91,7 @@ const AuditPurchase = () => {
     data: campaignList,
     isFetching: fetchingCampaignList,
     isLoading: loadingCampaignList,
-  } = useGetExeCampaignsNameWiseDataQuery({
+  } = useGetNewExeCampaignsNameWiseDataQuery({
     search: campaignSearchQuery,
     page: 1,
     limit: 10
@@ -405,7 +405,7 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row) {
+  async function handledataUpdate(row,setEditFlag) {
     // console.log('row', row);
     const followerCount = row?.owner_info?.followers
       ? row.owner_info.followers / 1000000
@@ -441,7 +441,7 @@ const AuditPurchase = () => {
         // toastAlert("Data Updated with amount " + row.amount);
         toastAlert(res?.data?.message);
         setToggleModal(false);
-
+        setEditFlag && setEditFlag(false);
       } catch (err) {
         toastError("Error while Uploading");
       }
@@ -505,6 +505,7 @@ const AuditPurchase = () => {
         // setEditFlag && setEditFlag(false);
         setVendorName("");
         setPageName("");
+        setEditFlag && setEditFlag(false);
       } catch (err) {
         toastError("Error while Uploading");
       }
@@ -743,6 +744,7 @@ const AuditPurchase = () => {
       key: "Sr.No",
       width: 40,
       renderRowCell: (row, index) => index + 1,
+
     },
     {
       name: "Platform",
@@ -1276,7 +1278,7 @@ const AuditPurchase = () => {
             contextData[66]?.view_value == 1 && (
               <button
                 className="btn btn-sm cmnbtn btn-primary"
-                onClick={() => handledataUpdate(row)}
+                onClick={() => handledataUpdate(row, setEditFlag)}
                 title="Save"
                 disabled={isUpdatingPurchasedStatus}
               // disabled={row.audit_status !== "purchased"}
