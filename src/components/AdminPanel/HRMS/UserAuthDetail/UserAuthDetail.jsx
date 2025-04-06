@@ -93,7 +93,7 @@ const UserAuthDetail = () => {
     });
     setFilterData(updatedData);
   };
-
+  console.log(filterData, "fil daa ------------");
   const handleSelectAllColumn = (columnName) => {
     const updatedData = filterData.map((item) => ({
       ...item,
