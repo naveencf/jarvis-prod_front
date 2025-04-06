@@ -35,6 +35,7 @@ import PageOverviewWithoutHealth from "./PageOverview/PageOverviewWithoutHealth"
 import StatsOfOverview from "./PageOverview/StatsOfOverview";
 import PageEdit from "./PageEdit";
 import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
+import PageLogsModel from "./PageLogsModel";
 const PageOverviewNew = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -141,6 +142,17 @@ const PageOverviewNew = () => {
   const handleCloseFollowerModal = () => {
     setOpenFollowerModal(false);
   };
+
+  const [openPageLogsModel, setOpenPageLogsModel] = useState(false);
+  const [PageLogsId, setPageLogsId] = useState("");
+  const handlePageLogs = (row) => {
+    setOpenPageLogsModel(true);
+    setPageLogsId(row);
+  };
+  const handleClosePageLogsModel = () => {
+    setOpenPageLogsModel(false);
+  };
+
   const [openPriceLogModal, setOpenPriceLogModal] = useState(false);
   const [rowDataPriceLog, setRowDataPriceLog] = useState("");
 
@@ -1122,6 +1134,31 @@ const PageOverviewNew = () => {
       },
     },
     {
+      key: "history",
+      name: "History",
+      width: 200,
+      renderRowCell: (row) => {
+        return (
+          <div>
+            {
+              <button
+                title="History"
+                onClick={() => handlePageLogs(row)}
+                className="btn cmnbtn btn_sm btn-outline-danger"
+              >
+                History
+              </button>
+            }
+          </div>
+        );
+      },
+    },
+    {
+      key: "vendor_group_link",
+      width: 150,
+      name: "Whatsapp Link",
+    },
+    {
       key: "Price_logs",
       name: "Price Logs",
       width: 200,
@@ -1330,11 +1367,19 @@ const PageOverviewNew = () => {
             onClose={handleCloseFollowerModal}
             rowData={rowDataFollower}
           />
+
+          <PageLogsModel
+            open={openPageLogsModel}
+            onClose={handleClosePageLogsModel}
+            rowData={PageLogsId}
+          />
+
           <PriceLogs
             open={openPriceLogModal}
             onClose={handleClosePriceModal}
             rowData={rowDataPriceLog}
           />
+
           <div className="tabs">
             {vendorDetails && (
               <VendorDetails

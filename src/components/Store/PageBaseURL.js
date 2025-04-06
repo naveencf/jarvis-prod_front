@@ -308,6 +308,11 @@ export const PageBaseURL = createApi({
       query: (vendorId) => `v1/vendor_wise_page_master_data/${vendorId}`,
       transformResponse: (response) => response.data,
     }),
+
+    getPageLogsById: builder.query({
+      query: (page_id) => `v1/get_page_master_log_data?page_id=${page_id}`,
+      transformResponse: (response) => response.data.data,
+    }),
   }),
 });
 
@@ -346,4 +351,5 @@ export const {
   useGetOperationContentCostQuery,
   useUpdateOperationContentCostMutation,
   useGetPageByVendorIdQuery,
+  useGetPageLogsByIdQuery,
 } = PageBaseURL;

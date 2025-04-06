@@ -13,12 +13,13 @@ import View from "../Sales/Account/View/View";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
+import formatString from "../Operation/CampaignMaster/WordCapital";
 
 export default function FollowerLogsModal({ open, onClose, rowData }) {
   const token = sessionStorage.getItem("token");
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false); 
-  const [progress, setProgress] = useState(0); 
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
   const { userContextData } = useAPIGlobalContext();
 
   useEffect(() => {
@@ -26,7 +27,8 @@ export default function FollowerLogsModal({ open, onClose, rowData }) {
       setLoading(true);
       try {
         const res = await axios.get(
-          baseUrl + `v1/get_all_page_follower_count_logs?page_id=${rowData._id}`,
+          baseUrl +
+            `v1/get_all_page_follower_count_logs?page_id=${rowData._id}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -42,11 +44,11 @@ export default function FollowerLogsModal({ open, onClose, rowData }) {
           }
         );
         setData(res.data.data);
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching page logs:", error);
       } finally {
-        setLoading(false); 
+        setLoading(false);
       }
     };
 
@@ -65,6 +67,7 @@ export default function FollowerLogsModal({ open, onClose, rowData }) {
     {
       key: "page_name",
       name: "Page Name",
+      renderRowCell: (row) => formatString(row.page_name),
       width: 200,
     },
     {

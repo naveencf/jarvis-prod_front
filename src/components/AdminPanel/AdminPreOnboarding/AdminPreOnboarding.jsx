@@ -27,7 +27,7 @@ import { useAPIGlobalContext } from "../APIContext/APIContext";
 const onBoardStatus = 2;
 
 const AdminPreOnboarding = () => {
-  const { userContextData } = useAPIGlobalContext();
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -86,7 +86,7 @@ const AdminPreOnboarding = () => {
   const [roomId, setRoomId] = useState("");
 
   const [department, setDepartment] = useState("");
-  const [departmentdata, getDepartmentData] = useState([]);
+  // const [departmentdata, getDepartmentData] = useState([]);
 
   // const [usersData, getUsersData] = useState([]);
 
@@ -149,9 +149,9 @@ const AdminPreOnboarding = () => {
     axios.get(baseUrl + "get_all_roles").then((res) => {
       getRoleData(res.data.data);
     });
-    axios.get(baseUrl + "get_all_departments").then((res) => {
-      getDepartmentData(res.data);
-    });
+    // axios.get(baseUrl + "get_all_departments").then((res) => {
+    //   getDepartmentData(res.data);
+    // });
   }, []);
 
   useEffect(() => {
@@ -778,7 +778,7 @@ const AdminPreOnboarding = () => {
         title="User Registration"
         handleSubmit={handleSubmit}
         submitButton={false}
-      // loading={loading}
+        // loading={loading}
       >
         <div className="col-md-3">
           <FieldContainer
@@ -822,14 +822,14 @@ const AdminPreOnboarding = () => {
           </label>
           <Select
             className=""
-            options={departmentdata.map((option) => ({
+            options={DepartmentContext.map((option) => ({
               value: option.dept_id,
               label: `${option.dept_name}`,
             }))}
             value={{
               value: department,
               label:
-                departmentdata.find((user) => user.dept_id === department)
+                DepartmentContext.find((user) => user.dept_id === department)
                   ?.dept_name || "",
             }}
             onChange={(e) => {
@@ -967,16 +967,16 @@ const AdminPreOnboarding = () => {
                   return { ...prev, reportL1: false };
                 });
             }}
-          // onBlur={(e) => {
-          //   !reportL1 &&
-          //     setIsRequired((prev) => {
-          //       return { ...prev, reportL1: true };
-          //     });
-          //   reportL1 &&
-          //     setIsRequired((prev) => {
-          //       return { ...prev, reportL1: false };
-          //     });
-          // }}
+            // onBlur={(e) => {
+            //   !reportL1 &&
+            //     setIsRequired((prev) => {
+            //       return { ...prev, reportL1: true };
+            //     });
+            //   reportL1 &&
+            //     setIsRequired((prev) => {
+            //       return { ...prev, reportL1: false };
+            //     });
+            // }}
           />
           {isRequired.reportL1 && (
             <p className="form-error">Please select Report L1</p>
@@ -1009,7 +1009,7 @@ const AdminPreOnboarding = () => {
             value={personalContact}
             required={false}
             onChange={handlePersonalContactChange}
-          // onBlur={handlePersonalContactBlur}
+            // onBlur={handlePersonalContactBlur}
           />
           {(isContactTouched1 || personalContact.length >= 10) &&
             !isValidcontact1 && (
@@ -1083,23 +1083,23 @@ const AdminPreOnboarding = () => {
             required={false}
             value={userCtc}
             onChange={handleYearlySalaryChange}
-          // onChange={(e) => {
-          //   // setUserCtc(e.target.value);
-          //   const value = e.target.value;
-          //   // Limit input to 6 digits
-          //   if (/^\d{0,7}$/.test(value)) {
-          //     setUserCtc(value);
-          //   }
+            // onChange={(e) => {
+            //   // setUserCtc(e.target.value);
+            //   const value = e.target.value;
+            //   // Limit input to 6 digits
+            //   if (/^\d{0,7}$/.test(value)) {
+            //     setUserCtc(value);
+            //   }
 
-          //   userCtc !== "" &&
-          //     setIsRequired((prev) => {
-          //       return { ...prev, userCtc: true };
-          //     });
-          //   userCtc &&
-          //     setIsRequired((prev) => {
-          //       return { ...prev, userCtc: false };
-          //     });
-          // }}
+            //   userCtc !== "" &&
+            //     setIsRequired((prev) => {
+            //       return { ...prev, userCtc: true };
+            //     });
+            //   userCtc &&
+            //     setIsRequired((prev) => {
+            //       return { ...prev, userCtc: false };
+            //     });
+            // }}
           />
 
           {isRequired.userCtc && <p className="form-error">Please Enter CTC</p>}
@@ -1255,9 +1255,9 @@ const AdminPreOnboarding = () => {
             value={
               selectedRole
                 ? {
-                  value: selectedRole.role_id,
-                  label: selectedRole.Role_name,
-                }
+                    value: selectedRole.role_id,
+                    label: selectedRole.Role_name,
+                  }
                 : null
             }
             onChange={(e) => {

@@ -465,30 +465,49 @@ const CampaignExecution = () => {
         }
       }
 
+      if (actTab == 4) {
+        if (
+          selectedData.length > 0 &&
+          selectedData.every((data) => data.audit_status != "audited")
+        ) {
+          toastError("Please select the data which is audited");
+          return;
+        }
+      }
+
       let data = {};
       data =
-        actTab == 5 && selectedData.length === 1
+        actTab == 4 && selectedData.length > 0
+          ? {
+              userId: token.id,
+
+              isVendorWise: true,
+              vendor_id: vendorList.current,
+              shortCodes: selectedData.map((data) => data.shortCode),
+            }
+          : actTab == 5 && selectedData.length === 1
           ? {
               userId: token.id,
               shortCodes: selectedData.map((data) => data.shortCode),
               campaignId: selectedData[0].campaignId,
             }
-          : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
-          ? {
+          : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+            // ?
+            {
               userId: token.id,
               isVendorWise: true,
               vendor_id: vendorList.current,
-            }
-          : {
-              campaignId: selectedPlan,
-              userId: token.id,
-              phaseDate:
-                activeTab == "all"
-                  ? phaseList?.length == 1
-                    ? phaseList[0]?.value
-                    : ""
-                  : activeTab,
             };
+      // : {
+      //     campaignId: selectedPlan,
+      //     userId: token.id,
+      //     phaseDate:
+      //       activeTab == "all"
+      //         ? phaseList?.length == 1
+      //           ? phaseList[0]?.value
+      //           : ""
+      //         : activeTab,
+      //   };
 
       const res = await uploadAudetedData(data);
       if (res.error) throw new Error(res.error);
@@ -761,6 +780,7 @@ const CampaignExecution = () => {
                 }}
                 title="Save"
                 disabled={
+                  isLoading ||
                   row.audit_status === "purchased" ||
                   Number(row.amount) < 1 ||
                   !row.vendor_name ||
@@ -818,9 +838,12 @@ const CampaignExecution = () => {
               }
               disabled={
                 row.audit_status === "purchased" ||
-                row.amount < 0 ||
+                row.amount <= 0 ||
                 row?.vendor_name == "" ||
-                row?.campaignId == null
+                row?.campaignId == null ||
+                !row?.platform_name ||
+                !row?.owner_info?.username ||
+                !row?.campaignId
               }
               onClick={() => {
                 const data = {
@@ -1333,14 +1356,20 @@ const CampaignExecution = () => {
   ];
 
   function disableAuditUpload() {
-    const phaseData = phaseWiseData;
-    // const hasPending = phaseData?.some(
-    //   (data) => data.audit_status === "pending"
-    // );
-    const allPurchased = phaseData?.every(
-      (data) => data.audit_status === "purchased"
-    );
-    return allPurchased;
+    if (selectedData?.length > 0) {
+      if (
+        selectedData?.some(
+          (data) =>
+            data?.audit_status !== "audited" ||
+            data?.amount == 0 ||
+            !data?.vendor_name ||
+            !data?.campaignId ||
+            !data?.platform_name
+        )
+      ) {
+        return true;
+      } else return false;
+    }
   }
 console.log("campaignList",campaignList);
   const CampaignSelection = useMemo(
@@ -1635,7 +1664,7 @@ console.log("campaignList",campaignList);
               >
                 Campaign Update
               </button>
-              {phaseWiseData?.length > 0 && (
+              {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"
                   className={`mr-3 cmnbtn btn btn-sm ${

@@ -12,6 +12,7 @@ import { baseUrl } from "../../../../utils/config";
 import dayjs from "dayjs";
 import IndianStatesMui from "../../../ReusableComponents/IndianStatesMui";
 import IndianCitiesMui from "../../../ReusableComponents/IndianCitiesMui";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const onBoardStatus = 1;
 
@@ -21,6 +22,7 @@ const WFHDRegister = ({ userUpdateID }) => {
     { label: "No", value: false },
   ];
 
+  const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const [loading, setLoading] = useState(false);
 
   const jobTypeData = ["WFHD", "WFO", "WFH"];
@@ -86,7 +88,7 @@ const WFHDRegister = ({ userUpdateID }) => {
   const [department, setDepartment] = useState("");
   const [departmentdata, getDepartmentData] = useState([]);
 
-  const [usersData, getUsersData] = useState([]);
+  // const [usersData, getUsersData] = useState([]);
 
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
@@ -231,7 +233,7 @@ const WFHDRegister = ({ userUpdateID }) => {
     setDepartment(deptID);
   }, [deptID]);
 
-  useEffect(() => { }, [reportL2]);
+  useEffect(() => {}, [reportL2]);
 
   // Handle change for Monthly Salary
   const handleMonthlySalaryChange = (e) => {
@@ -301,9 +303,9 @@ const WFHDRegister = ({ userUpdateID }) => {
       console.log(res.data.data, "deparmetn data");
     });
 
-    axios.get(baseUrl + "get_all_users").then((res) => {
-      getUsersData(res.data.data);
-    });
+    // axios.get(baseUrl + "get_all_users").then((res) => {
+    //   getUsersData(res.data.data);
+    // });
 
     axios.get(baseUrl + "get_all_cities").then((res) => {
       setCityData(res.data.data);
@@ -556,16 +558,16 @@ const WFHDRegister = ({ userUpdateID }) => {
     try {
       if (!userUpdateID) {
         setLoading(true);
-        const isLoginIdExists = usersData.some(
+        const isLoginIdExists = userContextData.some(
           (user) =>
             user.user_login_id?.toLocaleLowerCase() ===
             loginId?.toLocaleLowerCase()
         );
-        const contactNumberExists = usersData?.some(
+        const contactNumberExists = userContextData?.some(
           (user) => user.personal_contact == personalContact
         );
 
-        const emailIdExists = usersData?.some(
+        const emailIdExists = userContextData?.some(
           (user) =>
             user.user_email_id?.toLocaleLowerCase() ==
             personalEmail?.toLocaleLowerCase()
@@ -1149,14 +1151,14 @@ const WFHDRegister = ({ userUpdateID }) => {
                 <Select
                   required={true}
                   className=""
-                  options={usersData.map((option) => ({
+                  options={userContextData.map((option) => ({
                     value: option.user_id,
                     label: `${option.user_name}`,
                   }))}
                   value={{
                     value: reportL1,
                     label:
-                      usersData.find((user) => user.user_id === reportL1)
+                      userContextData.find((user) => user.user_id === reportL1)
                         ?.user_name || "",
                   }}
                   onChange={(e) => {
@@ -1185,14 +1187,14 @@ const WFHDRegister = ({ userUpdateID }) => {
                 <label className="form-label">Report L2</label>
                 <Select
                   className=""
-                  options={usersData.map((option) => ({
+                  options={userContextData.map((option) => ({
                     value: option.user_id,
                     label: `${option.user_name}`,
                   }))}
                   value={{
                     value: reportL2,
                     label:
-                      usersData.find((user) => user.user_id === reportL2)
+                      userContextData.find((user) => user.user_id === reportL2)
                         ?.user_name || "",
                   }}
                   onChange={(e) => {
@@ -1207,14 +1209,14 @@ const WFHDRegister = ({ userUpdateID }) => {
                 <label className="form-label">Report L3</label>
                 <Select
                   className=""
-                  options={usersData.map((option) => ({
+                  options={userContextData.map((option) => ({
                     value: option.user_id,
                     label: `${option.user_name}`,
                   }))}
                   value={{
                     value: reportL3,
                     label:
-                      usersData.find((user) => user.user_id === reportL3)
+                      userContextData.find((user) => user.user_id === reportL3)
                         ?.user_name || "",
                   }}
                   onChange={(e) => {
@@ -1330,7 +1332,7 @@ const WFHDRegister = ({ userUpdateID }) => {
                 value={personalContact}
                 required={false}
                 onChange={handlePersonalContactChange}
-              // onBlur={handlePersonalContactBlur}
+                // onBlur={handlePersonalContactBlur}
               />
               {(isContactTouched1 || personalContact?.length >= 10) &&
                 !isValidcontact1 && (
@@ -1350,7 +1352,7 @@ const WFHDRegister = ({ userUpdateID }) => {
                 value={contact}
                 required={false}
                 onChange={handleContactChange}
-              // onBlur={handleContactBlur}
+                // onBlur={handleContactBlur}
               />
               {(isContactTouched || contact?.length >= 10) &&
                 !isValidcontact && (

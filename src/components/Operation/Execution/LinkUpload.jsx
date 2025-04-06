@@ -503,6 +503,7 @@ const LinkUpload = ({
             className={`pointer header-tab ${record == 0 && "header-active"}`}
             onClick={() => {
               setRecord(0);
+              setActTab("");
             }}
           >
             Record Links
@@ -526,20 +527,17 @@ const LinkUpload = ({
         >
           Add Vendor Links{" "}
         </div>
-        {!(
-          selectedPlan == 0 ||
-          selectedPlan == null ||
-          selectedPlan == "null"
-        ) && (
+        {
           <div
             className={`pointer header-tab ${record == 1 && "header-active"}`}
             onClick={() => {
               setRecord(1);
+              setActTab("");
             }}
           >
             Update Vendor{" "}
           </div>
-        )}
+        }
         {!(
           selectedPlan == 0 ||
           selectedPlan == null ||
@@ -549,6 +547,7 @@ const LinkUpload = ({
             className={`pointer header-tab ${record == 2 && "header-active"}`}
             onClick={() => {
               setRecord(2);
+              setActTab("");
             }}
           >
             Service{" "}
@@ -568,6 +567,7 @@ const LinkUpload = ({
           className={`pointer header-tab ${record == 5 && "header-active"}`}
           onClick={() => {
             setRecord(5);
+            setActTab(5);
           }}
         >
           Filter by links
@@ -827,6 +827,7 @@ const LinkUpload = ({
                     setStartDate("");
                     setEndDate("");
                     setSelectedPlan((prev) => prev);
+                    vendorList.current = null;
                   }
                 : () => {
                     handleUpload();
@@ -858,6 +859,7 @@ const LinkUpload = ({
               onClick={() => {
                 setLinkData("");
                 setActTab(null);
+                setLinks("");
               }}
             >
               {" "}

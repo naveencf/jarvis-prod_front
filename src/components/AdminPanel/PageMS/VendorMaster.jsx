@@ -769,6 +769,10 @@ const VendorMaster = () => {
     //     return;
     //   }
     // }
+    if (!busiType) {
+      toastError("Business Type is mandatory");
+      return;
+    }
     if (bankRows.length > 0) {
       const hasInvalidBankDetails = bankRows.some(
         (bank) =>
@@ -1167,6 +1171,7 @@ const VendorMaster = () => {
         bankName={bankName}
         docDetails={docDetails}
         handleFinalSubmit={handleFinalSubmit}
+        isFormSubmitting={isFormSubmitting}
       />
       <PennyDropVendor bankRows={bankRows} />
       <div className="card">
