@@ -76,6 +76,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       setSelectedBankIndex(bankIndex);
     }
   }, [extractedData])
+  console.log(token, "token")
   useEffect(() => {
     if (vendorInvoices && vendorInvoices?.totalRequestedAmount >= 100000) {
       setTdsDeductionMandatory(true);
@@ -507,6 +508,21 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     setReqestPaymentDialog(false)
   };
 
+  const getOutstandingText = () => {
+    const phpOutstanding = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
+    const vendorOutstanding =
+      Number(vendorDetail?.vendor_outstandings ?? vendorDetail?.outstandings) || 0;
+    const total = phpOutstanding + vendorOutstanding;
+
+    return `${phpOutstanding} + (${vendorOutstanding}) = ${total}`;
+  };
+
+  // Then use it like this:
+  <ListItemText
+    primary="Outstanding"
+    secondary={getOutstandingText()}
+  />
+
   return (
     <Dialog
       open={reqestPaymentDialog}
@@ -567,21 +583,14 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
                 <ListItem>
                   <ListItemText primary="Page" secondary={vendorDetail?.primary_page_name} />
                 </ListItem>
-                <ListItem>
+                {/* <ListItem>
                   <ListItemText primary="Outstanding" secondary={`${vendorPhpDetail[0]?.outstanding} + (${vendorDetail?.vendor_outstandings || vendorDetail?.outstandings}) = ${(Number(vendorPhpDetail[0]?.outstanding) + Number(vendorDetail?.vendor_outstandings || vendorDetail?.outstandings))}`} />
-                </ListItem>
+                </ListItem> */}
 
                 <ListItem>
                   <ListItemText
                     primary="Outstanding"
-                    secondary={() => {
-                      const phpOutstanding = Number(vendorPhpDetail[0]?.outstanding) || 0;
-                      const vendorOutstanding =
-                        Number(vendorDetail?.vendor_outstandings || vendorDetail?.outstandings) || 0;
-                      const total = phpOutstanding + vendorOutstanding;
-
-                      return `${phpOutstanding} + (${vendorOutstanding}) = ${total}`;
-                    }}
+                    secondary={getOutstandingText()}
                   />
                 </ListItem>
 
