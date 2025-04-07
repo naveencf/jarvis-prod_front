@@ -139,7 +139,7 @@ export default function OrderDialogforHouseKeeping({ alertSound, order, setOrder
                                                             <span>Room : </span>{order?.room_id}
                                                         </li>
                                                         <li>
-                                                            <span>Seat : </span>{order?.room_id}
+                                                            <span>Seat : </span>{order?.seat_id}
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -151,7 +151,7 @@ export default function OrderDialogforHouseKeeping({ alertSound, order, setOrder
                                             </div>
                                         </div>
                                         <ul>
-                                            {order?.order_items.length > 0 && <div className="orderInfo">
+                                            {order?.order_items.length > 0 ? <div className="orderInfo">
                                                 {order?.order_items.map((res) => {
                                                     { console.log(res) }
                                                     return <li>
@@ -159,6 +159,9 @@ export default function OrderDialogforHouseKeeping({ alertSound, order, setOrder
 
                                                     </li>
                                                 })}
+                                            </div> : <div className="orderRemark">
+                                                <p>{orderDetail?.order_type == 1 ? "Please refill Water Bottle" : orderDetail?.order_type == 2 ? "Housekeeping" :
+                                                    orderDetail?.order_items.map(res => `${res.quantity} ${formatString(res.item_name)}, `)}</p>
                                             </div>}
                                         </ul>
                                         <div className="orderRemark">

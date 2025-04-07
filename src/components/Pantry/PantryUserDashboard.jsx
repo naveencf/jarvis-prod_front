@@ -7,6 +7,7 @@ import { useCreatePantryMutation, useGetPantryByIdQuery, useOfflineFromPantryMut
 import OrderDialogforHouseKeeping from "./OrderDialogforHouseKeeping";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import formatString from "../../utils/formatString";
 
 function PantryUserDashboard() {
     const location = useLocation();
@@ -227,7 +228,8 @@ function PantryUserDashboard() {
                                 </div>
 
                                 <div className="orderRemark">
-                                    <p>{orderDetail?.remark}</p>
+                                    <p>{orderDetail?.order_type == 1 ? "Please refill Water Bottle" : orderDetail?.order_type == 2 ? "Housekeeping" :
+                                        orderDetail?.order_items.map(res => `${res.quantity} ${formatString(res.item_name)}, `)}</p>
                                 </div>
                                 <div className="orderAction">
                                     {orderDetail?.order_status === 1 && (
