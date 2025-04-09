@@ -284,10 +284,11 @@ const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVid
               <div className="row form_small">
                 <div className="col">
                   <div className="form-group">
-                    <label>Twitter Trend Cost (per post): {totalTwitterTrendCost}</label>
+                    <label>Twitter Trend</label>
                     <input type="text" value={twitterTrendCount} onChange={handleTwitterMultiplierChange} className="form-control" placeholder="Enter Twitter Trend Count" pattern="[0-9]*" inputMode="numeric" />
 
-                    <span style={{ color: 'green', fontSize: '12px' }}>Total Post Cost : {isNaN(multipliedCostTwitter) ? totalTwitterTrendCost : multipliedCostTwitter} </span>
+                    {/* <span style={{ color: 'green', fontSize: '12px' }}>Total Post Cost : {isNaN(multipliedCostTwitter) ? totalTwitterTrendCost : multipliedCostTwitter} </span> */}
+                    <span style={{ color: 'green', fontSize: '12px' }}>Twitter Trend Cost per video : {totalTwitterTrendCost} </span>
                   </div>
                 </div>
                 <div className="col">
@@ -298,14 +299,15 @@ const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVid
                 </div>
                 <div className="col">
                   <div className="form-group">
-                    <label>UGC Video Cost (per video): {totalUgcVideoCost}</label>
-                    <input type="text" value={ugcVideoCount} onChange={handleUgcMultiplierChange} className="form-control" placeholder="Enter UGC Video Count" pattern="[0-9]*" inputMode="numeric" /> <span style={{ color: 'green', fontSize: '12px' }}>Total Video Cost : {isNaN(multipliedCostUgc) ? totalUgcVideoCost : multipliedCostUgc} </span>
+                    <label>UGC Video</label>
+                    {/* <input type="text" value={ugcVideoCount} onChange={handleUgcMultiplierChange} className="form-control" placeholder="Enter UGC Video Count" pattern="[0-9]*" inputMode="numeric" /> <span style={{ color: 'green', fontSize: '12px' }}>Total Video Cost : {isNaN(multipliedCostUgc) ? totalUgcVideoCost : multipliedCostUgc} </span> */}
+                    <input type="text" value={ugcVideoCount} onChange={handleUgcMultiplierChange} className="form-control" placeholder="Enter UGC Video Count" pattern="[0-9]*" inputMode="numeric" /> <span style={{ color: 'green', fontSize: '12px' }}>UGC Video Cost (per video): {totalUgcVideoCost} </span>
                   </div>
                 </div>
                 <div className="col">
                   <div className="form-group">
                     <label>Total UGC Video Cost:</label>
-                    <input type="text" value={ugcVideoCost} onChange={handleUgcCostChange} className="form-control" placeholder="Enter Total Operation Cost" pattern="[0-9]" inputMode="numeric" />
+                    <input type="text" value={ugcVideoCost} onChange={handleUgcCostChange} className="form-control" placeholder="Enter Total Operation Cost" pattern="[0-9]*" inputMode="numeric" />
                   </div>
                 </div>
                 <div className="col">

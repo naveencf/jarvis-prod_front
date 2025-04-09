@@ -43,9 +43,10 @@ const RecentlyBoosted = () => {
       formattedEndDate && {
         startDate: formattedStartDate,
         endDate: formattedEndDate,
-        creatorName: creatorName,
+        creatorName: creatorName.value,
       }),
   });
+  console.log(creatorName.value, "creatorname");
   const totalExpense = (arr) => {
     return arr.reduce((acc, item) => acc + item.price, 0)?.toFixed(0);
   };
@@ -214,7 +215,17 @@ const RecentlyBoosted = () => {
   const uniqueBoostingPosts = Array.from(
     new Map(boostingPosts?.map((cat) => [cat.creatorName, cat])).values()
   );
-  console.log(uniqueBoostingPosts, "uniqboosting");
+
+  const handleResetFilters = () => {
+    const defaultStart = dayjs().format("YYYY-MM-DD");
+    const defaultEnd = dayjs().add(1, "day").format("YYYY-MM-DD");
+
+    setStartDate(defaultStart);
+    setEndDate(defaultEnd);
+    setCreatorName("");
+    refetch();
+  };
+
   return (
     <div>
       <div className="d-flex">
@@ -238,6 +249,12 @@ const RecentlyBoosted = () => {
             <TextField {...params} label="Creator Name" />
           )}
         />
+        <button
+          className="btn btn-outline-danger btn-sm ml-2 mb-2"
+          onClick={handleResetFilters}
+        >
+          Reset
+        </button>
       </div>
       <ReportPriceCard
         startDate={startDate}

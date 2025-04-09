@@ -37,6 +37,8 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   // Overview Data
   let totalPostsAndStories = 0;
   let totalCost = 0;
+  console.log("ugcVideoCost", ugcVideoCost);
+  console.log("twitter", twitterTrendCost);
   // Calculate GST
   const gst = totalCost * 0.18; // 18% GST
   const totalWithGst = totalCost + gst; // Total after GST
@@ -473,7 +475,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
           totalPostsAndStories, // Total posts and stories,
           deliverableText, // Deliverables
           `₹${platformTotalCost.toFixed(2)}`, // Total cost
-          1234,
+          // 1234,
         ]);
 
         // Apply styles to overview row
@@ -527,6 +529,34 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   const gstPrice = Number(((agencyFee + planDetails[0]?.selling_price) * 0.18).toFixed(2));
 
   // console.log(typeof (gstPrice), 'gstPrice', typeof (agencyFees), typeof (planDetails[0]?.selling_price), agencyFees + planDetails[0]?.selling_price)
+  // Twitter Trend Cost
+  // const twitterTrendCost = Number(planDetails[0]?.twitter_trend_cost || 0); // Or use a % if needed
+  // Twitter Trend Cost
+  if (twitterTrendCost > 0) {
+    let twitterTrendRow = overviewSheet.addRow(['', 'Twitter Trend Cost', '', '', '', '', `₹${formatIndianNumber(twitterTrendCost)}`]);
+    styleMergedCostRow(twitterTrendRow, 'Twitter Trend Cost');
+  }
+
+  // UGC Cost
+  if (ugcVideoCost > 0) {
+    let ugcRow = overviewSheet.addRow(['', 'UGC Cost', '', '', '', '', `₹${formatIndianNumber(ugcVideoCost)}`]);
+    styleMergedCostRow(ugcRow, 'UGC Cost');
+  }
+
+  // Utility function to apply consistent style and merge
+  function styleMergedCostRow(row, label) {
+    row.eachCell((cell, colNumber) => {
+      if (colNumber > 1) {
+        cell.border = contentBorder;
+        cell.font = { name: 'Comic Sans MS', bold: true };
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      }
+    });
+
+    overviewSheet.mergeCells(`B${row.number}:F${row.number}`);
+    row.getCell(2).alignment = { horizontal: 'right', vertical: 'middle' };
+    row.getCell(2).font = { name: 'Comic Sans MS', bold: true };
+  }
 
   let gstRow = overviewSheet.addRow(['', 'GST (18%)', '', '', '', '', `₹${formatIndianNumber(gstPrice)}`]);
   gstRow.eachCell((cell, colNumber) => {
@@ -539,7 +569,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   });
 
   const totalCostWithGst = planDetails[0]?.selling_price + agencyFee + gstPrice;
-  let totalWithGstRow = overviewSheet.addRow(['', 'Total with GST', '', '', '', '', `₹${formatIndianNumber(totalCostWithGst)}`]);
+  let totalWithGstRow = overviewSheet.addRow(['', 'Total with GST', '', '', '', '', `₹${formatIndianNumber(totalCostWithGst + ugcVideoCost + twitterTrendCost)}`]);
   // let totalFollowers = overviewSheet.addRow(['', '','', '', '', '', '', '',1000]);
 
   // totalFollowers.eachCell((cell, colNumber) => {
@@ -608,8 +638,11 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
 
   const firstNoteRow = endRow + 2; // The row where notes start
   const lastNoteRow = firstNoteRow + notes.length - 1; // The last row of the notes
-  overviewSheet.mergeCells(`F${8}:F${endRow - 3}`);
-  overviewSheet.mergeCells(`G${8}:G${endRow - 3}`);
+  const twitterAndUgc =
+    twitterTrendCost > 0 && ugcVideoCost > 0 ? 5 :
+      twitterTrendCost > 0 || ugcVideoCost > 0 ? 4 : 3;
+  overviewSheet.mergeCells(`F${8}:F${endRow - twitterAndUgc}`);
+  overviewSheet.mergeCells(`G${8}:G${endRow - twitterAndUgc}`);
   const sellingPriceforsheet = overviewSheet.getCell('G8');
   sellingPriceforsheet.value = `₹${formatIndianNumber(planDetails[0]?.selling_price)}`;
 

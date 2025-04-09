@@ -278,6 +278,11 @@ const LinkUpload = ({
 
   async function handleUpload() {
     setFunctionLoading(true);
+    if(record===0){
+      if(!phaseDate){
+        toastAlert("Please Select the phase Date")
+      }
+    }
     let otherData = {
       createdBy: token.id,
       phaseDate: phaseDate,
@@ -777,6 +782,7 @@ const LinkUpload = ({
                   setStartDate(e.target.value);
                 }}
                 label="Start Date"
+                max={new Date().toISOString().split("T")[0]}
               />
               <FieldContainer
                 fieldGrid={6}
@@ -786,6 +792,7 @@ const LinkUpload = ({
                   setEndDate(e.target.value);
                 }}
                 label="End Date"
+                max={new Date().toISOString().split("T")[0]}
               />
             </>
           )}
