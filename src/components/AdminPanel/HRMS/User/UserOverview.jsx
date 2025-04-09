@@ -198,6 +198,8 @@ const UserOverview = () => {
           const onboardStatus = decodedToken.onboard_status;
           if (userRole !== 1 && deptId == 36 && onboardStatus == 1) {
             window.open("/admin/sales-dashboard", "_blank");
+          } else if (deptId === 20) {
+            navigate("/admin/pantry");
           } else {
             window.open("/", "_blank");
           }

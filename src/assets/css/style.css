@@ -24053,6 +24053,40 @@ hr.cardBodyHr {
   }
 }
 
+.orderWrapperHead {
+  margin: 0px 0px 15px;
+
+  .MuiButtonGroup-root {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    background: var(--bg-white);
+    border-radius: 8cqmax;
+    box-shadow: var(--shadowOne);
+
+    button.MuiButtonBase-root {
+      width: 100%;
+      box-shadow: none;
+      outline: none;
+      border: none;
+      font-size: 15px;
+      line-height: 20px;
+      font-weight: 500;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: var(--primary);
+      background-color: var(--white-bg);
+      text-transform: capitalize;
+    }
+
+    button.MuiButtonBase-root.active-tab {
+      color: var(--white-text);
+      background-color: var(--primary);
+    }
+  }
+}
+
 .orderItem {
   background-color: #ffffff;
   backdrop-filter: blur(4px);
@@ -24091,6 +24125,11 @@ hr.cardBodyHr {
           color: var(--dark);
           font-size: 14px;
           font-weight: 500;
+
+          .badge {
+            padding: 4px 8px;
+            font-size: 10px;
+        }
         }
 
         ul {
@@ -24168,10 +24207,14 @@ hr.cardBodyHr {
   }
 
   .orderAction {
-    padding: 0px 12px 12px;
+    padding: 0px 12px 0px;
     display: flex;
     align-items: center;
     gap: 0px 8px;
+
+    button {
+      margin-bottom: 12px;
+    }
   }
 }
 
@@ -24180,4 +24223,49 @@ hr.cardBodyHr {
     margin: 0;
     box-shadow: none;
   }
+}
+
+
+
+
+
+.orderModal .MuiPaper-root.MuiDialog-paper {
+  max-width: 100%;
+  margin: 25px 25px;
+  width: 100%;
+}
+
+.orderModal .MuiDialogContent-root {
+  padding: 0px !important;
+}
+
+.orderModal .orderInfo {
+  padding: 12px 12px 12px 24px;
+  border-bottom: none;
+  list-style: disc;
+  margin: 0px 0px;
+
+  li {
+    list-style: disc;
+    color: var(--dark);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+    margin: 1px 0px;
+
+    span {
+      color: var(--dark);
+    }
+  }
+}
+
+.orderModal .MuiDialogActions-root {
+  border-top: 1px solid var(--border);
+  padding: 12px 12px;
+}
+
+.orderModal .modal-header .modal-title {
+  color: var(--dark);
+  font-size: 16px;
+  font-weight: 500;
 }

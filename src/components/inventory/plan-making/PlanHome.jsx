@@ -274,7 +274,7 @@ function PlanHome() {
     return newErrors;
   };
 
-  console.log('planDetail', planDetails);
+
   const fetchPlans = async () => {
     setLoading(true);
     try {

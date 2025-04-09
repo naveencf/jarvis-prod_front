@@ -460,7 +460,6 @@ const AuditPurchase = () => {
         }
         return acc;
       }, {});
-      console.log("rowwwww-----", row);
       const formData = new FormData();
       formData.append("sponsored", true);
       formData.append("_id", row._id);
@@ -656,27 +655,46 @@ const AuditPurchase = () => {
     );
     return allPurchased;
   }
-
+ 
   async function handleAuditedDataUpload() {
     try {
+      if (selectedData.length < 1) {
+        toastError("Please Select atleast one row.");
+        return;
+      }
+      
+      const shortCodes = selectedData.map(item => item.shortCode);
+      const auditedData = selectedData.every(item => item.audit_status === "audited");
+      if (!auditedData) {
+        await Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'All rows must have status as "audited".',
+        });
+        return;  
+      }
+  
       const data = {
         vendor_id: vendorNumericId,
         userId: token.id,
         isVendorWise: true,
+        shortCodes,
       };
-
+      
       const res = await recordPurchase(data);
       if (res.error) throw new Error(res.error);
-      // const response = await refetchPlanData();
+  
       const response = await fetchFilteredPosts();
       if (response.isSuccess && response.data) {
         setCampainPlanData(response.data);
       }
-      toastAlert("Data Uploaded");
+      toastAlert("All audited data is now purchased and its ledger is updated");
+      setSelectedData([])
     } catch (err) {
       toastError("Error Uploading Data");
     }
   }
+  
   function istToUtc(istDate) {
     let [day, month, year] = istDate.split("/").map(Number);
     let date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
@@ -761,7 +779,6 @@ const AuditPurchase = () => {
         handelchange,
         column
       ) => {
-        console.log("row,,,", row)
         // setPlatformName(row.platform_name);
         return (
           <CustomSelect
@@ -1399,7 +1416,6 @@ const AuditPurchase = () => {
     };
   };
   const useDebouncedSetter = (setter, delay = 500) => {
-    console.log('setter', setter);
     return useCallback(
       debounce((value) => {
         setter(value);
@@ -1411,7 +1427,6 @@ const AuditPurchase = () => {
   // Usage
   const debouncedSetSearchQuery = useDebouncedSetter(setVendorSearchQuery);
   const debouncedSetSearchQueryForCampName = useDebouncedSetter(setCampaignSearchQuery)
-  console.log("campQuery", campaignSearchQuery);
   // const phaseWiseData = useMemo(() => {
   //   const phasedData = campaignPlanData?.filter((data) => {
   //     if (activeTab === "all") {

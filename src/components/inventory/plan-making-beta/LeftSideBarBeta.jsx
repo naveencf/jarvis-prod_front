@@ -123,6 +123,7 @@ const LeftSideBarBeta = ({
         confirmButtonText: 'Save Plan',
         cancelButtonText: 'Close Plan',
         reverseButtons: true,
+        allowOutsideClick: false,
       });
 
       const planStatus = result.isConfirmed ? 'open' : 'close';
@@ -145,7 +146,7 @@ const LeftSideBarBeta = ({
           icon: 'success',
           confirmButtonText: 'OK',
         }).then(() => {
-          navigate('/admin/pms-plan-making');
+          navigate('/admin/pms-plan-making-beta');
         });
       } else {
         Swal.fire({

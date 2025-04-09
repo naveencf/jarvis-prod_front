@@ -58,9 +58,9 @@ const LayeringControls = ({
           className="icon"
           onClick={() => setLayering(layering + 1)}
           title={ButtonTitle[(layering + 1) % 6]}
-          disabled={layering >= 8}
+          disabled={layering >= 9}
         >
-          {layering <= 7 && <ImNext />}
+          {layering <= 9 && <ImNext />}
         </button>
         <label>{ButtonTitle[layering]}</label>
         <span style={{position:"relative", right:'0.65rem'}}>({getTableData?.length})</span>

@@ -106,7 +106,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
   const [tempID, setTempID] = useState();
   const [showPriceFields, setShowPriceFields] = useState(false);
   const [newPriceRow, setNewPriceRow] = useState({});
-
+  const [addNewPrice, setAddNewPrice] = useState(false)
   const [engagment, setEngagment] = useState(0);
   const [singleVendor, setSingleVendor] = useState({});
   const [p_id, setP_id] = useState();
@@ -169,10 +169,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       });
   };
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
-
+ 
   const {
     data: category,
     error: categoryError,
@@ -575,7 +572,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     // const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
     return (Math.floor((followCount / 1000000) * (price)));
   };
-
+ 
   const handleUpadteFollowers = async () => {
     const payload = {
       creators: [pageName],
@@ -1114,7 +1111,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                   This Profile Cost = {" Rs "} {calculateFollowerCount(value)}
                 </p>
               )}
-              {isLastRow && newPriceRow.value > 0 && !showPriceFields && (
+              {isLastRow && Number(newPriceRow.value) > 0 && !showPriceFields && (
                 <button
                   className="btn btn-sm btn-danger mt-4 ml-2 col-1 mb-3"
                   type="button"
@@ -1176,7 +1173,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                   const selectedPriceType = priceTypeList.find(
                     (pt) => pt._id === newPriceRow.priceType
                   );
-                  if (selectedPriceType && newPriceRow.value > 0) {
+                  if (selectedPriceType && Number(newPriceRow.value) > 0) {
                     setPagePriceList([
                       ...pagePriceList,
                       { [selectedPriceType.name]: Number(newPriceRow.value) },
@@ -1190,7 +1187,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
                 }}
                 className="btn btn-sm btn-primary"
               >
-                Add Price
+                {"Save"}
               </button>
             </div>
           </React.Fragment>

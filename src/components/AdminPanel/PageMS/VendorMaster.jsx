@@ -120,6 +120,8 @@ const VendorMaster = () => {
   const [validationMessage, setValidationMessage] = useState(null);
   const [isNumberValid, setIsNumberValid] = useState(null);
 
+  const [vendorLegalName, setVendorLegalName] = useState("");
+
   const [bankRows, setBankRows] = useState([
     {
       payment_method: "666856874366007df1dfacde", // setting bank default to dropdown
@@ -152,6 +154,11 @@ const VendorMaster = () => {
   const [isContactTouched1, setisContactTouched1] = useState(false);
 
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
+  const vendorTypeData = [
+    { value: "Individual Vendor", label: "Individual Vendor" },
+    { value: "Bulk Vendor", label: "Bulk Vendor" },
+    { value: "Multiple Pages Vendor", label: "Multiple Pages Vendor" },
+  ];
 
   const {
     data: allVendorData,
@@ -181,6 +188,15 @@ const VendorMaster = () => {
   const [existError, setExistError] = useState("");
   const [busiTypeData, setBusiTypeData] = useState([]);
   const { userContextData, contextData } = useAPIGlobalContext();
+
+  const [openPanyDropModel, setOpenPanyDropModel] = useState(false);
+
+  const handleOpenPannyDrop = () => {
+    setOpenPanyDropModel(true);
+  };
+  const handleClosePanyDropModel = () => {
+    setOpenPanyDropModel(false);
+  };
 
   // const isAssets = [53].some((index) => ApiContextData[index]?.view_value === 1);
 
@@ -410,13 +426,14 @@ const VendorMaster = () => {
           setHomeAddress(data?.home_address);
           setHomeCity(data?.home_city);
           setHomeState(data?.home_state);
-          setTypeId(data?.vendor_type);
+          setTypeId(data?.vendor_type_name);
           setPlatformId(data?.vendor_platform);
           setCycleId(data?.pay_cycle);
           setHomePincode(data?.home_pincode);
           setVendorCategory(data?.vendor_category ?? "Theme Page");
           setDob(data?.dob);
           setBusiType(data?.busi_type);
+          setVendorLegalName(data?.vendor_legal_name);
         });
 
       axios
@@ -830,7 +847,7 @@ const VendorMaster = () => {
       mobile: mobile,
       alternate_mobile: altMobile,
       email: email,
-      vendor_type: typeId,
+      vendor_type_name: typeId,
       vendor_platform: platformId,
       pay_cycle: cycleId,
       company_name: compName,
@@ -850,6 +867,7 @@ const VendorMaster = () => {
       closed_by: userId,
       dob: dob,
       busi_type: busiType,
+      vendor_legal_name: vendorLegalName,
     };
     setPreviewData(formData);
     setOpenPreviewModal(true);
@@ -1173,7 +1191,11 @@ const VendorMaster = () => {
         handleFinalSubmit={handleFinalSubmit}
         isFormSubmitting={isFormSubmitting}
       />
-      <PennyDropVendor bankRows={bankRows} />
+      <PennyDropVendor
+        bankRows={bankRows}
+        onClose={handleClosePanyDropModel}
+        open={openPanyDropModel}
+      />
       <div className="card">
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Add Vendor Details</h5>
@@ -1537,22 +1559,12 @@ const VendorMaster = () => {
                 <div className="flexCenter input-group thmInputGroup">
                   <div className="w-100">
                     <Select
-                      options={
-                        !typeLoading &&
-                        typeData.data?.map((option) => ({
-                          value: option._id,
-                          label: option.type_name,
-                        }))
-                      }
+                      options={vendorTypeData}
                       required={true}
-                      value={{
-                        value: typeId,
-                        label:
-                          (!typeLoading &&
-                            typeData.data?.find((role) => role._id == typeId)
-                              ?.type_name) ||
-                          "",
-                      }}
+                      value={
+                        vendorTypeData.find((opt) => opt.value === typeId) ||
+                        null
+                      }
                       onChange={(e) => {
                         setTypeId(e.value);
                         if (e.value) {
@@ -1644,7 +1656,16 @@ const VendorMaster = () => {
                 )}
               </div>
             </div>
-            <div className="col-lg-4 col-md-4 col-12 p0"></div>
+            <div className="col-lg-4 col-md-4 col-12 p0">
+              <FieldContainer
+                label="Vendor Legal Name "
+                fieldGrid={12}
+                value={formatString(vendorLegalName)}
+                onChange={(e) => {
+                  setVendorLegalName(e.target.value);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -1654,12 +1675,20 @@ const VendorMaster = () => {
           <h5 className="card-title">Bank Details</h5>
 
           {(!_id || (contextData && contextData[65]?.view_value === 1)) && (
-            <button
-              className="btn cmnbtn btn_sm btn-primary"
-              onClick={handleAddBankInfoRow}
-            >
-              Add Another Bank Details
-            </button>
+            <div className="d-flex">
+              <button
+                className="btn cmnbtn btn_sm btn-primary mr-2"
+                onClick={handleAddBankInfoRow}
+              >
+                Add Another Bank Details
+              </button>
+              <button
+                className="btn smbtn btn_sm btn-success"
+                onClick={handleOpenPannyDrop}
+              >
+                Add Panny Drop
+              </button>
+            </div>
           )}
         </div>
         <div className="card-body thm_form">

@@ -84,6 +84,8 @@ const Login = () => {
           if (status === "Active") {
             if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
               navigate("/admin/sales-dashboard");
+            } else if (deptId === 20) {
+              navigate("/admin/pantry");
             } else {
               navigate("/");
             }

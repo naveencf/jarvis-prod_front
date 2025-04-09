@@ -21,6 +21,10 @@ import formatString from "../../utils/formatString";
 import { useGetVendorPaymentTransactionsQuery } from "../Store/API/Purchase/PurchaseRequestPaymentApi";
 import pdfImg from "../Finance/pdf-file.png";
 import { formatUTCDate } from "../../utils/formatUTCDate";
+import formatDataObject from "../../utils/formatDataObject";
+import { formatDateTime } from "../../utils/formatDateTime";
+import DateISOtoNormal from "../../utils/DateISOtoNormal";
+import DateTimeUTCtoISO from "../../utils/DateTimeUTCtoISO";
 
 const PurchaseTransactions = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -35,6 +39,7 @@ const PurchaseTransactions = () => {
   const [checkTransactionStatus, setCheckTransactionStatus] = useState(false);
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [refetch, setRefetch] = useState(false);
+  const [filterStep, setFilterStep] = useState(0); // 0: true, 1: false, 2: all
   const {
     data,
     error,
@@ -46,6 +51,9 @@ const PurchaseTransactions = () => {
   });
   const token = sessionStorage.getItem("token");
 
+  useEffect(() => {
+    setTransactionData(data)
+  }, [data])
   const downloadSlipAsImage = (rowData) => {
     // Create a container div for the content that will be captured
     const slipElement = document.createElement("div");
@@ -123,7 +131,7 @@ const PurchaseTransactions = () => {
   };
 
   const handleSubmitTransactionData = () => {
-    const formData = new FormData();
+
     refetchTransaction();
   };
 
@@ -207,73 +215,9 @@ const PurchaseTransactions = () => {
       //     return index + 1;
       // },
     },
-    // {
-    //     key: "invc_img",
-    //     name: "Invoice Image",
-    //     renderRowCell: (row) => {
-    //         if (!row.invc_img) {
-    //             return "No Image";
-    //         }
 
-    //         // Extract file extension and check if it's a PDF
-    //         const fileExtension = row.invc_img.split(".").pop().toLowerCase();
-    //         const isPdf = fileExtension === "pdf";
-    //         const imgUrl = `https://purchase.creativefuel.io/${row.invc_img}`;
-    //         console.log(imgUrl, isPdf, "Image URL and isPdf");
-
-    //         // Common click handler to open the dialog
-    //         const handleOpenDialog = () => {
-    //             setOpenImageDialog(true);
-    //             setViewImgSrc(imgUrl);
-    //         };
-
-    //         return isPdf ? (
-    //             <div
-    //                 style={{ position: "relative", overflow: "hidden", height: "80px" }}
-    //                 onClick={handleOpenDialog}
-    //             >
-
-    //                 <embed
-    //                     src={imgUrl}
-    //                     type="application/pdf"
-    //                     title="PDF Viewer"
-    //                     style={{ width: "100px", height: "150px", cursor: "pointer" }}
-    //                     onError={(e) => {
-    //                         e.target.src = "https://via.placeholder.com/150?text=No+PDF";
-    //                     }}
-    //                 />
-    //                 {/* Add a download link */}
-    //                 <a
-    //                     href={imgUrl}
-    //                     download
-    //                     target="_blank"
-    //                     rel="noreferrer"
-    //                     style={{ position: "absolute", bottom: 0, left: 0, fontSize: "10px", }}
-    //                 >
-    //                     Download PDF
-    //                 </a>
-    //             </div>
-    //         ) : (
-    //             <img
-    //                 onClick={handleOpenDialog}
-    //                 src={imgUrl}
-    //                 alt="Invoice"
-    //                 style={{
-    //                     width: "40px",
-    //                     height: "80px",
-    //                     objectFit: "cover",
-    //                     cursor: "pointer",
-    //                 }}
-    //                 onError={(e) => {
-    //                     e.target.src = "https://via.placeholder.com/80?text=No+Image";
-    //                 }}
-    //             />
-    //         );
-    //     },
-    //     width: 100,
-    // },
     {
-      key: "vendor_update",
+      key: "is_shared_ss",
       name: "Reported",
       width: 150,
 
@@ -288,6 +232,13 @@ const PurchaseTransactions = () => {
           </button>
         );
         // return <p>  {row.vendor_update}</p>;
+      },
+      colorRow: (row) => {
+        if (row?.is_shared_ss) {
+          return "#ACE1AF";
+        } else {
+          return "#ffff008c";
+        }
       },
     },
     {
@@ -305,13 +256,7 @@ const PurchaseTransactions = () => {
           </button>
         ),
 
-      colorRow: (row) => {
-        if (row?.is_shared_ss) {
-          return "#ACE1AF";
-        } else {
-          return "#ffff008c";
-        }
-      },
+
     },
     {
       key: "invoice_url",
@@ -386,7 +331,17 @@ const PurchaseTransactions = () => {
       name: "Payment Date ",
       width: 150,
       renderRowCell: (row) => {
-        return formatUTCDate(row.payment_date)
+        const { date, time } = DateTimeUTCtoISO(row.payment_date)
+        return date;
+      }
+    },
+    {
+      key: "payment_time",
+      name: "Payment Time ",
+      width: 150,
+      renderRowCell: (row) => {
+        const { date, time } = DateTimeUTCtoISO(row.payment_date)
+        return time;
       }
     },
 
@@ -395,11 +350,11 @@ const PurchaseTransactions = () => {
       name: "Vendor Name",
       width: 200,
     },
-    {
-      key: "page_name",
-      name: "Page Name",
-      width: 150,
-    },
+    // {
+    //   key: "page_name",
+    //   name: "Page Name",
+    //   width: 150,
+    // },
     {
       key: "payment_mode",
       name: "Payment Mode",
@@ -435,12 +390,12 @@ const PurchaseTransactions = () => {
       },
     },
     {
-      key: "request_by",
-      name: "Requested by",
+      key: "request_amount",
+      name: "Invoice Amount",
       width: 150,
-      renderRowCell: (row) => {
-        return row.request_by;
-      },
+      // renderRowCell: (row) => {
+      //   return row.request_by;
+      // },
     },
 
     {
@@ -453,12 +408,10 @@ const PurchaseTransactions = () => {
     },
 
     {
-      key: "outstandings",
-      name: "OutStanding ",
+      key: "accountNumber",
+      name: "Account ",
       width: 150,
-      renderRowCell: (row) => {
-        return <p> &#8377; {row.outstandings}</p>;
-      },
+
     },
 
     {
@@ -467,49 +420,6 @@ const PurchaseTransactions = () => {
       width: 150,
       getTotal: true,
     },
-
-    //         {
-    //             key: "ref",
-    //             name: "Reference Number",
-    //             width: 250,
-    //             renderRowCell: (row) => {
-    //                 const handleCopy = () => {
-    //                     const {
-    //                         bankTransactionReferenceId,
-    //                         payment_amount,
-    //                         payment_date,
-    //                         account_no, finance_remark
-    //                     } = row;
-    //                     const textToCopy = `Payment Amount: ${payment_amount} , Reference Number: ${bankTransactionReferenceId}`;
-    //                     // Create the message
-    //                     // no. ${account_no?.slice(-4)}
-    //                     const message = `
-    //     Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account  on ${payment_date}.
-    //     The reference ID for this transaction is ${bankTransactionReferenceId}.
-    //     ${finance_remark}
-
-    // `;
-    //                     navigator.clipboard
-    //                         .writeText(message)
-    //                         .then(() => toastAlert("Copied to clipboard!"))
-    //                         .catch((err) => console.error("Failed to copy text:", err));
-    //                 };
-
-    //                 return (
-    //                     <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-    //                         <span>{row.bankTransactionReferenceId}</span>
-    //                         {!row.bankTransactionReferenceId == "" ? (
-    //                             <ContentCopyIcon
-    //                                 style={{ cursor: "pointer", color: "gray" }}
-    //                                 onClick={handleCopy}
-    //                             />
-    //                         ) : (
-    //                             ""
-    //                         )}
-    //                     </div>
-    //                 );
-    //             },
-    //         },
     {
       key: "ref",
       name: "Reference Number",
@@ -524,24 +434,10 @@ const PurchaseTransactions = () => {
           } = row;
 
           if (!payment_date) return;
-
-          // Convert UTC date to IST
-          const dateObj = new Date(payment_date);
-          const istOffset = 5.5 * 60 * 60 * 1000; // IST Offset in milliseconds
-          const istDate = new Date(dateObj.getTime() + istOffset);
-
-          // Format Date and Time
-          const formattedDate = istDate.toISOString().split("T")[0]; // YYYY-MM-DD
-          const formattedTime = istDate.toLocaleTimeString("en-IN", {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false,
-            timeZone: "Asia/Kolkata", // Ensuring IST timezone
-          });
-
+          const { date, time } = DateTimeUTCtoISO(row.payment_date)
           // Properly formatted message with alignment
           const message =
-            `Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account on ${formattedDate} at ${formattedTime} IST.\nThe reference ID for this transaction is ${bankTransactionReferenceId}.\n${finance_remark ? finance_remark : ""
+            `Amount of ₹${payment_amount}/- has been released from Creativefuel to your bank account on ${date} at ${time}.\nThe reference ID for this transaction is ${bankTransactionReferenceId}.\n${finance_remark ? finance_remark : ""
               }`.trim();
 
           navigator.clipboard
@@ -565,6 +461,20 @@ const PurchaseTransactions = () => {
     },
   ];
 
+  const handleFilterData = () => {
+    let result = [];
+
+    if (filterStep === 0) {
+      result = data.filter(item => item.is_shared_ss === true);
+    } else if (filterStep === 1) {
+      result = data.filter(item => item.is_shared_ss === false);
+    } else {
+      result = data; // show all
+    }
+
+    setTransactionData(result);
+    setFilterStep((prev) => (prev + 1) % 3); // loop: 0 → 1 → 2 → 0
+  };
   return (
     <div>
       {/* <FormContainer
@@ -575,8 +485,8 @@ const PurchaseTransactions = () => {
         <div className="card-body thm_table">
           <View
             columns={columns}
-            // data={transactionData}
-            data={data}
+            data={transactionData}
+            // data={data}
             isLoading={isLoading}
             showTotal={true}
             title={"Recent Transaction"}
@@ -591,13 +501,25 @@ const PurchaseTransactions = () => {
                 >
                   Refetch
                 </button>
-                <PurchaseTransactionFilter
-                  startDate={startDate}
-                  endDate={endDate}
-                  setStartDate={setStartDate}
-                  setEndDate={setEndDate}
-                  onFilterChange={handleSubmitTransactionData}
-                />
+                <div
+                  className="pt-3"
+                >
+
+                  <PurchaseTransactionFilter
+
+                    startDate={startDate}
+                    endDate={endDate}
+                    setStartDate={setStartDate}
+                    setEndDate={setEndDate}
+                    onFilterChange={handleSubmitTransactionData}
+                  />
+                </div>
+                <button
+                  className="btn cmnbtn btn_sm btn-primary ms-2"
+                  onClick={() => handleFilterData()}
+                >
+                  Filter shared SS
+                </button>
               </>
             }
 

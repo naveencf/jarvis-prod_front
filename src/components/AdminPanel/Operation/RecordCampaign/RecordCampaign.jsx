@@ -1227,7 +1227,7 @@ const RecordCampaign = () => {
                   Campaign Update
                 </button>
               )}
-              <button className="mr-3 cmnbtn btn btn-sm btn-primary" disabled={uploadLoading} onClick={() => handleUploadUniqueLink(true)}>Update States</button>
+              <button className="mr-3 cmnbtn btn btn-sm btn-primary" disabled={!selectedData.length || uploadLoading} onClick={() => handleUploadUniqueLink(true)}>Update States</button>
               {/* {phaseWiseData?.length > 0 && (
                   <button
                     title="Upload Audited Data"

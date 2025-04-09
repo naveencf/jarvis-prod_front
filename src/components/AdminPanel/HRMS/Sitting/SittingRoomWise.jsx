@@ -106,7 +106,7 @@ const OfficeSittingRoomWise = () => {
         <div className="scrollRow">
           <Slider {...sliderSettings}>
             {fetchSittingModalData?.data && (
-              <div className="timeDataCard card">
+              <div className="timeDataCard card" style={{ width: "50px" }}>
                 <div className="card-header">
                   <div className="titleCard w-100">
                     <div className="titleCardImg bgPrimary border-0">
@@ -153,11 +153,7 @@ const OfficeSittingRoomWise = () => {
                         <i className="bi bi-pc-display-horizontal"></i>
                       </div>
                       <div className="titleCardText w-75">
-                        {/* <h2 className="colorPrimary">{d.roomName}</h2> */}
-                        <h3>
-                          Department wise Card:
-                          {/* {d.counts.allocated + d.counts.not_allocated} */}
-                        </h3>
+                        <h3>Department wise Card:</h3>
                       </div>
                     </div>
                   </div>
@@ -171,10 +167,10 @@ const OfficeSittingRoomWise = () => {
                           </div>
                         </li>
                         <li>
-                          <span>.</span>
-                          <div className="growthBadge growthWarning">
-                            {/* {d.counts.not_allocated} */}
-                          </div>
+                          {/* <span>.</span> */}
+                          {/* <div className="growthBadge growthWarning"> */}
+                          {/* {d.counts.not_allocated} */}
+                          {/* </div> */}
                         </li>
                       </ul>
                     </div>

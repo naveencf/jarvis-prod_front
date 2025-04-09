@@ -1,10 +1,21 @@
 import React from "react";
-import { Button, Select, MenuItem, TextField } from "@mui/material";
+import {
+  Button,
+  Select,
+  MenuItem,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
+import {} from "@mui/material";
 import { insightsBaseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 
-function PennyDropVendor({ bankRows }) {
+function PennyDropVendor({ bankRows, onClose, open }) {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
@@ -54,86 +65,97 @@ function PennyDropVendor({ bankRows }) {
 
   return (
     <>
-      <div className="card">
-        <div className="card-header">
-          <h5 className="card-title">Confirm Account Details</h5>
-        </div>
-
-        {bankRows.map((bankDetail, index) => (
-          <div
-            key={index}
-            className="bank-row"
-            style={{
-              border: "1px solid #ddd",
-              padding: "10px",
-              marginBottom: "10px",
-              borderRadius: "5px",
-            }}
-          >
-            <h4>Bank Details {index + 1}</h4>
-
-            <div className="form-group col-4">
-              <label className="form-label">Bank Name</label>
-              <TextField
-                fullWidth
-                variant="outlined"
-                value={bankDetail.bank_name}
-                disabled
-              />
+      <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+        {/* <DialogTitle>Page Change Logs</DialogTitle> */}
+        <DialogContent dividers>
+          <div className="card">
+            <div className="card-header">
+              <h5 className="card-title">Confirm Account Details</h5>
             </div>
 
-            <div className="form-group col-6">
-              <label className="form-label">Account Type</label>
-              <Select fullWidth value={bankDetail.account_type} disabled>
-                <MenuItem value="Savings">Savings</MenuItem>
-                <MenuItem value="Current">Current</MenuItem>
-              </Select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Account Number</label>
-              <TextField
-                fullWidth
-                type="text"
-                value={bankDetail.account_number}
-                disabled
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">IFSC</label>
-              <TextField
-                fullWidth
-                type="text"
-                value={bankDetail.ifsc}
-                disabled
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Account Holder Name</label>
-              <TextField
-                fullWidth
-                type="text"
-                value={bankDetail.account_holder_name}
-                disabled
-              />
-            </div>
-
-            {/* Show Penny Drop Button only if is_verified is false */}
-            {!bankDetail.is_verified && (
-              <Button
-                onClick={() => handlePennyDropforVendor(bankDetail)}
-                sx={{ mt: 2 }}
-                variant="contained"
-                color="success"
+            {bankRows.map((bankDetail, index) => (
+              <div
+                key={index}
+                className="bank-row"
+                style={{
+                  border: "1px solid #ddd",
+                  padding: "10px",
+                  marginBottom: "10px",
+                  borderRadius: "5px",
+                }}
               >
-                Penny Drop
-              </Button>
-            )}
+                <h4>Bank Details {index + 1}</h4>
+
+                <div className="form-group col-4">
+                  <label className="form-label">Bank Name</label>
+                  <TextField
+                    fullWidth
+                    variant="outlined"
+                    value={bankDetail.bank_name}
+                    disabled
+                  />
+                </div>
+
+                <div className="form-group col-6">
+                  <label className="form-label">Account Type</label>
+                  <Select fullWidth value={bankDetail.account_type} disabled>
+                    <MenuItem value="Savings">Savings</MenuItem>
+                    <MenuItem value="Current">Current</MenuItem>
+                  </Select>
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Account Number</label>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    value={bankDetail.account_number}
+                    disabled
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">IFSC</label>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    value={bankDetail.ifsc}
+                    disabled
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">Account Holder Name</label>
+                  <TextField
+                    fullWidth
+                    type="text"
+                    value={bankDetail.account_holder_name}
+                    disabled
+                  />
+                </div>
+
+                {/* Show Penny Drop Button only if is_verified is false */}
+                {/* {!bankDetail.is_verified && ( */}
+                <Button
+                  onClick={() => handlePennyDropforVendor(bankDetail)}
+                  sx={{ mt: 2 }}
+                  variant="contained"
+                  color="success"
+                  disabled={bankDetail.is_verified == true}
+                >
+                  Penny Drop
+                </Button>
+                {/* )} */}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose} variant="outlined" color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

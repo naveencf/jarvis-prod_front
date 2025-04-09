@@ -30,7 +30,7 @@ const PurchaseRequestPaymentApi = createApi({
                 url: `v1/vendor_payment_transactions?startDate=${startDate}&endDate=${endDate}`,
                 method: "GET",
             }),
-            transformResponse: (response) => response.data, // Optional: transform the response
+            transformResponse: (response) => response.data.filter((item) => item.payment_mode != "advanced-settled"), // Optional: transform the response
         }),
         getPaymentRequestTransactions: builder.query({
             query: ({ request_id }) => ({

@@ -22,6 +22,7 @@ const SarcasmNetwork = ({ selectedData, setSelectedData }) => {
     { label: 'HandlePicked Pages', value: 5 },
     { label: 'High Price Meme Pages', value: 6 },
     { label: 'Black Listed Pages', value: 7 },
+    { label: 'Disable', value: 9},
   ];
 
   const handleOptionChange = async (event, newValue) => {
