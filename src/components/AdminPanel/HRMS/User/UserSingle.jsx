@@ -22,6 +22,7 @@ import AppointmentLetter from "../../../PreOnboarding/AppointmentLetter";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 import OfferLetter from "../../../PreOnboarding/OfferLetter";
 import { useGlobalContext } from "../../../../Context/Context";
+import { calculateEMPPF } from "../../../../utils/CalculateEMPPF";
 const UserSingle = () => {
   const [loading, setLoading] = useState(false);
   const { toastAlert, toastError } = useGlobalContext();
@@ -156,21 +157,6 @@ const UserSingle = () => {
     }
   };
 
-  //This code Repetly Wirte same code write on LetterTab component ----------------------------------------------------------------------
-  let salary = user.salary;
-  let basicSalary = salary * 0.6;
-  let basicsal = (basicSalary <= 12300 ? salary * 0.8 : basicSalary).toFixed(0);
-  let EmployeePF = parseFloat(
-    (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
-  );
-
-  let EmployeerESIC = 0;
-
-  if (salary <= 21000) {
-    EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
-  }
-  const EMPPF = EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0);
-
   return (
     <>
       <div className="box">
@@ -181,7 +167,7 @@ const UserSingle = () => {
                 <OfferLetter
                   allUserData={user}
                   image64={image64}
-                  EMPPF={EMPPF}
+                  EMPPF={calculateEMPPF(user)}
                 />
               }
               fileName="OfferLetter.pdf"
@@ -199,7 +185,7 @@ const UserSingle = () => {
                 <AppointmentLetter
                   allUserData={user}
                   image64={image64}
-                  EMPPF={EMPPF}
+                  EMPPF={calculateEMPPF(user)}
                 />
               }
               fileName="AppointmentLetter.pdf"

@@ -7,7 +7,37 @@ import { Faders, X } from '@phosphor-icons/react';
 import { useSendPlanDetails } from '../plan-making/apiServices';
 import { useGetOperationContentCostQuery } from '../../Store/PageBaseURL';
 
-const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVideoCost, twitterTrendCost, setVideoUgcCost, setTwitterTrendCost, ugcVideoCount, setUgcVideoCount, setTwitterTrendCount, twitterTrendCount, setUpdatedCategories, setMergeCatList, updatedCategories, previewData, categories, setAgencyFees, agencyFees, selectedRow, handleAutomaticSelection, category, postCount, storyPerPage, planDetails, checkedDescriptions, downloadExcel, isDownloading, deliverableText, setDeliverableText, handleGetSpreadSheet }) => {
+const ExcelPreviewModalBeta = ({ 
+  open,
+  onClose,
+  sellingPrice,
+  handleSave, 
+  ugcVideoCost, 
+  twitterTrendCost, 
+  setVideoUgcCost, 
+  setTwitterTrendCost, 
+  ugcVideoCount, 
+  setUgcVideoCount, 
+  setTwitterTrendCount, 
+  twitterTrendCount, 
+  setUpdatedCategories, 
+  updatedCategories,
+  previewData, 
+  categories, 
+  setAgencyFees, 
+  agencyFees, 
+  selectedRow, 
+  handleAutomaticSelection, 
+  category, 
+  postCount, 
+  storyPerPage, 
+  planDetails, 
+  checkedDescriptions, 
+  downloadExcel, 
+  isDownloading, 
+  deliverableText, 
+  setDeliverableText, 
+  handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
   const [mainCategory, setMainCategory] = useState('');
@@ -236,11 +266,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVid
   const totalUgcVideoCost = planDetails && planDetails[0]?.ugc_video_cost ? planDetails[0]?.ugc_video_cost / planDetails[0]?.ugc_video_count : getOperationContentCost?.ugc_video_cost || 1;
   const multipliedCostUgc = totalUgcVideoCost * ugcVideoCount;
 
-  useEffect(() => {
-    if (planSuccess?.length) {
-      setMergeCatList(planSuccess);
-    }
-  }, [planSuccess]);
+
   return (
     <Modal className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable" open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
       <div
@@ -332,7 +358,7 @@ const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVid
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
                   <label htmlFor="old-category">Old Category</label>
-                  <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} label="Old Category" variant="outlined" />} />
+                  <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params}  variant="outlined" />} />
                 </div>
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
@@ -421,23 +447,25 @@ const ExcelPreviewModalBeta = ({ open, onClose, sellingPrice, handleSave, ugcVid
 
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
+                  <label>Main Category</label>
                   <Autocomplete
                     // value={`${mainCategory}`}
                     onChange={handleCategoryChange || []}
                     // getOptionLabel={(option) => option.label}
                     options={categories?.map((cat) => formatString(cat.page_category)) || []}
-                    renderInput={(params) => <TextField {...params} label="Main Category" variant="outlined" />}
+                    renderInput={(params) => <TextField {...params} variant="outlined" />}
                   />
                 </div>
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
+                <label>Merge Categories</label>
                   <Autocomplete
                     // value={`${mergedCategories}`}
                     // getOptionLabel={(option) => option.label}
                     onChange={(event, newValue) => setMergedCategories([newValue] || [])}
                     options={Object.keys(categoryData).filter((categoryName) => formatString(categoryName) !== formatString(mainCategory))}
-                    renderInput={(params) => <TextField {...params} label="Merge Categories" variant="outlined" />}
+                    renderInput={(params) => <TextField {...params} variant="outlined" />}
                   />
                 </div>
               </div>

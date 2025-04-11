@@ -109,7 +109,6 @@ const PlanMakingBeta = () => {
   const [showUnChecked, setShowUnCheked] = useState(false);
   const [selectedData, setSelectedData] = useState([]);
   const [searchPages, setSearchPages] = useState([]);
-  const [mergeCatList, setMergeCatList] = useState([]);
   const [showSearchColorRow, setShowSearchColorRow] = useState(false);
   const [leftSideDataUpdate, setLeftSideBarDataUpdate] = useState(false);
 
@@ -1116,7 +1115,7 @@ const PlanMakingBeta = () => {
       </div>
 
       {/* {toggleLeftNavbar && ( */}
-      <LeftSideBar totalFollowers={totalFollowers} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate} setMergeCatList={setMergeCatList} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
+      <LeftSideBar totalFollowers={totalFollowers} pageData={pageDetail} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate}  planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
       <div className="card">
         <div className="card-header flexCenterBetween">

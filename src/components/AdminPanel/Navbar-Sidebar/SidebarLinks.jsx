@@ -1882,7 +1882,7 @@ const SidebarLinks = () => {
               <NavLink className="collapse-item" to="/admin/pms-page-overview">
                 <i className="bi bi-dot"></i>Page
               </NavLink>
-              {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
+              {/* {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
               contextData &&
               contextData[4] &&
               contextData[4].insert_value === 1 ? (
@@ -1891,7 +1891,7 @@ const SidebarLinks = () => {
                 </NavLink>
               ) : (
                 ""
-              )}
+              )} */}
               {/* Plan X Beta */}
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
               contextData &&

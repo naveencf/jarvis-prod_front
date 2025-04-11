@@ -37,8 +37,6 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
   // Overview Data
   let totalPostsAndStories = 0;
   let totalCost = 0;
-  console.log("ugcVideoCost", ugcVideoCost);
-  console.log("twitter", twitterTrendCost);
   // Calculate GST
   const gst = totalCost * 0.18; // 18% GST
   const totalWithGst = totalCost + gst; // Total after GST

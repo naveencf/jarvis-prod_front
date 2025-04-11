@@ -21,6 +21,7 @@ import AssetSingleUser from "../../../Sim/AssetSingeUser/AssetSingleUser";
 import { CircularProgress } from "@mui/material";
 import { useGlobalContext } from "../../../../../../Context/Context";
 import { baseUrl } from "../../../../../../utils/config";
+import { calculateEMPPF } from "../../../../../../utils/CalculateEMPPF";
 
 // import GoogleSheetDownloader from "./googlesheet";
 
@@ -114,19 +115,6 @@ const Profile = () => {
       }
     }
   };
-  // const handleFileSelect = (event) => {
-  //   const file = event.target.files[0];
-  //   if (file) {
-  //     setProfileUpdate(file);
-
-  //     // Show preview of selected file
-  //     const reader = new FileReader();
-  //     reader.onloadend = () => {
-  //       setPreviewImage(reader.result);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
 
   useEffect(() => {
     getDocuments();
@@ -341,7 +329,11 @@ const Profile = () => {
                     <PDFDownloadLink
                       className="btn"
                       document={
-                        <OfferLetter allUserData={userData} image64={image64} />
+                        <OfferLetter
+                          allUserData={userData}
+                          image64={image64}
+                          EMPPF={calculateEMPPF(userData)}
+                        />
                       }
                       fileName="OfferLetter.pdf"
                     >
@@ -356,6 +348,7 @@ const Profile = () => {
                         <AppointmentLetter
                           allUserData={userData}
                           image64={image64}
+                          EMPPF={calculateEMPPF(userData)}
                         />
                       }
                       fileName="AppointmentLetter.pdf"

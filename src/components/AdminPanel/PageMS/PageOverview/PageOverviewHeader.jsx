@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import jwtDecode from "jwt-decode";
 import {
+  useGetAllCountWisePageQuery,
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
   useGetAllPageSubCategoryQuery,
@@ -95,6 +96,45 @@ function PageOverviewHeader({
     refetch: refetchPageList,
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+
+  const { data } = useGetAllCountWisePageQuery();
+  console.log(data, "dd----ds");
+  const categoryOptionsWithCount =
+    data?.category &&
+    Object.entries(data?.category)?.map(([label, count]) => {
+      const formattedLabel = formatString(label);
+      return {
+        label: `${formattedLabel}: ${count}`,
+        value: formattedLabel,
+      };
+    });
+  const subCategoryOptionsWithCount =
+    data?.subcategory &&
+    Object.entries(data?.subcategory)?.map(([label, count]) => {
+      const formattedLabel = formatString(label);
+      return {
+        label: `${formattedLabel}: ${count}`,
+        value: formattedLabel,
+      };
+    });
+  const profileDataOptionsWithCount =
+    data?.profile_type &&
+    Object.entries(data?.profile_type)?.map(([label, count]) => {
+      const formattedLabel = formatString(label);
+      return {
+        label: `${formattedLabel}: ${count}`,
+        value: formattedLabel,
+      };
+    });
+  const ownershipWithCount =
+    data?.ownership &&
+    Object.entries(data?.ownership)?.map(([label, count]) => {
+      const formattedLabel = formatString(label);
+      return {
+        label: `${formattedLabel}: ${count}`,
+        value: formattedLabel,
+      };
+    });
 
   // Sorting state
   const [sortField, setSortField] = useState("");
@@ -184,22 +224,22 @@ function PageOverviewHeader({
       setFilterFollowers(null);
     }
   };
-  categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
+  // categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
   useEffect(() => {
     const queryParams = [
       activeTab && `platform_name=${activeTab}`,
       categoryFilter && `page_category_name=${categoryFilter?.toLowerCase()}`,
       subCategoryFilter &&
-        `page_sub_category_name=${subCategoryFilter.toLowerCase()}`,
+      `page_sub_category_name=${subCategoryFilter.toLowerCase()}`,
       profileTypeFilter &&
-        `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
+      `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
       ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`,
       filterFollowers &&
-        `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
+      `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
       activenessFilter &&
-        `page_activeness=${activenessOptions
-          .find((option) => option.value === activenessFilter.toLowerCase())
-          ?.value?.toLowerCase()}`,
+      `page_activeness=${activenessOptions
+        .find((option) => option.value === activenessFilter.toLowerCase())
+        ?.value?.toLowerCase()}`,
       searchTerm && `search=${searchTerm.toLowerCase()}`,
       sortField && `sort_by=${sortField}&order=${sortOrder}`,
     ]
@@ -231,18 +271,19 @@ function PageOverviewHeader({
     );
   };
 
-  const subCategoryOptionsWithCount = subCategoryData?.map((res) => {
-    const count = getCount(
-      pageList,
-      "page_sub_category_name",
-      res.page_sub_category
-    );
-    return `${formatString(res.page_sub_category)} (${count})`;
-  });
-  const categoryOptionsWithCount = categoryData?.map((res) => {
-    const count = getCount(pageList, "page_category_name", res.page_category);
-    return `${formatString(res.page_category)} (${count})`;
-  });
+  // const subCategoryOptionsWithCount = subCategoryData?.map((res) => {
+  //   const count = getCount(
+  //     pageList,
+  //     "page_sub_category_name",
+  //     res.page_sub_category
+  //   );
+  //   return `${formatString(res.page_sub_category)} (${count})`;
+  // });
+
+  // const categoryOptionsWithCount = categoryData?.map((res) => {
+  //   const count = getCount(pageList, "page_category_name", res.page_category);
+  //   return `${formatString(res.page_category)} (${count})`;
+  // });
 
   const platformOptionsWithCount = platformData.map((res) => {
     const count = getCount(pageList, "platform_name", res.platform_name);
@@ -254,22 +295,24 @@ function PageOverviewHeader({
     return `${formatString(res.value)} (${count})`;
   });
 
-  const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
-    const count = getCount(pageList, "ownership_type", res);
-    return `${formatString(res)} (${count})`;
-  });
-  const profileDataOptionsWithCount = profileDataOptions.map((res) => {
-    const count = getCount(
-      pageList,
-      "page_profile_type_name",
-      res.profile_type
-    );
-    return `${formatString(res.profile_type)} (${count})`;
-  });
+  // const ownershipWithCount = ["Vendor", "Own", "Partnership"].map((res) => {
+  //   const count = getCount(pageList, "ownership_type", res);
+  //   return `${formatString(res)} (${count})`;
+  // });
+  // const profileDataOptionsWithCount = profileDataOptions.map((res) => {
+  //   const count = getCount(
+  //     pageList,
+  //     "page_profile_type_name",
+  //     res.profile_type
+  //   );
+  //   return `${formatString(res.profile_type)} (${count})`;
+  // });
 
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
+    console.log(optionWithCount, "optionWithCount")
     if (optionWithCount) {
+      console.log(optionWithCount.split(" (")[0], "optionWithCount")
       return optionWithCount.split(" (")[0];
     }
     return null;
@@ -525,24 +568,46 @@ function PageOverviewHeader({
           <div className="row thm_form">
             <div className="col-md-3 mb16">
               <Autocomplete
+                value={
+                  categoryOptionsWithCount?.find(
+                    (opt) => opt.value === categoryFilter
+                  ) || null
+                }
+                onChange={(event, newValue) =>
+                  setCategoryFilter(newValue ? newValue.value : "")
+                }
+                options={categoryOptionsWithCount}
+                getOptionLabel={(option) => option.label}
+                renderInput={(params) => (
+                  <TextField {...params} label="Category" />
+                )}
+              />
+
+              {/* <Autocomplete
                 value={categoryFilter}
                 onChange={(event, newValue) =>
+
                   setCategoryFilter(extractLabel(newValue))
                 }
                 options={categoryOptionsWithCount}
                 renderInput={(params) => (
                   <TextField {...params} label="Category" />
                 )}
-              />
+              /> */}
             </div>
 
             <div className="col-md-3 mb16">
               <Autocomplete
-                value={subCategoryFilter}
+                value={
+                  subCategoryOptionsWithCount?.find(
+                    (opt) => opt.value === subCategoryFilter
+                  ) || null
+                }
                 onChange={(event, newValue) =>
-                  setSubCategoryFilter(extractLabel(newValue))
+                  setSubCategoryFilter(newValue ? newValue.value : "")
                 }
                 options={subCategoryOptionsWithCount}
+                getOptionLabel={(option) => option.label}
                 renderInput={(params) => (
                   <TextField {...params} label="Subcategory" />
                 )}
@@ -550,11 +615,16 @@ function PageOverviewHeader({
             </div>
             <div className="col-md-3 mb16">
               <Autocomplete
-                value={profileTypeFilter}
+                value={
+                  profileDataOptionsWithCount?.find(
+                    (opt) => opt.value === profileTypeFilter
+                  ) || null
+                }
                 onChange={(event, newValue) =>
-                  setProfileTypeFilter(extractLabel(newValue))
+                  setProfileTypeFilter(newValue ? newValue.value : "")
                 }
                 options={profileDataOptionsWithCount}
+                getOptionLabel={(option) => option.label}
                 renderInput={(params) => (
                   <TextField {...params} label="Profile Type" />
                 )}
@@ -565,12 +635,27 @@ function PageOverviewHeader({
             </div> */}
 
             <div className="col-md-3 mb16">
-              <Autocomplete
+              {/* <Autocomplete
                 value={ownershipFilter}
                 onChange={(event, newValue) =>
                   setOwnershipFilter(extractLabel(newValue))
                 }
                 options={ownershipWithCount}
+                renderInput={(params) => (
+                  <TextField {...params} label="Ownership" />
+                )}
+              /> */}
+              <Autocomplete
+                value={
+                  ownershipWithCount?.find(
+                    (opt) => opt.value === ownershipFilter
+                  ) || null
+                }
+                onChange={(event, newValue) =>
+                  setOwnershipFilter(newValue ? newValue.value : "")
+                }
+                options={ownershipWithCount}
+                getOptionLabel={(option) => option.label}
                 renderInput={(params) => (
                   <TextField {...params} label="Ownership" />
                 )}

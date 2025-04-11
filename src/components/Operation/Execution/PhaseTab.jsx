@@ -196,12 +196,18 @@ const PhaseTab = ({
                   onClick={() => handleTabClick(phase, index)}
                 >
                   {phase.label ? phase.label : "service"}
-                  <button
-                    className="ml-2 px-2 py-1 border border-secondary rounded-pill "
+                  <span
+                    itemType="button"
+                    className="ml-2 px-2 py-1 border-radius-1"
+                    style={{
+                      backgroundColor: "lightgray",
+                      border: "none",
+                      borderRadius: "4px",
+                    }}
                     onClick={() => handleOpen(filteredData)}
                   >
                     {filteredData?.length}
-                  </button>
+                  </span>
                 </button>
               );
             })}

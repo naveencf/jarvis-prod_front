@@ -51,7 +51,21 @@ import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
 import { render } from "react-dom";
 import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
 import { Link } from "react-router-dom";
-
+const key = [
+  { price_key: "instagram_post" },
+  {
+    price_key: "instagram_story",
+  },
+  {
+    price_key: "instagram_reel",
+  },
+  {
+    price_key: "instagram_carousel",
+  },
+  {
+    price_key: "instagram_both",
+  },
+];
 const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const [selectedPlan, setSelectedPlan] = useState(null);
@@ -241,6 +255,26 @@ const CampaignExecution = () => {
     formData.append("campaignId", row.campaignId);
     row?.platform_id && formData.append("platform_id", row?.platform_id);
 
+    if (row.postTypeDecision == -1) {
+      if (row.postType == "") {
+        toastError("Please select the post type");
+        return;
+      } else {
+        formData.append(
+          "price_key",
+          row?.postType == "REEL"
+            ? key[2].price_key
+            : row?.postType == "CAROUSEL"
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key
+        );
+      }
+    }
+
     if (vendorName) {
       formData.append(
         "vendor_id",
@@ -387,27 +421,13 @@ const CampaignExecution = () => {
   // }, [selectedPrice]);
   async function handlePriceUpdate(row) {
     try {
-      const key = [
-        { price_key: "instagram_post" },
-        {
-          price_key: "instagram_story",
-        },
-        {
-          price_key: "instagram_reel",
-        },
-        {
-          price_key: "instagram_carousel",
-        },
-        {
-          price_key: "instagram_both",
-        },
-      ];
-
       const data = {
         shortCode: row.shortCode,
         platform_name: row.platform_name,
         price_key:
-          row?.postType == "REEL"
+          row?.postType == ""
+            ? ""
+            : row?.postType == "REEL"
             ? key[2].price_key
             : row?.postType == "CAROUSEL"
               ? key[3].price_key
@@ -422,7 +442,7 @@ const CampaignExecution = () => {
         return;
       }
       if (!data.price_key) {
-        toastError("Please enter the price");
+        toastError("Please fill the details and  save it");
         return;
       }
 

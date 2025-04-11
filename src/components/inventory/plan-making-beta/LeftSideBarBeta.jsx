@@ -32,7 +32,6 @@ const LeftSideBarBeta = ({
   totalCost,
   totalPostsPerPage,
   id,
-  setMergeCatList,
   totalPagesSelected,
   totalDeliverables,
   totalStoriesPerPage,
@@ -60,6 +59,7 @@ const LeftSideBarBeta = ({
   ownPages,
   planDetails,
   checkedDescriptions,
+  pageData
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
@@ -81,7 +81,6 @@ const LeftSideBarBeta = ({
   const [ugcVideoCost, setVideoUgcCost] = useState();
   const [ugcVideoCount, setUgcVideoCount] = useState(0);
 
-  
   const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
@@ -96,7 +95,7 @@ const LeftSideBarBeta = ({
   const formatFollowers = (followers) => {
     return (followers / 1000000).toFixed(1) + 'M';
   };
- 
+
   const location = useLocation();
   const isPlanPrice = location?.pathname?.split('/')[2] === 'pms-plan-pricing' ? true : false;
   const planStatus = planDetails && planDetails[0]?.plan_status;
@@ -113,7 +112,17 @@ const LeftSideBarBeta = ({
   //   return platformMap[platformId] || 'Unknown';
   // };
 
+
+
   const HandleSavePlan = async () => {
+    const planDataWithCategory = planData.map((planItem) => {
+      const matchedPage = pageData.find(page => page.page_name.toLowerCase() === planItem.page_name.toLowerCase());
+      return {
+        ...planItem,
+        category_name: matchedPage?.category_name || 'Unknown',
+      };
+    });
+
     try {
       const result = await Swal.fire({
         title: 'Do you want to close the plan?',
@@ -137,7 +146,7 @@ const LeftSideBarBeta = ({
         cost_price: totalCost,
         own_pages_cost_price: ownPagesCost,
       };
-      const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planData, planStatus)]);
+      const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planDataWithCategory, planStatus)]);
 
       if (fetchResponse.ok) {
         Swal.fire({
@@ -167,7 +176,7 @@ const LeftSideBarBeta = ({
       });
     }
   };
- 
+
   const platformCategory = Object.keys(updatedCategories).length > 0 ? updatedCategories : category;
 
   const handleDownload = async () => {
@@ -218,7 +227,7 @@ const LeftSideBarBeta = ({
 
     return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
-   const handlePreviewExcel = () => {
+  const handlePreviewExcel = () => {
     const preview = selectedRow?.map((page) => {
       const platformName = getPlatformName(page.platform_id);
       const postCountForPage = postCount[page._id] || 0;
@@ -315,20 +324,20 @@ const LeftSideBarBeta = ({
   function truncateString(inputString, maxLength = 10) {
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
-   const handleSave = async () => {
+  const handleSave = async () => {
     setLeftSideBarDataUpdate(true);
     const payload = {
       id: planDetails && planDetails[0]._id,
       plan_status: 'open',
       plan_name: planName,
-      selling_price: sellingPrice,
+      selling_price: sellingPrice ? Number(sellingPrice) : Number(planDetails?.[0]?.selling_price),
       brief: planBrief,
-      ugc_video_count:ugcVideoCount,
-      twitter_trend_count:twitterTrendCount,
-      ugc_video_cost:ugcVideoCost,
-      twitter_trend_cost:twitterTrendCost,
-      content_cost:contentCost,
-      operation_cost:operationCost
+      ugc_video_count: ugcVideoCount,
+      twitter_trend_count: twitterTrendCount,
+      ugc_video_cost: ugcVideoCost,
+      twitter_trend_cost: twitterTrendCost,
+      content_cost: contentCost,
+      operation_cost: operationCost
       // plan_saved: true,
       // post_count: totalPostCount,
       // story_count: totalStoryCount,
@@ -351,15 +360,15 @@ const LeftSideBarBeta = ({
   useEffect(() => {
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
- 
-   useEffect(()=> {
-    if(planDetails){
+
+  useEffect(() => {
+    if (planDetails) {
       setUgcVideoCount(planDetails?.[0]?.ugc_video_count)
       setTwitterTrendCount(planDetails?.[0]?.twitter_trend_count)
       setVideoUgcCost(planDetails?.[0]?.ugc_video_cost)
       setTwitterTrendCost(planDetails?.[0]?.twitter_trend_cost)
     }
-  },[planDetails])
+  }, [planDetails])
 
   const handleEditing = () => {
     setIsEditing(!isEditing);
@@ -630,7 +639,7 @@ const LeftSideBarBeta = ({
             ))}
           </div>
         </div>
-        <ExcelPreviewModalBeta open={openPreviewModal} sellingPrice={planDetails&& planDetails?.[0]?.selling_price} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost}  twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} setMergeCatList={setMergeCatList} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
+        <ExcelPreviewModalBeta open={openPreviewModal} sellingPrice={planDetails && planDetails?.[0]?.selling_price} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost} twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
         <div className="planSmall planLarge">
           {['own', 'vendor'].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
