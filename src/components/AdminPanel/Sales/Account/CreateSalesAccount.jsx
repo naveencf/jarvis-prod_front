@@ -241,7 +241,7 @@ const CreateSalesAccount = () => {
     try {
       await editDep(payload).unwrap();
       setEditFlag(false);
-    } catch (error) {}
+    } catch (error) { }
   };
   const handleEdit = async (row, setEditFlag) => {
     const payload = {
@@ -251,7 +251,7 @@ const CreateSalesAccount = () => {
     try {
       await edit(payload).unwrap();
       setEditFlag(false);
-    } catch (error) {}
+    } catch (error) { }
   };
   const ViewBrandCategoryColumns = [
     {
@@ -491,7 +491,7 @@ const CreateSalesAccount = () => {
   }, [gstDetails]);
 
   useEffect(() => {
-    if (documents.length > 0) {
+    if (documents?.length > 0) {
       const gstDoc = documents.find(
         (doc) => doc.document_master_id === "665dbc0d1df407940c078fd5"
       );
@@ -503,7 +503,7 @@ const CreateSalesAccount = () => {
         })
           .unwrap()
           .then((res) => {
-            setAccountName(res.legal_name.value);
+            setAccountName(res?.legal_name.value);
             setGstDetails(res);
           });
     }
@@ -1248,13 +1248,13 @@ const CreateSalesAccount = () => {
                     setSelectedId={setSelectedBrand}
                     required
                     astric
-                    // disabled={
-                    //   allAccountTypes?.find(
-                    //     (data) => data._id === selectedAccountType
-                    //   )?.account_type_name !== "Agency"
-                    //     ? false
-                    //     : true
-                    // }
+                  // disabled={
+                  //   allAccountTypes?.find(
+                  //     (data) => data._id === selectedAccountType
+                  //   )?.account_type_name !== "Agency"
+                  //     ? false
+                  //     : true
+                  // }
                   />
                   <span className="form-error">
                     Brand name & Account name can be different eg: Brand Name:
@@ -1738,8 +1738,8 @@ const CreateSalesAccount = () => {
                 ? "Submit"
                 : "Save"
               : id == 0
-              ? "Submitting..."
-              : "Saving..."}
+                ? "Submitting..."
+                : "Saving..."}
           </button>
           <button
             className="btn cmnbtn btn-warning"

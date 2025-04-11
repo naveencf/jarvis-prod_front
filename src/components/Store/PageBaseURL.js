@@ -96,6 +96,12 @@ export const PageBaseURL = createApi({
       },
     }),
 
+    getAllCountWisePage: builder.query({
+      query: () => `/v1/count_page_group
+`,
+      transformResponse: (response) => response.data,
+    }),
+
     //Page ALl Pages
     getAllPageList: builder.query({
       query: ({ decodedToken, userID, pagequery, limit, page }) => {
@@ -352,4 +358,5 @@ export const {
   useUpdateOperationContentCostMutation,
   useGetPageByVendorIdQuery,
   useGetPageLogsByIdQuery,
+  useGetAllCountWisePageQuery,
 } = PageBaseURL;

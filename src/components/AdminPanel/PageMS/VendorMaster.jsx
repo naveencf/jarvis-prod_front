@@ -1402,10 +1402,10 @@ const VendorMaster = () => {
                   maxLength={6}
                   fieldGrid={4}
                   onChange={handleCompPincode}
-                  // onChange={(e) => {
-                  //   if (isNaN(e.target.value)) return;
-                  //   setCompPin(e.target.value);
-                  // }}
+                // onChange={(e) => {
+                //   if (isNaN(e.target.value)) return;
+                //   setCompPin(e.target.value);
+                // }}
                 />
               </div>
             </>
@@ -1656,7 +1656,7 @@ const VendorMaster = () => {
                 )}
               </div>
             </div>
-            <div className="col-lg-4 col-md-4 col-12 p0">
+            {/* <div className="col-lg-4 col-md-4 col-12 p0">
               <FieldContainer
                 label="Vendor Legal Name "
                 fieldGrid={12}
@@ -1665,7 +1665,7 @@ const VendorMaster = () => {
                   setVendorLegalName(e.target.value);
                 }}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -1889,16 +1889,16 @@ const VendorMaster = () => {
 
                 {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
                   bankRows[i].payment_method == "666856624366007df1dfacc8") && (
-                  <FieldContainer
-                    label={"Registered Mobile Number"}
-                    value={bankRows[i].registered_number}
-                    required={false}
-                    fieldGrid={4}
-                    type="number"
-                    onChange={(e) => handleRegisteredMobileChange(e, i)}
-                    disabled={row.is_verified} // Disable if _id exists
-                  />
-                )}
+                    <FieldContainer
+                      label={"Registered Mobile Number"}
+                      value={bankRows[i].registered_number}
+                      required={false}
+                      fieldGrid={4}
+                      type="number"
+                      onChange={(e) => handleRegisteredMobileChange(e, i)}
+                      disabled={row.is_verified} // Disable if _id exists
+                    />
+                  )}
                 <Divider sx={{ mb: 2 }} />
                 {i > 0 && (
                   <IconButton

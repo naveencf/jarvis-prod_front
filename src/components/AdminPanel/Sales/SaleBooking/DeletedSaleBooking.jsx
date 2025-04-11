@@ -25,7 +25,7 @@ const DeletedSaleBooking = () => {
     data: deletedSaleBookingData,
     error: deletedSaleBookingError,
     isLoading: deletedSaleBookingLoading,
-  } = useGetAllNewDeletedSaleQuery();
+  } = useGetAllNewDeletedSaleQuery(loginUserId, { skip: !loginUserRole });
 
   const {
     data: creditApprovalData,

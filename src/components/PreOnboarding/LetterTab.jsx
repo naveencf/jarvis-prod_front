@@ -25,6 +25,7 @@ import PDFHeader from "./PDFHeader.jsx";
 import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import OfferLetter from "./OfferLetter.jsx";
 import AppointmentLetter from "./AppointmentLetter.jsx";
+import { calculateEMPPF } from "../../utils/CalculateEMPPF.js";
 
 const LetterTab = ({ allUserData, gettingData }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -60,26 +61,6 @@ const LetterTab = ({ allUserData, gettingData }) => {
         setReason("");
       });
   };
-
-  let salary = UserDetails?.salary;
-  let basicSalary = salary * 0.6;
-  let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(0);
-  let EmployeePF = parseFloat(
-    (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
-  );
-
-  let EmployeerESIC = 0;
-
-  if (
-    salary <= 21000 &&
-    allUserData.emergency_contact_person_name2 === "pf_and_esic"
-  ) {
-    EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
-  }
-  const EMPPF =
-    allUserData.emergency_contact_person_name2 === "pf_and_esic"
-      ? EmployeePF * 12 + (salary <= 21000 ? EmployeerESIC * 12 : 0)
-      : 0;
 
   const handelClose = () => {
     setpreview(!previewOffer);
@@ -232,7 +213,7 @@ const LetterTab = ({ allUserData, gettingData }) => {
                         <OfferLetter
                           allUserData={allUserData}
                           image64={image64}
-                          EMPPF={EMPPF}
+                          EMPPF={calculateEMPPF(allUserData)}
                         />
                       }
                       fileName="OfferLetter.pdf"
@@ -246,7 +227,7 @@ const LetterTab = ({ allUserData, gettingData }) => {
                         <AppointmentLetter
                           allUserData={allUserData}
                           image64={image64}
-                          EMPPF={EMPPF}
+                          EMPPF={calculateEMPPF(allUserData)}
                         />
                       }
                       fileName="AppointmentLetter.pdf"

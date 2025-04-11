@@ -526,7 +526,7 @@ How are you doing today?`}
           </div>
         )}
 
-        {contextData?.find((data) => data?._id == 64)?.view_value !== 1 && (
+        {contextData?.find((data) => data?._id == 64)?.view_value == 1 && (
           <div className="col">
             <NavLink to="/admin/deleted-sales-booking">
               <div className="card shadow-none bgDangerLight">

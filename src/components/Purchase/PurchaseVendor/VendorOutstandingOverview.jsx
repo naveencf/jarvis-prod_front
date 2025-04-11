@@ -25,9 +25,9 @@ const VendorOutstandingOverview = () => {
 
 
 
-    useEffect(() => {
-        fetchVendors("abh");
-    }, []);
+  useEffect(() => {
+    fetchVendors("abh");
+  }, []);
 
 
   // Debounced function to call the API
@@ -91,11 +91,19 @@ const VendorOutstandingOverview = () => {
       key: "vendor_outstandings",
       name: "Outstanding",
       width: 200,
+      renderRowCell: (row) => {
+        const value = row.vendor_outstandings ?? 0;
+        return Math.round(value);
+      }
     },
     {
       key: "vendor_total_remaining_advance_amount",
       name: "Advance",
       width: 200,
+      renderRowCell: (row) => {
+        const value = row.vendor_total_remaining_advance_amount ?? 0;
+        return Math.round(value);
+      }
     },
     {
       key: "primary_page_name",

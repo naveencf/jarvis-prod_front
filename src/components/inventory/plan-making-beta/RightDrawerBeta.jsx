@@ -187,14 +187,14 @@ const RightDrawerBeta = ({
   const deSelectAllRows = () => {
     // Filter out rows that are part of the current table data
     const filtered = selectedRows?.filter((row) => !getTableData.some((page) => page.page_name === row.page_name));
-
+    
     // Create updated state objects for resetting values
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
 
     // Iterate over the current table data to reset their values
-    getTableData.forEach((row) => {
+    getTableData?.forEach((row) => {
       // Remove post and story values for this row
       delete updatedPostValues[row._id];
       delete updatedStoryValues[row._id];
