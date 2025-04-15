@@ -102,7 +102,10 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
     }
   });
 
-  const platforms = ['Instagram', 'Facebook', 'YouTube', 'Twitter', 'Snapchat', 'Thread'];
+  const platforms = [
+    'Instagram', 'Facebook', 'Twitter', 'YouTube', 'SnapChat', 'Whatsapp', 'Linkedin', 'Telegram', 'Sharechat', 'Moj', 'Thread'
+  ];
+
   var serialNumber = 1;
   for (const platform of platforms) {
     const platformData = selectedRow?.filter((page) => !!page.platform_id);
@@ -304,7 +307,7 @@ export const downloadExcel = async (selectedRow, category, postCount, storyPerPa
 
       // Group pages into categories based on platform
       const groupedPages = platformPages.reduce((acc, page) => {
-        const pageLink = `https://www.${platform.toLowerCase()}.com/${page.page_name}`;
+        const pageLink = page.page_link;
         acc[platform] = acc[platform] || [];
 
         acc[platform].push({
