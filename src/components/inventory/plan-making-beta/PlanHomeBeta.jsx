@@ -527,14 +527,13 @@ function PlanHomeBeta() {
         //     isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
         //   },
         // });
-        setSubmitLoader(false);
         const planId = result.data._id;
         if (isEdit) {
           fetchPlans();
         } else {
           navigate(`/admin/pms-plan-making/${planId}`);
         }
-      } else {
+      } else {  
         Swal.fire({
           icon: 'error',
           title: 'Failed to save plan',
@@ -549,14 +548,13 @@ function PlanHomeBeta() {
         text: 'Something went wrong. Please try again later.',
       });
     }
-
+    setSubmitLoader(false);
     setOpenDialog(false);
     setIsEdit(false);
     setSelectedPlanId(null);
   };
 
   const isSubmitDisabled = submitLoader || !planDetails.planName || !inputValue || (planDetails.brandType === 'existing' && !planDetails.accountId) || !planDetails.salesExecutiveId;
-
   const handleDuplicateClick = (params) => {
     const planId = params.id;
     setDuplicatePlanId(planId);

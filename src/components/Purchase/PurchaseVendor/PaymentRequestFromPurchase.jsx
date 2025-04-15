@@ -1,34 +1,71 @@
-import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Checkbox, FormControlLabel, Button, MenuItem, List, ListItem, ListItemText, Stack, Autocomplete, IconButton, Typography } from '@mui/material';
-import { Select, FormControl, InputLabel } from '@mui/material';
-import { useAddPurchaseMutation, useAdvancedPaymentSettlementMutation, useDeletePurchaseRequestMutation, useGetAdvancedPaymentQuery, useGetVendorFinancialDetailQuery, useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../Store/API/Purchase/PurchaseRequestPaymentApi';
-import { useEffect } from 'react';
-import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../utils/config';
-import axios from 'axios';
-import formatString from '../../../utils/formatString';
-import { useGlobalContext } from '../../../Context/Context';
-import jwtDecode from 'jwt-decode';
-import { useGetVendorDocumentByVendorDetailQuery } from '../../Store/reduxBaseURL';
-import VendorAdvanceSettlement from './VendorAdvanceSettlement';
-import VendorAdavanceRequest from './VendorAdavanceRequest';
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  Button,
+  MenuItem,
+  List,
+  ListItem,
+  ListItemText,
+  Stack,
+  Autocomplete,
+  IconButton,
+  Typography,
+} from "@mui/material";
+import { Select, FormControl, InputLabel } from "@mui/material";
+import {
+  useAddPurchaseMutation,
+  useAdvancedPaymentSettlementMutation,
+  useDeletePurchaseRequestMutation,
+  useGetAdvancedPaymentQuery,
+  useGetVendorFinancialDetailQuery,
+  useGetVendorPaymentRequestsQuery,
+  useUpdatePurchaseRequestMutation,
+} from "../../Store/API/Purchase/PurchaseRequestPaymentApi";
+import { useEffect } from "react";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../../utils/config";
+import axios from "axios";
+import formatString from "../../../utils/formatString";
+import { useGlobalContext } from "../../../Context/Context";
+import jwtDecode from "jwt-decode";
+import { useGetVendorDocumentByVendorDetailQuery } from "../../Store/reduxBaseURL";
+import VendorAdvanceSettlement from "./VendorAdvanceSettlement";
+import VendorAdavanceRequest from "./VendorAdavanceRequest";
 import CloseIcon from "@mui/icons-material/Close";
-import PDFExtractorForInvoice from '../../Finance/Purchase Management/PendingPaymentRequest/Components/PDFExtractorForInvoice';
+import PDFExtractorForInvoice from "../../Finance/Purchase Management/PendingPaymentRequest/Components/PDFExtractorForInvoice";
 
-const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialog, vendorDetail, setVendorDetail, userName }) => {
-  const token = sessionStorage.getItem('token');
+const PaymentRequestFromPurchase = ({
+  reqestPaymentDialog,
+  setReqestPaymentDialog,
+  vendorDetail,
+  setVendorDetail,
+  userName,
+}) => {
+  const token = sessionStorage.getItem("token");
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(vendorDetail._id);
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
-  const [addPurchase, { isLoading, isSuccess, isError }] = useAddPurchaseMutation();
-  const [updatePurchaseRequest, { isLoading: UpdateLoading }] = useUpdatePurchaseRequestMutation();
+  const [addPurchase, { isLoading, isSuccess, isError }] =
+    useAddPurchaseMutation();
+  const [updatePurchaseRequest, { isLoading: UpdateLoading }] =
+    useUpdatePurchaseRequestMutation();
   const [deletePurchaseRequest] = useDeletePurchaseRequestMutation();
-  const { isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery();
-  const [vendorPhpDetail, setVendorPhpDetail] = useState('');
-  const [vendorBankDetail, setVendorBankDetail] = useState('');
+  const {
+    isLoading: requestLoading,
+    error,
+    refetch: refetchPaymentRequest,
+  } = useGetVendorPaymentRequestsQuery();
+  const [vendorPhpDetail, setVendorPhpDetail] = useState("");
+  const [vendorBankDetail, setVendorBankDetail] = useState("");
   const [selectedBankIndex, setSelectedBankIndex] = useState(0);
   const [selectedValues, setSelectedValues] = useState([]);
-  const [viewImgSrc, setViewImgSrc] = useState('');
+  const [viewImgSrc, setViewImgSrc] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
   const [extractedData, setExtractedData] = useState({});
   const [formData, setFormData] = useState({
@@ -37,14 +74,14 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     request_amount: 0,
     gst_amount: 0,
     base_amount: 0,
-    priority: 'high',
-    invc_no: '',
-    invc_date: '',
-    remark_audit: '',
-    invc_img: '',
+    priority: "high",
+    invc_no: "",
+    invc_date: "",
+    remark_audit: "",
+    invc_img: "",
     request_by: userName,
     outstandings: 0,
-    payment_type: 'payment',
+    payment_type: "payment",
     // advanced_payment_id: null,
     advance_name: "",
     at_price: "",
@@ -54,37 +91,36 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     page_list: [],
     page_name: "",
     // page_id: null,
-
   });
   const [isGSTAvailable, setIsGSTAvailable] = useState(false);
-  const [selectedFileName, setSelectedFileName] = useState('');
-  const [selectedFile, setSelectedFile] = useState('');
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [selectedFile, setSelectedFile] = useState("");
   const [selectedPaymentType, setSelectedPaymentType] = useState("payment");
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [isPDF, setIsPDF] = React.useState(false);
   const [mandateDocuments, setMandateDocuments] = useState(false);
   const [tdsDeductionMandatory, setTdsDeductionMandatory] = useState(false);
-  const { data: vendorInvoices, isLoading: invoicesLoading } = useGetVendorFinancialDetailQuery(vendorDetail._id);
-  console.log(vendorInvoices, "vendorInvoices")
-  console.log(venodrDocuments, "venodrDocuments", mandateDocuments)
+  const { data: vendorInvoices, isLoading: invoicesLoading } =
+    useGetVendorFinancialDetailQuery(vendorDetail._id);
+  console.log(vendorInvoices, "vendorInvoices");
+  console.log(venodrDocuments, "venodrDocuments", mandateDocuments);
   useEffect(() => {
-    console.log(extractedData, "extractedData")
+    console.log(extractedData, "extractedData");
     if (extractedData.accountNumber && vendorBankDetail) {
-      const bankIndex = vendorBankDetail.findIndex((bank) =>
-        bank.account_number == extractedData.accountNumber
+      const bankIndex = vendorBankDetail.findIndex(
+        (bank) => bank.account_number == extractedData.accountNumber
       );
       setSelectedBankIndex(bankIndex);
     }
-  }, [extractedData])
-  console.log(token, "token")
+  }, [extractedData]);
+  console.log(token, "token");
   useEffect(() => {
     if (vendorInvoices && vendorInvoices?.totalRequestedAmount >= 100000) {
       setTdsDeductionMandatory(true);
     }
-  }, [vendorInvoices])
+  }, [vendorInvoices]);
   useEffect(() => {
     if (vendorDetail) {
-
       axios
         .post(phpBaseUrl + `?view=getvendorDataListvid`, {
           vendor_id: vendorDetail?.vendor_id,
@@ -96,11 +132,15 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
           }
         });
       axios
-        .get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        })
+        .get(
+          `${baseUrl}` +
+            `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
         .then((res) => {
           if (res.status == 200) {
             setVendorBankDetail(res.data.data);
@@ -112,9 +152,8 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toISOString().split('T')[0]; // gives YYYY-MM-DD
+    return date.toISOString().split("T")[0]; // gives YYYY-MM-DD
   };
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -125,11 +164,20 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
       const updatedData = { ...prev, [name]: value };
       const outstandingPhp = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
-      const outstandingVendor = Number(vendorDetail?.vendor_outstandings) || Number(vendorDetail?.outstandings) || 0;
+      const outstandingVendor =
+        Number(vendorDetail?.vendor_outstandings) ||
+        Number(vendorDetail?.outstandings) ||
+        0;
       const totalOutstanding = (outstandingPhp + outstandingVendor) * 1.18;
 
-      if (selectedPaymentType === "payment" && vendorPhpDetail?.length && numericValue > totalOutstanding) {
-        toastError("Payment is not allowed more than outstanding. You can request Advance or Upfront Payment");
+      if (
+        selectedPaymentType === "payment" &&
+        vendorPhpDetail?.length &&
+        numericValue > totalOutstanding
+      ) {
+        toastError(
+          "Payment is not allowed more than outstanding. You can request Advance or Upfront Payment"
+        );
         return prev; // Preserve previous state
       }
       // Handle GST Calculation Logic
@@ -146,7 +194,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       if (name === "request_amount") {
         if (isGSTAvailable) {
           updatedData.gst_amount = ((numericValue * 18) / 118).toFixed(2);
-          updatedData.base_amount = (numericValue - updatedData.gst_amount).toFixed(2);
+          updatedData.base_amount = (
+            numericValue - updatedData.gst_amount
+          ).toFixed(2);
         } else {
           updatedData.base_amount = numericValue.toFixed(2);
           updatedData.gst_amount = "0";
@@ -155,7 +205,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       return updatedData;
     });
   };
-  console.log(vendorDetail, "vendorDetail")
+  console.log(vendorDetail, "vendorDetail");
   useEffect(() => {
     // Request Edit Case
     if (vendorDetail && vendorDetail.request_id && vendorBankDetail) {
@@ -165,7 +215,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
           ? bank.account_number === vendorDetail.account_number
           : bank.upi_id === vendorDetail.vpa
       );
-      setSelectedPaymentType(vendorDetail?.payment_type)
+      setSelectedPaymentType(vendorDetail?.payment_type);
       // If a matching bank is found, set the selected index
       if (bankIndex !== -1) {
         setSelectedBankIndex(bankIndex);
@@ -177,18 +227,18 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         request_amount: vendorDetail.request_amount,
         // invc_date: vendorDetail.invc_date || "",
         // invc_date: formatDate(apiResponse.invc_date),
-        invc_date: vendorDetail.invc_date ? vendorDetail.invc_date.split('T')[0] : '', // handles ISO date
+        invc_date: vendorDetail.invc_date
+          ? vendorDetail.invc_date.split("T")[0]
+          : "", // handles ISO date
         remark_audit: vendorDetail.remark_audit,
         invc_img: vendorDetail.invc_img,
         invc_no: vendorDetail.invc_no,
-
       }));
-      setSelectedFileName(vendorDetail.invc_img)
+      setSelectedFileName(vendorDetail.invc_img);
       if (vendorDetail.gst_amount > 0) {
         setIsGSTAvailable(true);
       }
-    }
-    else {
+    } else {
       // console.log("Adding Request");
       // setSelectedBankIndex(""); // Reset when adding a new request
     }
@@ -217,7 +267,6 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     }
   }, [venodrDocuments]); // Updated dependency to watch vendorDocuments
 
-
   const handleGSTChange = (isChecked) => {
     // console.log(isChecked, "hasGST")
     setIsGSTAvailable(isChecked);
@@ -227,7 +276,9 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
       if (isChecked) {
         updatedData.gst_amount = ((requestAmount * 18) / 118).toFixed(2);
-        updatedData.base_amount = (requestAmount - updatedData.gst_amount).toFixed(2);
+        updatedData.base_amount = (
+          requestAmount - updatedData.gst_amount
+        ).toFixed(2);
       } else {
         updatedData.gst_amount = "0.00";
         updatedData.base_amount = requestAmount.toFixed(2);
@@ -239,17 +290,20 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      let verify = file.name?.split(".")?.pop()?.toLowerCase() === "pdf";
+    const modifiedFile = new File([file], file.name.replace(/#/g, ""), {
+      type: file.type,
+    });
+    if (modifiedFile) {
+      let verify =
+        modifiedFile.name?.split(".")?.pop()?.toLowerCase() === "pdf";
       setIsPDF(verify);
-      setSelectedFileName(file.name);
-      setFormData({ ...formData, invc_img: file });
+      setSelectedFileName(modifiedFile.name);
+      setFormData({ ...formData, invc_img: modifiedFile });
       setOpenImageDialog(true);
-      // Create a URL for the selected file
-      const url = URL.createObjectURL(file);
-      setViewImgSrc(url)
-      setSelectedFile(file)
-      console.log(verify, "verify")
+      // Create a URL for the selected modifiedFile
+      const url = URL.createObjectURL(modifiedFile);
+      setViewImgSrc(url);
+      setSelectedFile(modifiedFile);
     }
   };
   const validateDate = (date) => {
@@ -274,13 +328,12 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     e.preventDefault();
 
     if (tdsDeductionMandatory && !mandateDocuments) {
-      toastError("For tds GST or PAN required as Vendor Payment limit reached")
+      toastError("For tds GST or PAN required as Vendor Payment limit reached");
       return;
-    }
-    else if (selectedFileName != "") {
+    } else if (selectedFileName != "") {
       // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
-        toastError("Invoice number is required.")
+        toastError("Invoice number is required.");
         return;
       }
       const dateError = validateDate(formData.invc_date);
@@ -297,18 +350,21 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       toastError("Invoice in mandatory for amount above 30k. ");
       return;
     } else if (formData.request_amount >= 30000 && !mandateDocuments) {
-      toastError("Vendor Profile is incomplete.Please add GST or PAN details first.");
+      toastError(
+        "Vendor Profile is incomplete.Please add GST or PAN details first."
+      );
       return;
     }
     // Ensure selected bank details are valid before submitting
     const selectedBank = vendorBankDetail[selectedBankIndex];
     if (!selectedBank) {
-      toastError('Please select a valid bank.');
+      toastError("Please select a valid bank.");
       return;
     }
     const payload = new FormData();
     Object.keys(formData).forEach((key) => {
-      if (key !== "outstanding") { // Exclude 'outstanding' key
+      if (key !== "outstanding") {
+        // Exclude 'outstanding' key
         payload.append(key, formData[key]);
       }
     });
@@ -319,7 +375,7 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     payload.append("vpa", selectedBank?.upi_id || "");
     payload.append("is_bank_verified", selectedBank?.is_verified);
 
-    console.log(formData.invc_date, "payload")
+    console.log(formData.invc_date, "payload");
     try {
       await addPurchase(payload).unwrap();
       toastAlert("Payment requested successfully!");
@@ -345,13 +401,12 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     if (tdsDeductionMandatory && !mandateDocuments) {
-      toastError("For tds GST or PAN required as Vendor Payment limit reached")
+      toastError("For tds GST or PAN required as Vendor Payment limit reached");
       return;
-    }
-    else if (selectedFileName != "") {
+    } else if (selectedFileName != "") {
       // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
-        toastError("Invoice number is required.")
+        toastError("Invoice number is required.");
         return;
       }
       const dateError = validateDate(formData.invc_date);
@@ -368,18 +423,21 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
       toastError("Invoice in mandatory for amount above 30k. ");
       return;
     } else if (formData.request_amount >= 30000 && !mandateDocuments) {
-      toastError("Vendor Profile is incomplete.Please add GST or PAN details first.");
+      toastError(
+        "Vendor Profile is incomplete.Please add GST or PAN details first."
+      );
       return;
     }
     // Ensure selected bank details are valid before submitting
     const selectedBank = vendorBankDetail[selectedBankIndex];
     if (!selectedBank) {
-      toastError('Please select a valid bank.');
+      toastError("Please select a valid bank.");
       return;
     }
     const payload = new FormData();
     Object.keys(formData).forEach((key) => {
-      if (key !== "outstanding") { // Exclude 'outstanding' key
+      if (key !== "outstanding") {
+        // Exclude 'outstanding' key
         payload.append(key, formData[key]);
       }
     });
@@ -390,9 +448,11 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     payload.append("vpa", selectedBank?.upi_id || "");
     payload.append("is_bank_verified", selectedBank?.is_verified);
 
-
     try {
-      await updatePurchaseRequest({ _id: vendorDetail._id, formData: payload }).unwrap();
+      await updatePurchaseRequest({
+        _id: vendorDetail._id,
+        formData: payload,
+      }).unwrap();
 
       toastAlert("Payment request updated successfully!");
       refetchPaymentRequest();
@@ -415,14 +475,16 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
     }
   };
   const handleCloseDialog = () => {
-    setReqestPaymentDialog(false)
+    setReqestPaymentDialog(false);
     setVendorDetail("");
-    setVendorPhpDetail("")
+    setVendorPhpDetail("");
     setVendorBankDetail("");
     setSelectedBankIndex(0);
-  }
+  };
   const handleDeleteRequest = async () => {
-    if (window.confirm("Are you sure you want to delete this purchase request?")) {
+    if (
+      window.confirm("Are you sure you want to delete this purchase request?")
+    ) {
       try {
         await deletePurchaseRequest(vendorDetail._id).unwrap();
         toastAlert("Purchase request deleted successfully!");
@@ -461,28 +523,29 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
   };
   const handlePennyDropforVendor = async () => {
     if (vendorBankDetail[selectedBankIndex]?.account_number == "") {
-      toastAlert("Penny drop is only for Bank Account and Account Number is missing");
+      toastAlert(
+        "Penny drop is only for Bank Account and Account Number is missing"
+      );
       return;
     }
     const payload = {
-      "accountNumber": vendorBankDetail[selectedBankIndex]?.account_number,
-      "branchCode": vendorBankDetail[selectedBankIndex]?.ifsc,
-      "createdBy": userID,
-      "vendorId": vendorBankDetail[selectedBankIndex]?.vendor_id,
-      "vendorName": vendorDetail?.vendor_name,
-      "vendorPhpId": vendorBankDetail[selectedBankIndex]?.php_vendor_id,
-      "zohoVendorId": "1111",
-      "isTestingData": false,
-      "vendorBankDetailId": vendorBankDetail[selectedBankIndex]?._id,
+      accountNumber: vendorBankDetail[selectedBankIndex]?.account_number,
+      branchCode: vendorBankDetail[selectedBankIndex]?.ifsc,
+      createdBy: userID,
+      vendorId: vendorBankDetail[selectedBankIndex]?.vendor_id,
+      vendorName: vendorDetail?.vendor_name,
+      vendorPhpId: vendorBankDetail[selectedBankIndex]?.php_vendor_id,
+      zohoVendorId: "1111",
+      isTestingData: false,
+      vendorBankDetailId: vendorBankDetail[selectedBankIndex]?._id,
       // "remarks": "Penny Drop"
-    }
+    };
     // Step 1: Get the JWT token
     const getTokenResponse = await axios.get(
       insightsBaseUrl + `v1/payment_gateway_access_token`
     );
     const getWayToken = getTokenResponse?.data?.data;
     try {
-
       axios
         .post(`${insightsBaseUrl}` + `v1/create_penny_drope`, payload, {
           headers: {
@@ -491,97 +554,115 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
         })
         .then((res) => {
           if (res.status == 200) {
-
-            toastAlert("Penny Drop Successfully initiated")
+            toastAlert("Penny Drop Successfully initiated");
           }
-
         });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
   const handleRemoveFile = () => {
     setSelectedFileName(""); // Clear the selected file name
     setViewImgSrc(""); // Clear the invoice preview
     setOpenImageDialog(false); // Close the left side preview
-    setSelectedFile('')
-    setReqestPaymentDialog(false)
+    setSelectedFile("");
+    setReqestPaymentDialog(false);
   };
 
   const getOutstandingText = () => {
     const phpOutstanding = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
     const vendorOutstanding =
-      Number(vendorDetail?.vendor_outstandings ?? vendorDetail?.outstandings) || 0;
+      Number(vendorDetail?.vendor_outstandings ?? vendorDetail?.outstandings) ||
+      0;
     const total = phpOutstanding + vendorOutstanding;
 
     return `${phpOutstanding} + (${vendorOutstanding}) = ${total}`;
   };
 
   // Then use it like this:
-  <ListItemText
-    primary="Outstanding"
-    secondary={getOutstandingText()}
-  />
+  <ListItemText primary="Outstanding" secondary={getOutstandingText()} />;
 
   return (
     <Dialog
       open={reqestPaymentDialog}
       onClose={() => setReqestPaymentDialog(false)}
-      maxWidth={openImageDialog ? 'xl' : "md"} // Dynamically set maxWidth
+      maxWidth={openImageDialog ? "xl" : "md"} // Dynamically set maxWidth
       fullWidth
     >
-      <Stack direction='row' spacing={2}>
-        {openImageDialog &&
+      <Stack direction="row" spacing={2}>
+        {openImageDialog && (
           <Stack width="50%">
             <>
-
               {!isPDF ? (
                 <img src={viewImgSrc} alt="img" />
               ) : (
-                <div style={{ width: "100%", height: "100vh", }}>
+                <div style={{ width: "100%", height: "100vh" }}>
                   <iframe
                     // src={viewImgSrc}
                     src={`${viewImgSrc}#toolbar=0&navpanes=0&scrollbar=0`}
                     title="file"
                     width="100%"
                     height="100%"
-
                   />
-                  <PDFExtractorForInvoice file={selectedFile} setExtractedData={setExtractedData} />
+                  <PDFExtractorForInvoice
+                    file={selectedFile}
+                    setExtractedData={setExtractedData}
+                  />
                 </div>
               )}
             </>
           </Stack>
-        }
+        )}
         {/* Right side (always visible) */}
         {/* <Stack width={openImageDialog ? "50%" : "100%"}> */}
-        <Stack >
+        <Stack>
           <DialogTitle>Request Payment</DialogTitle>
           <DialogContent>
             <Stack direction="row" justifyContent="space-between">
               <List>
                 <ListItem>
-                  <ListItemText primary="Vendor Name" secondary={formatString(vendorDetail?.vendor_name)} />
+                  <ListItemText
+                    primary="Vendor Name"
+                    secondary={formatString(vendorDetail?.vendor_name)}
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="Mobile" secondary={vendorDetail?.vendor_category} />
+                  <ListItemText
+                    primary="Mobile"
+                    secondary={vendorDetail?.vendor_category}
+                  />
                 </ListItem>
 
                 <ListItem>
-                  <ListItemText primary="Address" secondary={vendorDetail?.home_address} />
+                  <ListItemText
+                    primary="Address"
+                    secondary={vendorDetail?.home_address}
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="Account Number" secondary={vendorBankDetail[selectedBankIndex]?.account_number} />
+                  <ListItemText
+                    primary="Account Number"
+                    secondary={
+                      vendorBankDetail[selectedBankIndex]?.account_number
+                    }
+                  />
                 </ListItem>
-                {extractedData && extractedData != {} && extractedData.accountNumber && extractedData.accountNumber != vendorBankDetail[selectedBankIndex]?.account_number && (
-                  <Typography variant="caption" color="error" sx={{ pt: 0 }}>
-                    Account Number in Invoice : {extractedData.accountNumber}
-                  </Typography>
-                )}
+                {extractedData &&
+                  extractedData != {} &&
+                  extractedData.accountNumber &&
+                  extractedData.accountNumber !=
+                    vendorBankDetail[selectedBankIndex]?.account_number && (
+                    <Typography variant="caption" color="error" sx={{ pt: 0 }}>
+                      Account Number in Invoice : {extractedData.accountNumber}
+                    </Typography>
+                  )}
               </List>
               <List>
                 <ListItem>
-                  <ListItemText primary="Page" secondary={vendorDetail?.primary_page_name} />
+                  <ListItemText
+                    primary="Page"
+                    secondary={vendorDetail?.primary_page_name}
+                  />
                 </ListItem>
                 {/* <ListItem>
                   <ListItemText primary="Outstanding" secondary={`${vendorPhpDetail[0]?.outstanding} + (${vendorDetail?.vendor_outstandings || vendorDetail?.outstandings}) = ${(Number(vendorPhpDetail[0]?.outstanding) + Number(vendorDetail?.vendor_outstandings || vendorDetail?.outstandings))}`} />
@@ -595,49 +676,109 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
                 </ListItem>
 
                 <ListItem>
-                  <ListItemText primary="Account Verified" secondary={vendorBankDetail[selectedBankIndex]?.is_verified ? "Yes" : "No"} />
+                  <ListItemText
+                    primary="Account Verified"
+                    secondary={
+                      vendorBankDetail[selectedBankIndex]?.is_verified
+                        ? "Yes"
+                        : "No"
+                    }
+                  />
                 </ListItem>
                 <ListItem>
-                  <ListItemText primary="IFSC" secondary={vendorBankDetail[selectedBankIndex]?.ifsc} />
+                  <ListItemText
+                    primary="IFSC"
+                    secondary={vendorBankDetail[selectedBankIndex]?.ifsc}
+                  />
                 </ListItem>
-                {extractedData && extractedData != {} && extractedData.ifscCode && extractedData.ifscCode != vendorBankDetail[selectedBankIndex]?.ifsc && (
-                  <Typography variant="caption" color="error" sx={{ pt: 0 }}>
-                    IFSC differ from Invoice : {extractedData.ifscCode}
-                  </Typography>
-                )}
+                {extractedData &&
+                  extractedData != {} &&
+                  extractedData.ifscCode &&
+                  extractedData.ifscCode !=
+                    vendorBankDetail[selectedBankIndex]?.ifsc && (
+                    <Typography variant="caption" color="error" sx={{ pt: 0 }}>
+                      IFSC differ from Invoice : {extractedData.ifscCode}
+                    </Typography>
+                  )}
                 {/* <ListItem>
                   <ListItemText primary="outstanding" secondary={formData.address} />
               </ListItem> */}
               </List>
             </Stack>
-            {vendorBankDetail != '' && (
+            {vendorBankDetail != "" && (
               <FormControl fullWidth sx={{ maxWidth: 360 }}>
                 <InputLabel id="bank-select-label">Select Bank</InputLabel>
-                <Select labelId="bank-select-label" value={selectedBankIndex} onChange={handleBankChange} label="Select Bank">
+                <Select
+                  labelId="bank-select-label"
+                  value={selectedBankIndex}
+                  onChange={handleBankChange}
+                  label="Select Bank"
+                >
                   {vendorBankDetail?.map((bank, index) => (
                     <MenuItem key={index} value={index}>
-                      {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id}`}
+                      {`${bank.bank_name || "UPI"} : ${
+                        bank.account_number || bank.upi_id
+                      }`}
                       {/* {bank?.ifsc != "" ? ` IFSC : ${bank?.ifsc}` : ""} */}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
             )}
-            <Button disabled={vendorBankDetail[selectedBankIndex]?.is_verified} onClick={handlePennyDropforVendor} sx={{ ml: 1 }} variant="contained" color='success'>
+            <Button
+              disabled={vendorBankDetail[selectedBankIndex]?.is_verified}
+              onClick={handlePennyDropforVendor}
+              sx={{ ml: 1 }}
+              variant="contained"
+              color="success"
+            >
               Penny Drop
             </Button>
-            <div style={{ display: 'grid', gap: '16px', marginTop: '16px' }}>
-              {selectedValues.length === 0 && <TextField
-                autoComplete="off"
-                type="number"
-                onWheel={(e) => e.target.blur()} // Prevents scroll from changing number value
-                label="Request Amount (With GST)" name="request_amount" value={formData?.request_amount} onChange={handleChange} fullWidth />}
-              {selectedValues.length === 0 && <FormControlLabel sx={{ width: 200 }} control={<Checkbox checked={isGSTAvailable} onChange={(e) => handleGSTChange(e.target.checked)} />} label="Add GST (18%)" />}
+            <div style={{ display: "grid", gap: "16px", marginTop: "16px" }}>
+              {selectedValues.length === 0 && (
+                <TextField
+                  autoComplete="off"
+                  type="number"
+                  onWheel={(e) => e.target.blur()} // Prevents scroll from changing number value
+                  label="Request Amount (With GST)"
+                  name="request_amount"
+                  value={formData?.request_amount}
+                  onChange={handleChange}
+                  fullWidth
+                />
+              )}
+              {selectedValues.length === 0 && (
+                <FormControlLabel
+                  sx={{ width: 200 }}
+                  control={
+                    <Checkbox
+                      checked={isGSTAvailable}
+                      onChange={(e) => handleGSTChange(e.target.checked)}
+                    />
+                  }
+                  label="Add GST (18%)"
+                />
+              )}
 
               <Stack direction="row" spacing={2}>
-                {selectedValues.length === 0 && <TextField label="GST Amount" value={formData?.gst_amount} inputProps={{ readOnly: true }} />}
-                <TextField label="Base Amount (Excl. GST)" name="base_amount" onChange={handleChange} value={formData?.base_amount} />
-                <FormControl fullWidth sx={{ maxWidth: 360 }} disabled={!!vendorDetail?.request_id}>
+                {selectedValues.length === 0 && (
+                  <TextField
+                    label="GST Amount"
+                    value={formData?.gst_amount}
+                    inputProps={{ readOnly: true }}
+                  />
+                )}
+                <TextField
+                  label="Base Amount (Excl. GST)"
+                  name="base_amount"
+                  onChange={handleChange}
+                  value={formData?.base_amount}
+                />
+                <FormControl
+                  fullWidth
+                  sx={{ maxWidth: 360 }}
+                  disabled={!!vendorDetail?.request_id}
+                >
                   <InputLabel id="bank-select-label">Payment Type</InputLabel>
                   <Select
                     labelId="bank-select-label"
@@ -650,22 +791,44 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
                     <MenuItem value="upfront">Upfront</MenuItem>
                   </Select>
                 </FormControl>
-
               </Stack>
 
-              {(selectedPaymentType === "advanced" || selectedPaymentType === "upfront") &&
-                <VendorAdavanceRequest formData={formData} setFormData={setFormData} vendorId={vendorDetail._id} />
-              }
+              {(selectedPaymentType === "advanced" ||
+                selectedPaymentType === "upfront") && (
+                <VendorAdavanceRequest
+                  formData={formData}
+                  setFormData={setFormData}
+                  vendorId={vendorDetail._id}
+                />
+              )}
               <Stack direction="row" spacing={2}>
-                <TextField label="Invoice No#" name="invc_no" value={formData?.invc_no} onChange={handleChange} fullWidth />
-                <TextField type="date" label="Invoice Date" name="invc_date" value={formData?.invc_date} onChange={handleChange} InputLabelProps={{ shrink: true }} fullWidth />
+                <TextField
+                  label="Invoice No#"
+                  name="invc_no"
+                  value={formData?.invc_no}
+                  onChange={handleChange}
+                  fullWidth
+                />
+                <TextField
+                  type="date"
+                  label="Invoice Date"
+                  name="invc_date"
+                  value={formData?.invc_date}
+                  onChange={handleChange}
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                />
               </Stack>
               <Stack direction="row" spacing={2}>
                 <Button variant="outlined" component="label">
                   Upload Invoice
                   <input type="file" hidden onChange={handleFileChange} />
                 </Button>
-                {selectedFileName && <div style={{ color: 'green', marginTop: '8px' }}>Selected File: {selectedFileName}</div>}
+                {selectedFileName && (
+                  <div style={{ color: "green", marginTop: "8px" }}>
+                    Selected File: {selectedFileName}
+                  </div>
+                )}
                 <IconButton
                   aria-label="close"
                   onClick={handleRemoveFile}
@@ -679,30 +842,66 @@ const PaymentRequestFromPurchase = ({ reqestPaymentDialog, setReqestPaymentDialo
                   <CloseIcon />
                 </IconButton>
               </Stack>
-              <TextField label="Remark" name="remark_audit" value={formData?.remark_audit} onChange={handleChange} fullWidth />
+              <TextField
+                label="Remark"
+                name="remark_audit"
+                value={formData?.remark_audit}
+                onChange={handleChange}
+                fullWidth
+              />
             </div>
           </DialogContent>
           <DialogActions>
-            <VendorAdvanceSettlement selectedValues={selectedValues} setSelectedValues={setSelectedValues} vendorDetail={vendorDetail} vendorId={vendorDetail?._id} formData={formData} handleCloseDialog={handleCloseDialog} />
-            <Stack direction='row' spacing={1}>
-
+            <VendorAdvanceSettlement
+              selectedValues={selectedValues}
+              setSelectedValues={setSelectedValues}
+              vendorDetail={vendorDetail}
+              vendorId={vendorDetail?._id}
+              formData={formData}
+              handleCloseDialog={handleCloseDialog}
+            />
+            <Stack direction="row" spacing={1}>
               <Button onClick={handleCloseDialog}>Cancel</Button>
-              {(vendorDetail && vendorDetail.request_id) ? <Button variant="contained" onClick={handleEditSubmit} disabled={formData?.request_amount == 0 || selectedValues?.length > 0 || UpdateLoading ? true : false}>
-                {/* {UpdateLoading ? 'Submitting...' : 'Edit Payment Request'} */}
-                Edit Payment Request
-              </Button> :
-
-                <Button variant="contained" onClick={handleSubmit} disabled={formData?.request_amount == 0 || selectedValues?.length > 0 ? true : false}>
-                  {isLoading ? 'Submitting...' : 'Request Payment'}
+              {vendorDetail && vendorDetail.request_id ? (
+                <Button
+                  variant="contained"
+                  onClick={handleEditSubmit}
+                  disabled={
+                    formData?.request_amount == 0 ||
+                    selectedValues?.length > 0 ||
+                    UpdateLoading
+                      ? true
+                      : false
+                  }
+                >
+                  {/* {UpdateLoading ? 'Submitting...' : 'Edit Payment Request'} */}
+                  Edit Payment Request
                 </Button>
-
-              }
-              {vendorDetail && vendorDetail.request_id && <Button variant="contained" color='error' onClick={handleDeleteRequest}>Delete</Button>}
+              ) : (
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  disabled={
+                    formData?.request_amount == 0 || selectedValues?.length > 0
+                      ? true
+                      : false
+                  }
+                >
+                  {isLoading ? "Submitting..." : "Request Payment"}
+                </Button>
+              )}
+              {vendorDetail && vendorDetail.request_id && (
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleDeleteRequest}
+                >
+                  Delete
+                </Button>
+              )}
             </Stack>
           </DialogActions>
         </Stack>
-
-
       </Stack>
     </Dialog>
   );

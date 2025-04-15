@@ -229,22 +229,22 @@ const LinkUpload = ({
 
     const platforms = [
       {
-        name: "X",
-        regex: /https?:\/\/x\.com\/[^\/]+\/status\/(\d+)/,
-        type: "status",
+        name: "twitter",
+        regex: /^https?:\/\/(www\.)?(x\.com|twitter\.com)/,
+        type: "post",
       },
       {
-        name: "Threads",
+        name: "threads",
         regex: /https?:\/\/www\.threads\.net\/@[^\/]+\/post\/([a-zA-Z0-9_-]+)/,
         type: "post",
       },
       {
-        name: "Facebook",
+        name: "facebook",
         regex: /https?:\/\/www\.facebook\.com\/share\/(?:p\/)?([a-zA-Z0-9]+)/,
         type: "post",
       },
       {
-        name: "Facebook",
+        name: "facebook",
         regex: /https?:\/\/www\.facebook\.com\/[0-9]+\/posts\/([a-zA-Z0-9]+)/,
         type: "post",
       },
@@ -278,9 +278,9 @@ const LinkUpload = ({
 
   async function handleUpload() {
     setFunctionLoading(true);
-    if(record===0){
-      if(!phaseDate){
-        toastAlert("Please Select the phase Date")
+    if (record === 0) {
+      if (!phaseDate) {
+        toastAlert("Please Select the phase Date");
       }
     }
     let otherData = {
