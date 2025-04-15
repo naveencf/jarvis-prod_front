@@ -7,36 +7,36 @@ import { Faders, X } from '@phosphor-icons/react';
 import { useSendPlanDetails } from '../plan-making/apiServices';
 import { useGetOperationContentCostQuery } from '../../Store/PageBaseURL';
 
-const ExcelPreviewModalBeta = ({ 
+const ExcelPreviewModalBeta = ({
   open,
   onClose,
   sellingPrice,
-  handleSave, 
-  ugcVideoCost, 
-  twitterTrendCost, 
-  setVideoUgcCost, 
-  setTwitterTrendCost, 
-  ugcVideoCount, 
-  setUgcVideoCount, 
-  setTwitterTrendCount, 
-  twitterTrendCount, 
-  setUpdatedCategories, 
+  handleSave,
+  ugcVideoCost,
+  twitterTrendCost,
+  setVideoUgcCost,
+  setTwitterTrendCost,
+  ugcVideoCount,
+  setUgcVideoCount,
+  setTwitterTrendCount,
+  twitterTrendCount,
+  setUpdatedCategories,
   updatedCategories,
-  previewData, 
-  categories, 
-  setAgencyFees, 
-  agencyFees, 
-  selectedRow, 
-  handleAutomaticSelection, 
-  category, 
-  postCount, 
-  storyPerPage, 
-  planDetails, 
-  checkedDescriptions, 
-  downloadExcel, 
-  isDownloading, 
-  deliverableText, 
-  setDeliverableText, 
+  previewData,
+  categories,
+  setAgencyFees,
+  agencyFees,
+  selectedRow,
+  handleAutomaticSelection,
+  category,
+  postCount,
+  storyPerPage,
+  planDetails,
+  checkedDescriptions,
+  downloadExcel,
+  isDownloading,
+  deliverableText,
+  setDeliverableText,
   handleGetSpreadSheet }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
@@ -138,37 +138,52 @@ const ExcelPreviewModalBeta = ({
   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
+    // Normalize and build categoryMap
     const categoryMap = categories?.reduce((acc, cat) => {
-      acc[cat.page_category] = cat._id;
+      acc[cat.page_category.trim().toLowerCase()] = cat._id;
       return acc;
     }, {});
-    console.log("categoryMap",categoryMap);
-    console.log("mainCategory",mainCategory);
-    const mainCategoryId = categoryMap[mainCategory];
+
+    const normalizedMainCategory = mainCategory.trim().toLowerCase();
+    const normalizedMergedCategories = mergedCategories.map(c => c.trim().toLowerCase());
+    const mainCategoryId = categoryMap[normalizedMainCategory];
+
     if (!mainCategoryId) {
       console.error('Main category ID not found');
       return;
     }
 
-    // Clone the category data and update preview data
-    const updatedCategoryData = { ...categoryData };
+    // Normalize categoryData keys
+    const normalizeCategoryDataKeys = (data) => {
+      const normalized = {};
+      Object.keys(data).forEach((key) => {
+        const normalizedKey = key.trim().toLowerCase();
+        if (!normalized[normalizedKey]) {
+          normalized[normalizedKey] = [];
+        }
+        normalized[normalizedKey] = [...normalized[normalizedKey], ...data[key]];
+      });
+      return normalized;
+    };
+
+    const updatedCategoryData = normalizeCategoryDataKeys({ ...categoryData });
     const updatedPreviewData = [...previewData];
 
-    // Loop through the merged categories
-    mergedCategories.forEach((categoryName) => {
+    // Merge categories
+    normalizedMergedCategories.forEach((categoryName) => {
       if (updatedCategoryData[categoryName]) {
         updatedCategoryData[categoryName].forEach((item) => {
           const index = updatedPreviewData.findIndex((data) => data === item);
           if (index !== -1) {
-            // Update the category ID in the preview data to the main category's ID
             updatedPreviewData[index].category = mainCategoryId;
           }
         });
 
-        // Merge the category data into the main category
-        updatedCategoryData[mainCategory] = [...(updatedCategoryData[mainCategory] || []), ...updatedCategoryData[categoryName]];
+        updatedCategoryData[normalizedMainCategory] = [
+          ...(updatedCategoryData[normalizedMainCategory] || []),
+          ...updatedCategoryData[categoryName],
+        ];
 
-        // Delete the merged category
         delete updatedCategoryData[categoryName];
       }
     });
@@ -186,10 +201,9 @@ const ExcelPreviewModalBeta = ({
         platform_id: item['platform_id'],
       };
     });
+
     setUpdatedCategoryData(true);
-    // Update state with the modified data
     setCategoryData(updatedCategoryData);
-    // setPreviewDataMerge(finalPreviewData);
     sendPlanDetails(finalPreviewData);
     setMergedCategories([]);
   };
@@ -267,7 +281,6 @@ const ExcelPreviewModalBeta = ({
 
   const totalUgcVideoCost = planDetails && planDetails[0]?.ugc_video_cost ? planDetails[0]?.ugc_video_cost / planDetails[0]?.ugc_video_count : getOperationContentCost?.ugc_video_cost || 1;
   const multipliedCostUgc = totalUgcVideoCost * ugcVideoCount;
-
 
   return (
     <Modal className="excelDataModalDialog modal-dialog modal-xl modal-dialog-scrollable" open={open} onClose={onClose} aria-labelledby="preview-modal-title" aria-describedby="preview-modal-description">
@@ -360,7 +373,7 @@ const ExcelPreviewModalBeta = ({
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
                   <label htmlFor="old-category">Old Category</label>
-                  <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params}  variant="outlined" />} />
+                  <Autocomplete value={oldCategoryName} onChange={(event, newValue) => setOldCategoryName(newValue || '')} options={Object.keys(categoryData)} renderInput={(params) => <TextField {...params} variant="outlined" />} />
                 </div>
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
@@ -461,7 +474,7 @@ const ExcelPreviewModalBeta = ({
               </div>
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div className="form-group">
-                <label>Merge Categories</label>
+                  <label>Merge Categories</label>
                   <Autocomplete
                     // value={`${mergedCategories}`}
                     // getOptionLabel={(option) => option.label}
