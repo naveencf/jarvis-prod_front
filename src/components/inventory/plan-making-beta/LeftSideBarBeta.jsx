@@ -37,6 +37,7 @@ const LeftSideBarBeta = ({
   totalStoriesPerPage,
   pageCategoryCount,
   selectedRows,
+  platformData,
   handleToggleBtn,
   selectedRow,
   totalStoryCount,
@@ -183,7 +184,7 @@ const LeftSideBarBeta = ({
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel, ugcVideoCost, twitterTrendCost);
+      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel, ugcVideoCost, twitterTrendCost, platformData);
       handleSave()
     } catch (error) {
       console.error('Error downloading Excel:', error);
@@ -227,9 +228,10 @@ const LeftSideBarBeta = ({
 
     return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
   };
+
   const handlePreviewExcel = () => {
     const preview = selectedRow?.map((page) => {
-      const platformName = getPlatformName(page.platform_id);
+      const platformName = formatString(page.platform_name);
       const postCountForPage = postCount[page._id] || 0;
       const storyCountForPage = storyPerPage[page._id] || 0;
       return {

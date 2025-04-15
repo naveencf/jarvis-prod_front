@@ -20,7 +20,7 @@ const Ledger = () => {
   const { id } = useParams();
 
 
-  
+
   const getFinancialYears = () => {
     const currentYear = new Date().getFullYear();
     return [
@@ -108,21 +108,45 @@ const Ledger = () => {
     Number(vendorDetail?.vendor_outstandings ?? 0) -
     Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0) +
     Number(vendorPhpDetail[0]?.outstanding);
-    
+
+  // useEffect(() => {
+  //   if (vendorDetail?.vendor_id) {
+  //     axios
+  //       .post(phpBaseUrl + `?view=getvendorDataListvid`, {
+  //         vendor_id: vendorDetail?.vendor_id,
+  //       })
+  //       .then((res) => {
+  //         if (res.status == 200) {
+  //           setVendorPhpDetail(res.data.body);
+  //           // console.log(res.data.body, 'vendorDetail', vendorDetail);
+  //         }
+  //       });
+  //   }
+  // }, [vendorDetail]);
+
   useEffect(() => {
-    if (vendorDetail?.vendor_id) {
+    const excludedVendorIds = [
+      274, 181, 93, 96, 88, 9, 119, 385, 592, 582, 564, 7, 195, 10, 21, 14, 19,
+      1250, 1253, 1295, 1296, 1298, 1434, 1450, 1465, 1506, 1562, 1591, 1688,
+      1731, 1735, 1737, 1801, 1803, 204, 191, 1447, 1631
+    ];
+
+    if (
+      vendorDetail?.vendor_id &&
+      !excludedVendorIds.includes(Number(vendorDetail.vendor_id))
+    ) {
       axios
         .post(phpBaseUrl + `?view=getvendorDataListvid`, {
-          vendor_id: vendorDetail?.vendor_id,
+          vendor_id: vendorDetail.vendor_id,
         })
         .then((res) => {
-          if (res.status == 200) {
+          if (res.status === 200) {
             setVendorPhpDetail(res.data.body);
-            // console.log(res.data.body, 'vendorDetail', vendorDetail);
           }
         });
     }
   }, [vendorDetail]);
+
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading ledger data.</p>;
@@ -371,9 +395,9 @@ const Ledger = () => {
               </div>
             </div>
           </div>
-          
 
-         </div>
+
+        </div>
       </div>}
     </div>
   );

@@ -357,7 +357,6 @@ function PlanHomeBeta() {
     const planId = params.id; // Get the plan's _id from the clicked row
     navigate(`/admin/pms-plan-making-beta/${planId}`);
   };
-
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
     const selectedUser = userContextData.find((user) => user.user_id === row.sales_executive_id);
@@ -374,16 +373,17 @@ function PlanHomeBeta() {
       accountId: row.account_id,
       brandId: row.brandId,
       brief: row.brief,
+      brandType: 'existing',
       brand_id: row.brand_id,
       planStatus: row.plan_status,
       planSaved: false,
-      createdBy: row.created_by, // Assuming it's already available in the row
+      createdBy: row.created_by,  
       accountName: selectedAccount ? selectedAccount.account_name : '',
       salesExecutiveName: selectedUser ? selectedUser.user_name : '',
     });
-    setSelectedPlanId(row.id); // Store the plan ID
-    setIsEdit(true); // Switch to edit mode
-    setOpenDialog(true); // Open the dialog
+    setSelectedPlanId(row.id);  
+    setIsEdit(true);  
+    setOpenDialog(true);    
   };
 
   // Fetch accounts data from API
@@ -572,6 +572,7 @@ function PlanHomeBeta() {
       accountId: '',
       brandId: '',
       brief: '',
+      brandType: 'existing',
       planStatus: 'open',
       planSaved: false,
       createdBy: 938,

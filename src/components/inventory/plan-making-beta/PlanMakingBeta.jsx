@@ -29,6 +29,7 @@ import PageAddMasterModal from '../../AdminPanel/PageMS/PageAddMasterModal';
 import Swal from 'sweetalert2';
 import * as XLSX from 'xlsx';
 import { calculatePrice, ButtonTitle } from '../plan-making/helper';
+import LeftSideBarBeta from './LeftSideBarBeta';
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMakingBeta = () => {
@@ -1115,7 +1116,7 @@ const PlanMakingBeta = () => {
       </div>
 
       {/* {toggleLeftNavbar && ( */}
-      <LeftSideBar totalFollowers={totalFollowers} pageData={pageDetail} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate}  planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
+      <LeftSideBarBeta totalFollowers={totalFollowers} pageData={pageDetail}  platformData={platformData} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate}  planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
       <div className="card">
         <div className="card-header flexCenterBetween">

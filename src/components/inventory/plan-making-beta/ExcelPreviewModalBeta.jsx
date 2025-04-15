@@ -134,6 +134,7 @@ const ExcelPreviewModalBeta = ({
   const handleMergedCategoriesChange = (event) => {
     setMergedCategories(event.target.value);
   };
+
   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
@@ -141,7 +142,8 @@ const ExcelPreviewModalBeta = ({
       acc[cat.page_category] = cat._id;
       return acc;
     }, {});
-
+    console.log("categoryMap",categoryMap);
+    console.log("mainCategory",mainCategory);
     const mainCategoryId = categoryMap[mainCategory];
     if (!mainCategoryId) {
       console.error('Main category ID not found');
@@ -402,7 +404,7 @@ const ExcelPreviewModalBeta = ({
                 </div>
               </div>
               {/* downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel); */}
-              <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+              <div className="col-lg-4 col-md-4 col-sm-12 col-12 mb-4">
                 <button
                   className="btn cmnbtn btn-primary w-100"
                   disabled={isDownloading}
@@ -413,7 +415,7 @@ const ExcelPreviewModalBeta = ({
                 >
                   {isDownloading ? 'Downloading...' : 'Download Excel'}
                 </button>
-                <div className="col-lg-4 col-md-4 col-sm-12 col-12">
+                {/* <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                   <button
                     className="btn cmnbtn btn-primary w-100"
                     // disabled={isDownloading}
@@ -424,7 +426,7 @@ const ExcelPreviewModalBeta = ({
                   >
                     Get SpreadSheet
                   </button>
-                </div>
+                </div> */}
               </div>
               {/* <button
                 style={{
