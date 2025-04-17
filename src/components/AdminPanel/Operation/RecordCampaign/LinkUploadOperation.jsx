@@ -75,7 +75,7 @@ const LinkUploadOperation = ({
   }, [vendor]);
 
   useEffect(() => {
-    console.log(selectedData);
+    // console.log(selectedData);
     if (record == 1) {
       let data = selectedData.map((data) => data.ref_link);
       setLinks(data.join("\n"));
@@ -421,7 +421,7 @@ const LinkUploadOperation = ({
     }
   }
 
-  console.log("shortCodes", functionLoading);
+  // console.log("shortCodes", functionLoading);
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);

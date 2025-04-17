@@ -97,8 +97,7 @@ export const PageBaseURL = createApi({
     }),
 
     getAllCountWisePage: builder.query({
-      query: () => `/v1/count_page_group
-`,
+      query: (activeTab) => `/v1/count_page_group/${activeTab}`,
       transformResponse: (response) => response.data,
     }),
 
@@ -114,14 +113,14 @@ export const PageBaseURL = createApi({
 
         return isAdmin
           ? {
-              url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
-              method: "GET",
-            }
+            url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
+            method: "GET",
+          }
           : {
-              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
-              method: "GET",
-              // body: { user_id: userID },
-            };
+            url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+            method: "GET",
+            // body: { user_id: userID },
+          };
       },
       transformResponse: (response, meta, { decodedToken }) => {
         const isAdmin = decodedToken?.role_id === 1;
@@ -269,9 +268,8 @@ export const PageBaseURL = createApi({
       query: ({ start_date, end_date } = {}) => {
         let url = "v1/get_page_count";
         if (start_date || end_date) {
-          url += `?${start_date ? `start_date=${start_date}` : ""}${
-            start_date && end_date ? "&" : ""
-          }${end_date ? `end_date=${end_date}` : ""}`;
+          url += `?${start_date ? `start_date=${start_date}` : ""}${start_date && end_date ? "&" : ""
+            }${end_date ? `end_date=${end_date}` : ""}`;
         }
 
         return {
