@@ -23,17 +23,14 @@ import CustomSelect from "../../../ReusableComponents/CustomSelect";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import FieldContainer from "../../../AdminPanel/FieldContainer";
 import Modal from "react-modal";
-import { useGetAllExeCampaignsQuery } from "../../../Store/API/Sales/ExecutionCampaignApi";
+import { useGetAllExeCampaignsQuery, useGetNewExeCampaignsNameWiseDataQuery } from "../../../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import PageEdit from "../../../AdminPanel/PageMS/PageEdit";
 import { useGetPmsPlatformQuery } from "../../../Store/reduxBaseURL";
-import { Autocomplete } from "@mui/lab";
-import { TextField } from "@mui/material";
+// import { Autocomplete } from "@mui/lab";
+import { TextField, Autocomplete, CircularProgress } from "@mui/material";
 import { useGetVendorsQuery } from "../../../Store/API/Purchase/DirectPurchaseApi";
-import { set } from "date-fns";
-import Carousel from "/copy.png";
-import Reel from "/reel.png";
-import Image from "/more.png";
+
 import { formatDate } from "../../../../utils/formatDate.jsx";
 import { useGlobalContext } from "../../../../Context/Context.jsx";
 import PhaseTab from "../../../Operation/Execution/PhaseTab.jsx";
@@ -48,6 +45,8 @@ import StringLengthLimiter from "../../../../utils/StringLengthLimiter.js";
 import BulkCampaignUpdate from "../../../Operation/Execution/BulkCampaignUpdate.jsx";
 import LinkUploadOperation from "./LinkUploadOperation.jsx";
 import formatString from "../../../../utils/formatString.js";
+import axios from "axios";
+import { baseUrl } from "../../../../utils/config.js";
 
 const RecordCampaign = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -69,6 +68,21 @@ const RecordCampaign = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState("single");
+  const [selectedAction, setSelectedAction] = useState(null);
+  const [campaignSearchQuery, setCampaignSearchQuery] = useState("")
+  const [loadingPlans, setLoadingPlans] = useState(false);
+  const [campaignSheetUrl, setCampaignSheetUrl] = useState(null);
+
+  const {
+    data: campaignList,
+    isFetching: fetchingCampaignList,
+    isLoading: loadingCampaignList,
+  } = useGetNewExeCampaignsNameWiseDataQuery({
+    search: campaignSearchQuery,
+    page: 1,
+    limit: 10
+  });
+
   const maxTabs = useRef(4);
 
   const removeStory = useRef(null);
@@ -80,11 +94,6 @@ const RecordCampaign = () => {
   const token = getDecodedToken();
   const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsQuery();
 
-  const {
-    data: allPages,
-    isLoading: allPagesLoading,
-    isFetching: allPagesFetching,
-  } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
 
   const [
     uploadPlanData,
@@ -108,11 +117,7 @@ const RecordCampaign = () => {
     { isLoading: bulkAuditLoading, isSuccess: bulkAuditSuccess },
   ] = useUpdateMultipleAuditStatusMutation();
 
-  const {
-    data: campaignList,
-    isFetching: fetchingCampaignList,
-    isLoading: loadingCampaignList,
-  } = useGetAllExeCampaignsQuery();
+
 
   const {
     refetch: refetchPlanData,
@@ -276,12 +281,6 @@ const RecordCampaign = () => {
     }
   }
 
-  const pageesOnvendor = useMemo(() => {
-    return Array.isArray(allPages?.pageData)
-      ? allPages.pageData?.filter((data) => data?.temp_vendor_id === vendorName)
-      : [];
-  }, [allPages, vendorName]);
-
   useEffect(() => {
     if (duplicateMsg) {
       setToggleModal(true);
@@ -324,14 +323,7 @@ const RecordCampaign = () => {
 
     return `${day}/${month}/${year}`;
   }
-  function checkAbletoAudit() {
-    return selectedData.every(
-      (data) =>
-        data.amount > 0 &&
-        !!data.vendor_name &&
-        data.audit_status !== "purchased"
-    );
-  }
+
   const phaseWiseData = useMemo(() => {
     const phasedData = PlanData?.filter((data) => {
       if (activeTab === "all") {
@@ -342,129 +334,11 @@ const RecordCampaign = () => {
     return phasedData;
   }, [PlanData, activeTab, fetchingPlanData, loadingPlanData]);
 
-  // useEffect(() => {
-  //   if (selectedPrice) {
-  //     handlePriceUpdate(selectedPrice);
-  //   }
-  // }, [selectedPrice]);
-  async function handlePriceUpdate(row) {
-    try {
-      const key = [
-        { price_key: "instagram_post" },
-        {
-          price_key: "instagram_story",
-        },
-        {
-          price_key: "instagram_reel",
-        },
-        {
-          price_key: "instagram_carousel",
-        },
-        {
-          price_key: "instagram_both",
-        },
-      ];
 
-      const data = {
-        shortCode: row.shortCode,
-        platform_name: row.platform_name,
-        price_key:
-          row?.postType == "REEL"
-            ? key[2].price_key
-            : row?.postType == "CAROUSEL"
-              ? key[3].price_key
-              : row?.postType === "IMAGE"
-                ? key[0].price_key
-                : row?.story_link && row?.ref_link
-                  ? key[4].price_key
-                  : key[1].price_key,
-      };
-      if (!data.platform_name) {
-        toastError("Please select the platform");
-        return;
-      }
-      if (!data.price_key) {
-        toastError("Please enter the price");
-        return;
-      }
-
-      const res = await updatePrice(data);
-      if (res.error) throw new Error(res.error);
-      await refetchPlanData();
-      setSelectedPrice("");
-      toastAlert("Price Updated");
-    } catch (error) { }
-  }
-
-  async function handleBulkAudit() {
-    if (selectedData.length === 0) {
-      toastError("Please select the data to update");
-      return;
-    }
-    try {
-      if (selectedData.some((data) => data.audit_status === "purchased")) {
-        toastError("You have selected purchased data");
-        return;
-      }
-      if (!checkAbletoAudit()) {
-        toastError(
-          "Please fill the amount and vendor name for all the selected data or you have selected purchased data"
-        );
-        return;
-      }
-      const data = {
-        audit_status: "audited",
-        shortCodes: selectedData.map((data) => data.shortCode),
-      };
-
-      const res = await bulkAudit(data);
-      if (res.error) throw new Error(res.error);
-      await refetchPlanData();
-
-      toastAlert("Status Updated");
-    } catch (err) {
-      toastError("Error Uploading Data");
-    }
-  }
-
-  async function handleAuditedDataUpload() {
-    try {
-      const data = {
-        campaignId: selectedPlan,
-        userId: token.id,
-        phaseDate:
-          activeTab == "all"
-            ? phaseList?.length == 1
-              ? phaseList[0]?.value
-              : ""
-            : activeTab,
-      };
-
-      const res = await uploadAudetedData(data);
-      if (res.error) throw new Error(res.error);
-      await refetchPlanData();
-      toastAlert("Data Uploaded");
-    } catch (err) {
-      toastError("Error Uploading Data");
-    }
-  }
-  function istToUtc(istDate) {
-    let [day, month, year] = istDate.split("/").map(Number);
-    let date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
-    date.setHours(date.getHours() - 5, date.getMinutes() - 30); // Convert IST to UTC
-
-    return date.toISOString(); // Returns ISO UTC string
-  }
   const getRandomMultiplier = (min, max) =>
     Math.floor(Math.random() * (max - min + 1)) + min;
 
-  // let randomValue1 = getRandomMultiplier(19, 23);
-  // let randomValue2 = getRandomMultiplier(23, 29);
 
-  // let reach = views + (views / 100) * randomValue1;
-  //             // reach = Math.max(reach, 1); // Ensure reach is never 0
-
-  //             let impression = reach + (reach / 100) * randomValue1;
 
 
   let columns = [
@@ -565,34 +439,6 @@ const RecordCampaign = () => {
       },
       width: 150,
     },
-    // {
-    //   key: "post_dec",
-    //   name: "Logo",
-    //   renderRowCell: (row) => (
-    //     <div className="d-flex gap-2 align-items-center">
-    //       <img
-    //         className="mr-3"
-    //         src={
-    //           row?.postType == "REEL"
-    //             ? Reel
-    //             : row?.postType == "CAROUSEL"
-    //             ? Carousel
-    //             : Image
-    //         }
-    //         style={{ width: "20px", height: "20px" }}
-    //         alt=""
-    //       />
-
-    //       <img
-    //         className="icon-1"
-    //         src={`https://storage.googleapis.com/insights_backend_bucket/cr/${row?.owner_info?.username}.jpeg`}
-    //         alt=""
-    //       />
-    //     </div>
-    //   ),
-    // },
-
-
 
     {
       name: "Post Status",
@@ -664,38 +510,7 @@ const RecordCampaign = () => {
         </div>
       ),
     },
-    // {
-    //   key: "campaign_name",
-    //   name: "Campaign Name",
-    //   width: 150,
-    //   editable: true,
-    //   customEditElement: (
-    //     row,
-    //     index,
-    //     setEditFlag,
-    //     editflag,
-    //     handelchange,
-    //     column
-    //   ) => {
-    //     return (
-    //       <CustomSelect
-    //         fieldGrid={12}
-    //         dataArray={campaignList}
-    //         optionId={"_id"}
-    //         optionLabel={"exe_campaign_name"}
-    //         selectedId={row?.campaignId}
-    //         setSelectedId={(val) => {
-    //           const data = {
-    //             campaignId: val,
-    //             campaign_name: campaignList.find((item) => item._id === val)
-    //               ?.exe_campaign_name,
-    //           };
-    //           handelchange(data, index, column, true);
-    //         }}
-    //       />
-    //     );
-    //   },
-    // },
+
     {
       name: "Phase Date",
       key: "phaseDate1",
@@ -783,12 +598,6 @@ const RecordCampaign = () => {
       width: 100,
       editable: true,
     },
-    // {
-    //   name: "Is Paid Partnership",
-    //   key: "is_paid_partnership",
-    //   width: 150,
-    //   editable: true,
-    // },
     {
       name: "Like",
       key: "like_count",
@@ -883,13 +692,7 @@ const RecordCampaign = () => {
       },
       editable: true,
     },
-    // {
-    //   name: "Caption",
-    //   key: "accessibility_caption",
-    //   renderRowCell: (row) => StringLengthLimiter(row.accessibility_caption),
-    //   width: 300,
-    //   editable: true,
-    // },
+
     {
       name: "Posted On",
       key: "postedOn1",
@@ -934,30 +737,9 @@ const RecordCampaign = () => {
     },
   ];
 
-  function disableAuditUpload() {
-    const phaseData = phaseWiseData;
-    // const hasPending = phaseData?.some(
-    //   (data) => data.audit_status === "pending"
-    // );
-    const allPurchased = phaseData?.every(
-      (data) => data.audit_status === "purchased"
-    );
-    return allPurchased;
-  }
 
-  const CampaignSelection = useMemo(
-    () => [
-      {
-        _id: 0,
-        exe_campaign_name: "Vendor Wise Data",
-      },
-      ...(campaignList
-        ? campaignList.filter((data) => data?.is_sale_booking_created)
-        : []),
-    ],
-    [campaignList]
-  );
-  console.log("phaseWiseData", phaseWiseData);
+
+
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1065,6 +847,132 @@ const RecordCampaign = () => {
       );
     return null;
   }
+  // console.log(selectedPlan, "selectedPlan")
+
+  const sendToGoogleSheet = async (options = {}) => {
+    // const confirmed = window.confirm(`Are you sure you want to "${options.actionLabel}"?`);
+    const confirmed = window.confirm(`Are you sure you want to "${options.label || 'this action'}"?`);
+    // const CampaignSheetUrl = "https://docs.google.com/spreadsheets/d/1rl53FSMHtWsIz0l8-cVG4lRMjDFkD5pmNR11CC8eqC4/edit"
+    if (!confirmed) return;
+    if (campaignSheetUrl != "" && options.shouldOpenSheet) {
+      window.open(campaignSheetUrl, "_blank");
+      // ✅ Clear selected action
+      setSelectedAction(null);
+      return;
+    }
+    try {
+      const response = await axios.post(
+        baseUrl + `get_google_sheet_url`,
+        {
+          campaignId: selectedPlan,
+          sheetUrl: campaignSheetUrl,
+          phaseWiseData,
+          ...options.payload
+        },
+        {
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+      console.log("Google Sheet response:", response.data);
+      if (response.data.success) {
+        console.log("first")
+        if (options.label == "Generate Tracker") {
+
+          window.open(response.data.data.sheetUrl, "_blank");
+
+        }
+        toastAlert(response.data.message)
+      } else if (!response.data.success && response.data.data.tracker_link != "") {
+        window.open(response.data.data.tracker_link, "_blank");
+        console.log("second")
+      }
+      // ✅ Clear selected action
+      setSelectedAction(null);
+    } catch (error) {
+      console.error("Error sending to Google Sheet:", error);
+      toastError("There is some error.Please try again later.")
+    }
+  };
+  console.log(campaignSheetUrl, "campaignSheetUrl", selectedPlan)
+  const sheetActions = [
+    selectedPlan && campaignSheetUrl == "" && {
+      label: "Generate Tracker",
+      payload: {}, // triggers generation
+      shouldOpenSheet: true
+    },
+    campaignSheetUrl != "" && {
+      label: "Open Tracker",
+      payload: {}, // triggers generation
+      shouldOpenSheet: true
+    },
+    {
+      label: "Update Stats (Only Highlight If Changed)",
+      payload: { highlightOnlyIfChanged: true }
+    },
+    {
+      label: "Update Stats (Highlight All Matched Links)",
+      payload: { highlightAllMatched: true }
+    },
+    {
+      label: "Update Stats (Don't Highlight)",
+      payload: { highlightOnlyIfChanged: false }
+    },
+    {
+      label: "Clear Row Backgrounds",
+      payload: { clearCellBackground: true }
+    },
+    {
+      label: "Sort Sheets A-Z",
+      payload: { sortDirection: "asc" }
+    },
+    {
+      label: "Sort Sheets Z-A",
+      payload: { sortDirection: "desc" }
+    }
+  ];
+
+  const debounce = (callback, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+
+
+  const useDebouncedAsyncSetter = (setter, setLoading, delay = 500) => {
+    const debouncedFn = useRef();
+
+    useEffect(() => {
+      debouncedFn.current = debounce(async (value) => {
+        try {
+          await setter(value);
+        } finally {
+          setLoading(false); // Stop loader after response
+        }
+      }, delay);
+    }, [setter, delay, setLoading]);
+
+    return (value) => {
+      setLoading(true); // Show loader instantly
+      debouncedFn.current(value); // Debounced call
+    };
+  };
+
+  // Usage
+  // const debouncedSetSearchQueryForCampName = useDebouncedSetter(setCampaignSearchQuery)
+  const debouncedSetSearchQueryForCampName = useDebouncedAsyncSetter(setCampaignSearchQuery, setLoadingPlans);
+
+  const handleCampaignName = (newValue) => {
+    if (newValue) {
+
+      setSelectedPlan(newValue?._id || null);
+      setCampaignSheetUrl(newValue?.tracker_link)
+    }
+
+  }
   return (
     <>
       <Modal
@@ -1095,70 +1003,47 @@ const RecordCampaign = () => {
         <>{modalViewer(modalName)}</>
       </Modal>
 
-      <FormContainer mainTitle={"Record Purchase"} link={"true"} />
+      <FormContainer mainTitle={""} link={"true"} />
+
       <div className="card">
         <div className="card-body row">
           <div className="col-md-6">
-            {selectedPlan == 0
-              ? "Vendor Wise Data"
-              : campaignList?.find((data) => data?._id == selectedPlan)
-                ?.exe_campaign_name}
-          </div>
-          <CustomSelect
-            disabled={!!links}
-            fieldGrid={6}
-            dataArray={CampaignSelection}
-            optionId={"_id"}
-            optionLabel={"exe_campaign_name"}
-            selectedId={selectedPlan}
-            setSelectedId={(val) => {
-              localStorage.setItem(
-                "tab",
-                JSON.stringify({ [val]: { activeTab, activeTabIndex } })
-              );
-              setSelectedPlan(val);
-            }}
-            label={"Plans"}
-          />
-          {/* <CustomSelect
-              fieldGrid={6}
-              dataArray={vendorsList}
-              optionId={"_id"}
-              optionLabel={"vendor_name"}
-              selectedId={selectedVendor}
-              setSelectedId={setSelectedVendor}
-              label={"Vendor"}
-            /> */}
-          {/* <FieldContainer
-              fieldGrid={6}
-              type="date"
-              value={startDate}
-              onChange={(e) => {
-                setStartDate(e.target.value);
-              }}
-              label="Start Date"
-            />
-            <FieldContainer
-              fieldGrid={6}
-              type="date"
-              value={endDate}
-              onChange={(e) => {
-                setEndDate(e.target.value);
-              }}
-              label="End Date"
-            /> */}
 
-          {/* <button
-              className="btn cmnbtn btn-primary mt-4"
-              onClick={async () => {
-                setSelectedVendor("");
-                setStartDate("");
-                setEndDate("");
-                setSelectedPlan((prev) => prev);
-              }}
-            >
-              Clear
-            </button> */}
+            <Autocomplete
+              sx={{ gridColumn: 'span 6', width: '500px' }}
+              options={campaignList?.filter((data) => data?.is_sale_booking_created) || []}
+              getOptionLabel={(option) => option?.exe_campaign_name || ''}
+              value={campaignList?.find((data) => data._id === selectedPlan) || null}
+              // onChange={(event, newValue) => setSelectedPlan(newValue?._id || null)}
+              onChange={(event, newValue) => handleCampaignName(newValue || null)}
+              loading={loadingPlans}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Plans"
+                  variant="outlined"
+                  onChange={(event, value) => {
+                    { console.log("testing") }
+                    debouncedSetSearchQueryForCampName(value);
+                  }}
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loadingPlans ? <CircularProgress color="inherit" size={20} /> : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+
+                />
+              )}
+              isOptionEqualToValue={(option, value) => option._id === value?._id}
+              clearOnEscape
+            />
+
+
+          </div>
         </div>
       </div>
       {selectedData.length > 0 && <PostGenerator bulk={selectedData} />}
@@ -1227,19 +1112,28 @@ const RecordCampaign = () => {
                   Campaign Update
                 </button>
               )}
-              <button className="mr-3 cmnbtn btn btn-sm btn-primary" disabled={!selectedData.length || uploadLoading} onClick={() => handleUploadUniqueLink(true)}>Update States</button>
-              {/* {phaseWiseData?.length > 0 && (
-                  <button
-                    title="Upload Audited Data"
-                    className={`mr-3 cmnbtn btn btn-sm ${
-                      disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                    }`}
-                    onClick={handleAuditedDataUpload}
-                    disabled={disableAuditUpload() || AuditedUploading}
-                  >
-                    Record Purchase
-                  </button>
-                )} */}
+              <button className="mr-3 cmnbtn btn btn-sm btn-primary" disabled={!selectedData.length || uploadLoading} onClick={() => handleUploadUniqueLink(true)}>Update Stats</button>
+              {/* <button className="mr-3 cmnbtn btn btn-sm btn-primary"
+                // disabled={!selectedData.length || uploadLoading} 
+                onClick={() => sendToGoogleSheet(true)}>download excel</button> */}
+
+
+              <Autocomplete
+                options={sheetActions}
+                getOptionLabel={(option) => option.label}
+                value={selectedAction}
+                onChange={(event, newValue) => {
+                  if (newValue) {
+                    sendToGoogleSheet(newValue);
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Sheet Action" variant="outlined" size="small" />
+                )}
+                fullWidth
+              />
+
+
               <button
                 title="Reload Data"
                 className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
@@ -1248,74 +1142,7 @@ const RecordCampaign = () => {
               >
                 <ArrowClockwise />
               </button>
-              {/* <button
-                  title="audit"
-                  className={`cmnbtn btn btn-sm btn-outline-primary`}
-                  onClick={() => {
-                    handleBulkAudit();
-                  }}
-                  disabled={bulkAuditLoading}
-                >
-                  Audit
-                </button> */}
-              {/* <div className="popover-container">
-                  <i
-                    style={{ cursor: "pointer" }}
-                    className="bi bi-info-circle-fill warningText ml-3 mt-3"
-                  />
-                  <div className="popover-content">
-                    <div className="popover-item">
-                      <span
-                        className="rounded-circle mr-3"
-                        style={{
-                          backgroundColor: "#c4fac4",
-                          width: "10px",
-                          height: "10px",
-                        }}
-                      ></span>{" "}
-                      <p>Purchased</p>
-                    </div>
-                    <div className="popover-item">
-                      <span
-                        className="rounded-circle mr-3"
-                        style={{
-                          backgroundColor: "rgb(255 131 0 / 80%)",
-                          width: "10px",
-                          height: "10px",
-                        }}
-                      ></span>{" "}
-                      <p>Audited</p>
-                    </div>{" "}
-                    <div className="popover-item">
-                      <span
-                        className="rounded-circle mr-3"
-                        style={{
-                          backgroundColor: "#ffff008c",
-                          width: "10px",
-                          height: "10px",
-                        }}
-                      ></span>{" "}
-                      <p>Amount is 0 or Vendor name is empty</p>
-                    </div>
-                    <div className="popover-item">
-                      <span
-                        className="rounded-circle mr-3"
-                        style={{
-                          backgroundColor: "#ff00009c",
-                          width: "10px",
-                          height: "10px",
-                        }}
-                      ></span>{" "}
-                      <p>Data is not fetched</p>
-                    </div>
-                    <div className="popover-item">
-                      <p>
-                        No colour means all data is present and It's in pending
-                        Stage
-                      </p>
-                    </div>
-                  </div>
-                </div> */}
+
             </div>
           </div>
         }

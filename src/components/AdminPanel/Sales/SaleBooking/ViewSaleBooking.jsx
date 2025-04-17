@@ -528,7 +528,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-          "uploaded" == row?.invoice_request_status ? (
+            "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -579,9 +579,8 @@ const ViewSaleBooking = () => {
       comapare: true,
       renderRowCell: (row) => (
         <span
-          className={`badge ${
-            row.requested_amount ? "badge-success" : "badge-danger"
-          }`}
+          className={`badge ${row.requested_amount ? "badge-success" : "badge-danger"
+            }`}
         >
           {row.requested_amount > 0 ? "Requested" : "Not Requested"}
         </span>
@@ -730,9 +729,8 @@ const ViewSaleBooking = () => {
       name: "GST Status",
       renderRowCell: (row) => (
         <span
-          className={`badge ${
-            row.gst_status ? "badge-success" : "badge-danger"
-          }`}
+          className={`badge ${row.gst_status ? "badge-success" : "badge-danger"
+            }`}
         >
           {row.gst_status ? "Applicable" : "Not Applicable"}
         </span>
@@ -840,10 +838,10 @@ const ViewSaleBooking = () => {
       width: 100,
       renderRowCell: (row) => (
         <>
-          {!row?.is_dummy_sale_booking && (
+          {(!row?.is_dummy_sale_booking) && (
             <div className="flex-row">
               {/* {row.incentive_earning_status === "un-earned" &&  */}
-              {row.sale_booking_id > 2370 && (
+              {(row.sale_booking_id > 2370 || loginUserId == 62) && (
                 <Link
                   title="Edit sale booking"
                   to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}

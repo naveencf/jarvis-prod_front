@@ -97,7 +97,7 @@ function PageOverviewHeader({
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
-  const { data } = useGetAllCountWisePageQuery();
+  const { data } = useGetAllCountWisePageQuery(activeTab);
   console.log(data, "dd----ds");
   const categoryOptionsWithCount =
     data?.category &&

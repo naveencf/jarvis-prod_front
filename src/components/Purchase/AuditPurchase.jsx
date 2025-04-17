@@ -405,7 +405,7 @@ const AuditPurchase = () => {
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row,setEditFlag) {
+  async function handledataUpdate(row, setEditFlag) {
     // console.log('row', row);
     const followerCount = row?.owner_info?.followers
       ? row.owner_info.followers / 1000000
@@ -655,14 +655,14 @@ const AuditPurchase = () => {
     );
     return allPurchased;
   }
- 
+
   async function handleAuditedDataUpload() {
     try {
       if (selectedData.length < 1) {
         toastError("Please Select atleast one row.");
         return;
       }
-      
+
       const shortCodes = selectedData.map(item => item.shortCode);
       const auditedData = selectedData.every(item => item.audit_status === "audited");
       if (!auditedData) {
@@ -671,19 +671,19 @@ const AuditPurchase = () => {
           title: 'Error',
           text: 'All rows must have status as "audited".',
         });
-        return;  
+        return;
       }
-  
+
       const data = {
         vendor_id: vendorNumericId,
         userId: token.id,
         isVendorWise: true,
         shortCodes,
       };
-      
+
       const res = await recordPurchase(data);
       if (res.error) throw new Error(res.error);
-  
+
       const response = await fetchFilteredPosts();
       if (response.isSuccess && response.data) {
         setCampainPlanData(response.data);
@@ -694,7 +694,7 @@ const AuditPurchase = () => {
       toastError("Error Uploading Data");
     }
   }
-  
+
   function istToUtc(istDate) {
     let [day, month, year] = istDate.split("/").map(Number);
     let date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
@@ -709,6 +709,7 @@ const AuditPurchase = () => {
       setPrice(value);
     }
   };
+
   const handleTabClick = (tab) => {
     setcurrentTab(tab);
     switch (tab) {

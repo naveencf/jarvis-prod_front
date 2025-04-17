@@ -72,71 +72,71 @@ const DeletedSaleBooking = () => {
       width: 100,
       renderRowCell: (row) => row?.approved_amount,
     },
-    {
-      key: "requested_amount",
-      name: "Requested amount",
-      width: 100,
-      renderRowCell: (row) => row?.requested_amount,
-    },
-    {
-      key: "record_service_amount",
-      name: "Record service amount",
-      width: 100,
-      renderRowCell: (row) => row?.record_service_amount,
-    },
-    {
-      key: "record_service_counts",
-      name: "Record service counts",
-      width: 100,
-      renderRowCell: (row) => row?.record_service_counts,
-    },
-    {
-      key: "credit_approval_status",
-      name: "Credit approval status",
-      width: 100,
-      renderRowCell: (row) => formatString(row?.credit_approval_status),
-    },
-    {
-      key: "reason_credit_approval_1",
-      name: "Reason credit approval",
-      width: 100,
-      renderRowCell: (row) => {
-        const creditApproval = creditApprovalData?.find(
-          (creditApproval) => creditApproval.id === row?.reason_credit_approval
-        );
-        return creditApproval?.reason_credit_approval;
-      },
-      compare: true,
-    },
-    {
-      key: "reason_credit_approval_own_reason",
-      name: "Own reason for credit approval",
-      width: 100,
-      renderRowCell: (row) =>
-        formatString(row?.reason_credit_approval_own_reason),
-    },
-    {
-      key: "balance_payment_ondate",
-      name: "Balance payment date",
-      width: 100,
-      renderRowCell: (row) =>
-        new Date(row?.balance_payment_ondate).toLocaleDateString(),
-      compare: true,
-    },
-    {
-      key: "gst_status_1",
-      name: "GST status",
-      width: 100,
-      compare: true,
-      renderRowCell: (row) => (row?.gst_status ? "Yes" : "No"),
-      compare: true,
-    },
-    {
-      key: "tds_status",
-      name: "TDS status",
-      width: 100,
-      renderRowCell: (row) => row?.tds_status,
-    },
+    // {
+    //   key: "requested_amount",
+    //   name: "Requested amount",
+    //   width: 100,
+    //   renderRowCell: (row) => row?.requested_amount,
+    // },
+    // {
+    //   key: "record_service_amount",
+    //   name: "Record service amount",
+    //   width: 100,
+    //   renderRowCell: (row) => row?.record_service_amount,
+    // },
+    // {
+    //   key: "record_service_counts",
+    //   name: "Record service counts",
+    //   width: 100,
+    //   renderRowCell: (row) => row?.record_service_counts,
+    // },
+    // {
+    //   key: "credit_approval_status",
+    //   name: "Credit approval status",
+    //   width: 100,
+    //   renderRowCell: (row) => formatString(row?.credit_approval_status),
+    // },
+    // {
+    //   key: "reason_credit_approval_1",
+    //   name: "Reason credit approval",
+    //   width: 100,
+    //   renderRowCell: (row) => {
+    //     const creditApproval = creditApprovalData?.find(
+    //       (creditApproval) => creditApproval.id === row?.reason_credit_approval
+    //     );
+    //     return creditApproval?.reason_credit_approval;
+    //   },
+    //   compare: true,
+    // },
+    // {
+    //   key: "reason_credit_approval_own_reason",
+    //   name: "Own reason for credit approval",
+    //   width: 100,
+    //   renderRowCell: (row) =>
+    //     formatString(row?.reason_credit_approval_own_reason),
+    // },
+    // {
+    //   key: "balance_payment_ondate",
+    //   name: "Balance payment date",
+    //   width: 100,
+    //   renderRowCell: (row) =>
+    //     new Date(row?.balance_payment_ondate).toLocaleDateString(),
+    //   compare: true,
+    // },
+    // {
+    //   key: "gst_status_1",
+    //   name: "GST status",
+    //   width: 100,
+    //   compare: true,
+    //   renderRowCell: (row) => (row?.gst_status ? "Yes" : "No"),
+    //   compare: true,
+    // },
+    // {
+    //   key: "tds_status",
+    //   name: "TDS status",
+    //   width: 100,
+    //   renderRowCell: (row) => row?.tds_status,
+    // },
     {
       key: "booking_close_date",
       name: "Booking close date",
