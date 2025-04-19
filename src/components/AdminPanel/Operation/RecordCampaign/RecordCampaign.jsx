@@ -893,7 +893,7 @@ const RecordCampaign = () => {
       toastError("There is some error.Please try again later.")
     }
   };
-  console.log(campaignSheetUrl, "campaignSheetUrl", selectedPlan)
+  // console.log(campaignSheetUrl, "campaignSheetUrl", selectedPlan)
   const sheetActions = [
     selectedPlan && campaignSheetUrl == "" && {
       label: "Generate Tracker",
@@ -948,6 +948,7 @@ const RecordCampaign = () => {
     useEffect(() => {
       debouncedFn.current = debounce(async (value) => {
         try {
+          console.log(value, "testing debounce", campaignSearchQuery)
           await setter(value);
         } finally {
           setLoading(false); // Stop loader after response
@@ -1022,10 +1023,12 @@ const RecordCampaign = () => {
                   {...params}
                   label="Plans"
                   variant="outlined"
-                  onChange={(event, value) => {
-                    { console.log("testing") }
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    console.log("testing", value);
                     debouncedSetSearchQueryForCampName(value);
                   }}
+
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (

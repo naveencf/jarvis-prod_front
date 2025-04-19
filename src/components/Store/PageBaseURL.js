@@ -281,7 +281,7 @@ export const PageBaseURL = createApi({
 
     //get category wise invetory details
     getAllCategoryWiseInventory: builder.query({
-      query: () => `v1/category_wise_inventory_details`,
+      query: (platform) => `v1/category_wise_inventory_details/${platform}`,
       transformResponse: (response) => {
         return response.data.sort(
           (a, b) => b.totalPageCount - a.totalPageCount
