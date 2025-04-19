@@ -218,7 +218,7 @@ const PageOverviewNew = () => {
     // sessionStorage.setItem("token", storedToken);
     setEditMode(true);
     setEditID(_id);
-   };
+  };
   const handleEditClose = () => {
     setEditMode(false);
     setEditID(null);
@@ -634,6 +634,7 @@ const PageOverviewNew = () => {
     setVendorDetails(params);
   };
   const getPriceDetail = (priceDetails, key) => {
+    if (!priceDetails) return 0;
     const keyType = key.split("_")[1];
 
     const detail = priceDetails?.find((item) => {
@@ -683,29 +684,29 @@ const PageOverviewNew = () => {
         return formatString(row?.page_activeness);
       },
     },
-    {
-      key: "createdAt",
-      name: "Register Date",
-      renderRowCell: (row) => {
-        const date = new Date(row.createdAt).toLocaleDateString("en-CA");
-        return <div style={{ cursor: "pointer" }}>{date}</div>;
-      },
-      width: 120,
-      showCol: true,
-    },
-    {
-      key: "createdAt1",
-      name: "Register Time",
-      renderRowCell: (row) => {
-        const time = new Date(row.createdAt).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        return <div style={{ cursor: "pointer" }}>{time}</div>;
-      },
-      width: 120,
-      showCol: true,
-    },
+    // {
+    //   key: "createdAt",
+    //   name: "Register Date",
+    //   renderRowCell: (row) => {
+    //     const date = new Date(row.createdAt).toLocaleDateString("en-CA");
+    //     return <div style={{ cursor: "pointer" }}>{date}</div>;
+    //   },
+    //   width: 120,
+    //   showCol: true,
+    // },
+    // {
+    //   key: "createdAt1",
+    //   name: "Register Time",
+    //   renderRowCell: (row) => {
+    //     const time = new Date(row.createdAt).toLocaleTimeString("en-US", {
+    //       hour: "2-digit",
+    //       minute: "2-digit",
+    //     });
+    //     return <div style={{ cursor: "pointer" }}>{time}</div>;
+    //   },
+    //   width: 120,
+    //   showCol: true,
+    // },
     {
       key: "followers_count",
       name: "Followers",
@@ -759,12 +760,12 @@ const PageOverviewNew = () => {
       },
       compare: true,
     },
-    {
-      key: "Bio",
-      name: "Bio",
-      width: 80,
-      renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
-    },
+    // {
+    //   key: "Bio",
+    //   name: "Bio",
+    //   width: 80,
+    //   renderRowCell: (row) => <div>{row.bio ? row.bio : "NA "}</div>,
+    // },
     {
       key: "Logo",
       name: "Logo",
@@ -809,7 +810,7 @@ const PageOverviewNew = () => {
       renderRowCell: (row) => {
         const mPostPrice = row?.page_price_list;
         const postDetail = mPostPrice?.find(
-          (item) => item.instagram_post !== undefined
+          (item) => item?.instagram_post !== undefined
         );
         const postPrice = postDetail?.instagram_post || 0; // Use 0 if postPrice is not available
         let followerCount = Math.max(0, row?.followers_count || 0);
@@ -832,7 +833,7 @@ const PageOverviewNew = () => {
         // console.log(row.page_name, "fghj", row.page_price_list)
         const mStoryPrice = row?.page_price_list;
         const postDetail = mStoryPrice?.find(
-          (item) => item.instagram_story !== undefined
+          (item) => item?.instagram_story !== undefined
         );
         const storyPrice = postDetail?.instagram_story || 0;
         let followerCount = Math.max(0, row?.followers_count || 0);
@@ -891,15 +892,15 @@ const PageOverviewNew = () => {
       width: 200,
     },
 
-    {
-      key: "platform_name",
-      name: "Platform",
-      renderRowCell: (row) => {
-        return formatString(row.platform_name);
-      },
+    // {
+    //   key: "platform_name",
+    //   name: "Platform",
+    //   renderRowCell: (row) => {
+    //     return formatString(row.platform_name);
+    //   },
 
-      width: 200,
-    },
+    //   width: 200,
+    // },
     {
       key: "page_category_name",
       name: "Category",
@@ -1310,7 +1311,7 @@ const PageOverviewNew = () => {
           const reelData = row?.page_price_list?.find(
             (item) => item?.instagram_reel !== undefined
           );
-          const reelPrice = reelData ? reelData.instagram_reel : 0;
+          const reelPrice = reelData ? reelData?.instagram_reel : 0;
           return reelPrice > 0 ? Number(reelPrice) : 0;
         },
         compare: true,
@@ -1512,7 +1513,7 @@ const PageOverviewNew = () => {
               </div>
             )}
             {activeTab === "Tab3" && (
-              <CategoryWisePageOverviewNew dataTable={pageColumns} />
+              <CategoryWisePageOverviewNew dataTable={pageColumns} platform={platformName} />
             )}
             {activeTab === "Tab4" && <PageClosedByDetails />}
             {activeTab === "Tab5" && (

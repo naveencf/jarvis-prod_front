@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-const CategoryWisePageOverviewNew = ({ dataTable }) => {
+const CategoryWisePageOverviewNew = ({ dataTable, platform }) => {
     const [viewState, setViewState] = useState("main"); // State for controlling views
     const [pagequery, setPagequery] = useState("");
     const [activeSectionCat, setActiveSectionCat] = useState(null);
@@ -34,7 +34,7 @@ const CategoryWisePageOverviewNew = ({ dataTable }) => {
 
     const { data: pageList, refetch: refetchPageList, isLoading: isPageListLoading } =
         useGetAllPageListQuery({ decodedToken, userID, pagequery });
-    const { data: categoryWiseData } = useGetAllCategoryWiseInventoryQuery();
+    const { data: categoryWiseData } = useGetAllCategoryWiseInventoryQuery(platform);
 
     useEffect(() => {
         if (pageList?.length > 0) {

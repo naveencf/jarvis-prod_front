@@ -174,11 +174,11 @@ export default function OrderDialogforHouseKeeping({
                       ) : (
                         <div className="orderRemark">
                           <p>
-                            {orderDetail?.order_type == 1
+                            {order?.order_type == 1
                               ? "Please refill Water Bottle"
-                              : orderDetail?.order_type == 2
-                              ? "Housekeeping"
-                              : orderDetail?.order_items.map(
+                              : order?.order_type == 2
+                                ? "Housekeeping"
+                                : order?.order_items.map(
                                   (res) =>
                                     `${res.quantity} ${formatString(
                                       res.item_name
