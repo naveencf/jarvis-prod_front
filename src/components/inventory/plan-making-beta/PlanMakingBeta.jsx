@@ -6,7 +6,7 @@ import jwtDecode from 'jwt-decode';
 import { useDispatch, useSelector } from 'react-redux';
 import { setShowPageHealthColumn } from '../../Store/PageOverview';
 import { useGetAllVendorQuery, useGetPmsPlatformQuery, useGetAllVendorTypeQuery } from '../../Store/reduxBaseURL';
-import { useGetAllPageCategoryQuery, useGetAllPageListQuery } from '../../Store/PageBaseURL';
+import { useGetAllPageCategoryQuery, useGetAllPageListQuery, useGetSpecificPagesQuery } from '../../Store/PageBaseURL';
 import DataGridColumns from '../plan-making/DataGridColumns';
 // import Filters from './Filters';
 import { useFetchPlanDescription, useFetchPlanDetails, useGetPlanPages, usePageDetail, usePlanPagesVersionDetails, useSendPlanDetails } from '../plan-making/apiServices';
@@ -48,8 +48,8 @@ const PlanMakingBeta = () => {
   const userID = decodedToken.id;
   const dispatch = useDispatch();
 
-  const { data: pageList, isLoading: isPageListLoading, isFetching: isPageListFetching } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
-
+  // const { data: pageList, isLoading: isPageListLoading, isFetching: isPageListFetching } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  const {data: pageList, isLoading: isPageListLoading, isFetching: isPageListFetching } = useGetSpecificPagesQuery();
   const { data: vendorTypeData, isLoading: typeLoading } = useGetAllVendorTypeQuery();
   const typeData = vendorTypeData?.data;
 
@@ -713,72 +713,100 @@ const PlanMakingBeta = () => {
       .toLowerCase();
   };
 
+
   const filterAndSelectRows = (searchTerms) => {
-    // If there are search terms
-    if (searchTerms?.length > 0) {
-      // Filter data based on search terms
-
-      const filtered = getTableData?.filter((item) => item.followers_count > 0 && searchTerms.some((term) => normalize(item?.page_name || '') === normalize(term)));
-
-      // Store filtered data
-      setFilterData(filtered);
-
-      // Create a copy of the currently selected rows
-      const updatedSelectedRows = [...selectedRows];
-      const updatedPostValues = { ...postPerPageValues };
-      const updatedShowTotalCost = { ...showTotalCost };
-      // Loop through each filtered row
-      filtered?.forEach((row) => {
-        // Check if the row is already selected
-        const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
-
-        // If not already selected, select the row and update checkbox
-        if (!isAlreadySelected) {
-          handleCheckboxChange(row, '', { target: { checked: true } }, activeIndex);
-          updatedShowTotalCost[row._id] = true;
-          updatedSelectedRows.push(row);
-        }
-
-        // Set the post per page value to 1 for this row
-        updatedPostValues[row._id] = 1;
-      });
-
-      // Set post per page values for all rows at once
-      setPostPerPageValues(updatedPostValues);
-      setSelectedRows(updatedSelectedRows);
-      setShowTotalCost(updatedShowTotalCost);
-      // Update statistics based on the selected rows
-      updateStatistics(updatedSelectedRows);
-
-      // Identify pages not found
-      const filteredPageNames = new Set(filtered.map((item) => normalize(item.page_name || '')));
-
-      const notFound = searchTerms.filter((term) => !filteredPageNames.has(normalize(term)));
-
-      // Show not found pages if any
-      if (notFound.length > 0) {
-        setNotFoundPages(notFound);
-        handleOpenDialog();
-      } else {
-        setNotFoundPages([]);
-      }
-
-      // Determine unselected rows (not checked)
-      const selectedRowIds = new Set(updatedSelectedRows.map((row) => row._id));
-      const notCheckedRows = getTableData?.filter((item) => !selectedRowIds.has(item._id));
-
-      // Update filterData with the unselected rows for display
-      setFilterData(() => {
-        return [...filtered, ...notCheckedRows.filter((item) => !filtered.some((filteredItem) => filteredItem._id === item._id))];
-      });
-    } else {
-      // If no search terms, reset filterData and selectedRows
+    if (!searchTerms?.length) {
       setFilterData(getTableData);
       setSelectedRows([]);
       setNotFoundPages([]);
+      return;
     }
+  
+    const filtered = getTableData?.filter((item) =>
+      item.followers_count > 0 &&
+      searchTerms.some((term) => normalize(item?.page_name || '') === normalize(term))
+    );
+  
+    setFilterData(filtered);
+  
+    const updatedSelectedRows = [...selectedRows];
+    const updatedPostValues = { ...postPerPageValues };
+    const updatedStoryValues = { ...storyPerPageValues };
+    const updatedShowTotalCost = { ...showTotalCost };
+  
+    filtered.forEach((row) => {
+      const alreadySelected = updatedSelectedRows.some((r) => r._id === row._id);
+      if (!alreadySelected) {
+        handleCheckboxChange(row, '', { target: { checked: true } }, activeIndex);
+        updatedShowTotalCost[row._id] = true;
+        updatedSelectedRows.push(row);
+      }
+  
+      updatedPostValues[row._id] = 1; // default post count
+      updatedStoryValues[row._id] = storyPerPageValues[row._id] || 0;  
+    });
+  
+    setPostPerPageValues(updatedPostValues);
+    setStoryPerPageValues(updatedStoryValues);
+    setShowTotalCost(updatedShowTotalCost);
+    updateStatistics(updatedSelectedRows);
+  
+    // Not Found Terms
+    const filteredPageNames = new Set(filtered.map((item) => normalize(item.page_name || '')));
+    const notFound = searchTerms.filter((term) => !filteredPageNames.has(normalize(term)));
+  
+    if (notFound.length > 0) {
+      setNotFoundPages(notFound);
+      handleOpenDialog();
+    } else {
+      setNotFoundPages([]);
+    }
+  
+    const selectedRowIds = new Set(updatedSelectedRows.map((row) => row._id));
+    const unselectedRows = getTableData?.filter((item) => !selectedRowIds.has(item._id));
+    setFilterData([...filtered, ...unselectedRows]);
+  
+    const planxData = updatedSelectedRows.map((row) => {
+      const {
+        _id,
+        page_price_list,
+        page_name,
+        rate_type,
+        followers_count,
+        platform_name,
+        platform_id,
+      } = row;
+  
+      const isFixedRate = rate_type === 'fixed';
+  
+      const getPrice = (type) =>
+        isFixedRate
+          ? getPriceDetail(page_price_list, `instagram_${type}`)
+          : calculatePrice(rate_type, { page_price_list, followers_count }, type);
+  
+      return {
+        page_name,
+        post_price: getPrice('post'),
+        story_price: getPrice('story'),
+        post_count: Number(updatedPostValues[_id]) || 0,
+        story_count: Number(updatedStoryValues[_id]) || 0,
+        platform_name,
+        platform_id,
+        page_id: _id,
+      };
+    });
+  
+    if (!isAutomaticCheck) {
+      const planStatus = planDetails && planDetails[0]?.plan_status;
+      debouncedSendPlanDetails(planxData, planStatus);
+    }
+  
+    setPlanData(planxData);
+    setSelectedRows(updatedSelectedRows);  
   };
-  //   // console.log("searchInput", searchIn);
+  
+  
+
   const handleSearchChange = (event) => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
@@ -1116,7 +1144,7 @@ const PlanMakingBeta = () => {
       </div>
 
       {/* {toggleLeftNavbar && ( */}
-      <LeftSideBarBeta totalFollowers={totalFollowers} pageData={pageDetail}  platformData={platformData} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate}  planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
+      <LeftSideBarBeta totalFollowers={totalFollowers} pageData={pageDetail} platformData={platformData} setLeftSideBarDataUpdate={setLeftSideBarDataUpdate} planDetails={planDetails} id={id} planData={planData} totalStoryCount={totalStoryCount} totalPostCount={totalPostCount} sendPlanDetails={sendPlanDetails} selectedRows={selectedRows} handleTotalOwnCostChange={handleTotalOwnCostChange} totalCost={totalCost} totalPostsPerPage={totalPostsPerPage} totalPagesSelected={totalPagesSelected} totalDeliverables={totalDeliverables} totalStoriesPerPage={totalStoriesPerPage} pageCategoryCount={pageCategoryCount} handleToggleBtn={handleToggleBtn} selectedRow={selectedRows} totalRecord={pageList?.pagination_data} postCount={postPerPageValues} storyPerPage={storyPerPageValues} handleOwnPage={handleOwnPage} category={cat} ownPages={ownPages} checkedDescriptions={checkedDescriptions} />
       {/* )} */}
       <div className="card">
         <div className="card-header flexCenterBetween">

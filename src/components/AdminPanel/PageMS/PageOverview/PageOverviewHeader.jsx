@@ -97,7 +97,7 @@ function PageOverviewHeader({
     isLoading: isPageListLoading,
   } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
 
-  const { data } = useGetAllCountWisePageQuery(activeTab);
+  const { data } = useGetAllCountWisePageQuery({ activeTab });
   console.log(data, "dd----ds");
   const categoryOptionsWithCount =
     data?.category &&
@@ -224,13 +224,14 @@ function PageOverviewHeader({
       setFilterFollowers(null);
     }
   };
+  console.log(subCategoryFilter, "subCategoryFilter")
   // categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
   useEffect(() => {
     const queryParams = [
       activeTab && `platform_name=${activeTab}`,
-      categoryFilter && `page_category_name=${categoryFilter?.toLowerCase()}`,
+      categoryFilter && `page_category_name=${encodeURIComponent(categoryFilter?.toLowerCase())}`,
       subCategoryFilter &&
-      `page_sub_category_name=${subCategoryFilter.toLowerCase()}`,
+      `page_sub_category_name=${encodeURIComponent(subCategoryFilter.toLowerCase())}`,
       profileTypeFilter &&
       `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
       ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`,
@@ -442,6 +443,7 @@ function PageOverviewHeader({
     setActiveTab(tab.platform_name);
     localStorage.setItem("activeTab", tab.platform_name);
     setPlanFormName(tab.platform_name);
+    console.log(tab.platform_name, "platform anme");
   };
 
   // useEffect(() => {
@@ -479,6 +481,10 @@ function PageOverviewHeader({
     setFilterFollowers(null);
   }, [activeTab]);
 
+  const handleSubCategoryChange = (e, newValue) => {
+    console.log(newValue, "newValue")
+    setSubCategoryFilter(newValue ? newValue.value : "")
+  }
   return (
     <div className="card">
       <div className="">
@@ -604,7 +610,8 @@ function PageOverviewHeader({
                   ) || null
                 }
                 onChange={(event, newValue) =>
-                  setSubCategoryFilter(newValue ? newValue.value : "")
+
+                  handleSubCategoryChange(event, newValue)
                 }
                 options={subCategoryOptionsWithCount}
                 getOptionLabel={(option) => option.label}

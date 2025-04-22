@@ -20,7 +20,7 @@ const style = {
     p: 4,
 };
 
-const CategoryWisePageOverviewNew = ({ dataTable, platform }) => {
+const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
     const [viewState, setViewState] = useState("main"); // State for controlling views
     const [pagequery, setPagequery] = useState("");
     const [activeSectionCat, setActiveSectionCat] = useState(null);
@@ -31,10 +31,11 @@ const CategoryWisePageOverviewNew = ({ dataTable, platform }) => {
     const storedToken = sessionStorage.getItem("token");
     const decodedToken = jwtDecode(storedToken);
     const userID = decodedToken.id;
+    console.log("platformName", platformName);
 
     const { data: pageList, refetch: refetchPageList, isLoading: isPageListLoading } =
         useGetAllPageListQuery({ decodedToken, userID, pagequery });
-    const { data: categoryWiseData } = useGetAllCategoryWiseInventoryQuery(platform);
+    const { data: categoryWiseData } = useGetAllCategoryWiseInventoryQuery(platformName);
 
     useEffect(() => {
         if (pageList?.length > 0) {
@@ -151,6 +152,12 @@ const CategoryWisePageOverviewNew = ({ dataTable, platform }) => {
                             rowSelectable={true}
                             pagination={[100, 200, 1000]}
                             tableName={"Page Overview"}
+                            addHtml={
+                                <div className="d-flex sb w-10">
+                                    <br />
+                                    <p>| Current Platform <strong>{formatString(platformName)}</strong></p>
+                                </div>
+                            }
                         />
                     </div>
                 ) : (

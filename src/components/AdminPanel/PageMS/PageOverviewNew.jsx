@@ -781,29 +781,29 @@ const PageOverviewNew = () => {
         );
       },
     },
-    {
-      key: "WA Links",
-      name: "WA Links",
-      width: 100,
+    // {
+    //   key: "WA Links",
+    //   name: "WA Links",
+    //   width: 100,
 
-      renderRowCell: (row) => {
-        let name = allVendorWhats?.filter(
-          (item) => item?.vendor_id == row?.vendor_id
-        );
-        let countName = name?.length;
-        return (
-          <div
-            data-toggle="modal"
-            data-target="#waModal"
-            onClick={() => handlewhatsAppData(row)}
-            // onClick={<WhatsapplinksModel data={row} />}
-            style={{ cursor: "pointer" }}
-          >
-            {countName}
-          </div>
-        );
-      },
-    },
+    //   renderRowCell: (row) => {
+    //     let name = allVendorWhats?.filter(
+    //       (item) => item?.vendor_id == row?.vendor_id
+    //     );
+    //     let countName = name?.length;
+    //     return (
+    //       <div
+    //         data-toggle="modal"
+    //         data-target="#waModal"
+    //         onClick={() => handlewhatsAppData(row)}
+    //         // onClick={<WhatsapplinksModel data={row} />}
+    //         style={{ cursor: "pointer" }}
+    //       >
+    //         {countName}
+    //       </div>
+    //     );
+    //   },
+    // },
     {
       key: "average_post_price",
       name: "Average Post Price",
@@ -1351,6 +1351,7 @@ const PageOverviewNew = () => {
     setPageColumns(() => [...dataGridcolumns, ...updatedColumns]);
     // dataGridcolumns.push(updatedColumns)
   }, [platformName]);
+
   return (
     <>
       <PriceModal
@@ -1513,7 +1514,7 @@ const PageOverviewNew = () => {
               </div>
             )}
             {activeTab === "Tab3" && (
-              <CategoryWisePageOverviewNew dataTable={pageColumns} platform={platformName} />
+              <CategoryWisePageOverviewNew dataTable={pageColumns} platformName={platformName} />
             )}
             {activeTab === "Tab4" && <PageClosedByDetails />}
             {activeTab === "Tab5" && (

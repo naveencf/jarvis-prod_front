@@ -36,23 +36,33 @@ import OperationDashboard from "../UnusedCode/UnusedOp/OperationDashboard/Operat
 import Ledger from "../Purchase/PurchaseVendor/Ledger";
 import HomePantry from "../NewPantry/HomePantry";
 import PantryUserDashboard from "../Pantry/PantryUserDashboard";
+import SalesBonusOverview from "./Sales/ Bonus/SalesBonusOverview";
+import SalesBonusSlab from "./Sales/ Bonus/SaleBonusSlab";
+import BonusMastAddEdit from "./Sales/ Bonus/BonusMast/BonusMastAddEdit";
+import BonusMastOverview from "./Sales/ Bonus/BonusMast/BonusMastOverview";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
 const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
 
-const PurchaseReport = lazy(() => import("../Purchase/purchase-report/PurchaseReport"))
+const PurchaseReport = lazy(() =>
+  import("../Purchase/purchase-report/PurchaseReport")
+);
 
 const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU"));
 const SalesProductOverview = lazy(() =>
   import("./Sales/Product/SalesProductOverview")
 );
 const ViewSalesPoc = lazy(() => import("../AdminPanel/Sales/ViewSalesPoc"));
-const RecordCampaign = lazy(() => import(("../AdminPanel/Operation/RecordCampaign/RecordCampaign")))
+const RecordCampaign = lazy(() =>
+  import("../AdminPanel/Operation/RecordCampaign/RecordCampaign")
+);
 const NavSideBar = lazy(() => import("./Navbar-Sidebar/NavSideBar"));
 const UserMaster = lazy(() => import("./HRMS/User/UserMaster"));
 const UserView = lazy(() => import("./HRMS/User/UserView"));
-const VendorSalesOverview = lazy(() => import('./VendorSales/VendorSalesOverview'))
+const VendorSalesOverview = lazy(() =>
+  import("./VendorSales/VendorSalesOverview")
+);
 const UserUpdate = lazy(() => import("./HRMS/User/UserUpdate"));
 
 const UserOverview = lazy(() => import("./HRMS/User/UserOverview"));
@@ -835,9 +845,9 @@ const AllAssignedCategory = lazy(() =>
   import("../SuperTracker/CommunityManagement/AllAssignedCategory")
 );
 const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport"));
-const PageAddition = lazy(() => import("../Boosting/PageAddition"))
-const RecentlyBoosted = lazy(() => import("../Boosting/RecentlyBoosted"))
-const DefaultService = lazy(() => import("../Boosting/DefaultService"))
+const PageAddition = lazy(() => import("../Boosting/PageAddition"));
+const RecentlyBoosted = lazy(() => import("../Boosting/RecentlyBoosted"));
+const DefaultService = lazy(() => import("../Boosting/DefaultService"));
 
 const Admin = () => {
   // const [contextData, setData] = useState([]);
@@ -857,9 +867,7 @@ const Admin = () => {
           </div>
         }
       >
-
         <div id="wrapper" className={isPantryRoute ? "hkDashboard" : ""}>
-
           <div id="content-wrapper" className="d-flex flex-column">
             <div id="content">
               <div className="page_content">
@@ -922,8 +930,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1560,7 +1568,10 @@ const Admin = () => {
                       element={<OperationContents />}
                     /> */}
                     <Route path="/calender" element={<CalenderCreation />} />
-                    <Route path="/record-campaign" element={<RecordCampaign />} />
+                    <Route
+                      path="/record-campaign"
+                      element={<RecordCampaign />}
+                    />
                     <Route
                       path="/campaign_execution"
                       element={<OperationShortcodeUpdater />}
@@ -2088,6 +2099,22 @@ const Admin = () => {
                       element={<PlanRequest />}
                     />
                     <Route
+                      path="/sales-bonus-overview"
+                      element={<SalesBonusOverview />}
+                    />
+                    <Route
+                      path="/sales-bonus-slab/:id"
+                      element={<SalesBonusSlab />}
+                    />
+                    <Route
+                      path="/sales-bonus-master-add-edit/:id"
+                      element={<BonusMastAddEdit />}
+                    />
+                    <Route
+                      path="/sales-bonus-master-overview"
+                      element={<BonusMastOverview />}
+                    />
+                    <Route
                       path="/sales-user-report"
                       element={<SalesReport />}
                     />
@@ -2350,7 +2377,8 @@ const Admin = () => {
                     {/*  Vendor Sales Start */}
                     <Route
                       path="vendor-sale-overview"
-                      element={<VendorSalesOverview />} />
+                      element={<VendorSalesOverview />}
+                    />
                     {/*  Vendor Sales End */}
 
                     {/* Post stats from Insights */}
@@ -2369,7 +2397,10 @@ const Admin = () => {
                       path="/record-purchase"
                       element={<CampaignExecution />}
                     />
-                    <Route path="/purchased-record" element={<AuditPurchase />} />
+                    <Route
+                      path="/purchased-record"
+                      element={<AuditPurchase />}
+                    />
                     <Route
                       path="/purchase-report"
                       element={<PurchaseReport />}
@@ -2381,8 +2412,14 @@ const Admin = () => {
 
                     {/* Boosting Start */}
                     <Route path="/page-addition" element={<PageAddition />} />
-                    <Route path="/recently-boosted" element={<RecentlyBoosted />} />
-                    <Route path="/default-service" element={<DefaultService />} />
+                    <Route
+                      path="/recently-boosted"
+                      element={<RecentlyBoosted />}
+                    />
+                    <Route
+                      path="/default-service"
+                      element={<DefaultService />}
+                    />
                     {/* Boosting End */}
                   </Route>
                   {/* Pantry */}
@@ -2390,11 +2427,7 @@ const Admin = () => {
                       contextData[29] &&
                       contextData[29]?.view_value === 1 && ( */}
                   <>
-                    <Route
-                      path="/pantry"
-                      element={<PantryUserDashboard />}
-                    />
-
+                    <Route path="/pantry" element={<PantryUserDashboard />} />
                   </>
                   {/* )} */}
                   <Route path="**" element={<ErrorPage />} />

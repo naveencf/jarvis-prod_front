@@ -29,6 +29,7 @@ import SalesCategoryApi from "../API/Sales/salesCategoryApi";
 import IncentiveStatementApi from "../API/Sales/IncentiveSettelmentApi";
 import BrandApi from "../API/Sales/BrandApi";
 import BrandCategoryTypeApi from "../API/Sales/BrandCategoryTypeApi";
+import SalesBonusApi from "../API/Sales/SalesBonusApi";
 
 export const salesReducers = {
   [BrandApi.reducerPath]: BrandApi.reducer,
@@ -62,4 +63,5 @@ export const salesReducers = {
   [SalesCategoryApi.reducerPath]: SalesCategoryApi.reducer,
   [IncentiveStatementApi.reducerPath]: IncentiveStatementApi.reducer,
   [BrandCategoryTypeApi.reducerPath]: BrandCategoryTypeApi.reducer,
+  [SalesBonusApi.reducerPath]: SalesBonusApi.reducer,
 };

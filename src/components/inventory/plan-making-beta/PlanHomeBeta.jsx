@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Autocomplete, MenuItem } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
-import PlanPricing from '../plan-making/PlanPricing';
+// import PlanPricing from '../plan-making/PlanPricing';
 import { baseUrl } from '../../../utils/config';
 import { useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
@@ -14,7 +14,7 @@ import { useGetAllPageListQuery, useGetOperationContentCostQuery, useUpdateOpera
 import PlanXStatusDialog from '../plan-making/StatusDialog';
 //   import PlanXHeader from "./PlanXHeader";
 import PageDialog from '../plan-making/PageDialog';
-import { CiStickyNote } from 'react-icons/ci';
+// import { CiStickyNote } from 'react-icons/ci';
 import PlanXNoteModal from '../plan-making/PlanXNoteModal';
 import DataGridOverviewColumns from '../plan-making/DataGridOverviewColumns';
 import numberToWords from '../../../utils/convertNumberToIndianString';
@@ -472,10 +472,10 @@ function PlanHomeBeta() {
     formData.append('description', planDetails.description);
     formData.append('sales_executive_id', parseInt(id));
     if (planDetails.accountId) {
-      formData.append('account_id', planDetails.accountId);
+      formData.append('account_id', planDetails?.accountId);
     }
     if (planDetails.brandId || planDetails.brand_id) {
-      formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
+      formData.append('brand_id', planDetails?.brandId || planDetails?.brand_id);
     }
     // content_cost,
     // twitter_trend_cost,
@@ -484,12 +484,12 @@ function PlanHomeBeta() {
     // ugc_video_count,
     // twitter_trend_serviceName,
     // net_profit,
-    formData.append('ugc_video_cost', Number(priceFormData.ugc_video_cost));
-    formData.append('content_cost', Number(priceFormData.content_cost));
-    formData.append('twitter_trend_cost', Number(priceFormData.twitter_trend_cost));
-    formData.append('brief', planDetails.brief);
-    formData.append('plan_status', planDetails.planStatus);
-    formData.append('plan_saved', planDetails.planSaved);
+    formData.append('ugc_video_cost', Number(priceFormData?.ugc_video_cost));
+    formData.append('content_cost', Number(priceFormData?.content_cost));
+    formData.append('twitter_trend_cost', Number(priceFormData?.twitter_trend_cost));
+    formData.append('brief', planDetails?.brief);
+    formData.append('plan_status', planDetails?.planStatus);
+    formData.append('plan_saved', planDetails?.planSaved);
     // if (planDetails.createdBy) {
     formData.append('created_by', userID);
     // }
@@ -594,7 +594,10 @@ function PlanHomeBeta() {
     handleRowClick,
     handleEditClick,
   });
-  const finalPlanList = filteredPlans.length ? filteredPlans : planRows?.reverse();
+
+  const sortedPlanRows=   planRows.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+
+  const finalPlanList = filteredPlans.length ? filteredPlans : sortedPlanRows;
   const dateWiseFilteredData = filteredPlanRows?.reverse();
 
   useEffect(() => {
@@ -605,6 +608,7 @@ function PlanHomeBeta() {
 
   const handleCostUpdate = async () => {
     try {
+
       await updateOperationContentCost(priceFormData);
       alert('Updated successfully!');
       setIsModalOpen(false);

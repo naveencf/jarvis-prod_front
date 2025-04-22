@@ -1674,22 +1674,22 @@ const VendorMaster = () => {
         <div className="card-header flexCenterBetween">
           <h5 className="card-title">Bank Details</h5>
 
-          {(!_id || (contextData && contextData[65]?.view_value === 1)) && (
-            <div className="d-flex">
-              <button
-                className="btn cmnbtn btn_sm btn-primary mr-2"
-                onClick={handleAddBankInfoRow}
-              >
-                Add Another Bank Details
-              </button>
-              <button
-                className="btn smbtn btn_sm btn-success"
-                onClick={handleOpenPannyDrop}
-              >
-                Add Panny Drop
-              </button>
-            </div>
-          )}
+          {/* {(!_id || (contextData && contextData[65]?.view_value === 1)) && ( */}
+          <div className="d-flex">
+            <button
+              className="btn cmnbtn btn_sm btn-primary mr-2"
+              onClick={handleAddBankInfoRow}
+            >
+              Add Another Bank Details
+            </button>
+            <button
+              className="btn smbtn btn_sm btn-success"
+              onClick={handleOpenPannyDrop}
+            >
+              Add Panny Drop
+            </button>
+          </div>
+          {/* )} */}
         </div>
         <div className="card-body thm_form">
           <div className="row">

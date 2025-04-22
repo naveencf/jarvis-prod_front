@@ -169,7 +169,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       });
   };
 
- 
+
   const {
     data: category,
     error: categoryError,
@@ -494,59 +494,60 @@ const Page = ({ pageMast_id, handleEditClose }) => {
       // }),
     };
 
-    await axios
-      .put(baseUrl + `v1/pageMaster/${pageMasterId}`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(() => {
-        setSubmitLoading(false);
-        const cat_name = categoryData?.find(
-          (item) => item?._id === singlePage?.page_category_id
-        )?.page_category;
+    try {
+      await axios
+        .put(baseUrl + `v1/pageMaster/${pageMasterId}`, payload, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(() => {
+          setSubmitLoading(false);
+          const cat_name = categoryData?.find(
+            (item) => item?._id === singlePage?.page_category_id
+          )?.page_category;
 
-        // Dynamically extract prices based on `priceTypeMappings`
-        const prices = Object.keys(priceTypeMappings).reduce((acc, typeId) => {
-          const priceType = priceTypeMappings[typeId];
-          acc[priceType] =
-            rowCount.find((item) => item?.page_price_type_id === typeId)
-              ?.price || null;
-          return acc;
-        }, {});
+          const prices = Object.keys(priceTypeMappings).reduce((acc, typeId) => {
+            const priceType = priceTypeMappings[typeId];
+            acc[priceType] =
+              rowCount.find((item) => item?.page_price_type_id === typeId)
+                ?.price || null;
+            return acc;
+          }, {});
 
-        // Construct the payload
-        const payload = {
-          p_id: singlePage.p_id,
-          page_name: pageName,
-          page_link: link,
-          temp_vendor_id: tempID,
-          ...prices,
-          // m_post_price: singlePage?.m_post_price,
-          // m_story_price: singlePage?.m_story_price,
-          // m_both_price: singlePage?.m_both_price,
-          followers_count: followCount,
-          preference_level: pageLevel,
-          temp_page_cat_id: cat_name,
-        };
+          const payload = {
+            p_id: singlePage.p_id,
+            page_name: pageName,
+            page_link: link,
+            temp_vendor_id: tempID,
+            ...prices,
+            followers_count: followCount,
+            preference_level: pageLevel,
+            temp_page_cat_id: cat_name,
+          };
 
-        axios
-          .post(baseUrl + `node_data_to_php_update_page`, payload)
-          .then(() => { })
-          .catch((err) => {
-            console.log(err);
-          });
+          axios
+            .post(baseUrl + `node_data_to_php_update_page`, payload)
+            .then(() => { })
+            .catch((err) => {
+              console.error("POST error:", err);
+            });
 
-        if (flag) {
-          toastAlert("Submitted");
-          refetchPageList();
-          handleEditClose();
-        }
-        if (!flag) {
-          toastAlert("Submitted");
-        }
-      });
+          if (flag) {
+            toastAlert("Submitted");
+            refetchPageList();
+            handleEditClose();
+          }
+          if (!flag) {
+            toastAlert("Submitted");
+          }
+        });
+    } catch (err) {
+      setSubmitLoading(false);
+      toastError(err.response.data.message);
+    }
+
   };
 
   const handleVariableTypeChange = (selectedOption) => {
@@ -572,7 +573,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     // const val = variableType.value === "Per Thousand" ? 1000 : 1000000;
     return (Math.floor((followCount / 1000000) * (price)));
   };
- 
+
   const handleUpadteFollowers = async () => {
     const payload = {
       creators: [pageName],
