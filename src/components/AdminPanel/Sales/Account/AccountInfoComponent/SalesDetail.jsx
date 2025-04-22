@@ -378,7 +378,7 @@ const SalesDetail = ({ SingleAccount, refetchSingleAccount }) => {
                     </a>
                   </h4>
                 </li>
-                <li>
+                {/* <li>
                   <span className="icon">
                     <i className="bi bi-telephone"></i>
                   </span>
@@ -386,7 +386,7 @@ const SalesDetail = ({ SingleAccount, refetchSingleAccount }) => {
                     <b>Phone</b>
                     <a href="#">+91 82905-41254</a>
                   </h4>
-                </li>
+                </li> */}
                 <li>
                   <span className="icon">
                     <i className="bi bi-envelope"></i>

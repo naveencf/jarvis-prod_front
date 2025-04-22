@@ -1,13 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import Dropdown from "./Dropdown";
 import "../Table.css";
-import * as XLSX from "xlsx";
 import Modal from "react-modal";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
 import ExcelJS from "exceljs";
-import { format } from "date-fns";
-import logo from "/logo.png";
 
 const TableToolkit = ({
   exportData,
@@ -420,9 +417,7 @@ const TableToolkit = ({
           left: { style: "thin" },
           right: { style: "thin" },
         };
-
-      })
-
+      });
     }
     const headerRow = worksheet.getRow(1);
     headerRow.eachCell((cell) => {
@@ -714,8 +709,9 @@ function DropdownElement({
             </button>
           )}
           <button
-            className={`btn cmnbtn btn_sm ${dragFlag ? "btn-danger" : "btn-primary"
-              }`}
+            className={`btn cmnbtn btn_sm ${
+              dragFlag ? "btn-danger" : "btn-primary"
+            }`}
             onClick={() => setDragFlag(!dragFlag)}
           >
             {dragFlag ? "Cancel" : "Edit"}
