@@ -29,6 +29,7 @@ import SalesCategoryApi from "../API/Sales/salesCategoryApi";
 import IncentiveStatementApi from "../API/Sales/IncentiveSettelmentApi";
 import BrandApi from "../API/Sales/BrandApi";
 import BrandCategoryTypeApi from "../API/Sales/BrandCategoryTypeApi";
+import SalesBonusApi from "../API/Sales/SalesBonusApi";
 
 export const salesMiddlewares = [
   BrandApi.middleware,
@@ -62,4 +63,5 @@ export const salesMiddlewares = [
   SalesCategoryApi.middleware,
   IncentiveStatementApi.middleware,
   BrandCategoryTypeApi.middleware,
+  SalesBonusApi.middleware,
 ];

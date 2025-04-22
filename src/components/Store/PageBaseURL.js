@@ -97,7 +97,8 @@ export const PageBaseURL = createApi({
     }),
 
     getAllCountWisePage: builder.query({
-      query: (activeTab) => `/v1/count_page_group/${activeTab}`,
+      query: ({ activeTab }) => `/v1/count_page_group/${activeTab}`,
+      method: "GET",
       transformResponse: (response) => response.data,
     }),
 
@@ -136,6 +137,10 @@ export const PageBaseURL = createApi({
     getPageById: builder.query({
       query: (id) => `v1/pageMaster/${id}`,
       transformResponse: (response) => response.data,
+    }),
+    getSpecificPages: builder.query({
+      query: () => `v1/retrive_all_pages_specific_data`,
+      transformResponse: (response) => response.data.pageData,
     }),
 
     //Page price Multiple
@@ -332,6 +337,7 @@ export const {
   useGetPlatformPriceQuery,
   useUpdatePlatformPriceMutation,
   useGetAllPageListQuery,
+  useGetSpecificPagesQuery,
   useGetPageByIdQuery,
   useGetMultiplePagePriceQuery,
   useGetpagePriceTypeQuery,

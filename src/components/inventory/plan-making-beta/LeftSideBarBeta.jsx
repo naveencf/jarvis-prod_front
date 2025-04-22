@@ -101,19 +101,6 @@ const LeftSideBarBeta = ({
   const isPlanPrice = location?.pathname?.split('/')[2] === 'pms-plan-pricing' ? true : false;
   const planStatus = planDetails && planDetails[0]?.plan_status;
   const netProfit = planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost - planDetails?.[0]?.content_cost * totalDeliverables - finalOperationCost));
-  // Function to get the platform name based on the platform ID
-  // const getPlatformName = (platformId) => {
-  //   const platformMap = {
-  //     '666818824366007df1df1319': 'Instagram',
-  //     '666818a44366007df1df1322': 'Facebook',
-  //     '666856d34366007df1dfacf6': 'YouTube',
-  //     '666818c34366007df1df1328': 'Twitter',
-  //     '666856e04366007df1dfacfc': 'Snapchat',
-  //   };
-  //   return platformMap[platformId] || 'Unknown';
-  // };
-
-
 
   const HandleSavePlan = async () => {
     const planDataWithCategory = planData.map((planItem) => {
@@ -147,8 +134,8 @@ const LeftSideBarBeta = ({
         cost_price: totalCost,
         own_pages_cost_price: ownPagesCost,
       };
+      
       const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planDataWithCategory, planStatus)]);
-
       if (fetchResponse.ok) {
         Swal.fire({
           title: result.isConfirmed ? 'Plan Saved!' : 'Plan Closed!',

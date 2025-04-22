@@ -264,7 +264,7 @@ const NewCampaignExecutions = () => {
           </div>
         </div>
         <div className="card-body">
-          {planWisePage.length > 0 && (
+          {planWisePage?.length > 0 && (
             <div>
               {/* <OpreationLinkUpdateDirect
                 getPlanWisePages={getPlanWisePages}
