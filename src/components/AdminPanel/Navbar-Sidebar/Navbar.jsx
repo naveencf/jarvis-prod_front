@@ -88,9 +88,8 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-          `sales/badges_sales_booking_data${
-            RoleID != 1 ? `?userId=${loginUserId}` : ""
-          }`,
+        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -106,7 +105,7 @@ const Navbar = () => {
 
       const badgeDataRes = responseBadges.data.data;
       const userBadgeRes = responseOutstanding.data.data;
-
+      // console.log(userBadgeRes, "userBadgeRes")
       const userBadge = badgeDataRes.filter(
         (item) =>
           item.max_rate_amount > userBadgeRes.totalCampaignAmount &&
@@ -116,13 +115,16 @@ const Navbar = () => {
       setBadge(userBadge);
       setBadgeData(badgeDataRes, "badge data");
       setUserBadgeData(userBadgeRes);
+      // console.log(userBadgeRes, "userBadgeRes")
     } catch (error) {
       console.error("Error");
     }
   };
 
   useEffect(() => {
-    if (isSalesRoute && data[52]?.view_value == 1) {
+    console.log("first")
+    if (isSalesRoute) {
+      console.log("first")
       getUserBadge();
     }
     // getAdjustment();
@@ -136,12 +138,12 @@ const Navbar = () => {
   //     .then((res) => setLoginUserData(res.data));
   // }, []);
 
-  const fetchData = async () => {
-    await axios.get(baseUrl + "get_all_unreden_notifications").then((res) => {
-      setNotificationData(res.data.data);
-      setCount(res.data.data.length);
-    });
-  };
+  // const fetchData = async () => {
+  //   await axios.get(baseUrl + "get_all_unreden_notifications").then((res) => {
+  //     setNotificationData(res.data.data);
+  //     setCount(res.data.data.length);
+  //   });
+  // };
 
   // useEffect(() => {
   //   fetchData();
@@ -152,14 +154,14 @@ const Navbar = () => {
   //   return () => clearInterval(intervalId);
   // }, []);
 
-  const NotificationsOff = async (_id) => {
-    // e.preventDefault();
-    await axios.put(`${baseUrl}` + `update_notification/`, {
-      _id: _id,
-      readen: true,
-    });
-    fetchData();
-  };
+  // const NotificationsOff = async (_id) => {
+  //   // e.preventDefault();
+  //   await axios.put(`${baseUrl}` + `update_notification/`, {
+  //     _id: _id,
+  //     readen: true,
+  //   });
+  //   fetchData();
+  // };
 
   return (
     <>
@@ -197,7 +199,7 @@ const Navbar = () => {
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
@@ -232,7 +234,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                  userBadgeData?.totalUnEarnedOutstandingAmount
+                                userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -251,7 +253,7 @@ const Navbar = () => {
                         Un-Billed Outstanding: ₹
                         {formatNumber(
                           userBadgeData?.totalUnEarnedOutstandingAmount -
-                            userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                          userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                         ) || 0}
                       </h4>
                     </div>

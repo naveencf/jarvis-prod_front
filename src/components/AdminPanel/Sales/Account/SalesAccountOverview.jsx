@@ -29,6 +29,7 @@ import FormContainer from "../../FormContainer.jsx";
 import { UserSwitch } from "@phosphor-icons/react";
 import TransferAccount from "./TransferAccount.jsx";
 import { all } from "axios";
+import NumberToNumericWords from "../../../../utils/NumberToNumericWords.js";
 
 const SalesAccountOverview = () => {
   const { userContextData, contextData } = useAPIGlobalContext();
@@ -275,14 +276,14 @@ const SalesAccountOverview = () => {
     {
       key: "campaignAmount",
       name: "Campaign Amount Total",
-      renderRowCell: (row) => row?.campaignAmount?.toFixed(2),
+      renderRowCell: (row) => NumberToNumericWords(Number(row?.campaignAmount)),
       width: 100,
       sortable: true,
     },
     {
       key: "totalOutstanding",
       name: "Total Outstanding Amount",
-      renderRowCell: (row) => row?.totalOutstanding?.toFixed(2),
+      renderRowCell: (row) => NumberToNumericWords(row?.totalOutstanding),
       width: 100,
       sortable: true,
     },
@@ -292,11 +293,12 @@ const SalesAccountOverview = () => {
       renderRowCell: (row) => {
         if (row?.campaignAmount && row?.totalSaleBookingCounts) {
           const result = row.campaignAmount / row.totalSaleBookingCounts;
-          return Number.isInteger(result)
-            ? result?.toString()
-            : result?.toFixed(2);
+          return NumberToNumericWords(result);
+          // return Number.isInteger(result)
+          //   ? result?.toString()
+          //   : result?.toFixed(2);
         }
-        return 0;
+        return "Zero";
       },
       width: 100,
       compare: true,
