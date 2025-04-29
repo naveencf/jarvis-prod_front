@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../utils/authBaseQuery";
 import { get } from "jquery";
 import jwtDecode from "jwt-decode";
+import { use } from "react";
 
 export const PageBaseURL = createApi({
   baseQuery: authBaseQuery,
@@ -104,24 +105,25 @@ export const PageBaseURL = createApi({
 
     //Page ALl Pages
     getAllPageList: builder.query({
-      query: ({ decodedToken, userID, pagequery, limit, page }) => {
+      query: ({ decodedToken, userID, pagequery, limit, page, search }) => {
         const isAdmin = decodedToken?.role_id === 1;
         let queryParams = pagequery ? `${pagequery}` : "";
 
         // Append limit & page only if they are provided (not undefined or null)
         if (limit !== undefined) queryParams += `&limit=${limit}`;
         if (page !== undefined) queryParams += `&page=${page}`;
+        if(search !== undefined) queryParams+=`&search${search}`
 
         return isAdmin
           ? {
-            url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
-            method: "GET",
-          }
+              url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
+              method: "GET",
+            }
           : {
-            url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
-            method: "GET",
-            // body: { user_id: userID },
-          };
+              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+              method: "GET",
+              // body: { user_id: userID },
+            };
       },
       transformResponse: (response, meta, { decodedToken }) => {
         const isAdmin = decodedToken?.role_id === 1;
@@ -133,7 +135,50 @@ export const PageBaseURL = createApi({
       },
       keepUnusedDataFor: 300,
     }),
+    getAllPageListWithPagination: builder.query({
+      query: ({ decodedToken, userID, pagequery, limit, page, search }) => {
+        const isAdmin = decodedToken?.role_id === 1;
+        let queryParams = [];
 
+        if (pagequery) queryParams.push(pagequery);
+        
+        if (limit !== undefined) queryParams.push(`limit=${limit}`);
+        if (page !== undefined) queryParams.push(`page=${page}`);
+        if (search !== undefined) queryParams.push(`page_name=${encodeURIComponent(search)}`);
+        
+        const queryString = queryParams.length > 0 ? `${queryParams.join('&')}` : '';
+        return isAdmin
+          ? {
+            url: `v1/get_all_pages?${queryString}`, // Admin: GET request
+            method: "GET",
+          }
+          : {
+            url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+            method: "GET",
+            // body: { user_id: userID },
+          };
+      },
+      transformResponse: (response, meta, { decodedToken }) => {
+        const isAdmin = decodedToken?.role_id === 1;
+      
+        const pageData = isAdmin
+          ? response.data.pageData || [] // Admin response structure
+          : response.data || [];         // User response structure
+      
+        const sortedPages = pageData.sort(
+          (a, b) => b.followers_count - a.followers_count
+        );
+      
+        const pagesData = {
+          pages: sortedPages,
+          pagination: isAdmin ? response.data?.pagination : null,
+        };
+      
+        return pagesData;
+      },
+      keepUnusedDataFor: 300,
+      
+    }),
     getPageById: builder.query({
       query: (id) => `v1/pageMaster/${id}`,
       transformResponse: (response) => response.data,
@@ -273,8 +318,9 @@ export const PageBaseURL = createApi({
       query: ({ start_date, end_date } = {}) => {
         let url = "v1/get_page_count";
         if (start_date || end_date) {
-          url += `?${start_date ? `start_date=${start_date}` : ""}${start_date && end_date ? "&" : ""
-            }${end_date ? `end_date=${end_date}` : ""}`;
+          url += `?${start_date ? `start_date=${start_date}` : ""}${
+            start_date && end_date ? "&" : ""
+          }${end_date ? `end_date=${end_date}` : ""}`;
         }
 
         return {
@@ -322,6 +368,51 @@ export const PageBaseURL = createApi({
       query: (page_id) => `v1/get_page_master_log_data?page_id=${page_id}`,
       transformResponse: (response) => response.data.data,
     }),
+
+    getStateandCityVendoDataCount: builder.query({
+      query: () => `v1/count_vendor_with_state_and_city`,
+      transformResponse: (response) => response.data,
+    }),
+
+    getVendorDataWithStateCity: builder.query({
+      query: ({ home_city, home_state }) => {
+        let url = "v1/get_vendor_data_with_state_or_city";
+
+        if (home_city && !home_state) {
+          url += `?home_city=${home_city}`;
+        } else if (home_state && !home_city) {
+          url += `?home_state=${home_state}`;
+          console.log(home_state, "home_state");
+        }
+
+        return {
+          url,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
+
+    // getVendorDataWithStateCity: builder.query({
+    //   //   query: (city) =>
+    //   //     `v1/get_vendor_data_with_state_or_city?home_city=${city}`,
+    //   //   transformResponse: (response) => response.data,
+    //   // }),
+    //   query: ({ home_city, home_state } = {}) => {
+    //     let url = "v1/get_vendor_data_with_state_or_city";
+    //     if (home_city || home_state) {
+    //       url += `?${home_city ? `home_city=${home_city}` : ""}${
+    //         start_date && end_date ? "&" : ""
+    //       }${home_state ? `home_state=${home_state}` : ""}`;
+    //     }
+
+    //     return {
+    //       url,
+    //       method: "GET",
+    //     };
+    //   },
+    //   transformResponse: (response) => response.data,
+    // }),
   }),
 });
 
@@ -337,6 +428,7 @@ export const {
   useGetPlatformPriceQuery,
   useUpdatePlatformPriceMutation,
   useGetAllPageListQuery,
+  useGetAllPageListWithPaginationQuery,
   useGetSpecificPagesQuery,
   useGetPageByIdQuery,
   useGetMultiplePagePriceQuery,
@@ -363,4 +455,6 @@ export const {
   useGetPageByVendorIdQuery,
   useGetPageLogsByIdQuery,
   useGetAllCountWisePageQuery,
+  useGetStateandCityVendoDataCountQuery,
+  useGetVendorDataWithStateCityQuery,
 } = PageBaseURL;

@@ -13,42 +13,16 @@ const UserOverview = () => {
   const { userContextData, DepartmentContext } = useAPIGlobalContext();
   const [search, setSearch] = useState("");
   const [datas, setDatas] = useState([]);
-  // const [backupData, setBackupData] = useState([]);
   const [contextData, setData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState("");
-  // const [departmentData, setDepartmentData] = useState([]);
-
-  // const storedToken = sessionStorage.getItem("token");
-  // const decodedToken = jwtDecode(storedToken);
-  // const userID = decodedToken.id;
-
-  // useEffect(() => {
-  //   if (userID && contextData.length === 0) {
-  //     axios.get(`${baseUrl}` + `userauth/${userID}`).then((res) => {
-  //       setData(res.data);
-  //     });
-  //   }
-  // }, [userID]);
-
-  // function getData() {
-  //   axios.get(baseUrl + "get_all_users").then((res) => {
-  //     setDatas(res.data.data);
-  //     setBackupData(res.data.data);
-  //   });
-  //   axios.get(baseUrl + "get_all_departments").then((res) => {
-  //     setDepartmentData(res.data);
-  //   });
-  // }
-  // useEffect(() => {
-  //   getData();
-  // }, []);
 
   useEffect(() => {
     if (selectedDepartment === "") {
       setDatas(userContextData);
     } else {
       const filteredData = userContextData.filter(
-        (item) => item.dept_id == selectedDepartment
+        (item) =>
+          item.dept_id == selectedDepartment && item.user_status == "Active"
       );
       setDatas(filteredData);
     }

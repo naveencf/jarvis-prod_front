@@ -626,6 +626,7 @@ function PayVendorDialog(props) {
               <div className="row gap-3">
 
                 <TextField
+                  onWheel={(e) => e.target.blur()} // <-- THIS LINE prevents scroll changes
                   onChange={(e) => {
                     const currentValue = e.target.value;
 

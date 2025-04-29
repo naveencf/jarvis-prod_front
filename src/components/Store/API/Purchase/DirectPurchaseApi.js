@@ -12,7 +12,9 @@ const DirectPurchaseApi = createApi({
     getVendorsWithSearch: builder.query({
       query: (query) => {
         if (typeof query === "string" && query.trim() !== "") {
-          return `v1/vendor?search=${encodeURIComponent(query)}&page=1&limit=10`;
+          return `v1/vendor?search=${encodeURIComponent(
+            query
+          )}&page=1&limit=10`;
         }
         return `v1/vendor?page=1&limit=10`;
       },
@@ -47,10 +49,28 @@ const DirectPurchaseApi = createApi({
       }),
     }),
     updatePurchasedStatusData: builder.mutation({
-      query: ({ amount, shortCode, updatedBy, pageName, campaignId, platform_id, phaseDate, platform_name }) => ({
+      query: ({
+        amount,
+        shortCode,
+        updatedBy,
+        pageName,
+        campaignId,
+        platform_id,
+        phaseDate,
+        platform_name,
+      }) => ({
         url: `v1/purchase/update_purchased_status_data`,
         method: "PUT",
-        body: { amount, shortCode, updatedBy, pageName, campaignId, platform_id, phaseDate, platform_name },
+        body: {
+          amount,
+          shortCode,
+          updatedBy,
+          pageName,
+          campaignId,
+          platform_id,
+          phaseDate,
+          platform_name,
+        },
       }),
     }),
     updateMultiplePurchasedStatusData: builder.mutation({
@@ -84,7 +104,8 @@ const DirectPurchaseApi = createApi({
       transformResponse: (response) => response?.data,
     }),
     getVendorPendingAuditedOutstanding: builder.query({
-      query: (vendor_id) => `v1/get_vendor_pending_audited_outstanding/${vendor_id}`,
+      query: (vendor_id) =>
+        `v1/get_vendor_pending_audited_outstanding/${vendor_id}`,
       transformResponse: (response) => response?.data,
     }),
     getVendorAdvancedPayment: builder.query({
@@ -95,11 +116,56 @@ const DirectPurchaseApi = createApi({
       query: (vendor_id) => `v1/vendor/${vendor_id}`,
       transformResponse: (response) => response?.data,
     }),
+    getVendorAdvanceSummaryAndDetails: builder.query({
+      query: (range) => `v1/get_vendor_advance_summary_and_details/${range}`,
+      // ${range}?page=${page}&limit=${limit}
+      transformResponse: (response) => response?.data,
+    }),
+    getVendorLedgerMonthWise: builder.query({
+      query: ({ startDate, endDate }) => {
+        const params = new URLSearchParams();
+
+        if (startDate) params.append("startDate", startDate);
+        if (endDate) params.append("endDate", endDate);
+
+        return `v1/get_vendor_ledger_month_wise?${params.toString()}`;
+      },
+      transformResponse: (response) => response?.data,
+    }),
+    getAuditedAndPendingLinkStatsByVendors: builder.mutation({
+      query: ({ page = 1, limit = 10 ,audit_status}) => ({
+        url: `v1/purchase/get_audited_and_pending_link_stats_by_vendors`,
+        method: 'POST',
+        body: { page, limit, audit_status }
+      }),
+      transformResponse: (response) => response?.data,
+    }),
+    
+
     // api/purchase/advanced_payment/66827bcf8e6fbfb72f5c8afe?startDate=2025-03-04&&endDate=2025-03-04
   }),
 });
 
-export const { useGetVendorsQuery, useGetVendorsWithSearchQuery, useAddServiceMutation, useAuditReportMutation, useRefetchPostPriceMutation, useRecordPurchaseMutation, useGetLedgerQuery, useUpdatePurchasedStatusDataMutation, useUpdateMultiplePurchasedStatusDataMutation, useUpdatePurchasedStatusVendorMutation,
-  useGetTotalDataQuery, useGetVendorOutstandingQuery, useGetCountOfUnregisteredPagesQuery, useGetVendorPendingAuditedOutstandingQuery, useGetVendorAdvancedPaymentQuery, useGetVendorDetailQuery } = DirectPurchaseApi;
+export const {
+  useGetVendorsQuery,
+  useGetVendorsWithSearchQuery,
+  useAddServiceMutation,
+  useAuditReportMutation,
+  useRefetchPostPriceMutation,
+  useRecordPurchaseMutation,
+  useGetLedgerQuery,
+  useUpdatePurchasedStatusDataMutation,
+  useUpdateMultiplePurchasedStatusDataMutation,
+  useUpdatePurchasedStatusVendorMutation,
+  useGetTotalDataQuery,
+  useGetVendorOutstandingQuery,
+  useGetCountOfUnregisteredPagesQuery,
+  useGetVendorPendingAuditedOutstandingQuery,
+  useGetVendorAdvancedPaymentQuery,
+  useGetVendorDetailQuery,
+  useGetVendorAdvanceSummaryAndDetailsQuery,
+  useGetVendorLedgerMonthWiseQuery,
+  useGetAuditedAndPendingLinkStatsByVendorsMutation,
+} = DirectPurchaseApi;
 
 export default DirectPurchaseApi;

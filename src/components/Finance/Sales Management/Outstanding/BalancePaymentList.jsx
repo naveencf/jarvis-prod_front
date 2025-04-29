@@ -91,7 +91,8 @@ const BalancePaymentList = () => {
   const [viewImgSrc, setViewImgSrc] = useState("");
   const [viewImgDialog, setViewImgDialog] = useState(false);
   // const [paymentDate, setPaymentDate] = useState(dayjs(new Date()));
-  const [paymentDate, setPaymentDate] = useState("");
+  const [paymentDate, setPaymentDate] = useState(null);
+
 
   const [uniqueCustomerCount, setUniqueCustomerCount] = useState(0);
   const [uniqueCustomerDialog, setUniqueCustomerDialog] = useState(false);
@@ -260,16 +261,18 @@ const BalancePaymentList = () => {
   // };
 
   const handleImageClick = (e, row) => {
+    console.log(e, row, "row")
     e.preventDefault();
-    setBalAmount(row.campaign_amount - row.paid_amount);
-    setBaseAmount(row.base_amount);
-    setPaidAmountData(row.paid_amount);
+    setBalAmount(row?.campaign_amount - row?.paid_amount);
+    setBaseAmount(row?.base_amount);
+    setPaidAmountData(row?.paid_amount);
     setCampaignAmountData(row.campaign_amount);
     setTDSFieldSaleBookingId(row.sale_booking_id);
     setNonGstStatus(row.gst_status);
     setSingleRow(row);
     refetchOutstandingList();
     setImageModalOpen(true);
+    // return;
   };
 
   function calculateAging(date1, date2) {

@@ -28,7 +28,9 @@ function VendorAdvanceSettlement({ vendorDetail, vendorId, formData, handleClose
 
         // Extract _id values from selectedValues
         const selectedAdvanceIds = selectedValues.map(item => item._id);
-
+        if (formData.base_amount == 0) {
+            toastAlert("Please input settle amount")
+        }
         // Constructing the payload using formData values
         const payload = {
             payment_amount: formData.base_amount, // Using request_amount from formData
@@ -73,7 +75,8 @@ function VendorAdvanceSettlement({ vendorDetail, vendorId, formData, handleClose
                     sx={{ width: 300 }}
                     id="tags-standard"
                     options={advanceData}
-                    getOptionLabel={(option) => `${option?.page_name} - ${option?.advance_amount > option?.base_amount ? option?.remaining_advance_amount - option?.advance_amount + option?.base_amount : option?.remaining_advance_amount}`} // Fix: No need for .title, as options are strings
+                    getOptionLabel={(option) => `${option?.page_name} - ${option?.remaining_advance_amount - option?.gst_amount}`} // Fix: No need for .title, as options are strings
+                    // getOptionLabel={(option) => `${option?.page_name} - ${option?.advance_amount > option?.base_amount ? option?.remaining_advance_amount - option?.advance_amount + option?.base_amount : option?.remaining_advance_amount}`} // Fix: No need for .title, as options are strings
                     // getOptionLabel={(option) => option} // Fix: No need for .title, as options are strings
                     onChange={(e, newValue) => handleChange(e, newValue)} // Update state
                     renderInput={(params) => (

@@ -15,13 +15,15 @@ const View = ({
   selectedData,
   showTotal = false,
   addHtml,
-  version = 0,
+  version = 1,
   exportData,
   getFilteredData,
   cloudPagination = false,
   pageNavigator = {
     prev: {},
     next: {},
+    totalRows: 0,
+    currentPage: 1,
   },
 }) => {
   const Version = useCallback(!version ? CustomTableV2 : CustomTable, [

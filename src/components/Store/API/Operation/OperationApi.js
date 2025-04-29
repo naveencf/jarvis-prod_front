@@ -67,6 +67,13 @@ const OperationApi = createApi({
         body: data,
       }),
     }),
+    getPostDetailofPagenVendor: builder.mutation({
+      query: (data) => ({
+        url: `v1/get_page_name_or_vendor_name_based_on_condition`,
+        method: "POST",
+        body: data,
+      }),
+    }),
 
     PostDataUpdate: builder.mutation({
       query: (data) => ({
@@ -170,6 +177,7 @@ export const {
   useAddMultipleServiceMutation,
   useGetDeleteStoryDataQuery,
   useBulkCampaignUpdateMutation,
+  useGetPostDetailofPagenVendorMutation,
 } = OperationApi;
 
 export default OperationApi;

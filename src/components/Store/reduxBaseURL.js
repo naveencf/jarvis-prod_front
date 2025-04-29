@@ -178,7 +178,6 @@ export const reduxBaseURL = createApi({
         if (limit) queryParams.push(`limit=${limit}`);
         if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
         const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
-
         let res;
         if (roleToken === 1) {
           // If the user is an admin, fetch all vendor data with pagination and search
@@ -209,7 +208,53 @@ export const reduxBaseURL = createApi({
       keepUnusedDataFor: 60 * 60,
       providesTags: ['addVendorMaster'],
     }),
-
+    getVendorsWithPagination: builder.query({
+      queryFn: async ({ page, limit, search } = {}, _queryApi, _extraOptions, baseQuery) => {
+        const storedToken = sessionStorage.getItem('token');
+        if (!storedToken) {
+          return { error: { status: 401, message: 'No token found' } };
+        }
+    
+        const decodedToken = jwtDecode(storedToken);
+        const userID = decodedToken.id;
+        const roleToken = decodedToken.role_id;
+    
+        const queryParams = [];
+        if (page) queryParams.push(`page=${page}`);
+        if (limit) queryParams.push(`limit=${limit}`);
+        if (search) queryParams.push(`search=${encodeURIComponent(search)}`);
+        const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+    
+        let res;
+        if (roleToken === 1) {
+          res = await baseQuery({
+            url: `v1/vendor${queryString}`,
+            method: 'GET',
+          });
+        } else {
+          const body = { user_id: userID };
+          if (page) body.page = page;
+          if (limit) body.limit = limit;
+          if (search) body.search = search;
+    
+          res = await baseQuery({
+            url: `v1/get_all_vendors_for_users`,
+            method: 'POST',
+            body,
+          });
+        }
+    
+        if (res.error) {
+          return { error: res.error };
+        }
+    
+        return { data: res.data || res.data };
+      },
+      keepUnusedDataFor: 60 * 60,
+      providesTags: ['addVendorMaster'],
+    }),
+    
+    
     addVendor: builder.mutation({
       query: (data) => ({
         url: `v1/vendor`,
@@ -300,5 +345,5 @@ export const reduxBaseURL = createApi({
   }),
 });
 
-export const { useGetnotAssignedVendorsQuery, useAddPmsVendorTypeMutation, useGetAllVendorTypeQuery, useUpdateVendorTypeMutation, useAddPmsPlatformMutation, useGetPmsPlatformQuery, useUpdatePmsPlatformMutation, useAddPmsPaymentMethodMutation, useGetPmsPaymentMethodQuery, useUpdatePmsPaymentMethodMutation, useAddPmsPayCycleMutation, useGetPmsPayCycleQuery, useUpdatePmsPayCycleMutation, useAddVendorWhatsappLinkTypeMutation, useGetVendorWhatsappLinkTypeQuery, useUpdateVendorWhatsappLinkTypeMutation, useGetSingleBankDetailQuery, useGetVendorWhatsappLinkQuery, useGetCountryCodeQuery, useAddCountryCodeMutation, useUpdateCountryCodeMutation, useGetAllVendorQuery, useAddVendorMutation, useUpdateVenodrMutation, useGetBankNameDetailQuery, useAddBankNameDetailMutation, useUpdateBankNameDetailMutation, useGetVendorDocumentByVendorDetailQuery, useAddVendorDocumentMutation, useAddCompanyDataMutation, useGetAllVendorWiseListQuery, useUpdateVendorDocumentMutation, useUploadExcelMutation } =
+export const { useGetnotAssignedVendorsQuery, useAddPmsVendorTypeMutation, useGetAllVendorTypeQuery, useUpdateVendorTypeMutation, useAddPmsPlatformMutation, useGetPmsPlatformQuery, useUpdatePmsPlatformMutation, useAddPmsPaymentMethodMutation, useGetPmsPaymentMethodQuery, useUpdatePmsPaymentMethodMutation, useAddPmsPayCycleMutation, useGetPmsPayCycleQuery, useUpdatePmsPayCycleMutation, useAddVendorWhatsappLinkTypeMutation, useGetVendorWhatsappLinkTypeQuery, useUpdateVendorWhatsappLinkTypeMutation, useGetSingleBankDetailQuery, useGetVendorWhatsappLinkQuery, useGetCountryCodeQuery, useAddCountryCodeMutation, useUpdateCountryCodeMutation, useGetAllVendorQuery, useGetVendorsWithPaginationQuery, useAddVendorMutation, useUpdateVenodrMutation, useGetBankNameDetailQuery, useAddBankNameDetailMutation, useUpdateBankNameDetailMutation, useGetVendorDocumentByVendorDetailQuery, useAddVendorDocumentMutation, useAddCompanyDataMutation, useGetAllVendorWiseListQuery, useUpdateVendorDocumentMutation, useUploadExcelMutation } =
   reduxBaseURL;

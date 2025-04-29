@@ -6,10 +6,10 @@ import { useParams } from "react-router-dom";
 import View from "../Account/View/View";
 import Modal from "@mui/material/Modal";
 import SalesBonusModal from "./SalesBonusModal";
+import ViewSlabModal from "./BonusMast/ViewSlabModal.jsx";
 
 const SalesBonusSlab = () => {
   const { id } = useParams();
-  console.log(id + "id");
   const { data: bonusByID, isLoading: BonusLoading } =
     useGetSalesBonusByIdQuery(id);
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,13 +45,12 @@ const SalesBonusSlab = () => {
       name: "Action",
       renderRowCell: (row) => (
         <>
-          <Button
-            variant="outlined"
-            color="primary"
+          <button
+            className="btn cmnbtn btn-primary btn_sm mr-2"
             onClick={() => openModal(row)}
           >
             Slab
-          </Button>
+          </button>
         </>
       ),
       showCol: true,
@@ -67,7 +66,8 @@ const SalesBonusSlab = () => {
           data={bonusByID?.assignedSlabs}
           isLoading={BonusLoading}
           title={"Bonus Type"}
-          tableName={"Bonus Slabe"}
+          tableName={"Bonus-Slab"}
+          pagination
         />
       </div>
       <Modal
@@ -76,11 +76,7 @@ const SalesBonusSlab = () => {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <SalesBonusModal
-          rowData={rowData}
-          BonusLoading={BonusLoading}
-          closeModal={closeModal}
-        />
+        <ViewSlabModal id={rowData?._id} closeModal={closeModal} />
       </Modal>
     </>
   );

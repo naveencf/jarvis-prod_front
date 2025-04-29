@@ -65,6 +65,7 @@ function PlanHomeBeta() {
     planSaved: false,
     createdBy: 938,
   });
+
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
@@ -470,7 +471,7 @@ function PlanHomeBeta() {
     // formData.append('post_count', parseInt(planDetails.postCount, 10));
     // formData.append('story_count', parseInt(planDetails.storyCount, 10));
     formData.append('description', planDetails.description);
-    formData.append('sales_executive_id', parseInt(id));
+    formData.append('sales_executive_id', planDetails.salesExecutiveId);
     if (planDetails.accountId) {
       formData.append('account_id', planDetails?.accountId);
     }
@@ -761,7 +762,7 @@ function PlanHomeBeta() {
               onChange={(event, value) => {
                 setPlanDetails((prevDetails) => ({
                   ...prevDetails,
-                  salesExecutiveId: value ? value._id : '',
+                  salesExecutiveId: value ? value.user_id : '',
                   salesExecutiveName: value ? value.user_name : '',
                 }));
               }}

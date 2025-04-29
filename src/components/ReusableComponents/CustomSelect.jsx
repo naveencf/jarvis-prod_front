@@ -14,7 +14,7 @@ const CustomSelect = ({
   disabled,
   multiple = false,
   filterOption,
-  setSearchQuery
+  setSearchQuery,
 }) => {
   const [inputValue, setInputValue] = useState("");
 
@@ -32,7 +32,10 @@ const CustomSelect = ({
   if (multiple) {
     const selection = selectedId?.map((id) => ({
       value: id,
-      label: typeof findOptionLabelById(id) === "string" ? formatString(findOptionLabelById(id)) : findOptionLabelById(id),
+      label:
+        typeof findOptionLabelById(id) === "string"
+          ? formatString(findOptionLabelById(id))
+          : findOptionLabelById(id),
     }));
     valueProp = isAllSelected ? [selectAllOption, ...selection] : selection;
   } else {
@@ -43,7 +46,10 @@ const CustomSelect = ({
       valueProp = {
         value: selectedId,
         // label: formatString(findOptionLabelById(selectedId)),
-        label: typeof findOptionLabelById(selectedId) === "string" ? formatString(findOptionLabelById(selectedId)) : findOptionLabelById(selectedId),
+        label:
+          typeof findOptionLabelById(selectedId) === "string"
+            ? formatString(findOptionLabelById(selectedId))
+            : findOptionLabelById(selectedId),
       };
     } else {
       valueProp = null;
@@ -58,7 +64,9 @@ const CustomSelect = ({
       }
 
       if (
-        selectedOptions?.some((option) => option.value === selectAllOption.value)
+        selectedOptions?.some(
+          (option) => option.value === selectAllOption.value
+        )
       ) {
         if (action_meta.action === "remove-value") {
           setSelectedId(
@@ -88,11 +96,12 @@ const CustomSelect = ({
     }
   };
 
-
   const options = dataArray?.map((option) => ({
     value: option[optionId],
-    label: typeof option[optionLabel] === "string" ? formatString(option[optionLabel]) : option[optionLabel],
-
+    label:
+      typeof option[optionLabel] === "string"
+        ? formatString(option[optionLabel])
+        : option[optionLabel],
   }));
 
   if (multiple) {

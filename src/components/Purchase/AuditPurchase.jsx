@@ -61,6 +61,7 @@ const AuditPurchase = () => {
   const [currentTab, setcurrentTab] = useState("Tab1");
   const [platform, setPlatform] = useState("");
   const [campaignPlanData, setCampainPlanData] = useState();
+  const [filterBy, setFilterBy] = useState("phase");
   const [modalName, setModalName] = useState("");
   const [duplicateMsg, setDuplicateMsg] = useState(false);
   const [links, setLinks] = useState("");
@@ -330,6 +331,7 @@ const AuditPurchase = () => {
                 endDate && { startDate: startDate, endDate: endDate }),
               // ...(endDate && { endDate }),
               ...(selectedPlan && { campaignId: selectedPlan }),
+              isFlagForDateFilter: filterBy === "created" ? 1 : 2,
             }
             : {};
         case "Tab2":
@@ -867,7 +869,8 @@ const AuditPurchase = () => {
     {
       name: "Phase Date",
       key: "phaseDate1",
-      renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(),
+      // renderRowCell: (row) => formatDate(row.phaseDate)?.replace(/T.*Z/, "")?.trim(), 
+      renderRowCell: (row) => row.phaseDate?.replace(/T.*Z/, "")?.trim(),
       width: 200,
       compare: true,
       editable: true,
@@ -1054,7 +1057,7 @@ const AuditPurchase = () => {
           href={row?.postImage}
           target="_blank"
           className="icon-1"
-          title="View Image"
+          title="View Image" rel="noreferrer"
         >
           <img
             src={row?.postImage}
@@ -1607,7 +1610,7 @@ const AuditPurchase = () => {
               <>
                 <div className="col-lg-6 col-md-6 col-12">
                   <div className="form-group">
-                    <label>Select Vendor</label>
+                    {/* <label>Select Vendor</label> */}
                     <Autocomplete
                       fullWidth
                       options={vendorsList}
@@ -1714,6 +1717,37 @@ const AuditPurchase = () => {
                     </button>
                   </div>
                 )}
+                <div className="col-lg-6 col-md-6 col-12">
+                  <label className="form-label d-block mb-2">Filter By</label>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="filterByDate"
+                      id="filterByPhase"
+                      value="phase"
+                      checked={filterBy === "phase"}
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="filterByPhase">
+                      Phase Date
+                    </label>
+                  </div>
+                  <div className="form-check form-check-inline">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      name="filterByDate"
+                      id="filterByCreated"
+                      value="created"
+                      checked={filterBy === "created"}
+                      onChange={(e) => setFilterBy(e.target.value)}
+                    />
+                    <label className="form-check-label" htmlFor="filterByCreated">
+                      Created Date
+                    </label>
+                  </div>
+                </div>
 
                 <div className="col-lg-12 col-md-12 col-12">
                   <LinkUploadAudit

@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link } from "react-router-dom";
-import { Box, Grid, Skeleton } from "@mui/material";
+import { Box, Grid, Skeleton, TextField } from "@mui/material";
 import View from "../Sales/Account/View/View";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Brightness6Icon from "@mui/icons-material/Brightness6";
@@ -25,12 +25,15 @@ import {
   useGetPmsPayCycleQuery,
   useGetPmsPaymentMethodQuery,
   useGetPmsPlatformQuery,
+  useGetVendorsWithPaginationQuery,
 } from "../../Store/reduxBaseURL";
 import VendorBankDetailModal from "./VendorBankDetailModal";
 import VendorDetails from "./Vendor/VendorDetails";
 import {
   useGetAllPageListQuery,
   useGetCountDocumentsQuery,
+  useGetStateandCityVendoDataCountQuery,
+  useGetVendorDataWithStateCityQuery,
 } from "../../Store/PageBaseURL";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
@@ -46,6 +49,29 @@ const VendorOverview = () => {
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
 
+  const { data: getStateandCityVendoData } =
+    useGetStateandCityVendoDataCountQuery();
+
+  const [stateDataS, setStateDataS] = useState([]);
+  const [cityDataS, setCityDataS] = useState([]);
+
+  // const queryParams = cityDataS
+  //   ? { home_city: cityDataS }
+  //   : stateDataS
+  //   ? { home_state: stateDataS }
+  //   : null;
+  const [queryParams, setQueryParams] = useState(null);
+
+  const { data: cityStateWiseData } = useGetVendorDataWithStateCityQuery(
+    queryParams,
+    {
+      skip: !queryParams,
+    }
+  );
+
+  const stateWiseCountData = getStateandCityVendoData?.state;
+  const cityWiseCountData = getStateandCityVendoData?.city;
+
   const [vendorDetails, setVendorDetails] = useState(null);
   const [openUpdateVendorMPrice, setOpenUpdateVendorMPrice] = useState(false);
   const [rowVendor, setRowVendor] = useState("");
@@ -54,18 +80,22 @@ const VendorOverview = () => {
   const token = sessionStorage.getItem("token");
   const [activeTab, setActiveTab] = useState("Tab1");
   const [tabFilterData, setTabFilterData] = useState([]);
-  
+
   const [categoryCounts, setCategoryCounts] = useState({});
   const [platformCounts, setPlatformCounts] = useState([]);
-  const [stateDataS, setStateDataS] = useState([]);
- 
-  const [cityDataS, setCityDataS] = useState([]);
+
   const [vendorDocsCountData, setVendorDocsCountData] = useState([]);
-  const [filterStateData, setFilterStateData] = useState([])
+  const [filterStateData, setFilterStateData] = useState([]);
   const [getRowData, setGetRowData] = useState([]);
 
-  const { data: vendor } = useGetAllVendorTypeQuery();
-  const typeData = vendor?.data;
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState('');
+  const { data: vendor, refetch: refetchVendor, isLoading: isVendorLoading, isFetching: isVendorFetching } = useGetVendorsWithPaginationQuery({ page, limit, search });
+  const typeData = vendor?.data?.data;
+  const vendorData = vendor?.data;
+  const pagination = vendor?.pagination_data;
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
   const { data: vendordocumentCount } = useGetCountDocumentsQuery();
@@ -73,14 +103,32 @@ const VendorOverview = () => {
   const { data: cycle } = useGetPmsPayCycleQuery();
 
   const [closedByCount, setClosedByCount] = useState([]);
+  function debounce(func, delay) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  }
 
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearch(value)
+    }, 300),
+    []
+  );
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSearch(value);
+  };
   const cycleData = cycle?.data;
-  const {
-    data: vendorData,
-    isLoading: loading,
-    refetch: refetchVendor,
-  } = useGetAllVendorQuery();
-  
+  // const {
+  //   data: vendorData,
+  //   isLoading: loading,
+  //   refetch: refetchVendor,
+  // } = useGetAllVendorQuery();
+
   const handleUpdateVendorMPrice = (row) => {
     setOpenUpdateVendorMPrice(true);
     setRowVendor(row);
@@ -160,7 +208,7 @@ const VendorOverview = () => {
           }
         }
       }
-      setStateDataS(stateData);
+      // setStateDataS(stateData);
     }
 
     function getUniqueCitiesWithCounts() {
@@ -181,7 +229,7 @@ const VendorOverview = () => {
           }
         }
       }
-      setCityDataS(cityData);
+      // setCityDataS(cityData);
     }
     getUniqueStatesWithCounts();
     getUniqueCitiesWithCounts();
@@ -628,17 +676,38 @@ const VendorOverview = () => {
     setFilterData(vendorwithnopages);
     setActiveTab("Tab1");
   };
-  
+
   const vendorWithCategories = (category) => {
-    const vendorwithcategories = tabFilterData.filter((item) => item.home_state === category);    
-    setFilterStateData(vendorwithcategories);
-    setActiveTab('Tab1');
-  };
-  const vendorWithCity = (category) => {    
-    const vendorwithcategories = tabFilterData.filter((item) => item.home_city === category);    
+    const vendorwithcategories = tabFilterData.filter(
+      (item) => item.home_state === category
+    );
     setFilterStateData(vendorwithcategories);
     setActiveTab("Tab1");
   };
+  const vendorWithState = (category) => {
+    setStateDataS(category);
+    setQueryParams({ home_state: category }); // trigger API call
+    // const vendorwithcategories = tabFilterData.filter(
+    //   (item) => item.home_state === category
+    // );
+    // setFilterStateData(cityStateWiseData);
+    setActiveTab("Tab1");
+  };
+  const vendorWithCity = (category) => {
+    setQueryParams({ home_city: category });
+    setCityDataS(category);
+    // const vendorwithcategories = tabFilterData.filter(
+    //   (item) => item.home_city === category
+    // );
+    // setFilterStateData(cityStateWiseData);
+    setActiveTab("Tab1");
+  };
+  useEffect(() => {
+    if (cityStateWiseData) {
+      setFilterStateData(cityStateWiseData);
+    }
+  }, [cityStateWiseData, cityDataS, stateDataS]);
+
   const vendorWithPlatforms = (platform) => {
     const vendorwithplatforms = tabFilterData.filter(
       (item) => item.vendor_platform == platform
@@ -653,6 +722,7 @@ const VendorOverview = () => {
     setFilterData(vendorclosedby);
     setActiveTab("Tab1");
   };
+
   useEffect(() => {
     if (vendorDocsCountData?.length) {
       setFilterData(vendorDocsCountData);
@@ -737,7 +807,12 @@ const VendorOverview = () => {
                 )}
                 <VendorWhatsappLinkModla />
                 <div className="card-header flexCenterBetween">
-                  <h5 className="card-title">Vendor : {filterStateData?.length ? filterStateData?.length : filterData?.length}</h5>
+                  <h5 className="card-title">
+                    Vendor :{" "}
+                    {filterStateData?.length
+                      ? filterStateData?.length
+                      : filterData?.length}
+                  </h5>
                   <div className="flexCenter colGap8">
                     <Link
                       to={`/admin/pms-vendor-master`}
@@ -754,7 +829,7 @@ const VendorOverview = () => {
                   </div>
                 </div>
                 <div className="data_tbl thm_table table-responsive card-body p0">
-                  {loading ? (
+                  {isVendorLoading ? (
                     <Box mt={2} ml={2} mb={3} sx={{ width: "95%" }}>
                       <Grid
                         container
@@ -789,18 +864,49 @@ const VendorOverview = () => {
                       </Grid>
                     </Box>
                   ) : (
+
                     <View
-                    version={1}
-                    columns={dataGridcolumns}
-                    data={filterStateData?.length ? filterStateData : filterData} 
-                    isLoading={false}
-                    title="Vendor Overview"
-                    rowSelectable={true}
-                    pagination={[100, 200, 1000]}
-                    tableName="Vendor Overview"
-                    selectedData={setGetRowData}
-                  />
+                      version={1}
+                      columns={dataGridcolumns}
+                      data={
+                        filterStateData?.length ? filterStateData : filterData
+                      }
+                      isLoading={false}
+                      cloudPagination={true}
+                      title="Vendor Overview"
+                      rowSelectable={true}
+                      pagination={[100, 200, 1000]}
+                      tableName="Vendor Overview"
+                      selectedData={setGetRowData}
+                      pageNavigator={{
+                        prev: {
+                          disabled: page === 1,
+                          onClick: () =>
+                            setPage((prev) => Math.max(prev - 1, 1)),
+                        },
+                        next: {
+                          disabled: vendorData?.data?.length < limit,
+                          onClick: () => setPage((prev) => prev + 1),
+                        },
+                        totalRows: pagination?.total_records || 0,
+                        currentPage: pagination?.current_page,
+                      }}
+                      addHtml={
+                        <>
+                          <TextField
+                            label="Search Vendor"
+                            variant="outlined"
+                            size="small"
+                            value={inputValue}
+                            onChange={handleSearchChange}
+                          />
+                        </>
+                      }
+                    />
                   )}
+
+                 
+                
                   {/* <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} exportData={ExportData} /> */}
                 </div>
                 <VendorBankDetailModal />
@@ -993,30 +1099,31 @@ const VendorOverview = () => {
               </div>
               <div className="card-body">
                 <div className="row">
-                  {Object.entries(stateDataS).map(([state, data]) => (
-                    <div
-                      key={state}
-                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    >
+                  {stateWiseCountData &&
+                    typeof stateWiseCountData === "object" &&
+                    Object.entries(stateWiseCountData).map(([state, data]) => (
                       <div
-                        className="card"
                         key={state}
-                        onClick={() => vendorWithCategories(state)}
+                        className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
                       >
-                        <div className="card-body pb20 flexCenter colGap14">
-                          <div className="iconBadge small bgPrimaryLight m-0">
-                            <span>
-                              <HouseSidingIcon />
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="colorMedium">{state}</h6>
-                            <h6 className="mt4 fs_16">{data.count}</h6>
+                        <div
+                          className="card"
+                          onClick={() => vendorWithState(state)}
+                        >
+                          <div className="card-body pb20 flexCenter colGap14">
+                            <div className="iconBadge small bgPrimaryLight m-0">
+                              <span>
+                                <HouseSidingIcon />
+                              </span>
+                            </div>
+                            <div>
+                              <h6 className="colorMedium">{state}</h6>
+                              <h6 className="mt4 fs_16">{data}</h6>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </div>
               </div>
             </div>
@@ -1027,30 +1134,39 @@ const VendorOverview = () => {
               </div>
               <div className="card-body">
                 <div className="row">
-                  {Object.entries(cityDataS).map(([city, data]) => (
-                    <div
-                      key={city}
-                      className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                    >
+                  {cityWiseCountData &&
+                  typeof cityWiseCountData === "object" &&
+                  Object.entries(cityWiseCountData).length > 0 ? (
+                    Object.entries(cityWiseCountData).map(([city, data]) => (
                       <div
-                        className="card"
                         key={city}
-                      onClick={() => vendorWithCity(city)}
+                        className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
                       >
-                        <div className="card-body pb20 flexCenter colGap14">
-                          <div className="iconBadge small bgPrimaryLight m-0">
-                            <span>
-                              <City size={32} />
-                            </span>
-                          </div>
-                          <div>
-                            <h6 className="colorMedium">{city}</h6>
-                            <h6 className="mt4 fs_16">{data.count}</h6>
+                        <div
+                          className="card"
+                          onClick={() => vendorWithCity(city)}
+                        >
+                          <div className="card-body pb20 flexCenter colGap14">
+                            <div className="iconBadge small bgPrimaryLight m-0">
+                              <span>
+                                <City size={32} />
+                              </span>
+                            </div>
+                            <div>
+                              <h6 className="colorMedium">{city}</h6>
+                              <h6 className="mt4 fs_16">{data}</h6>
+                            </div>
                           </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="col-12">
+                      <p className="text-center text-muted">
+                        No city data available
+                      </p>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>

@@ -81,7 +81,7 @@ const PageOverviewNew = () => {
   } = useGetAllPageListQuery({
     decodedToken,
     userID,
-    pagequery,
+    // pagequery,
   });
   const { data: pageStates, isLoading: isPagestatLoading } =
     useGetPageStateQuery();
@@ -108,7 +108,6 @@ const PageOverviewNew = () => {
         _id: item?._id,
       };
     });
-
     setNewFilterData(data);
   }
 

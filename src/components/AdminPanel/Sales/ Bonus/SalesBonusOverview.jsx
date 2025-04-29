@@ -18,21 +18,6 @@ const SalesBonusOverview = () => {
       showCol: true,
       compare: true,
     },
-    {
-      key: "Button",
-      name: "user id",
-      renderRowCell: (row) => (
-        <>
-          <Link to={`/admin/sales-bonus-slab/${row.user_id}`}>
-            <Button variant="outlined" color="primary">
-              Bonus Name
-            </Button>
-          </Link>
-        </>
-      ),
-      showCol: true,
-      width: 100,
-    },
 
     {
       key: "user_name",
@@ -42,35 +27,43 @@ const SalesBonusOverview = () => {
       getTotal: true,
     },
     {
-      key: "status",
-      name: "status",
+      key: "total_bonus_amount",
+      name: "Amount",
       showCol: true,
       width: 100,
       getTotal: true,
+    },
+    {
+      key: "bonus_details",
+      name: "Bonus Details",
+      renderRowCell: (row) => (
+        <>
+          {/* <Link to={`/admin/sales-bonus-slab/${row.user_id}`}> */}
+          <Link to={`/admin/sales-bonus-summary/${row.user_id}`}>
+            <button className="btn cmnbtn btn-primary btn_sm mr-2">
+              Details
+            </button>
+          </Link>
+        </>
+      ),
+      showCol: true,
+      width: 100,
     },
   ];
 
   return (
     <div>
       <div className="action_title d-flex justify-content-between">
-        <FormContainer mainTitle={"Bonus Assignment"} link={true} />
-
-        <Link to="/admin/sales-bonus-master-overview">
-          <button className="btn cmnbtn btn-primary btn_sm">
-            Bonus Master
-          </button>
-        </Link>
-        {/* <Link to="/admin/view-Outstanding-details">
-          <button className="btn cmnbtn btn-primary btn_sm">Bonus Slab</button>
-        </Link> */}
+        <FormContainer mainTitle={"User Wise Bonus"} link={true} />
       </div>
 
       <View
         columns={columns}
         data={getAllBonus}
         isLoading={bonusLoading}
-        title={"Bonus"}
-        tableName={"Bonus Overview"}
+        title={"Overview"}
+        tableName={"Bonus-Overview"}
+        pagination={true}
       />
     </div>
   );

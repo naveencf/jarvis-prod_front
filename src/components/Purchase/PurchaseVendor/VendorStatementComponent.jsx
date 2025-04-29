@@ -1,23 +1,70 @@
-import React from 'react';
-import { Avatar } from "@mui/material";
+import { useCallback, useEffect, useState } from 'react';
+import { Autocomplete, Avatar, Card, Skeleton, TextField } from "@mui/material";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
+import ShimmerLoader from '../../../utils/ShimmerLoader';
 
-const VendorInfo = ({ vendorDetail, ledgerData }) => (
-    <div className="vendorBox">
-        <div className="vendorImg">
-            <Avatar alt="Vendor" src={ledgerData[0]?.vendor_image || 'vendor.jpg'} />
+
+const VendorInfo = ({ vendorDetail, ledgerData, selectedVendor, handleVendorChange, vendorList, setVendorSearchQuery }) => {
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return function (...args) {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(() => {
+                func.apply(this, args);
+            }, delay);
+        };
+    };
+    const [inputValue, setInputValue] = useState('');
+    const debouncedSetVendorSearchQuery = useCallback(
+        debounce((value) => {
+            setVendorSearchQuery(value);
+        }, 500),
+        [setVendorSearchQuery]
+    );
+
+    useEffect(() => {
+        if (inputValue) {
+            debouncedSetVendorSearchQuery(inputValue);
+        }
+    }, [inputValue, debouncedSetVendorSearchQuery]);
+
+    const handleInputChange = (event, newInputValue) => {
+        setInputValue(newInputValue);
+    };
+
+    // const debouncedSearch = useMemo((val) => debounce(setVendorSearchQuery(val), 500)(), [setVendorSearchQuery])
+
+    return (
+        <div className="vendorBox">
+            <div className="vendorImg">
+                <Avatar alt="Vendor" src={ledgerData[0]?.vendor_image || 'vendor.jpg'} />
+            </div>
+            <div className="vendorTitle">
+                <Autocomplete
+                    options={vendorList || []}
+                    getOptionLabel={(option) => formatString(option?.vendor_name) || "Unnamed Vendor"}
+                    isOptionEqualToValue={(option, value) => option._id === value?._id}
+                    value={selectedVendor}
+                    inputValue={inputValue}
+                    onChange={handleVendorChange}
+                    onInputChange={handleInputChange}
+                    renderInput={(params) => (
+                        <TextField {...params} label="Vendor Name" variant="outlined" size="small" />
+                    )}
+                    sx={{ minWidth: 300 }}
+                />
+                <h4>Vendor Category: {vendorDetail?.vendor_category}</h4>
+                {vendorDetail?.recent_purchase_date && (
+                    <h4>Purchase Date: {vendorDetail.recent_purchase_date}</h4>
+                )}
+            </div>
         </div>
-        <div className="vendorTitle">
-            <h2>{formatString(vendorDetail?.vendor_name) || 'Vendor Name'}</h2>
-            <h4>Vendor Category: {vendorDetail?.vendor_category}</h4>
-            {vendorDetail?.recent_purchase_date && (
-                <h4>Purchase Date: {vendorDetail.recent_purchase_date}</h4>
-            )}
-        </div>
-    </div>
-);
+    );
+};
 
 const StatsBox = ({ title, amount }) => (
     <div className="statsBox">
@@ -33,7 +80,13 @@ const CardBox = ({ title, amount, bgColor }) => (
     </div>
 );
 
-const FilterSelect = ({ label, dataArray, selectedId, setSelectedId, multiple = false }) => (
+const FilterSelect = ({
+    label,
+    dataArray,
+    selectedId,
+    setSelectedId,
+    multiple = false,
+}) => (
     <div className="col-md-6 col-12">
         <CustomSelect
             fieldGrid={12}
@@ -48,13 +101,13 @@ const FilterSelect = ({ label, dataArray, selectedId, setSelectedId, multiple = 
     </div>
 );
 
-const DataTable = ({ columns, data, isLoading }) => (
+const DataTable = ({ columns, data, isLoading, isFetching }) => (
     <div className="table-responsive noCardHeader">
         <View
             columns={columns}
             showTotal={true}
             data={data}
-            isLoading={isLoading}
+            isLoading={isLoading || isFetching}
             tableName={"Op_executions"}
             pagination={[100, 200, 1000]}
         />
@@ -65,6 +118,10 @@ const VendorStatementComponent = ({
     activeTab,
     vendorDetail,
     ledgerData,
+    selectedVendor,
+    handleVendorChange,
+    vendorList,
+    setVendorSearchQuery,
     totalDebit,
     totalCredit,
     runningBalance,
@@ -79,14 +136,23 @@ const VendorStatementComponent = ({
     setSelectedMonths,
     columns,
     filteredData,
-    isLoading
-}) => {
-    if (activeTab !== 'Tab1') return null;
+    isLoading,
+    isFetching,
 
+}) => {
+    if (activeTab !== "Tab1") return null;
     return (
         <div className="statementDoc">
+
             <div className="statementDocHeader">
-                <VendorInfo vendorDetail={vendorDetail} ledgerData={ledgerData} />
+                <VendorInfo
+                    vendorDetail={vendorDetail}
+                    ledgerData={ledgerData}
+                    selectedVendor={selectedVendor}
+                    handleVendorChange={handleVendorChange}
+                    vendorList={vendorList}
+                    setVendorSearchQuery={setVendorSearchQuery}
+                />
                 <div className="stats">
                     <StatsBox title="Total Debited Amount" amount={totalDebit} />
                     <StatsBox title="Total Credit Amount" amount={totalCredit} />
@@ -95,6 +161,7 @@ const VendorStatementComponent = ({
             </div>
             <div className="statementDocBody card-body p-3">
                 <div className="row">
+
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
                             <h6 className="colorMedium">Audit Pending</h6>
@@ -125,16 +192,16 @@ const VendorStatementComponent = ({
                             <h6 className="mt8 fs_16">₹{actualOutstanding?.toLocaleString()}</h6>
                         </div>
                     </div>
-                    </div>
-                    <div className="row mt-2">
-                        <FilterSelect label="Financial Year" dataArray={financialYears} selectedId={selectedYear} setSelectedId={setSelectedYear} />
-                        <FilterSelect label="Months" dataArray={months} selectedId={selectedMonths} setSelectedId={setSelectedMonths} multiple />
-                    </div>
-
-                    <DataTable columns={columns} data={filteredData} isLoading={isLoading} />
                 </div>
+                <div className="row mt-2">
+                    <FilterSelect label="Financial Year" dataArray={financialYears} selectedId={selectedYear} setSelectedId={setSelectedYear} />
+                    <FilterSelect label="Months" dataArray={months} selectedId={selectedMonths} setSelectedId={setSelectedMonths} multiple />
+                </div>
+
+                <DataTable columns={columns} data={filteredData} isLoading={isLoading} isFetching={isFetching} />
             </div>
-            );
+        </div>
+    );
 };
 
-            export default VendorStatementComponent;
+export default VendorStatementComponent;

@@ -9,7 +9,7 @@ const Calendar = ({ startDate, endDate, setStartDate, setEndDate }) => {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className="form-group">
-        <label>Select Date Range</label>
+        {/* <label>Select Date Range</label> */}
         <div className="flexCenterBetween colGap20">
           <div className="w-100">
             {/* Start Date Picker */}

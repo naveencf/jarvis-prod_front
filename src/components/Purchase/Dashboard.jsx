@@ -1,6 +1,7 @@
 import FormContainer from "../AdminPanel/FormContainer";
 import {
   Bank,
+  Browser,
   Browsers,
   CodaLogo,
   HandCoins,
@@ -11,6 +12,8 @@ import {
 import {
   useGetCountOfUnregisteredPagesQuery,
   useGetTotalDataQuery,
+  useGetVendorAdvanceSummaryAndDetailsQuery,
+  useGetVendorLedgerMonthWiseQuery,
   useGetVendorOutstandingQuery,
 } from "../Store/API/Purchase/DirectPurchaseApi";
 import { useState } from "react";
@@ -23,14 +26,26 @@ import {
   useGetPmsPlatformQuery,
 } from "../Store/reduxBaseURL";
 import View from "../AdminPanel/Sales/Account/View/View";
+import Calendar from "./Calender";
+import { formatNumber } from "../../utils/formatNumber";
+import { formatIndianNumber } from "../../utils/formatIndianNumber";
+import { Spinner } from "react-bootstrap";
+import { Box, Skeleton, Card, CardContent } from '@mui/material';
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState("");
-
+  const [advanceRange, setAdvanceRange] = useState("");
+  const [showAdvance, setShowAdvance] = useState(true)
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   // console.log("range", range);
   const { data, error, isLoading } = useGetTotalDataQuery();
-  const { data: vendorDetail } = useGetVendorOutstandingQuery(range);
+  const {
+    data: vendorDetail,
+    isLoading: isVendorDetailLoading,
+    isFetching: isVendorDetailFetching,
+  } = useGetVendorOutstandingQuery(range);
   const { data: unregisteredPages } = useGetCountOfUnregisteredPagesQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
@@ -39,9 +54,29 @@ const Dashboard = () => {
   const typeData = vendor?.data;
   const vendorData = vendorDetail?.vendorData;
   const cycleData = cycle?.data;
+  const { data: vendorAdvancedDetail, isLoading: isVendorAdvancedDetailLoading, isFetching: isVendorAdvancedDetailFetching } = useGetVendorAdvanceSummaryAndDetailsQuery(advanceRange);
+
+  let queryParams = {};
+
+  if (startDate && endDate) {
+    queryParams.startDate = new Date(startDate).toISOString().split("T")[0];
+    queryParams.endDate = new Date(endDate).toISOString().split("T")[0];
+  }
+
+  const {
+    data: vendorLedgerMonthWise,
+    isLoading: isVendorLedgerMonthWiseLoading,
+    isFetching: isVendorLedgerMonthWiseFetching,
+  } = useGetVendorLedgerMonthWiseQuery(queryParams);
+
   const handleClick = (newRange) => {
     setRange(newRange);
+    setShowAdvance(true)
   };
+  const handleRangeClick = (range) => {
+    setAdvanceRange(range)
+    setShowAdvance(false)
+  }
   const dataGridcolumns = [
     {
       key: "sno",
@@ -49,50 +84,64 @@ const Dashboard = () => {
       width: 80,
       renderRowCell: (row, index) => index + 1,
     },
-    {
-      key: "vendorPercentage",
-      name: "Vendor %",
-      width: 150,
-      renderRowCell: (row) => {
-        const fields = [
-          "vendor_name",
-          "email",
-          "mobile",
-          "home_address",
-          "payment_method",
-          "Pincode",
-        ];
-        const totalFields = fields.length;
-        let filledFields = 0;
+    // {
+    //   key: "vendorPercentage",
+    //   name: "Vendor %",
+    //   width: 150,
+    //   renderRowCell: (row) => {
+    //     const fields = [
+    //       "vendor_name",
+    //       "email",
+    //       "mobile",
+    //       "home_address",
+    //       "payment_method",
+    //       "Pincode",
+    //     ];
+    //     const totalFields = fields.length;
+    //     let filledFields = 0;
 
-        fields.forEach((field) => {
-          if (row[field] && row[field] !== 0) {
-            filledFields++;
-          }
-        });
+    //     fields.forEach((field) => {
+    //       if (row[field] && row[field] !== 0) {
+    //         filledFields++;
+    //       }
+    //     });
 
-        const percentage = (filledFields / totalFields) * 100;
+    //     const percentage = (filledFields / totalFields) * 100;
 
-        if (percentage === 100) {
-          return "Full";
-        } else if (percentage > 50) {
-          return "More than Partial";
-        } else {
-          return "Less than Partial";
-        }
-      },
-    },
+    //     if (percentage === 100) {
+    //       return "Full";
+    //     } else if (percentage > 50) {
+    //       return "More than Partial";
+    //     } else {
+    //       return "Less than Partial";
+    //     }
+    //   },
+    // },
     {
       key: "vendor_name",
       name: "Vendor Name",
       width: 200,
-      renderRowCell: (row) => formatString(row.vendor_name),
+      renderRowCell: (row) => formatString(row?.vendor_name),
     },
     {
-      key: "Price_Update",
-      name: "Price Update",
-      width: "20%",
+      key: "vendor_outstandings",
+      name: "Outstanding",
+      width: 200,
+      renderRowCell: (row) => Math.floor(row?.vendor_outstandings),
+      // compare: true
     },
+    {
+      key: "vendor_total_remaining_advance_amount",
+      name: "Advance",
+      width: 200,
+      renderRowCell: (row) => Math.floor(row?.vendor_total_remaining_advance_amount),
+      // compare: true
+    },
+    // {
+    //   key: "Price_Update",
+    //   name: "Price Update",
+    //   width: 150,
+    // },
     {
       key: "vendor_category",
       name: "Vendor Category.",
@@ -102,94 +151,125 @@ const Dashboard = () => {
       key: "primary_page",
       name: "Primary Page",
       width: 200,
-      renderRowCell: (row) => row?.primary_page_name || "NA",
+      renderRowCell: (row) => formatString(row?.primary_page_name) || "NA",
     },
-    {
-      key: "page_count",
-      name: "Page Count",
-      width: 200,
-      renderRowCell: (row) => row.page_count,
-    },
+    // {
+    //   key: "page_count",
+    //   name: "Page Count",
+    //   width: 200,
+    //   renderRowCell: (row) => row.page_count,
+    // },
     {
       key: "mobile",
       name: "Mobile",
       width: 200,
       editable: true,
     },
-    {
-      key: "email",
-      name: "Email",
-      width: 200,
-      editable: true,
-    },
-    {
-      key: "Pincode",
-      name: "Home Pincode",
-      width: 200,
-      editable: true,
-    },
-    {
-      key: "home_city",
-      name: "Home City",
-      width: 200,
-      editable: true,
-    },
-    {
-      key: "home_state",
-      name: "Home State",
-      width: 200,
-      editable: true,
-    },
-    {
-      key: "home_address",
-      name: "Home Address",
-      width: 200,
-      editable: true,
-    },
-    {
-      key: "vendor_type",
-      name: "Vendor Type",
-      width: 200,
-      editable: true,
-      renderRowCell: (row) =>
-        typeData?.find((item) => item?._id == row?.vendor_type)?.type_name,
-    },
-    {
-      key: "vendor_platform",
-      name: "Platform",
-      width: 200,
-      editable: true,
-      renderRowCell: (row) =>
-        formatString(
-          platformData?.find((item) => item?._id == row?.vendor_platform)
-            ?.platform_name
-        ),
-    },
-    {
-      key: "pay_cycle",
-      name: "Cycle",
-      width: 200,
-      editable: true,
-      renderRowCell: (row) =>
-        cycleData?.find((item) => item?._id == row?.pay_cycle)?.cycle_name,
-    },
-    {
-      key: "Bank Details",
-      name: "Bank Details",
-      width: 200,
-    },
-    {
-      key: "whatsapp_link",
-      name: "Whatsapp Link",
-      width: 200,
-    },
-    {
-      key: "action",
-      name: "Action",
-      width: 200,
-    },
+    // {
+    //   key: "email",
+    //   name: "Email",
+    //   width: 200,
+    //   editable: true,
+    // },
+    // {
+    //   key: "Pincode",
+    //   name: "Home Pincode",
+    //   width: 200,
+    //   editable: true,
+    // },
+    // {
+    //   key: "home_city",
+    //   name: "Home City",
+    //   width: 200,
+    //   editable: true,
+    // },
+    // {
+    //   key: "home_state",
+    //   name: "Home State",
+    //   width: 200,
+    //   editable: true,
+    // },
+    // {
+    //   key: "home_address",
+    //   name: "Home Address",
+    //   width: 200,
+    //   editable: true,
+    // },
+    // {
+    //   key: "vendor_type",
+    //   name: "Vendor Type",
+    //   width: 200,
+    //   editable: true,
+    //   renderRowCell: (row) =>
+    //     typeData?.find((item) => item?._id == row?.vendor_type)?.type_name,
+    // },
+    // {
+    //   key: "vendor_platform",
+    //   name: "Platform",
+    //   width: 200,
+    //   editable: true,
+    //   renderRowCell: (row) =>
+    //     formatString(
+    //       platformData?.find((item) => item?._id == row?.vendor_platform)
+    //         ?.platform_name
+    //     ),
+    // },
+    // {
+    //   key: "pay_cycle",
+    //   name: "Cycle",
+    //   width: 200,
+    //   editable: true,
+    //   renderRowCell: (row) =>
+    //     cycleData?.find((item) => item?._id == row?.pay_cycle)?.cycle_name,
+    // },
+    // {
+    //   key: "Bank Details",
+    //   name: "Bank Details",
+    //   width: 200,
+    // },
+    // {
+    //   key: "whatsapp_link",
+    //   name: "Whatsapp Link",
+    //   width: 200,
+    // },
+    // {
+    //   key: "action",
+    //   name: "Action",
+    //   width: 200,
+    // },
   ];
-
+  const monthWiseDataColumns = [
+    {
+      key: "sno",
+      name: "S.NO",
+      renderRowCell: (row, index) => index + 1,
+    },
+    {
+      key: "totalCredit",
+      name: "Total Credit",
+      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalCredit))
+    },
+    {
+      key: "totalDebit",
+      name: "Total Debit",
+      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalDebit))
+    },
+    {
+      key: "month",
+      name: "Month",
+      renderRowCell: (row) => row.month
+    },
+  ]
+  const formatString = (str) => {
+    if (!str) return "";
+    const firstChar = str.charAt(0);
+    if (/[a-zA-Z]/.test(firstChar)) {
+      return firstChar.toUpperCase() + str.slice(1);
+    }
+    return str;
+  };
+  // console.log("vendorAdvancedDetail", vendorAdvancedDetail?.vendorData);
+  const vendorDetailData = showAdvance ? vendorData : vendorAdvancedDetail?.vendorData
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   return (
@@ -205,110 +285,156 @@ const Dashboard = () => {
         <div className="col-xl-9 col-lg-9 col-md-12 col-12">
           <div className="card">
             <div className="card-body pb20">
-              <div className="row">
-                <div className="col-xl-3 col-lg-3 col-md-3 col-12 border-right">
+              <div className="row no-wrap">
+
+                <div className="col-xl-2 col-lg-2 col-md-4 col-6 border-right mr-4">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgSuccessLight m-0">
                       <span>
                         <Bank />
                       </span>
                     </div>
-                    <div className="mt12 text-center">
-                      <h6 className="colorMedium">Total Outstanding</h6>
-                      <h6 className="mt4 fs_16">₹{data?.total_outstanding}</h6>
-                    </div>
+                    <Link to="/admin/vendor_outstanding">
+                      <div className="mt12 text-center">
+                        <h6 className="colorMedium">Total Outstanding</h6>
+                        <h6 className="mt4 fs_16">
+                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding))}
+                        </h6>
+                      </div>
+                    </Link>
                   </div>
                 </div>
-                <div className="col-xl-3 col-lg-3 col-md-3 col-12 border-right">
+
+                <div className="col-xl-2 col-lg-2 col-md-4 col-6 border-right mr-4">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgWarningLight m-0">
                       <span>
                         <HandCoins />
                       </span>
                     </div>
-                    <div className="mt12 text-center">
-                      <h6 className="colorMedium">Total Advanced Amount</h6>
-                      <h6 className="mt4 fs_16">
-                        ₹{data?.total_advanced_amount}
-                      </h6>
-                    </div>
+                    <Link to="/admin/vendor_outstanding">
+                      <div className="mt12 text-center">
+                        <h6 className="colorMedium">Total Advanced</h6>
+                        <h6 className="mt4 fs_16">
+                          ₹{formatIndianNumber(Math.floor(data?.total_advanced_amount))}
+                        </h6>
+                      </div>
+                    </Link>
                   </div>
                 </div>
-                <div className="col-xl-3 col-lg-3 col-md-3 col-12 border-right">
+
+                <div className="col-xl-2 col-lg-2 col-md-4 col-6 border-right mr-4">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgInfoLight m-0">
                       <span>
                         <Wallet />
                       </span>
                     </div>
-                    <div className="mt12 text-center">
-                      <h6 className="colorMedium">Outstandings</h6>
-                      <h6 className="mt4 fs_16">
-                        ₹{data?.total_outstanding - data?.total_advanced_amount}
-                      </h6>
-                    </div>
+                    <Link to="/admin/vendor_outstanding">
+                      <div className="mt12 text-center">
+                        <h6 className="colorMedium">Outstandings</h6>
+                        <h6 className="mt4 fs_16">
+                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding - data?.total_advanced_amount))}
+                        </h6>
+                      </div>
+                    </Link>
                   </div>
                 </div>
-                <div className="col-xl-3 col-lg-3 col-md-3 col-12">
+
+                <div className="col-xl-2 col-lg-2 col-md-4 col-6 border-right mr-4">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgWarningLight m-0">
                       <span>
                         <Wallet />
                       </span>
                     </div>
-                    <div className="mt12 text-center">
-                      <h6 className="colorMedium">
-                        Total Pending Audit OutStanding Amount
-                      </h6>
-                      <h6 className="mt4 fs_16">
-                        ₹{unregisteredPages?.totalPendingAuditOutStandingAmount}
-                      </h6>
-                    </div>
+                    <Link to="/admin/pending-outstanding-total">
+                      <div className="mt12 text-center">
+                        <h6 className="colorMedium">Audit Pending</h6>
+                        <h6 className="mt4 fs_16">
+                          ₹{formatIndianNumber(Math.floor(data?.total_pending_link_amt))}
+                        </h6>
+                      </div>
+                    </Link>
                   </div>
                 </div>
+
+                <div className="col-xl-2 col-lg-2 col-md-4 col-6 mr-4">
+                  <div className="flexCenter flex_col">
+                    <div className="iconBadge small bgTertiaryLight m-0">
+                      <span>
+                        <Browser />
+                      </span>
+                    </div>
+                    <Link to="/admin/audited-outstanding-total">
+                      <div className="mt12 text-center">
+                        <h6 className="colorMedium">Purchase Pending</h6>
+                        <h6 className="mt4 fs_16">
+                          ₹{formatIndianNumber(Math.floor(data?.total_audited_link_amt))}
+                        </h6>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
+
           <div className="row">
             <div className="col-xl-6 col-lg-6 col-md-12 col-12">
               <div className="card overflow-hidden">
                 <div className="card-header">
                   <h5 className="card-title">Vendor Outstanding</h5>
                 </div>
-                <div className="card-body p0">
-                  <div className="table-responsive">
-                    <table className="table infoTable">
-                      <thead>
-                        <tr>
-                          <th>Range</th>
-                          <th>Count</th>
-                          <th className="text-right">Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {vendorDetail?.data?.data?.map((item, index) => (
-                          <tr key={index}>
-                            <td
-                              onClick={() => handleClick(item.range)}
-                              style={{ cursor: "pointer" }}
-                            >
-                              {item.range}
-                            </td>
-                            <td>{item.vendorCount}</td>
-                            <td className="text-right">
-                              {item.totalOutstanding.toLocaleString()}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                {isVendorDetailLoading ?
+                  <div>
+                    <Card sx={{ width: 410 }}>
+                      <Skeleton variant="rectangular" height={180} />
+                      <Skeleton variant="text" height={30} sx={{ mt: 2 }} />
+                    </Card>
                   </div>
-                </div>
+                  : <div className="card-body p0">
+                    <div className="table-responsive">
+                      <table className="table infoTable">
+                        <thead>
+                          <tr>
+                            <th>Range</th>
+                            <th>Count</th>
+                            <th className="text-right">Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {vendorDetail?.data?.data?.map((item, index) => (
+                            <tr key={index}>
+                              <td
+                                onClick={() => {
+                                  if (item.range !== "total") {
+                                    handleClick(item.range);
+                                  }
+                                }}
+                                style={{
+                                  cursor: item.range !== "total" ? "pointer" : "default"
+                                }}
+                              >
+                                {formatString(item.range)}
+                              </td>
+
+                              <td>{item.vendorCount}</td>
+                              <td className="text-right">
+                                {Math.floor(item.totalOutstanding).toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>}
               </div>
             </div>
             <div className="col-xl-6 col-lg-6 col-md-12 col-12">
               <div className="card overflow-hidden">
-                <div className="card-header">
+                {/* <div className="card-header">
                   <h5 className="card-title">Previous Four Months Purchases</h5>
                 </div>
                 <div className="card-body p0">
@@ -340,7 +466,52 @@ const Dashboard = () => {
                       </tbody>
                     </table>
                   </div>
+                </div> */}
+                <div className="card-header">
+                  <h5 className="card-title">Vendor Advanced Amount</h5>
                 </div>
+                {isVendorAdvancedDetailLoading ?
+                  <Card sx={{ width: 410 }}>
+                    <Skeleton variant="rectangular" height={180} />
+                    <Skeleton variant="text" height={30} sx={{ mt: 2 }} />
+                  </Card> :
+                  <div className="card-body p0">
+                    <div className="table-responsive">
+                      <table className="table infoTable">
+                        <thead>
+                          <tr>
+                            <th>Range</th>
+                            <th>Count</th>
+                            <th className="text-right">Amount</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          {vendorAdvancedDetail?.summary?.map((item, index) => (
+                            <tr key={index}>
+                              <td
+                                onClick={() => {
+                                  if (item.range !== "total") {
+                                    handleRangeClick(item.range);
+                                  }
+                                }}
+                                style={{
+                                  cursor: item.range !== "total" ? "pointer" : "default"
+                                }}
+                              >
+                                {formatString(item.range)}
+                              </td>
+
+                              <td>{item.vendorCount}</td>
+                              <td className="text-right">
+                                {Math.floor(item?.totalAdvanceAmount)?.toLocaleString()}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>}
               </div>
             </div>
           </div>
@@ -632,12 +803,37 @@ const Dashboard = () => {
           </div>
         </div>
       </div> */}
+      {vendorDetailData?.length > 0 &&
+        <View
+          version={1}
+          columns={dataGridcolumns}
+          data={vendorDetailData}
+          isLoading={isVendorDetailLoading || isVendorDetailFetching || isVendorAdvancedDetailFetching || isVendorAdvancedDetailLoading}
+          title="Vendor Overview"
+          rowSelectable={true}
+          pagination={[100, 200, 1000]}
+          tableName="Vendor Overview"
+        />}
+      <div className="card">
+        <div className="card-body">
+          <div className="row">
+            <div className="col-lg-6 col-md-6 col-12">
+              <Calendar
+                startDate={startDate}
+                endDate={endDate}
+                setStartDate={setStartDate}
+                setEndDate={setEndDate}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <View
         version={1}
-        columns={dataGridcolumns}
-        data={vendorData}
-        isLoading={false}
-        title="Vendor Overview"
+        columns={monthWiseDataColumns}
+        data={vendorLedgerMonthWise?.monthWiseLedger}
+        isLoading={isVendorLedgerMonthWiseLoading || isVendorLedgerMonthWiseFetching}
+        title="Month Wise Ledger"
         rowSelectable={true}
         pagination={[100, 200, 1000]}
         tableName="Vendor Overview"

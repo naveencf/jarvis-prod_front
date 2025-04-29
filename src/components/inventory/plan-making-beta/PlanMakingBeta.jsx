@@ -47,7 +47,7 @@ const PlanMakingBeta = () => {
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
   const dispatch = useDispatch();
-
+// 
   // const { data: pageList, isLoading: isPageListLoading, isFetching: isPageListFetching } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
   const {data: pageList, isLoading: isPageListLoading, isFetching: isPageListFetching } = useGetSpecificPagesQuery();
   const { data: vendorTypeData, isLoading: typeLoading } = useGetAllVendorTypeQuery();
@@ -955,7 +955,8 @@ const PlanMakingBeta = () => {
             highPriceMemes.push(page);
           } else if (page?.page_layer === 7) {
             blackListed.push(page);
-          } else if (page?.page_layer === 9) {
+          // } else if (page?.page_layer === 9) {
+              } else if (page?.page_status==="Disabled" || page?.page_status==="disabled") {
             disabledPages.push(page);
           }
         }

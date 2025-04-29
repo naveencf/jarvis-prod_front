@@ -43,6 +43,7 @@ const style = {
 };
 
 function PageOverviewHeader({
+  setPage,
   setPlanFormName,
   onFilterChange,
   pagequery,
@@ -95,10 +96,9 @@ function PageOverviewHeader({
     data: pageList,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({ decodedToken, userID, pagequery });
+  } = useGetAllPageListQuery({ decodedToken, userID });
 
   const { data } = useGetAllCountWisePageQuery({ activeTab });
-  console.log(data, "dd----ds");
   const categoryOptionsWithCount =
     data?.category &&
     Object.entries(data?.category)?.map(([label, count]) => {
@@ -224,7 +224,6 @@ function PageOverviewHeader({
       setFilterFollowers(null);
     }
   };
-  console.log(subCategoryFilter, "subCategoryFilter")
   // categoryFilter = categoryFilter?.replace(/[^a-zA-Z]/g, "");
   useEffect(() => {
     const queryParams = [
@@ -311,7 +310,6 @@ function PageOverviewHeader({
 
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
-    console.log(optionWithCount, "optionWithCount")
     if (optionWithCount) {
       console.log(optionWithCount.split(" (")[0], "optionWithCount")
       return optionWithCount.split(" (")[0];
@@ -443,7 +441,6 @@ function PageOverviewHeader({
     setActiveTab(tab.platform_name);
     localStorage.setItem("activeTab", tab.platform_name);
     setPlanFormName(tab.platform_name);
-    console.log(tab.platform_name, "platform anme");
   };
 
   // useEffect(() => {
@@ -482,7 +479,6 @@ function PageOverviewHeader({
   }, [activeTab]);
 
   const handleSubCategoryChange = (e, newValue) => {
-    console.log(newValue, "newValue")
     setSubCategoryFilter(newValue ? newValue.value : "")
   }
   return (

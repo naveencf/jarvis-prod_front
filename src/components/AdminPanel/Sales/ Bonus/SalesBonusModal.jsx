@@ -58,7 +58,7 @@ const SalesBonusModal = ({ rowData, BonusLoading, closeModal }) => {
             data={RowData}
             isLoading={BonusLoading}
             title={SlabName}
-            tableName={"Bonus Structure"}
+            tableName={"Bonus-Structure"}
           />
         </div>
         <Button variant="contained" onClick={closeModal}>

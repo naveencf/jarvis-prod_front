@@ -12,6 +12,7 @@ import {
   useGetAllPagessByPlatformQuery,
   useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
+  useGetPostDetailofPagenVendorMutation,
   useGetPostDetailsBasedOnFilterMutation,
   usePostDataUpdateMutation,
   useUpdateMultipleAuditStatusMutation,
@@ -106,6 +107,8 @@ const CampaignExecution = () => {
     isLoading: allPagesLoading,
     isFetching: allPagesFetching,
   } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
+  const [getData, { isLoading: gettingData, isError: gettingError }] =
+    useGetPostDetailofPagenVendorMutation();
 
   const {
     data: pmsPlatform,
@@ -383,7 +386,8 @@ const CampaignExecution = () => {
       (data) =>
         data.amount > 0 &&
         !!data.vendor_name &&
-        data.audit_status !== "purchased"
+        data.audit_status !== "purchased" &&
+        data.campaignId != null
     );
   }
   const phaseWiseData = useMemo(() => {
@@ -430,12 +434,12 @@ const CampaignExecution = () => {
             : row?.postType == "REEL"
             ? key[2].price_key
             : row?.postType == "CAROUSEL"
-              ? key[3].price_key
-              : row?.postType === "IMAGE"
-                ? key[0].price_key
-                : row?.story_link && row?.ref_link
-                  ? key[4].price_key
-                  : key[1].price_key,
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key,
       };
       if (!data.platform_name) {
         toastError("Please select the platform");
@@ -451,7 +455,7 @@ const CampaignExecution = () => {
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async function handleBulkAudit() {
@@ -633,8 +637,8 @@ const CampaignExecution = () => {
               row?.postType == "REEL"
                 ? Reel
                 : row?.postType == "CAROUSEL"
-                  ? Carousel
-                  : Image
+                ? Carousel
+                : Image
             }
             style={{ width: "20px", height: "20px" }}
             alt=""
@@ -868,9 +872,9 @@ const CampaignExecution = () => {
             <button
               title={
                 row.audit_status === "purchased" ||
-                  row.amount < 0 ||
-                  row?.vendor_name == "" ||
-                  row?.campaignId == null
+                row.amount < 0 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
                   ? "Amount should be greater than or equal to 0 and select the vendor for the page or this link is not present in any campaign"
                   : ""
               }
@@ -889,8 +893,8 @@ const CampaignExecution = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                        ? "pending"
-                        : row.audit_status,
+                      ? "pending"
+                      : row.audit_status,
                 };
                 handledataUpdate({
                   ...row,
@@ -898,12 +902,13 @@ const CampaignExecution = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${row.audit_status === "pending"
+              className={`pointer badge ${
+                row.audit_status === "pending"
                   ? "btn btn-sm cmnbtn btn-primary"
                   : row.audit_status !== "audited"
-                    ? "bg-success"
-                    : "btn btn-sm cmnbtn btn-primary"
-                }`}
+                  ? "bg-success"
+                  : "btn btn-sm cmnbtn btn-primary"
+              }`}
             >
               {row.audit_status}
             </button>
@@ -973,10 +978,10 @@ const CampaignExecution = () => {
         return row.audit_status === "audited"
           ? "rgb(255 131 0 / 80%)"
           : row.audit_status === "purchased"
-            ? "#c4fac4"
-            : row.amoumt == 0 || row.vendor_name == ""
-              ? "#ffff008c"
-              : "";
+          ? "#c4fac4"
+          : row.amoumt == 0 || row.vendor_name == ""
+          ? "#ffff008c"
+          : "";
       },
     },
     {
@@ -1015,9 +1020,10 @@ const CampaignExecution = () => {
       name: "Phase Date",
       key: "phaseDate1",
       renderRowCell: (row) =>
-        ConvertDateToOpposite(
-          formatDateAsDDMMYY(row.phaseDate)?.replace(/T.*Z/, "").trim()
-        ),
+        // ConvertDateToOpposite(
+        // formatDateAsDDMMYY(row.phaseDate)?.replace(/T.*Z/, "").trim()
+        row.phaseDate?.replace(/T.*Z/, "").trim(),
+      // ),
       width: 100,
       compare: true,
     },
@@ -1299,7 +1305,8 @@ const CampaignExecution = () => {
       ) => {
         // return ConvertDateToOpposite(utcToIst(row.postedOn));
         return ConvertDateToOpposite(
-          formatDateAsDDMMYY(row.phaseDate)?.replace(/T.*Z/, "").trim())
+          formatDateAsDDMMYY(row.phaseDate)?.replace(/T.*Z/, "").trim()
+        );
       },
       customEditElement: (
         row,
@@ -1393,7 +1400,7 @@ const CampaignExecution = () => {
       editable: true,
     },
   ];
-console.log("phaseDate", phaseDate);
+
   function disableAuditUpload() {
     if (selectedData?.length > 0) {
       if (
@@ -1471,7 +1478,7 @@ console.log("phaseDate", phaseDate);
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-              modalData?.data?.data?.requestStatsUpdate?.length ? (
+            modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1567,7 +1574,7 @@ console.log("phaseDate", phaseDate);
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                ?.exe_campaign_name}
+                  ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -1690,10 +1697,11 @@ console.log("phaseDate", phaseDate);
               <button
                 title="Bulk Upload"
                 disabled={selectedData.length === 0}
-                className={`mr-3 cmnbtn btn btn-sm ${selectedData.length === 0
+                className={`mr-3 cmnbtn btn btn-sm ${
+                  selectedData.length === 0
                     ? "btn-outline-primary"
                     : "btn-primary"
-                  }`}
+                }`}
                 onClick={() => {
                   setModalName("bulkUpload");
                   setToggleModal(true);
@@ -1704,8 +1712,9 @@ console.log("phaseDate", phaseDate);
               {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                    }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                  }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -1714,8 +1723,9 @@ console.log("phaseDate", phaseDate);
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
-                  }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${
+                  fetchingPlanData && "animate_rotate"
+                }`}
                 onClick={actTab == 5 ? handleFilterLinks : refetchPlanData}
               >
                 <ArrowClockwise />

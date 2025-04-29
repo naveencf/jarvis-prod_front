@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import { baseUrl } from '../../../../utils/config';
+import { useEffect, useState } from "react";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import { baseUrl } from "../../../../utils/config";
 
 const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
-  const [documentCount, setDocumentCount] = useState('');
+  console.log(documents, "documents");
+  const [documentCount, setDocumentCount] = useState("");
 
   const fetchVendorCounts = async () => {
     try {
-      const response = await fetch(`${baseUrl}v1/count_documents/${documentCount}`);
+      const response = await fetch(
+        `${baseUrl}v1/count_documents/${documentCount}`
+      );
       const json = await response.json();
       if (json.success) {
         setVendorDocsCountData(json.data.vendors);
@@ -32,7 +35,10 @@ const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
         <div className="card-body">
           <div className="row">
             {documents?.map((item, index) => (
-              <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12" key={index}>
+              <div
+                className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
+                key={index}
+              >
                 <div className="card">
                   <div className="card-body text-center">
                     <div className="iconBadge small bgPrimaryLight">
@@ -42,8 +48,17 @@ const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
                     </div>
                     <div>
                       <h6 className="text-primary mb-2 ">
-                        <button className="btn btn-sm btn-outline-primary" onClick={() => setDocumentCount(item.documentCountKey)}>
-                          Document {item?.documentCount === 'morethan3' ? '3+' : item.documentCount}: {item.vendorCount}
+                        <button
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={() =>
+                            setDocumentCount(item.documentCountKey)
+                          }
+                        >
+                          Document{" "}
+                          {item?.documentCount === "morethan3"
+                            ? "3+"
+                            : item.documentCount}
+                          : {item.vendorCount}
                         </button>
                       </h6>
                     </div>

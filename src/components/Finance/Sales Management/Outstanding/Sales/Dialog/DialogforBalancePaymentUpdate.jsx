@@ -13,6 +13,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import React, { useState } from "react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+
 import moment from "moment";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
@@ -75,7 +77,7 @@ function DialogforBalancePaymentUpdate(props) {
     setPaidPercentage("");
     setPaymentDate("");
   };
-
+  console.log("balance update")
   const handleSubmit = async (e) => {
     e.preventDefault();
 

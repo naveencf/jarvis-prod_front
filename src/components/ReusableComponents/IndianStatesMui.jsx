@@ -13,15 +13,16 @@ const IndianStatesMui = ({ selectedState, onChange }) => {
   };
 
   const handleInputChange = (event, newInputValue) => {
+    console.log(newInputValue, "newInputValue")
     setInputValue(newInputValue);
   };
- 
+
   return (
     <Autocomplete
       options={states}
       getOptionLabel={(option) => option.name} // Display the name in the dropdown
-      value={findStateByIsoCode(selectedState)} // Find the state object based on the isoCode
-      onChange={(event, newValue) => onChange(newValue ? newValue.isoCode : "")} // Pass the isoCode to the onChange handler
+      value={(selectedState)} // Find the state object based on the isoCode
+      onChange={(event, newValue) => onChange(newValue ? newValue : "")} // Pass the isoCode to the onChange handler
       inputValue={inputValue}
       onInputChange={handleInputChange}
       isOptionEqualToValue={(option, value) => option.isoCode === value.isoCode} // Compare based on isoCode

@@ -344,7 +344,7 @@ const RecordCampaign = () => {
   let columns = [
     {
       name: "Sr.No",
-      key: "Sr.No",
+      key: "S No",
       renderRowCell: (row, index) => index + 1,
       width: 50,
     },
@@ -967,8 +967,8 @@ const RecordCampaign = () => {
   const debouncedSetSearchQueryForCampName = useDebouncedAsyncSetter(setCampaignSearchQuery, setLoadingPlans);
 
   const handleCampaignName = (newValue) => {
+    console.log(newValue, "newValue")
     if (newValue) {
-
       setSelectedPlan(newValue?._id || null);
       setCampaignSheetUrl(newValue?.tracker_link)
     }
