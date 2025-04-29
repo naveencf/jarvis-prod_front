@@ -140,7 +140,6 @@ const PageOverview = () => {
 
   // Filter data when the button is clicked
   const handleFilter = () => {
-    console.log(filterData, "filterData");
     const filteredData = filterData?.filter((row) => {
       let price = 0;
       // Get the selected price based on the selectedPriceType

@@ -70,7 +70,7 @@ const PaymentRequestFromPurchase = ({
   const [extractedData, setExtractedData] = useState({});
   const [formData, setFormData] = useState({
     vendor_id: vendorDetail?.vendor_id,
-    outstanding: vendorPhpDetail[0]?.outstanding,
+    outstanding: 0,
     request_amount: 0,
     gst_amount: 0,
     base_amount: 0,
@@ -121,20 +121,20 @@ const PaymentRequestFromPurchase = ({
   }, [vendorInvoices]);
   useEffect(() => {
     if (vendorDetail) {
-      axios
-        .post(phpBaseUrl + `?view=getvendorDataListvid`, {
-          vendor_id: vendorDetail?.vendor_id,
-        })
-        .then((res) => {
-          if (res.status == 200) {
-            setVendorPhpDetail(res.data.body);
-            // console.log(res.data.body, 'vendorDetail', vendorDetail);
-          }
-        });
+      // axios
+      //   .post(phpBaseUrl + `?view=getvendorDataListvid`, {
+      //     vendor_id: vendorDetail?.vendor_id,
+      //   })
+      //   .then((res) => {
+      //     if (res.status == 200) {
+      //       setVendorPhpDetail(res.data.body);
+      //       // console.log(res.data.body, 'vendorDetail', vendorDetail);
+      //     }
+      //   });
       axios
         .get(
           `${baseUrl}` +
-            `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`,
+          `v1/bank_details_by_vendor_id/${vendorDetail?.vendor_id}?isNumberId=true`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -163,16 +163,16 @@ const PaymentRequestFromPurchase = ({
       if (!prev) return {}; // Ensure prev is always defined
 
       const updatedData = { ...prev, [name]: value };
-      const outstandingPhp = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
+      // const outstandingPhp = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
       const outstandingVendor =
         Number(vendorDetail?.vendor_outstandings) ||
         Number(vendorDetail?.outstandings) ||
         0;
-      const totalOutstanding = (outstandingPhp + outstandingVendor) * 1.18;
+      const totalOutstanding = (outstandingVendor) * 1.18;
 
       if (
         selectedPaymentType === "payment" &&
-        vendorPhpDetail?.length &&
+        // vendorPhpDetail?.length &&
         numericValue > totalOutstanding
       ) {
         toastError(
@@ -312,14 +312,14 @@ const PaymentRequestFromPurchase = ({
       return "Invalid date format. Use DD-MM-YYYY.";
     }
 
-    const today = new Date();
-    const selectedDate = new Date(date);
-    const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-    const thirdOfMonth = new Date(today.getFullYear(), today.getMonth(), 3);
+    // const today = new Date();
+    // const selectedDate = new Date(date);
+    // const firstOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    // const thirdOfMonth = new Date(today.getFullYear(), today.getMonth(), 3);
 
-    if (today >= thirdOfMonth && selectedDate < firstOfMonth) {
-      return "You cannot select a previous month’s date after the 2nd.";
-    }
+    // if (today >= thirdOfMonth && selectedDate < firstOfMonth) {
+    //   return "You cannot select a previous month’s date after the 2nd.";
+    // }
 
     return "";
   };
@@ -337,10 +337,10 @@ const PaymentRequestFromPurchase = ({
         return;
       }
       const dateError = validateDate(formData.invc_date);
-      // if (dateError) {
-      //   toastError(dateError);
-      //   return;
-      // }
+      if (dateError) {
+        toastError(dateError);
+        return;
+      }
     }
     // Ensure request amount is not 0
     else if (formData.request_amount === 0) {
@@ -355,6 +355,15 @@ const PaymentRequestFromPurchase = ({
       );
       return;
     }
+
+    if (
+      selectedPaymentType === "advanced" &&
+      (!formData.at_price || !formData.no_of_post || !formData.page_name)
+    ) {
+      toastError("Please fill all the details");
+      return;
+    }
+
     // Ensure selected bank details are valid before submitting
     const selectedBank = vendorBankDetail[selectedBankIndex];
     if (!selectedBank) {
@@ -410,10 +419,10 @@ const PaymentRequestFromPurchase = ({
         return;
       }
       const dateError = validateDate(formData.invc_date);
-      // if (dateError) {
-      //   toastError(dateError);
-      //   return;
-      // }
+      if (dateError) {
+        toastError(dateError);
+        return;
+      }
     }
     // Ensure request amount is not 0
     else if (formData.request_amount === 0) {
@@ -570,17 +579,18 @@ const PaymentRequestFromPurchase = ({
   };
 
   const getOutstandingText = () => {
-    const phpOutstanding = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
+    // const phpOutstanding = Number(vendorPhpDetail?.[0]?.outstanding) || 0;
     const vendorOutstanding =
       Number(vendorDetail?.vendor_outstandings ?? vendorDetail?.outstandings) ||
       0;
-    const total = phpOutstanding + vendorOutstanding;
+    // const total = phpOutstanding + vendorOutstanding;
 
-    return `${phpOutstanding} + (${vendorOutstanding}) = ${total}`;
+    // return `${phpOutstanding} + (${vendorOutstanding}) = ${total}`;
+    return `${vendorOutstanding}`;
   };
 
   // Then use it like this:
-  <ListItemText primary="Outstanding" secondary={getOutstandingText()} />;
+  // <ListItemText primary="Outstanding" secondary={getOutstandingText()} />;
 
   return (
     <Dialog
@@ -651,7 +661,7 @@ const PaymentRequestFromPurchase = ({
                   extractedData != {} &&
                   extractedData.accountNumber &&
                   extractedData.accountNumber !=
-                    vendorBankDetail[selectedBankIndex]?.account_number && (
+                  vendorBankDetail[selectedBankIndex]?.account_number && (
                     <Typography variant="caption" color="error" sx={{ pt: 0 }}>
                       Account Number in Invoice : {extractedData.accountNumber}
                     </Typography>
@@ -695,7 +705,7 @@ const PaymentRequestFromPurchase = ({
                   extractedData != {} &&
                   extractedData.ifscCode &&
                   extractedData.ifscCode !=
-                    vendorBankDetail[selectedBankIndex]?.ifsc && (
+                  vendorBankDetail[selectedBankIndex]?.ifsc && (
                     <Typography variant="caption" color="error" sx={{ pt: 0 }}>
                       IFSC differ from Invoice : {extractedData.ifscCode}
                     </Typography>
@@ -716,9 +726,8 @@ const PaymentRequestFromPurchase = ({
                 >
                   {vendorBankDetail?.map((bank, index) => (
                     <MenuItem key={index} value={index}>
-                      {`${bank.bank_name || "UPI"} : ${
-                        bank.account_number || bank.upi_id
-                      }`}
+                      {`${bank.bank_name || "UPI"} : ${bank.account_number || bank.upi_id
+                        }`}
                       {/* {bank?.ifsc != "" ? ` IFSC : ${bank?.ifsc}` : ""} */}
                     </MenuItem>
                   ))}
@@ -774,74 +783,79 @@ const PaymentRequestFromPurchase = ({
                   onChange={handleChange}
                   value={formData?.base_amount}
                 />
-                <FormControl
-                  fullWidth
-                  sx={{ maxWidth: 360 }}
-                  disabled={!!vendorDetail?.request_id}
-                >
-                  <InputLabel id="bank-select-label">Payment Type</InputLabel>
-                  <Select
-                    labelId="bank-select-label"
-                    value={selectedPaymentType}
-                    onChange={handlePaymentTypeChange}
-                    label="Payment Type"
+                {selectedValues.length === 0 && (
+                  <FormControl
+                    fullWidth
+                    sx={{ maxWidth: 360 }}
+                    disabled={!!vendorDetail?.request_id}
                   >
-                    <MenuItem value="payment">Payment</MenuItem>
-                    <MenuItem value="advanced">Advance</MenuItem>
-                    <MenuItem value="upfront">Upfront</MenuItem>
-                  </Select>
-                </FormControl>
+                    <InputLabel id="bank-select-label">Payment Type</InputLabel>
+                    <Select
+                      labelId="bank-select-label"
+                      value={selectedPaymentType}
+                      onChange={handlePaymentTypeChange}
+                      label="Payment Type"
+                    >
+                      <MenuItem value="payment">Payment</MenuItem>
+                      <MenuItem value="advanced">Advance</MenuItem>
+                      <MenuItem value="upfront">Upfront</MenuItem>
+                    </Select>
+                  </FormControl>
+                )}
               </Stack>
 
               {(selectedPaymentType === "advanced" ||
                 selectedPaymentType === "upfront") && (
-                <VendorAdavanceRequest
-                  formData={formData}
-                  setFormData={setFormData}
-                  vendorId={vendorDetail._id}
-                />
-              )}
-              <Stack direction="row" spacing={2}>
-                <TextField
-                  label="Invoice No#"
-                  name="invc_no"
-                  value={formData?.invc_no}
-                  onChange={handleChange}
-                  fullWidth
-                />
-                <TextField
-                  type="date"
-                  label="Invoice Date"
-                  name="invc_date"
-                  value={formData?.invc_date}
-                  onChange={handleChange}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-                />
-              </Stack>
-              <Stack direction="row" spacing={2}>
-                <Button variant="outlined" component="label">
-                  Upload Invoice
-                  <input type="file" hidden onChange={handleFileChange} />
-                </Button>
-                {selectedFileName && (
-                  <div style={{ color: "green", marginTop: "8px" }}>
-                    Selected File: {selectedFileName}
-                  </div>
+                  <VendorAdavanceRequest
+                    formData={formData}
+                    setFormData={setFormData}
+                    vendorId={vendorDetail._id}
+                  />
                 )}
-                <IconButton
-                  aria-label="close"
-                  onClick={handleRemoveFile}
-                  sx={{
-                    position: "absolute",
-                    right: 8,
-                    top: 8,
-                    color: (theme) => theme.palette.grey[500],
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Stack>
+              {selectedValues.length === 0 && (
+                <Stack direction="row" spacing={2}>
+                  <TextField
+                    label="Invoice No#"
+                    name="invc_no"
+                    value={formData?.invc_no}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                  <TextField
+                    type="date"
+                    label="Invoice Date"
+                    name="invc_date"
+                    value={formData?.invc_date}
+                    onChange={handleChange}
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                  />
+                </Stack>)}
+              {selectedValues.length === 0 && (
+                <Stack direction="row" spacing={2}>
+                  <Button variant="outlined" component="label">
+                    Upload Invoice
+                    <input type="file" hidden onChange={handleFileChange} />
+                  </Button>
+                  {selectedFileName && (
+                    <div style={{ color: "green", marginTop: "8px" }}>
+                      Selected File: {selectedFileName}
+                    </div>
+                  )}
+                  <IconButton
+                    aria-label="close"
+                    onClick={handleRemoveFile}
+                    sx={{
+                      position: "absolute",
+                      right: 8,
+                      top: 8,
+                      color: (theme) => theme.palette.grey[500],
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                </Stack>
+              )}
               <TextField
                 label="Remark"
                 name="remark_audit"
@@ -868,8 +882,8 @@ const PaymentRequestFromPurchase = ({
                   onClick={handleEditSubmit}
                   disabled={
                     formData?.request_amount == 0 ||
-                    selectedValues?.length > 0 ||
-                    UpdateLoading
+                      selectedValues?.length > 0 ||
+                      UpdateLoading
                       ? true
                       : false
                   }

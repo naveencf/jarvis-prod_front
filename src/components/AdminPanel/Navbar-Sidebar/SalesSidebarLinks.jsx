@@ -4,14 +4,18 @@ import getDecodedToken from "../../../utils/DecodedToken";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const SalesSidebarLinks = () => {
+  const { userContextData, contextData } = useAPIGlobalContext();
+
   const token = getDecodedToken();
   const navigate = useNavigate();
+
+  let isSalesAdmin =
+    contextData?.find((data) => data?._id == 64)?.view_value === 1;
 
   let loginUserId;
   const loginUserRole = token.role_id;
   const deptId = token.dept_id;
 
-  const { userContextData, contextData } = useAPIGlobalContext();
   if (contextData?.find((data) => data?._id == 64)?.view_value !== 1) {
     loginUserId = token.id;
   }
@@ -36,8 +40,8 @@ const SalesSidebarLinks = () => {
       <div
         id="collapseTwom99"
         className={`${loginUserRole !== 1 && deptId == 36
-            ? "collapse show"
-            : "collapse hide"
+          ? "collapse show"
+          : "collapse hide"
           }`}
         aria-labelledby="headingTwo"
         data-parent="#accordionSidebar"
@@ -80,10 +84,23 @@ const SalesSidebarLinks = () => {
             <i className="bi bi-dot" />
             Plan Request
           </NavLink>
-          {/* <NavLink className="collapse-item" to="/admin/sales-bonus-overview">
+          <NavLink
+            className="collapse-item"
+            to={
+              isSalesAdmin
+                ? "/admin/sales-bonus-overview"
+                : `/admin/sales-bonus-summary/${loginUserId}`
+            }
+          >
             <i className="bi bi-dot" />
-            Bonus Overview
-          </NavLink> */}
+            {isSalesAdmin ? "User Wise Bonus" : "Bonus Summary"}
+          </NavLink>
+          {isSalesAdmin && (
+            <NavLink className="collapse-item" to={"/admin/sales-bonus-list"}>
+              <i className="bi bi-dot" />
+              Bonus List
+            </NavLink>
+          )}
         </div>
       </div>
     </li>

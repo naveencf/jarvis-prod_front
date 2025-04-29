@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import View from "../../Sales/Account/View/View";
 // import CustomTable from "../../../CustomTable/CustomTable";
 import jwtDecode from "jwt-decode";
 import {
   useGetAllPageListQuery,
+  useGetAllPageListWithPaginationQuery,
   // useGetAllPageCategoryQuery,
   // useGetAllPageSubCategoryQuery,
   // useGetAllProfileListQuery,
@@ -18,7 +19,7 @@ import SkeletonLoader from "../../../CustomTable/TableComponent/SkeletonLoader";
 import PageOverviewHeader from "./PageOverviewHeader";
 import { useEffect } from "react";
 // import CustomTableV2 from '../../../CustomTable_v2/CustomTableV2';
-import CustomTable from "../../../CustomTable/CustomTable";
+import { TextField } from "@mui/material";
 // import SarcasmNetwork from '../SarcasmNetwork';
 
 function PageOverviewWithoutHealth({
@@ -40,19 +41,46 @@ function PageOverviewWithoutHealth({
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [limit, setLimit] = useState(10)
+  const [page, setPage] = useState(1)
+  const [search, setSearch] = useState("")
+  const [inputValue, setInputValue] = useState('')
   const [selectedData, setSelectedData] = useState([]);
 
   const {
-    data: pageList,
+    data: pages,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-  } = useGetAllPageListQuery({
+    isFetching: ispageListFetching
+  } = useGetAllPageListWithPaginationQuery({
     decodedToken,
     userID,
-    pagequery,
+    page,
+    limit,
+    search,
+    pagequery
   });
+  const pageList = pages?.pages
+  const pagination = pages?.pagination
+  function debounce(func, delay) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => func(...args), delay);
+    };
+  }
 
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearch(value)
+    }, 300),
+    []
+  );
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSearch(value);
+  };
   // const {
   //   data: vendorData,
   //   isLoading: loading,
@@ -81,11 +109,16 @@ function PageOverviewWithoutHealth({
       refetchPageList();
     }
   }, [latestPageObject]);
-
+  // console.log("pageList", pageList);
+  // console.log("pagination", pagination);
+  // console.log("isPageListLoading", isPageListLoading);
+  // console.log("ispageListFetching", ispageListFetching);
+  // console.log("isLoadinf", isLoading);
   return (
     <div className="card">
       <PageOverviewHeader
         setPlanFormName={setPlanFormName}
+        setPage={setPage}
         selectedData={selectedData}
         setSelectedData={setSelectedData}
         onFilterChange={handleFilterChange}
@@ -118,20 +151,48 @@ function PageOverviewWithoutHealth({
       </div> */}
       <div className="card-body p0">
         <div className="data_tbl thm_table table-responsive">
-          {isLoading ? (
-            <SkeletonLoader />
-          ) : (
-            <CustomTable
-              columns={columns}
-              data={pageList}
-              isLoading={false}
-              // title={"Page Overview"}
-              selectedData={setSelectedData}
-              Pagination={[100, 200, 1000]}
-              rowSelectable={true}
-              tableName={`PageOverview_without_health_t${activeTab}`}
-            />
-          )}
+          {
+            // isLoading ? (
+            //   <SkeletonLoader />
+            // ) : 
+            (
+              <View
+                version={1}
+                columns={columns}
+                data={pageList}
+                // isLoading={false}
+                isLoading={isPageListLoading || ispageListFetching|| isLoading}
+                cloudPagination={true}
+                title="Page Overview"
+                rowSelectable={true}
+                pagination={[10]}
+                tableName="Page Overview"
+                selectedData={setSelectedData}
+                pageNavigator={{
+                  prev: {
+                    disabled: page === 1,
+                    onClick: () => setPage((prev) => Math.max(prev - 1, 1)),
+                  },
+                  next: {
+                    disabled: pagination?.current_page >= pagination?.total_page,
+                    onClick: () => setPage((prev) => prev + 1),
+                  },
+                  totalRows: pagination?.total_records || 0,
+                  currentPage: pagination?.current_page,
+                }}
+                addHtml={
+                  <>
+                    <TextField
+                      label="Search Page"
+                      variant="outlined"
+                      size="small"
+                      value={inputValue}
+                      onChange={handleSearchChange}
+                    />
+                  </>
+                }
+              />
+            )}
           {/* <button
             // type="button"
             className="btn cmnbtn btn_sm btn-outline-primary"

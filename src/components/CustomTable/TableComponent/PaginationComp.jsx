@@ -35,12 +35,12 @@ const PaginationComp = ({
               {...(cloudPagination
                 ? pageNavigator["prev"] // user defined event
                 : {
-                    onClick: () =>
-                      setCurrentPage(
-                        currentPage > 1 ? currentPage - 1 : currentPage
-                      ),
-                    disabled: currentPage === 1,
-                  })}
+                  onClick: () =>
+                    setCurrentPage(
+                      currentPage > 1 ? currentPage - 1 : currentPage
+                    ),
+                  disabled: currentPage === 1,
+                })}
             >
               <svg
                 fill="var(--medium)"
@@ -65,15 +65,15 @@ const PaginationComp = ({
               {...(cloudPagination
                 ? pageNavigator["next"]
                 : {
-                    onClick: () =>
-                      setCurrentPage(
-                        currentPage < Math.ceil(data.length / itemsPerPage)
-                          ? currentPage + 1
-                          : currentPage
-                      ),
-                    disabled:
-                      currentPage === Math.ceil(data?.length / itemsPerPage),
-                  })}
+                  onClick: () =>
+                    setCurrentPage(
+                      currentPage < Math.ceil(data.length / itemsPerPage)
+                        ? currentPage + 1
+                        : currentPage
+                    ),
+                  disabled:
+                    currentPage === Math.ceil(data?.length / itemsPerPage),
+                })}
             >
               <svg
                 fill="var(--medium)"
@@ -94,7 +94,7 @@ const PaginationComp = ({
               </svg>
             </button>
 
-            <div className="pagy-current">Current Page: {currentPage}</div>
+            <div className="pagy-current">Current Page: {cloudPagination ? pageNavigator?.currentPage : currentPage}</div>
           </div>
           <div className="pagination-controls">
             <select
@@ -103,7 +103,7 @@ const PaginationComp = ({
             >
               {Pagination?.map((value, index) => (
                 <option key={index} value={value}>
-                  {value === originalData?.length ? "All" : value}
+                  {value === originalData?.length && !cloudPagination ? "All" : value}
                 </option>
               ))}
             </select>
@@ -111,7 +111,8 @@ const PaginationComp = ({
           </div>
         </>
       )}
-      <div>Total Rows: {data?.length}</div>
+
+      <div>Total Rows: {cloudPagination ? pageNavigator?.totalRows : data?.length}</div>
       <div>Total Columns: {columnsheader?.length}</div>
     </div>
   );

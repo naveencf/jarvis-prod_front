@@ -1,26 +1,22 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetLedgerQuery,
   useGetVendorAdvancedPaymentQuery,
   useGetVendorDetailQuery,
   useGetVendorPendingAuditedOutstandingQuery,
+  useGetVendorsWithSearchQuery,
 } from "../../Store/API/Purchase/DirectPurchaseApi";
-import View from "../../AdminPanel/Sales/Account/View/View";
-import CustomSelect from "../../ReusableComponents/CustomSelect";
 import formatString from "../../../utils/formatString";
-import { FilterDrama } from "@mui/icons-material";
-import { formatDateTime } from "../../../utils/formatDateTime";
 import axios from "axios";
 import { phpBaseUrl } from "../../../utils/config";
 import VendorStatementComponent from "./VendorStatementComponent";
 import { AdvancedPaymentComponent } from "./AdvancedPaymentComponent";
+import Loader from "../../Finance/Loader/Loader";
 
 const Ledger = () => {
   const { id } = useParams();
-
-
-
+  const navigate = useNavigate()
   const getFinancialYears = () => {
     const currentYear = new Date().getFullYear();
     return [
@@ -64,8 +60,10 @@ const Ledger = () => {
   ];
   const [activeTab, setActiveTab] = useState("Tab1");
   const [financialYears] = useState(getFinancialYears());
+  const [selectedVendorId, setSelectedVendorId] = useState(null)
   const [selectedYear, setSelectedYear] = useState(financialYears[1]?.value);
   const [selectedMonths, setSelectedMonths] = useState();
+  const [vendorSearchQuery, setVendorSearchQuery] = useState("abh");
   const [selectedPaymentYear, setSelectedPaymentYear] = useState(
     financialYears[1]?.value
   );
@@ -73,17 +71,32 @@ const Ledger = () => {
 
   // const [filteredData, setFilterdData] = useState([]);
   const [dateRange, setDateRange] = useState(selectedYear);
+
+  const { data: vendorsList, isLoading: isVendorLoading, isFetching: isVendorFetching } =
+    useGetVendorsWithSearchQuery(vendorSearchQuery);
+  const { data: vendorData, isLoading: isVendorDataLoading, isFetching: isVendorDataFetching } = useGetVendorPendingAuditedOutstandingQuery(id);
+  const { data: vendorDetail, isLoading: isVendorDetailLoading, isFetching: isVendorDetailFetching } = useGetVendorDetailQuery(id);
+  const [selectedVendor, setSelectedVendor] = useState(vendorDetail);
+  console.log(vendorDetail, "vendorDetail")
   const {
     data: ledgerData = [],
     isLoading,
     error,
+    isFetching
   } = useGetLedgerQuery({ id, query: dateRange });
-  const { data: vendorAdvanced } = useGetVendorAdvancedPaymentQuery({
+  const { data: vendorAdvanced, isLoading: isVendorAdvanceLoading, isFetching: isVendorAdvancedDetailFetching } = useGetVendorAdvancedPaymentQuery({
     id,
     query: selectedPaymentYear,
   });
-  const { data: vendorData } = useGetVendorPendingAuditedOutstandingQuery(id);
-  const { data: vendorDetail } = useGetVendorDetailQuery(id);
+
+  const handleVendorChange = (event, newValue) => {
+    setSelectedVendor(newValue);
+    if (newValue?._id !== undefined) {
+      navigate(`/admin/ledger/${newValue?._id}`)
+    }
+    // setSelectedVendorId?.(newValue?._id); // Pass selected _id to parent
+  };
+
 
   const filteredData = useMemo(() => {
     if (selectedMonths?.length) {
@@ -103,11 +116,11 @@ const Ledger = () => {
     setDateRange(selectedYear);
   }, [selectedYear]);
 
+  // Number(vendorPhpDetail[0]?.outstanding);
+  // Number(vendorDetail?.totalAmount ?? 0)
   const actualOutstanding =
-    Number(vendorDetail?.totalAmount ?? 0) +
     Number(vendorDetail?.vendor_outstandings ?? 0) -
-    Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0) +
-    Number(vendorPhpDetail[0]?.outstanding);
+    Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0)
 
   useEffect(() => {
     if (vendorDetail?.vendor_id) {
@@ -124,28 +137,12 @@ const Ledger = () => {
     }
   }, [vendorDetail]);
 
-  // useEffect(() => {
-  //   const excludedVendorIds = [
-  //     274, 181, 93, 96, 88, 9, 119, 385, 592, 582, 564, 7, 195, 10, 21, 14, 19,
-  //     1250, 1253, 1295, 1296, 1298, 1434, 1450, 1465, 1506, 1562, 1591, 1688,
-  //     1731, 1735, 1737, 1801, 1803, 204, 191, 1447, 1631
-  //   ];
 
-  //   if (
-  //     vendorDetail?.vendor_id &&
-  //     excludedVendorIds.includes(Number(vendorDetail.vendor_id))
-  //   ) {
-  //     axios
-  //       .post(phpBaseUrl + `?view=getvendorDataListvid`, {
-  //         vendor_id: vendorDetail.vendor_id,
-  //       })
-  //       .then((res) => {
-  //         if (res.status === 200) {
-  //           setVendorPhpDetail(res.data.body);
-  //         }
-  //       });
-  //   }
-  // }, [vendorDetail]);
+  useEffect(() => {
+    if (vendorDetail) {
+      setSelectedVendor(vendorDetail);
+    }
+  }, [vendorDetail]);
 
 
   if (isLoading) return <p>Loading...</p>;
@@ -186,9 +183,9 @@ const Ledger = () => {
       // renderRowCell: (row) => row?.no_of_post,
       width: 150,
     },
-    { key: "campaign_name", name: "Campaign Name", width: 120 },
-    { key: "created_by_name", name: "Created By", width: 120 },
-    { key: "transaction_type_status", name: "Status", width: 100 },
+    { key: "campaign_name", name: "Campaign Name", width: 120, renderRowCell: (row) => formatString(row.campaign_name) },
+    { key: "created_by_name", name: "Created By", width: 120, renderRowCell: (row) => formatString(row.created_by_name) },
+    { key: "transaction_type_status", name: "Status", width: 100, renderRowCell: (row) => formatString(row.transaction_type_status), },
     {
       key: "Credit_amt",
       name: "Credit",
@@ -308,7 +305,9 @@ const Ledger = () => {
       width: 100,
     },
   ];
-
+  if (isVendorDetailLoading || isVendorDetailFetching || isLoading) {
+    return <Loader />
+  }
   return (
     <div className="ledgerStatementDoc">
       <div className="tabs">
@@ -335,6 +334,10 @@ const Ledger = () => {
         activeTab={activeTab}
         vendorDetail={vendorDetail}
         ledgerData={ledgerData}
+        selectedVendor={selectedVendor}
+        handleVendorChange={handleVendorChange}
+        vendorList={vendorsList}
+        setVendorSearchQuery={setVendorSearchQuery}
         totalDebit={totalDebit}
         totalCredit={totalCredit}
         runningBalance={runningBalance}
@@ -350,6 +353,7 @@ const Ledger = () => {
         columns={columns}
         filteredData={filteredData}
         isLoading={isLoading}
+        isFetching={isFetching}
       />
 
       <AdvancedPaymentComponent

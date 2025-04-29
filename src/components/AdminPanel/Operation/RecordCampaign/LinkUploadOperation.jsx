@@ -81,7 +81,7 @@ const LinkUploadOperation = ({
       setLinks(data.join("\n"));
     }
   }, [selectedData]);
-
+  console.log(links, "links", links.length)
   useEffect(() => {
     if (selectedPlan == 0 || selectedPlan == null || selectedPlan == "null") {
       setRecord(3);
@@ -150,13 +150,45 @@ const LinkUploadOperation = ({
     setShortCodes(extractShortCodes());
     setOtherPlatform(extractSocialMediaId());
   }, [links]);
+  // const filterDuplicateLinks = () => {
+  //   if (!links) return [];
+  //   const uniqueLinks = Array.from(
+  //     new Set(links.split("\n").filter((link) => link.startsWith("https")))
+  //   );
+  //   console.log(uniqueLinks.length, "uniqueLinks")
+  //   return uniqueLinks;
+  // };
   const filterDuplicateLinks = () => {
     if (!links) return [];
-    const uniqueLinks = Array.from(
-      new Set(links.split("\n").filter((link) => link.startsWith("https")))
-    );
+
+    const allLinks = links.split("\n").map(link => link.trim()).filter(link => link !== "");
+
+    const validLinks = allLinks.filter((link) => link.startsWith("https"));
+    const invalidLinks = allLinks.filter((link) => !link.startsWith("https"));
+
+    const uniqueLinks = Array.from(new Set(validLinks));
+
+    // 👇 Logic to find duplicate links
+    const linkCount = {};
+    const duplicateLinks = [];
+
+    allLinks.forEach((link) => {
+      linkCount[link] = (linkCount[link] || 0) + 1;
+      if (linkCount[link] === 2) {
+        duplicateLinks.push(link);
+      }
+    });
+
+    // console.log(uniqueLinks.length, "uniqueLinks");
+    // console.log(invalidLinks.length, "invalid or filtered out links");
+    // console.log(invalidLinks); // List of invalid links
+    // console.log(allLinks.length, "total links"); // Total links
+    // console.log(duplicateLinks.length, "duplicate links found");
+    // console.log(duplicateLinks); // List of duplicate links
+
     return uniqueLinks;
   };
+
 
   async function handleFetchPricing() {
     try {
@@ -182,6 +214,7 @@ const LinkUploadOperation = ({
 
   const extractShortCodes = () => {
     const uniqueLinks = filterDuplicateLinks();
+    console.log(uniqueLinks.length, "uniqueLinks")
     const shortCodes = uniqueLinks
       .map((link) => {
         const match = link.match(/\/(reel|p)\/([A-Za-z0-9-_]+)/);
@@ -210,7 +243,7 @@ const LinkUploadOperation = ({
 
   function extractSocialMediaId() {
     let urls = filterDuplicateLinks();
-
+    console.log(urls.length, "urls")
     const platforms = [
       {
         name: "X",
@@ -450,6 +483,10 @@ const LinkUploadOperation = ({
         );
         isMatched ? matchedLinks.push(link) : unmatchedLinks.push(link);
       });
+      console.log(duplicateLinks.length,
+        NewLinks.length,
+        NewShortCodes.length,
+        duplicateShortCodes.length,)
       duplicateLinks = matchedLinks.join(` \n`);
       NewLinks = unmatchedLinks.join(` \n`);
       setDuplicateMsg({

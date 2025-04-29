@@ -40,9 +40,14 @@ import SalesBonusOverview from "./Sales/ Bonus/SalesBonusOverview";
 import SalesBonusSlab from "./Sales/ Bonus/SaleBonusSlab";
 import BonusMastAddEdit from "./Sales/ Bonus/BonusMast/BonusMastAddEdit";
 import BonusMastOverview from "./Sales/ Bonus/BonusMast/BonusMastOverview";
+import SalesBonusSummary from "./Sales/ Bonus/SalesBonusSummary";
+import BonusSlabMastAddEdit from "./Sales/ Bonus/BonusSlabMast/BonusSlabMastAddEdit";
+import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview";
+// import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
+const PendingAuditOutstandingTotal = lazy(() => import("../Purchase/PurchaseVendor/PendingAuditOutstandingTotal"))
 const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
 
 const PurchaseReport = lazy(() =>
@@ -930,8 +935,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1449,6 +1454,14 @@ const Admin = () => {
                     <Route
                       path="/purchase-transaction"
                       element={<PurchaseTransactions />}
+                    />
+                    <Route
+                      path="/audited-outstanding-total"
+                      element={<PendingAuditOutstandingTotal />}
+                    />
+                    <Route
+                      path="/pending-outstanding-total"
+                      element={<PendingAuditOutstandingTotal />}
                     />
                     <Route
                       path="/finance-dashboard"
@@ -2098,10 +2111,7 @@ const Admin = () => {
                       path="/sales-plan-request"
                       element={<PlanRequest />}
                     />
-                    <Route
-                      path="/sales-bonus-overview"
-                      element={<SalesBonusOverview />}
-                    />
+
                     <Route
                       path="/sales-bonus-slab/:id"
                       element={<SalesBonusSlab />}
@@ -2111,8 +2121,24 @@ const Admin = () => {
                       element={<BonusMastAddEdit />}
                     />
                     <Route
-                      path="/sales-bonus-master-overview"
+                      path="/sales-bonus-slab-master-add-edit/:id"
+                      element={<BonusSlabMastAddEdit />}
+                    />
+                    <Route
+                      path="/sales-bonus-salb-overview"
+                      element={<BonusSlabOverview />}
+                    />
+                    <Route
+                      path="/sales-bonus-list"
                       element={<BonusMastOverview />}
+                    />
+                    <Route
+                      path="/sales-bonus-overview"
+                      element={<SalesBonusOverview />}
+                    />
+                    <Route
+                      path="/sales-bonus-summary/:id"
+                      element={<SalesBonusSummary />}
                     />
                     <Route
                       path="/sales-user-report"

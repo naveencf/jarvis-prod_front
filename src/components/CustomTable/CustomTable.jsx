@@ -31,6 +31,9 @@ const CustomTable = ({
   pageNavigator = {
     prev: {},
     next: {},
+    inputSearch: {},
+    totalRows: 0,
+    currentPage: 1,
   },
 }) => {
   const tableref = useRef();
@@ -90,7 +93,7 @@ const CustomTable = ({
   useEffect(() => {
     if (
       pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
-      data?.length > 0
+      data?.length > 0 && !cloudPagination
     )
       pagination.current = [...pagination?.current, data?.length];
   }, [data, columns, tableName]);
@@ -589,6 +592,8 @@ const CustomTable = ({
     <div className="table-pagination-container">
       <TableToolkit
         exportData={exportData}
+        cloudPagination={cloudPagination}
+        pageNavigator={pageNavigator}
         showTotal={showTotal}
         setApiFilters={setApiFilters}
         apiFilters={apiFilters}

@@ -29,7 +29,7 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
     {
       key: 'plan_name',
       name: 'Plan Name',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{row.planName}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{formatString(row.planName)}</div>,
       width: 150,
       showCol: true,
     },
@@ -65,21 +65,21 @@ const DataGridOverviewColumns = ({ handleOpenDialog, handleStatusChange, handleD
     {
       key: 'account_name',
       name: 'Account Name',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{row.account_name}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{formatString(row.account_name)}</div>,
       width: 200,
       showCol: true,
     },
     {
       key: 'sales_executive_name',
       name: 'Sales Executive Name',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{row.sales_executive_name}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{formatString(row.sales_executive_name)}</div>,
       width: 150,
       showCol: true,
     },
     {
       key: 'created_by_name',
       name: 'Created By',
-      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{row.created_by_name}</div>,
+      renderRowCell: (row) => <div style={{ cursor: 'pointer' }}>{formatString(row.created_by_name)}</div>,
       width: 150,
       showCol: true,
     },

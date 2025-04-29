@@ -11,13 +11,34 @@ function VendorAdavanceRequest({ formData, setFormData, vendorId }) {
         isSuccess,
     } = useGetPageByVendorIdQuery(vendorId);
 
+    // const handleAdvanceChange = (event) => {
+    //     const { name, value } = event.target;
+    //     setFormData((prevData) => ({
+    //         ...prevData,
+    //         [name]: name === "at_price" || name === "no_of_post" ? Number(value) : value,
+    //     }));
+    // };
+
     const handleAdvanceChange = (event) => {
         const { name, value } = event.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: name === "at_price" || name === "no_of_post" ? Number(value) : value,
-        }));
+
+        setFormData((prevData) => {
+            const updatedValue = name === "at_price" || name === "no_of_post" ? Number(value) : value;
+            let newFormData = {
+                ...prevData,
+                [name]: updatedValue,
+            };
+
+            if (name === "at_price" && updatedValue > 0 && prevData.base_amount) {
+                newFormData.no_of_post = Math.floor(prevData.base_amount / updatedValue);
+            } else if (name === "no_of_post" && updatedValue > 0 && prevData.base_amount) {
+                newFormData.at_price = Math.floor(prevData.base_amount / updatedValue);
+            }
+
+            return newFormData;
+        });
     };
+
 
     const handlePageChange = (_, newValue) => {
         // console.log(newValue, "newValue")
