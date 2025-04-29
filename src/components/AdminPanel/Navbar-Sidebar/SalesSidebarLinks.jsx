@@ -95,12 +95,12 @@ const SalesSidebarLinks = () => {
             <i className="bi bi-dot" />
             {isSalesAdmin ? "User Wise Bonus" : "Bonus Summary"}
           </NavLink>
-          {isSalesAdmin && (
+          {/* {isSalesAdmin && (
             <NavLink className="collapse-item" to={"/admin/sales-bonus-list"}>
               <i className="bi bi-dot" />
               Bonus List
             </NavLink>
-          )}
+          )} */}
         </div>
       </div>
     </li>
