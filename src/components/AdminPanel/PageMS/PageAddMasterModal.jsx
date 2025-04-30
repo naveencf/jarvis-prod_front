@@ -95,7 +95,7 @@ export default function PageAddMasterModal() {
       selectedCategory === 96 && currentState
         ? currentState.name
         : "";
-    console.log(stateToSend, "stateToSend")
+    // console.log(stateToSend, "stateToSend")
     const obj = {
       description: data.description,
       created_by: userID,

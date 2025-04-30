@@ -97,13 +97,18 @@ function PantryUserDashboard() {
 
                 // add other fields as needed
             };
-            // console.log(houseKeepingOnlineStatus, "houseKeepingOnlineStatus");
+
             // The unwrap() method returns a promise that resolves with the actual response or rejects with an error.
             if (houseKeepingOnlineStatus) {
                 const response = await offlineFromPantry(newPantry).unwrap();
+                console.log(response, "response")
                 if (response.success) {
                     setHouseKeepingOnlineStatus(false);
+                } else if (!response.success && response.message ==
+                    "User is not online") {
+                    setHouseKeepingOnlineStatus(false);
                 }
+                setIsToggleLoading(false); // re-enable the button
             } else {
                 const response = await createPantry(newPantry).unwrap();
                 console.log(response, "response");
@@ -112,14 +117,18 @@ function PantryUserDashboard() {
                     console.log(houseKeepingOnlineStatus, "houseKeepingOnlineStatus - 2");
                 } else {
                     setHouseKeepingOnlineStatus(false);
+                    console.log("offline")
                 }
+                setIsToggleLoading(false); // re-enable the button
             }
-            houseKeepingUserStatus();
+            // houseKeepingUserStatus();
         } catch (err) {
             console.error("Error creating pantry:", err);
-        } finally {
-            setIsToggleLoading(false); // re-enable the button
         }
+        // finally {
+        //     setIsToggleLoading(false); // re-enable the button
+        // }
+        setIsToggleLoading(false); // re-enable the button
     };
     const alertSound = new Audio(
         "https://www.myinstants.com/media/sounds/alarm.mp3"
@@ -258,7 +267,7 @@ function PantryUserDashboard() {
                                 aria-pressed={houseKeepingOnlineStatus}
                                 autoComplete="off"
                                 onClick={handleOnlineStatus}
-                            // disabled={isToggleLoading} // <--- disable while loading
+                                disabled={isToggleLoading} // <--- disable while loading
                             > <div className="switch"></div></button>
                         </div>
                     </div>
