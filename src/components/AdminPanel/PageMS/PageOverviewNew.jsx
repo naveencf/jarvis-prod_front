@@ -11,12 +11,14 @@ import jwtDecode from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { addRow } from "../../Store/Executon-Slice";
 import View from "../Sales/Account/View/View";
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import DateFormattingComponent from "../../DateFormator/DateFormared";
 import TagCategoryListModal from "./TagCategoryListModal";
 import VendorNotAssignedModal from "./VendorNotAssignedModal";
 import {
   useGetAllPageListQuery,
+  useGetPageCountWithStateMutation,
   useGetPageStateQuery,
 } from "../../Store/PageBaseURL";
 import { setStatsUpdate } from "../../Store/PageMaster";
@@ -49,6 +51,7 @@ const PageOverviewNew = () => {
   const [vendorDetails, setVendorDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("Tab0");
   const [user, setUser] = useState();
+  const [stateWiseData, setStateWiseData] = useState(false)
   const [progress, setProgress] = useState(10);
   const [showPriceModal, setShowPriceModal] = useState(false);
 
@@ -90,8 +93,26 @@ const PageOverviewNew = () => {
     if (activeTab == "Tab1") {
       pageHealthToggleCheck();
     }
+
   }, [activeTab]);
 
+
+
+  const [getPageCountWithState, { data, isLoading, isFetching, error }] = useGetPageCountWithStateMutation();
+
+  const handleStateClick = async (item) => {
+    try {
+      const response = await getPageCountWithState({
+        platform_name: 'instagram',
+        state: item,
+      });
+      setStateWiseData(true)
+      console.log('Response:', response);
+    } catch (err) {
+      console.error('API Error:', err);
+    }
+  };
+  
   function pageHealthToggleCheck() {
     // if (showPageHealthColumn) {
     const data = pageList?.map((item) => {
@@ -626,6 +647,47 @@ const PageOverviewNew = () => {
           "NA"
         );
       },
+    },
+  ];
+  const columns = [
+    {
+      key: "followers_count",
+      name: "Followers Count",
+      width: 250,
+      renderRowCell: (row) => row?.followers_count || "NA",
+    },
+    {
+      key: "state",
+      name: "State",
+      width: 250,
+      renderRowCell: (row) => row?.state || "NA",
+    },
+    {
+      key: "state_count",
+      name: "State Count",
+      width: 250,
+      // renderRowCell: (row) => row?.state_count || "NA",
+      renderRowCell: (row) => (
+        <button
+          title="View Pages"
+          onClick={() => handleStateClick(row.state)}
+          className="btn btn-outline-primary btn-sm user-button"
+        >
+          {row.state_count}
+        </button>
+      ),
+    },
+    {
+      key: "sub_category_count",
+      name: "Sub Category Count",
+      width: 250,
+      renderRowCell: (row) => row?.sub_category_count || "NA",
+    },
+    {
+      key: "vendor_count",
+      name: "Vendor Count",
+      width: 250,
+      renderRowCell: (row) => row?.vendor_count || "NA",
     },
   ];
 
@@ -1351,6 +1413,14 @@ const PageOverviewNew = () => {
     // dataGridcolumns.push(updatedColumns)
   }, [platformName]);
 
+  useEffect(() => {
+    getPageCountWithState({
+      platform_name: 'instagram',
+      state: ''
+    });
+  }, [])
+  const stateWisePageData = stateWiseData ? data?.stateWiseData : data?.state
+  console.log("state", stateWisePageData);
   return (
     <>
       <PriceModal
@@ -1412,6 +1482,14 @@ const PageOverviewNew = () => {
               onClick={() => setActiveTab("Tab3")}
             >
               Category Wise
+            </button>
+            <button
+              className={
+                activeTab === "Tab6" ? "active btn btn-primary" : "btn"
+              }
+              onClick={() => setActiveTab("Tab6")}
+            >
+              State Wise
             </button>
             <button
               className={
@@ -1524,6 +1602,26 @@ const PageOverviewNew = () => {
       ) : (
         <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />
       )}
+      {activeTab === "Tab6" &&
+        <View
+          version={1}
+          columns={stateWiseData ? pageColumns : columns}
+          data={stateWisePageData}
+          isLoading={isFetching || isLoading}
+          title={"State wise Data"}
+          rowSelectable={true}
+          pagination={[100, 200, 1000]}
+          tableName={"State wise Data"}
+          addHtml={
+            <div>
+              {stateWiseData &&
+                <button className="btn cmnbtn btn_sm btn-outline-secondary m-1" onClick={() => setStateWiseData(false)}>
+                  < ArrowBackIcon />  State Wise Overview
+                </button>
+              }
+            </div>
+          }
+        />}
     </>
   );
 };

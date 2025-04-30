@@ -26,7 +26,11 @@ import { useGlobalContext } from "../../../Context/Context";
 import FieldContainer from "../../AdminPanel/FieldContainer";
 import { formatDate, formatDateAsDDMMYY } from "../../../utils/formatDate";
 import Modal from "react-modal";
-import { useGetAdvancedPaymentsByVendorQuery, useGetExeCampaignsNameWiseDataQuery, useVerifyAdvancePurchaseMutation } from "../../Store/API/Sales/ExecutionCampaignApi";
+import {
+  useGetAdvancedPaymentsByVendorQuery,
+  useGetExeCampaignsNameWiseDataQuery,
+  useVerifyAdvancePurchaseMutation,
+} from "../../Store/API/Sales/ExecutionCampaignApi";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import LinkUpload from "./LinkUpload";
 import PhaseTab from "./PhaseTab";
@@ -49,10 +53,9 @@ import Carousel from "/copy.png";
 import Reel from "/reel.png";
 import Image from "/more.png";
 import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
-import { render } from "react-dom";
 import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
-import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
+import Loader from "../../Finance/Loader/Loader.jsx";
 const key = [
   { price_key: "instagram_post" },
   {
@@ -72,6 +75,7 @@ const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [phaseList, setPhaseList] = useState([]);
+  const [advancedPaymentLoading, setAdvancedPaymentLoading] = useState(false)
   const [vendorName, setVendorName] = useState("");
   const [toggleModal, setToggleModal] = useState(false);
   const [modalData, setModalData] = useState({});
@@ -134,91 +138,7 @@ const CampaignExecution = () => {
     isLoading: isAdvancedPaymentsLoading,
     refetch: refetchAdvancedPayments,
   } = useGetAdvancedPaymentsByVendorQuery(selectedVendor);
-// console.log("advancedPayments",advancedPayments);
-  const handlePaymentSelect = async (selectedOption) => {
-    if (!selectedOption) return;
-
-    const invalidReasons = [];
-
-    const allAudited = selectedData.every((item) => item.audit_status === "audited");
-    if (!allAudited) {
-      invalidReasons.push("One or more posts are not audited.");
-    }
-
-    const allPageMatch = selectedData.every((item) => item.page_name === selectedOption.page_name);
-    if (!allPageMatch) {
-      invalidReasons.push(`All selected posts must belong to the page: ${selectedOption.page_name}`);
-    }
-
-    selectedData.forEach((item, index) => {
-      const errors = [];
-      if (item.amount === 0) errors.push("amount is 0");
-      if (!item.vendor_name) errors.push("vendor_name is missing");
-      // if (!item.campaignId) errors.push("campaignId is missing");
-      if (!item.platform_name) errors.push("platform_name is missing");
-
-      if (errors.length > 0) {
-        invalidReasons.push(`Post ${index + 1} (${item.shortCode || item.page_name}): ${errors.join(", ")}`);
-      }
-    });
-
-    // Calculate the net amount from the selected payment
-    const netAmount = selectedOption.remaining_advance_amount - selectedOption.gst_amount;
-    const totalSelectedAmount = selectedData.reduce((sum, item) => sum + (item.amount || 0), 0);
-
-    if (netAmount < totalSelectedAmount) {
-      invalidReasons.push(
-        `Insufficient balance. Required: ₹${totalSelectedAmount}, Available: ₹${netAmount}`
-      );
-    }
-
-    if (invalidReasons.length > 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Validation Failed",
-        html: `<ul style="text-align: left;">${invalidReasons.map(reason => `<li>${reason}</li>`).join("")}</ul>`,
-      });
-      return;
-    }
-
-    const shortCodes = selectedData.map(item => item.shortCode).filter(code => code);
-
-    if (shortCodes.length === 0) {
-      Swal.fire({
-        icon: "error",
-        title: "No ShortCodes Found",
-        text: "No valid shortCodes were found in the selected posts.",
-      });
-      return;
-    }
-
-    try {
-      const { data } = await verifyAdvancePurchase(shortCodes);
-      if (data.success) {
-        Swal.fire({
-          icon: "success",
-          title: "Success",
-          text: "Advance purchase verification was successful!",
-        });
-        if (actTab == 5) handleFilterLinks();
-        else await refetchPlanData();
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Verification Failed",
-          text: data?.message,
-        });
-      }
-    } catch (error) {
-      console.log("Verification failed:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Advance purchase Failed",
-        text: "Something went wrong",
-      });
-    }
-  };
-
+  // console.log("advancedPayments",advancedPayments);
 
   const {
     refetch: refetchPlanData,
@@ -254,6 +174,110 @@ const CampaignExecution = () => {
     getDataByFilter,
     { isLoading: filterLoading, isSuccess: filterSuccess },
   ] = useGetPostDetailsBasedOnFilterMutation();
+
+  const handlePaymentSelect = async (selectedOption) => {
+    if (!selectedOption) return;
+
+    const invalidReasons = [];
+
+    const allAudited = selectedData.every(
+      (item) => item.audit_status === "audited"
+    );
+    if (!allAudited) {
+      invalidReasons.push("One or more posts are not audited.");
+    }
+
+    const allPageMatch = selectedData.every(
+      (item) => item.page_name === selectedOption.page_name
+    );
+    if (!allPageMatch) {
+      invalidReasons.push(
+        `All selected posts must belong to the page: ${selectedOption.page_name}`
+      );
+    }
+
+    selectedData.forEach((item, index) => {
+      const errors = [];
+      if (item.amount === 0) errors.push("amount is 0");
+      if (!item.vendor_name) errors.push("vendor_name is missing");
+      // if (!item.campaignId) errors.push("campaignId is missing");
+      if (!item.platform_name) errors.push("platform_name is missing");
+
+      if (errors.length > 0) {
+        invalidReasons.push(
+          `Post ${index + 1} (${item.shortCode || item.page_name
+          }): ${errors.join(", ")}`
+        );
+      }
+    });
+
+    // Calculate the net amount from the selected payment
+    const netAmount =
+      selectedOption.remaining_advance_amount - selectedOption.gst_amount;
+    const totalSelectedAmount = selectedData.reduce(
+      (sum, item) => sum + (item.amount || 0),
+      0
+    );
+
+    if (netAmount < totalSelectedAmount) {
+      invalidReasons.push(
+        `Insufficient balance. Required: ₹${totalSelectedAmount}, Available: ₹${netAmount}`
+      );
+    }
+
+    if (invalidReasons.length > 0) {
+      Swal.fire({
+        icon: "error",
+        title: "Validation Failed",
+        html: `<ul style="text-align: left;">${invalidReasons
+          .map((reason) => `<li>${reason}</li>`)
+          .join("")}</ul>`,
+      });
+      return;
+    }
+
+    const shortCodes = selectedData
+      .map((item) => item.shortCode)
+      .filter((code) => code);
+
+    if (shortCodes.length === 0) {
+      Swal.fire({
+        icon: "error",
+        title: "No ShortCodes Found",
+        text: "No valid shortCodes were found in the selected posts.",
+      });
+      return;
+    }
+    setAdvancedPaymentLoading(true)
+    try {
+      const { data } = await verifyAdvancePurchase(shortCodes);
+      if (data.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Success",
+          text: "Advance purchase verification was successful!",
+        });
+        if (actTab == 5) handleFilterLinks();
+        else await refetchPlanData();
+        await refetchAdvancedPayments()
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Verification Failed",
+          text: data?.message,
+        });
+      }
+      setAdvancedPaymentLoading(false)
+    } catch (error) {
+      console.log("Verification failed:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Advance purchase Failed",
+        text: "Something went wrong",
+      });
+    }
+    setAdvancedPaymentLoading(false)
+  };
 
   async function handleFilterLinks(codes, tab) {
     setActTab(!memoValue?.current?.tab ? tab : memoValue?.current?.tab);
@@ -555,7 +579,13 @@ const CampaignExecution = () => {
       return;
     }
     try {
-      if (selectedData.some((data) => data.audit_status === "purchased" || data?.audit_status === "audited")) {
+      if (
+        selectedData.some(
+          (data) =>
+            data.audit_status === "purchased" ||
+            data?.audit_status === "audited"
+        )
+      ) {
         toastError("You have selected purchased or audited data");
         return;
       }
@@ -586,7 +616,13 @@ const CampaignExecution = () => {
       return;
     }
     try {
-      if (selectedData.some((data) => data.audit_status === "purchased" || data.audited_status === "pending")) {
+      if (
+        selectedData.some(
+          (data) =>
+            data.audit_status === "purchased" ||
+            data.audited_status === "pending"
+        )
+      ) {
         toastError("You have selected purchased or audited data");
         return;
       }
@@ -608,23 +644,19 @@ const CampaignExecution = () => {
   }
 
   async function handleSingleAuditPending(item) {
-
     try {
-
       if (!item?.campaignId) {
-        toastAlert("Please select the campaign")
-        return
+        toastAlert("Please select the campaign");
+        return;
       }
       if (item?.amount <= 0) {
-        toastAlert("Please enter the amount grater than 0")
+        toastAlert("Please enter the amount grater than 0");
         return;
       }
       if (!item?.vendor_name) {
         toastAlert("Please select the vendor");
         return;
       }
-
-
 
       const data = {
         audit_status: item?.audit_status,
@@ -635,7 +667,6 @@ const CampaignExecution = () => {
       if (res.error) throw new Error(res.error);
       if (actTab == 5) handleFilterLinks();
       else await refetchPlanData();
-      await refetchAdvancedPayments()
       toastAlert("Status Updated");
     } catch (err) {
       toastError("Error Uploading Data");
@@ -1689,7 +1720,11 @@ const CampaignExecution = () => {
       );
     return null;
   }
-
+  if (advancedPaymentLoading) {
+    return (
+      <Loader />
+    )
+  }
   return (
     <>
       <Modal
@@ -1861,7 +1896,7 @@ const CampaignExecution = () => {
               >
                 Campaign Update
               </button>
-              {/* {actTab === 4 ?
+              {actTab === 4 && selectedVendor ?
                 <Autocomplete
                   options={advancedPayments || []}
                   getOptionLabel={(option) => {
@@ -1870,11 +1905,11 @@ const CampaignExecution = () => {
                   }}
                   sx={{ width: 200, marginRight: 2 }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Select Page" variant="outlined" />
+                    <TextField {...params} label="Advance Page" variant="outlined" />
                   )}
                   onChange={(event, newValue) => handlePaymentSelect(newValue)}
                 />
-                : ""} */}
+                : ""}
               {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"

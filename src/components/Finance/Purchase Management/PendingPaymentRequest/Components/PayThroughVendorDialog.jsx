@@ -9,6 +9,7 @@ import {
   TextField,
   Autocomplete,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import axios from "axios";
@@ -32,7 +33,7 @@ const PayThroughVendorDialog = (props) => {
     setPayThroughVendor,
     rowSelectionModel,
     filterData, handlePayVendorClick, handleClosePayDialog, paymentStatus, gatewayPaymentMode, setGatewayPaymentMode, rowData, paymentAmout, userName, payRemark, TDSValue, GSTHoldAmount, gstHold, TDSDeduction,
-    TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi, selectedBankIndex, vendorBankDetail,
+    TDSPercentage, paymentDate, vendorDetail, adjustAmount, callApi, selectedBankIndex, vendorBankDetail, handleOpenPayThroughVendor,
     setSelectedBankIndex, setRefetch, refetch
   } = props;
 
@@ -267,23 +268,28 @@ const PayThroughVendorDialog = (props) => {
 
         </DialogContent>
         <DialogActions>
-          {/* <Button
-          variant="contained"
-          color="primary"
-          size="small"
-          onClick={handleOTPforPayment}
-        >
-          Pay
-        </Button> */}
-          {paymentAmout > 0 &&
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              onClick={doPayment}
-            >
-              Pay ₹{paymentAmout}
-            </Button>}
+          <Stack direction='row' justifyContent='space-between' width="100%">
+            <Typography
+              onClick={() => handleOpenPayThroughVendor('resendOtp')}
+              sx={{
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                '&:hover': {
+                  color: 'blue',
+                  textDecoration: 'underline',
+                },
+              }}
+            >Resend OTP</Typography>
+            {paymentAmout > 0 &&
+              <Button
+                variant="contained"
+                color="primary"
+                size="small"
+                onClick={doPayment}
+              >
+                Pay ₹{paymentAmout}
+              </Button>}
+          </Stack>
         </DialogActions>
       </> :
         <CircularProgress sx={{ m: 4, p: 1 }} />}

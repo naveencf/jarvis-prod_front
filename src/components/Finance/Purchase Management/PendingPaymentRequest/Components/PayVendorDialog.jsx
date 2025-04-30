@@ -88,7 +88,8 @@ function PayVendorDialog(props) {
   // const { data: vendorInvoices, isLoading: requestLoading, } = useGetVendorFinancialDetail(vendorDetail?.vendor_obj_id);
   // console.log(vendorInvoices, "vendorInvoices")
   const { data: vendorDocuments, isLoading: isVendorDocumentsLoading } =
-    useGetVendorDocumentByVendorDetailQuery(vendorDetail?.vendor_obj_id);
+    useGetVendorDocumentByVendorDetailQuery(vendorDetail?._id);
+  // console.log(vendorDetail)
   useEffect(() => {
     if (vendorDocuments && vendorDocuments.length > 0) {
       const hasGST = vendorDocuments.find(
@@ -99,7 +100,7 @@ function PayVendorDialog(props) {
         (doc) => doc.document_name === "Pan Card" && doc.document_no !== ""
       );
 
-      let tdsPercentage = 20; // Default TDS if no documents available
+      let tdsPercentage = 2; // Default TDS if no documents available
 
       if (hasGST) {
         const seventhChar = hasGST.document_no.charAt(6).toUpperCase(); // Get 7th character of GST
@@ -157,7 +158,7 @@ function PayVendorDialog(props) {
       if (res.status == 200) {
         // console.log(res.data.data)
         setVendorDetail(res.data.data)
-        findPhpOutstanding(res.data.data)
+        // findPhpOutstanding(res.data.data)
       }
     });
 
@@ -347,7 +348,7 @@ function PayVendorDialog(props) {
     }
   };
 
-  const handleOpenPayThroughVendor = () => {
+  const handleOpenPayThroughVendor = (resendOtp) => {
     if (paymentAmout > 700000) {
       toastAlert("You are allow to pay below 7,00,000")
       return;
@@ -368,29 +369,34 @@ function PayVendorDialog(props) {
     if (!userEmail || userEmail == "") {
       mailTo = "naveen@creativefuel.io";
     }
-    setPaymentIntiated(true);
-    try {
+    if (resendOtp == "resendOtp") {
 
-      axios
-        .post(insightsBaseUrl + `v1/payment_otp_send`, {
-          "email": mailTo,
-          "amount": paymentAmout
-          // headers: {
-          //   "Content-Type": "multipart/form-data",
-          // },
-        }).then((res) => {
-          // console.log(res)
-          if (res.status == 200) {
-            toastAlert("OTP sent to registered Id successfully")
-            setPayThroughVendor(true);
-          } else {
-            toastAlert("You are not authorizied make this payment")
-          }
-          setPaymentIntiated(false);
-        })
-    } catch (error) {
-      toastAlert("There some issue")
-      setPaymentIntiated(false);
+      setPaymentIntiated(true);
+      try {
+
+        axios
+          .post(insightsBaseUrl + `v1/payment_otp_send`, {
+            "email": mailTo,
+            "amount": paymentAmout
+            // headers: {
+            //   "Content-Type": "multipart/form-data",
+            // },
+          }).then((res) => {
+            // console.log(res)
+            if (res.status == 200) {
+              toastAlert("OTP sent to registered Id successfully")
+              setPayThroughVendor(true);
+            } else {
+              toastAlert("You are not authorizied make this payment")
+            }
+            setPaymentIntiated(false);
+          })
+      } catch (error) {
+        toastAlert("There some issue")
+        setPaymentIntiated(false);
+      }
+    } else {
+      setPayThroughVendor(true);
     }
 
   };
@@ -773,7 +779,7 @@ function PayVendorDialog(props) {
                   variant="contained"
                   color="primary"
                   size="small"
-                  onClick={handleOpenPayThroughVendor}
+                  onClick={() => handleOpenPayThroughVendor('sameOtp')}
                   disabled={!paymentAmout > 0 || paymentIntiated}
                 >
                   Pay Through Gateway
@@ -789,6 +795,7 @@ function PayVendorDialog(props) {
         rowSelectionModel={rowSelectionModel}
         filterData={filterData}
         paymentStatus={paymentStatus}
+        handleOpenPayThroughVendor={handleOpenPayThroughVendor}
         handlePayVendorClick={handlePayVendorClick}
         handleClosePayDialog={handleClosePayDialog}
         gatewayPaymentMode={gatewayPaymentMode}
