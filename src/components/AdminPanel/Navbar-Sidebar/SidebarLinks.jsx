@@ -79,7 +79,7 @@ const SidebarLinks = () => {
   //     });
   // }, []);
 
-  const isUserManagementVisible = [0, 1, 2, 6, 16, 23].some(
+  const isUserManagementVisible = [0, 1, 2, 6, 16, 21, 23].some(
     (index) => contextData[index]?.view_value === 1
   );
   const isWFHVisible = [17, 19].some(

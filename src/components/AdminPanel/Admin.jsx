@@ -43,11 +43,14 @@ import BonusMastOverview from "./Sales/ Bonus/BonusMast/BonusMastOverview";
 import SalesBonusSummary from "./Sales/ Bonus/SalesBonusSummary";
 import BonusSlabMastAddEdit from "./Sales/ Bonus/BonusSlabMast/BonusSlabMastAddEdit";
 import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview";
+import RecordServiceDistribution from "./Sales/SaleBooking/RecordServiceDistribution.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
 );
-const PendingAuditOutstandingTotal = lazy(() => import("../Purchase/PurchaseVendor/PendingAuditOutstandingTotal"))
+const PendingAuditOutstandingTotal = lazy(() =>
+  import("../Purchase/PurchaseVendor/PendingAuditOutstandingTotal")
+);
 const PurchaseDashboard = lazy(() => import("../Purchase/Dashboard"));
 
 const PurchaseReport = lazy(() =>
@@ -935,8 +938,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -2264,6 +2267,10 @@ const Admin = () => {
                     <Route
                       path="/incentive-statement"
                       element={<IncentiveStatements />}
+                    />
+                    <Route
+                      path="/sales-service-distribution"
+                      element={<RecordServiceDistribution />}
                     />
 
                     {/* Sales Pratyush end */}

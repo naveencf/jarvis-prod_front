@@ -139,11 +139,13 @@ export default function OrderDialogforHouseKeeping({
                           <h2>{order?.user_name}</h2>
                           <ul>
                             <li>
-                              <span>Room : </span>
+                              {/* <span>Room : </span> */}
+                              <span>Room (रूम): </span>
                               {order?.room_id}
                             </li>
                             <li>
-                              <span>Seat : </span>
+                              {/* <span>Seat : </span> */}
+                              <span>Seat (सीट) : </span>
                               {order?.seat_id}
                             </li>
                           </ul>
@@ -201,7 +203,7 @@ export default function OrderDialogforHouseKeeping({
                 className="btn cmnbtn btn-success ml-auto mr-auto"
                 data-dismiss="modal"
               >
-                Accept Order
+                Accept Order(एक्सेप्ट ऑर्डर)
               </button>
               {/* <Button onClick={handleClose}>Disagree</Button>
                         <Button onClick={handleClose}>Agree</Button> */}

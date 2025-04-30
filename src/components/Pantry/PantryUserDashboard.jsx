@@ -14,6 +14,7 @@ import formatString from "../../utils/formatString";
 import { Button, ButtonGroup, Dialog } from "@mui/material";
 import { useMemo } from "react";
 import OrderDialog from "./OrderDialog";
+import { formatUTCDate } from "../../utils/formatUTCDate";
 function PantryUserDashboard() {
 
     const location = useLocation();
@@ -241,23 +242,14 @@ function PantryUserDashboard() {
                                 <span>Emp ID : </span>
                                 {userID}
                             </h4>
-                            {/* <button onClick={() => setOrderConfirmationDialog(!orderConfirmationDialog)}>test</button> */}
                         </div>
                     </div>
+                    {/* <button onClick={() => setOrderConfirmationDialog(!orderConfirmationDialog)}>test</button> */}
 
                     <div className="hkAction">
                         <div className="statusToggle">
-                            {/* <button
-                                type="button"
-                                className={`btn btn-lg btn-toggle ${houseKeepingOnlineStatus ? "active" : ""
-                                    }`}
-                                data-toggle="button"
-                                aria-pressed={houseKeepingOnlineStatus}
-                                autoComplete="off"
-                                onClick={() => handleOnlineStatus()}
-                            >
-                                <div className="switch"></div>
-                            </button> */}
+
+
                             <button
                                 type="button"
                                 className={`btn btn-lg btn-toggle ${houseKeepingOnlineStatus ? "active" : ""
@@ -279,13 +271,13 @@ function PantryUserDashboard() {
                                 onClick={() => setOrderStatus(1)}
                                 className={orderStatus === 1 ? "active-tab" : ""}
                             >
-                                Pending
+                                Pending (लंबित)
                             </Button>
                             <Button
                                 onClick={() => setOrderStatus(3)}
                                 className={orderStatus === 3 ? "active-tab" : ""}
                             >
-                                Close
+                                Close (बंद)
                             </Button>
                         </ButtonGroup>
                     </div>
@@ -302,23 +294,24 @@ function PantryUserDashboard() {
                                             />
                                         </div>
                                         <div className="orderUserName">
-                                            <h2>{orderDetail?.user_name} <span className={`badge ${orderDetail.order_status == 3 ? "badge-success" : "badge-danger"}`}>{orderDetail.order_status == 3 ? "Delivered" : "Cancel"}</span></h2>
+                                            <h2>{orderDetail?.user_name} <span className={`badge ${orderDetail.order_status == 3 ? "badge-success" : "badge-danger"}`}>{orderDetail.order_status == 3 ? "Delivered (डिलीवर्ड)" : orderDetail.order_status == 4 ? "Cancel (कैंसिल)" : ""}</span></h2>
                                             <ul>
                                                 <li>
-                                                    <span>Room : </span>
+                                                    <span>Room (रूम): </span>
                                                     {orderDetail?.room_id}
                                                 </li>
                                                 <li>
-                                                    <span>Seat : </span>
+                                                    <span>Seat (सीट) : </span>
                                                     {orderDetail?.seat_id}
                                                 </li>
                                             </ul>
-                                            <h6>{(orderDetail.updatedAt)}</h6>
+                                            <h6>{formatUTCDate(orderDetail.updatedAt)}</h6>
                                         </div>
                                     </div>
                                     <div className="orderId">
                                         <h4>
                                             <span>Order ID </span>
+                                            <span>ऑर्डर आईडी</span>
                                             {orderDetail?.order_id}
                                         </h4>
                                     </div>
@@ -345,7 +338,7 @@ function PantryUserDashboard() {
                                                 handleOrderDeliveredCancelled(orderDetail, 3)
                                             }
                                         >
-                                            Delivered
+                                            Delivered डिलीवर्ड
                                         </button>
                                     )}
                                     {orderDetail?.order_status === 1 && (
@@ -356,7 +349,7 @@ function PantryUserDashboard() {
                                                 handleOrderDeliveredCancelled(orderDetail, 4)
                                             }
                                         >
-                                            Cancel
+                                            Cancel कैंसिल
                                         </button>
                                     )}
                                 </div>

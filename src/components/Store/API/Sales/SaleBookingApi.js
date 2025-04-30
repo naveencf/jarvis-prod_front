@@ -30,6 +30,42 @@ const SaleBookingApi = createApi({
       keepUnusedDataFor: 0,
     }),
 
+    getDistribution: builder.query({
+      query: (args = {}) => {
+        const {
+          sales_service_master_id,
+          sale_executive_id,
+          startDate,
+          endDate,
+        } = args;
+
+        const params = new URLSearchParams();
+
+        if (sales_service_master_id) {
+          params.append("sales_service_master_id", sales_service_master_id);
+        }
+
+        if (sale_executive_id) {
+          params.append("sale_executive_id", sale_executive_id);
+        }
+
+        if (startDate) {
+          params.append("startDate", startDate);
+        }
+
+        if (endDate) {
+          params.append("endDate", endDate);
+        }
+
+        const queryString = params.toString();
+        return `sales/record_service_wise_distribution${
+          queryString ? `?${queryString}` : ""
+        }`;
+      },
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
+
     getAllDeletedSaleBooking: builder.query({
       query: (id) =>
         `sales/deleted_sale_booking_list${id ? `?userId=${id}` : ""}`,
@@ -177,6 +213,7 @@ export const {
   useGetmonthwiseSaleBookingQuery,
   useLazyGetmonthwiseSaleBookingQuery,
   useEditBookingIncentiveUpdateMutation,
+  useGetDistributionQuery,
 } = SaleBookingApi;
 
 export default SaleBookingApi;

@@ -112,7 +112,7 @@ export const PageBaseURL = createApi({
         // Append limit & page only if they are provided (not undefined or null)
         if (limit !== undefined) queryParams += `&limit=${limit}`;
         if (page !== undefined) queryParams += `&page=${page}`;
-        if(search !== undefined) queryParams+=`&search${search}`
+        if (search !== undefined) queryParams += `&search${search}`;
 
         return isAdmin
           ? {
@@ -141,43 +141,44 @@ export const PageBaseURL = createApi({
         let queryParams = [];
 
         if (pagequery) queryParams.push(pagequery);
-        
+
         if (limit !== undefined) queryParams.push(`limit=${limit}`);
         if (page !== undefined) queryParams.push(`page=${page}`);
-        if (search !== undefined) queryParams.push(`page_name=${encodeURIComponent(search)}`);
-        
-        const queryString = queryParams.length > 0 ? `${queryParams.join('&')}` : '';
+        if (search !== undefined)
+          queryParams.push(`page_name=${encodeURIComponent(search)}`);
+
+        const queryString =
+          queryParams.length > 0 ? `${queryParams.join("&")}` : "";
         return isAdmin
           ? {
-            url: `v1/get_all_pages?${queryString}`, // Admin: GET request
-            method: "GET",
-          }
+              url: `v1/get_all_pages?${queryString}`, // Admin: GET request
+              method: "GET",
+            }
           : {
-            url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
-            method: "GET",
-            // body: { user_id: userID },
-          };
+              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+              method: "GET",
+              // body: { user_id: userID },
+            };
       },
       transformResponse: (response, meta, { decodedToken }) => {
         const isAdmin = decodedToken?.role_id === 1;
-      
+
         const pageData = isAdmin
           ? response.data.pageData || [] // Admin response structure
-          : response.data || [];         // User response structure
-      
+          : response.data || []; // User response structure
+
         const sortedPages = pageData.sort(
           (a, b) => b.followers_count - a.followers_count
         );
-      
+
         const pagesData = {
           pages: sortedPages,
           pagination: isAdmin ? response.data?.pagination : null,
         };
-      
+
         return pagesData;
       },
       keepUnusedDataFor: 300,
-      
     }),
     getPageById: builder.query({
       query: (id) => `v1/pageMaster/${id}`,
@@ -392,6 +393,14 @@ export const PageBaseURL = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+    getPageCountWithState: builder.mutation({
+      query: (body) => ({
+        url: "v1/get_page_count_with_state",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response) => response.data,
+    }),
 
     // getVendorDataWithStateCity: builder.query({
     //   //   query: (city) =>
@@ -457,4 +466,5 @@ export const {
   useGetAllCountWisePageQuery,
   useGetStateandCityVendoDataCountQuery,
   useGetVendorDataWithStateCityQuery,
+  useGetPageCountWithStateMutation,
 } = PageBaseURL;
