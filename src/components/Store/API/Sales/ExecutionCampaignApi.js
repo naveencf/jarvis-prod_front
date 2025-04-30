@@ -88,18 +88,40 @@ const ExecutionCampaignApi = createApi({
         if (userId) params.append("userId", userId);
         if (search) params.append("exe_campaign_name", search);
         if (page !== undefined && page !== null) params.append("page", page);
-        if (limit !== undefined && limit !== null) params.append("limit", limit);
+        if (limit !== undefined && limit !== null)
+          params.append("limit", limit);
 
         const queryString = params.toString();
-        return `new_exe_campaign_name_wise${queryString ? `?${queryString}` : ""}`;
+        return `new_exe_campaign_name_wise${
+          queryString ? `?${queryString}` : ""
+        }`;
       },
       transformResponse: (response) => response.data,
     }),
 
-
     getAllExeCampaignList: builder.query({
       query: (id) => `exe_campaign_wise_list/${id}`,
       transformResponse: (response) => response.data,
+    }),
+
+    getAdvancedPaymentsByVendor: builder.query({
+      query: (vendorObjId) => {
+        const params = new URLSearchParams({
+          advanced_payment_status: "active",
+          vendor_obj_id: vendorObjId,
+        });
+
+        return `purchase/advanced_payment?${params.toString()}`;
+      },
+      transformResponse: (response) => response.data,
+    }),
+
+    verifyAdvancePurchase: builder.mutation({
+      query: (shortCodes) => ({
+        url: "v1/operation/advance_purchase",
+        method: "POST",
+        body: { shortCodes },
+      }),
     }),
   }),
 });
@@ -113,6 +135,8 @@ export const {
   useGetExeCampaignsNameWiseDataQuery,
   useGetNewExeCampaignsNameWiseDataQuery,
   useGetAllExeCampaignListQuery,
+  useGetAdvancedPaymentsByVendorQuery,
+  useVerifyAdvancePurchaseMutation,
 } = ExecutionCampaignApi;
 
 export default ExecutionCampaignApi;

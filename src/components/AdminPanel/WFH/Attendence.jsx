@@ -39,7 +39,6 @@ const Attendence = () => {
 
   const [rowUpdateError, setRowUpdateError] = useState(null);
 
-  console.log(filterData, 'ddddddd')
 
   let isInEditMode = false;
 
@@ -309,14 +308,12 @@ const Attendence = () => {
   };
 
   const processRowUpdate = (newRow) => {
-    console.log(newRow, 'hello hello')
     if (newRow.noOfabsent < 0 || newRow.noOfabsent > newRow.present_days) {
       toastError("Absent days cannot be greater present days.");
       return null;
     } else {
       const updatedRow = { ...newRow, isNew: false };
       // console.log(updatedRow, "update row");
-      console.log(updatedRow.attendence_id, 'okkkkkkkkk')
       axios
         .post(baseUrl + "add_attendance", {
           attendence_id: updatedRow.attendence_id,
@@ -408,11 +405,13 @@ const Attendence = () => {
       headerName: "Joining Date",
       width: 150,
       type: "text",
-      renderCell: (params) => {
-        const oldDate = params.row.joining_date.split("T");
-        const arr = oldDate[0].toString().split("-");
-        const newDate = arr[2] + "-" + arr[1] + "-" + arr[0];
-        return <div>{newDate}</div>;
+      renderCell: (params) => { 
+        const isoDate = params?.row?.joining_date;
+        if (!isoDate) return "N/A"; 
+        const datePart = isoDate.split("T")[0]; 
+        const [year, month, day] = datePart.split("-");
+        if (!year || !month || !day) return "Invalid Date";
+        return `${day}-${month}-${year}`;
       },
     },
     {

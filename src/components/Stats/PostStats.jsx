@@ -160,16 +160,18 @@ function PostStats() {
 
             const extractedData = res.data.data.map((item, index) => {
               let views = item?.play_count || 0; // Default views to 0 if not available
-              let randomValue1 = getRandomMultiplier(19, 23);
-              let randomValue2 = getRandomMultiplier(23, 29);
+              let randomValue1 = getRandomMultiplier(18, 26); // reach = likes*(18,26)
+              let randomValue2 = getRandomMultiplier(29, 32);// views = likes*(29,32)
+              let randomValue3 = getRandomMultiplier(70, 80);// views = likes*(29,32)
 
+              let reach = views * (randomValue3 / 100);
               if (views == 0 && item?.like_count > 0) {
                 views = item.like_count * randomValue2;
+                reach = item.like_count * randomValue1;
               }
 
-              // views = Math.max(views, 1);
 
-              let reach = views + (views / 100) * randomValue1;
+
               // reach = Math.max(reach, 1); // Ensure reach is never 0
 
               let impression = reach + (reach / 100) * randomValue1;
@@ -186,8 +188,8 @@ function PostStats() {
                 Views: Math.round(views), // Updated views
                 comments: item?.comment_count || 0,
                 reach: Math.round(reach), // Updated reach
-                impression: Math.round(impression), // Corrected impression calculation
                 Time: addTimeToPostedOn(item?.postedOn),
+                // impression: Math.round(impression), // Corrected impression calculation
               };
             });
 
