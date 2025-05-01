@@ -104,16 +104,22 @@ const PreviewModal = ({
                 "Home City": previewData.home_city,
                 "Home State": previewData.home_state,
                 "Home Pincode": previewData.home_pincode,
-                "Vendor Category": previewData.vendor_category,
+                "Vendor Category":
+                  typeof previewData?.vendor_category === "object"
+                    ? previewData?.vendor_category?.name
+                    : previewData?.vendor_category,
               }).map(([key, value]) => (
                 <TableRow key={key}>
                   <TableCell>{key}</TableCell>
-                  <TableCell>{value || "N/A"}</TableCell>
+                  <TableCell>
+                    {typeof value === "object" ? JSON.stringify(value) : value || "N/A"}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
+
 
         {/* Bank Details Section */}
         <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1 }}>
@@ -132,7 +138,7 @@ const PreviewModal = ({
 
                 {/* Payment method-specific details */}
                 <Grid container spacing={2}>
-                  {row.payment_method === "666856874366007df1dfacde" && (
+                  {row?.payment_method === "666856874366007df1dfacde" && (
                     <>
                       <Grid item xs={6}>
                         <Typography>
@@ -142,13 +148,13 @@ const PreviewModal = ({
                       <Grid item xs={6}>
                         <Typography>
                           <strong>Account Type:</strong>{" "}
-                          {row.account_type || "N/A"}
+                          {row?.account_type || "N/A"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
                         <Typography>
                           <strong>Account Number:</strong>{" "}
-                          {row.account_number || "N/A"}
+                          {row?.account_number || "N/A"}
                         </Typography>
                       </Grid>
                       <Grid item xs={6}>
@@ -180,13 +186,13 @@ const PreviewModal = ({
 
                   {(row.payment_method === "66681c3c4366007df1df1481" ||
                     row.payment_method === "666856624366007df1dfacc8") && (
-                    <Grid item xs={12}>
-                      <Typography>
-                        <strong>Registered Mobile Number:</strong>{" "}
-                        {row.registered_number || "N/A"}
-                      </Typography>
-                    </Grid>
-                  )}
+                      <Grid item xs={12}>
+                        <Typography>
+                          <strong>Registered Mobile Number:</strong>{" "}
+                          {row.registered_number || "N/A"}
+                        </Typography>
+                      </Grid>
+                    )}
                 </Grid>
               </CardContent>
             </Card>

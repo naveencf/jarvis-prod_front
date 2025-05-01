@@ -4,6 +4,7 @@ import View from "../../AdminPanel/Sales/Account/View/View";
 import CustomSelect from '../../ReusableComponents/CustomSelect';
 import formatString from '../../../utils/formatString';
 import ShimmerLoader from '../../../utils/ShimmerLoader';
+import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 
 
 const VendorInfo = ({ vendorDetail, ledgerData, selectedVendor, handleVendorChange, vendorList, setVendorSearchQuery }) => {
@@ -69,14 +70,14 @@ const VendorInfo = ({ vendorDetail, ledgerData, selectedVendor, handleVendorChan
 const StatsBox = ({ title, amount }) => (
     <div className="statsBox">
         <h4>{title}</h4>
-        <h2>₹ {amount?.toLocaleString()}</h2>
+        <h2>₹ {formatIndianNumber(amount)}</h2>
     </div>
 );
 
 const CardBox = ({ title, amount, bgColor }) => (
     <div className={`card p16 shadow-none border-0 m0 ${bgColor}`}>
         <h6 className="colorMedium">{title}</h6>
-        <h6 className="mt8 fs_16">₹ {amount?.toLocaleString()}</h6>
+        <h6 className="mt8 fs_16">₹ {formatIndianNumber(amount)}</h6>
     </div>
 );
 
@@ -165,31 +166,31 @@ const VendorStatementComponent = ({
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
                             <h6 className="colorMedium">Audit Pending</h6>
-                            <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount?.toLocaleString()}</h6>
+                            <h6 className="mt8 fs_16">₹ {formatIndianNumber(vendorData?.totalAmount)}</h6>
                         </div>
                     </div>
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
                             <h6 className="colorMedium">Outstanding:</h6>
-                            <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}</h6>
+                            <h6 className="mt8 fs_16">₹ {formatIndianNumber(vendorDetail?.vendor_outstandings)}</h6>
                         </div>
                     </div>
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
                             <h6 className="colorMedium">Php Outstanding:</h6>
-                            <h6 className="mt8 fs_16">₹ {Number(vendorPhpDetail[0]?.outstanding)?.toLocaleString()}</h6>
+                            <h6 className="mt8 fs_16">₹ {Number(formatIndianNumber(vendorPhpDetail[0]?.outstanding))}</h6>
                         </div>
                     </div>
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0 bgInfoLight">
                             <h6 className="colorMedium">Total Remaining Advance</h6>
-                            <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}</h6>
+                            <h6 className="mt8 fs_16">₹ {formatIndianNumber(vendorDetail?.vendor_total_remaining_advance_amount)}</h6>
                         </div>
                     </div>
                     <div className="col">
                         <div className="card p16 shadow-none border-0 m0 bgDangerLight">
                             <h6 className="colorMedium">Actual Outstanding</h6>
-                            <h6 className="mt8 fs_16">₹{actualOutstanding?.toLocaleString()}</h6>
+                            <h6 className="mt8 fs_16">₹{formatIndianNumber(actualOutstanding)}</h6>
                         </div>
                     </div>
                 </div>

@@ -13,7 +13,6 @@ const IndianStatesMui = ({ selectedState, onChange }) => {
   };
 
   const handleInputChange = (event, newInputValue) => {
-    console.log(newInputValue, "newInputValue")
     setInputValue(newInputValue);
   };
 

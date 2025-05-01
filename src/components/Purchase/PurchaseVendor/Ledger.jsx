@@ -13,6 +13,8 @@ import { phpBaseUrl } from "../../../utils/config";
 import VendorStatementComponent from "./VendorStatementComponent";
 import { AdvancedPaymentComponent } from "./AdvancedPaymentComponent";
 import Loader from "../../Finance/Loader/Loader";
+import { formatIndianNumber } from "../../../utils/formatIndianNumber";
+import { formatNumber } from "../../../utils/formatNumber";
 
 const Ledger = () => {
   const { id } = useParams();
@@ -166,9 +168,9 @@ const Ledger = () => {
       width: 20,
     },
     {
-      key: "transaction_date",
+      key: "Trans_date",
       name: "Transaction Date",
-      renderRowCell: (row) => formatDate(row?.Trans_date),
+      // renderRowCell: (row) => row?.Trans_date.replace(/T.*Z/, "")?.trim(),
       width: 120,
     },
     {
@@ -383,13 +385,13 @@ const Ledger = () => {
             <div className="col">
               <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
                 <h6 className="colorMedium">Php Outstanding:</h6>
-                <h6 className="mt8 fs_16">₹ {Number(vendorPhpDetail[0]?.outstanding)?.toLocaleString()}</h6>
+                <h6 className="mt8 fs_16">₹ {formatNumber(Number(vendorPhpDetail[0]?.outstanding))}</h6>
               </div>
             </div>
             <div className="col">
               <div className="card p16 shadow-none border-0 m0 bgInfoLight">
                 <h6 className="colorMedium">Total Remaining Advance</h6>
-                <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_total_remaining_advance_amount?.toLocaleString()}</h6>
+                <h6 className="mt8 fs_16">₹ {formatIndianNumber(vendorDetail?.vendor_total_remaining_advance_amount)}</h6>
               </div>
             </div>
             <div className="col">
