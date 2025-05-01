@@ -117,6 +117,7 @@ const AdminPreOnboarding = () => {
 
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
+  console.log(city, "city");
   const [currentState, setcurrentState] = useState("");
   const [pincode, setPincode] = useState("");
 
@@ -195,6 +196,33 @@ const AdminPreOnboarding = () => {
 
     return correctedUserName.replace(/\s+/g, " ").trim();
   }
+
+  const handlepincode = async (event) => {
+    const newValue = event.target.value;
+    // setPincode(newValue);
+    setPincode(newValue);
+    if (newValue.length === 6) {
+      try {
+        const response = await axios.get(
+          `https://api.postalpincode.in/pincode/${newValue}`
+        );
+        const data = response.data;
+
+        if (data[0].Status === "Success") {
+          const postOffice = data[0].PostOffice[0];
+          const abbreviatedState =
+            stateAbbreviations[postOffice.State] || postOffice.State;
+          console.log(postOffice, "------abbreviatedState");
+          setcurrentState(abbreviatedState);
+          setCity(postOffice.District);
+        } else {
+          // console.log("Invalid Pincode");
+        }
+      } catch (error) {
+        // console.log("Error fetching details.");
+      }
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -490,31 +518,6 @@ const AdminPreOnboarding = () => {
     }
   }
 
-  //personal Contact validation
-
-  // function handlePersonalContactChange(event) {
-  //   if (event.target.value.length <= 10) {
-  //     const newContact1 = event.target.value;
-  //     setPersonalContact(newContact1);
-
-  //     if (
-  //       newContact1 === "" ||
-  //       (newContact1.length === 1 && parseInt(newContact1) < 6)
-  //     ) {
-  //       setPersonalContact("");
-  //     } else {
-  //       setPersonalContact(newContact1);
-  //     }
-
-  //     if (newContact1 === "") {
-  //       setValidContact1(false);
-  //     } else {
-  //       setValidContact1(
-  //         /^(\+91[ \-\s]?)?[0]?(91)?[6789]\d{9}$/.test(newContact1)
-  //       );
-  //     }
-  //   }
-  // }
   function handlePersonalContactChange(event) {
     const newContact1 = event.target.value;
 
@@ -1489,23 +1492,24 @@ const AdminPreOnboarding = () => {
             fieldGrid={12}
             maxLength={6}
             value={pincode}
-            onChange={(e) => {
-              const value = e.target.value;
-              if (/^\d{0,6}$/.test(value)) {
-                setPincode(value);
-              }
-              if (e.target.value === "") {
-                setIsRequired((prev) => ({
-                  ...prev,
-                  pincode: true,
-                }));
-              } else {
-                setIsRequired((prev) => ({
-                  ...prev,
-                  pincode: false,
-                }));
-              }
-            }}
+            onChange={handlepincode}
+            // onChange={(e) => {
+            //   const value = e.target.value;
+            //   if (/^\d{0,6}$/.test(value)) {
+            //     setPincode(value);
+            //   }
+            //   if (e.target.value === "") {
+            //     setIsRequired((prev) => ({
+            //       ...prev,
+            //       pincode: true,
+            //     }));
+            //   } else {
+            //     setIsRequired((prev) => ({
+            //       ...prev,
+            //       pincode: false,
+            //     }));
+            //   }
+            // }}
           />
           {isRequired.pincode && (
             <p className="form-error">Please Enter Pincode</p>
