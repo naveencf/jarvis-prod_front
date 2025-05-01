@@ -60,11 +60,11 @@ const Login = () => {
   }, []);
 
   // 🔹 Login API call
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    axios
+    await axios
       .post(baseUrl + "login_user", {
         user_login_id: email,
         user_login_password: password,
@@ -72,33 +72,43 @@ const Login = () => {
         current_location: location.address, // ✅ Sending Address in Payload
       })
       .then((res) => {
-        if (!res.data.token) {
-          navigate("/login");
-        } else {
-          const token = res.data.token;
-          const decodedToken = jwtDecode(token);
-          const status = decodedToken.user_status;
-          const deptId = decodedToken.dept_id;
-          const onboardStatus = decodedToken.onboard_status;
+        const token = res.data?.token;
 
-          if (status === "Active") {
-            if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
-              navigate("/admin/sales-dashboard");
-            } else if (deptId === 20) {
-              navigate("/admin/pantry");
-            } else {
-              navigate("/");
-            }
-            sessionStorage.setItem("token", token);
-            setTimeout(() => {
-              sessionStorage.removeItem("token");
-              navigate("/login");
-            }, 1000 * 60 * 60 * 10); // 10 hours
-          } else {
-            navigate("/login");
-          }
+        if (!token) {
+          setIsError("Invalid credentials or token missing");
+          return;
         }
+
+        const decodedToken = jwtDecode(token);
+        const {
+          user_status: status,
+          dept_id: deptId,
+          onboard_status: onboardStatus,
+        } = decodedToken;
+
+        if (status !== "Active") {
+          setIsError("Account is inactive");
+          return navigate("/login");
+        }
+
+        // Store token and navigate based on dept and onboardStatus
+        sessionStorage.setItem("token", token);
+
+        if (deptId === 36 && (onboardStatus === 0 || onboardStatus === 1)) {
+          navigate("/admin/sales-dashboard");
+        } else if (deptId === 20) {
+          navigate("/admin/pantry");
+        } else {
+          navigate("/");
+        }
+
+        // Auto logout after 10 hours
+        setTimeout(() => {
+          sessionStorage.removeItem("token");
+          navigate("/login");
+        }, 1000 * 60 * 60 * 10);
       })
+
       .catch((error) => {
         setIsError(error?.response?.data?.error || "Login failed");
       })
@@ -134,7 +144,7 @@ const Login = () => {
                 </div>
 
                 {/* Password input */}
-                <div class="form-group input-group password-input-container">
+                <div className="form-group input-group password-input-container">
                   <input
                     className="form-control"
                     name="password"

@@ -19,6 +19,7 @@ import { useGlobalContext } from "../../../../../Context/Context";
 import { TextFields } from "@mui/icons-material";
 import { useState } from "react";
 import jwtDecode from "jwt-decode";
+import { useEffect } from "react";
 
 const PayThroughVendorDialog = (props) => {
   const token = sessionStorage.getItem("token");
@@ -28,6 +29,8 @@ const PayThroughVendorDialog = (props) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [paymentInitiated, setPaymentInitiated] = useState(false);
   const [otptoVerify, setOtptoVerify] = useState(0);
+  const [disablePayment, setDisablePayment] = useState(false);
+  const [cooldown, setCooldown] = useState(0);
   const {
     payThroughVendor,
     setPayThroughVendor,
@@ -78,9 +81,9 @@ const PayThroughVendorDialog = (props) => {
       const getTokenResponse = await axios.get(
         insightsBaseUrl + `v1/payment_gateway_access_token`
       );
-      const token = getTokenResponse?.data?.data;
+      const gatewayToken = getTokenResponse?.data?.data;
 
-      if (!token) {
+      if (!gatewayToken) {
         toastError("Payment gateway server down.Please ask IT team for more details");
         return;
       }
@@ -147,12 +150,14 @@ const PayThroughVendorDialog = (props) => {
         // return
         setPaymentInitiated(true);
         const payResponse = await axios.post(
-          insightsBaseUrl + `v1/create_payout`,
+          // insightsBaseUrl + `v1/create_payout`,
+          baseUrl + `v1/create_payout_insights`,
           paymentPayload,
           {
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
+              "x-client-token": gatewayToken,
             },
           }
         );
@@ -197,6 +202,33 @@ const PayThroughVendorDialog = (props) => {
 
     setOtptoVerify(e.target.value)
   }
+  const handleOpenPayThroughVendorinParent = (type) => {
+
+    handleOpenPayThroughVendor('resendOtp')
+    // your resend OTP logic here
+    // setDisablePayment(true);
+    setCooldown(60); // 60 seconds cooldown
+
+  };
+
+  // Countdown effect
+  useEffect(() => {
+    let timer;
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [cooldown]);
+  const isDisabled = cooldown > 0;
+  console.log(isDisabled, "isDisabled")
   // console.log(typeof (paymentAmout), "paymentAmout", paymentAmout, "paymentAmout")
   return (
     <Dialog
@@ -227,25 +259,6 @@ const PayThroughVendorDialog = (props) => {
         </IconButton>
         <DialogContent dividers sx={{ maxHeight: "80vh", overflowY: "auto" }}>
 
-
-
-          {/* Uncomment and ensure activeAccordionIndex, filterData, and columns are passed as props if needed */}
-          {/* <DataGrid
-          rows={
-            activeAccordionIndex === 0
-              ? filterData
-              : activeAccordionIndex === 1
-              ? filterData
-              : []
-          }
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          disableSelectionOnClick
-          autoHeight
-          components={{ Toolbar: GridToolbar }}
-          getRowId={(row) => filterData?.indexOf(row)}
-        /> */}
           <Autocomplete
             onChange={(e, value) => setGatewayPaymentMode(value)}
             // className="col mt-1"
@@ -269,8 +282,8 @@ const PayThroughVendorDialog = (props) => {
         </DialogContent>
         <DialogActions>
           <Stack direction='row' justifyContent='space-between' width="100%">
-            <Typography
-              onClick={() => handleOpenPayThroughVendor('resendOtp')}
+            {/* <Typography
+              onClick={handleOpenPayThroughVendorinParent}
               sx={{
                 fontSize: '0.9rem',
                 cursor: 'pointer',
@@ -279,7 +292,21 @@ const PayThroughVendorDialog = (props) => {
                   textDecoration: 'underline',
                 },
               }}
-            >Resend OTP</Typography>
+            >Resend OTP</Typography> */}
+            <Typography
+              onClick={!isDisabled ? handleOpenPayThroughVendorinParent : null}
+              sx={{
+                fontSize: '0.9rem',
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+                color: isDisabled ? 'gray' : 'inherit',
+                '&:hover': {
+                  color: isDisabled ? 'gray' : 'blue',
+                  textDecoration: isDisabled ? 'none' : 'underline',
+                },
+              }}
+            >
+              {isDisabled ? `Resend OTP (${cooldown}s)` : 'Resend OTP'}
+            </Typography>
             {paymentAmout > 0 &&
               <Button
                 variant="contained"
