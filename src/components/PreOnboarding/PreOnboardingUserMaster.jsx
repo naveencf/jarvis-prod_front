@@ -1019,9 +1019,9 @@ const PreOnboardingUserMaster = () => {
     });
   }, []);
   const filteredHobbyOption = hobbiesData
-    .filter(
+    ?.filter(
       (category) =>
-        !hobbies.find((selected) => selected.value === category.hobby_id)
+        !hobbies?.find((selected) => selected?.value === category?.hobby_id)
     )
     .map((category) => ({
       label: category.hobby_name,

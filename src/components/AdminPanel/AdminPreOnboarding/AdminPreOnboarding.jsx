@@ -209,10 +209,12 @@ const AdminPreOnboarding = () => {
         const data = response.data;
 
         if (data[0].Status === "Success") {
+          console.log("-------testing");
+          console.log(data[0].PostOffice, "data");
           const postOffice = data[0].PostOffice[0];
           const abbreviatedState =
             stateAbbreviations[postOffice.State] || postOffice.State;
-          console.log(postOffice, "------abbreviatedState");
+          console.log(abbreviatedState, "------abbreviatedState");
           setcurrentState(abbreviatedState);
           setCity(postOffice.District);
         } else {

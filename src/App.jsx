@@ -269,7 +269,7 @@ function App() {
   //     navigate("/login");
   //   }
   // }, [navigate, pathName]);
- 
+
   return (
     <>
       {/* <div>{isOnline ? <h1></h1> : alert("No Internet Connection")}</div> */}
@@ -304,10 +304,18 @@ function App() {
             }
           />
           <Route
-            path="/pre-onboard-user-from"
+            path="/pre-onboard-user-form"
             element={
               <AppProvider>
-                <PreOnboardingUserMaster />
+                <Suspense
+                  fallback={
+                    <div>
+                      <Loader />
+                    </div>
+                  }
+                >
+                  <PreOnboardingUserMaster />
+                </Suspense>
               </AppProvider>
             }
           />
