@@ -44,7 +44,7 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
     }, [pageList]);
 
     const handleClickCatData = (key, val) => {
-        setPagequery(`${key}=${val}`);
+        setPagequery(`platform_name=${platformName}&${key}=${val}`);
         setActiveSectionCat(key);
         setRecordsLoading(true);
         setViewState("subCategory"); // Switch to sub-category view
@@ -85,6 +85,7 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
             width: 200,
             renderRowCell: (row) => <div>{formatNumber(row.totalFollowersCount)}</div>,
         },
+
         {
             key: "Page Count",
             name: "Page Count",

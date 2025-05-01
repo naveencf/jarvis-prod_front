@@ -112,7 +112,7 @@ const PageOverviewNew = () => {
       console.error('API Error:', err);
     }
   };
-  
+
   function pageHealthToggleCheck() {
     // if (showPageHealthColumn) {
     const data = pageList?.map((item) => {
@@ -953,15 +953,15 @@ const PageOverviewNew = () => {
       width: 200,
     },
 
-    // {
-    //   key: "platform_name",
-    //   name: "Platform",
-    //   renderRowCell: (row) => {
-    //     return formatString(row.platform_name);
-    //   },
+    {
+      key: "platform_name",
+      name: "Platform",
+      renderRowCell: (row) => {
+        return formatString(row.platform_name);
+      },
 
-    //   width: 200,
-    // },
+      width: 200,
+    },
     {
       key: "page_category_name",
       name: "Category",
@@ -1420,7 +1420,6 @@ const PageOverviewNew = () => {
     });
   }, [])
   const stateWisePageData = stateWiseData ? data?.stateWiseData : data?.state
-  console.log("state", stateWisePageData);
   return (
     <>
       <PriceModal

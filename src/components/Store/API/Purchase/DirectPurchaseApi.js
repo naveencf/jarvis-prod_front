@@ -140,8 +140,28 @@ const DirectPurchaseApi = createApi({
       }),
       transformResponse: (response) => response?.data,
     }),
-    
+    getVendorWiseAdvancedPaymentDetails: builder.query({
+      query: () => 'purchase/vendor_wise_advanced_payment_details',
+      transformResponse: (response) => response?.data,
+    }),
 
+    getPageWiseAdvancedPaymentDetails: builder.query({
+      query: () => 'purchase/page_wise_advanced_payment_details',
+      transformResponse: (response) => response?.data,
+    }),
+
+    getAdvancePaymentsByPageAndVendor: builder.query({
+      query: ({ vendor_obj_id, page_name }) => {
+        const params = new URLSearchParams();
+    
+        if (vendor_obj_id) params.append('vendor_obj_id', vendor_obj_id);
+        if (page_name) params.append('page_name', page_name);
+    
+        return `purchase/page_wise_advanced_payment_details?${params.toString()}`;
+      },
+      transformResponse: (response) => response?.data,
+    }),
+    
     // api/purchase/advanced_payment/66827bcf8e6fbfb72f5c8afe?startDate=2025-03-04&&endDate=2025-03-04
   }),
 });
@@ -166,6 +186,9 @@ export const {
   useGetVendorAdvanceSummaryAndDetailsQuery,
   useGetVendorLedgerMonthWiseQuery,
   useGetAuditedAndPendingLinkStatsByVendorsMutation,
+  useGetVendorWiseAdvancedPaymentDetailsQuery,
+  useGetPageWiseAdvancedPaymentDetailsQuery,
+  useLazyGetAdvancePaymentsByPageAndVendorQuery
 } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;

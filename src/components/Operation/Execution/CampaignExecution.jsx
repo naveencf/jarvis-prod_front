@@ -1905,7 +1905,7 @@ const CampaignExecution = () => {
                   }}
                   sx={{ width: 200, marginRight: 2 }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Advance Page" variant="outlined" />
+                    <TextField {...params} label="Select Page" variant="outlined" />
                   )}
                   onChange={(event, newValue) => handlePaymentSelect(newValue)}
                 />

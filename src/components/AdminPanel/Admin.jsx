@@ -668,6 +668,7 @@ const RegisteredCampaigns = lazy(() =>
 const PlanCreation = lazy(() => import("./Operation/PlanCreation"));
 const PhaseCreation = lazy(() => import("./Operation/PhaseCreation"));
 const AuditPurchase = lazy(() => import("../Purchase/AuditPurchase"));
+const AdvancePurchaseOverview = lazy(() => import("../Purchase/AdvancePurchaseOverview"));
 const CampaignExecutions = lazy(() =>
   import("./Operation/CampaignExecutionOverview/CampaignExecutions")
 );
@@ -2433,6 +2434,10 @@ const Admin = () => {
                     <Route
                       path="/purchased-record"
                       element={<AuditPurchase />}
+                    />
+                    <Route
+                      path="/advanced-purchase-overview"
+                      element={<AdvancePurchaseOverview />}
                     />
                     <Route
                       path="/purchase-report"

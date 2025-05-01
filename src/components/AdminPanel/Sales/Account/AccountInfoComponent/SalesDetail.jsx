@@ -16,6 +16,7 @@ import Cropper from "react-easy-crop";
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import getCroppedImg from "../../../../../utils/CropImage";
+import formatString from "../../../../../utils/formatString.js";
 const SalesDetail = ({ SingleAccount, refetchSingleAccount }) => {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
@@ -318,8 +319,8 @@ const SalesDetail = ({ SingleAccount, refetchSingleAccount }) => {
                   <div className="saleAccTitleTxt">
                     <h2>{SingleAccount?.account_name}</h2>
                     <p>
-                      <b>Description: </b>
-                      {SingleAccount?.description || "N/A"}
+                      <b>Brand: </b>
+                      {formatString(SingleAccount?.brand_name) || "N/A"}
                     </p>
                   </div>
                   <div className="saleAccTitleSocial">
