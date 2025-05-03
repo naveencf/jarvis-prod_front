@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import SignatureCanvas from "react-signature-canvas";
 import axios from "axios";
 import { useGlobalContext } from "../../Context/Context";
 import { baseUrl } from "../../utils/config";
+import FieldContainer from "../AdminPanel/FieldContainer";
 
 const DigitalSignature = ({
   userID,
@@ -11,90 +11,90 @@ const DigitalSignature = ({
   offerLetterStatus,
   gettingData,
 }) => {
-  const { toastAlert } = useGlobalContext();
-  const [signature, setSignature] = useState();
+  const { toastAlert, toastError } = useGlobalContext();
+  const [file, setFile] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClear = () => {
-    signature.clear();
+    setFile(null);
   };
 
-  console.log(offetLetterAcceptanceDate, 'dddkddkdkd')
-
   const handleGenerate = async () => {
+    if (!file) {
+      toastError("Please upload a signature file first.");
+      return;
+    }
+
+    // Validate file size (1MB = 1024 * 1024 bytes)
+    if (file.size > 1024 * 1024) {
+      toastError("File size should be less than 1MB.");
+      return;
+    }
+
     setIsSubmitting(true);
-    const canvas = signature.getTrimmedCanvas();
-    canvas.toBlob(async (blob) => {
-      if (blob) {
-        const formData = new FormData();
-        formData.append("user_id", userID);
 
-        // Get current date and time in ISO format
-        const currentDateTime = new Date().toISOString();
+    const formData = new FormData();
+    formData.append("user_id", userID);
+    formData.append("digital_signature_image", file);
 
-        // Create a file name with the current date and time
-        const fileName = `digital_signature_${currentDateTime}.png`;
+    if (offetLetterAcceptanceDate) {
+      formData.append(
+        "offer_letter_acceptance_date",
+        offetLetterAcceptanceDate
+      );
+    }
+    if (offerLetterStatus) {
+      formData.append("offer_later_status", offerLetterStatus);
+    }
 
-        // Create a File object from the blob with the new file name
-        const file = new File([blob], fileName, {
-          type: "image/png",
-        });
+    try {
+      await axios.put(`${baseUrl}update_user`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-        formData.append("digital_signature_image", file);
+      setIsSubmitting(false);
+      toastAlert("Submitted");
+      closeModal();
+      setFile(null);
 
-        {
-          offetLetterAcceptanceDate &&
-            formData.append(
-              "offer_later_acceptance_date",
-              offetLetterAcceptanceDate
-            );
-        }
-        {
-          offerLetterStatus &&
-            formData.append("offer_later_status", offerLetterStatus);
-        }
-
-        try {
-          await axios.put(`${baseUrl}` + `update_user`, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
-
-          setIsSubmitting(false);
-          closeModal();
-          toastAlert("Submitted");
-          signature.clear();
-
-          //3 sec delay because API takes time to save image in GCP bucket || so we wait for 3 sec to call get api
-          setTimeout(async () => {
-            await gettingData();
-          }, 3000);
-        } catch (error) {
-          console.error("Error in PUT API", error);
-        }
-      }
-    }, "image/png");
+      setTimeout(async () => {
+        await gettingData();
+      }, 3000);
+    } catch (error) {
+      console.error("Error in PUT API", error);
+      setIsSubmitting(false);
+      toastAlert("Failed to submit signature.");
+    }
   };
 
   return (
     <>
-      <h1>Digital Signature</h1>
+      <h1>Upload Signature</h1>
       <div className="signBox">
-        <SignatureCanvas
-          ref={(data) => setSignature(data)}
-          canvasProps={{ className: "sigCanvas" }}
+        <FieldContainer
+          label=""
+          fieldGrid={12}
+          onChange={(e) => setFile(e.target.files[0])}
+          type="file"
+          required={false}
         />
       </div>
+
       <div className="signBtn">
-        <button className="btn onboardBtn btn_primary" onClick={handleClear}>
+        {/* <button
+          className="btn onboardBtn btn_primary"
+          onClick={handleClear}
+          disabled={!file}
+        >
           Clear
-        </button>
+        </button> */}
         <button
           className="btn onboardBtn btn_secondary"
           onClick={handleGenerate}
         >
-          {isSubmitting ? "Submitting...." : "Save"}
+          {isSubmitting ? "Submitting..." : "Save"}
         </button>
       </div>
     </>

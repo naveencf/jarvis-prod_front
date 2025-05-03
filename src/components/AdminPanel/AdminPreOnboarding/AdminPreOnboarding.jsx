@@ -117,7 +117,6 @@ const AdminPreOnboarding = () => {
 
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
-  console.log(city, "city");
   const [currentState, setcurrentState] = useState("");
   const [pincode, setPincode] = useState("");
 
@@ -209,12 +208,10 @@ const AdminPreOnboarding = () => {
         const data = response.data;
 
         if (data[0].Status === "Success") {
-          console.log("-------testing");
-          console.log(data[0].PostOffice, "data");
           const postOffice = data[0].PostOffice[0];
-          const abbreviatedState =
-            stateAbbreviations[postOffice.State] || postOffice.State;
-          console.log(abbreviatedState, "------abbreviatedState");
+
+          let abbreviatedState = data[0]?.PostOffice[0].State;
+
           setcurrentState(abbreviatedState);
           setCity(postOffice.District);
         } else {
@@ -225,7 +222,7 @@ const AdminPreOnboarding = () => {
       }
     }
   };
-
+  console.log("currentState", currentState, "----------city", city);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -660,27 +657,47 @@ const AdminPreOnboarding = () => {
     return dayjs(date).isAfter(dayjs(), "day");
   };
 
-  const handleDateChange = (e) => {
+  // const handleDateChange = (e) => {
+  //   const selectedDate = e.target.value;
+  //   const validateAge = dayjs().diff(dayjs(selectedDate), "year"); // Use selectedDate for age calculation
+  //   const age = calculateAge(selectedDate); // Assuming calculateAge is correct
+  //   setDobValidate(validateAge);
+
+  //   if (selectedDate === "") {
+  //     setIsRequired((prev) => ({ ...prev, dateOfBirth: true }));
+  //     setDobError("Please select a DOB."); // Set error if date is empty
+  //   } else {
+  //     setIsRequired((prev) => ({ ...prev, dateOfBirth: false }));
+
+  //     // Only set dobError if age is invalid; clear it otherwise
+  //     if (validateAge < 15 || validateAge > 100) {
+  //       setDobError("Age can't be less than 15 or greater than 100 years.");
+  //       setDateOfBirth(""); // Clear DOB if invalid
+  //     } else {
+  //       setDobError(""); // Clear error if age is valid
+  //       setDateOfBirth(selectedDate);
+  //       setAge(age);
+  //     }
+  //   }
+  // };
+
+  const [dobInput, setDobInput] = useState("");
+
+  const handleDateBlur = (e) => {
     const selectedDate = e.target.value;
-    const validateAge = dayjs().diff(dayjs(selectedDate), "year"); // Use selectedDate for age calculation
+    const validateAge = dayjs().diff(dayjs(selectedDate), "year");
     const age = calculateAge(selectedDate); // Assuming calculateAge is correct
-    setDobValidate(validateAge);
 
-    if (selectedDate === "") {
-      setIsRequired((prev) => ({ ...prev, dateOfBirth: true }));
-      setDobError("Please select a DOB."); // Set error if date is empty
+    if (!selectedDate) {
+      setDobError("Please select a DOB.");
+      setDateOfBirth("");
+    } else if (validateAge < 15 || validateAge > 100) {
+      setDobError("Age can't be less than 15 or greater than 100 years.");
+      setDateOfBirth("");
     } else {
-      setIsRequired((prev) => ({ ...prev, dateOfBirth: false }));
-
-      // Only set dobError if age is invalid; clear it otherwise
-      if (validateAge < 15 || validateAge > 100) {
-        setDobError("Age can't be less than 15 or greater than 100 years.");
-        setDateOfBirth(""); // Clear DOB if invalid
-      } else {
-        setDobError(""); // Clear error if age is valid
-        setDateOfBirth(selectedDate);
-        setAge(age);
-      }
+      setDobError("");
+      setDateOfBirth(selectedDate);
+      setAge(age);
     }
   };
 
@@ -1367,10 +1384,14 @@ const AdminPreOnboarding = () => {
             label="DOB"
             required={false}
             fieldGrid={3}
-            value={dateOfBirth}
+            // value={dateOfBirth}
+            value={dobInput}
             // disabled={disableFutureDates}
-            onChange={handleDateChange}
+            // onChange={handleDateChange}
+            onChange={(e) => setDobInput(e.target.value)} // Just update input
+            onBlur={handleDateBlur} // Validate only after user finishes input
           />
+
           {isRequired.dateOfBirth && (
             <p className="form-error">Please select a DOB</p>
           )}

@@ -25,6 +25,8 @@ const View = ({
     totalRows: 0,
     currentPage: 1,
   },
+  tableSelectedRows,
+  setTableSelectedRows
 }) => {
   const Version = useCallback(!version ? CustomTableV2 : CustomTable, [
     version,
@@ -46,6 +48,8 @@ const View = ({
         getFilteredData={getFilteredData}
         cloudPagination={cloudPagination}
         pageNavigator={pageNavigator}
+        tableSelectedRows={tableSelectedRows}
+        setTableSelectedRows={setTableSelectedRows}
       />
     </CustomTableWrapper>
   );

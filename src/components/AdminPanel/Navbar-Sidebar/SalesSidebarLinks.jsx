@@ -84,7 +84,7 @@ const SalesSidebarLinks = () => {
             <i className="bi bi-dot" />
             Plan Request
           </NavLink>
-          {/* <NavLink
+          <NavLink
             className="collapse-item"
             to={
               isSalesAdmin
@@ -100,7 +100,7 @@ const SalesSidebarLinks = () => {
               <i className="bi bi-dot" />
               Bonus List
             </NavLink>
-          )} */}
+          )}
         </div>
       </div>
     </li>

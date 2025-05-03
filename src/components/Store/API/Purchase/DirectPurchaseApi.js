@@ -157,7 +157,7 @@ const DirectPurchaseApi = createApi({
         if (vendor_obj_id) params.append('vendor_obj_id', vendor_obj_id);
         if (page_name) params.append('page_name', page_name);
     
-        return `purchase/page_wise_advanced_payment_details?${params.toString()}`;
+        return `purchase/advanced_payment?${params.toString()}`;
       },
       transformResponse: (response) => response?.data,
     }),

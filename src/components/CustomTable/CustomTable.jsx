@@ -35,6 +35,8 @@ const CustomTable = ({
     totalRows: 0,
     currentPage: 1,
   },
+  tableSelectedRows,
+  setTableSelectedRows
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -91,6 +93,12 @@ const CustomTable = ({
   const loginUserId = decodedToken.id;
 
   useEffect(() => {
+    if (tableSelectedRows.length == 0) {
+      setSelectedRowsIndex([]);
+    }
+  }, [tableSelectedRows])
+  // console.log(selectedRowsData, "selectedRowsData")
+  useEffect(() => {
     if (
       pagination?.current?.findIndex((item) => item === data?.length) === -1 &&
       data?.length > 0 && !cloudPagination
@@ -105,15 +113,15 @@ const CustomTable = ({
 
   const filteredData = searchQuery
     ? unSortedData?.filter((item) =>
-        columnsheader
-          .map((column) => column.key)
-          .some((key) =>
-            item[key]
-              ?.toString()
-              .toLowerCase()
-              .includes(searchQuery.toLowerCase())
-          )
-      )
+      columnsheader
+        .map((column) => column.key)
+        .some((key) =>
+          item[key]
+            ?.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        )
+    )
     : unSortedData;
 
   // const tabledata = pagination
@@ -271,9 +279,9 @@ const CustomTable = ({
     setSortedData(
       pagination
         ? filteredData?.slice(
-            (currentPage - 1) * itemsPerPage,
-            currentPage * itemsPerPage
-          )
+          (currentPage - 1) * itemsPerPage,
+          currentPage * itemsPerPage
+        )
         : unSortedData
     );
   }, [itemsPerPage, currentPage, searchQuery, unSortedData]);
@@ -381,11 +389,11 @@ const CustomTable = ({
       apiColumns?.length === 0
         ? columns?.map(() => true)
         : sortedColumns?.map((column, index) =>
-            apiColumns[index]?.visibility === undefined ||
+          apiColumns[index]?.visibility === undefined ||
             apiColumns[index]?.visibility === null
-              ? true
-              : apiColumns[index]?.visibility
-          )
+            ? true
+            : apiColumns[index]?.visibility
+        )
     );
     setAscFlag(sortedColumns?.map(() => true));
     setEditablesRows(

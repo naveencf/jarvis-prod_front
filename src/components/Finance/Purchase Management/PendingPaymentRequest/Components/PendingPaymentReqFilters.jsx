@@ -9,6 +9,8 @@ const PendingPaymentReqFilters = (props) => {
     handleOpenOverview,
     setFilterData,
     data,
+    setVendorPaymentRequestQuery,
+    vendorPaymentRequestQuery
     // search,
   } = props;
 
@@ -19,18 +21,51 @@ const PendingPaymentReqFilters = (props) => {
   const [requestAmountFilter, setRequestAmountFilter] = useState("");
   const [requestedAmountField, setRequestedAmountField] = useState("");
   const [search, setSearch] = useState("");
-  //  console.log("vendorList", vendorNameList);
+  // console.log("vendorNameList", vendorNameList);
+
+  const handleDatefromBackend = () => {
+    setVendorPaymentRequestQuery(`startDate=${fromDate}&&endDate=${toDate}`);
+
+  }
+  const handleChangeDate = (e, dataType) => {
+    if (dataType === 'fromDate') {
+      setFromDate(e.target.value)
+    }
+    else if (dataType === 'toDate') {
+      setToDate(e.target.value);
+    }
+    else if (dataType === 'requestAmount') {
+      setRequestedAmountField(e.target.value);
+    }
+    handleDateFilter()
+  }
   const handleDateFilter = () => {
-    const filterData = data?.filter((item) => {
-      const date = new Date(item.request_date);
-      const fromDate1 = new Date(fromDate);
-      const toDate1 = new Date(toDate);
-      toDate1.setDate(toDate1.getDate() + 1);
+    const tempfilterData = data?.filter((item) => {
+      const itemDate = new Date(item.createdAt);
+      const normalizedItemDate = new Date(
+        itemDate.getFullYear(),
+        itemDate.getMonth(),
+        itemDate.getDate()
+      );
+
+      const fromDateObj = fromDate ? new Date(fromDate) : null;
+      const toDateObj = toDate ? new Date(toDate) : null;
+
+      // Normalize from and to dates to remove time part
+      const normalizedFromDate = fromDateObj
+        ? new Date(fromDateObj.getFullYear(), fromDateObj.getMonth(), fromDateObj.getDate())
+        : null;
+
+      const normalizedToDate = toDateObj
+        ? new Date(toDateObj.getFullYear(), toDateObj.getMonth(), toDateObj.getDate())
+        : null;
 
       // Date Range Filter
       const dateFilterPassed =
-        !fromDate || !toDate || (date >= fromDate1 && date <= toDate1);
-
+        (!normalizedFromDate || normalizedItemDate >= normalizedFromDate) &&
+        (!normalizedToDate || normalizedItemDate <= normalizedToDate);
+      // console.log(dateFilterPassed, "dateFilterPassed", normalizedFromDate, normalizedItemDate, normalizedToDate)
+      console.log(dateFilterPassed, "dateFilterPassed", normalizedItemDate, item)
       // Vender Name Filter
       const vendorNameFilterPassed =
         !vendorName ||
@@ -70,12 +105,70 @@ const PendingPaymentReqFilters = (props) => {
         priorityFilterPassed &&
         searchFilterPassed &&
         requestedAmountFilterPassed();
-
+      console.log(allFiltersPassed, "allFiltersPassed")
       return allFiltersPassed;
     });
 
-    setFilterData(filterData);
+    setFilterData(tempfilterData);
   };
+
+
+  // const handleDateFilter = () => {
+  //   const filterData = data?.filter((item) => {
+  //     const date = new Date(item.request_date);
+  //     const fromDate1 = new Date(fromDate);
+  //     const toDate1 = new Date(toDate);
+  //     toDate1.setDate(toDate1.getDate() + 1);
+
+  //     // Date Range Filter
+  //     const dateFilterPassed =
+  //       !fromDate || !toDate || (date >= fromDate1 && date <= toDate1);
+
+  //     // Vender Name Filter
+  //     const vendorNameFilterPassed =
+  //       !vendorName ||
+  //       item.vendor_name.toLowerCase().includes(vendorName.toLowerCase());
+
+  //     // Priority Filter
+  //     const priorityFilterPassed =
+  //       !priorityFilter || item.priority === priorityFilter;
+
+  //     // Search Query Filter
+  //     const searchFilterPassed =
+  //       !search ||
+  //       Object.values(item).some(
+  //         (val) =>
+  //           typeof val === "string" &&
+  //           val.toLowerCase().includes(search.toLowerCase())
+  //       );
+
+  //     // Requested Amount Filter
+  //     const requestedAmountFilterPassed = () => {
+  //       const numericRequestedAmount = parseFloat(requestedAmountField);
+  //       switch (requestAmountFilter) {
+  //         case "greaterThan":
+  //           return +item.request_amount > numericRequestedAmount;
+  //         case "lessThan":
+  //           return +item.request_amount < numericRequestedAmount;
+  //         case "equalTo":
+  //           return +item.request_amount === numericRequestedAmount;
+  //         default:
+  //           return true;
+  //       }
+  //     };
+
+  //     const allFiltersPassed =
+  //       dateFilterPassed &&
+  //       vendorNameFilterPassed &&
+  //       priorityFilterPassed &&
+  //       searchFilterPassed &&
+  //       requestedAmountFilterPassed();
+
+  //     return allFiltersPassed;
+  //   });
+
+  //   setFilterData(filterData);
+  // };
 
   const handleClearDateFilter = () => {
     setFilterData(data);
@@ -96,7 +189,7 @@ const PendingPaymentReqFilters = (props) => {
             <div className="card-header flexCenterBetween">
               <h5 className="card-title">Search by filter</h5>
 
-              <div className="flexCenter colGap12">
+              {/* <div className="flexCenter colGap12">
                 <div className="form-group flexCenter colGap8">
                   <label className="w-100 m0">Select Date Range:</label>
                   <select
@@ -106,7 +199,6 @@ const PendingPaymentReqFilters = (props) => {
                   >
                     <option value="">All</option>
                     <option value="today">Today</option>
-                    {/* <option value="last7Days">Last 7 Days</option> */}
                     <option value="last30Days">Last 30 Days</option>
                     <option value="thisWeek">This Week</option>
                     <option value="lastWeek">Last Week</option>
@@ -114,7 +206,7 @@ const PendingPaymentReqFilters = (props) => {
                     <option value="currentQuarter">This Quarter</option>
                   </select>
                 </div>
-              </div>
+              </div> */}
             </div>
             <div className="card-body pb4">
               <div className="row thm_form">
@@ -158,7 +250,9 @@ const PendingPaymentReqFilters = (props) => {
                       value={fromDate}
                       type="date"
                       className="form-control"
-                      onChange={(e) => setFromDate(e.target.value)}
+                      // onChange={(e) => setFromDate(e.target.value)}
+                      onChange={(e) => handleChangeDate(e, 'fromDate')}
+
                     />
                   </div>
                 </div>
@@ -169,9 +263,10 @@ const PendingPaymentReqFilters = (props) => {
                       value={toDate}
                       type="date"
                       className="form-control"
-                      onChange={(e) => {
-                        setToDate(e.target.value);
-                      }}
+                      // onChange={(e) => {
+                      //   setToDate(e.target.value);
+                      // }}
+                      onChange={(e) => handleChangeDate(e, 'toDate')}
                     />
                   </div>
                 </div>
@@ -197,6 +292,7 @@ const PendingPaymentReqFilters = (props) => {
                       value={requestAmountFilter}
                       className="form-control"
                       onChange={(e) => setRequestAmountFilter(e.target.value)}
+
                     >
                       <option value="">Select Amount</option>
                       <option value="greaterThan">Greater Than</option>
@@ -213,9 +309,10 @@ const PendingPaymentReqFilters = (props) => {
                       type="number"
                       placeholder="Request Amount"
                       className="form-control"
-                      onChange={(e) => {
-                        setRequestedAmountField(e.target.value);
-                      }}
+                      // onChange={(e) => {
+                      //   setRequestedAmountField(e.target.value);
+                      // }}
+                      onChange={(e) => handleChangeDate(e, 'requestAmount')}
                     />
                   </div>
                 </div>
@@ -225,7 +322,7 @@ const PendingPaymentReqFilters = (props) => {
               <div className="flexCenter colGap16">
                 <Button
                   variant="contained"
-                  onClick={handleDateFilter}
+                  onClick={handleDatefromBackend}
                   className="btn cmnbtn btn-primary"
                 >
                   <i className="fas fa-search"></i> Search

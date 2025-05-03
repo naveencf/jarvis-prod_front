@@ -2195,7 +2195,7 @@ const SidebarLinks = () => {
                   <i className="bi bi-dot"></i>Purchased Data
                 </NavLink>
                 <NavLink className="collapse-item" to="/admin/advanced-purchase-overview">
-                  <i className="bi bi-dot"></i>Advanced Overview
+                  <i className="bi bi-dot"></i>Bulk Purchased Posts
                 </NavLink>
                 <NavLink
                   className="collapse-item"

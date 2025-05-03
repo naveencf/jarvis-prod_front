@@ -13,6 +13,7 @@ import { phpBaseUrl } from "../../../utils/config";
 import VendorStatementComponent from "./VendorStatementComponent";
 import { AdvancedPaymentComponent } from "./AdvancedPaymentComponent";
 import Loader from "../../Finance/Loader/Loader";
+import DateISOtoNormal from "../../../utils/DateISOtoNormal";
 import { formatIndianNumber } from "../../../utils/formatIndianNumber";
 import { formatNumber } from "../../../utils/formatNumber";
 
@@ -79,7 +80,7 @@ const Ledger = () => {
   const { data: vendorData, isLoading: isVendorDataLoading, isFetching: isVendorDataFetching } = useGetVendorPendingAuditedOutstandingQuery(id);
   const { data: vendorDetail, isLoading: isVendorDetailLoading, isFetching: isVendorDetailFetching } = useGetVendorDetailQuery(id);
   const [selectedVendor, setSelectedVendor] = useState(vendorDetail);
-  console.log(vendorDetail, "vendorDetail")
+
   const {
     data: ledgerData = [],
     isLoading,
@@ -170,7 +171,7 @@ const Ledger = () => {
     {
       key: "Trans_date",
       name: "Transaction Date",
-      // renderRowCell: (row) => row?.Trans_date.replace(/T.*Z/, "")?.trim(),
+      // renderRowCell: (row) => DateISOtoNormal(row?.Trans_date).trim(),
       width: 120,
     },
     {

@@ -12,8 +12,6 @@ import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../../utils/config';
 import ShowDataModal from './Components/ShowDataModal';
 import WhatsappAPI from '../../../WhatsappAPI/WhatsappAPI';
 import moment from 'moment';
-import JSZip from 'jszip';
-import { saveAs } from 'file-saver';
 import PayVendorDialog from '././Components/PayVendorDialog';
 import CommonDialogBox from './Components/CommonDialogBox';
 import BankDetailPendingPaymentDialog from './Components/BankDetailPendingPaymentDialog';
@@ -29,13 +27,15 @@ import { formatNumber } from '../../../../utils/formatNumber';
 import { useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
 import PaymentRequestFromPurchase from '../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase';
 import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 export default function PendingPaymentRequest() {
   // const whatsappApi = WhatsappAPI();
   const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
-  const [vendorPaymentRequestQuery, setVendorPaymentRequestQuery] = useState(1);
-  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
+  const [vendorPaymentRequestQuery, setVendorPaymentRequestQuery] = useState('pending=true');
+  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest, isFetching: vendorRequestFetching } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
   // const { data, isLoading: transactionLoading,  } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
   const [updatePurchaseRequest, { isLoading: updateLoading, error: updateError }] = useUpdatePurchaseRequestMutation();
   const token = sessionStorage.getItem('token');
@@ -72,7 +72,7 @@ export default function PendingPaymentRequest() {
   const [dateFilter, setDateFilter] = useState('');
   const [invoiceCount, setInvoiceCount] = useState(0);
   const [nonInvoiceCount, setNonInvoiceCount] = useState(0);
-  const [nonGstCount, setNonGstCount] = useState(0);
+
   const [activeAccordionIndex, setActiveAccordionIndex] = useState(0);
   const [vendorNameList, setVendorNameList] = useState([]);
   // const [rowSelectionModel, setRowSelectionModel] = useState([]);
@@ -81,7 +81,7 @@ export default function PendingPaymentRequest() {
   const [loading, setLoading] = useState(false);
   const [netAmount, setNetAmount] = useState('');
   const [tdsDeductedCount, setTdsDeductedCount] = useState(0);
-  const accordionButtons = ['All', 'Partial', 'Instant'];
+  const accordionButtons = ['Pending', 'Partial', 'All'];
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [bulkPayThroughVendor, setBulkPayThroughVendor] = useState('');
   const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState('');
@@ -124,10 +124,7 @@ export default function PendingPaymentRequest() {
     setRemainderDialog(true);
   };
 
-  GridToolbar.defaultProps = {
-    filterRowsButtonText: 'Filter',
-    filterGridToolbarButton: 'Filter',
-  };
+
 
   const calculateTotals = (data) => {
     return (
@@ -167,10 +164,10 @@ export default function PendingPaymentRequest() {
       toastError(`You can't pay this request as it has been reminded ${x?.length} times`);
       return;
     }
-    const enrichedRow = {
-      ...row,
-      totalFY: calculateTotalFY(row),
-    };
+    // const enrichedRow = {
+    //   ...row,
+    //   totalFY: calculateTotalFY(row),
+    // };
     setLoading(true);
     setRowData(row);
     // console.log(Number(row.outstandings) - Number(row?.getway_process_amt), 'bal-proc');
@@ -188,9 +185,9 @@ export default function PendingPaymentRequest() {
     }, 1000);
   }, [loading]);
 
-  const handleOpenUniqueVendorClick = () => {
-    setUniqueVenderDialog(true);
-  };
+  // const handleOpenUniqueVendorClick = () => {
+  //   setUniqueVenderDialog(true);
+  // };
 
   const handleCloseUniqueVendor = () => {
     setUniqueVenderDialog(false);
@@ -247,6 +244,19 @@ export default function PendingPaymentRequest() {
   // accordian function:-
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
+
+    if (index === 0 || index === 1) {
+      setVendorPaymentRequestQuery("pending=true");
+    } else {
+      const now = new Date();
+      const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+      const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      const formattedStartDate = startDate.toISOString().split('T')[0];
+      const formattedEndDate = endDate.toISOString().split('T')[0];
+
+      setVendorPaymentRequestQuery(`startDate=${formattedStartDate}&&endDate=${formattedEndDate}`);
+    }
   };
 
   const getStatusText = (status) => {
@@ -351,77 +361,91 @@ export default function PendingPaymentRequest() {
   );
 
   // Use the function for partialData and instantData
-  const partialResults = processData(filterData, '3');
-  const instantResults = processData(filterData, '0');
+  // const partialResults = processData(filterData, '3');
+  // const instantResults = processData(filterData, '0');
 
   // Destructure the results as needed
-  const { pendingCount: pendingPartialCount, uniqueVendorCount: uniqueVendorPartialCount, pendingAmount: pendingAmountPartial, balanceAmount: balanceAmountPartial, nonGstCount: nonGstPartialCount, withInvcImage: withInvcPartialImage, withoutInvcImage: withoutInvcPartialImage, tdsDeduction: partialTDSDeduction } = partialResults;
+  // const { pendingCount: pendingPartialCount, uniqueVendorCount: uniqueVendorPartialCount, pendingAmount: pendingAmountPartial, balanceAmount: balanceAmountPartial, nonGstCount: nonGstPartialCount, withInvcImage: withInvcPartialImage, withoutInvcImage: withoutInvcPartialImage, tdsDeduction: partialTDSDeduction } = partialResults;
 
-  const { pendingCount: pendingInstantCount, uniqueVendorCount: uniqueVendorsInstantCount, pendingAmount: pendingAmountInstant, balanceAmount: balanceAmountInstant, nonGstCount: nonGstInstantCount, withInvcImage: withInvcInstantImage, withoutInvcImage: withoutInvcInstantImage, tdsDeduction: instantTDSDeduction } = instantResults;
+  // const { pendingCount: pendingInstantCount, uniqueVendorCount: uniqueVendorsInstantCount, pendingAmount: pendingAmountInstant, balanceAmount: balanceAmountInstant, nonGstCount: nonGstInstantCount, withInvcImage: withInvcInstantImage, withoutInvcImage: withoutInvcInstantImage, tdsDeduction: instantTDSDeduction } = instantResults;
+
+  // useEffect(() => {
+  //   const getUniqueVendorNames = (filterCondition) => {
+  //     const filteredData = filterCondition ? data?.filter(filterCondition) : data;
+  //     const uniqueVendorNames = [...new Set(filteredData?.map((d) => d?.vendor_name))];
+  //     setVendorNameList(uniqueVendorNames);
+  //   };
+
+  //   switch (activeAccordionIndex) {
+  //     case 0:
+  //       getUniqueVendorNames();
+  //       break;
+  //     case 1:
+  //       getUniqueVendorNames((d) => d?.status === '3');
+  //       break;
+  //     case 2:
+  //       getUniqueVendorNames((d) => d?.status === '0');
+  //       break;
+  //     default:
+  //       setVendorNameList([]);
+  //   }
+  // }, [activeAccordionIndex, data]);
 
   useEffect(() => {
-    const getUniqueVendorNames = (filterCondition) => {
-      const filteredData = filterCondition ? data?.filter(filterCondition) : data;
-      const uniqueVendorNames = [...new Set(filteredData?.map((d) => d?.vendor_name))];
+    if (data?.length > 0) {
+      const uniqueVendorNames = [
+        ...new Set(
+          data
+            .map((d) => d.vendor_name)
+            .filter((name) => typeof name === 'string' && name.trim() !== "")
+        ),
+      ];
       setVendorNameList(uniqueVendorNames);
-    };
-
-    switch (activeAccordionIndex) {
-      case 0:
-        getUniqueVendorNames();
-        break;
-      case 1:
-        getUniqueVendorNames((d) => d?.status === '3');
-        break;
-      case 2:
-        getUniqueVendorNames((d) => d?.status === '0');
-        break;
-      default:
-        setVendorNameList([]);
     }
   }, [activeAccordionIndex, data]);
 
-  useEffect(() => {
-    if (activeAccordionIndex === 0 && data?.length) {
-      const uniqueVendorNames = [...new Set(data?.map((d) => d?.vendor_name))];
-      setVendorNameList(uniqueVendorNames);
-    }
-  }, [activeAccordionIndex, data]);
 
 
 
   const handleDownloadInvoices = async () => {
     const zip = new JSZip();
-    console.log("first")
-    selectedRows.forEach((rowId) => {
-      const rowData = filterData.find((row) => row.request_id === rowId);
-      if (rowData) {
-        const csvContent = [
-          Object.keys(rowData).join(','),
-          Object.values(rowData)
-            .map((value) => `"${value}"`)
-            .join(','),
-        ].join('\n');
 
-        zip.file(`invoice_${rowId}.csv`, csvContent);
+    if (selectedRows.length === 0) {
+      alert("Please select invoices first");
+      return;
+    }
+
+    const fetchPromises = selectedRows.map(async (row) => {
+      if (row.invoice_file_url) {
+        try {
+          const response = await axios.post(
+            `${baseUrl}v1/download_image`,
+            { imageUrl: row.invoice_file_url },
+            { responseType: 'blob' } // This is KEY!
+          );
+
+          const blob = response.data; // axios returns the blob as `data`
+          const fileName = `${row.vendor_name || "Vendor"}_${row.invc_no || "Invoice"}.pdf`;
+          zip.file(fileName, blob);
+          // setSelectedRows([]);
+          setSelectedRows([])
+        } catch (err) {
+          console.error(`Fetch error for ${row.invoice_file_url}`, err);
+        }
+      } else {
+        console.warn("No invoice URL found for row:", row);
       }
     });
 
     try {
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
-      saveAs(zipBlob, 'invoices.zip');
+      await Promise.all(fetchPromises);
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      saveAs(zipBlob, "invoices.zip");
     } catch (error) {
-      console.error('Error generating zip file:', error);
+      console.error("Error generating ZIP file:", error);
     }
   };
 
-
-  const handleOpenPayThroughVendor = () => {
-    setPayThroughVendor(true);
-  };
-  const handleOpenBulkPayThroughVendor = () => {
-    setBulkPayThroughVendor(true);
-  };
 
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
@@ -471,7 +495,7 @@ export default function PendingPaymentRequest() {
       console.error("Failed to update request:", err);
     }
   };
-
+  // console.log(requestLoading, "requestLoading")
   return (
     <div>
 
@@ -538,7 +562,7 @@ export default function PendingPaymentRequest() {
         })}
       />
 
-      <PendingPaymentReqFilters setDateFilter={setDateFilter} dateFilter={dateFilter} data={data} setVendorNameList={setVendorNameList} vendorNameList={vendorNameList} setOverviewDialog={setOverviewDialog} setFilterData={setFilterData} handleOpenOverview={handleOpenOverview} />
+      <PendingPaymentReqFilters vendorPaymentRequestQuery={vendorPaymentRequestQuery} setDateFilter={setDateFilter} dateFilter={dateFilter} data={data} setVendorPaymentRequestQuery={setVendorPaymentRequestQuery} setVendorNameList={setVendorNameList} vendorNameList={vendorNameList} setOverviewDialog={setOverviewDialog} setFilterData={setFilterData} handleOpenOverview={handleOpenOverview} />
 
       <>
         <div className="tab">
@@ -569,14 +593,16 @@ export default function PendingPaymentRequest() {
                 contextData,
                 handlePaymentRequest
               })}
-              data={activeAccordionIndex === 0 ? filterData : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === '3') : activeAccordionIndex === 2 ? filterData?.filter((d) => d.status === '0') : []}
-              isLoading={requestLoading}
+              data={activeAccordionIndex === 0 ? filterData : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === 3) : activeAccordionIndex === 2 ? filterData : []}
+              isLoading={requestLoading || vendorRequestFetching}
               showTotal={true}
               title={'Pending Payment Request'}
               rowSelectable={true}
               pagination={[100, 200]}
               tableName={'finance-pending-payment-request'}
-              selectedData={setSelectedRows}
+              selectedData={setSelectedRows} // Setter function
+              tableSelectedRows={selectedRows} // Getter function
+
               addHtml={
                 <>
                   {contextData && contextData[67]?.view_value && <>
@@ -592,9 +618,9 @@ export default function PendingPaymentRequest() {
                   <button className="btn cmnbtn btn_sm btn-secondary ms-2" onClick={(e) => handleClearSameRecordFilter(e)}>
                     Clear
                   </button>
-                  {/* <button className="btn btn-success cmnbtn btn_sm ms-2" variant="contained" color="primary" size="small" onClick={handleDownloadInvoices()}>
+                  <button className="btn btn-success cmnbtn btn_sm ms-2" variant="contained" color="primary" size="small" onClick={handleDownloadInvoices}>
                     Download Invoice
-                  </button> */}
+                  </button>
                 </>
               }
             />
