@@ -44,7 +44,8 @@ const PurchaseRequestPaymentApi = createApi({
                 url: `v1/vendor_payment_request?${status}`,
                 method: "GET",
             }),
-            transformResponse: (response) => response.data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3)), // Optional: transform the response
+            // transformResponse: (response) => response.data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3)), // Optional: transform the response
+            transformResponse: (response) => response.data, // Optional: transform the response
         }),
         getVendorFinancialDetail: builder.query({
             query: (_id) => ({

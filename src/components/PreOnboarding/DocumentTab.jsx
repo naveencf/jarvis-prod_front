@@ -407,7 +407,7 @@ const DocumentTab = ({
                               className="icon btn btn_sm btn-outline-dark"
                               onClick={() => handleNotAvail(item)}
                             >
-                              <p>N/A</p>
+                              N/A
                             </button>
                           )}
                         </div>

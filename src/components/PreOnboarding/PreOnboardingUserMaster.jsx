@@ -723,6 +723,13 @@ const PreOnboardingUserMaster = () => {
     } else if (!currentPincode || currentPincode == "") {
       return toastError("Current Pincode is Required");
     }
+    if (!familyDetails || familyDetails.length === 0) {
+      return toastError("At least one Family Detail is required");
+    }
+
+    if (!educationDetails || educationDetails.length === 0) {
+      return toastError("At least one Education Detail is required");
+    }
 
     setIsSubmitting(true);
 
@@ -1341,7 +1348,7 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     <div className="sidebar_itemboxText">
                       <h2>Form</h2>
-                      <h3>{formFieldProgressPercentage}%</h3>
+                      {/* <h3>{formFieldProgressPercentage}%</h3> */}
                     </div>
                   </div>
                   <div
@@ -1368,7 +1375,7 @@ const PreOnboardingUserMaster = () => {
                       <div className="pack" style={{ flexDirection: "row" }}>
                         <h2 className="document_tab_name">Documents</h2>
                         {/* <span>(verified)</span> */}
-                        <h3>{documentPercentage}%</h3>
+                        {/* <h3>{documentPercentage}%</h3> */}
                       </div>
                       <h3>
                         {/* Mandatory <span>{showMandotaryPer}%</span> */}

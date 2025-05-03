@@ -55,6 +55,7 @@ const AdvancePurchaseOverview = () => {
     : activeTab === 'Tab0'
       ? pageData
       : vendorData;
+    const advancedPaymentData = viewContext? advanceByPageVendor : tableData 
 
   const columns = [
     {
@@ -172,7 +173,7 @@ const AdvancePurchaseOverview = () => {
       <View
         version={1}
         columns={columns}
-        data={advanceByPageVendor || tableData || []}
+        data={advancedPaymentData}
         isLoading={advanceLoading || isLoading}
         title={
           viewContext

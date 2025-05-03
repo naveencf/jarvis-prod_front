@@ -7,7 +7,7 @@ import { baseUrl } from "../../../utils/config";
 import { useGlobalContext } from "../../../Context/Context";
 
 const OnboardingBankDetails = () => {
-  const { toastError, toastAlert } = useGlobalContext()
+  const { toastError, toastAlert } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
@@ -29,17 +29,26 @@ const OnboardingBankDetails = () => {
   useEffect(() => {
     axios.get(`${baseUrl}` + `get_single_user/${userID}`).then((res) => {
       const fetchedData = res.data;
-      const { bank_name, ifsc_code, beneficiary, account_no, account_type, old_esic_number, upi_Id, uan_number, old_pf_number } =
-        fetchedData;
+      const {
+        bank_name,
+        ifsc_code,
+        beneficiary,
+        account_no,
+        account_type,
+        old_esic_number,
+        upi_Id,
+        uan_number,
+        old_pf_number,
+      } = fetchedData;
       setBankName(bank_name);
       setIFSC(ifsc_code);
       setBeneficiary(beneficiary);
       setBankAccountNumber(account_no);
       setAccountType(account_type);
-      setOldPFNumber(old_pf_number)
-      setOldESICNumber(old_esic_number)
-      setUANNumber(uan_number)
-      setUPINumber(upi_Id)
+      setOldPFNumber(old_pf_number);
+      setOldESICNumber(old_esic_number);
+      setUANNumber(uan_number);
+      setUPINumber(upi_Id);
     });
   }, [userID]);
   const handleSubmitBank = async (e) => {
@@ -54,7 +63,6 @@ const OnboardingBankDetails = () => {
     formData.append("uan_number", UANNumber);
     formData.append("old_esic_number", oldESICNumber);
     formData.append("upi_id", upiNumber);
-
 
     if (!bankName || bankName == "") {
       return toastError("bank name is required");
@@ -121,7 +129,10 @@ const OnboardingBankDetails = () => {
         isOptionEqualToValue={(option, value) => option.value === value.value}
         value={
           bankName
-            ? IndianBankList.find((bank) => bank.value === bankName) || { label: customBank, value: "other" }
+            ? IndianBankList.find((bank) => bank.value === bankName) || {
+                label: customBank,
+                value: "other",
+              }
             : null
         }
         onChange={(event, newValue) => {

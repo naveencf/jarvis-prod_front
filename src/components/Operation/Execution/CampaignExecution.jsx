@@ -178,6 +178,17 @@ const CampaignExecution = () => {
   const handlePaymentSelect = async (selectedOption) => {
     if (!selectedOption) return;
 
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to proceed with the advanced payment option?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, proceed",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
     const invalidReasons = [];
 
     const allAudited = selectedData.every(
@@ -188,7 +199,8 @@ const CampaignExecution = () => {
     }
 
     const allPageMatch = selectedData.every(
-      (item) => item.page_name === selectedOption.page_name
+      (item) =>
+        item.page_name?.toLowerCase() === selectedOption.page_name?.toLowerCase()
     );
     if (!allPageMatch) {
       invalidReasons.push(
@@ -205,13 +217,11 @@ const CampaignExecution = () => {
 
       if (errors.length > 0) {
         invalidReasons.push(
-          `Post ${index + 1} (${item.shortCode || item.page_name
-          }): ${errors.join(", ")}`
+          `Post ${index + 1} (${item.shortCode || item.page_name}): ${errors.join(", ")}`
         );
       }
     });
 
-    // Calculate the net amount from the selected payment
     const netAmount =
       selectedOption.remaining_advance_amount - selectedOption.gst_amount;
     const totalSelectedAmount = selectedData.reduce(
@@ -248,7 +258,8 @@ const CampaignExecution = () => {
       });
       return;
     }
-    setAdvancedPaymentLoading(true)
+
+    setAdvancedPaymentLoading(true);
     try {
       const { data } = await verifyAdvancePurchase(shortCodes);
       if (data.success) {
@@ -259,7 +270,7 @@ const CampaignExecution = () => {
         });
         if (actTab == 5) handleFilterLinks();
         else await refetchPlanData();
-        await refetchAdvancedPayments()
+        await refetchAdvancedPayments();
       } else {
         Swal.fire({
           icon: "error",
@@ -267,7 +278,7 @@ const CampaignExecution = () => {
           text: data?.message,
         });
       }
-      setAdvancedPaymentLoading(false)
+      setAdvancedPaymentLoading(false);
     } catch (error) {
       console.log("Verification failed:", error);
       Swal.fire({
@@ -276,8 +287,9 @@ const CampaignExecution = () => {
         text: "Something went wrong",
       });
     }
-    setAdvancedPaymentLoading(false)
+    setAdvancedPaymentLoading(false);
   };
+
 
   async function handleFilterLinks(codes, tab) {
     setActTab(!memoValue?.current?.tab ? tab : memoValue?.current?.tab);
@@ -1905,7 +1917,7 @@ const CampaignExecution = () => {
                   }}
                   sx={{ width: 200, marginRight: 2 }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Select Page" variant="outlined" />
+                    <TextField {...params} label="Advanced Payment" variant="outlined" />
                   )}
                   onChange={(event, newValue) => handlePaymentSelect(newValue)}
                 />

@@ -191,6 +191,7 @@ const RenderedTable = ({
   };
   const handleSelectAll = (e) => {
     setSelectAll(e.target.checked);
+
     if (e.target.checked) {
       setSelectedRowsIndex(
         !!searchQuery
@@ -609,9 +610,9 @@ function DropdownElement({
                     filterCondition.map((item, i) =>
                       i === index
                         ? {
-                            ...item,
-                            ...valuefiller(value),
-                          }
+                          ...item,
+                          ...valuefiller(value),
+                        }
                         : item
                     )
                   );
@@ -630,9 +631,9 @@ function DropdownElement({
                       filterCondition.map((item, i) =>
                         i === index
                           ? {
-                              ...item,
-                              value1: e.target.value,
-                            }
+                            ...item,
+                            value1: e.target.value,
+                          }
                           : item
                       )
                     );
@@ -642,31 +643,31 @@ function DropdownElement({
 
               {(filterCondition[index]?.key === "notBetween" ||
                 filterCondition[index]?.key === "between") && (
-                <FieldContainer
-                  className="form-control form_sm"
-                  fieldGrid={12}
-                  fieldLabel="Value"
-                  placeholder={"Enter value"}
-                  type={
-                    filterCondition[index]?.type !== undefined
-                      ? filterCondition[index].type
-                      : "text"
-                  }
-                  value={filterCondition[index].value2}
-                  onChange={(e) => {
-                    setFilterCondition(
-                      filterCondition.map((item, i) =>
-                        i === index
-                          ? {
+                  <FieldContainer
+                    className="form-control form_sm"
+                    fieldGrid={12}
+                    fieldLabel="Value"
+                    placeholder={"Enter value"}
+                    type={
+                      filterCondition[index]?.type !== undefined
+                        ? filterCondition[index].type
+                        : "text"
+                    }
+                    value={filterCondition[index].value2}
+                    onChange={(e) => {
+                      setFilterCondition(
+                        filterCondition.map((item, i) =>
+                          i === index
+                            ? {
                               ...item,
                               value2: e.target.value,
                             }
-                          : item
-                      )
-                    );
-                  }}
-                />
-              )}
+                            : item
+                        )
+                      );
+                    }}
+                  />
+                )}
             </div>
           </li>
 
