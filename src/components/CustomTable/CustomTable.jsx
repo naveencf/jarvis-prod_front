@@ -93,7 +93,7 @@ const CustomTable = ({
   const loginUserId = decodedToken.id;
 
   useEffect(() => {
-    if (tableSelectedRows.length == 0) {
+    if (tableSelectedRows?.length == 0) {
       setSelectedRowsIndex([]);
     }
   }, [tableSelectedRows])
