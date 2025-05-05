@@ -593,7 +593,7 @@ export default function PendingPaymentRequest() {
                 contextData,
                 handlePaymentRequest
               })}
-              data={activeAccordionIndex === 0 ? filterData : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === 3) : activeAccordionIndex === 2 ? filterData : []}
+              data={activeAccordionIndex === 0 ? filterData.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null)) : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === 3 && (d.proccessingAmount == 0 || d.proccessingAmount == null)) : activeAccordionIndex === 2 ? filterData : []}
               isLoading={requestLoading || vendorRequestFetching}
               showTotal={true}
               title={'Pending Payment Request'}
