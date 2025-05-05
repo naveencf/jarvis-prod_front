@@ -63,54 +63,53 @@ const styles = StyleSheet.create({
 const EsicTable = ({ UserDetails }) => {
   let salary = UserDetails?.salary;
 
-  let basicSalary = salary * 0.6;
+  let basicSalary = salary * 0.65;
 
   let basicsal = (basicSalary < 12300 ? salary * 0.8 : basicSalary).toFixed(0);
+  // let basicsal = salary * 0.65;
 
-  let HRA = basicsal * 0.4;
+  // let HRA = basicsal * 0.4;
 
   let AdvanceBonus = (basicsal * 0.2).toFixed(0);
 
   let addbasicAdvance = Number(basicsal) + Number(AdvanceBonus);
 
-  let monthlyEncashment = ((basicsal / 30) * 2).toFixed(0);
+  // let monthlyEncashment = ((basicsal / 30) * 2).toFixed(0);
 
-  let monthEncash =
-    salary >= 20500 ? monthlyEncashment : salary - addbasicAdvance;
+  // let monthEncash =
+  // salary >= 20500 ? monthlyEncashment : salary - addbasicAdvance;
 
-  let specialAllowance =
-    salary - basicsal - HRA - AdvanceBonus - monthlyEncashment;
+  let specialAllowance = salary - (Number(basicsal) + Number(AdvanceBonus));
 
   let EmployeePF = parseFloat(
     (basicsal <= 14999 ? basicsal * 0.12 : 1800).toFixed(0)
   );
-  let EmployeESIC = parseFloat(((salary * 0.75) / 100).toFixed(0));
+  let EmployeESIC =
+    salary <= 21000 ? parseFloat(((salary * 0.75) / 100).toFixed(0)) : 0;
 
-  let EmployeerESIC = parseFloat(((salary * 3.25) / 100).toFixed(0));
+  let EmployeerESIC =
+    salary <= 21000 ? parseFloat(((salary * 3.25) / 100).toFixed(0)) : 0;
 
   let TotalEarnings =
-    salary >= 20500
-      ? Number(basicsal) +
-        Number(HRA) +
-        Number(AdvanceBonus) +
-        Number(monthEncash) +
-        Number(specialAllowance)
-      : Number(basicsal) + Number(AdvanceBonus) + Number(monthEncash);
+    salary <= 21000
+      ? Number(basicsal) + Number(AdvanceBonus) + Number(specialAllowance)
+      : Number(basicsal) + Number(AdvanceBonus) + Number(specialAllowance);
 
   let TotalCTC =
-    salary >= 20500
-      ? Number(salary) + Number(EmployeePF)
-      : Number(salary) + Number(EmployeePF) + Number(EmployeerESIC);
+    salary <= 21000
+      ? Number(salary) + Number(EmployeePF) + Number(EmployeerESIC)
+      : Number(salary) + Number(EmployeePF);
+  console.log();
 
   basicSalary = basicSalary.toFixed(2);
-  HRA = HRA.toFixed(2);
   AdvanceBonus = Number(AdvanceBonus).toFixed(2);
-  monthlyEncashment = Number(monthlyEncashment).toFixed(2);
+  // monthlyEncashment = Number(monthlyEncashment).toFixed(2);
   specialAllowance = specialAllowance.toFixed(2);
   EmployeePF = EmployeePF.toFixed(2);
   TotalEarnings = TotalEarnings.toFixed(2);
   TotalCTC = TotalCTC.toFixed(2);
 
+  console.log(Number(EmployeePF) + Number(EmployeESIC), "netpay");
   return (
     <>
       <View style={styles.table}>
@@ -141,7 +140,7 @@ const EsicTable = ({ UserDetails }) => {
             </Text>
           </View>
         </View>
-        {salary > 20500 && (
+        {/* {salary > 20500 && (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell1}>HRA</Text>
@@ -153,7 +152,7 @@ const EsicTable = ({ UserDetails }) => {
               <Text style={styles.tableCell}>INR {(HRA * 12).toFixed(2)}</Text>
             </View>
           </View>
-        )}
+        )} */}
         <View style={styles.tableRow}>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell1}>Advance Bonus</Text>
@@ -167,7 +166,7 @@ const EsicTable = ({ UserDetails }) => {
             </Text>
           </View>
         </View>
-        <View style={styles.tableRow}>
+        {/* <View style={styles.tableRow}>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell1}>Monthly Leave Encashment</Text>
           </View>
@@ -179,19 +178,21 @@ const EsicTable = ({ UserDetails }) => {
               INR {(monthEncash * 12).toFixed(2)}
             </Text>
           </View>
-        </View>
-        {/* {salary > 20500 && (<View style={styles.tableRow}>
-                    <View style={styles.tableCol}>
-                        <Text style={styles.tableCell1}>Special Allowance</Text>
-                    </View>
-                    <View style={styles.tableCol}>
-                        <Text style={styles.tableCell}>INR {specialAllowance}</Text>
-                    </View>
-                    <View style={styles.tableCol}>
-                        <Text style={styles.tableCell}>INR {(specialAllowance * 12).toFixed(2)}</Text>
-                    </View>
+        </View> */}
 
-                </View>)} */}
+        <View style={styles.tableRow}>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell1}>Special Allowance</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>INR {specialAllowance}</Text>
+          </View>
+          <View style={styles.tableCol}>
+            <Text style={styles.tableCell}>
+              INR {(specialAllowance * 12).toFixed(2)}
+            </Text>
+          </View>
+        </View>
         <View style={styles.tableRow}>
           <View style={styles.tableCol}>
             <Text style={styles.tableCell1}>TOTAL EARNING</Text>
@@ -233,7 +234,7 @@ const EsicTable = ({ UserDetails }) => {
             </Text>
           </View>
         </View>
-        {salary < 21000 && (
+        {salary <= 21000 && (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell1}>ESIC Employee</Text>
@@ -255,9 +256,12 @@ const EsicTable = ({ UserDetails }) => {
           <View style={styles.tableCol}>
             <Text style={styles.tableCell}>
               INR{" "}
-              {salary >= 20500
-                ? (TotalEarnings - EmployeePF).toFixed(2)
-                : (TotalEarnings - EmployeePF - EmployeESIC).toFixed(2)}
+              {salary <= 21000
+                ? (
+                    Number(TotalEarnings) -
+                    (Number(EmployeePF) + Number(EmployeESIC))
+                  )?.toFixed(2)
+                : (Number(TotalEarnings) - Number(EmployeePF))?.toFixed(2)}
             </Text>
           </View>
           <View style={styles.tableCol}>
@@ -297,7 +301,7 @@ const EsicTable = ({ UserDetails }) => {
             </Text>
           </View>
         </View>
-        {salary < 21000 && (
+        {salary <= 21000 && (
           <View style={styles.tableRow}>
             <View style={styles.tableCol}>
               <Text style={styles.tableCell1}>ESIC Employer</Text>

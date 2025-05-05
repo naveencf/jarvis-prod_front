@@ -198,7 +198,14 @@ const LinkUpload = ({
     const uniqueLinks = filterDuplicateLinks();
     const shortCodes = uniqueLinks
       .map((link) => {
-        const match = link.match(/\/(?:share\/)?(reel|p)\/([A-Za-z0-9-_]+)/);
+        const match = link.match(/\/(?:share\/)?(?:reel|p)\/([A-Za-z0-9-_]+)/);
+        const match2 = link.match(
+          /\/(?:(share)\/(?:reel|p)\/|(reel|p)\/|share\/)([A-Za-z0-9-_]+)/
+        );
+        console.log(match, "-------->", match2)
+        // const match = link.match(
+        //   /\/(?:(share)\/(?:reel|p)\/|(reel|p)\/|share\/)([A-Za-z0-9-_]+)/
+        // );
 
         //https://www.instagram.com/reel/DGw_rSoCdLV/?igsh=MWVkYTU3dHViNWVqaw==  /\/(reel|p|share)\/([A-Za-z0-9-_]+)/
         return match

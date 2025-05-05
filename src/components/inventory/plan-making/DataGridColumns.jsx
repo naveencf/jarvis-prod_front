@@ -69,7 +69,7 @@ const DataGridColumns = ({
       },
       width: 200,
       showCol: true,
-      compare:true,
+      compare: true,
     },
 
     // {
@@ -144,6 +144,13 @@ const DataGridColumns = ({
       key: 'ownership_type',
       name: 'Ownership',
       renderRowCell: (row) => row.ownership_type,
+      width: 100,
+      showCol: true,
+    },
+    {
+      key: 'rate_type',
+      name: 'Rate Type',
+      // renderRowCell: (row) => row.rate_type,
       width: 100,
       showCol: true,
     },

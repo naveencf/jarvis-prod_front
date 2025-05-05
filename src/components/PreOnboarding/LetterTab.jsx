@@ -295,7 +295,11 @@ const LetterTab = ({ allUserData, gettingData }) => {
                 />
                 <BlobProvider
                   document={
-                    <OfferLetter allUserData={allUserData} image64={image64} />
+                    <OfferLetter
+                      allUserData={allUserData}
+                      image64={image64}
+                      EMPPF={calculateEMPPF(allUserData)}
+                    />
                   }
                 >
                   {({ blob, url, loading, error }) => {

@@ -27,7 +27,7 @@ const DigitalSignature = ({
 
     // Validate file size (1MB = 1024 * 1024 bytes)
     if (file.size > 1024 * 1024) {
-      toastError("File size should be less than 1MB.");
+      alert("File size should be less than 1MB.");
       return;
     }
 
