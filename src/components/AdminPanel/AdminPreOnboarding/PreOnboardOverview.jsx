@@ -7,6 +7,8 @@ import { Button } from "@mui/material";
 import { baseUrl } from "../../../utils/config";
 import { useGlobalContext } from "../../../Context/Context";
 import Loader from "../../Finance/Loader/Loader";
+import { RiLoginBoxLine } from "react-icons/ri";
+import jwtDecode from "jwt-decode";
 
 const PreOnboardOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -14,6 +16,12 @@ const PreOnboardOverview = () => {
   const [datas, setDatas] = useState([]);
   const [filterdata, setFilterData] = useState([]);
   const [isloading, setLoading] = useState(true);
+
+  const storedToken = sessionStorage.getItem("token");
+  const decodedToken = jwtDecode(storedToken);
+  const userID = decodedToken.id;
+  const roleToken = decodedToken.role_id;
+  const oldToken = sessionStorage.getItem("token");
 
   async function getData() {
     try {
@@ -47,6 +55,37 @@ const PreOnboardOverview = () => {
       })
       .then(() => getData());
     toastAlert("User Onboarded Successfully");
+  };
+
+  const handleLogin = (user_id, user_login_id, user_login_password) => {
+    axios
+      .post(baseUrl + "login_user", {
+        user_id: user_id,
+        user_login_id: user_login_id,
+        user_login_password: user_login_password,
+        role_id: roleToken,
+      })
+      .then((res) => {
+        const token1 = res.data.token;
+        sessionStorage.getItem("token", token1);
+        if (oldToken && token1) {
+          sessionStorage.setItem("token", token1);
+          const decodedToken = jwtDecode(token1);
+          const deptId = decodedToken.dept_id;
+          const userRole = decodedToken.role_id;
+          const onboardStatus = decodedToken.onboard_status;
+          if (deptId == 36 && onboardStatus == 1) {
+            window.open("/admin/sales-dashboard", "_blank");
+          } else if (deptId === 20) {
+            navigate("/admin/pantry");
+          } else {
+            window.open("/", "_blank");
+          }
+          sessionStorage.setItem("token", oldToken);
+        } else {
+          navigate("/admin/user-overview");
+        }
+      });
   };
 
   useEffect(() => {
@@ -159,6 +198,25 @@ const PreOnboardOverview = () => {
       reorder: true,
     },
     {
+      name: "Log",
+      selector: (row) => row.user_login_id,
+      cell: (row) => (
+        <Button
+          className=" cmnbtn btn_sm"
+          size="small"
+          color="primary"
+          variant="outlined"
+          sx={{ marginRight: "10px" }}
+          startIcon={<RiLoginBoxLine />}
+          onClick={() =>
+            handleLogin(row.user_id, row.user_login_id, row.user_login_password)
+          }
+        ></Button>
+      ),
+      width: 100,
+      sortable: true,
+    },
+    {
       name: "Status",
       selector: (row) => row.user_status,
       width: "4%",
@@ -178,6 +236,7 @@ const PreOnboardOverview = () => {
       ),
       reorder: true,
     },
+
     {
       name: "Exit",
       selector: (row) => row.user_status,

@@ -51,9 +51,9 @@ const DuplicayModal = ({
         shortCodes: !isBoth
           ? duplicateMsg?.NewShortCodes
           : [
-              ...duplicateMsg?.NewShortCodes,
-              ...duplicateMsg?.duplicateShortCodes,
-            ],
+            ...duplicateMsg?.NewShortCodes,
+            ...duplicateMsg?.duplicateShortCodes,
+          ],
         department: token.dept_id,
         userId: token.id,
         phaseDate: phaseDate,
@@ -128,7 +128,7 @@ const DuplicayModal = ({
               <textarea
                 className="text-area"
                 value={duplicateMsg.duplicateLinks}
-                // onChange={(e) => setLinks(e.target.value)}
+              // onChange={(e) => setLinks(e.target.value)}
               />
             </div>
             <div className="col-md-6">
@@ -137,7 +137,7 @@ const DuplicayModal = ({
               <textarea
                 className="text-area"
                 value={duplicateMsg.NewLinks}
-                // onChange={(e) => setLinks(e.target.value)}
+              // onChange={(e) => setLinks(e.target.value)}
               />
             </div>
             <div className="col-md-12">
@@ -163,7 +163,7 @@ const DuplicayModal = ({
                 updateLoading || duplicateMsg.duplicateShortCodes?.length < 1
               }
             >
-              Update Phase Date of Duplicate Links
+              Update Phase Date of Duplicate Links {duplicateMsg.duplicateShortCodes?.length}
             </button>
 
             <button
