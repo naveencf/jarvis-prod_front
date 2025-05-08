@@ -123,9 +123,6 @@ const VendorStatementComponent = ({
     handleVendorChange,
     vendorList,
     setVendorSearchQuery,
-    totalDebit,
-    totalCredit,
-    runningBalance,
     vendorData,
     vendorPhpDetail,
     actualOutstanding,
@@ -139,6 +136,7 @@ const VendorStatementComponent = ({
     filteredData,
     isLoading,
     isFetching,
+    ledgerAmountData
 
 }) => {
     if (activeTab !== "Tab1") return null;
@@ -155,9 +153,9 @@ const VendorStatementComponent = ({
                     setVendorSearchQuery={setVendorSearchQuery}
                 />
                 <div className="stats">
-                    <StatsBox title="Total Debited Amount" amount={totalDebit} />
-                    <StatsBox title="Total Credit Amount" amount={totalCredit} />
-                    <StatsBox title="Balance Amount" amount={runningBalance} />
+                    <StatsBox title="Total Debited Amount" amount={ledgerAmountData?.totalDebit} />
+                    <StatsBox title="Total Credit Amount" amount={ledgerAmountData?.totalCredit} />
+                    <StatsBox title="Balance Amount" amount={ledgerAmountData?.balance} />
                 </div>
             </div>
             <div className="statementDocBody card-body p-3">

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { FaEdit } from "react-icons/fa";
 import DeleteButton from "../DeleteButton";
 import { Link } from "react-router-dom";
-import { Box, Grid, Skeleton, TextField } from "@mui/material";
+import { Box, Grid, Skeleton, TextField, Modal, Button } from "@mui/material";
 import View from "../Sales/Account/View/View";
 import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
 import Brightness6Icon from "@mui/icons-material/Brightness6";
@@ -32,8 +32,12 @@ import VendorDetails from "./Vendor/VendorDetails";
 import {
   useGetAllPageListQuery,
   useGetCountDocumentsQuery,
+  useGetDeletedVendorDataQuery,
   useGetStateandCityVendoDataCountQuery,
   useGetVendorDataWithStateCityQuery,
+  useGetVendorRetainMutation,
+  useGetVendorStaticsCountDataQuery,
+  useGetVendorWithCategoryQuery,
 } from "../../Store/PageBaseURL";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
@@ -43,8 +47,22 @@ import VendorMPriceModal from "./VendorMPriceModal";
 import { formatNumber } from "../../../utils/formatNumber";
 import CustomTableV2 from "../../CustomTable_v2/CustomTableV2";
 import VendorDocCount from "./Vendor/VendorDocCount";
+import { useGlobalContext } from "../../../Context/Context";
+import { set } from "date-fns";
 
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 1100,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 const VendorOverview = () => {
+  const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
@@ -61,11 +79,24 @@ const VendorOverview = () => {
   //   ? { home_state: stateDataS }
   //   : null;
   const [queryParams, setQueryParams] = useState(null);
-
   const { data: cityStateWiseData } = useGetVendorDataWithStateCityQuery(
     queryParams,
     {
       skip: !queryParams,
+    }
+  );
+
+  const { data: vendorStaticCountData } = useGetVendorStaticsCountDataQuery();
+  const vendorStaticCount = vendorStaticCountData?.vendor_category;
+  const vendorCountWithPlatform = vendorStaticCountData?.vendor_platforms;
+
+  const [queryVendorWith, setQueryVendorWith] = useState(null);
+  const [cateogryChange, setCateogryChange] = useState(null);
+
+  const { data: vendorWithStaticData } = useGetVendorWithCategoryQuery(
+    queryVendorWith,
+    {
+      skip: !queryVendorWith,
     }
   );
 
@@ -91,8 +122,13 @@ const VendorOverview = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
-  const [inputValue, setInputValue] = useState('');
-  const { data: vendor, refetch: refetchVendor, isLoading: isVendorLoading, isFetching: isVendorFetching } = useGetVendorsWithPaginationQuery({ page, limit, search });
+  const [inputValue, setInputValue] = useState("");
+  const {
+    data: vendor,
+    refetch: refetchVendor,
+    isLoading: isVendorLoading,
+    isFetching: isVendorFetching,
+  } = useGetVendorsWithPaginationQuery({ page, limit, search });
   const typeData = vendor?.data?.data;
   const vendorData = vendor?.data;
   const pagination = vendor?.pagination_data;
@@ -103,6 +139,31 @@ const VendorOverview = () => {
   const { data: cycle } = useGetPmsPayCycleQuery();
 
   const [closedByCount, setClosedByCount] = useState([]);
+
+  const [openDisabledVendor, setOpenDisabledVednor] = useState(false);
+  const handleCloseDisabled = () => setOpenDisabledVednor(false);
+  const { data: disabledVedorData, refetch: vendordataRefetch } =
+    useGetDeletedVendorDataQuery();
+  const handleDisabledVendor = async () => {
+    setOpenDisabledVednor(true);
+  };
+  const [vendorDeletedUnrap] = useGetVendorRetainMutation();
+  const handleRetainVendor = (row) => {
+    const payload = {
+      id: row._id,
+      vendor_name: row.vendor_name,
+    };
+
+    vendorDeletedUnrap(payload)
+      .unwrap()
+      .then(() => {
+        toastAlert("Vendor retained successfully");
+        vendordataRefetch();
+        // handleCloseDisabled();
+      })
+      .catch((err) => toastError(err.message));
+  };
+
   function debounce(func, delay) {
     let timer;
     return (...args) => {
@@ -113,7 +174,7 @@ const VendorOverview = () => {
 
   const debouncedSearch = useCallback(
     debounce((value) => {
-      setSearch(value)
+      setSearch(value);
     }, 300),
     []
   );
@@ -615,19 +676,19 @@ const VendorOverview = () => {
   }, []);
 
   // for category statistics
-  useEffect(() => {
-    const countVendorCategories = (tabFilterData) => {
-      const counts = {};
-      tabFilterData.forEach((item) => {
-        const category = item.vendor_category;
-        counts[category] = (counts[category] || 0) + 1;
-      });
-      return counts;
-    };
+  // useEffect(() => {
+  //   const countVendorCategories = (tabFilterData) => {
+  //     const counts = {};
+  //     tabFilterData.forEach((item) => {
+  //       const category = item.vendor_category;
+  //       counts[category] = (counts[category] || 0) + 1;
+  //     });
+  //     return counts;
+  //   };
 
-    const counts = countVendorCategories(tabFilterData);
-    setCategoryCounts(counts);
-  }, [tabFilterData]);
+  //   const counts = countVendorCategories(tabFilterData);
+  //   setCategoryCounts(counts);
+  // }, [tabFilterData]);
 
   // for platform statistics
   useEffect(() => {
@@ -684,6 +745,17 @@ const VendorOverview = () => {
     setFilterStateData(vendorwithcategories);
     setActiveTab("Tab1");
   };
+
+  const vendorWithCategoriesOnly = (category) => {
+    setCateogryChange(category);
+    setQueryVendorWith({ vendor_category: category });
+    // const vendorwithcategories = tabFilterData.filter(
+    //   (item) => item.vendor_category === category
+    // );
+    // setFilterStateData(vendorwithcategories);
+    setActiveTab("Tab1");
+  };
+
   const vendorWithState = (category) => {
     setStateDataS(category);
     setQueryParams({ home_state: category }); // trigger API call
@@ -708,13 +780,21 @@ const VendorOverview = () => {
     }
   }, [cityStateWiseData, cityDataS, stateDataS]);
 
+  useEffect(() => {
+    if (vendorWithStaticData) {
+      setFilterStateData(vendorWithStaticData);
+    }
+  }, [vendorWithStaticData, cateogryChange]);
+
   const vendorWithPlatforms = (platform) => {
-    const vendorwithplatforms = tabFilterData.filter(
-      (item) => item.vendor_platform == platform
-    );
-    setFilterData(vendorwithplatforms);
+    setQueryVendorWith({ vendor_platform: platform });
+    // const vendorwithplatforms = tabFilterData.filter(
+    //   (item) => item.vendor_platform == platform
+    // );
+    // setFilterData(vendorwithplatforms);
     setActiveTab("Tab1");
   };
+
   const vendorClosedBy = (closeby) => {
     const vendorclosedby = tabFilterData.filter(
       (item) => item.closed_by == closeby
@@ -733,6 +813,52 @@ const VendorOverview = () => {
   const ExportData = () => {
     return decodedToken?.role_id == 1; // returns false if role_id is not 1, otherwise true
   };
+
+  const dataVendorDeletedcolumns = [
+    {
+      key: "sno",
+      name: "S.NO",
+      width: 80,
+      renderRowCell: (row, index) => {
+        return index + 1;
+      },
+    },
+    {
+      key: "vendor_name",
+      name: "vendor_name",
+      width: 200,
+      editable: true,
+    },
+    {
+      key: "vendor_category",
+      name: "vendor_category",
+      width: 200,
+      editable: true,
+    },
+    {
+      key: "vendor_type_name",
+      name: "vendor_type_name",
+      width: 200,
+      editable: true,
+    },
+    {
+      key: "Add Vendor",
+      name: "Add Vendor",
+      width: 200,
+      renderRowCell: (row) => {
+        return (
+          <button
+            title="Retain Vendor"
+            className="btn btn-outline-primary btn-sm user-button"
+            onClick={() => handleRetainVendor(row)}
+          >
+            Add Vendor
+          </button>
+        );
+      },
+    },
+  ];
+
   return (
     <>
       <VendorMPriceModal
@@ -814,12 +940,20 @@ const VendorOverview = () => {
                       : filterData?.length}
                   </h5>
                   <div className="flexCenter colGap8">
+                    <button
+                      className="btn cmnbtn btn_sm btn-outline-danger"
+                      onClick={handleDisabledVendor}
+                    >
+                      Disabled Vendor
+                    </button>
+
                     <Link
                       to={`/admin/pms-vendor-master`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
                     >
                       Add Vendor <i className="fa fa-plus" />
                     </Link>
+
                     <Link
                       to={`/admin/pms-page-overview`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
@@ -864,7 +998,6 @@ const VendorOverview = () => {
                       </Grid>
                     </Box>
                   ) : (
-
                     <View
                       version={1}
                       columns={dataGridcolumns}
@@ -905,8 +1038,6 @@ const VendorOverview = () => {
                     />
                   )}
 
-                 
-                
                   {/* <View version={1} columns={dataGridcolumns} data={filterData} isLoading={false} title="Vendor Overview" rowSelectable={true} pagination={[100, 200, 1000]} tableName="Vendor Overview" selectedData={setGetRowData} exportData={ExportData} /> */}
                 </div>
                 <VendorBankDetailModal />
@@ -924,14 +1055,47 @@ const VendorOverview = () => {
               </div>
               <div className="card-body">
                 <div className="row">
-                  {Object.entries(categoryCounts).map(([category, count]) => (
+                  {vendorStaticCount &&
+                  typeof vendorStaticCount === "object" ? (
+                    Object.entries(vendorStaticCount).map(
+                      ([category, count]) => (
+                        <div
+                          className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
+                          key={category}
+                        >
+                          <div
+                            className="card"
+                            onClick={() => vendorWithCategoriesOnly(category)}
+                          >
+                            <div className="card-body pb20 flexCenter colGap14">
+                              <div className="iconBadge small bgPrimaryLight m-0">
+                                <span>
+                                  <Brightness6Icon />
+                                </span>
+                              </div>
+                              <div>
+                                <h6 className="colorMedium">{category}</h6>
+                                <h6 className="mt4 fs_16">{count}</h6>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )
+                  ) : (
+                    <div className="col-12">
+                      <p>No category data available.</p>
+                    </div>
+                  )}
+                </div>
+                <div className="row">
+                  {Object?.entries(categoryCounts).map(([category, count]) => (
                     <div
                       className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12"
-                      key={Math.random()}
+                      key={category}
                     >
                       <div
                         className="card"
-                        key={category}
                         onClick={() => vendorWithCategories(category)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
@@ -964,10 +1128,7 @@ const VendorOverview = () => {
                     <div>
                       <h6 className="colorMedium">Vendor with 0 pages</h6>
                       <h6 className="mt4 fs_16">
-                        {
-                          tabFilterData.filter((item) => item.page_count == 0)
-                            ?.length
-                        }
+                        {vendorStaticCountData?.vendor_with_0_page_count}
                       </h6>
                     </div>
                   </div>
@@ -986,10 +1147,11 @@ const VendorOverview = () => {
                         Vendor with no mobile number
                       </h6>
                       <h6 className="mt4 fs_16">
-                        {
+                        {vendorStaticCountData?.vendor_with_no_mobile_no}
+                        {/* {
                           tabFilterData.filter((item) => item.mobile == 0)
                             ?.length
-                        }
+                        } */}
                       </h6>
                     </div>
                   </div>
@@ -1006,10 +1168,7 @@ const VendorOverview = () => {
                     <div>
                       <h6 className="colorMedium">Vendor with no email id</h6>
                       <h6 className="mt4 fs_16">
-                        {
-                          tabFilterData.filter((item) => item.email == "")
-                            ?.length
-                        }
+                        {vendorStaticCountData?.vendor_with_no_email_id}
                       </h6>
                     </div>
                   </div>
@@ -1023,15 +1182,14 @@ const VendorOverview = () => {
               </div>
               <div className="card-body">
                 <div className="row">
-                  {platformCounts.map((item, index) => (
+                  {vendorCountWithPlatform?.map((data, index) => (
                     <div
                       className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
-                      key={index}
+                      key={data.platform_id}
                     >
                       <div
                         className="card"
-                        key={index}
-                        onClick={() => vendorWithPlatforms(item.platform_id)}
+                        onClick={() => vendorWithPlatforms(data.platform_id)}
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -1040,10 +1198,10 @@ const VendorOverview = () => {
                             </span>
                           </div>
                           <div>
-                            <h6 className="colorMedium">
-                              {item.platform_name}
+                            <h6 className="colorMedium text-capitalize">
+                              {data.platform_name}
                             </h6>
-                            <h6 className="mt4 fs_16">{item.count}</h6>
+                            <h6 className="mt4 fs_16">{data.count}</h6>
                           </div>
                         </div>
                       </div>
@@ -1173,6 +1331,39 @@ const VendorOverview = () => {
           </div>
         )}
       </div>
+
+      <>
+        <Modal
+          open={openDisabledVendor}
+          onClose={handleCloseDisabled}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <button
+              className="btn cmnbtn btn_sm btn-danger "
+              onClick={handleCloseDisabled}
+              style={{
+                position: "absolute",
+                top: "0px",
+                right: "10px",
+                margin: "5px",
+                zIndex: 1000,
+              }}
+            >
+              X
+            </button>
+            <View
+              columns={dataVendorDeletedcolumns}
+              data={disabledVedorData}
+              isLoading={false}
+              title={"Disabled Vendor"}
+              pagination={[100, 200, 1000]}
+              tableName={"Disabled Pages"}
+            />
+          </Box>
+        </Modal>
+      </>
     </>
   );
 };

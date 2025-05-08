@@ -44,6 +44,7 @@ import SalesBonusSummary from "./Sales/ Bonus/SalesBonusSummary";
 import BonusSlabMastAddEdit from "./Sales/ Bonus/BonusSlabMast/BonusSlabMastAddEdit";
 import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview";
 import RecordServiceDistribution from "./Sales/SaleBooking/RecordServiceDistribution.jsx";
+import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -668,7 +669,9 @@ const RegisteredCampaigns = lazy(() =>
 const PlanCreation = lazy(() => import("./Operation/PlanCreation"));
 const PhaseCreation = lazy(() => import("./Operation/PhaseCreation"));
 const AuditPurchase = lazy(() => import("../Purchase/AuditPurchase"));
-const AdvancePurchaseOverview = lazy(() => import("../Purchase/AdvancePurchaseOverview"));
+const AdvancePurchaseOverview = lazy(() =>
+  import("../Purchase/AdvancePurchaseOverview")
+);
 const CampaignExecutions = lazy(() =>
   import("./Operation/CampaignExecutionOverview/CampaignExecutions")
 );
@@ -2017,6 +2020,7 @@ const Admin = () => {
                       path="/pms-page-overview"
                       element={<PageOverviewNew />}
                     />
+                    <Route path="/pms-page-logs" element={<PageLogs />} />
                     <Route
                       path="/pms-purchase-price/:id"
                       element={<PurchasePrice />}

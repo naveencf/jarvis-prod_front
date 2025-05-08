@@ -101,7 +101,7 @@ function PageOverviewHeader({
   const { data } = useGetAllCountWisePageQuery({ activeTab });
   const categoryOptionsWithCount =
     data?.category &&
-    Object.entries(data?.category)?.map(([label, count]) => {
+    Object?.entries(data?.category)?.map(([label, count]) => {
       const formattedLabel = formatString(label);
       return {
         label: `${formattedLabel}: ${count}`,
@@ -175,13 +175,13 @@ function PageOverviewHeader({
   useEffect(() => {
     const storedFilters = JSON.parse(sessionStorage.getItem("filters"));
     if (storedFilters) {
-      setCategoryFilter(storedFilters.categoryFilter);
-      setSubCategoryFilter(storedFilters.subCategoryFilter);
-      setProfileTypeFilter(storedFilters.profileTypeFilter);
-      setPlatformFilter(storedFilters.platformFilter);
-      setOwnershipFilter(storedFilters.ownershipFilter);
-      setActivenessFilter(storedFilters.activenessFilter);
-      setFilterFollowers(storedFilters.filterFollowers);
+      setCategoryFilter(storedFilters?.categoryFilter);
+      setSubCategoryFilter(storedFilters?.subCategoryFilter);
+      setProfileTypeFilter(storedFilters?.profileTypeFilter);
+      setPlatformFilter(storedFilters?.platformFilter);
+      setOwnershipFilter(storedFilters?.ownershipFilter);
+      setActivenessFilter(storedFilters?.activenessFilter);
+      setFilterFollowers(storedFilters?.filterFollowers);
     }
   }, []);
 
@@ -228,18 +228,23 @@ function PageOverviewHeader({
   useEffect(() => {
     const queryParams = [
       activeTab && `platform_name=${activeTab}`,
-      categoryFilter && `page_category_name=${encodeURIComponent(categoryFilter?.toLowerCase())}`,
+      categoryFilter &&
+        `page_category_name=${encodeURIComponent(
+          categoryFilter?.toLowerCase()
+        )}`,
       subCategoryFilter &&
-      `page_sub_category_name=${encodeURIComponent(subCategoryFilter.toLowerCase())}`,
+        `page_sub_category_name=${encodeURIComponent(
+          subCategoryFilter.toLowerCase()
+        )}`,
       profileTypeFilter &&
-      `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
+        `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
       ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`,
       filterFollowers &&
-      `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
+        `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
       activenessFilter &&
-      `page_activeness=${activenessOptions
-        .find((option) => option.value === activenessFilter.toLowerCase())
-        ?.value?.toLowerCase()}`,
+        `page_activeness=${activenessOptions
+          .find((option) => option.value === activenessFilter.toLowerCase())
+          ?.value?.toLowerCase()}`,
       searchTerm && `search=${searchTerm.toLowerCase()}`,
       sortField && `sort_by=${sortField}&order=${sortOrder}`,
     ]
@@ -311,7 +316,7 @@ function PageOverviewHeader({
   // Helper function to extract just the label (before parentheses)
   const extractLabel = (optionWithCount) => {
     if (optionWithCount) {
-      console.log(optionWithCount.split(" (")[0], "optionWithCount")
+      console.log(optionWithCount.split(" (")[0], "optionWithCount");
       return optionWithCount.split(" (")[0];
     }
     return null;
@@ -479,8 +484,9 @@ function PageOverviewHeader({
   }, [activeTab]);
 
   const handleSubCategoryChange = (e, newValue) => {
-    setSubCategoryFilter(newValue ? newValue.value : "")
-  }
+    setSubCategoryFilter(newValue ? newValue.value : "");
+  };
+
   return (
     <div className="card">
       <div className="">
@@ -518,8 +524,8 @@ function PageOverviewHeader({
                 {categoryFilter != null && (
                   <Typography>
                     Category -{" "}
-                    {categoryFilter.charAt(0).toUpperCase() +
-                      categoryFilter.slice(1)}
+                    {categoryFilter?.charAt(0).toUpperCase() +
+                      categoryFilter?.slice(1)}
                   </Typography>
                 )}
                 {subCategoryFilter != null && (
@@ -542,6 +548,13 @@ function PageOverviewHeader({
                 selectedData={selectedData}
                 setSelectedData={setSelectedData}
               />
+
+              <Link
+                to={`/admin/pms-page-logs`}
+                className="btn cmnbtn btn_sm btn-outline-success"
+              >
+                Page Logs
+              </Link>
               <button
                 className="btn cmnbtn btn_sm btn-outline-danger"
                 onClick={handleDisabledPages}
@@ -583,6 +596,12 @@ function PageOverviewHeader({
                 renderInput={(params) => (
                   <TextField {...params} label="Category" />
                 )}
+                disabled={
+                  !(
+                    categoryOptionsWithCount &&
+                    categoryOptionsWithCount.length > 0
+                  )
+                }
               />
 
               {/* <Autocomplete
@@ -606,7 +625,6 @@ function PageOverviewHeader({
                   ) || null
                 }
                 onChange={(event, newValue) =>
-
                   handleSubCategoryChange(event, newValue)
                 }
                 options={subCategoryOptionsWithCount}
@@ -614,6 +632,12 @@ function PageOverviewHeader({
                 renderInput={(params) => (
                   <TextField {...params} label="Subcategory" />
                 )}
+                disabled={
+                  !(
+                    subCategoryOptionsWithCount &&
+                    subCategoryOptionsWithCount.length > 0
+                  )
+                }
               />
             </div>
             <div className="col-md-3 mb16">
@@ -631,6 +655,12 @@ function PageOverviewHeader({
                 renderInput={(params) => (
                   <TextField {...params} label="Profile Type" />
                 )}
+                disabled={
+                  !(
+                    profileDataOptionsWithCount &&
+                    profileDataOptionsWithCount.length > 0
+                  )
+                }
               />
             </div>
             {/* <div className="col-md-3 mb16">
@@ -662,6 +692,9 @@ function PageOverviewHeader({
                 renderInput={(params) => (
                   <TextField {...params} label="Ownership" />
                 )}
+                disabled={
+                  !(ownershipWithCount && ownershipWithCount.length > 0)
+                }
               />
             </div>
 

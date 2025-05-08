@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
+  useGetLedgerAmountByVendorQuery,
   useGetLedgerQuery,
   useGetVendorAdvancedPaymentQuery,
   useGetVendorDetailQuery,
@@ -79,6 +80,12 @@ const Ledger = () => {
     useGetVendorsWithSearchQuery(vendorSearchQuery);
   const { data: vendorData, isLoading: isVendorDataLoading, isFetching: isVendorDataFetching } = useGetVendorPendingAuditedOutstandingQuery(id);
   const { data: vendorDetail, isLoading: isVendorDetailLoading, isFetching: isVendorDetailFetching } = useGetVendorDetailQuery(id);
+  const {
+    data: ledgerAmountData,
+    isLoading: isLedgerLoading,
+    isFetching: isLedgerFetching,
+  } = useGetLedgerAmountByVendorQuery(id);
+
   const [selectedVendor, setSelectedVendor] = useState(vendorDetail);
 
   const {
@@ -159,7 +166,7 @@ const Ledger = () => {
     (sum, { Credit_amt }) => sum + (Number(Credit_amt) || 0),
     0
   );
-  let runningBalance = totalDebit - totalCredit;
+  let runningBalance = ledgerAmountData?.totalDebit - ledgerAmountData?.totalCredit;
 
   const columns = [
     {
@@ -357,6 +364,7 @@ const Ledger = () => {
         filteredData={filteredData}
         isLoading={isLoading}
         isFetching={isFetching}
+        ledgerAmountData={ledgerAmountData}
       />
 
       <AdvancedPaymentComponent

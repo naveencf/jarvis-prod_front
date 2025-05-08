@@ -361,10 +361,11 @@ function PayVendorDialog(props) {
     else if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
       toastError("Invalid Amount")
       return;
-    } else if (rowSelectionModel?.ifsc == "") {
-      toastError("Invalid IFSC Code")
+    } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(rowSelectionModel?.ifsc)) {
+      toastError("Invalid IFSC Code");
       return;
     }
+
     let mailTo = userEmail;
     if (!userEmail || userEmail == "") {
       mailTo = "naveen@creativefuel.io";

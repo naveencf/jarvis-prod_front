@@ -41,27 +41,27 @@ function PageOverviewWithoutHealth({
   const userID = decodedToken.id;
   // const [pagequery, setPagequery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [limit, setLimit] = useState(10)
-  const [page, setPage] = useState(1)
-  const [search, setSearch] = useState("")
-  const [inputValue, setInputValue] = useState('')
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [inputValue, setInputValue] = useState("");
   const [selectedData, setSelectedData] = useState([]);
 
   const {
     data: pages,
     refetch: refetchPageList,
     isLoading: isPageListLoading,
-    isFetching: ispageListFetching
+    isFetching: ispageListFetching,
   } = useGetAllPageListWithPaginationQuery({
     decodedToken,
     userID,
     page,
     limit,
     search,
-    pagequery
+    pagequery,
   });
-  const pageList = pages?.pages
-  const pagination = pages?.pagination
+  const pageList = pages?.pages;
+  const pagination = pages?.pagination;
   function debounce(func, delay) {
     let timer;
     return (...args) => {
@@ -72,7 +72,7 @@ function PageOverviewWithoutHealth({
 
   const debouncedSearch = useCallback(
     debounce((value) => {
-      setSearch(value)
+      setSearch(value);
     }, 300),
     []
   );
@@ -154,45 +154,44 @@ function PageOverviewWithoutHealth({
           {
             // isLoading ? (
             //   <SkeletonLoader />
-            // ) : 
-            (
-              <View
-                version={1}
-                columns={columns}
-                data={pageList}
-                // isLoading={false}
-                isLoading={isPageListLoading || ispageListFetching|| isLoading}
-                cloudPagination={true}
-                title="Page Overview"
-                rowSelectable={true}
-                pagination={[10]}
-                tableName="Page Overview"
-                selectedData={setSelectedData}
-                pageNavigator={{
-                  prev: {
-                    disabled: page === 1,
-                    onClick: () => setPage((prev) => Math.max(prev - 1, 1)),
-                  },
-                  next: {
-                    disabled: pagination?.current_page >= pagination?.total_page,
-                    onClick: () => setPage((prev) => prev + 1),
-                  },
-                  totalRows: pagination?.total_records || 0,
-                  currentPage: pagination?.current_page,
-                }}
-                addHtml={
-                  <>
-                    <TextField
-                      label="Search Page"
-                      variant="outlined"
-                      size="small"
-                      value={inputValue}
-                      onChange={handleSearchChange}
-                    />
-                  </>
-                }
-              />
-            )}
+            // ) :
+            <View
+              version={1}
+              columns={columns}
+              data={pageList}
+              // isLoading={false}
+              isLoading={isPageListLoading || ispageListFetching || isLoading}
+              cloudPagination={true}
+              title="Page Overview"
+              rowSelectable={true}
+              pagination={[10]}
+              tableName="Page Overview"
+              selectedData={setSelectedData}
+              pageNavigator={{
+                prev: {
+                  disabled: page === 1,
+                  onClick: () => setPage((prev) => Math.max(prev - 1, 1)),
+                },
+                next: {
+                  disabled: pagination?.current_page >= pagination?.total_page,
+                  onClick: () => setPage((prev) => prev + 1),
+                },
+                totalRows: pagination?.total_records || 0,
+                currentPage: pagination?.current_page,
+              }}
+              addHtml={
+                <>
+                  <TextField
+                    label="Search Page"
+                    variant="outlined"
+                    size="small"
+                    value={inputValue}
+                    onChange={handleSearchChange}
+                  />
+                </>
+              }
+            />
+          }
           {/* <button
             // type="button"
             className="btn cmnbtn btn_sm btn-outline-primary"

@@ -117,10 +117,10 @@ const ExecutionCampaignApi = createApi({
     }),
 
     verifyAdvancePurchase: builder.mutation({
-      query: (shortCodes) => ({
+      query: (data) => ({
         url: "v1/operation/advance_purchase",
         method: "POST",
-        body: { shortCodes },
+        body: data,
       }),
     }),
   }),

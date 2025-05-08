@@ -120,9 +120,10 @@ export const PageBaseURL = createApi({
               method: "GET",
             }
           : {
-              url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+              url: `v1/get_all_pages?${queryParams}`, // Admin: GET request
               method: "GET",
-              // body: { user_id: userID },
+              // url: `v1/get_all_pages_for_users/${userID}`, // User: GET request
+              // method: "GET",
             };
       },
       transformResponse: (response, meta, { decodedToken }) => {
@@ -393,12 +394,66 @@ export const PageBaseURL = createApi({
       },
       transformResponse: (response) => response.data,
     }),
+
+    getVendorWithCategory: builder.query({
+      query: ({ vendor_category, vendor_platform }) => {
+        let url = "v1/get_vendor_statistic_data";
+
+        if (vendor_category && !vendor_platform) {
+          url += `?vendor_category=${vendor_category}`;
+        } else if (vendor_platform && !vendor_category) {
+          url += `?vendor_platform=${vendor_platform}`;
+          console.log(vendor_platform, "vendor_platform");
+        }
+
+        return {
+          url,
+          method: "GET",
+        };
+      },
+      transformResponse: (response) => response.data,
+    }),
+
     getPageCountWithState: builder.mutation({
       query: (body) => ({
         url: "v1/get_page_count_with_state",
         method: "POST",
         body,
       }),
+      transformResponse: (response) => response.data,
+    }),
+    getVendorRetain: builder.mutation({
+      query: (body) => ({
+        url: "v1/convert_disable_vendor_to_enable_in_vendor",
+        method: "POST",
+        body,
+      }),
+      transformResponse: (response) => response.data,
+    }),
+
+    getDeletedVendorData: builder.query({
+      query: () => `v1/deleted_vendor`,
+      transformResponse: (response) => response.data,
+    }),
+
+    getAllSubCategoryWiseInventory: builder.query({
+      query: ({ page_category_name } = {}) => {
+        let url = `v1/sub_category_wise_inventory_details`;
+        if (page_category_name) {
+          url += `?page_sub_category=${page_category_name}`;
+        }
+        return url;
+      },
+      transformResponse: (response) => response.data,
+    }),
+
+    getRecentlyLogs: builder.query({
+      query: () => `v1/get_recently_log_page`,
+      transformResponse: (response) => response.data,
+    }),
+
+    getVendorStaticsCountData: builder.query({
+      query: () => `v1/count_vendor_data_statistic`,
       transformResponse: (response) => response.data,
     }),
 
@@ -467,4 +522,10 @@ export const {
   useGetStateandCityVendoDataCountQuery,
   useGetVendorDataWithStateCityQuery,
   useGetPageCountWithStateMutation,
+  useGetDeletedVendorDataQuery,
+  useGetVendorRetainMutation,
+  useGetAllSubCategoryWiseInventoryQuery,
+  useGetRecentlyLogsQuery,
+  useGetVendorStaticsCountDataQuery,
+  useGetVendorWithCategoryQuery,
 } = PageBaseURL;

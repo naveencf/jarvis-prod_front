@@ -177,7 +177,7 @@ const CampaignExecution = () => {
 
   const handlePaymentSelect = async (selectedOption) => {
     if (!selectedOption) return;
-
+    console.log("selectedOption", selectedOption);
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to proceed with the advanced payment option?",
@@ -258,10 +258,13 @@ const CampaignExecution = () => {
       });
       return;
     }
-
+    const payload = {
+      shortCodes: shortCodes,
+      advancedPaymentIds: [selectedOption._id],
+    };
     setAdvancedPaymentLoading(true);
     try {
-      const { data } = await verifyAdvancePurchase(shortCodes);
+      const { data } = await verifyAdvancePurchase(payload);
       if (data.success) {
         Swal.fire({
           icon: "success",
@@ -1166,17 +1169,22 @@ const CampaignExecution = () => {
         );
       },
       colorRow: (row) => {
-        if (row?.phaseDate == null) {
-          return "";
+        // if (!row || row.phaseDate == null) {
+        //   return "";
+        // }
+        if (row.audit_status === "purchased") { 
+          return "#c4fac4"; 
         }
-        if (!row?.owner_info?.username) return "#ff00009c";
-        return row.audit_status === "audited"
-          ? "rgb(255 131 0 / 80%)"
-          : row.audit_status === "purchased"
-            ? "#c4fac4"
-            : row.amoumt == 0 || row.vendor_name == ""
-              ? "#ffff008c"
-              : "";
+        if (row.audit_status === "audited") {
+          return "rgb(255 131 0 / 80%)";  
+        }
+        if (!row.owner_info?.username) {
+          return "#ff00009c"; 
+        }
+        if (row.amount === 0 || !row.vendor_name) {
+          return "#ffff008c";  
+        }
+        return "";
       },
     },
     {

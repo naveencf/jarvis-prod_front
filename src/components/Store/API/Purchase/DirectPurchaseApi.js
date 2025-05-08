@@ -149,6 +149,10 @@ const DirectPurchaseApi = createApi({
       query: () => 'purchase/page_wise_advanced_payment_details',
       transformResponse: (response) => response?.data,
     }),
+    getLedgerAmountByVendor: builder.query({
+      query: (id) => `v1/purchase/get_ledger_amt_by_vendor/${id}`,
+      transformResponse: (response) => response?.data,
+    }),
 
     getAdvancePaymentsByPageAndVendor: builder.query({
       query: ({ vendor_obj_id, page_name }) => {
@@ -188,6 +192,7 @@ export const {
   useGetAuditedAndPendingLinkStatsByVendorsMutation,
   useGetVendorWiseAdvancedPaymentDetailsQuery,
   useGetPageWiseAdvancedPaymentDetailsQuery,
+  useGetLedgerAmountByVendorQuery,
   useLazyGetAdvancePaymentsByPageAndVendorQuery
 } = DirectPurchaseApi;
 
