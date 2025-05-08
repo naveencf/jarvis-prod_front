@@ -5,13 +5,18 @@ import DataTable from "react-data-table-component";
 import FormContainer from "../../FormContainer";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import View from "../Account/View/View";
-import { useGetAllNewDeletedSaleQuery } from "../../../Store/API/Sales/SaleBookingApi";
+import {
+  useGetAllNewDeletedSaleQuery,
+  useGetSaleBookingRetainMutation,
+} from "../../../Store/API/Sales/SaleBookingApi";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import formatString from "../../../../utils/formatString";
 import { useGetAllCreditApprovalsQuery } from "../../../Store/API/Sales/CreditApprovalApi";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
+import { useGlobalContext } from "../../../../Context/Context";
 
 const DeletedSaleBooking = () => {
+  const { toastAlert, toastError } = useGlobalContext();
   const [originalData, setOriginalData] = useState([]);
   const [search, setSearch] = useState("");
   const token = getDecodedToken();
@@ -25,7 +30,21 @@ const DeletedSaleBooking = () => {
     data: deletedSaleBookingData,
     error: deletedSaleBookingError,
     isLoading: deletedSaleBookingLoading,
+    refetch: deletedSaleBookingRefetch,
   } = useGetAllNewDeletedSaleQuery(loginUserId, { skip: !loginUserRole });
+
+  const [retainSaleBooking] = useGetSaleBookingRetainMutation();
+
+  const handleRetainSalesBooking = async (id) => {
+    try {
+      await retainSaleBooking({ id }).unwrap();
+      deletedSaleBookingRefetch();
+      toastAlert("Sales Booking retained successfully");
+    } catch (error) {
+      console.error("Failed to retain sales booking:", error);
+      toastAlert("Failed to retain Sales Booking");
+    }
+  };
 
   const {
     data: creditApprovalData,
@@ -65,6 +84,16 @@ const DeletedSaleBooking = () => {
       name: "GST amount",
       width: 100,
       renderRowCell: (row) => row?.gst_amount,
+    },
+    {
+      key: "created_user_name",
+      name: "Sales Exicutive Name",
+      width: 100,
+    },
+    {
+      key: "campaign_name",
+      name: "Campaign Name",
+      width: 100,
     },
     {
       key: "approved_amount",
@@ -240,6 +269,19 @@ const DeletedSaleBooking = () => {
       name: "Final invoice",
       width: 100,
       renderRowCell: (row) => row?.final_invoice,
+    },
+    {
+      key: "Sales",
+      name: "Sales",
+      width: 100,
+      renderRowCell: (row) => (
+        <button
+          className="btn btn-outline-success btn-sm"
+          onClick={() => handleRetainSalesBooking(row._id)}
+        >
+          Retain sale booking
+        </button>
+      ),
     },
     {
       key: "created_At",

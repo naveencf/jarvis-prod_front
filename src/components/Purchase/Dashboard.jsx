@@ -298,7 +298,8 @@ const Dashboard = () => {
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Total Outstanding</h6>
                         <h6 className="mt4 fs_16">
-                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding))}
+                          {/* ₹{formatIndianNumber(Math.floor(data?.total_outstanding))} */}
+                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding + data?.total_pending_link_amt + data?.total_audited_link_amt))}
                         </h6>
                       </div>
                     </Link>
@@ -334,7 +335,8 @@ const Dashboard = () => {
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Outstandings</h6>
                         <h6 className="mt4 fs_16">
-                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding - data?.total_advanced_amount))}
+                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding))}
+                          {/* ₹{formatIndianNumber(Math.floor(data?.total_outstanding - data?.total_advanced_amount))} */}
                         </h6>
                       </div>
                     </Link>
@@ -519,6 +521,23 @@ const Dashboard = () => {
         <div className="col-xl-3 col-lg-3 col-md-12 col-12">
           <div className="card">
             <div className="card-body pl0 pr0">
+
+              <div className="p12">
+                <Link to="/admin/pms-page-overview">
+                  <div className="flexCenter flex_col">
+                    <div className="iconBadge small bgSecondaryLight m-0">
+                      <span>
+                        <Browsers />
+                      </span>
+                    </div>
+                    <div className="mt12 text-center">
+                      <h6 className="colorMedium">Creativefuel Outstanding</h6>
+                      <h6 className="mt4 fs_16">{data?.own_outstanding}</h6>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+              <hr />
               <div className="p12">
                 <Link to="/admin/pms-vendor-overview">
                   <div className="flexCenter flex_col">
@@ -570,6 +589,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
+
             </div>
           </div>
         </div>

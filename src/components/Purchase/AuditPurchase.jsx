@@ -638,7 +638,7 @@ const AuditPurchase = () => {
     ) {
       fetchFilteredPosts();
     }
-  }, [selectedVendorId, startDate, endDate, selectedPlan, shortCodes]);
+  }, [selectedVendorId, startDate, endDate, selectedPlan, shortCodes, filterBy]);
   // const filteredData = useMemo(() => {
   //     if (!shortCodes.length) return campaignPlanData;
   //     return shortCodes.flatMap(item => campaignPlanData.filter(data => data.shortCode === item.shortCode));

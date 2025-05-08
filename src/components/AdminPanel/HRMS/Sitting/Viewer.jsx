@@ -578,7 +578,7 @@ const Viewer = ({
                           <Text
                             key={`${el.id}-offset`}
                             text={`${el.seat_no || ""}`} // Show seat_no even if user is not assigned
-                            fontSize={11}
+                            fontSize={10}
                             fontStyle="bold"
                             x={numberX}
                             y={numberY}

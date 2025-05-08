@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../../../utils/authBaseQuery";
+import { use } from "react";
 
 const SaleBookingApi = createApi({
   reducerPath: "saleBookingApi",
@@ -197,6 +198,14 @@ const SaleBookingApi = createApi({
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),
+
+    getSaleBookingRetain: builder.mutation({
+      query: ({ id }) => ({
+        url: `sales/revert_sales_booking/${id}`,
+        method: "PUT",
+      }),
+      transformResponse: (response) => response.data,
+    }),
   }),
 });
 
@@ -214,6 +223,7 @@ export const {
   useLazyGetmonthwiseSaleBookingQuery,
   useEditBookingIncentiveUpdateMutation,
   useGetDistributionQuery,
+  useGetSaleBookingRetainMutation,
 } = SaleBookingApi;
 
 export default SaleBookingApi;

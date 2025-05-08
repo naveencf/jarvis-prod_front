@@ -605,6 +605,21 @@ const RecordCampaign = () => {
       editable: true,
     },
     {
+      name: "Link Type",
+      key: "post",
+      width: 100,
+      compare: true,
+      renderRowCell: (row) => {
+        if (typeof row.shortCode === 'string' && row.shortCode.startsWith("service_")) {
+          return "Service";
+        } else {
+          return "Link";
+        }
+      }
+
+
+    },
+    {
       name: "View",
       key: "play_count",
       renderRowCell: (row) => {
@@ -910,6 +925,14 @@ const RecordCampaign = () => {
       payload: { highlightOnlyIfChanged: true }
     },
     {
+      label: "Create Sub-sheet",
+      payload: { subSheetStatus: 4 }
+    },
+    {
+      label: "Create Category Sub-Sheet",
+      payload: { categorySheetStatus: 1 }
+    },
+    {
       label: "Update Stats (Highlight All Matched Links)",
       payload: { highlightAllMatched: true }
     },
@@ -928,7 +951,8 @@ const RecordCampaign = () => {
     {
       label: "Sort Sheets Z-A",
       payload: { sortDirection: "desc" }
-    }
+    },
+
   ];
 
   const debounce = (callback, delay) => {

@@ -11,13 +11,14 @@ import jwtDecode from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
 import { addRow } from "../../Store/Executon-Slice";
 import View from "../Sales/Account/View/View";
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 import DateFormattingComponent from "../../DateFormator/DateFormared";
 import TagCategoryListModal from "./TagCategoryListModal";
 import VendorNotAssignedModal from "./VendorNotAssignedModal";
 import {
   useGetAllPageListQuery,
+  useGetAllSubCategoryWiseInventoryQuery,
   useGetPageCountWithStateMutation,
   useGetPageStateQuery,
 } from "../../Store/PageBaseURL";
@@ -38,6 +39,7 @@ import StatsOfOverview from "./PageOverview/StatsOfOverview";
 import PageEdit from "./PageEdit";
 import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
 import PageLogsModel from "./PageLogsModel";
+
 const PageOverviewNew = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const storedToken = sessionStorage.getItem("token");
@@ -51,7 +53,7 @@ const PageOverviewNew = () => {
   const [vendorDetails, setVendorDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("Tab0");
   const [user, setUser] = useState();
-  const [stateWiseData, setStateWiseData] = useState(false)
+  const [stateWiseData, setStateWiseData] = useState(false);
   const [progress, setProgress] = useState(10);
   const [showPriceModal, setShowPriceModal] = useState(false);
 
@@ -59,7 +61,6 @@ const PageOverviewNew = () => {
   // const [categoryData, setCategoryData] = useState([]);
   const [newFilterData, setNewFilterData] = useState([]);
   const [waData, setWaData] = useState(null);
-
   const [allVendorWhats, setAllVendorWhats] = useState([]);
   const [platformName, setPlanFormName] = useState(
     localStorage.getItem("activeTab")
@@ -93,23 +94,42 @@ const PageOverviewNew = () => {
     if (activeTab == "Tab1") {
       pageHealthToggleCheck();
     }
-
   }, [activeTab]);
 
+  const [subCategoryWise, setSubCateogryWise] = useState(false);
+  const [getPageCountWithState, { data, isLoading, isFetching, error }] =
+    useGetPageCountWithStateMutation();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const {
+    data: subCategoryWiseData,
+    isLoading: isLoadingSubCat,
+    isFetching: fetchingData,
+  } = useGetAllSubCategoryWiseInventoryQuery(
+    selectedCategory ? { page_category_name: selectedCategory } : {}
+  );
+  const subCatData = subCategoryWiseData?.subCateWiseData;
 
+  const entity = (data) => {
+    if (!data || typeof data !== "object") return [];
+    return Array.isArray(data?.subcategories) ? data.subcategories : [];
+  };
+  const subCategoryData = entity(subCategoryWiseData);
 
-  const [getPageCountWithState, { data, isLoading, isFetching, error }] = useGetPageCountWithStateMutation();
+  const handleVenodrClick = (page_category_name) => {
+    setSelectedCategory(page_category_name);
+    setSubCateogryWise(true);
+  };
 
   const handleStateClick = async (item) => {
     try {
       const response = await getPageCountWithState({
-        platform_name: 'instagram',
+        platform_name: "instagram",
         state: item,
       });
-      setStateWiseData(true)
-      console.log('Response:', response);
+      setStateWiseData(true);
+      console.log("Response:", response);
     } catch (err) {
-      console.error('API Error:', err);
+      console.error("API Error:", err);
     }
   };
 
@@ -159,6 +179,7 @@ const PageOverviewNew = () => {
     setOpenFollowerModal(true);
     setRowDataFollower(row);
   };
+
   const handleCloseFollowerModal = () => {
     setOpenFollowerModal(false);
   };
@@ -649,6 +670,7 @@ const PageOverviewNew = () => {
       },
     },
   ];
+
   const columns = [
     {
       key: "followers_count",
@@ -1274,6 +1296,35 @@ const PageOverviewNew = () => {
     },
   ];
 
+  const calculatePrice = (rate_type, pageData, type) => {
+    const getPriceDetail = (priceDetails, key) => {
+      const detail = priceDetails?.find((item) => item[key] !== undefined);
+      return detail ? detail[key] : 0;
+    };
+
+    if (rate_type === "Variable") {
+      const followersCountInMillions = pageData.followers_count / 1000000;
+      if (type === "post") {
+        return (
+          followersCountInMillions *
+          getPriceDetail(pageData.page_price_list, "instagram_post")
+        );
+      } else if (type === "story") {
+        return (
+          followersCountInMillions *
+          getPriceDetail(pageData.page_price_list, "instagram_story")
+        );
+      } else {
+        return (
+          followersCountInMillions *
+          getPriceDetail(pageData.page_price_list, "instagram_both")
+        );
+      }
+    }
+
+    return 0;
+  };
+
   useEffect(() => {
     let updatedColumns = [];
 
@@ -1282,6 +1333,20 @@ const PageOverviewNew = () => {
       platformName !== "thread" &&
       platformName !== "youtube"
     ) {
+      //   updatedColumns.push({
+      //     key: "Post Price",
+      //     name: "Post Price",
+      //     width: 200,
+      //     renderRowCell: (row) => {
+      //       const postPrice = getPriceDetail(
+      //         row?.page_price_list,
+      //         "platform_post"
+      //       );
+      //       return postPrice > 0 ? Number(postPrice) : 0;
+      //     },
+      //     compare: true,
+      //   });
+      // }
       updatedColumns.push({
         key: "Post Price",
         name: "Post Price",
@@ -1291,7 +1356,18 @@ const PageOverviewNew = () => {
             row?.page_price_list,
             "platform_post"
           );
-          return postPrice > 0 ? Number(postPrice) : 0;
+          const followersCount = row?.followers_count || 0;
+          const rateType = row?.rate_type;
+
+          let price = 0;
+
+          if (rateType === "Variable") {
+            price = ((postPrice || 0) * followersCount) / 1000000;
+          } else {
+            price = postPrice > 0 ? Number(postPrice) : 0;
+          }
+
+          return price % 1 !== 0 ? Number(price.toFixed(0)) : price;
         },
         compare: true,
       });
@@ -1378,6 +1454,19 @@ const PageOverviewNew = () => {
         compare: true,
       });
 
+      // updatedColumns.push({
+      //   key: "Story Price",
+      //   name: "Story Price",
+      //   width: 200,
+      //   renderRowCell: (row) => {
+      //     const storyPrice = getPriceDetail(
+      //       row?.page_price_list,
+      //       "platform_story"
+      //     );
+      //     return storyPrice > 0 ? Number(storyPrice) : 0;
+      //   },
+      //   compare: true,
+      // });
       updatedColumns.push({
         key: "Story Price",
         name: "Story Price",
@@ -1387,11 +1476,37 @@ const PageOverviewNew = () => {
             row?.page_price_list,
             "platform_story"
           );
-          return storyPrice > 0 ? Number(storyPrice) : 0;
+          const followersCount = row?.followers_count || 0;
+          const rateType = row?.rate_type;
+
+          let price = 0;
+
+          if (rateType === "Variable") {
+            price = ((storyPrice || 0) * followersCount) / 1000000;
+          } else {
+            price = storyPrice > 0 ? Number(storyPrice) : 0;
+          }
+
+          // Round off only if it's a decimal
+          return price % 1 !== 0 ? Number(price.toFixed(0)) : price;
         },
         compare: true,
       });
 
+      //   updatedColumns.push({
+      //     key: "Both Price",
+      //     name: "Both Price",
+      //     width: 200,
+      //     renderRowCell: (row) => {
+      //       const bothData = row?.page_price_list?.find(
+      //         (item) => item?.instagram_both !== undefined
+      //       );
+      //       const bothPrice = bothData ? bothData.instagram_both : 0;
+      //       return bothPrice;
+      //     },
+      //     compare: true,
+      //   });
+      // }
       updatedColumns.push({
         key: "Both Price",
         name: "Both Price",
@@ -1401,7 +1516,18 @@ const PageOverviewNew = () => {
             (item) => item?.instagram_both !== undefined
           );
           const bothPrice = bothData ? bothData.instagram_both : 0;
-          return bothPrice;
+          const followersCount = row?.followers_count || 0;
+          const rateType = row?.rate_type;
+
+          let price = 0;
+
+          if (rateType === "Variable") {
+            price = ((bothPrice || 0) * followersCount) / 1000000;
+          } else {
+            price = bothPrice > 0 ? Number(bothPrice) : 0;
+          }
+
+          return price % 1 !== 0 ? Number(price.toFixed(0)) : price;
         },
         compare: true,
       });
@@ -1415,11 +1541,55 @@ const PageOverviewNew = () => {
 
   useEffect(() => {
     getPageCountWithState({
-      platform_name: 'instagram',
-      state: ''
+      platform_name: "instagram",
+      state: "",
     });
-  }, [])
-  const stateWisePageData = stateWiseData ? data?.stateWiseData : data?.state
+  }, []);
+
+  const stateWisePageData = stateWiseData ? data?.stateWiseData : data?.state;
+
+  const subCategoryColumns = [
+    {
+      key: "S.NO",
+      name: "S.no",
+      renderRowCell: (row, index) => index + 1,
+      width: 80,
+      showCol: true,
+    },
+    {
+      key: "sub_category_name",
+      name: "sub_category_name",
+      width: 200,
+    },
+    {
+      key: "page_count",
+      name: "page_count",
+      width: 200,
+      renderRowCell: (row) => (
+        <>
+          <button
+            title="View Pages"
+            onClick={() => handleVenodrClick(row.sub_category_name)}
+            className="btn btn-outline-primary btn-sm user-button"
+          >
+            {row.page_count}
+          </button>
+        </>
+      ),
+    },
+    {
+      key: "vendors_count",
+      name: "vendors_count",
+      width: 200,
+    },
+
+    {
+      key: "followers_count",
+      name: "Followers Count ",
+      width: 200,
+    },
+  ];
+
   return (
     <>
       <PriceModal
@@ -1481,6 +1651,14 @@ const PageOverviewNew = () => {
               onClick={() => setActiveTab("Tab3")}
             >
               Category Wise
+            </button>
+            <button
+              className={
+                activeTab === "Tab7" ? "active btn btn-primary" : "btn"
+              }
+              onClick={() => setActiveTab("Tab7")}
+            >
+              Sub Category Wise
             </button>
             <button
               className={
@@ -1590,7 +1768,34 @@ const PageOverviewNew = () => {
               </div>
             )}
             {activeTab === "Tab3" && (
-              <CategoryWisePageOverviewNew dataTable={pageColumns} platformName={platformName} />
+              <CategoryWisePageOverviewNew
+                dataTable={pageColumns}
+                platformName={platformName}
+              />
+            )}
+            {activeTab === "Tab7" && (
+              <View
+                version={1}
+                columns={subCategoryWise ? pageColumns : subCategoryColumns}
+                data={subCategoryWise ? subCatData : subCategoryData}
+                isLoading={isLoadingSubCat || fetchingData}
+                title={"Sub Category wise Data"}
+                // rowSelectable={true}
+                pagination={[100, 200, 1000]}
+                tableName={"Sub Category wise Data"}
+                addHtml={
+                  <div>
+                    {subCategoryWise && (
+                      <button
+                        className="btn cmnbtn btn_sm btn-outline-secondary m-1"
+                        onClick={() => setSubCateogryWise(false)}
+                      >
+                        <ArrowBackIcon /> Sub Cateogry Wise Overview
+                      </button>
+                    )}
+                  </div>
+                }
+              />
             )}
             {activeTab === "Tab4" && <PageClosedByDetails />}
             {activeTab === "Tab5" && (
@@ -1601,7 +1806,7 @@ const PageOverviewNew = () => {
       ) : (
         <PageEdit pageMast_id={editID} handleEditClose={handleEditClose} />
       )}
-      {activeTab === "Tab6" &&
+      {activeTab === "Tab6" && (
         <View
           version={1}
           columns={stateWiseData ? pageColumns : columns}
@@ -1613,14 +1818,18 @@ const PageOverviewNew = () => {
           tableName={"State wise Data"}
           addHtml={
             <div>
-              {stateWiseData &&
-                <button className="btn cmnbtn btn_sm btn-outline-secondary m-1" onClick={() => setStateWiseData(false)}>
-                  < ArrowBackIcon />  State Wise Overview
+              {stateWiseData && (
+                <button
+                  className="btn cmnbtn btn_sm btn-outline-secondary m-1"
+                  onClick={() => setStateWiseData(false)}
+                >
+                  <ArrowBackIcon /> State Wise Overview
                 </button>
-              }
+              )}
             </div>
           }
-        />}
+        />
+      )}
     </>
   );
 };
