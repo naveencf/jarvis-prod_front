@@ -318,6 +318,7 @@ const Ledger = () => {
   if (isVendorDetailLoading || isVendorDetailFetching || isLoading) {
     return <Loader />
   }
+  console.log(vendorPhpDetail, "vendorPhpDetail")
   return (
     <div className="ledgerStatementDoc">
       <div className="tabs">
@@ -394,7 +395,7 @@ const Ledger = () => {
             <div className="col">
               <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
                 <h6 className="colorMedium">Php Outstanding:</h6>
-                <h6 className="mt8 fs_16">₹ {formatNumber(Number(vendorPhpDetail[0]?.outstanding))}</h6>
+                <h6 className="mt8 fs_16">{(vendorPhpDetail[0]?.outstanding)}</h6>
               </div>
             </div>
             <div className="col">

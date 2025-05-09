@@ -84,12 +84,32 @@ function SalaryDetailsInLineChart() {
     return series;
   };
 
+  // const getData = async () => {
+  //   try {
+  //     const res = await axios.get(baseUrl + "get_salary_by_month_wise");
+  //     const updatedData = groupByPageCategoryId(res.data);
+  //     const tempSeries = formatForSeries(updatedData);
+  //     setGraphData(res.data);
+  //     setSeriesArray(tempSeries);
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+  // };
   const getData = async () => {
     try {
       const res = await axios.get(baseUrl + "get_salary_by_month_wise");
-      const updatedData = groupByPageCategoryId(res.data);
+
+      const currentYear = new Date().getFullYear();
+
+      // Filter only data for current year
+      const filteredData = res.data.filter(
+        (item) => item._id.year === currentYear
+      );
+
+      const updatedData = groupByPageCategoryId(filteredData);
       const tempSeries = formatForSeries(updatedData);
-      setGraphData(res.data);
+
+      setGraphData(filteredData);
       setSeriesArray(tempSeries);
     } catch (error) {
       console.error("Error fetching data: ", error);

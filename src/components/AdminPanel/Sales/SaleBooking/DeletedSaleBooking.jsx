@@ -62,10 +62,10 @@ const DeletedSaleBooking = () => {
       sortable: true,
     },
     {
-      key: "customer_name",
-      name: "Customer name",
+      key: "account_name",
+      name: "Account name",
       width: 100,
-      renderRowCell: (row) => row.customer_name,
+      renderRowCell: (row) => row.account_name,
     },
     {
       key: "campaign_amount",
@@ -167,12 +167,12 @@ const DeletedSaleBooking = () => {
     //   renderRowCell: (row) => row?.tds_status,
     // },
     {
-      key: "booking_close_date",
-      name: "Booking close date",
+      key: "sale_booking_id",
+      name: "Booking ID",
       width: 100,
-      renderRowCell: (row) =>
-        new Date(row?.Booking_close_date).toLocaleDateString(),
-      compare: true,
+      // renderRowCell: (row) =>
+      //   new Date(row?.Booking_close_date).toLocaleDateString(),
+      // compare: true,
     },
     {
       key: "tds_verified_amount",
@@ -210,10 +210,10 @@ const DeletedSaleBooking = () => {
       renderRowCell: (row) => row?.incentive_earning_status,
     },
     {
-      key: "payment_credit_status",
-      name: "Payment credit status",
+      key: "invoice_request_status",
+      name: "Invoice status",
       width: 100,
-      renderRowCell: (row) => row?.payment_credit_status,
+      // renderRowCell: (row) => row?.payment_credit_status,
     },
     {
       key: "incentive_sharing_percent",
@@ -265,10 +265,10 @@ const DeletedSaleBooking = () => {
       renderRowCell: (row) => row?.payment_type,
     },
     {
-      key: "final_invoice",
-      name: "Final invoice",
+      key: "invoice_requested_amount",
+      name: "Invoice Amount",
       width: 100,
-      renderRowCell: (row) => row?.final_invoice,
+      // renderRowCell: (row) => row?.final_invoice,
     },
     {
       key: "Sales",
