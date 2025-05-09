@@ -71,12 +71,9 @@ const Viewer = ({
 
   const [unassignedUsersList, setUnassignedUsersList] = useState([]);
   const [unListData, setUnListData] = useState({});
-  console.log(elements, "elements hhh");
   const allElements = Array.isArray(unListData)
     ? unListData.flatMap((item) => item.elements || []) // Ensure elements exist
     : [];
-
-  console.log(allElements, "Merged elements array");
 
   const totalSeats = elements.length;
   const assignedSeats = elements.filter((el) => el.employee).length;
@@ -588,6 +585,7 @@ const Viewer = ({
                             rotation={0}
                             offsetX={8}
                             offsetY={44}
+                            listening={false}
                           />
 
                           {/* Only Render User Name if Assigned */}

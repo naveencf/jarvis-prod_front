@@ -38,6 +38,7 @@ import {
   useGetVendorRetainMutation,
   useGetVendorStaticsCountDataQuery,
   useGetVendorWithCategoryQuery,
+  useGetVendorWithoutWhatsappLinkQuery,
 } from "../../Store/PageBaseURL";
 import jwtDecode from "jwt-decode";
 import axios from "axios";
@@ -49,6 +50,7 @@ import CustomTableV2 from "../../CustomTable_v2/CustomTableV2";
 import VendorDocCount from "./Vendor/VendorDocCount";
 import { useGlobalContext } from "../../../Context/Context";
 import { set } from "date-fns";
+import VendorStaticsModel from "./PageOverview/VendorStaticsModel";
 
 const style = {
   position: "absolute",
@@ -87,6 +89,10 @@ const VendorOverview = () => {
   );
 
   const { data: vendorStaticCountData } = useGetVendorStaticsCountDataQuery();
+  const { data: vendorWithoutWhatsappLinkData } =
+    useGetVendorWithoutWhatsappLinkQuery();
+
+  console.log(vendorWithoutWhatsappLinkData, "hello hello");
   const vendorStaticCount = vendorStaticCountData?.vendor_category;
   const vendorCountWithPlatform = vendorStaticCountData?.vendor_platforms;
 
@@ -99,6 +105,9 @@ const VendorOverview = () => {
       skip: !queryVendorWith,
     }
   );
+
+  const [activeSection, setActiveSection] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const stateWiseCountData = getStateandCityVendoData?.state;
   const cityWiseCountData = getStateandCityVendoData?.city;
@@ -230,6 +239,7 @@ const VendorOverview = () => {
   const handleClickVendorName = (params) => {
     setVendorDetails(params);
   };
+
   const showPagesOfVendor = async (data) => {
     try {
       let result;
@@ -730,6 +740,14 @@ const VendorOverview = () => {
     setFilterData(vendorwithnoemail);
     setActiveTab("Tab1");
   };
+  const vendorWithoutLink = (key) => {
+    setFilterData(vendorWithoutWhatsappLinkData);
+    setActiveTab("Tab1");
+    // setActiveSection(key);
+    // setLoading(true);
+  };
+
+  console.log(filterData, "filterData------------");
   const vendorWithNoPages = () => {
     const vendorwithnopages = tabFilterData.filter(
       (item) => item.page_count == 0
@@ -737,6 +755,12 @@ const VendorOverview = () => {
     setFilterData(vendorwithnopages);
     setActiveTab("Tab1");
   };
+
+  useEffect(() => {
+    if (filterData?.length > 0) {
+      setLoading(false);
+    }
+  }, [filterData]);
 
   const vendorWithCategories = (category) => {
     const vendorwithcategories = tabFilterData.filter(
@@ -746,7 +770,7 @@ const VendorOverview = () => {
     setActiveTab("Tab1");
   };
 
-  const vendorWithCategoriesOnly = (category) => {
+  const vendorWithCategoriesOnly = (key, category) => {
     setCateogryChange(category);
     setQueryVendorWith({ vendor_category: category });
     // const vendorwithcategories = tabFilterData.filter(
@@ -754,6 +778,7 @@ const VendorOverview = () => {
     // );
     // setFilterStateData(vendorwithcategories);
     setActiveTab("Tab1");
+    // setActiveSection(key);
   };
 
   const vendorWithState = (category) => {
@@ -786,21 +811,23 @@ const VendorOverview = () => {
     }
   }, [vendorWithStaticData, cateogryChange]);
 
-  const vendorWithPlatforms = (platform) => {
+  const vendorWithPlatforms = (key, platform) => {
     setQueryVendorWith({ vendor_platform: platform });
     // const vendorwithplatforms = tabFilterData.filter(
     //   (item) => item.vendor_platform == platform
     // );
     // setFilterData(vendorwithplatforms);
     setActiveTab("Tab1");
+    // setActiveSection(key);
   };
 
-  const vendorClosedBy = (closeby) => {
+  const vendorClosedBy = (key, closeby) => {
     const vendorclosedby = tabFilterData.filter(
       (item) => item.closed_by == closeby
     );
     setFilterData(vendorclosedby);
     setActiveTab("Tab1");
+    // setActiveSection(key);
   };
 
   useEffect(() => {
@@ -1065,7 +1092,12 @@ const VendorOverview = () => {
                         >
                           <div
                             className="card"
-                            onClick={() => vendorWithCategoriesOnly(category)}
+                            onClick={() =>
+                              vendorWithCategoriesOnly(
+                                "vendor_with_category",
+                                category
+                              )
+                            }
                           >
                             <div className="card-body pb20 flexCenter colGap14">
                               <div className="iconBadge small bgPrimaryLight m-0">
@@ -1087,7 +1119,14 @@ const VendorOverview = () => {
                       <p>No category data available.</p>
                     </div>
                   )}
+                  {activeSection === "vendor_with_category" && !loading && (
+                    <VendorStaticsModel
+                      vendorData={filterData}
+                      dataGridcolumns={dataGridcolumns}
+                    />
+                  )}
                 </div>
+
                 <div className="row">
                   {Object?.entries(categoryCounts).map(([category, count]) => (
                     <div
@@ -1117,8 +1156,9 @@ const VendorOverview = () => {
             </div>
 
             <div className="row">
-              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                <div className="card" onClick={vendorWithNoPages}>
+              <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                {/* <div className="card" onClick={vendorWithNoPages}> */}
+                <div className="card">
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
                       <span>
@@ -1134,8 +1174,9 @@ const VendorOverview = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                <div className="card" onClick={vendorWithNoMobileNum}>
+              <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                {/* <div className="card" onClick={vendorWithNoMobileNum}> */}
+                <div className="card">
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
                       <span>
@@ -1157,8 +1198,9 @@ const VendorOverview = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-                <div className="card" onClick={vendorWithNoEmail}>
+              <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                {/* <div className="card" onClick={vendorWithNoEmail}> */}
+                <div className="card">
                   <div className="card-body pb20 flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
                       <span>
@@ -1174,6 +1216,34 @@ const VendorOverview = () => {
                   </div>
                 </div>
               </div>
+              <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12">
+                <div
+                  className="card"
+                  onClick={() => vendorWithoutLink("vendor_without_link")}
+                >
+                  <div className="card-body pb20 flexCenter colGap14">
+                    <div className="iconBadge small bgPrimaryLight m-0">
+                      <span>
+                        <FormatListNumberedIcon />
+                      </span>
+                    </div>
+                    <div>
+                      <h6 className="colorMedium">
+                        Vendor without Whatsapp Link
+                      </h6>
+                      <h6 className="mt4 fs_16">
+                        {vendorWithoutWhatsappLinkData?.length}
+                      </h6>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {activeSection === "vendor_without_link" && !loading && (
+                <VendorStaticsModel
+                  vendorData={filterData}
+                  dataGridcolumns={dataGridcolumns}
+                />
+              )}
             </div>
 
             <div className="card">
@@ -1189,7 +1259,12 @@ const VendorOverview = () => {
                     >
                       <div
                         className="card"
-                        onClick={() => vendorWithPlatforms(data.platform_id)}
+                        onClick={() =>
+                          vendorWithPlatforms(
+                            "vendor_with_platform",
+                            data.platform_id
+                          )
+                        }
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -1210,6 +1285,12 @@ const VendorOverview = () => {
                 </div>
               </div>
             </div>
+            {activeSection === "vendor_with_platform" && !loading && (
+              <VendorStaticsModel
+                vendorData={filterData}
+                dataGridcolumns={dataGridcolumns}
+              />
+            )}
             <VendorDocCount
               documents={vendordocumentCount}
               setVendorDocsCountData={setVendorDocsCountData}
@@ -1228,7 +1309,9 @@ const VendorOverview = () => {
                       <div
                         className="card"
                         key={index}
-                        onClick={() => vendorClosedBy(item.closed_by)}
+                        onClick={() =>
+                          vendorClosedBy("closed_by", item.closed_by)
+                        }
                       >
                         <div className="card-body pb20 flexCenter colGap14">
                           <div className="iconBadge small bgPrimaryLight m-0">
@@ -1247,6 +1330,12 @@ const VendorOverview = () => {
                 </div>
               </div>
             </div>
+            {activeSection === "closed_by" && !loading && (
+              <VendorStaticsModel
+                vendorData={filterData}
+                dataGridcolumns={dataGridcolumns}
+              />
+            )}
           </div>
         )}
         {activeTab === "Tab3" && (

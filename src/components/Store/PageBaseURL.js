@@ -456,6 +456,10 @@ export const PageBaseURL = createApi({
       query: () => `v1/count_vendor_data_statistic`,
       transformResponse: (response) => response.data,
     }),
+    getVendorWithoutWhatsappLink: builder.query({
+      query: () => `v1/unlinked_vendors`,
+      transformResponse: (response) => response.data,
+    }),
 
     // getVendorDataWithStateCity: builder.query({
     //   //   query: (city) =>
@@ -528,4 +532,5 @@ export const {
   useGetRecentlyLogsQuery,
   useGetVendorStaticsCountDataQuery,
   useGetVendorWithCategoryQuery,
+  useGetVendorWithoutWhatsappLinkQuery,
 } = PageBaseURL;
