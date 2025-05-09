@@ -5,8 +5,11 @@ import loginlogo from "../assets/img/logo/logo_login1.png";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../utils/config";
 import useIPAddress from "../components/AdminPanel/HRMS/User/UserDashboard/LoginHistory/UseIPAddress";
+import { GoogleLogin, GoogleOAuthProvider } from "@react-oauth/google";
+import { constant } from "../utils/constants";
 
 const GOOGLE_MAPS_API_KEY = "AIzaSyCk0q-yHS182mYMIc_IH9oOn3Tii-4UVeg";
+const GOOGLE_CLIENT_ID = constant.GOOGLE_CLIENT_ID_FOR_LOGIN;
 
 const Login = () => {
   const ip = useIPAddress();
@@ -117,8 +120,45 @@ const Login = () => {
       });
   };
 
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    try {
+      const response = await axios.post(baseUrl + "login_user_with_google", {
+        token: credentialResponse.credential,
+        ip_address: ip,
+        current_location: location.address,
+      });
+      // You can decode, store token, and navigate similarly to normal login
+      const token = response.data.data.token;
+      const decodedToken = jwtDecode(token);
+      const status = decodedToken.user_status;
+      const deptId = decodedToken.dept_id;
+      const onboardStatus = decodedToken.onboard_status;
+
+      if (status === "Active") {
+        if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
+          navigate("/admin/sales-dashboard");
+        } else if (deptId === 20) {
+          navigate("/admin/pantry");
+        } else {
+          navigate("/");
+        }
+        sessionStorage.setItem("token", token);
+        setTimeout(() => {
+          sessionStorage.removeItem("token");
+          navigate("/login");
+        }, 1000 * 60 * 60 * 10); // 10 hours
+      } else {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Google Login failed:", error.response?.data?.message || error.message);
+      setIsError(error.response?.data?.message || error.message);
+      // setIsError("Google login failed. Please try again.");
+    }
+  };
+
   return (
-    <>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <section className="section authwrapper">
         <div className="authbox">
           <div className="authlogo authbrand_spacing">
@@ -201,10 +241,21 @@ const Login = () => {
                 </div>
               </div>
             </form>
+
+            {/* 🔹 Google Login Section */}
+            <div className="google-login-section" style={{ marginTop: "10px",marginBottom: "10px", textAlign: "center" }}>
+              <p style={{ marginBottom: "10px", fontWeight: "bold" }}>OR</p>
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={() => {
+                  setIsError("Google login failed.");
+                }}
+              />
+            </div>
           </div>
         </div>
       </section>
-    </>
+    </GoogleOAuthProvider>
   );
 };
 
