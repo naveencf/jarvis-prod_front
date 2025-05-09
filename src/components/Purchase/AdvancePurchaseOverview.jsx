@@ -47,25 +47,23 @@ const AdvancePurchaseOverview = () => {
     }
   };
 
-  const pagesWithoutUpfront = pageData?.filter(
-    (item) => item.is_upfront === false
-  );
-  const pagesWithUpfront = pageData?.filter((item) => item.is_upfront === true);
+  const pagesWithoutUpfront = pageData?.filter((item) => item.is_upfront === false)
+  const pagesWithUpfront = pageData?.filter((item) => item.is_upfront === true)
   const isDefaultView = !selectedFilter;
   const isLoading =
     selectedFilter !== null
       ? advanceLoading || advanceFetching
       : activeTab === "Tab0"
-      ? isPageLoading
-      : isVendorLoading;
+        ? isPageLoading
+        : isVendorLoading;
 
   const tableData = selectedFilter
     ? advanceByPageVendor
     : activeTab === "Tab0"
-    ? pagesWithoutUpfront
-    : activeTab === "Tab2"
-    ? pagesWithUpfront
-    : vendorData;
+      ? pagesWithoutUpfront
+      : activeTab === "Tab2"
+        ? pagesWithUpfront
+        : vendorData;
   const advancedPaymentData = viewContext ? advanceByPageVendor : tableData;
 
   const calculateAdvanceAmount = (row) => {
@@ -122,24 +120,24 @@ const AdvancePurchaseOverview = () => {
     },
     ...(activeTab !== "Tab1"
       ? [
-          {
-            key: "page_name",
-            name: "Page Name",
-            width: 180,
-            renderRowCell: (row) =>
-              row?.page_name ? (
-                <span
-                  style={{ cursor: "pointer" }}
-                  onClick={() => handleNameClick({ page_name: row.page_name })}
-                  disabled={!isDefaultView}
-                >
-                  {formatString(row?.page_name)}
-                </span>
-              ) : (
-                "NA"
-              ),
-          },
-        ]
+        {
+          key: "page_name",
+          name: "Page Name",
+          width: 180,
+          renderRowCell: (row) =>
+            row?.page_name ? (
+              <span
+                style={{ cursor: "pointer" }}
+                onClick={() => handleNameClick({ page_name: row.page_name })}
+                disabled={!isDefaultView}
+              >
+                {formatString(row?.page_name)}
+              </span>
+            ) : (
+              "NA"
+            ),
+        },
+      ]
       : []),
     {
       key: "advance_amount",
@@ -149,24 +147,32 @@ const AdvancePurchaseOverview = () => {
     },
     ...(activeTab !== "Tab1"
       ? [
-          {
-            key: "remaining_advance_amount",
-            name: "Remaining Post",
-            width: 180,
-            renderRowCell: (row) =>
-              Math.floor(
-                ((row?.remaining_advance_amount || 0) -
-                  (row?.gst_amount || 0)) /
-                  (row?.at_price || 1)
-              ) || 0,
-          },
-        ]
+        {
+          key: "remaining_advance_amount",
+          name: "Remaining Post",
+          width: 180,
+          renderRowCell: (row) =>
+            Math.floor(
+              ((row?.remaining_advance_amount || 0) -
+                (row?.gst_amount || 0)) /
+              (row?.at_price || 1)
+            ) || 0,
+        },
+      ]
       : []),
     {
-      key: "remaining_advance_amount",
-      name: "Remaining Advance",
+      key: 'remaining_advance_amount',
+      name: 'Remaining Advance',
+      width: 180,
+      renderRowCell: (row) =>
+        calculateRemainingAdvanceAmount(row) ??
+        'NA',
+    },
+    {
+      key: 'base_amount',
+      name: 'Base Amount',
       width: 150,
-      renderRowCell: (row) => calculateRemainingAdvanceAmount(row),
+      renderRowCell: (row) => (row.base_amount),
     },
     {
       key: "gst_amount",
@@ -176,13 +182,13 @@ const AdvancePurchaseOverview = () => {
     },
     ...(activeTab !== "Tab1"
       ? [
-          {
-            key: "no_of_post",
-            name: "Purchased post",
-            width: 140,
-            renderRowCell: (row) => row?.no_of_post ?? "NA",
-          },
-        ]
+        {
+          key: "no_of_post",
+          name: "Purchased post",
+          width: 140,
+          renderRowCell: (row) => row?.no_of_post ?? "NA",
+        },
+      ]
       : []),
   ];
 
@@ -212,11 +218,9 @@ const AdvancePurchaseOverview = () => {
           Vendor Wise
         </button>
         <button
-          className={
-            activeTab === "Tab2" ? "btn btn-primary" : "btn btn-outline"
-          }
+          className={activeTab === 'Tab2' ? 'btn btn-primary' : 'btn btn-outline'}
           onClick={() => {
-            setActiveTab("Tab2");
+            setActiveTab('Tab2');
             setSelectedFilter(null);
           }}
         >
@@ -243,18 +247,16 @@ const AdvancePurchaseOverview = () => {
         isLoading={advanceLoading || isLoading}
         title={
           viewContext
-            ? `${
-                viewContext.type === "vendor" ? "Vendor" : "Page"
-              } Overview - ${viewContext.label}`
+            ? `${viewContext.type === "vendor" ? "Vendor" : "Page"
+            } Overview - ${viewContext.label}`
             : activeTab === "Tab0"
-            ? "Page Wise Advance Overview"
-            : "Vendor Wise Advance Overview"
+              ? "Page Wise Advance Overview"
+              : "Vendor Wise Advance Overview"
         }
         tableName={
           viewContext
-            ? `${
-                viewContext.type === "vendor" ? "Vendor" : "Page"
-              } Overview - ${viewContext.label}`
+            ? `${viewContext.type === "vendor" ? "Vendor" : "Page"
+            } Overview - ${viewContext.label}`
             : "Advance Purchase Overview"
         }
         rowSelectable={true}
