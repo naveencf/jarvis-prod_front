@@ -504,6 +504,11 @@ const VendorOverview = () => {
       width: 150,
     },
     {
+      key: "created_by_name",
+      name: "Created By.",
+      width: 150,
+    },
+    {
       key: "primary_page",
       name: "Primary Page.",
       width: 200,
