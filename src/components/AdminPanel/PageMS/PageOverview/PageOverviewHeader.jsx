@@ -559,7 +559,7 @@ function PageOverviewHeader({
                 className="btn cmnbtn btn_sm btn-outline-danger"
                 onClick={handleDisabledPages}
               >
-                Disabled pages
+                Deleted pages
               </button>
 
               <Link
@@ -778,9 +778,9 @@ function PageOverviewHeader({
               columns={dataGridcolumns}
               data={disabledPagesData}
               isLoading={false}
-              title={"Disabled Pages"}
+              title={"Deleted Pages"}
               pagination={[100, 200, 1000]}
-              tableName={"Disabled Pages"}
+              tableName={"Deleted Pages"}
             />
           </Box>
         </Modal>

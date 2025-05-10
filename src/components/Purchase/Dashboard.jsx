@@ -30,13 +30,13 @@ import Calendar from "./Calender";
 import { formatNumber } from "../../utils/formatNumber";
 import { formatIndianNumber } from "../../utils/formatIndianNumber";
 import { Spinner } from "react-bootstrap";
-import { Box, Skeleton, Card, CardContent } from '@mui/material';
+import { Box, Skeleton, Card, CardContent } from "@mui/material";
 
 const Dashboard = () => {
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState("");
   const [advanceRange, setAdvanceRange] = useState("");
-  const [showAdvance, setShowAdvance] = useState(true)
+  const [showAdvance, setShowAdvance] = useState(true);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   // console.log("range", range);
@@ -54,7 +54,11 @@ const Dashboard = () => {
   const typeData = vendor?.data;
   const vendorData = vendorDetail?.vendorData;
   const cycleData = cycle?.data;
-  const { data: vendorAdvancedDetail, isLoading: isVendorAdvancedDetailLoading, isFetching: isVendorAdvancedDetailFetching } = useGetVendorAdvanceSummaryAndDetailsQuery(advanceRange);
+  const {
+    data: vendorAdvancedDetail,
+    isLoading: isVendorAdvancedDetailLoading,
+    isFetching: isVendorAdvancedDetailFetching,
+  } = useGetVendorAdvanceSummaryAndDetailsQuery(advanceRange);
 
   let queryParams = {};
 
@@ -71,12 +75,12 @@ const Dashboard = () => {
 
   const handleClick = (newRange) => {
     setRange(newRange);
-    setShowAdvance(true)
+    setShowAdvance(true);
   };
   const handleRangeClick = (range) => {
-    setAdvanceRange(range)
-    setShowAdvance(false)
-  }
+    setAdvanceRange(range);
+    setShowAdvance(false);
+  };
   const dataGridcolumns = [
     {
       key: "sno",
@@ -134,7 +138,8 @@ const Dashboard = () => {
       key: "vendor_total_remaining_advance_amount",
       name: "Advance",
       width: 200,
-      renderRowCell: (row) => Math.floor(row?.vendor_total_remaining_advance_amount),
+      renderRowCell: (row) =>
+        Math.floor(row?.vendor_total_remaining_advance_amount),
       // compare: true
     },
     // {
@@ -246,20 +251,31 @@ const Dashboard = () => {
     },
     {
       key: "totalCredit",
-      name: "Total Credit",
-      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalCredit))
+      name: "Paid Amount",
+      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalCredit)),
+      getTotal: true,
     },
     {
       key: "totalDebit",
-      name: "Total Debit",
-      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalDebit))
+      name: "Purchase Amount",
+      renderRowCell: (row) => formatIndianNumber(Math.floor(row.totalDebit)),
+      getTotal: true,
+    },
+    {
+      key: "outstanding",
+      name: "Outstanding Amount",
+      renderRowCell: (row) =>
+        formatIndianNumber(
+          Math.floor(row.totalCredit) - Math.floor(row.totalDebit)
+        ),
+      getTotal: true,
     },
     {
       key: "month",
       name: "Month",
-      renderRowCell: (row) => row.month
+      renderRowCell: (row) => row.month,
     },
-  ]
+  ];
   const formatString = (str) => {
     if (!str) return "";
     const firstChar = str.charAt(0);
@@ -269,7 +285,9 @@ const Dashboard = () => {
     return str;
   };
   // console.log("vendorAdvancedDetail", vendorAdvancedDetail?.vendorData);
-  const vendorDetailData = showAdvance ? vendorData : vendorAdvancedDetail?.vendorData
+  const vendorDetailData = showAdvance
+    ? vendorData
+    : vendorAdvancedDetail?.vendorData;
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   return (
@@ -286,7 +304,6 @@ const Dashboard = () => {
           <div className="card">
             <div className="card-body pb20">
               <div className="row no-wrap">
-
                 <div className="col-xl-2 col-lg-2 col-md-4 col-6 border-right mr-4">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgSuccessLight m-0">
@@ -294,7 +311,8 @@ const Dashboard = () => {
                         <Bank />
                       </span>
                     </div>
-                    <Link to="/admin/vendor_outstanding">
+                    {/* <Link to="/admin/vendor_outstanding"> */}
+                    <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Total Outstanding</h6>
                         <h6 className="mt4 fs_16">
@@ -314,10 +332,14 @@ const Dashboard = () => {
                       </span>
                     </div>
                     <Link to="/admin/vendor_outstanding">
+                      {/* <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero"> */}
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Total Advanced</h6>
                         <h6 className="mt4 fs_16">
-                          ₹{formatIndianNumber(Math.floor(data?.total_advanced_amount))}
+                          ₹
+                          {formatIndianNumber(
+                            Math.floor(data?.total_advanced_amount)
+                          )}
                         </h6>
                       </div>
                     </Link>
@@ -331,7 +353,7 @@ const Dashboard = () => {
                         <Wallet />
                       </span>
                     </div>
-                    <Link to="/admin/vendor_outstanding">
+                    <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Outstandings</h6>
                         <h6 className="mt4 fs_16">
@@ -354,7 +376,10 @@ const Dashboard = () => {
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Audit Pending</h6>
                         <h6 className="mt4 fs_16">
-                          ₹{formatIndianNumber(Math.floor(data?.total_pending_link_amt))}
+                          ₹
+                          {formatIndianNumber(
+                            Math.floor(data?.total_pending_link_amt)
+                          )}
                         </h6>
                       </div>
                     </Link>
@@ -372,13 +397,15 @@ const Dashboard = () => {
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Purchase Pending</h6>
                         <h6 className="mt4 fs_16">
-                          ₹{formatIndianNumber(Math.floor(data?.total_audited_link_amt))}
+                          ₹
+                          {formatIndianNumber(
+                            Math.floor(data?.total_audited_link_amt)
+                          )}
                         </h6>
                       </div>
                     </Link>
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -389,14 +416,15 @@ const Dashboard = () => {
                 <div className="card-header">
                   <h5 className="card-title">Vendor Outstanding</h5>
                 </div>
-                {isVendorDetailLoading ?
+                {isVendorDetailLoading ? (
                   <div>
                     <Card sx={{ width: 410 }}>
                       <Skeleton variant="rectangular" height={180} />
                       <Skeleton variant="text" height={30} sx={{ mt: 2 }} />
                     </Card>
                   </div>
-                  : <div className="card-body p0">
+                ) : (
+                  <div className="card-body p0">
                     <div className="table-responsive">
                       <table className="table infoTable">
                         <thead>
@@ -416,7 +444,10 @@ const Dashboard = () => {
                                   }
                                 }}
                                 style={{
-                                  cursor: item.range !== "total" ? "pointer" : "default"
+                                  cursor:
+                                    item.range !== "total"
+                                      ? "pointer"
+                                      : "default",
                                 }}
                               >
                                 {formatString(item.range)}
@@ -424,14 +455,17 @@ const Dashboard = () => {
 
                               <td>{item.vendorCount}</td>
                               <td className="text-right">
-                                {Math.floor(item.totalOutstanding).toLocaleString()}
+                                {Math.floor(
+                                  item.totalOutstanding
+                                ).toLocaleString()}
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                  </div>}
+                  </div>
+                )}
               </div>
             </div>
             <div className="col-xl-6 col-lg-6 col-md-12 col-12">
@@ -472,11 +506,12 @@ const Dashboard = () => {
                 <div className="card-header">
                   <h5 className="card-title">Vendor Advanced Amount</h5>
                 </div>
-                {isVendorAdvancedDetailLoading ?
+                {isVendorAdvancedDetailLoading ? (
                   <Card sx={{ width: 410 }}>
                     <Skeleton variant="rectangular" height={180} />
                     <Skeleton variant="text" height={30} sx={{ mt: 2 }} />
-                  </Card> :
+                  </Card>
+                ) : (
                   <div className="card-body p0">
                     <div className="table-responsive">
                       <table className="table infoTable">
@@ -498,7 +533,10 @@ const Dashboard = () => {
                                   }
                                 }}
                                 style={{
-                                  cursor: item.range !== "total" ? "pointer" : "default"
+                                  cursor:
+                                    item.range !== "total"
+                                      ? "pointer"
+                                      : "default",
                                 }}
                               >
                                 {formatString(item.range)}
@@ -506,14 +544,17 @@ const Dashboard = () => {
 
                               <td>{item.vendorCount}</td>
                               <td className="text-right">
-                                {Math.floor(item?.totalAdvanceAmount)?.toLocaleString()}
+                                {Math.floor(
+                                  item?.totalAdvanceAmount
+                                )?.toLocaleString()}
                               </td>
                             </tr>
                           ))}
                         </tbody>
                       </table>
                     </div>
-                  </div>}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -823,17 +864,23 @@ const Dashboard = () => {
           </div>
         </div>
       </div> */}
-      {vendorDetailData?.length > 0 &&
+      {vendorDetailData?.length > 0 && (
         <View
           version={1}
           columns={dataGridcolumns}
           data={vendorDetailData}
-          isLoading={isVendorDetailLoading || isVendorDetailFetching || isVendorAdvancedDetailFetching || isVendorAdvancedDetailLoading}
+          isLoading={
+            isVendorDetailLoading ||
+            isVendorDetailFetching ||
+            isVendorAdvancedDetailFetching ||
+            isVendorAdvancedDetailLoading
+          }
           title="Vendor Overview"
           rowSelectable={true}
           pagination={[100, 200, 1000]}
           tableName="Vendor Overview"
-        />}
+        />
+      )}
       <div className="card">
         <div className="card-body">
           <div className="row">
@@ -852,11 +899,14 @@ const Dashboard = () => {
         version={1}
         columns={monthWiseDataColumns}
         data={vendorLedgerMonthWise?.monthWiseLedger}
-        isLoading={isVendorLedgerMonthWiseLoading || isVendorLedgerMonthWiseFetching}
+        isLoading={
+          isVendorLedgerMonthWiseLoading || isVendorLedgerMonthWiseFetching
+        }
         title="Month Wise Ledger"
         rowSelectable={true}
         pagination={[100, 200, 1000]}
         tableName="Vendor Overview"
+        showTotal={true}
       />
     </>
   );

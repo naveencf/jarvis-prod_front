@@ -8,9 +8,10 @@ import axios from "axios";
 import { baseUrl } from "../../../utils/config";
 import { useCallback } from "react";
 import jwtDecode from "jwt-decode";
+import formatString from "../../../utils/formatString";
 
 const VendorOutstandingOverview = () => {
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -23,31 +24,77 @@ const VendorOutstandingOverview = () => {
   const [vendorDetail, setVendorDetail] = useState("");
   const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
 
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const filter = params.get("filter");
 
-
+  console.log(filter);
   useEffect(() => {
-    fetchVendors("abh");
+    if (filter === "outstandingGreaterThanZero") {
+      fetchVendors("abh", true);
+    } else {
+      fetchVendors("abh");
+    }
   }, []);
 
 
-  // Debounced function to call the API
+  // // Debounced function to call the API
   const fetchVendors = useCallback(
-    debounce(async (search) => {
+    debounce(async (search, includeOutstandingFilter = false) => {
       try {
-        if (search.length >= 3) {
-          const res = await axios.get(
-            `${baseUrl}v1/vendor?search=${search}&page=1&limit=10`
-          );
-          if (res.status === 200) {
-            setVendorData(res.data.data);
+        const queryParams = new URLSearchParams();
+
+        if (includeOutstandingFilter) {
+          queryParams.append("vendor_outstandings", "true");
+        } else {
+          if (search.length >= 3) {
+            queryParams.append("search", search);
+            queryParams.append("page", page); // use current state
+            queryParams.append("limit", limit);
+          } else {
+            setVendorData([]); // Optional: clear list if search too short
+            return;
           }
+        }
+
+        const res = await axios.get(`${baseUrl}v1/vendor?${queryParams.toString()}`);
+        if (res.status === 200) {
+          setVendorData(res.data.data);
         }
       } catch (error) {
         console.error("Error fetching vendor data:", error);
       }
-    }, 500), // 300ms debounce delay
-    []
+    }, 500),
+    [page, limit]
   );
+
+
+  // const fetchVendors = useCallback(
+  //   debounce(async (search, includeOutstandingFilter = false) => {
+  //     try {
+  //       if (search.length >= 3) {
+  //         const queryParams = new URLSearchParams({
+  //           search,
+  //           page: 1,
+  //           limit: 10,
+  //         });
+  //         if (includeOutstandingFilter) {
+  //           queryParams.append("vendor_outstandings", true);
+  //         }
+
+  //         const res = await axios.get(`${baseUrl}v1/vendor?${queryParams.toString()}`);
+  //         // const res = await axios.get(`${baseUrl}v1/vendor?vendor_outstandings=true`);
+  //         if (res.status === 200) {
+  //           setVendorData(res.data.data);
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching vendor data:", error);
+  //     }
+  //   }, 500),
+  //   []
+  // );
+
   // Debounce function
   function debounce(func, delay) {
     let timer;
@@ -60,8 +107,9 @@ const VendorOutstandingOverview = () => {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-    fetchVendors(value);
+    fetchVendors(value, filter === "outstandingGreaterThanZero");
   };
+
 
   // Handle pagination changes
   const handlePaginationChange = (newPage, newLimit) => {
@@ -80,6 +128,7 @@ const VendorOutstandingOverview = () => {
       key: "vendor_name",
       name: "Vendor Name",
       width: 200,
+      renderRowCell: (row, index) => formatString(row.vendor_name),
     },
     {
       key: "vendor_category",
@@ -93,7 +142,7 @@ const VendorOutstandingOverview = () => {
       renderRowCell: (row) => {
         const value = row.vendor_outstandings ?? 0;
         return Math.round(value);
-      }
+      },
     },
     {
       key: "vendor_total_remaining_advance_amount",
@@ -102,12 +151,13 @@ const VendorOutstandingOverview = () => {
       renderRowCell: (row) => {
         const value = row.vendor_total_remaining_advance_amount ?? 0;
         return Math.round(value);
-      }
+      },
     },
     {
       key: "primary_page_name",
       name: "Primary Page",
       width: 200,
+      renderRowCell: (row) => formatString(row.primary_page_name),
     },
 
     {

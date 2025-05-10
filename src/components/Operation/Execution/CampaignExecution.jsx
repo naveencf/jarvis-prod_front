@@ -177,7 +177,6 @@ const CampaignExecution = () => {
 
   const handlePaymentSelect = async (selectedOption) => {
     if (!selectedOption) return;
-    console.log("selectedOption", selectedOption);
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Do you want to proceed with the advanced payment option?",
@@ -292,7 +291,6 @@ const CampaignExecution = () => {
     }
     setAdvancedPaymentLoading(false);
   };
-
 
   async function handleFilterLinks(codes, tab) {
     setActTab(!memoValue?.current?.tab ? tab : memoValue?.current?.tab);
@@ -1856,6 +1854,7 @@ const CampaignExecution = () => {
         setType={setType}
         type={type}
         selectedData={selectedData}
+        setSelectedData={setSelectedData}
         phaseList={phaseList}
         token={token}
         refetchPlanData={refetchPlanData}

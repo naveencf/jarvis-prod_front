@@ -133,20 +133,20 @@ const DirectPurchaseApi = createApi({
       transformResponse: (response) => response?.data,
     }),
     getAuditedAndPendingLinkStatsByVendors: builder.mutation({
-      query: ({ page = 1, limit = 10 ,audit_status}) => ({
+      query: ({ page = 1, limit = 10, audit_status }) => ({
         url: `v1/purchase/get_audited_and_pending_link_stats_by_vendors`,
-        method: 'POST',
-        body: { page, limit, audit_status }
+        method: "POST",
+        body: { page, limit, audit_status },
       }),
       transformResponse: (response) => response?.data,
     }),
     getVendorWiseAdvancedPaymentDetails: builder.query({
-      query: () => 'purchase/vendor_wise_advanced_payment_details',
+      query: () => "purchase/vendor_wise_advanced_payment_details",
       transformResponse: (response) => response?.data,
     }),
 
     getPageWiseAdvancedPaymentDetails: builder.query({
-      query: () => 'purchase/page_wise_advanced_payment_details',
+      query: () => "purchase/page_wise_advanced_payment_details",
       transformResponse: (response) => response?.data,
     }),
     getLedgerAmountByVendor: builder.query({
@@ -157,15 +157,26 @@ const DirectPurchaseApi = createApi({
     getAdvancePaymentsByPageAndVendor: builder.query({
       query: ({ vendor_obj_id, page_name }) => {
         const params = new URLSearchParams();
-    
-        if (vendor_obj_id) params.append('vendor_obj_id', vendor_obj_id);
-        if (page_name) params.append('page_name', page_name);
-    
+
+        if (vendor_obj_id) params.append("vendor_obj_id", vendor_obj_id);
+        if (page_name) params.append("page_name", page_name);
+
         return `purchase/advanced_payment?${params.toString()}`;
       },
       transformResponse: (response) => response?.data,
     }),
-    
+    getLinksOnCondition: builder.query({
+      query: ({ audit_status, vendorId }) => ({
+        url: "/v1/purchase/get_links_on_the_basis_of_condition",
+        method: "POST",
+        body: {
+          matchCondition: {
+            audit_status,
+            vendorId,
+          },
+        },
+      }),
+    }),    
     // api/purchase/advanced_payment/66827bcf8e6fbfb72f5c8afe?startDate=2025-03-04&&endDate=2025-03-04
   }),
 });
@@ -193,7 +204,8 @@ export const {
   useGetVendorWiseAdvancedPaymentDetailsQuery,
   useGetPageWiseAdvancedPaymentDetailsQuery,
   useGetLedgerAmountByVendorQuery,
-  useLazyGetAdvancePaymentsByPageAndVendorQuery
+  useLazyGetAdvancePaymentsByPageAndVendorQuery,
+  useGetLinksOnConditionQuery,
 } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;
