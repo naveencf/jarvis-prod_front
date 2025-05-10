@@ -134,7 +134,6 @@ function PayVendorDialog(props) {
           return res.payment_mode == 'PineLab'
         })
         setPaymentMode(defaultOption?.payment_mode)
-        // console.log(defaultOption, "paymentModeData", res.data)
       }
     });
 
@@ -361,8 +360,9 @@ function PayVendorDialog(props) {
     else if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
       toastError("Invalid Amount")
       return;
-    } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(rowSelectionModel?.ifsc)) {
-      toastError("Invalid IFSC Code");
+    } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(rowSelectionModel[0]?.branchCode)) {
+      console.log(rowSelectionModel[0].branchCode, "ifsc", rowSelectionModel)
+      // toastError("Invalid IFSC Code");
       return;
     }
 
