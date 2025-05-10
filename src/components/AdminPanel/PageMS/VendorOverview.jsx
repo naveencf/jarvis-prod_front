@@ -504,11 +504,6 @@ const VendorOverview = () => {
       width: 150,
     },
     {
-      key: "created_by_name",
-      name: "Created By.",
-      width: 150,
-    },
-    {
       key: "primary_page",
       name: "Primary Page.",
       width: 200,
@@ -517,7 +512,7 @@ const VendorOverview = () => {
         //   (ele) => ele._id === row.primary_page
         // )?.page_name;
         // return name ?? 'NA';
-        return row?.primary_page_name;
+        return formatString(row?.primary_page_name);
       },
     },
     {

@@ -40,6 +40,7 @@ const LinkUpload = ({
   setToggleModal,
   setSelectedPlan,
   selectedData,
+  setSelectedData,
   startDate,
   endDate,
   setStartDate,
@@ -171,7 +172,7 @@ const LinkUpload = ({
     );
     return uniqueLinks;
   };
-
+  
   async function handleFetchPricing() {
     try {
       let payload;
@@ -189,6 +190,7 @@ const LinkUpload = ({
       if (record == 5) handleFilterLinks();
       else await refetchPlanData();
       toastAlert("Pricing Fetched");
+      setSelectedData([])
     } catch (err) {
       toastError("Error Fetching Pricing");
     }

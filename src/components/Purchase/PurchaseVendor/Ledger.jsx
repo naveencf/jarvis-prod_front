@@ -236,7 +236,7 @@ const Ledger = () => {
     {
       key: "advance_name",
       name: "Advance Name",
-      renderRowCell: (row) => row?.advance_name,
+      renderRowCell: (row) => formatString(row?.advance_name),
       width: 120,
     },
     {
@@ -261,13 +261,13 @@ const Ledger = () => {
     {
       key: "vendor_name",
       name: "Vendor Name",
-      renderRowCell: (row) => row?.vendor_name,
+      renderRowCell: (row) => formatString(row?.vendor_name),
       width: 150,
     },
     {
       key: "page_name",
       name: "Page Name",
-      renderRowCell: (row) => row?.page_name,
+      renderRowCell: (row) => formatString(row?.page_name),
       width: 150,
     },
     {
