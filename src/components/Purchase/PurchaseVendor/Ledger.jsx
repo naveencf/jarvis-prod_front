@@ -25,6 +25,7 @@ const Ledger = () => {
     const currentYear = new Date().getFullYear();
     return [
       { label: `2023-2024`, value: `startDate=2023-04-01&endDate=2024-03-31` },
+      { label: `2025-2026`, value: `startDate=2025-04-01&endDate=2026-03-31` },
       { label: `2021-2026`, value: `startDate=2021-04-01&endDate=2026-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
