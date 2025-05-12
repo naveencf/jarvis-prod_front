@@ -506,7 +506,8 @@ const ViewSaleBooking = () => {
                 setSelectedRowData(row);
               }}
             >
-              {row?.record_service_counts}
+              {/* {row?.record_service_counts} */}
+              {row?.executionData?.length == 1 ? row?.executionData[0]?.execution_token : row?.executionData?.length == 0 ? 0 : row?.record_service_counts}
             </div>
           );
         else return 0;
@@ -528,7 +529,7 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-          "uploaded" == row?.invoice_request_status ? (
+            "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
           ) : row.invoice_request_status !== "requested" ? (
             <>
@@ -579,9 +580,8 @@ const ViewSaleBooking = () => {
       comapare: true,
       renderRowCell: (row) => (
         <span
-          className={`badge ${
-            row.requested_amount ? "badge-success" : "badge-danger"
-          }`}
+          className={`badge ${row.requested_amount ? "badge-success" : "badge-danger"
+            }`}
         >
           {row.requested_amount > 0 ? "Requested" : "Not Requested"}
         </span>
@@ -730,9 +730,8 @@ const ViewSaleBooking = () => {
       name: "GST Status",
       renderRowCell: (row) => (
         <span
-          className={`badge ${
-            row.gst_status ? "badge-success" : "badge-danger"
-          }`}
+          className={`badge ${row.gst_status ? "badge-success" : "badge-danger"
+            }`}
         >
           {row.gst_status ? "Applicable" : "Not Applicable"}
         </span>
