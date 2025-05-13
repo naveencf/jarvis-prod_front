@@ -798,6 +798,14 @@ const PageOverviewNew = () => {
         return row.followers_count;
       },
     },
+    {
+      key: "page_status",
+      name: "Page Status",
+      renderRowCell:(row)=>{
+        return formatString(row.page_status)
+      }
+       
+    },
     // {
     //   key: "max_cost_price",
     //   name: "Max Cost Price",

@@ -1,34 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Button, TextField } from "@mui/material";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import PaymentRequestFromPurchase from "./PaymentRequestFromPurchase";
-import { useGetAllVendorQuery } from "../../Store/reduxBaseURL";
 import axios from "axios";
 import { baseUrl } from "../../../utils/config";
-import { useCallback } from "react";
 import jwtDecode from "jwt-decode";
 import formatString from "../../../utils/formatString";
 
 const VendorOutstandingOverview = () => {
-  // const location = useLocation();
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userName = decodedToken.name;
-  // State for the search input
+
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [vendorData, setVendorData] = useState([]);
   const [vendorDetail, setVendorDetail] = useState("");
   const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
+  const [rangeCounts, setRangeCounts] = useState([]);
+  const [selectedRange, setSelectedRange] = useState(null);
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
   const filter = params.get("filter");
 
-  console.log(filter);
   useEffect(() => {
     if (filter === "outstandingGreaterThanZero") {
       fetchVendors("abh", true);
@@ -37,8 +35,6 @@ const VendorOutstandingOverview = () => {
     }
   }, []);
 
-
-  // // Debounced function to call the API
   const fetchVendors = useCallback(
     debounce(async (search, includeOutstandingFilter = false) => {
       try {
@@ -49,17 +45,47 @@ const VendorOutstandingOverview = () => {
         } else {
           if (search.length >= 3) {
             queryParams.append("search", search);
-            queryParams.append("page", page); // use current state
+            queryParams.append("page", page);
             queryParams.append("limit", limit);
           } else {
-            setVendorData([]); // Optional: clear list if search too short
+            setVendorData([]);
             return;
           }
         }
 
-        const res = await axios.get(`${baseUrl}v1/vendor?${queryParams.toString()}`);
+        const res = await axios.get(
+          `${baseUrl}v1/vendor?${queryParams.toString()}`
+        );
         if (res.status === 200) {
-          setVendorData(res.data.data);
+          const data = res.data.data;
+          setVendorData(data);
+          if (includeOutstandingFilter) {
+            const ranges = [
+              { label: "0–10k", min: 0, max: 10000 },
+              { label: "10k–50k", min: 10000, max: 50000 },
+              { label: "50k–1L", min: 50000, max: 100000 },
+              { label: "1L–2L", min: 100000, max: 200000 },
+              { label: "1L–5L", min: 100000, max: 500000 },
+              { label: "5L+", min: 500000, max: Infinity },
+            ];
+
+            const counts = ranges.map((range) => {
+              const count = data.filter(
+                (item) =>
+                  item.vendor_outstandings &&
+                  item.vendor_outstandings > range.min &&
+                  item.vendor_outstandings <= range.max
+              ).length;
+              return {
+                ...range,
+                count,
+              };
+            });
+
+            setRangeCounts(counts);
+          } else {
+            setRangeCounts([]);
+          }
         }
       } catch (error) {
         console.error("Error fetching vendor data:", error);
@@ -68,34 +94,6 @@ const VendorOutstandingOverview = () => {
     [page, limit]
   );
 
-
-  // const fetchVendors = useCallback(
-  //   debounce(async (search, includeOutstandingFilter = false) => {
-  //     try {
-  //       if (search.length >= 3) {
-  //         const queryParams = new URLSearchParams({
-  //           search,
-  //           page: 1,
-  //           limit: 10,
-  //         });
-  //         if (includeOutstandingFilter) {
-  //           queryParams.append("vendor_outstandings", true);
-  //         }
-
-  //         const res = await axios.get(`${baseUrl}v1/vendor?${queryParams.toString()}`);
-  //         // const res = await axios.get(`${baseUrl}v1/vendor?vendor_outstandings=true`);
-  //         if (res.status === 200) {
-  //           setVendorData(res.data.data);
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching vendor data:", error);
-  //     }
-  //   }, 500),
-  //   []
-  // );
-
-  // Debounce function
   function debounce(func, delay) {
     let timer;
     return (...args) => {
@@ -103,19 +101,36 @@ const VendorOutstandingOverview = () => {
       timer = setTimeout(() => func(...args), delay);
     };
   }
-  // Handle search input changes
+
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
     fetchVendors(value, filter === "outstandingGreaterThanZero");
   };
 
-
-  // Handle pagination changes
   const handlePaginationChange = (newPage, newLimit) => {
     setPage(newPage);
     setLimit(newLimit);
   };
+
+  const handlePaymentRequest = (row) => {
+    if (!row) return;
+    setReqestPaymentDialog(true);
+    setVendorDetail(row);
+  };
+
+  const handleRangeFilter = (range) => {
+    setSelectedRange(range);
+  };
+
+  const filteredData = selectedRange
+    ? vendorData.filter(
+        (item) =>
+          item.vendor_outstandings &&
+          item.vendor_outstandings > selectedRange.min &&
+          item.vendor_outstandings <= selectedRange.max
+      )
+    : vendorData;
 
   const columns = [
     {
@@ -139,19 +154,14 @@ const VendorOutstandingOverview = () => {
       key: "vendor_outstandings",
       name: "Outstanding",
       width: 200,
-      renderRowCell: (row) => {
-        const value = row.vendor_outstandings ?? 0;
-        return Math.round(value);
-      },
+      renderRowCell: (row) => Math.round(row.vendor_outstandings ?? 0),
     },
     {
       key: "vendor_total_remaining_advance_amount",
       name: "Advance",
       width: 200,
-      renderRowCell: (row) => {
-        const value = row.vendor_total_remaining_advance_amount ?? 0;
-        return Math.round(value);
-      },
+      renderRowCell: (row) =>
+        Math.round(row.vendor_total_remaining_advance_amount ?? 0),
     },
     {
       key: "primary_page_name",
@@ -159,23 +169,24 @@ const VendorOutstandingOverview = () => {
       width: 200,
       renderRowCell: (row) => formatString(row.primary_page_name),
     },
-
     {
       key: "action",
       name: "Action",
       width: 200,
-      renderRowCell: (row) => {
-        return (
-          <>
-            <Button onClick={() => handlePaymentRequest(row)}>
-              Request Payment
-            </Button>
-            {/* <Link to={`/admin/ledger/${row.vendor_id}`}>
-                            <Button onClick={() => handlePaymentRequest(row)}>Ledger</Button>
-                        </Link> */}
-          </>
-        );
-      },
+      renderRowCell: (row) => (
+        <button
+          style={{
+            color: "#1876D1",
+            backgroundColor: "transparent",
+            border: "1px solid transparent",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+          onClick={() => handlePaymentRequest(row)}
+        >
+          Request Payment
+        </button>
+      ),
     },
     {
       key: "mobile",
@@ -196,24 +207,24 @@ const VendorOutstandingOverview = () => {
       key: "action",
       name: "Ledger",
       width: 200,
-      renderRowCell: (row) => {
-        return (
-          <Link to={`/admin/ledger/${row._id}`}>
-            <Button>Ledger</Button>
-          </Link>
-        );
-      },
+      renderRowCell: (row) => (
+        <Link to={`/admin/ledger/${row._id}`}>
+          <button
+            style={{
+              color: "#1876D1",
+              backgroundColor: "transparent",
+              border: "1px solid transparent",
+              cursor: "pointer",
+              fontSize: "14px",
+            }}
+          >
+            Ledger
+          </button>
+        </Link>
+      ),
     },
-
-    // Add more columns as needed
   ];
-  const handlePaymentRequest = (row) => {
-    if (!row) {
-      return;
-    }
-    setReqestPaymentDialog(true);
-    setVendorDetail(row);
-  };
+
   return (
     <>
       {reqestPaymentDialog && (
@@ -229,15 +240,14 @@ const VendorOutstandingOverview = () => {
         <View
           version={1}
           columns={columns}
-          data={vendorData || []}
-          // isLoading={isLoading}
+          data={filteredData || []}
           title="Vendor Overview"
           rowSelectable={true}
           pagination={[100, 200, 1000]}
           onPaginationChange={handlePaginationChange}
           tableName="Vendor Overview"
           addHtml={
-            <>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>
               <TextField
                 label="Search Vendor"
                 variant="outlined"
@@ -245,7 +255,29 @@ const VendorOutstandingOverview = () => {
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
-            </>
+              {rangeCounts.map((range) => (
+                <Button
+                  key={range.label}
+                  variant={
+                    selectedRange?.label === range.label
+                      ? "contained"
+                      : "outlined"
+                  }
+                  onClick={() => handleRangeFilter(range)}
+                >
+                  {range.label} ({range.count})
+                </Button>
+              ))}
+              {selectedRange && (
+                <Button
+                  variant="text"
+                  color="error"
+                  onClick={() => setSelectedRange(null)}
+                >
+                  Clear Filter
+                </Button>
+              )}
+            </div>
           }
         />
       </div>

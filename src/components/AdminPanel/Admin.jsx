@@ -45,6 +45,7 @@ import BonusSlabMastAddEdit from "./Sales/ Bonus/BonusSlabMast/BonusSlabMastAddE
 import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview";
 import RecordServiceDistribution from "./Sales/SaleBooking/RecordServiceDistribution.jsx";
 import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
+import PantryAdminDashboard from "../Pantry/PantryAdminDashboard.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -2470,6 +2471,10 @@ const Admin = () => {
                       contextData[29]?.view_value === 1 && ( */}
                   <>
                     <Route path="/pantry" element={<PantryUserDashboard />} />
+                    <Route
+                      path="/pantry-admin"
+                      element={<PantryAdminDashboard />}
+                    />
                   </>
                   {/* )} */}
                   <Route path="**" element={<ErrorPage />} />

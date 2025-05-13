@@ -135,8 +135,9 @@ const SidebarLinks = () => {
       {deptId !== 36 && (
         <li className="nav-item nav-item-single">
           <Link
-            className={`nav-btn nav-link ${activelink === "/admin" ? "active" : ""
-              }`}
+            className={`nav-btn nav-link ${
+              activelink === "/admin" ? "active" : ""
+            }`}
             to="/admin"
           >
             <i className="ph">
@@ -1333,8 +1334,9 @@ const SidebarLinks = () => {
                 {/* </div> */}
 
                 <Link
-                  className={`nav-btn nav-link ${deptId == 36 ? "" : "collapsed"
-                    }`}
+                  className={`nav-btn nav-link ${
+                    deptId == 36 ? "" : "collapsed"
+                  }`}
                   data-toggle="collapse"
                   data-target="#collapsInnerEightFinanceEdit"
                   aria-expanded="true"
@@ -1348,7 +1350,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceEdit"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="collapse-inner">
                     <>
@@ -1594,7 +1596,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinance"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1662,7 +1664,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinancePayout"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1700,7 +1702,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceTask"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1892,9 +1894,9 @@ const SidebarLinks = () => {
               )} */}
               {/* Plan X Beta */}
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
-                contextData &&
-                contextData[4] &&
-                contextData[4].insert_value === 1 ? (
+              contextData &&
+              contextData[4] &&
+              contextData[4].insert_value === 1 ? (
                 <NavLink
                   className="collapse-item"
                   to="/admin/pms-plan-making-beta"
@@ -2036,7 +2038,7 @@ const SidebarLinks = () => {
             id="cummunity"
             className="collapse"
             aria-labelledby="headingFive"
-          // data-parent="#accordionSidebar"
+            // data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
               {contextData &&
@@ -2076,7 +2078,7 @@ const SidebarLinks = () => {
             data-target="#sarcasm"
             aria-expanded="false"
             aria-controls="sarcasm"
-          // to="/admin/sarcasm"
+            // to="/admin/sarcasm"
           >
             <i className="ph">
               <MaskHappy size={32} />
@@ -2194,7 +2196,10 @@ const SidebarLinks = () => {
                 <NavLink className="collapse-item" to="/admin/purchased-record">
                   <i className="bi bi-dot"></i>Purchased Data
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/advanced-purchase-overview">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/advanced-purchase-overview"
+                >
                   <i className="bi bi-dot"></i>Bulk Purchased Posts
                 </NavLink>
                 <NavLink
@@ -2308,7 +2313,7 @@ const SidebarLinks = () => {
         </>
       )}
 
-      {contextData && contextData[15] && contextData[15]?.view_value === 1 && (
+      {/* {contextData && contextData[15] && contextData[15]?.view_value === 1 && (
         <li className="nav-item">
           <Link
             className="nav-btn nav-link collapsed"
@@ -2324,7 +2329,44 @@ const SidebarLinks = () => {
             <span>Pantry</span>
           </Link>
         </li>
-      )}
+      )} */}
+      <li className="nav-item">
+        <Link
+          className="nav-link nav-btn collapsed"
+          data-toggle="collapse"
+          data-target="#collapsePantry"
+          aria-expanded="true"
+          aria-controls="collapsePantry"
+        >
+          <i className="ph">
+            <MaskHappy size={32} />
+          </i>
+          <span>Pantry</span>
+        </Link>
+        <div
+          id="collapsePantry"
+          className="collapse"
+          aria-labelledby="headingBoosting"
+          data-parent="#accordionSidebar"
+        >
+          <div className="internal collapse-inner">
+            {contextData &&
+              contextData[15] &&
+              contextData[15]?.view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pantry">
+                  <i className="bi bi-plus-circle"></i> Pantry
+                </NavLink>
+              )}
+            {contextData &&
+              contextData[71] &&
+              contextData[71]?.view_value === 1 && (
+                <NavLink className="collapse-item" to="/admin/pantry-admin">
+                  <i className="bi bi-graph-up"></i> Pantry Admin
+                </NavLink>
+              )}
+          </div>
+        </div>
+      </li>
     </>
   );
 };

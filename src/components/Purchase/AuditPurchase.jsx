@@ -1484,7 +1484,7 @@ const AuditPurchase = () => {
 
       <div className="card">
         <div className="card-header flexCenterBetween">
-          <h5 className="card-title w-100">Audit Purchase</h5>
+          <h5 className="card-title w-100">Purchased Purchase</h5>
           <div className="tabs sm m0">
             <button
               className={
@@ -1827,7 +1827,7 @@ const AuditPurchase = () => {
       )}
 
       <View
-        version={1}
+        // version={1}
         data={campaignPlanData}
         showTotal={true}
         // data={phaseWiseData}
