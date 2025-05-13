@@ -17,8 +17,10 @@ import {
   usePostDataUpdateMutation,
   useUpdateMultipleAuditStatusMutation,
   useUpdatePriceforPostMutation,
+  useUpdateVendorMutation,
   useVendorDataQuery,
 } from "../../Store/API/Operation/OperationApi";
+
 import View from "../../AdminPanel/Sales/Account/View/View";
 import CustomSelect from "../../ReusableComponents/CustomSelect";
 import getDecodedToken from "../../../utils/DecodedToken";
@@ -43,7 +45,10 @@ import PhotoPreview from "./PhotoPreview";
 import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
 import { Autocomplete } from "@mui/lab";
 import { TextField } from "@mui/material";
-import { useGetVendorsQuery } from "../../Store/API/Purchase/DirectPurchaseApi";
+import {
+  useGetVendorsQuery,
+  useUpdateMultiplePurchasedStatusDataMutation,
+} from "../../Store/API/Purchase/DirectPurchaseApi";
 import formatDataObject from "../../../utils/formatDataObject";
 import StoryModal from "./StoryModal.jsx";
 import MultipleService from "./MultipleService.jsx";
@@ -56,6 +61,7 @@ import BulkCampaignUpdate from "./BulkCampaignUpdate.jsx";
 import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
 import Swal from "sweetalert2";
 import Loader from "../../Finance/Loader/Loader.jsx";
+import PriceUpdateModal from "../../Purchase/PriceUpdateModal.jsx";
 const key = [
   { price_key: "instagram_post" },
   {
@@ -75,7 +81,7 @@ const CampaignExecution = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const [selectedPlan, setSelectedPlan] = useState(null);
   const [phaseList, setPhaseList] = useState([]);
-  const [advancedPaymentLoading, setAdvancedPaymentLoading] = useState(false)
+  const [advancedPaymentLoading, setAdvancedPaymentLoading] = useState(false);
   const [vendorName, setVendorName] = useState("");
   const [toggleModal, setToggleModal] = useState(false);
   const [modalData, setModalData] = useState({});
@@ -89,7 +95,9 @@ const CampaignExecution = () => {
   const [pageName, setPageName] = useState({ page_name: "" });
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [startDate, setStartDate] = useState("");
+  const [price, setPrice] = useState("");
   const [endDate, setEndDate] = useState("");
   const [type, setType] = useState("single");
   const [actTab, setActTab] = useState("all");
@@ -115,6 +123,10 @@ const CampaignExecution = () => {
   } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
   const [getData, { isLoading: gettingData, isError: gettingError }] =
     useGetPostDetailofPagenVendorMutation();
+  const [
+    updatePurchasedStatusMultiple,
+    { isLoading: isUpdatingPurchasedStatusMultiple },
+  ] = useUpdateMultiplePurchasedStatusDataMutation();
 
   const {
     data: pmsPlatform,
@@ -171,6 +183,11 @@ const CampaignExecution = () => {
   });
 
   const [
+    updateVendor,
+    { error: vendorError, isLoading: vendorLoading, isSuccess: vendorSuccess },
+  ] = useUpdateVendorMutation();
+
+  const [
     getDataByFilter,
     { isLoading: filterLoading, isSuccess: filterSuccess },
   ] = useGetPostDetailsBasedOnFilterMutation();
@@ -199,7 +216,8 @@ const CampaignExecution = () => {
 
     const allPageMatch = selectedData.every(
       (item) =>
-        item.page_name?.toLowerCase() === selectedOption.page_name?.toLowerCase()
+        item.page_name?.toLowerCase() ===
+        selectedOption.page_name?.toLowerCase()
     );
     if (!allPageMatch) {
       invalidReasons.push(
@@ -216,7 +234,9 @@ const CampaignExecution = () => {
 
       if (errors.length > 0) {
         invalidReasons.push(
-          `Post ${index + 1} (${item.shortCode || item.page_name}): ${errors.join(", ")}`
+          `Post ${index + 1} (${
+            item.shortCode || item.page_name
+          }): ${errors.join(", ")}`
         );
       }
     });
@@ -398,12 +418,12 @@ const CampaignExecution = () => {
           row?.postType == "REEL"
             ? key[2].price_key
             : row?.postType == "CAROUSEL"
-              ? key[3].price_key
-              : row?.postType === "IMAGE"
-                ? key[0].price_key
-                : row?.story_link && row?.ref_link
-                  ? key[4].price_key
-                  : key[1].price_key
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key
         );
       }
     }
@@ -560,14 +580,14 @@ const CampaignExecution = () => {
           row?.postType == ""
             ? ""
             : row?.postType == "REEL"
-              ? key[2].price_key
-              : row?.postType == "CAROUSEL"
-                ? key[3].price_key
-                : row?.postType === "IMAGE"
-                  ? key[0].price_key
-                  : row?.story_link && row?.ref_link
-                    ? key[4].price_key
-                    : key[1].price_key,
+            ? key[2].price_key
+            : row?.postType == "CAROUSEL"
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key,
       };
       if (!data.platform_name) {
         toastError("Please select the platform");
@@ -583,7 +603,7 @@ const CampaignExecution = () => {
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async function handleBulkAudit() {
@@ -686,6 +706,17 @@ const CampaignExecution = () => {
     }
   }
 
+  const handlePriceChange = (e) => {
+    const value = e.target.value;
+    const regex = /^[0-9]*\.?[0-9]*$/;
+    if (regex.test(value)) {
+      setPrice(value);
+    }
+  };
+
+  const handleSave = () => {
+    setShowModal(true);
+  };
   async function handleAuditedDataUpload() {
     try {
       if (actTab == 5) {
@@ -717,19 +748,19 @@ const CampaignExecution = () => {
       data =
         actTab == 4 && selectedData.length > 0
           ? {
-            userId: token.id,
+              userId: token.id,
 
-            isVendorWise: true,
-            vendor_id: vendorList.current,
-            shortCodes: selectedData.map((data) => data.shortCode),
-          }
+              isVendorWise: true,
+              vendor_id: vendorList.current,
+              shortCodes: selectedData.map((data) => data.shortCode),
+            }
           : actTab == 5 && selectedData.length === 1
-            ? {
+          ? {
               userId: token.id,
               shortCodes: selectedData.map((data) => data.shortCode),
               campaignId: selectedData[0].campaignId,
             }
-            : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+          : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
             // ?
             {
               userId: token.id,
@@ -833,8 +864,8 @@ const CampaignExecution = () => {
               row?.postType == "REEL"
                 ? Reel
                 : row?.postType == "CAROUSEL"
-                  ? Carousel
-                  : Image
+                ? Carousel
+                : Image
             }
             style={{ width: "20px", height: "20px" }}
             alt=""
@@ -1069,9 +1100,9 @@ const CampaignExecution = () => {
             <button
               title={
                 row.audit_status === "purchased" ||
-                  row.amount < 0 ||
-                  row?.vendor_name == "" ||
-                  row?.campaignId == null
+                row.amount < 0 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
                   ? "Amount should be greater than or equal to 0 and select the vendor for the page or this link is not present in any campaign"
                   : ""
               }
@@ -1090,8 +1121,8 @@ const CampaignExecution = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                        ? "pending"
-                        : row.audit_status,
+                      ? "pending"
+                      : row.audit_status,
                 };
                 handleSingleAuditPending({
                   ...row,
@@ -1099,12 +1130,13 @@ const CampaignExecution = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${row.audit_status === "pending"
-                ? "btn btn-sm cmnbtn btn-primary"
-                : row.audit_status !== "audited"
+              className={`pointer badge ${
+                row.audit_status === "pending"
+                  ? "btn btn-sm cmnbtn btn-primary"
+                  : row.audit_status !== "audited"
                   ? "bg-success"
                   : "btn btn-sm cmnbtn btn-primary"
-                }`}
+              }`}
             >
               {row.audit_status}
             </button>
@@ -1170,17 +1202,17 @@ const CampaignExecution = () => {
         // if (!row || row.phaseDate == null) {
         //   return "";
         // }
-        if (row.audit_status === "purchased") { 
-          return "#c4fac4"; 
+        if (row.audit_status === "purchased") {
+          return "#c4fac4";
         }
         if (row.audit_status === "audited") {
-          return "rgb(255 131 0 / 80%)";  
+          return "rgb(255 131 0 / 80%)";
         }
         if (!row.owner_info?.username) {
-          return "#ff00009c"; 
+          return "#ff00009c";
         }
         if (row.amount === 0 || !row.vendor_name) {
-          return "#ffff008c";  
+          return "#ffff008c";
         }
         return "";
       },
@@ -1602,6 +1634,63 @@ const CampaignExecution = () => {
     },
   ];
 
+  const handleConfirmUpdate = async () => {
+    try {
+      setShowModal(false);
+
+      if (!selectedData || selectedData.length === 0) {
+        toastError("No data selected for updating.");
+        return;
+      }
+      //   {
+      //     "dataToBeUpdate":{
+      //         "amount":1221
+      //     },
+      //     "shortCodes":[
+      //     "DFfuJyvIKrh"
+      //     ]
+      // }
+
+      const shortCodes = selectedData.map((data) => data.shortCode);
+      if (shortCodes.length === 0) {
+        toastError("No valid short codes found for updating.");
+        return;
+      }
+      const isAllPurchased = selectedData.every(
+        (item) => item.audit_status !== "purchased"
+      );
+      if (!isAllPurchased) {
+        toastError("Only Audited and Pending Links can be updated.");
+        return;
+      }
+
+      const payload = {
+        dataToBeUpdate: { amount: Number(price) || 0 },
+        shortCodes,
+        // updatedBy: token.id,
+      };
+
+      const res = await updateVendor(payload);
+      if (res?.error) throw new Error(res.error);
+      if (res.data.success) {
+        toastAlert("Price updated successfully!");
+        await refetchPlanData();
+      }
+      // Fetch updated campaign data
+      // const response = await fetchFilteredPosts();
+      // if (response?.isSuccess && response?.data) {
+      //   setCampainPlanData(response.data);
+      // }
+
+      setPrice(null);
+      setToggleModal(false);
+      setSelectedData([])
+    } catch (error) {
+      console.error("Error updating data:", error);
+      toastError(`Update failed: ${error.message || "Something went wrong."}`);
+    }
+  };
+
   function disableAuditUpload() {
     if (selectedData?.length > 0) {
       if (
@@ -1679,7 +1768,7 @@ const CampaignExecution = () => {
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-              modalData?.data?.data?.requestStatsUpdate?.length ? (
+            modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1739,9 +1828,7 @@ const CampaignExecution = () => {
     return null;
   }
   if (advancedPaymentLoading) {
-    return (
-      <Loader />
-    )
+    return <Loader />;
   }
   return (
     <>
@@ -1780,7 +1867,7 @@ const CampaignExecution = () => {
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                ?.exe_campaign_name}
+                  ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -1839,6 +1926,16 @@ const CampaignExecution = () => {
           </button> */}
         </div>
       </div>
+      {showModal && (
+        <PriceUpdateModal
+          selectedData={selectedData}
+          price={price}
+          // pricePerMillion={pricePerMillion}
+          onConfirm={handleConfirmUpdate}
+          onClose={() => setShowModal(false)}
+        />
+      )}
+
       {/* {selectedData.length > 0 && <PostGenerator bulk={selectedData} />} */}
       <LinkUpload
         vendorList={vendorList}
@@ -1869,6 +1966,9 @@ const CampaignExecution = () => {
         setModalData={setModalData}
         setToggleModal={setToggleModal}
         setSelectedPlan={setSelectedPlan}
+        handlePriceChange={handlePriceChange}
+        handleSave={handleSave}
+        price={price}
       />
 
       {phaseList.length > 1 && (
@@ -1904,10 +2004,11 @@ const CampaignExecution = () => {
               <button
                 title="Bulk Upload"
                 disabled={selectedData.length === 0}
-                className={`mr-3 cmnbtn btn btn-sm ${selectedData.length === 0
-                  ? "btn-outline-primary"
-                  : "btn-primary"
-                  }`}
+                className={`mr-3 cmnbtn btn btn-sm ${
+                  selectedData.length === 0
+                    ? "btn-outline-primary"
+                    : "btn-primary"
+                }`}
                 onClick={() => {
                   setModalName("bulkUpload");
                   setToggleModal(true);
@@ -1915,25 +2016,33 @@ const CampaignExecution = () => {
               >
                 Campaign Update
               </button>
-              {actTab === 4 && selectedVendor ?
+              {actTab === 4 && selectedVendor ? (
                 <Autocomplete
                   options={advancedPayments || []}
                   getOptionLabel={(option) => {
-                    const netAmount = option.remaining_advance_amount - option.gst_amount;
+                    const netAmount =
+                      option.remaining_advance_amount - option.gst_amount;
                     return `${option.page_name} - ₹${netAmount}`;
                   }}
                   sx={{ width: 200, marginRight: 2 }}
                   renderInput={(params) => (
-                    <TextField {...params} label="Advanced Payment" variant="outlined" />
+                    <TextField
+                      {...params}
+                      label="Advanced Payment"
+                      variant="outlined"
+                    />
                   )}
                   onChange={(event, newValue) => handlePaymentSelect(newValue)}
                 />
-                : ""}
+              ) : (
+                ""
+              )}
               {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                    }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                  }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -1942,8 +2051,9 @@ const CampaignExecution = () => {
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
-                  }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${
+                  fetchingPlanData && "animate_rotate"
+                }`}
                 onClick={actTab == 5 ? handleFilterLinks : refetchPlanData}
               >
                 <ArrowClockwise />

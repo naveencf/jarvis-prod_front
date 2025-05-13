@@ -48,6 +48,9 @@ const LinkUpload = ({
   selectedVendor,
   setSelectedVendor,
   vendorList,
+  handlePriceChange,
+  handleSave,
+  price
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
@@ -71,6 +74,7 @@ const LinkUpload = ({
   const [selectedOpUser, setSelectedOpUser] = useState("");
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
+  
   const [serviceName, setServiceName] = useState("");
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const platformID = useRef(null);
@@ -172,7 +176,7 @@ const LinkUpload = ({
     );
     return uniqueLinks;
   };
-  
+
   async function handleFetchPricing() {
     try {
       let payload;
@@ -190,7 +194,7 @@ const LinkUpload = ({
       if (record == 5) handleFilterLinks();
       else await refetchPlanData();
       toastAlert("Pricing Fetched");
-      setSelectedData([])
+      setSelectedData([]);
     } catch (err) {
       toastError("Error Fetching Pricing");
     }
@@ -864,6 +868,30 @@ const LinkUpload = ({
               "Update Vendor"
             )}
           </button>
+          <div className="col-lg-6 col-md-6 col-12">
+            <div className="row">
+              <div className="col-md-10">
+                <div className="form-group">
+                  <label className="form-label">Price</label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={price}
+                    onChange={handlePriceChange}
+                    placeholder="Update Price For Selected Links"
+                  />
+                </div>
+              </div>
+              <div className="col-md-2 pl-0">
+                <button
+                  className="btn cmnbtn btn-primary mt28 w-100"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
           {record == 5 && (
             <button
               className="btn-primary cmnbtn mt-4 ml-3"
