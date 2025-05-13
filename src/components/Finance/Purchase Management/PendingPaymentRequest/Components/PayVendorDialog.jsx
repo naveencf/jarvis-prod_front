@@ -362,7 +362,7 @@ function PayVendorDialog(props) {
       return;
     } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(rowSelectionModel[0]?.branchCode)) {
       console.log(rowSelectionModel[0].branchCode, "ifsc", rowSelectionModel)
-      // toastError("Invalid IFSC Code");
+      toastError("Invalid IFSC Code");
       return;
     }
 
