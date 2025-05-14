@@ -288,7 +288,7 @@ function PlanHomeBeta() {
       const response = await fetch(`${baseUrl}v1/planxlogs`);
       const data = await response.json();
       if (data.success) {
-        const formattedRows = data?.data
+        const formattedRows = data?.data?.data
           ?.filter((plan) => plan.plan_status !== 'pricing')
           ?.map((plan) => ({
             sales_executive_name: plan.sales_executive_name,
@@ -378,13 +378,13 @@ function PlanHomeBeta() {
       brand_id: row.brand_id,
       planStatus: row.plan_status,
       planSaved: false,
-      createdBy: row.created_by,  
+      createdBy: row.created_by,
       accountName: selectedAccount ? selectedAccount.account_name : '',
       salesExecutiveName: selectedUser ? selectedUser.user_name : '',
     });
-    setSelectedPlanId(row.id);  
-    setIsEdit(true);  
-    setOpenDialog(true);    
+    setSelectedPlanId(row.id);
+    setIsEdit(true);
+    setOpenDialog(true);
   };
 
   // Fetch accounts data from API
@@ -534,7 +534,7 @@ function PlanHomeBeta() {
         } else {
           navigate(`/admin/pms-plan-making/${planId}`);
         }
-      } else {  
+      } else {
         Swal.fire({
           icon: 'error',
           title: 'Failed to save plan',
@@ -596,11 +596,10 @@ function PlanHomeBeta() {
     handleEditClick,
   });
 
-  const sortedPlanRows=   planRows.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  const sortedPlanRows = planRows.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   const finalPlanList = filteredPlans.length ? filteredPlans : sortedPlanRows;
   const dateWiseFilteredData = filteredPlanRows?.reverse();
-
   useEffect(() => {
     if (inputValue <= 100) {
       setSuggestions(generateSuggestions(inputValue));

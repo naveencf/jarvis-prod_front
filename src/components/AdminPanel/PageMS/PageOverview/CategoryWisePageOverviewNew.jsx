@@ -130,6 +130,14 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
       renderRowCell: (row) => <div>{row.totalInstagramBothPrice}</div>,
     },
     {
+      key: "page_status",
+      name: "Page Status",
+      renderRowCell: (row) => {
+        return formatString(row.page_status)
+      }
+
+    },
+    {
       key: "Sub Category",
       name: "Sub Category Count",
       width: 200,
