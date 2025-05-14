@@ -229,22 +229,22 @@ function PageOverviewHeader({
     const queryParams = [
       activeTab && `platform_name=${activeTab}`,
       categoryFilter &&
-        `page_category_name=${encodeURIComponent(
-          categoryFilter?.toLowerCase()
-        )}`,
+      `page_category_name=${encodeURIComponent(
+        categoryFilter?.toLowerCase()
+      )}`,
       subCategoryFilter &&
-        `page_sub_category_name=${encodeURIComponent(
-          subCategoryFilter.toLowerCase()
-        )}`,
+      `page_sub_category_name=${encodeURIComponent(
+        subCategoryFilter.toLowerCase()
+      )}`,
       profileTypeFilter &&
-        `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
+      `page_profile_type_name=${profileTypeFilter.toLowerCase()}`,
       ownershipFilter && `ownership_type=${ownershipFilter.toLowerCase()}`,
       filterFollowers &&
-        `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
+      `minFollower=${filterFollowers?.value[0]}&maxFollower=${filterFollowers?.value[1]}`,
       activenessFilter &&
-        `page_activeness=${activenessOptions
-          .find((option) => option.value === activenessFilter.toLowerCase())
-          ?.value?.toLowerCase()}`,
+      `page_activeness=${activenessOptions
+        .find((option) => option.value === activenessFilter.toLowerCase())
+        ?.value?.toLowerCase()}`,
       searchTerm && `search=${searchTerm.toLowerCase()}`,
       sortField && `sort_by=${sortField}&order=${sortOrder}`,
     ]
@@ -356,6 +356,14 @@ function PageOverviewHeader({
       key: "page_name",
       name: "Page Name ",
       width: 200,
+    },
+    {
+      key: "page_status",
+      name: "Page Status",
+      renderRowCell: (row) => {
+        return formatString(row.page_status)
+      }
+
     },
     {
       key: "page_category_name",
