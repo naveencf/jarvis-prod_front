@@ -46,6 +46,8 @@ import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview";
 import RecordServiceDistribution from "./Sales/SaleBooking/RecordServiceDistribution.jsx";
 import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
 import PantryAdminDashboard from "../Pantry/PantryAdminDashboard.jsx";
+import VendorStatement from "../Finance/Sales Management/Outstanding/VendorStatement.jsx";
+import VendorStatementView from "../Finance/Sales Management/Outstanding/VendorStatementView.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -1369,6 +1371,14 @@ const Admin = () => {
                     <Route
                       path="/finance-balancepayment"
                       element={<BalancePaymentList />}
+                    />
+                    <Route
+                      path="/vendor-statement"
+                      element={<VendorStatement />}
+                    />
+                    <Route
+                      path="/vendor-statement-view/:id"
+                      element={<VendorStatementView />}
                     />
                     <Route
                       path="/finance-transaction-list/:sale_booking_id"

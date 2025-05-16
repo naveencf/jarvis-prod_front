@@ -11,6 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import {
   useGetCountOfUnregisteredPagesQuery,
+  useGetLedgerAmountByVendorQuery,
   useGetTotalDataQuery,
   useGetVendorAdvanceSummaryAndDetailsQuery,
   useGetVendorLedgerMonthWiseQuery,
@@ -46,6 +47,11 @@ const Dashboard = () => {
     isLoading: isVendorDetailLoading,
     isFetching: isVendorDetailFetching,
   } = useGetVendorOutstandingQuery(range);
+    const {
+      data: ledgerAmountData,
+      isLoading: isLedgerLoading,
+      isFetching: isLedgerFetching,
+    } = useGetLedgerAmountByVendorQuery("66827bcf8e6fbfb72f5c8b6d") //creative-fuel id
   const { data: unregisteredPages } = useGetCountOfUnregisteredPagesQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
@@ -66,7 +72,7 @@ const Dashboard = () => {
     queryParams.startDate = new Date(startDate).toISOString().split("T")[0];
     queryParams.endDate = new Date(endDate).toISOString().split("T")[0];
   }
-
+console.log("ledgerAmountData",ledgerAmountData);
   const {
     data: vendorLedgerMonthWise,
     isLoading: isVendorLedgerMonthWiseLoading,
@@ -573,7 +579,7 @@ const Dashboard = () => {
                     </div>
                     <div className="mt12 text-center">
                       <h6 className="colorMedium">Creativefuel Outstanding</h6>
-                      <h6 className="mt4 fs_16">{data?.own_outstanding}</h6>
+                      <h6 className="mt4 fs_16">₹{formatIndianNumber(Math.floor(ledgerAmountData?.balance))}</h6>
                     </div>
                   </div>
                 </Link>

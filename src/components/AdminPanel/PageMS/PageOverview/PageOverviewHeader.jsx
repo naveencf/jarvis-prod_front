@@ -30,6 +30,7 @@ import axios from "axios";
 import { baseUrl } from "../../../../utils/config";
 import View from "../../Sales/Account/View/View";
 import BulkVendor from "../Vendor/BulkVendor/BulkVendor";
+import { formatPageLabel } from "../../../../utils/helper";
 const style = {
   position: "absolute",
   top: "50%",
@@ -356,6 +357,7 @@ function PageOverviewHeader({
       key: "page_name",
       name: "Page Name ",
       width: 200,
+      renderRowCell: (row) => formatPageLabel(row.page_name)
     },
     {
       key: "page_status",
@@ -369,16 +371,27 @@ function PageOverviewHeader({
       key: "page_category_name",
       name: "Category",
       width: 200,
+      renderRowCell: (row) => formatString(row.page_category_name)
     },
     {
       key: "platform_name",
       name: "Platform Name",
       width: 200,
+      renderRowCell: (row) => formatString(row.platform_name)
+
     },
     {
       key: "vendor_name",
       name: "Vendor",
       width: 200,
+      renderRowCell: (row) => formatString(row.vendor_name)
+
+    },
+    {
+      key: "page_status",
+      name: "Page Status",
+      width: 200,
+      renderRowCell: (row) => formatString(row.page_status)
     },
     {
       key: "add_inventory",

@@ -1,13 +1,10 @@
 import * as React from "react";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
-import { useEffect } from "react";
-import io from "socket.io-client";
 import jwtDecode from "jwt-decode";
 // import { useEditPantryMutation } from '../Store/API/Pantry/PantryApi';
 import formatString from "../../utils/formatString";
@@ -179,8 +176,8 @@ export default function OrderDialogforHouseKeeping({
                             {order?.order_type == 1
                               ? "Please refill Water Bottle"
                               : order?.order_type == 2
-                                ? "Housekeeping"
-                                : order?.order_items.map(
+                              ? "Housekeeping"
+                              : order?.order_items.map(
                                   (res) =>
                                     `${res.quantity} ${formatString(
                                       res.item_name

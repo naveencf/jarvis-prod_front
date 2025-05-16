@@ -102,6 +102,9 @@ const CampaignExecution = () => {
   const [type, setType] = useState("single");
   const [actTab, setActTab] = useState("all");
   const [linkData, setLinkData] = useState([]);
+  const [vendorId, setVendorId] = useState(null);
+  const [platfromId, setPlatformId] = useState(null);
+  const [allPages, setAllpages]= useState([])
   const vendorList = useRef(null);
   const maxTabs = useRef(4);
   const memoValue = useRef(null);
@@ -116,13 +119,14 @@ const CampaignExecution = () => {
   const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsQuery();
   const [verifyAdvancePurchase] = useVerifyAdvancePurchaseMutation();
 
-  const {
-    data: allPages,
-    isLoading: allPagesLoading,
-    isFetching: allPagesFetching,
-  } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
+  // const {
+  //   data: allPages,
+  //   isLoading: allPagesLoading,
+  //   isFetching: allPagesFetching,
+  // } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
   const [getData, { isLoading: gettingData, isError: gettingError }] =
     useGetPostDetailofPagenVendorMutation();
+
   const [
     updatePurchasedStatusMultiple,
     { isLoading: isUpdatingPurchasedStatusMultiple },
@@ -336,6 +340,27 @@ const CampaignExecution = () => {
     setActTab("");
   }, [selectedPlan]);
 
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!vendorId || !platfromId) return; 
+
+      const payload = {
+        vendor_id: vendorId,
+        platform_id: platfromId,
+      };
+      try {
+        const response = await getData(payload);
+        setAllpages(response.data.data)
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+  }, [platfromId, vendorId]);
+  
+
   useEffect(() => {
     if (deleteStorySuccess) {
       toastAlert("Story Deleted");
@@ -467,12 +492,12 @@ const CampaignExecution = () => {
     }
   }
 
-  const pageesOnvendor = useMemo(() => {
-    return Array.isArray(allPages?.pageData)
-      ? allPages.pageData?.filter((data) => data?.temp_vendor_id === vendorName)
-      : [];
-  }, [allPages, vendorName]);
-
+  // const pageesOnvendor = useMemo(() => {
+  //   return Array.isArray(allPages?.pageData)
+  //     ? allPages.pageData?.filter((data) => data?.temp_vendor_id === vendorName)
+  //     : [];
+  // }, [allPages, vendorName]);
+// console.log("pageesOnvendor",pageesOnvendor);
   useEffect(() => {
     if (duplicateMsg) {
       setToggleModal(true);
@@ -676,6 +701,17 @@ const CampaignExecution = () => {
     }
   }
 
+  // const handleFetchPages = async(row) =>{
+  //   console.log("roww",row);
+  //   const payload = {
+  //       "vendor_id":"66827bcf8e6fbfb72f5c8c6f",
+  //   "platform_id":"666818824366007df1df1319",
+  //   // "page_name":"studentgyaan"
+  //   }
+  //   const response = await getData(payload)
+  //   console.log("ressponse",response)
+  // }
+
   async function handleSingleAuditPending(item) {
     try {
       if (!item?.campaignId) {
@@ -831,6 +867,8 @@ const CampaignExecution = () => {
         column
       ) => {
         setPlatformName(row.platform_name);
+        setPlatformId(row.platform_id);
+        // handleFetchPages(row)
         return (
           <CustomSelect
             fieldGrid={12}
@@ -891,6 +929,7 @@ const CampaignExecution = () => {
         column
       ) => {
         setVendorName(row.vendor_id);
+        setVendorId(row.vendorId);
         return (
           <div className="row" style={{ width: "300px", display: "flex" }}>
             <CustomSelect
@@ -910,7 +949,7 @@ const CampaignExecution = () => {
                 };
 
                 setVendorName(vendorDetail.temp_vendor_id);
-
+                setVendorId(vendorDetail._id);
                 handelchange(vendorData, index, column, true);
               }}
             />
@@ -954,7 +993,7 @@ const CampaignExecution = () => {
               }}
             /> */}
             <Autocomplete
-              options={pageesOnvendor}
+              options={allPages}
               getOptionLabel={(option) => option.page_name || ""}
               // getOptionKey={(option) => option.page_name}
               renderInput={(params) => {
@@ -1684,7 +1723,7 @@ const CampaignExecution = () => {
 
       setPrice(null);
       setToggleModal(false);
-      setSelectedData([])
+      setSelectedData([]);
     } catch (error) {
       console.error("Error updating data:", error);
       toastError(`Update failed: ${error.message || "Something went wrong."}`);
@@ -1988,7 +2027,7 @@ const CampaignExecution = () => {
 
       <View
         rowSelectable={true}
-        version={1}
+        // version={1}
         data={phaseWiseData}
         columns={columns}
         title={`Records`}

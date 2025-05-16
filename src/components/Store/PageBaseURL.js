@@ -461,6 +461,10 @@ export const PageBaseURL = createApi({
       transformResponse: (response) => response.data,
     }),
 
+    getPlanxlogDateWise: builder.query({
+      query: ({ month_year, status }) => 
+        `v1/planxlog_date_wise?month_year=${encodeURIComponent(month_year)}&status=${status}`,
+    }),
     // getVendorDataWithStateCity: builder.query({
     //   //   query: (city) =>
     //   //     `v1/get_vendor_data_with_state_or_city?home_city=${city}`,
@@ -533,4 +537,5 @@ export const {
   useGetVendorStaticsCountDataQuery,
   useGetVendorWithCategoryQuery,
   useGetVendorWithoutWhatsappLinkQuery,
+  useGetPlanxlogDateWiseQuery
 } = PageBaseURL;

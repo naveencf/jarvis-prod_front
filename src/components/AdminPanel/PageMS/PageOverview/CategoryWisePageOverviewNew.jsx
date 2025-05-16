@@ -10,6 +10,7 @@ import {
 import { formatNumber } from "../../../../utils/formatNumber";
 import formatString from "../../../../utils/formatString";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useGetPmsPlatformQuery } from "../../../Store/reduxBaseURL";
 
 const style = {
   position: "absolute",
@@ -23,18 +24,30 @@ const style = {
   p: 4,
 };
 
-const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
+const CategoryWisePageOverviewNew = ({
+  dataTable,
+  platformName,
+  setPlanFormName,
+}) => {
   const [viewState, setViewState] = useState("main"); // State for controlling views
   const [pagequery, setPagequery] = useState("");
   const [activeSectionCat, setActiveSectionCat] = useState(null);
   const [recordsLoading, setRecordsLoading] = useState(true);
   const [open, setOpen] = useState(false);
+  const [startIndex, setStartIndex] = useState(0);
+  const [activeTab, setActiveTab]= useState()
   const [selectedSubCategories, setSelectedSubCategories] = useState([]);
+  const { data: platform } = useGetPmsPlatformQuery();
+  const platformData = platform?.data || [];
+  const itemsPerPage = 5;
+  const visiblePlatforms = platformData.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const userID = decodedToken.id;
-  console.log("platformName", platformName);
 
   const {
     data: pageList,
@@ -68,7 +81,22 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
   const handleBackButton = () => {
     setViewState("main"); // Go back to the main page
   };
+  const handleTabClick = (tab) => {
+    setActiveTab(tab.platform_name);
+    localStorage.setItem("activeTab", tab.platform_name);
+    setPlanFormName(tab.platform_name);
+  };
+  const handleNext = () => {
+    if (startIndex + itemsPerPage < platformData.length) {
+      setStartIndex((prev) => prev + 4);
+    }
+  };
 
+  const handlePrevious = () => {
+    if (startIndex > 0) {
+      setStartIndex((prev) => prev - 4);
+    }
+  };
   const dataGridcolumns = [
     {
       key: "S.NO",
@@ -152,10 +180,53 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
       ),
     },
   ];
-
+// const categoryCount  = categoryWiseData
+ 
   return (
     <div className="card">
       <div className="card-body p0">
+      <div className="tabs-container tabslide">
+              <div className="navigation">
+                {/* Left Arrow */}
+                {/* {startIndex > 0 && ( */}
+                <button
+                  className="prev-arrow arrow-btn btn"
+                  onClick={handlePrevious}
+                >
+                  <i className="bi bi-chevron-left"></i>
+                  {/* Left Arrow */}
+                </button>
+                {/* )} */}
+
+                {/* Dynamic Tabs */}
+                <div className="tabs">
+                  {visiblePlatforms.map((platform, index) => (
+                    <button
+                      key={platform._id}
+                      className={
+                        activeTab === platform.platform_name.toLowerCase()
+                          ? "active btn btn-primary"
+                          : "btn"
+                      }
+                      onClick={() => handleTabClick(platform)}
+                    >
+                      {platform.platform_name.charAt(0).toUpperCase() +
+                        platform.platform_name.slice(1)}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Right Arrow */}
+                {/* {startIndex + itemsPerPage < platformData.length && ( */}
+                <button
+                  className="next-arrow arrow-btn btn"
+                  onClick={handleNext}
+                >
+                  <i className="bi bi-chevron-right"></i> {/* Right Arrow */}
+                </button>
+                {/* )} */}
+              </div>
+            </div>
         {viewState === "main" ? (
           <div className="data_tbl thm_table table-responsive">
             <View
@@ -199,7 +270,7 @@ const CategoryWisePageOverviewNew = ({ dataTable, platformName }) => {
           </>
         )}
       </div>
-
+     
       {/* Modal for displaying subcategories */}
       <Modal
         open={open}

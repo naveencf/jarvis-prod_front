@@ -1462,6 +1462,14 @@ const SidebarLinks = () => {
                             <i className="bi bi-dot"></i> Outstanding
                           </NavLink>
                         </>
+                        <>
+                          <NavLink
+                            className="collapse-item"
+                            to="/admin/vendor-statement"
+                          >
+                            <i className="bi bi-dot"></i> Vendor Statment
+                          </NavLink>
+                        </>
                         {/* </div>
                         </div> */}
                       </li>

@@ -92,7 +92,7 @@ const VendorOverview = () => {
   const { data: vendorWithoutWhatsappLinkData } =
     useGetVendorWithoutWhatsappLinkQuery();
 
-  console.log(vendorWithoutWhatsappLinkData, "hello hello");
+ 
   const vendorStaticCount = vendorStaticCountData?.vendor_category;
   const vendorCountWithPlatform = vendorStaticCountData?.vendor_platforms;
 
@@ -747,7 +747,7 @@ const VendorOverview = () => {
     // setLoading(true);
   };
 
-  console.log(filterData, "filterData------------");
+
   const vendorWithNoPages = () => {
     const vendorwithnopages = tabFilterData.filter(
       (item) => item.page_count == 0

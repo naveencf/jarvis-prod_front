@@ -81,3 +81,19 @@ export function utcToIst(utcDate) {
 
   return `${day}/${month}/${year}`;
 }
+
+export const cleanPageName = (name) =>
+  name
+    ?.toLowerCase()
+    ?.trim()
+    ?.replace(/^_+|_+$/g, "");
+
+export function formatPageLabel(name) {
+  if (!name) return "";
+
+  if (name[0] === "_") {
+    return name;
+  }
+
+  return name[0].toUpperCase() + name.slice(1);
+}

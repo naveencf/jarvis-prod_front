@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   useAddStoryDataMutation,
   usePlanDataUploadMutation,
@@ -12,6 +12,7 @@ import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
 import {
   useAddServiceMutation,
   useGetVendorsQuery,
+  useGetVendorsWithSearchQuery,
   useRefetchPostPriceMutation,
 } from "../../Store/API/Purchase/DirectPurchaseApi";
 import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
@@ -19,6 +20,8 @@ import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/Execu
 import { Select } from "antd";
 import { Campaign } from "@mui/icons-material";
 import { ArrowClockwise } from "@phosphor-icons/react";
+import { Autocomplete, TextField } from "@mui/material";
+import Swal from "sweetalert2";
 
 const LinkUpload = ({
   setLinkData,
@@ -50,7 +53,7 @@ const LinkUpload = ({
   vendorList,
   handlePriceChange,
   handleSave,
-  price
+  price,
 }) => {
   const { toastAlert, toastError } = useGlobalContext();
   const [notnewLine, setNotNewLine] = useState(false);
@@ -68,13 +71,14 @@ const LinkUpload = ({
   const [functionLoading, setFunctionLoading] = useState(false);
   const [shortCodes, setShortCodes] = useState([]);
   const [record, setRecord] = useState(0);
+  const [selectedVendorId, setSelectedVendorId] = useState(null);
   const updatevendorTab = useRef(false);
   const [vendor, setVendor] = useState("");
   const [otherPlatform, setOtherPlatform] = useState("");
   const [selectedOpUser, setSelectedOpUser] = useState("");
   const [amount, setAmount] = useState(0);
   const [file, setFile] = useState(null);
-  
+
   const [serviceName, setServiceName] = useState("");
   const [vendorSearchQuery, setVendorSearchQuery] = useState("");
   const platformID = useRef(null);
@@ -122,6 +126,9 @@ const LinkUpload = ({
     isLoading: pmsPlatformLoading,
     error: pmsPlatformError,
   } = useGetPmsPlatformQuery({ skip: record == 0 });
+
+  const { data: vendorsList, isLoading: vendorsLoading } =
+    useGetVendorsWithSearchQuery(vendorSearchQuery);
 
   const [
     uploadServiceData,
@@ -421,6 +428,7 @@ const LinkUpload = ({
           : record == 0 || record == 3
           ? await uploadPlanData(Data)
           : await updateVendor(Data);
+      console.log("data", Data);
       if (res.error) throw new Error(res.error);
       await refetchPlanData();
       setLinks("");
@@ -498,7 +506,83 @@ const LinkUpload = ({
     } else setDuplicateMsg(false);
   }
   const today = new Date().toISOString().split("T")[0];
+  const handleUpdateStatus = async (vendorId) => {
+    const shortCode = selectedData?.map((item) => item.shortCode);
 
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to update the Vendor!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, update it!",
+      cancelButtonText: "No, cancel!",
+    });
+    if (result.isConfirmed) {
+      try {
+        const paylaod = {
+          shortCodes: shortCode,
+          dataToBeUpdate: {
+            record_purchase_by: token.id
+          },
+          vendor_id: vendorId,
+          // userId: token.id,
+        };
+        const response = await updateVendor(paylaod);
+
+        if (response?.error) {
+          console.error("Error updating vendor status:", response.error);
+          Swal.fire({
+            title: "Error!",
+            text:
+              response.error.data.message ||
+              "Something went wrong while updating the vendor status.",
+            icon: "error",
+          });
+          return;
+        }
+
+        if (response?.data?.success) {
+          const refetchResponse = await refetchPlanData();
+          setSelectedData([])
+          // if (refetchResponse.isSuccess && refetchResponse.data) {
+          //   setCampainPlanData(refetchResponse.data);
+          // }
+
+          Swal.fire({
+            title: "Updated!",
+            text: "Vendor status has been updated successfully.",
+            icon: "success",
+          });
+        }
+      } catch (error) {
+        console.error("Unexpected Error:", error);
+        Swal.fire({
+          title: "Error!",
+          text: "An unexpected error occurred while updating the vendor status.",
+          icon: "error",
+        });
+      }
+    }
+  };
+  const debounce = (callback, delay) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+
+  const useDebouncedSetter = (setter, delay = 500) => {
+    return useCallback(
+      debounce((value) => {
+        setter(value);
+      }, delay),
+      [setter, delay]
+    );
+  };
+  const debouncedSetSearchQuery = useDebouncedSetter(setVendorSearchQuery);
   useEffect(() => {
     if (record == 0 && phaseDate) CheckDuplicateInPlan();
   }, [shortCodes, phaseDate]);
@@ -810,7 +894,7 @@ const LinkUpload = ({
               className="btn cmnbtn btn-primary mt-4 ml-3"
               onClick={() => handleFetchPricing()}
             >
-              {selectedData.length > 0
+              {selectedData?.length > 0
                 ? "Fetch price of selected links"
                 : "Fetch price of all links"}
 
@@ -905,6 +989,40 @@ const LinkUpload = ({
               Clear
             </button>
           )}
+          {
+            <div className="col-lg-6 col-md-6 col-12 mt-4">
+              <div className="form-group mt-1">
+                {/* <label>Update Vendor</label> */}
+
+                <Autocomplete
+                  fullWidth
+                  options={vendorsList}
+                  getOptionLabel={(option) => option.vendor_name}
+                  value={
+                    vendorsList?.find(
+                      (item) => item.vendor_id === selectedVendorId
+                    ) || null
+                  }
+                  onChange={(event, newValue) => {
+                    if (newValue) {
+                      handleUpdateStatus(newValue.vendor_id);
+                    } else {
+                      handleUpdateStatus(null);
+                    }
+                  }}
+                  disabled={!selectedData?.length}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Update Vendor"
+                      variant="outlined"
+                      onChange={(e) => debouncedSetSearchQuery(e.target.value)}
+                    />
+                  )}
+                />
+              </div>
+            </div>
+          }
         </div>
       </div>
     </div>

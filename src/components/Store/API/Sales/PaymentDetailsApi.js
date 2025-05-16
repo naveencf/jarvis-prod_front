@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../../../utils/authBaseQuery";
+import { use } from "react";
 
 const PaymentDetailsApi = createApi({
   reducerPath: "paymentDetailsApi",
@@ -104,6 +105,24 @@ const PaymentDetailsApi = createApi({
         }
       },
     }),
+
+    getVendorStatement: builder.query({
+      query: (id) => `sales/get_account_history/${id}`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
+
+    getAllAccountData: builder.query({
+      query: (query) => {
+        if (typeof query === "string" && query.trim() !== "") {
+          return `accounts/get_all_account?search=${encodeURIComponent(
+            query
+          )}&page=1&limit=10`;
+        }
+        return `v1/vendor?page=1&limit=10`;
+      },
+      transformResponse: (response) => response?.data,
+    }),
   }),
 });
 
@@ -114,6 +133,8 @@ export const {
   useCreatePaymentDetailsMutation,
   useUpdatePaymentDetailsMutation,
   useDeletePaymentDetailsMutation,
+  useGetVendorStatementQuery,
+  useGetAllAccountDataQuery,
 } = PaymentDetailsApi;
 
 export default PaymentDetailsApi;
