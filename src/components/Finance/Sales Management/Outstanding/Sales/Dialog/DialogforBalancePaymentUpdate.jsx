@@ -65,7 +65,7 @@ function DialogforBalancePaymentUpdate(props) {
 
   const [showField, setShowField] = useState(false);
   const [paymentType, setPaymentType] = useState({ label: "", value: "" });
-
+  console.log(singleRow, "singleRow")
   const handleCloseImageModal = () => {
     setImageModalOpen(false);
     setBalAmount("");
@@ -75,15 +75,15 @@ function DialogforBalancePaymentUpdate(props) {
     setPaymentDetails("");
     setPaidAmount([]);
     setPaidPercentage("");
-    setPaymentDate("");
+    setPaymentDate(null);
   };
-  console.log("balance update")
+  // console.log("balance update")
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new FormData();
-      formData.append("sale_booking_id", singleRow?.sale_booking_id || "");
+      formData.append("sale_booking_id", singleRow?.sale_booking_id);
       formData.append("account_id", singleRow?.account_id || "");
       formData.append("payment_ref_no", paymentRefNo || "");
       formData.append("payment_detail_id", paymentDetails?.id || "");
@@ -91,6 +91,8 @@ function DialogforBalancePaymentUpdate(props) {
       formData.append("payment_amount", paidAmount || "");
       formData.append("payment_date", paymentDate || "");
       formData.append("created_by", loginUserId || "");
+      formData.append("invoice_req_id", singleRow._id);
+      // formData.append("connected_booking_id", );
 
       await updateOutstandingBalancePayment(formData).unwrap();
       getData();

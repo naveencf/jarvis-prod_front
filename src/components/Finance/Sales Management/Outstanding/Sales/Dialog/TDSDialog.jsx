@@ -77,6 +77,7 @@ function TDSDialog(props) {
       formData.append("payment_screenshot", paymentRefImg || "");
       formData.append("payment_amount", paidAmount);
       formData.append("created_by", loginUserId);
+      formData.append("invoice_req_id", singleRow._id);
 
       await updateOutstandingBalancePayment(formData).unwrap();
 

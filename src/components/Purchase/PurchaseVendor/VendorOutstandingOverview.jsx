@@ -125,11 +125,11 @@ const VendorOutstandingOverview = () => {
 
   const filteredData = selectedRange
     ? vendorData.filter(
-        (item) =>
-          item.vendor_outstandings &&
-          item.vendor_outstandings > selectedRange.min &&
-          item.vendor_outstandings <= selectedRange.max
-      )
+      (item) =>
+        item.vendor_outstandings &&
+        item.vendor_outstandings > selectedRange.min &&
+        item.vendor_outstandings <= selectedRange.max
+    )
     : vendorData;
 
   const columns = [
@@ -155,11 +155,13 @@ const VendorOutstandingOverview = () => {
       name: "Outstanding",
       width: 200,
       renderRowCell: (row) => Math.round(row.vendor_outstandings ?? 0),
+      getTotal: true
     },
     {
       key: "vendor_total_remaining_advance_amount",
       name: "Advance",
       width: 200,
+      getTotal: true,
       renderRowCell: (row) =>
         Math.round(row.vendor_total_remaining_advance_amount ?? 0),
     },
@@ -245,6 +247,7 @@ const VendorOutstandingOverview = () => {
           rowSelectable={true}
           pagination={[100, 200, 1000]}
           onPaginationChange={handlePaginationChange}
+          showTotal={true}
           tableName="Vendor Overview"
           addHtml={
             <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>

@@ -29,15 +29,13 @@ const Ledger = () => {
       { label: `2021-2026`, value: `startDate=2021-04-01&endDate=2026-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
-        value: `startDate=${
-          currentYear - 1
-        }-04-01&endDate=${currentYear}-03-31`,
+        value: `startDate=${currentYear - 1
+          }-04-01&endDate=${currentYear}-03-31`,
       },
       {
         label: `${currentYear}-${currentYear + 1}`,
-        value: `startDate=${currentYear}-04-01&endDate=${
-          currentYear + 1
-        }-03-31`,
+        value: `startDate=${currentYear}-04-01&endDate=${currentYear + 1
+          }-03-31`,
       },
     ];
   };
@@ -349,7 +347,7 @@ const Ledger = () => {
   if (isVendorDetailLoading || isVendorDetailFetching || isLoading) {
     return <Loader />;
   }
-  console.log(vendorPhpDetail, "vendorPhpDetail");
+  // console.log(vendorPhpDetail, "vendorPhpDetail");
   return (
     <div className="ledgerStatementDoc">
       <div className="tabs">
