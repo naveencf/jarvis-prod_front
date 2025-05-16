@@ -165,7 +165,7 @@ export default function PDFExtractorForInvoice({ file, setExtractedData }) {
 
             setExtractedData({ ...details, companyName: companyCheck.foundName, isCorrect: companyCheck.isCorrect });
 
-            console.log("Extracted Details:", { ...details, companyName: companyCheck.foundName, isCorrect: companyCheck.isCorrect });
+            console.log("Extracted Details:", text);
 
         } catch (error) {
             console.error("Error uploading PDF:", error);

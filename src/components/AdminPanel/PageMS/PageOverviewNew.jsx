@@ -1597,7 +1597,7 @@ const PageOverviewNew = () => {
       width: 200,
     },
   ];
-
+console.log("platfromName",platformName);
   return (
     <>
       <PriceModal
@@ -1779,6 +1779,7 @@ const PageOverviewNew = () => {
               <CategoryWisePageOverviewNew
                 dataTable={pageColumns}
                 platformName={platformName}
+                setPlanFormName={setPlanFormName}
               />
             )}
             {activeTab === "Tab7" && (

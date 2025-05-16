@@ -159,11 +159,11 @@ export default function PendingPaymentRequest() {
     // }
     e?.preventDefault();
     setSelectedRows([row]);
-    let x = phpRemainderData.filter((item) => item?.request_id == row?.request_id);
-    if (x.length > 0) {
-      toastError(`You can't pay this request as it has been reminded ${x?.length} times`);
-      return;
-    }
+    // let x = phpRemainderData.filter((item) => item?.request_id == row?.request_id);
+    // if (x.length > 0) {
+    //   toastError(`You can't pay this request as it has been reminded ${x?.length} times`);
+    //   return;
+    // }
     // const enrichedRow = {
     //   ...row,
     //   totalFY: calculateTotalFY(row),

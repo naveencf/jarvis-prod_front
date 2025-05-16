@@ -20,7 +20,7 @@ import { formatNumber } from "../../../utils/formatNumber";
 
 const Ledger = () => {
   const { id } = useParams();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const getFinancialYears = () => {
     const currentYear = new Date().getFullYear();
     return [
@@ -29,13 +29,15 @@ const Ledger = () => {
       { label: `2021-2026`, value: `startDate=2021-04-01&endDate=2026-03-31` },
       {
         label: `${currentYear - 1}-${currentYear}`,
-        value: `startDate=${currentYear - 1
-          }-04-01&endDate=${currentYear}-03-31`,
+        value: `startDate=${
+          currentYear - 1
+        }-04-01&endDate=${currentYear}-03-31`,
       },
       {
         label: `${currentYear}-${currentYear + 1}`,
-        value: `startDate=${currentYear}-04-01&endDate=${currentYear + 1
-          }-03-31`,
+        value: `startDate=${currentYear}-04-01&endDate=${
+          currentYear + 1
+        }-03-31`,
       },
     ];
   };
@@ -65,7 +67,7 @@ const Ledger = () => {
   ];
   const [activeTab, setActiveTab] = useState("Tab1");
   const [financialYears] = useState(getFinancialYears());
-  const [selectedVendorId, setSelectedVendorId] = useState(null)
+  const [selectedVendorId, setSelectedVendorId] = useState(null);
   const [selectedYear, setSelectedYear] = useState(financialYears[1]?.value);
   const [selectedMonths, setSelectedMonths] = useState();
   const [vendorSearchQuery, setVendorSearchQuery] = useState("abh");
@@ -77,10 +79,21 @@ const Ledger = () => {
   // const [filteredData, setFilterdData] = useState([]);
   const [dateRange, setDateRange] = useState(selectedYear);
 
-  const { data: vendorsList, isLoading: isVendorLoading, isFetching: isVendorFetching } =
-    useGetVendorsWithSearchQuery(vendorSearchQuery);
-  const { data: vendorData, isLoading: isVendorDataLoading, isFetching: isVendorDataFetching } = useGetVendorPendingAuditedOutstandingQuery(id);
-  const { data: vendorDetail, isLoading: isVendorDetailLoading, isFetching: isVendorDetailFetching } = useGetVendorDetailQuery(id);
+  const {
+    data: vendorsList,
+    isLoading: isVendorLoading,
+    isFetching: isVendorFetching,
+  } = useGetVendorsWithSearchQuery(vendorSearchQuery);
+  const {
+    data: vendorData,
+    isLoading: isVendorDataLoading,
+    isFetching: isVendorDataFetching,
+  } = useGetVendorPendingAuditedOutstandingQuery(id);
+  const {
+    data: vendorDetail,
+    isLoading: isVendorDetailLoading,
+    isFetching: isVendorDetailFetching,
+  } = useGetVendorDetailQuery(id);
   const {
     data: ledgerAmountData,
     isLoading: isLedgerLoading,
@@ -93,9 +106,13 @@ const Ledger = () => {
     data: ledgerData = [],
     isLoading,
     error,
-    isFetching
+    isFetching,
   } = useGetLedgerQuery({ id, query: dateRange });
-  const { data: vendorAdvanced, isLoading: isVendorAdvanceLoading, isFetching: isVendorAdvancedDetailFetching } = useGetVendorAdvancedPaymentQuery({
+  const {
+    data: vendorAdvanced,
+    isLoading: isVendorAdvanceLoading,
+    isFetching: isVendorAdvancedDetailFetching,
+  } = useGetVendorAdvancedPaymentQuery({
     id,
     query: selectedPaymentYear,
   });
@@ -103,11 +120,10 @@ const Ledger = () => {
   const handleVendorChange = (event, newValue) => {
     setSelectedVendor(newValue);
     if (newValue?._id !== undefined) {
-      navigate(`/admin/ledger/${newValue?._id}`)
+      navigate(`/admin/ledger/${newValue?._id}`);
     }
     // setSelectedVendorId?.(newValue?._id); // Pass selected _id to parent
   };
-
 
   const filteredData = useMemo(() => {
     if (selectedMonths?.length) {
@@ -131,7 +147,7 @@ const Ledger = () => {
   // Number(vendorDetail?.totalAmount ?? 0)
   const actualOutstanding =
     Number(vendorDetail?.vendor_outstandings ?? 0) -
-    Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0)
+    Number(vendorDetail?.vendor_total_remaining_advance_amount ?? 0);
 
   useEffect(() => {
     if (vendorDetail?.vendor_id) {
@@ -148,13 +164,11 @@ const Ledger = () => {
     }
   }, [vendorDetail]);
 
-
   useEffect(() => {
     if (vendorDetail) {
       setSelectedVendor(vendorDetail);
     }
   }, [vendorDetail]);
-
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>Error loading ledger data.</p>;
@@ -167,7 +181,8 @@ const Ledger = () => {
     (sum, { Credit_amt }) => sum + (Number(Credit_amt) || 0),
     0
   );
-  let runningBalance = ledgerAmountData?.totalDebit - ledgerAmountData?.totalCredit;
+  let runningBalance =
+    ledgerAmountData?.totalDebit - ledgerAmountData?.totalCredit;
 
   const columns = [
     {
@@ -194,9 +209,24 @@ const Ledger = () => {
       // renderRowCell: (row) => row?.no_of_post,
       width: 150,
     },
-    { key: "campaign_name", name: "Campaign Name", width: 120, renderRowCell: (row) => formatString(row.campaign_name) },
-    { key: "created_by_name", name: "Created By", width: 120, renderRowCell: (row) => formatString(row.created_by_name) },
-    { key: "transaction_type_status", name: "Status", width: 100, renderRowCell: (row) => formatString(row.transaction_type_status), },
+    {
+      key: "campaign_name",
+      name: "Campaign Name",
+      width: 120,
+      renderRowCell: (row) => formatString(row.campaign_name),
+    },
+    {
+      key: "created_by_name",
+      name: "Created By",
+      width: 120,
+      renderRowCell: (row) => formatString(row.created_by_name),
+    },
+    {
+      key: "transaction_type_status",
+      name: "Status",
+      width: 100,
+      renderRowCell: (row) => formatString(row.transaction_type_status),
+    },
     {
       key: "Credit_amt",
       name: "Credit",
@@ -317,9 +347,9 @@ const Ledger = () => {
     },
   ];
   if (isVendorDetailLoading || isVendorDetailFetching || isLoading) {
-    return <Loader />
+    return <Loader />;
   }
-  console.log(vendorPhpDetail, "vendorPhpDetail")
+  console.log(vendorPhpDetail, "vendorPhpDetail");
   return (
     <div className="ledgerStatementDoc">
       <div className="tabs">
@@ -378,44 +408,60 @@ const Ledger = () => {
         vendorAdvanced={vendorAdvanced}
         isLoading={isLoading}
       />
-      {activeTab === 'Tab3' && <div>
-        <div className="statementDocBody card-body p-3">
-          <div className="row">
-            <div className="col">
-              <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
-                <h6 className="colorMedium">Audit Pending</h6>
-                <h6 className="mt8 fs_16">₹ {vendorData?.totalAmount?.toLocaleString()}</h6>
+      {activeTab === "Tab3" && (
+        <div>
+          <div className="statementDocBody card-body p-3">
+            <div className="row">
+              <div className="col">
+                <div className="card p16 shadow-none border-0 m0 bgPrimaryLight">
+                  <h6 className="colorMedium">Audit Pending</h6>
+                  <h6 className="mt8 fs_16">
+                    ₹ {vendorData?.totalAmount?.toLocaleString()}
+                  </h6>
+                </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
-                <h6 className="colorMedium">Outstanding:</h6>
-                <h6 className="mt8 fs_16">₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}</h6>
+              <div className="col">
+                <div className="card p16 shadow-none border-0 m0 bgSecondaryLight">
+                  <h6 className="colorMedium">Outstanding:</h6>
+                  <h6 className="mt8 fs_16">
+                    ₹ {vendorDetail?.vendor_outstandings?.toLocaleString()}
+                  </h6>
+                </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="card p16 shadow-none border-0 m0" style={{ backgroundColor: "lightsteelblue" }}>
-                <h6 className="colorMedium">Php Outstanding:</h6>
-                <h6 className="mt8 fs_16">{(vendorPhpDetail[0]?.outstanding)}</h6>
+              <div className="col">
+                <div
+                  className="card p16 shadow-none border-0 m0"
+                  style={{ backgroundColor: "lightsteelblue" }}
+                >
+                  <h6 className="colorMedium">Php Outstanding:</h6>
+                  <h6 className="mt8 fs_16">
+                    ₹ {formatNumber(Number(vendorPhpDetail[0]?.outstanding))}
+                  </h6>
+                </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="card p16 shadow-none border-0 m0 bgInfoLight">
-                <h6 className="colorMedium">Total Remaining Advance</h6>
-                <h6 className="mt8 fs_16">₹ {formatIndianNumber(vendorDetail?.vendor_total_remaining_advance_amount)}</h6>
+              <div className="col">
+                <div className="card p16 shadow-none border-0 m0 bgInfoLight">
+                  <h6 className="colorMedium">Total Remaining Advance</h6>
+                  <h6 className="mt8 fs_16">
+                    ₹{" "}
+                    {formatIndianNumber(
+                      vendorDetail?.vendor_total_remaining_advance_amount
+                    )}
+                  </h6>
+                </div>
               </div>
-            </div>
-            <div className="col">
-              <div className="card p16 shadow-none border-0 m0 bgDangerLight">
-                <h6 className="colorMedium">Actual Outstanding</h6>
-                <h6 className="mt8 fs_16">₹{actualOutstanding?.toLocaleString()}</h6>
+              <div className="col">
+                <div className="card p16 shadow-none border-0 m0 bgDangerLight">
+                  <h6 className="colorMedium">Actual Outstanding</h6>
+                  <h6 className="mt8 fs_16">
+                    ₹{actualOutstanding?.toLocaleString()}
+                  </h6>
+                </div>
               </div>
             </div>
           </div>
-
-
         </div>
-      </div>}
+      )}
     </div>
   );
 };

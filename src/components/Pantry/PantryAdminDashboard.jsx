@@ -77,6 +77,7 @@ function PantryAdminDashboard() {
   useEffect(() => {
     fetchOrders();
   }, []);
+
   useEffect(() => {
     houseKeepingUserStatus();
   }, [pantryData]);
@@ -202,6 +203,7 @@ function PantryAdminDashboard() {
       if (res.status === 200) {
         // Assuming handleClose is defined somewhere in your component
         // handleClose && handleClose();
+
         fetchOrders();
         if (status == 3 || status == 4) {
           setOrderConfirmationDialog(true);

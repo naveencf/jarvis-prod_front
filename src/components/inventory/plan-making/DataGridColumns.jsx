@@ -3,6 +3,8 @@ import formatString from '../../../utils/formatString';
 import { FaEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { calculatePrice } from './helper';
+import { formatIndianNumber } from '../../../utils/formatIndianNumber';
+import { formatPageLabel } from '../../../utils/helper';
 
 const DataGridColumns = ({
   vendorData,
@@ -54,7 +56,7 @@ const DataGridColumns = ({
     {
       key: 'page_name',
       name: 'Page Name',
-      renderRowCell: (row) => formatString(row?.page_name),
+      renderRowCell: (row) => formatPageLabel(row?.page_name),
       colorRow: (row) => {
         if (row.page_layer === 6) {
           return '##FF6347';
@@ -134,6 +136,17 @@ const DataGridColumns = ({
       renderRowCell: (row) =>
         // <div title={row.followers_count}>
         formatNumber(Number(row.followers_count)),
+      // </div>
+      width: 150,
+      showCol: true,
+      getTotal: true,
+    },
+    {
+      key: 'followers_count',
+      name: 'Followers Count',
+      renderRowCell: (row) =>
+        // <div title={row.followers_count}>
+        formatIndianNumber(Number(row.followers_count)),
       // </div>
       width: 150,
       showCol: true,
