@@ -55,6 +55,7 @@ function PlanHomeBeta() {
   const [statusDialog, setStatusDialog] = useState(false);
   const [statusDialogPlan, setStatusDialogPlan] = useState(null);
   const [filteredPlans, setFilteredPlans] = useState([]);
+  const [planxLoading, setPlanxLoading] = useState(false)
   const [selectedPages, setSelectedPages] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCostModalOpen, setIsCostModalOpen] = useState(false);
@@ -295,7 +296,7 @@ function PlanHomeBeta() {
       console.error("Error:", error);
     }
   };
-  console.log("filterData", filteredPlanRows);
+
   const fetchAccounts = async () => {
     try {
       const response = await fetch(`${baseUrl}accounts/get_all_account`, {
@@ -347,8 +348,11 @@ function PlanHomeBeta() {
       if (page) queryParams.push(`page=${page}`);
       if (limit) queryParams.push(`limit=${limit}`);
       if (search) queryParams.push(`plan_name=${encodeURIComponent(search)}`);
-      if (startDate) queryParams.push(`startDate=${startDate}`);
-      if (endDate) queryParams.push(`endDate=${endDate}`);
+      if(!search){
+        if (startDate) queryParams.push(`startDate=${startDate}`);
+        if (endDate) queryParams.push(`endDate=${endDate}`);
+      }
+  
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
@@ -743,7 +747,7 @@ function PlanHomeBeta() {
       console.error("Update failed", error);
     }
   };
-
+ 
   return (
     <div>
       <PageDialog
@@ -1053,6 +1057,7 @@ function PlanHomeBeta() {
           </button>
           <button
             className={activeTab === "Tab3" ? "active btn btn-primary" : "btn"}
+            disabled={true}
             onClick={() => setActiveTab("Tab3")}
           >
             Highest Plan Request
@@ -1105,9 +1110,10 @@ function PlanHomeBeta() {
                 <DateWiseFilter
                   planRows={planRows}
                   setFilteredPlanRows={setFilteredPlanRows}
+                  setPlanxLoading={setPlanxLoading}
                 />
                 <View
-                  isLoading={loading}
+                  isLoading={loading || planxLoading}
                   columns={columns}
                   data={dateWiseFilteredData}
                   pagination={[100, 200]}

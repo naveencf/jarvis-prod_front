@@ -107,7 +107,7 @@ const PaymentDetailsApi = createApi({
     }),
 
     getVendorStatement: builder.query({
-      query: (id) => `sales/get_account_history/${id}`,
+      query: (id) => `sales/account_invoice_history/${id}`,
       transformResponse: (response) => response.data,
       keepUnusedDataFor: 0,
     }),
@@ -123,6 +123,18 @@ const PaymentDetailsApi = createApi({
       },
       transformResponse: (response) => response?.data,
     }),
+
+    getAccountStatement: builder.query({
+      query: (id) => `sales/get_account_history/${id}`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
+
+    getPaymentTransection: builder.query({
+      query: (id) => `sales/account_invoice_history/${id}`,
+      transformResponse: (response) => response.data,
+      keepUnusedDataFor: 0,
+    }),
   }),
 });
 
@@ -135,6 +147,8 @@ export const {
   useDeletePaymentDetailsMutation,
   useGetVendorStatementQuery,
   useGetAllAccountDataQuery,
+  useGetAccountStatementQuery,
+  useGetPaymentTransectionQuery,
 } = PaymentDetailsApi;
 
 export default PaymentDetailsApi;

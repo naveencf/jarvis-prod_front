@@ -862,7 +862,7 @@ const ViewSaleBooking = () => {
                 />
               )}
 
-              {row?.campaign_amount >= row?.approved_amount && (
+              {/* {row?.campaign_amount >= row?.approved_amount && (
                 <button
                   title="Payment Update"
                   className="icon-1"
@@ -877,7 +877,7 @@ const ViewSaleBooking = () => {
                 >
                   <i className="bi bi-credit-card-2-back" />
                 </button>
-              )}
+              )} */}
               {isAdmin && (
                 <button
                   className="icon-1"

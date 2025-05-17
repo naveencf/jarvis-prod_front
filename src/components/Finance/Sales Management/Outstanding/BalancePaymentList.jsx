@@ -186,6 +186,7 @@ const BalancePaymentList = () => {
 
   const calculateTDSPercentage = () => {
     const remainingData = balAmount - paidAmount;
+    console.log(balAmount, remainingData, "remainingData", baseAmount)
     if (remainingData === 0) {
       setTDSPercentage(0);
     } else {
@@ -263,10 +264,10 @@ const BalancePaymentList = () => {
   const handleImageClick = (e, row) => {
     console.log(e, row, "row")
     e.preventDefault();
-    setBalAmount(row?.campaign_amount - row?.paid_amount);
-    setBaseAmount(row?.base_amount);
-    setPaidAmountData(row?.paid_amount);
-    setCampaignAmountData(row.campaign_amount);
+    setBalAmount(row?.invoice_amount - row?.invoice_approved_amount);
+    setBaseAmount((row?.invoice_amount * 100) / 118);
+    setPaidAmountData(row?.invoice_approved_amount);
+    setCampaignAmountData(row.invoice_amount);
     setTDSFieldSaleBookingId(row.sale_booking_id);
     setNonGstStatus(row.gst_status);
     setSingleRow(row);
@@ -374,7 +375,8 @@ const BalancePaymentList = () => {
         invc.invoice_type_id === "tax-invoice" &&
         invc.invoice_creation_status !== "pending" &&
         invc.gst_status === true &&
-        invc.paid_amount <= invc.campaign_amount * 0.9,
+        invc.invoice_status !== 'close',
+      // invc.paid_amount <= invc.campaign_amount * 0.9,
       1: (invc) =>
         invc.invoice_type_id !== "tax-invoice" ||
         invc.invoice_creation_status === "pending",

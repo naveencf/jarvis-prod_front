@@ -1,20 +1,41 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, DownloadSimple, Eye, FloppyDiskBack, StackMinus } from '@phosphor-icons/react';
-import { Box, Typography, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Tooltip, IconButton, TextField } from '@mui/material';
-import * as XLSX from 'xlsx-js-style';
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowUpRight,
+  DownloadSimple,
+  Eye,
+  FloppyDiskBack,
+  StackMinus,
+} from "@phosphor-icons/react";
+import {
+  Box,
+  Typography,
+  Modal,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Tooltip,
+  IconButton,
+  TextField,
+} from "@mui/material";
+import * as XLSX from "xlsx-js-style";
 // import ExcelJS from 'exceljs';
-import formatString from '../../../utils/formatString';
-import axios from 'axios';
-import { baseUrl } from '../../../utils/config';
-import { downloadExcel, getPlatformName } from '../plan-making/downloadExcel';
-import { formatIndianNumber } from '../../../utils/formatIndianNumber';
-import Swal from 'sweetalert2';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useUploadExcelMutation } from '../../Store/reduxBaseURL';
-import ExcelPreviewModal from '../plan-making/ExcelPreviewModal';
-import { calculatePrice } from '../plan-making/helper';
-import ExcelPreviewModalBeta from './ExcelPreviewModalBeta';
+import formatString from "../../../utils/formatString";
+import axios from "axios";
+import { baseUrl } from "../../../utils/config";
+import { downloadExcel, getPlatformName } from "../plan-making/downloadExcel";
+import { formatIndianNumber } from "../../../utils/formatIndianNumber";
+import Swal from "sweetalert2";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useUploadExcelMutation } from "../../Store/reduxBaseURL";
+import ExcelPreviewModal from "../plan-making/ExcelPreviewModal";
+import { calculatePrice } from "../plan-making/helper";
+import ExcelPreviewModalBeta from "./ExcelPreviewModalBeta";
 
 // Function to download an image as base64 using ArrayBuffer and Uint8Array
 // async function downloadImageToBase64(url) {
@@ -44,6 +65,7 @@ const LeftSideBarBeta = ({
   postCount,
   handleOwnPage,
   category,
+  subCategory,
   storyPerPage,
   handleTotalOwnCostChange,
   totalPostCount,
@@ -60,7 +82,7 @@ const LeftSideBarBeta = ({
   ownPages,
   planDetails,
   checkedDescriptions,
-  pageData
+  pageData,
 }) => {
   const [openModal, setOpenModal] = useState(false);
   const [pageDetails, setPageDetails] = useState([]);
@@ -68,65 +90,91 @@ const LeftSideBarBeta = ({
   const [openPreviewModal, setOpenPreviewModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [agencyFees, setAgencyFees] = useState(0);
-  const [deliverableText, setDeliverableText] = useState('');
+  const [deliverableText, setDeliverableText] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [planBrief, setPlanBrief] = useState(planDetails?.[0]?.brief);
   const [sellingPrice, setSellingPrice] = useState(0);
-  const [planName, setPlanName] = useState(formatString(planDetails?.[0]?.plan_name));
-  const [operationCost, setOperationCost] = useState(planDetails?.[0]?.operation_cost);
-  const [contentCost, setContentCost] = useState(planDetails?.[0]?.content_cost);
+  const [planName, setPlanName] = useState(
+    formatString(planDetails?.[0]?.plan_name)
+  );
+  const [operationCost, setOperationCost] = useState(
+    planDetails?.[0]?.operation_cost
+  );
+  const [contentCost, setContentCost] = useState(
+    planDetails?.[0]?.content_cost
+  );
   const [isdownloadExcel, setIsDownloadExcel] = useState(false);
   const [updatedCategories, setUpdatedCategories] = useState({});
   const [twitterTrendCount, setTwitterTrendCount] = useState(0);
   const [twitterTrendCost, setTwitterTrendCost] = useState();
   const [ugcVideoCost, setVideoUgcCost] = useState();
   const [ugcVideoCount, setUgcVideoCount] = useState(0);
+  const [renamedCategories, setRenamedCategories] = useState({});
 
-  const [uploadExcel, { isLoading, isSuccess, isError }] = useUploadExcelMutation();
+
+  const [uploadExcel, { isLoading, isSuccess, isError }] =
+    useUploadExcelMutation();
   const navigate = useNavigate();
   // const [expanded, setExpanded] = useState(false);
 
   // Function to handle opening the modal and setting the page details
   const handleOpenModal = (type) => {
-    setPageDetails(selectedRow?.filter((page) => page?.ownership_type === type) || []);
+    setPageDetails(
+      selectedRow?.filter((page) => page?.ownership_type === type) || []
+    );
     setOpenModal(true); // Open the modal
   };
 
-  const finalOperationCost = planDetails && (planDetails[0]?.selling_price * planDetails[0]?.operation_cost) / 100;
+  const finalOperationCost =
+    planDetails &&
+    (planDetails[0]?.selling_price * planDetails[0]?.operation_cost) / 100;
   const formatFollowers = (followers) => {
-    return (followers / 1000000).toFixed(1) + 'M';
+    return (followers / 1000000).toFixed(1) + "M";
   };
 
   const location = useLocation();
-  const isPlanPrice = location?.pathname?.split('/')[2] === 'pms-plan-pricing' ? true : false;
+  const isPlanPrice =
+    location?.pathname?.split("/")[2] === "pms-plan-pricing" ? true : false;
   const planStatus = planDetails && planDetails[0]?.plan_status;
-  const netProfit = planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost - planDetails?.[0]?.content_cost * totalDeliverables - finalOperationCost));
+  const netProfit =
+    planDetails &&
+    formatIndianNumber(
+      Math.floor(
+        planDetails?.[0]?.selling_price -
+          totalCost -
+          planDetails?.[0]?.content_cost * totalDeliverables -
+          finalOperationCost
+      )
+    );
 
   const HandleSavePlan = async () => {
     const planDataWithCategory = planData.map((planItem) => {
-      const matchedPage = pageData.find(page => page.page_name.toLowerCase() === planItem.page_name.toLowerCase());
+      const matchedPage = pageData.find(
+        (page) =>
+          page.page_name.toLowerCase() === planItem.page_name.toLowerCase()
+      );
       return {
         ...planItem,
-        category_name: matchedPage?.category_name || 'Unknown',
+        category_name: matchedPage?.category_name || "Unknown",
       };
     });
 
     try {
       const result = await Swal.fire({
-        title: 'Do you want to close the plan?',
-        text: 'You can either save the plan or close it directly.',
-        icon: 'warning',
+        title: "Do you want to close the plan?",
+        text: "You can either save the plan or close it directly.",
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonText: 'Save Plan',
-        cancelButtonText: 'Close Plan',
+        confirmButtonText: "Save Plan",
+        cancelButtonText: "Close Plan",
         reverseButtons: true,
         allowOutsideClick: false,
       });
 
-      const planStatus = result.isConfirmed ? 'open' : 'close';
+      const planStatus = result.isConfirmed ? "open" : "close";
       const payload = {
         id: id,
-        plan_status: isPlanPrice ? 'open' : planStatus,
+        plan_status: isPlanPrice ? "open" : planStatus,
         plan_saved: true,
         post_count: totalPostCount,
         story_count: totalStoryCount,
@@ -134,47 +182,68 @@ const LeftSideBarBeta = ({
         cost_price: totalCost,
         own_pages_cost_price: ownPagesCost,
       };
-      
-      const [fetchResponse] = await Promise.all([sendPlanxLogs('v1/planxlogs', payload), sendPlanDetails(planDataWithCategory, planStatus)]);
+
+      const [fetchResponse] = await Promise.all([
+        sendPlanxLogs("v1/planxlogs", payload),
+        sendPlanDetails(planDataWithCategory, planStatus),
+      ]);
       if (fetchResponse.ok) {
         Swal.fire({
-          title: result.isConfirmed ? 'Plan Saved!' : 'Plan Closed!',
-          text: result.isConfirmed ? 'Plan has been saved successfully.' : 'Plan has been closed successfully.',
-          icon: 'success',
-          confirmButtonText: 'OK',
+          title: result.isConfirmed ? "Plan Saved!" : "Plan Closed!",
+          text: result.isConfirmed
+            ? "Plan has been saved successfully."
+            : "Plan has been closed successfully.",
+          icon: "success",
+          confirmButtonText: "OK",
         }).then(() => {
-          navigate('/admin/pms-plan-making-beta');
+          navigate("/admin/pms-plan-making-beta");
         });
       } else {
         Swal.fire({
-          title: 'Error!',
-          text: 'Failed to save or close the plan. Please try again.',
-          icon: 'error',
-          confirmButtonText: 'OK',
+          title: "Error!",
+          text: "Failed to save or close the plan. Please try again.",
+          icon: "error",
+          confirmButtonText: "OK",
         });
       }
     } catch (error) {
-      console.error('Error processing plan:', error);
+      console.error("Error processing plan:", error);
 
       Swal.fire({
-        title: 'Error!',
-        text: 'Something went wrong. Please try again later.',
-        icon: 'error',
-        confirmButtonText: 'OK',
+        title: "Error!",
+        text: "Something went wrong. Please try again later.",
+        icon: "error",
+        confirmButtonText: "OK",
       });
     }
   };
 
-  const platformCategory = Object.keys(updatedCategories).length > 0 ? updatedCategories : category;
+  const platformCategory =
+    Object.keys(updatedCategories).length > 0 ? updatedCategories : subCategory;
 
-  const handleDownload = async () => {
+    const handleDownload = async () => {
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
-      await downloadExcel(selectedRow, platformCategory, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel, ugcVideoCost, twitterTrendCost, platformData);
-      handleSave()
+      await downloadExcel(
+    {    selectedRow,
+        platformCategory,
+        postCount,
+        storyPerPage,
+        planDetails,
+        checkedDescriptions,
+        agencyFees,
+        deliverableText,
+        isdownloadExcel,
+        ugcVideoCost,
+        twitterTrendCost,
+        platformData,
+        renamedCategories,
+        subCategory}
+      );
+      handleSave();
     } catch (error) {
-      console.error('Error downloading Excel:', error);
+      console.error("Error downloading Excel:", error);
     } finally {
       setIsDownloading(false);
     }
@@ -184,19 +253,29 @@ const LeftSideBarBeta = ({
     setIsDownloading(true);
     setIsDownloadExcel(false);
     try {
-      const result = await downloadExcel(selectedRow, category, postCount, storyPerPage, planDetails, checkedDescriptions, agencyFees, deliverableText, isdownloadExcel);
+      const result = await downloadExcel(
+        selectedRow,
+        category,
+        postCount,
+        storyPerPage,
+        planDetails,
+        checkedDescriptions,
+        agencyFees,
+        deliverableText,
+        isdownloadExcel
+      );
       const formData = new FormData();
-      formData.append('file', result);
+      formData.append("file", result);
 
       try {
         await uploadExcel(formData).unwrap();
-        alert('File uploaded successfully!');
+        alert("File uploaded successfully!");
       } catch (uploadError) {
-        console.error('File upload failed:', uploadError);
-        alert('Failed to upload the file.');
+        console.error("File upload failed:", uploadError);
+        alert("Failed to upload the file.");
       }
     } catch (downloadError) {
-      console.error('Error downloading Excel:', downloadError);
+      console.error("Error downloading Excel:", downloadError);
     } finally {
       setIsDownloading(false);
     }
@@ -207,33 +286,40 @@ const LeftSideBarBeta = ({
   //   return detail ? detail[key] : 0;
   // };
   const getPriceDetail = (priceDetails, key) => {
-    const keyType = key.split('_')[1];
+    const keyType = key.split("_")[1];
 
     const detail = priceDetails?.find((item) => {
       return Object.keys(item).some((priceKey) => priceKey.includes(keyType));
     });
 
-    return detail ? detail[Object.keys(detail).find((key) => key.includes(keyType))] : 0;
+    return detail
+      ? detail[Object.keys(detail).find((key) => key.includes(keyType))]
+      : 0;
   };
-
   const handlePreviewExcel = () => {
     const preview = selectedRow?.map((page) => {
       const platformName = formatString(page.platform_name);
       const postCountForPage = postCount[page._id] || 0;
       const storyCountForPage = storyPerPage[page._id] || 0;
       return {
-        'Page Name': page.page_name,
+        "Page Name": page.page_name,
         Platform: platformName,
         Followers: page.followers_count,
         page_id: page._id,
         platform_id: page.platform_id,
-        'Post Count': postCountForPage,
-        'Story Count': storyCountForPage,
-        'Post Price': getPriceDetail(page.page_price_list, 'platform_post'),
-        'Story Price': getPriceDetail(page.page_price_list, 'platform_story'),
-        'Total Post Cost': postCountForPage * getPriceDetail(page.page_price_list, 'platform_post'),
-        'Total Story Cost': storyCountForPage * getPriceDetail(page.page_price_list, 'platform_story'),
+        "Post Count": postCountForPage,
+        "Story Count": storyCountForPage,
+        "Post Price": getPriceDetail(page.page_price_list, "platform_post"),
+        "Story Price": getPriceDetail(page.page_price_list, "platform_story"),
+        "Total Post Cost":
+          postCountForPage *
+          getPriceDetail(page.page_price_list, "platform_post"),
+        "Total Story Cost":
+          storyCountForPage *
+          getPriceDetail(page.page_price_list, "platform_story"),
         category: page.page_category_id,
+        page_sub_category_name:page.page_sub_category_name,
+        page_sub_category_id:page.page_sub_category_id
       };
     });
     setPreviewData(preview);
@@ -261,23 +347,39 @@ const LeftSideBarBeta = ({
 
   // const formatFollowers = (followers) => `${followers} Followers`;
   // Function to calculate ownership counts and total costs based on selected rows
-  const calculateOwnershipCounts = (selectedRow = [], postCount = {}, storyPerPage = {}) =>
+  const calculateOwnershipCounts = (
+    selectedRow = [],
+    postCount = {},
+    storyPerPage = {}
+  ) =>
     selectedRow
       ?.filter((page) => page && page._id)
       ?.reduce(
         (acc, page) => {
           const postCountForPage = Number(postCount[page._id] || 0);
           const storyCountForPage = Number(storyPerPage[page._id] || 0);
-          const postPrice = getPriceDetail(page.page_price_list, 'instagram_post');
-          const storyPrice = getPriceDetail(page.page_price_list, 'instagram_story');
-          const rateType = page.rate_type === 'Fixed';
-          const finalPostCost = rateType ? Math.floor(postPrice) : calculatePrice(page.rate_type, page, 'post');
-          const finalStoryCost = rateType ? Math.floor(storyPrice) : calculatePrice(page.rate_type, page, 'story');
-          const totalCost = postCountForPage * (finalPostCost || 0) + storyCountForPage * (finalStoryCost || 0);
-          if (page.ownership_type === 'Own') {
+          const postPrice = getPriceDetail(
+            page.page_price_list,
+            "instagram_post"
+          );
+          const storyPrice = getPriceDetail(
+            page.page_price_list,
+            "instagram_story"
+          );
+          const rateType = page.rate_type === "Fixed";
+          const finalPostCost = rateType
+            ? Math.floor(postPrice)
+            : calculatePrice(page.rate_type, page, "post");
+          const finalStoryCost = rateType
+            ? Math.floor(storyPrice)
+            : calculatePrice(page.rate_type, page, "story");
+          const totalCost =
+            postCountForPage * (finalPostCost || 0) +
+            storyCountForPage * (finalStoryCost || 0);
+          if (page.ownership_type === "Own") {
             acc.own.count += 1;
             acc.own.totalCost += totalCost;
-          } else if (page.ownership_type === 'Vendor') {
+          } else if (page.ownership_type === "Vendor") {
             acc.vendor.count += 1;
             acc.vendor.totalCost += totalCost;
           }
@@ -290,56 +392,63 @@ const LeftSideBarBeta = ({
       );
 
   // Memoized calculation of ownership counts for performance optimization
-  const ownershipCounts = useMemo(() => calculateOwnershipCounts(selectedRow, postCount, storyPerPage), [selectedRow, postCount, storyPerPage]);
+  const ownershipCounts = useMemo(
+    () => calculateOwnershipCounts(selectedRow, postCount, storyPerPage),
+    [selectedRow, postCount, storyPerPage]
+  );
 
-  const ownpages = selectedRow.filter((item) => item.ownership_type === 'Own');
+  const ownpages = selectedRow.filter((item) => item.ownership_type === "Own");
 
   const sendPlanxLogs = async (endpoint, payload) => {
     try {
       const response = await fetch(`${baseUrl}${endpoint}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
       return response;
     } catch (error) {
-      console.error('Error making API request:', error);
+      console.error("Error making API request:", error);
       throw error;
     }
   };
 
   function truncateString(inputString, maxLength = 10) {
-    return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
+    return inputString?.length > maxLength
+      ? inputString?.slice(0, maxLength) + "..."
+      : inputString;
   }
   const handleSave = async () => {
     setLeftSideBarDataUpdate(true);
     const payload = {
       id: planDetails && planDetails[0]._id,
-      plan_status: 'open',
+      plan_status: "open",
       plan_name: planName,
-      selling_price: sellingPrice ? Number(sellingPrice) : Number(planDetails?.[0]?.selling_price),
+      selling_price: sellingPrice
+        ? Number(sellingPrice)
+        : Number(planDetails?.[0]?.selling_price),
       brief: planBrief,
       ugc_video_count: ugcVideoCount,
       twitter_trend_count: twitterTrendCount,
       ugc_video_cost: ugcVideoCost,
       twitter_trend_cost: twitterTrendCost,
       content_cost: contentCost,
-      operation_cost: operationCost
+      operation_cost: operationCost,
       // plan_saved: true,
       // post_count: totalPostCount,
       // story_count: totalStoryCount,
       // no_of_pages: selectedRows?.length,
       // cost_price: totalCost,
     };
-    const response = await sendPlanxLogs('v1/planxlogs', payload);
+    const response = await sendPlanxLogs("v1/planxlogs", payload);
     if (response.status === 400) {
       Swal.fire({
-        icon: 'error',
-        title: 'Duplicate Entry',
-        text: 'Plan with the same name already exists',
-        confirmButtonText: 'OK',
+        icon: "error",
+        title: "Duplicate Entry",
+        text: "Plan with the same name already exists",
+        confirmButtonText: "OK",
       });
       setPlanName(planDetails?.[0]?.plan_name);
     }
@@ -352,24 +461,26 @@ const LeftSideBarBeta = ({
 
   useEffect(() => {
     if (planDetails) {
-      setUgcVideoCount(planDetails?.[0]?.ugc_video_count)
-      setTwitterTrendCount(planDetails?.[0]?.twitter_trend_count)
-      setVideoUgcCost(planDetails?.[0]?.ugc_video_cost)
-      setTwitterTrendCost(planDetails?.[0]?.twitter_trend_cost)
+      setUgcVideoCount(planDetails?.[0]?.ugc_video_count);
+      setTwitterTrendCount(planDetails?.[0]?.twitter_trend_count);
+      setVideoUgcCost(planDetails?.[0]?.ugc_video_cost);
+      setTwitterTrendCost(planDetails?.[0]?.twitter_trend_cost);
     }
-  }, [planDetails])
+  }, [planDetails]);
 
   const handleEditing = () => {
     setIsEditing(!isEditing);
     setSellingPrice(planDetails?.[0]?.selling_price);
-    setOperationCost(planDetails?.[0]?.operation_cost)
+    setOperationCost(planDetails?.[0]?.operation_cost);
   };
   const groupCategoriesByPlatform = (rows, isPageCategory) => {
     const platformWiseCategories = {};
 
     rows.forEach((row) => {
-      const platform = row?.platform_name || 'Unknown Platform';
-      const category = isPageCategory ? row?.page_category_name :row?.page_sub_category_name || 'Unknown Category';
+      const platform = row?.platform_name || "Unknown Platform";
+      const category = isPageCategory
+        ? row?.page_category_name
+        : row?.page_sub_category_name || "Unknown Category";
 
       if (!platformWiseCategories[platform]) {
         platformWiseCategories[platform] = {};
@@ -384,18 +495,18 @@ const LeftSideBarBeta = ({
 
     return platformWiseCategories;
   };
-  const platformCategories = groupCategoriesByPlatform(selectedRows ,true);
-  const platfromSubCategory = groupCategoriesByPlatform(selectedRows ,false);
+  const platformCategories = groupCategoriesByPlatform(selectedRows, true);
+  const platfromSubCategory = groupCategoriesByPlatform(selectedRows, false);
 
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
         <div className="planSmall">
-          {' '}
+          {" "}
           <div>
             <Button variant="text" onClick={() => handleEditing()}>
-              {isEditing ? 'Cancel' : 'Edit'}
-            </Button>{' '}
+              {isEditing ? "Cancel" : "Edit"}
+            </Button>{" "}
             {isEditing && (
               <Button variant="contained" color="primary" onClick={handleSave}>
                 Save
@@ -410,32 +521,41 @@ const LeftSideBarBeta = ({
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
                   }}
                   type="number"
                 />
               ) : (
-                <span>{formatIndianNumber(sellingPrice || planDetails?.[0]?.selling_price)}</span>
+                <span>
+                  {formatIndianNumber(
+                    sellingPrice || planDetails?.[0]?.selling_price
+                  )}
+                </span>
               )}
             </h6>
             <h6>
               Plan Brief:
               {isEditing ? (
                 <TextField
-                  value={planBrief || planDetails?.[0]?.brief || ''}
+                  value={planBrief || planDetails?.[0]?.brief || ""}
                   onChange={(e) => setPlanBrief(e.target.value)}
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
                   }}
                   type="test"
                 />
               ) : (
-                <span style={{ cursor: 'pointer' }} title={formatString(planBrief || planDetails?.[0]?.brief)}>
-                  {truncateString(formatString(planBrief || planDetails?.[0]?.brief))}
+                <span
+                  style={{ cursor: "pointer" }}
+                  title={formatString(planBrief || planDetails?.[0]?.brief)}
+                >
+                  {truncateString(
+                    formatString(planBrief || planDetails?.[0]?.brief)
+                  )}
                 </span>
               )}
             </h6>
@@ -443,19 +563,21 @@ const LeftSideBarBeta = ({
               Plan Name:
               {isEditing ? (
                 <TextField
-                  value={planName || planDetails?.[0]?.plan_name || ''}
+                  value={planName || planDetails?.[0]?.plan_name || ""}
                   onChange={(e) => setPlanName(e.target.value)}
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
-                    color: 'white',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
+                    color: "white",
                   }}
                 />
               ) : (
                 <Tooltip title={planName || planDetails?.[0]?.plan_name}>
-                  <p style={{ cursor: 'pointer', color: 'white' }}>{planName || planDetails?.[0]?.plan_name}</p>
+                  <p style={{ cursor: "pointer", color: "white" }}>
+                    {planName || planDetails?.[0]?.plan_name}
+                  </p>
                 </Tooltip>
               )}
             </h6>
@@ -468,14 +590,18 @@ const LeftSideBarBeta = ({
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
-                    color: 'white',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
+                    color: "white",
                   }}
                 />
               ) : (
-                <Tooltip title={operationCost || planDetails?.[0]?.operation_cost}>
-                  <p style={{ cursor: 'pointer', color: 'white' }}>{operationCost || planDetails?.[0]?.operation_cost}%</p>
+                <Tooltip
+                  title={operationCost || planDetails?.[0]?.operation_cost}
+                >
+                  <p style={{ cursor: "pointer", color: "white" }}>
+                    {operationCost || planDetails?.[0]?.operation_cost}%
+                  </p>
                 </Tooltip>
               )}
             </h6>
@@ -483,19 +609,21 @@ const LeftSideBarBeta = ({
               Content Cost:
               {isEditing ? (
                 <TextField
-                  value={contentCost || planDetails?.[0]?.content_cost || ''}
+                  value={contentCost || planDetails?.[0]?.content_cost || ""}
                   onChange={(e) => setContentCost(e.target.value)}
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
-                    color: 'white',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
+                    color: "white",
                   }}
                 />
               ) : (
                 <Tooltip title={contentCost || planDetails?.[0]?.content_cost}>
-                  <p style={{ cursor: 'pointer', color: 'white' }}>{contentCost || planDetails?.[0]?.content_cost}</p>
+                  <p style={{ cursor: "pointer", color: "white" }}>
+                    {contentCost || planDetails?.[0]?.content_cost}
+                  </p>
                 </Tooltip>
               )}
             </h6>
@@ -503,19 +631,29 @@ const LeftSideBarBeta = ({
               Twitter Trend Cost:
               {isEditing ? (
                 <TextField
-                  value={twitterTrendCost || planDetails?.[0]?.twitter_trend_cost || ''}
+                  value={
+                    twitterTrendCost ||
+                    planDetails?.[0]?.twitter_trend_cost ||
+                    ""
+                  }
                   onChange={(e) => setTwitterTrendCost(e.target.value)}
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
-                    color: 'white',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
+                    color: "white",
                   }}
                 />
               ) : (
-                <Tooltip title={twitterTrendCost || planDetails?.[0]?.twitter_trend_cost}>
-                  <p style={{ cursor: 'pointer', color: 'white' }}>{twitterTrendCost || planDetails?.[0]?.twitter_trend_cost}</p>
+                <Tooltip
+                  title={
+                    twitterTrendCost || planDetails?.[0]?.twitter_trend_cost
+                  }
+                >
+                  <p style={{ cursor: "pointer", color: "white" }}>
+                    {twitterTrendCost || planDetails?.[0]?.twitter_trend_cost}
+                  </p>
                 </Tooltip>
               )}
             </h6>
@@ -523,32 +661,43 @@ const LeftSideBarBeta = ({
               UGC Video Cost:
               {isEditing ? (
                 <TextField
-                  value={ugcVideoCost || planDetails?.[0]?.ugc_video_cost || ''}
+                  value={ugcVideoCost || planDetails?.[0]?.ugc_video_cost || ""}
                   onChange={(e) => setVideoUgcCost(e.target.value)}
                   variant="outlined"
                   size="small"
                   sx={{
-                    backgroundColor: 'white',
-                    borderRadius: '6px',
-                    color: 'white',
+                    backgroundColor: "white",
+                    borderRadius: "6px",
+                    color: "white",
                   }}
                 />
               ) : (
-                <Tooltip title={ugcVideoCost || planDetails?.[0]?.ugc_video_cost}>
-                  <p style={{ cursor: 'pointer', color: 'white' }}>{ugcVideoCost || planDetails?.[0]?.ugc_video_cost}</p>
+                <Tooltip
+                  title={ugcVideoCost || planDetails?.[0]?.ugc_video_cost}
+                >
+                  <p style={{ cursor: "pointer", color: "white" }}>
+                    {ugcVideoCost || planDetails?.[0]?.ugc_video_cost}
+                  </p>
                 </Tooltip>
               )}
             </h6>
           </div>
           <h6>
             Account Name
-            <span>{planDetails && formatString(planDetails[0]?.account_name)}</span>
+            <span>
+              {planDetails && formatString(planDetails[0]?.account_name)}
+            </span>
           </h6>
         </div>
         <div className="planSmall">
           <h6>
             Total Profit
-            <span>{planDetails && formatIndianNumber(Math.floor(planDetails?.[0]?.selling_price - totalCost))}</span>
+            <span>
+              {planDetails &&
+                formatIndianNumber(
+                  Math.floor(planDetails?.[0]?.selling_price - totalCost)
+                )}
+            </span>
           </h6>
           <h6>
             Net Profit
@@ -564,7 +713,11 @@ const LeftSideBarBeta = ({
           </h6>
           <h6>
             Actual Cost
-            <span>{formatIndianNumber(Math.floor(totalCost - ownershipCounts['own'].totalCost))}</span>
+            <span>
+              {formatIndianNumber(
+                Math.floor(totalCost - ownershipCounts["own"].totalCost)
+              )}
+            </span>
           </h6>
           <h6>
             Total Posts
@@ -590,7 +743,12 @@ const LeftSideBarBeta = ({
           </h6>
           <h6>
             Own Remaining Pages
-            <span> {ownPages?.length - selectedRow?.length > 0 ? ownPages?.length - selectedRow?.length : 0}</span>
+            <span>
+              {" "}
+              {ownPages?.length - selectedRow?.length > 0
+                ? ownPages?.length - selectedRow?.length
+                : 0}
+            </span>
           </h6>
         </div>
         <div className="planSmall">
@@ -602,83 +760,190 @@ const LeftSideBarBeta = ({
             Meme
             <span>1</span>
           </h6> */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', backgroundColor: '#111C42', borderRadius: '2px' }}>
-            {Object.entries(platformCategories)?.map(([platform, categories]) => (
-              <div key={platform} style={{ flex: '1 1 300px', padding: '0.4rem', backgroundColor: '#1D284C', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-               <span   style={{
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    marginLeft:"0.6rem"
-
-                  }}>Categories</span>
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1rem",
+              backgroundColor: "#111C42",
+              borderRadius: "2px",
+            }}
+          >
+            {Object.entries(platformCategories)?.map(
+              ([platform, categories]) => (
+                <div
+                  key={platform}
+                  style={{
+                    flex: "1 1 300px",
+                    padding: "0.4rem",
+                    backgroundColor: "#1D284C",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      color: "white",
+                      marginLeft: "0.6rem",
+                    }}
+                  >
+                    Categories
+                  </span>
+                  <h6
+                    onClick={handleToggleBtn}
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      color: "white",
+                      cursor: "pointer",
+                      marginBottom: "0.8rem",
+                      borderBottom: "2px solid #666",
+                    }}
+                  >
+                    {formatString(platform)}
+                  </h6>
+                  {Object.entries(categories).map(([category, count]) => (
+                    <div
+                      key={category}
+                      style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          color: "white",
+                          fontSize: "1rem",
+                          lineHeight: "1.4",
+                        }}
+                      >
+                        {formatString(category)}:{" "}
+                        <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
+                          {count}
+                        </span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
+          </div>
+        </div>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1rem",
+            backgroundColor: "#111C42",
+            borderRadius: "2px",
+            marginTop: "1rem",
+          }}
+        >
+          {Object.entries(platfromSubCategory)?.map(
+            ([platform, categories]) => (
+              <div
+                key={platform}
+                style={{
+                  flex: "1 1 300px",
+                  padding: "0.4rem",
+                  backgroundColor: "#1D284C",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    color: "white",
+                    marginLeft: "0.6rem",
+                  }}
+                >
+                  Sub Categories
+                </span>
                 <h6
                   onClick={handleToggleBtn}
                   style={{
-                    fontSize: '1.2rem',
-                    fontWeight: 'bold',
-                    color: 'white',
-                    cursor: 'pointer',
-                    marginBottom: '0.8rem',
-                    borderBottom: '2px solid #666',
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    color: "white",
+                    cursor: "pointer",
+                    marginBottom: "0.8rem",
+                    borderBottom: "2px solid #666",
+                    marginLeft: "0.6rem",
                   }}
                 >
                   {formatString(platform)}
                 </h6>
                 {Object.entries(categories).map(([category, count]) => (
-                  <div key={category} style={{ marginBottom: '0.6rem', paddingLeft: '0.5rem' }}>
-                    <p style={{ margin: 0, color: 'white', fontSize: '1rem', lineHeight: '1.4' }}>
-                      {formatString(category)}: <span style={{ fontWeight: 'bold', color: '#00d4ff' }}>{count}</span>
+                  <div
+                    key={category}
+                    style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
+                  >
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "white",
+                        fontSize: "1rem",
+                        lineHeight: "1.4",
+                      }}
+                    >
+                      {formatString(category)}:{" "}
+                      <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
+                        {count}
+                      </span>
                     </p>
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-         
+            )
+          )}
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', backgroundColor: '#111C42', borderRadius: '2px', marginTop:"1rem" }}>
-       
-       {Object.entries(platfromSubCategory)?.map(([platform, categories]) => (
-         <div key={platform} style={{ flex: '1 1 300px', padding: '0.4rem', backgroundColor: '#1D284C', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)' }}>
-         <span   style={{
-               fontSize: '1.2rem',
-               fontWeight: 'bold',
-               color: 'white',
-               marginLeft:"0.6rem"
-
-             }}>Sub Categories</span>
-           <h6
-             onClick={handleToggleBtn}
-             style={{
-               fontSize: '1.2rem',
-               fontWeight: 'bold',
-               color: 'white',
-               cursor: 'pointer',
-               marginBottom: '0.8rem',
-               borderBottom: '2px solid #666',
-                marginLeft:"0.6rem"
-             }}
-           >
-             {formatString(platform)}
-           </h6>
-           {Object.entries(categories).map(([category, count]) => (
-             <div key={category} style={{ marginBottom: '0.6rem', paddingLeft: '0.5rem' }}>
-               <p style={{ margin: 0, color: 'white', fontSize: '1rem', lineHeight: '1.4' }}>
-                 {formatString(category)}: <span style={{ fontWeight: 'bold', color: '#00d4ff' }}>{count}</span>
-               </p>
-             </div>
-           ))}
-         </div>
-       ))}
-     </div>
-        <ExcelPreviewModalBeta open={openPreviewModal} sellingPrice={planDetails && planDetails?.[0]?.selling_price} ugcVideoCount={ugcVideoCount} ugcVideoCost={ugcVideoCost} setVideoUgcCost={setVideoUgcCost} twitterTrendCost={twitterTrendCost} setTwitterTrendCost={setTwitterTrendCost} handleSave={handleSave} setUgcVideoCount={setUgcVideoCount} setTwitterTrendCount={setTwitterTrendCount} twitterTrendCount={twitterTrendCount} updatedCategories={updatedCategories} setUpdatedCategories={setUpdatedCategories} onClose={() => setOpenPreviewModal(false)} previewData={previewData} categories={category} agencyFees={agencyFees} setAgencyFees={setAgencyFees} selectedRow={selectedRow} category={category} postCount={postCount} storyPerPage={storyPerPage} planDetails={planDetails} checkedDescriptions={checkedDescriptions} setDeliverableText={setDeliverableText} deliverableText={deliverableText} isDownloading={isDownloading} downloadExcel={handleDownload} handleGetSpreadSheet={handleGetSpreadSheet} />
+        <ExcelPreviewModalBeta
+          open={openPreviewModal}
+          sellingPrice={planDetails && planDetails?.[0]?.selling_price}
+          ugcVideoCount={ugcVideoCount}
+          ugcVideoCost={ugcVideoCost}
+          setVideoUgcCost={setVideoUgcCost}
+          twitterTrendCost={twitterTrendCost}
+          setTwitterTrendCost={setTwitterTrendCost}
+          handleSave={handleSave}
+          setUgcVideoCount={setUgcVideoCount}
+          setTwitterTrendCount={setTwitterTrendCount}
+          twitterTrendCount={twitterTrendCount}
+          updatedCategories={updatedCategories}
+          setUpdatedCategories={setUpdatedCategories}
+          onClose={() => setOpenPreviewModal(false)}
+          previewData={previewData}
+          categories={category}
+          subCategory={subCategory}
+          agencyFees={agencyFees}
+          setAgencyFees={setAgencyFees}
+          selectedRow={selectedRow}
+          // category={category}
+          postCount={postCount}
+          storyPerPage={storyPerPage}
+          planDetails={planDetails}
+          checkedDescriptions={checkedDescriptions}
+          setDeliverableText={setDeliverableText}
+          deliverableText={deliverableText}
+          isDownloading={isDownloading}
+          downloadExcel={handleDownload}
+          handleGetSpreadSheet={handleGetSpreadSheet}
+          setRenamedCategories={setRenamedCategories}
+        />
         <div className="planSmall planLarge">
-          {['own', 'vendor'].map((type) => (
+          {["own", "vendor"].map((type) => (
             <div className="pointer" onClick={handleOwnPage} key={type}>
-              <h6 onClick={() => handleOpenModal(type.charAt(0).toUpperCase() + type.slice(1))}>
-                {type.charAt(0).toUpperCase() + type.slice(1)} Pages : {ownershipCounts[type].count} <br />
-                Total Post & Story Cost : ₹ {Math.round(ownershipCounts[type].totalCost)}
+              <h6
+                onClick={() =>
+                  handleOpenModal(type.charAt(0).toUpperCase() + type.slice(1))
+                }
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{" "}
+                {ownershipCounts[type].count} <br />
+                Total Post & Story Cost : ₹{" "}
+                {Math.round(ownershipCounts[type].totalCost)}
                 {/* <h6 className=""></h6> */}
               </h6>
             </div>
@@ -694,10 +959,10 @@ const LeftSideBarBeta = ({
           </Tooltip>
         </button> */}
         <button className="btn icon" onClick={handlePreviewExcel}>
-          {' '}
+          {" "}
           <Tooltip title="Preview Excel">
             <IconButton>
-              <Eye />{' '}
+              <Eye />{" "}
             </IconButton>
           </Tooltip>
         </button>
@@ -724,7 +989,7 @@ const LeftSideBarBeta = ({
         <button className="btn icon" onClick={() => HandleSavePlan(planStatus)}>
           <Tooltip title="Save Plan">
             <IconButton>
-              <FloppyDiskBack />{' '}
+              <FloppyDiskBack />{" "}
             </IconButton>
           </Tooltip>
         </button>
@@ -735,14 +1000,14 @@ const LeftSideBarBeta = ({
           {/* Repeated sections for Total Metrics */}
           {[
             {
-              label: 'Total Followers',
+              label: "Total Followers",
               value: formatFollowers(totalFollowers),
             },
-            { label: 'Total Cost', value: totalCost },
-            { label: 'Total Posts / Page', value: totalPostsPerPage },
-            { label: 'Total Stories / Page', value: totalStoriesPerPage },
-            { label: 'Total Deliverable', value: totalDeliverables },
-            { label: 'Total Pages', value: totalPagesSelected },
+            { label: "Total Cost", value: totalCost },
+            { label: "Total Posts / Page", value: totalPostsPerPage },
+            { label: "Total Stories / Page", value: totalStoriesPerPage },
+            { label: "Total Deliverable", value: totalDeliverables },
+            { label: "Total Pages", value: totalPagesSelected },
           ].map(({ label, value }, idx) => (
             <div className="nav-item nav-item-single" key={idx}>
               <div className="nav-btn nav-link">
@@ -760,13 +1025,21 @@ const LeftSideBarBeta = ({
           <div className="nav-item nav-item-single">
             <div className="row pl16 pr16 border-bottom">
               {Object.entries(pageCategoryCount)?.map(([categoryId, count]) => {
-                const categoryName = category?.find((item) => item._id === categoryId)?.page_category || 'Unknown';
+                const categoryName =
+                  category?.find((item) => item._id === categoryId)
+                    ?.page_category || "Unknown";
 
                 return (
-                  <div className="col-lg-3 col-md-4 col-sm-6 col-12" key={categoryId}>
+                  <div
+                    className="col-lg-3 col-md-4 col-sm-6 col-12"
+                    key={categoryId}
+                  >
                     <div>
                       <div className="flexCenter colGap14">
-                        <div className="iconBadge small bgPrimaryLight m-0" onClick={handleToggleBtn}>
+                        <div
+                          className="iconBadge small bgPrimaryLight m-0"
+                          onClick={handleToggleBtn}
+                        >
                           <h5>{count}</h5>
                         </div>
                         <div>
@@ -788,11 +1061,15 @@ const LeftSideBarBeta = ({
                 <div onClick={handleOwnPage}>
                   <div className="flexCenter colGap14">
                     <div className="iconBadge small bgPrimaryLight m-0">
-                      <h5>{Math.max(ownPages?.length - selectedRow?.length, 0)}</h5>
+                      <h5>
+                        {Math.max(ownPages?.length - selectedRow?.length, 0)}
+                      </h5>
                     </div>
                     <div>
                       <h6 className="colorMedium">Own Remaining Pages</h6>
-                      <h6 className="mt4">{Math.max(ownPages?.length - selectedRow?.length, 0)}</h6>
+                      <h6 className="mt4">
+                        {Math.max(ownPages?.length - selectedRow?.length, 0)}
+                      </h6>
                     </div>
                   </div>
                 </div>
@@ -803,7 +1080,7 @@ const LeftSideBarBeta = ({
           {/* Ownership Types */}
           <div className="nav-item nav-item-single">
             <div className="row p16">
-              {['own', 'vendor'].map((type) => (
+              {["own", "vendor"].map((type) => (
                 <div className="col-lg-4 col-md-4 col-sm-6 col-12" key={type}>
                   <div onClick={handleOwnPage}>
                     <div className="flexCenter colGap14">
@@ -819,9 +1096,13 @@ const LeftSideBarBeta = ({
                       </div>
                       <div>
                         <h6>
-                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages : {ownershipCounts[type]?.count || 0}
+                          {type.charAt(0).toUpperCase() + type.slice(1)} Pages :{" "}
+                          {ownershipCounts[type]?.count || 0}
                         </h6>
-                        <h6 className="mt4">Total Post & Story Cost : ₹ {ownershipCounts[type]?.totalCost || 0}</h6>
+                        <h6 className="mt4">
+                          Total Post & Story Cost : ₹{" "}
+                          {ownershipCounts[type]?.totalCost || 0}
+                        </h6>
                       </div>
                     </div>
                   </div>
@@ -841,12 +1122,12 @@ const LeftSideBarBeta = ({
       >
         <Box
           sx={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '80%',
-            bgcolor: 'background.paper',
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "80%",
+            bgcolor: "background.paper",
             boxShadow: 24,
             p: 4,
           }}
@@ -855,7 +1136,7 @@ const LeftSideBarBeta = ({
           <Button
             onClick={() => setOpenModal(false)}
             sx={{
-              position: 'absolute',
+              position: "absolute",
               top: 8,
               right: 8,
             }}
@@ -868,7 +1149,10 @@ const LeftSideBarBeta = ({
           </Typography>
 
           {/* Table to display page details */}
-          <TableContainer component={Paper} sx={{ maxHeight: 300, overflowY: 'auto' }}>
+          <TableContainer
+            component={Paper}
+            sx={{ maxHeight: 300, overflowY: "auto" }}
+          >
             <Table>
               <TableHead>
                 <TableRow>
@@ -884,8 +1168,8 @@ const LeftSideBarBeta = ({
                 {(pageDetails || [])?.map((page, index) => (
                   <TableRow key={page?._id || index}>
                     <TableCell>{index + 1}</TableCell>
-                    <TableCell>{page?.page_name || 'N/A'}</TableCell>
-                    <TableCell>{page?.ownership_type || 'Unknown'}</TableCell>
+                    <TableCell>{page?.page_name || "N/A"}</TableCell>
+                    <TableCell>{page?.ownership_type || "Unknown"}</TableCell>
                     <TableCell>{page?.followers_count || 0}</TableCell>
                     <TableCell>{postCount?.[page?._id] || 0}</TableCell>
                     <TableCell>{storyPerPage?.[page?._id] || 0}</TableCell>

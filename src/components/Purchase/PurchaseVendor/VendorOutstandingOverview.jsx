@@ -79,6 +79,7 @@ const VendorOutstandingOverview = () => {
               return {
                 ...range,
                 count,
+
               };
             });
 
