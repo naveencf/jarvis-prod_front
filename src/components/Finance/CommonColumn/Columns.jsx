@@ -1306,7 +1306,7 @@ export const pendingInvoiceColumn = ({
       },
     },
     {
-      name: " Requested On",
+      name: "Requested On",
       key: "createdAt",
       width: 220,
       renderRowCell: (row) => {
@@ -1398,7 +1398,7 @@ export const pendingInvoiceColumn = ({
       name: "Invoice Amount",
       width: 200,
       compare: true,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => (row?.invoice_amount ? row?.invoice_amount : 0),
     },
     {
@@ -1407,27 +1407,25 @@ export const pendingInvoiceColumn = ({
       width: 180,
       compare: true,
       getTotal: true,
-      renderRowCell: (row) =>
-        row?.saleData?.base_amount ? row?.saleData.base_amount : 0,
+      renderRowCell: (row) => ((row?.invoice_amount * 100) / 118),
     },
     {
       name: "GST Amount",
-      field: "gst_amount",
+      key: "gst_amount_new",
       width: 180,
       compare: true,
-      getTotal: true,
-      renderRowCell: (row) =>
-        row?.saleData?.gst_amount ? row?.saleData?.gst_amount : 0,
+      // getTotal: true,
+      renderRowCell: (row) => ((row?.invoice_amount * 18) / 118),
     },
-    {
-      name: "Campaign Amount",
-      key: "campaign_amount",
-      width: 180,
-      compare: true,
-      getTotal: true,
-      renderRowCell: (row) =>
-        row?.saleData?.campaign_amount ? row?.saleData?.campaign_amount : 0,
-    },
+    // {
+    //   name: "Campaign Amount",
+    //   key: "campaign_amount",
+    //   width: 180,
+    //   compare: true,
+    //   getTotal: true,
+    //   renderRowCell: (row) =>
+    //     row?.saleData?.campaign_amount ? row?.saleData?.campaign_amount : 0,
+    // },
     {
       key: "invoice_action_reason",
       name: "Invoice Reason",
@@ -2228,16 +2226,16 @@ export const outstandingColumns = ({
         </div>
       ),
     },
-    {
-      key: "balance_payment_ondate",
-      name: "Expected Payment Receive Date",
-      width: 190,
-      renderRowCell: (row) => (
-        <div style={{ whiteSpace: "normal" }}>
-          {moment(row?.balance_payment_ondate).format("DD/MM/YYYY")}
-        </div>
-      ),
-    },
+    // {
+    //   key: "balance_payment_ondate",
+    //   name: "Expected Payment Receive Date",
+    //   width: 190,
+    //   renderRowCell: (row) => (
+    //     <div style={{ whiteSpace: "normal" }}>
+    //       {moment(row?.balance_payment_ondate).format("DD/MM/YYYY")}
+    //     </div>
+    //   ),
+    // },
     {
       key: "sale_booking_date",
       name: "Sale Booking Date",
@@ -2248,21 +2246,35 @@ export const outstandingColumns = ({
         </div>
       ),
     },
+    // {
+    //   key: "campaign_amount",
+    //   name: "Campaign Amount",
+    //   width: 190,
+    //   getTotal: true,
+    //   renderRowCell: (row) => row?.campaign_amount,
+    // },
     {
-      key: "campaign_amount",
-      name: "Campaign Amount",
+      key: "invoice_amount",
+      name: "Invoice Amount",
       width: 190,
       getTotal: true,
-      renderRowCell: (row) => row?.campaign_amount,
+      renderRowCell: (row) => row?.invoice_amount,
     },
     {
-      key: "paid_amount",
+      key: "invoice_status",
+      name: "Invoice Status",
+      width: 190,
+      // getTotal: true,
+      renderRowCell: (row) => row?.invoice_status,
+    },
+    {
+      key: "invoice_approved_amount",
       name: "Paid Amount",
       width: 190,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => (
         <div style={{ whiteSpace: "normal" }}>
-          {row?.paid_amount ? row?.paid_amount : 0}
+          {row?.invoice_approved_amount ? row?.invoice_approved_amount : 0}
         </div>
       ),
     },
@@ -2271,13 +2283,13 @@ export const outstandingColumns = ({
       key: "Balance Amount",
       compare: true,
       getTotal: true,
-      renderRowCell: (row) => row?.campaign_amount - row?.paid_amount || 0,
+      renderRowCell: (row) => row?.invoice_amount - row?.invoice_approved_amount || 0,
     },
     {
-      key: "base_amount",
+      key: "base_amount_new",
       name: "Base Amount",
       getTotal: true,
-      renderRowCell: (row) => row?.base_amount,
+      renderRowCell: (row) => (row?.invoice_amount * 100) / 118,
     },
     {
       key: "gst_status",

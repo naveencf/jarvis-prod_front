@@ -61,6 +61,8 @@ import { useAPIGlobalContext } from "../APIContext/APIContext";
 import { stateAbbreviations } from "../../../utils/helper";
 import { ArrowLeft } from "@phosphor-icons/react";
 import PennyDropVendor from "./PennyDropVendor";
+import { isValidIFSC } from "../../../utils/IFSCCommon";
+import { isValidPAN } from "../../../utils/PANCommon";
 // import { useGlobalContext } from "../../../Context/Context";
 
 const VendorMaster = () => {
@@ -298,6 +300,10 @@ const VendorMaster = () => {
     const updatedRows = [...bankRows];
     updatedRows[i].ifsc = ifscValue;
     setBankRows(updatedRows);
+
+    if (ifscValue.length === 11 && !isValidIFSC(ifscValue)) {
+      toastError("Invalid IFSC Code");
+    }
   };
 
   const handlePANChange = (e, i) => {
@@ -307,11 +313,19 @@ const VendorMaster = () => {
       updatedRows[i].pan_card = panValue;
       setBankRows(updatedRows);
     }
+    if (panValue.length === 10 && !isValidPAN(panValue)) {
+      toastError("Invalid PAN Number");
+    }
   };
 
   const handleAccountHolderChange = (e, i) => {
     const updatedRows = [...bankRows];
     updatedRows[i].account_holder_name = e.target.value;
+    setBankRows(updatedRows);
+  };
+  const handleGstNorChange = (e, i) => {
+    const updatedRows = [...bankRows];
+    updatedRows[i].gst_no = e.target.value.toUpperCase();
     setBankRows(updatedRows);
   };
   const handleUPIidChange = (e, i) => {
@@ -1402,10 +1416,10 @@ const VendorMaster = () => {
                   maxLength={6}
                   fieldGrid={4}
                   onChange={handleCompPincode}
-                // onChange={(e) => {
-                //   if (isNaN(e.target.value)) return;
-                //   setCompPin(e.target.value);
-                // }}
+                  // onChange={(e) => {
+                  //   if (isNaN(e.target.value)) return;
+                  //   setCompPin(e.target.value);
+                  // }}
                 />
               </div>
             </>
@@ -1873,6 +1887,14 @@ const VendorMaster = () => {
                         row.is_verified && bankRows[i].account_holder_name != ""
                       } // Disable if _id exists
                     />
+                    <FieldContainer
+                      label="GST No"
+                      fieldGrid={4}
+                      value={bankRows[i].gst_no}
+                      maxLength={15}
+                      onChange={(e) => handleGstNorChange(e, i)}
+                      disabled={row.is_verified && bankRows[i].gst_no != ""} // Disable if _id exists
+                    />
                     <div className="col-lg-8 col-md-8 col-12"></div>
                   </>
                 )}
@@ -1889,16 +1911,16 @@ const VendorMaster = () => {
 
                 {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
                   bankRows[i].payment_method == "666856624366007df1dfacc8") && (
-                    <FieldContainer
-                      label={"Registered Mobile Number"}
-                      value={bankRows[i].registered_number}
-                      required={false}
-                      fieldGrid={4}
-                      type="number"
-                      onChange={(e) => handleRegisteredMobileChange(e, i)}
-                      disabled={row.is_verified} // Disable if _id exists
-                    />
-                  )}
+                  <FieldContainer
+                    label={"Registered Mobile Number"}
+                    value={bankRows[i].registered_number}
+                    required={false}
+                    fieldGrid={4}
+                    type="number"
+                    onChange={(e) => handleRegisteredMobileChange(e, i)}
+                    disabled={row.is_verified} // Disable if _id exists
+                  />
+                )}
                 <Divider sx={{ mb: 2 }} />
                 {i > 0 && (
                   <IconButton

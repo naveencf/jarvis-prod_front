@@ -13,6 +13,7 @@ import {
 import {
   useGetAllPageCategoryQuery,
   useGetAllPageListQuery,
+  useGetAllPageSubCategoryQuery,
   useGetSpecificPagesQuery,
 } from "../../Store/PageBaseURL";
 import DataGridColumns from "../plan-making/DataGridColumns";
@@ -49,7 +50,6 @@ import LeftSideBarBeta from "./LeftSideBarBeta";
 const PlanMakingBeta = () => {
   // const { id } = useParams();
   const [activePlatform, setActivePlatform] = useState("instagram");
-
   const [filterData, setFilterData] = useState([]);
   const [toggleShowBtn, setToggleShowBtn] = useState();
   // const [progress, setProgress] = useState(10);
@@ -175,7 +175,8 @@ const PlanMakingBeta = () => {
   const platformData = platData?.data;
   const { data: pageCate } = useGetAllPageCategoryQuery();
   const cat = pageCate?.data;
-
+  const { data: subCategory } = useGetAllPageSubCategoryQuery();
+  const subCategoryData = subCategory?.data || [];
   const { data: vendor, isLoading: VendorLoading } = useGetAllVendorQuery();
   const vendorData = vendor;
 
@@ -751,15 +752,16 @@ const PlanMakingBeta = () => {
           return;
         }
 
-        processedPages.add(pageKey); // ✅ Mark as processed
+        processedPages.add(pageKey); 
 
         if (incomingPage.category_name) {
-          matchingPage.page_category_name = incomingPage.category_name;
-          const matchingCategoryId =
+          matchingPage.page_sub_category_name = incomingPage.category_name;
+          const matchingSubCategoryId =
             categoryMap[incomingPage.category_name?.toLowerCase()?.trim()];
-          if (matchingCategoryId)
-            matchingPage.page_category_id = matchingCategoryId;
+          if (matchingSubCategoryId)
+            matchingPage.page_sub_category_id = matchingSubCategoryId;
         }
+        
 
         updatedPostValues[matchingPage._id] = incomingPage.post_count || 0;
         updatedStoryValues[matchingPage._id] = incomingPage.story_count || 0;
@@ -1437,6 +1439,7 @@ const PlanMakingBeta = () => {
         storyPerPage={storyPerPageValues}
         handleOwnPage={handleOwnPage}
         category={cat}
+        subCategory={subCategoryData}
         ownPages={ownPages}
         checkedDescriptions={checkedDescriptions}
       />

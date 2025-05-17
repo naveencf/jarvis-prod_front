@@ -113,15 +113,19 @@ const EditInvoiceActionDialog = (props) => {
       setIsPDF(isFilePDF);
     }
   };
-
+  console.log(invcNumber, "invcNumber")
   const handleInvoiceEditFields = async (e) => {
     e.preventDefault();
     if (!imageInvoice) {
       setIsRequired((prev) => ({ ...prev, imageInvoice: true }));
       toastError("Please Add Invoice Image");
       return;
-    }
+    } else if (invcNumber == "") {
+      toastError("Please Add Invoice Number");
+      return;
 
+    }
+    console.log(invcNumber, "invcNumber")
     const confirmation = confirm("Are you sure you want to submit this data?");
     if (confirmation) {
       const formData = new FormData();

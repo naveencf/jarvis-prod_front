@@ -83,8 +83,11 @@ function TDSDialog(props) {
 
       const tdsClosePayload = {
         id: tdsFieldSaleBookingId,
-        tds_amount: balAmount - paidAmount,
-        tds_percentage: tdsPercentage,
+        // tds_amount: balAmount - paidAmount,
+        // tds_percentage: tdsPercentage,
+        invoice_tds_amount: balAmount - paidAmount,
+        invoice_tds_percentage: tdsPercentage,
+        invoice_req_id: singleRow._id
       };
       const tdsResponse = await updateOutstandingSaleBookingClose(
         tdsClosePayload

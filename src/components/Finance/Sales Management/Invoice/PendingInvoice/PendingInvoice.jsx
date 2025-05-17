@@ -40,7 +40,7 @@ const PendingInvoice = ({
     isLoading: allProformaInvoiceListLoading,
   } = useGetAllProformaListQuery({ status: "uploaded", type: "proforma" });
 
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
   const [datas, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -99,7 +99,7 @@ const PendingInvoice = ({
     calculateUniqueData(sortedData);
     calculateTotals(sortedData);
   };
-
+  console.log(filterData, "filterData")
   const calculateUniqueData = (sortedData) => {
     const aggregateData = (data, keyName, isAccountName) =>
       data?.reduce((acc, curr) => {
@@ -184,9 +184,9 @@ const PendingInvoice = ({
     getData();
     setButtonaccess(
       contextData &&
-        contextData[2] &&
-        contextData[2].insert_value === 1 &&
-        false
+      contextData[2] &&
+      contextData[2].insert_value === 1 &&
+      false
     );
   }, []);
 

@@ -1566,12 +1566,13 @@ const PageOverviewNew = () => {
     },
     {
       key: "sub_category_name",
-      name: "sub_category_name",
+      name: "Sub Category Name",
       width: 200,
+      renderRowCell:(row) => formatString(row.sub_category_name)
     },
     {
       key: "page_count",
-      name: "page_count",
+      name: "Page Count",
       width: 200,
       renderRowCell: (row) => (
         <>
@@ -1587,7 +1588,7 @@ const PageOverviewNew = () => {
     },
     {
       key: "vendors_count",
-      name: "vendors_count",
+      name: "Vendor Count",
       width: 200,
     },
 
@@ -1597,7 +1598,7 @@ const PageOverviewNew = () => {
       width: 200,
     },
   ];
-console.log("platfromName",platformName);
+
   return (
     <>
       <PriceModal

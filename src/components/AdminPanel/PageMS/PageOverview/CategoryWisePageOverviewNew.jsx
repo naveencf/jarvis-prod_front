@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Box, Modal } from "@mui/material";
 import jwtDecode from "jwt-decode";
 import Loader from "../../../Finance/Loader/Loader";
@@ -180,8 +180,15 @@ const CategoryWisePageOverviewNew = ({
       ),
     },
   ];
-// const categoryCount  = categoryWiseData
  
+// const categoryCount  = categoryWiseData
+const totalPageCount = useMemo(() => {
+  return categoryWiseData?.reduce(
+    (acc, item) => acc + (Number(item?.totalPageCount) || 0),
+    0
+  );
+}, [categoryWiseData]);
+ console.log("totalPageCount", totalPageCount);
   return (
     <div className="card">
       <div className="card-body p0">
@@ -244,6 +251,7 @@ const CategoryWisePageOverviewNew = ({
                     | Current Platform{" "}
                     <strong>{formatString(platformName)}</strong>
                   </p>
+                  <p>| Total Page Count <strong>{totalPageCount}</strong></p>
                 </div>
               }
             />
