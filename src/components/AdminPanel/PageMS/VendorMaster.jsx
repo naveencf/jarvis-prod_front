@@ -804,16 +804,44 @@ const VendorMaster = () => {
       toastError("Business Type is mandatory");
       return;
     }
-    if (bankRows.length > 0) {
-      const hasInvalidBankDetails = bankRows.some(
-        (bank) =>
-          bank.payment_method === "666856874366007df1dfacde" &&
-          (!bank.ifsc || !bank.account_number)
+    // if (bankRows.length > 0) {
+    //   const hasInvalidBankDetails = bankRows.some(
+    //     (bank) =>
+    //       bank.payment_method === "666856874366007df1dfacde" &&
+    //       (!bank.ifsc || !bank.account_number || !bank.pan_card)
+    //   );
+
+    //   if (hasInvalidBankDetails) {
+    //     toastError("IFSC code and Account Number and Pan No are mandatory");
+    //     return;
+    //   }
+    // }
+    if (Array.isArray(bankRows) && bankRows.length > 0) {
+      const invalidBank = bankRows.find(
+        (bank) => bank?.payment_method === "666856874366007df1dfacde"
       );
 
-      if (hasInvalidBankDetails) {
-        toastError("IFSC code and Account Number are mandatory");
-        return;
+      if (invalidBank) {
+        if (
+          !invalidBank.account_number ||
+          invalidBank.account_number.trim() === ""
+        ) {
+          toastError("Account Number is mandatory");
+          return;
+        } else if (!invalidBank.ifsc || invalidBank.ifsc.trim() === "") {
+          toastError("IFSC Code is mandatory");
+          return;
+        } else if (
+          !invalidBank.pan_card ||
+          invalidBank.pan_card.trim() === ""
+        ) {
+        } else if (
+          !invalidBank.account_holder_name ||
+          invalidBank.account_holder_name.trim() === ""
+        ) {
+          toastError("Account Holder Name is mandatory");
+          return;
+        }
       }
     }
 

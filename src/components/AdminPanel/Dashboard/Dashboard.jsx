@@ -92,9 +92,9 @@ function Dashboard() {
   //   // });
   // }, []);
 
-  if (loginUserData.job_type == "WFHD" && roleId == 4) {
-    navigate("/admin/wfh-single-user");
-  }
+  // if (loginUserData.job_type == "WFHD" && roleId == 4) {
+  //   navigate("/admin/wfh-single-user");
+  // }
 
   const AllSimData = allsimData.length;
   const AllLogoBrandData = logoBrandData.length;
