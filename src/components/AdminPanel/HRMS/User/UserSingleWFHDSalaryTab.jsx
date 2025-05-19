@@ -4,9 +4,15 @@ const UserSingleWFHDSalaryTab = ({ salaryData }) => {
   const [search, setSearch] = useState("");
   const [filteredData, setFilteredData] = useState({});
 
-  // Group data by user_name
+  // Group data by user_name initially
   useEffect(() => {
-    const grouped = salaryData?.reduce((acc, curr) => {
+    if (!Array.isArray(salaryData)) {
+      setFilteredData({});
+      return;
+    }
+
+    const grouped = salaryData.reduce((acc, curr) => {
+      if (!curr?.user_name) return acc;
       if (!acc[curr.user_name]) {
         acc[curr.user_name] = [];
       }
@@ -17,20 +23,26 @@ const UserSingleWFHDSalaryTab = ({ salaryData }) => {
     setFilteredData(grouped);
   }, [salaryData]);
 
-  // Handle search for employee name & month-year
+  // Filter based on search input
   useEffect(() => {
-    const filtered = salaryData?.reduce((acc, curr) => {
-      const searchText = search.toLowerCase();
-      const matches =
-        curr.month.toLowerCase().includes(searchText) ||
-        String(curr.year).includes(searchText); // Convert year to string
+    if (!Array.isArray(salaryData)) {
+      setFilteredData({});
+      return;
+    }
 
-      if (matches) {
+    const searchText = search.toLowerCase();
+
+    const filtered = salaryData.reduce((acc, curr) => {
+      const monthMatch = curr?.month?.toLowerCase()?.includes(searchText);
+      const yearMatch = String(curr?.year || "").includes(searchText);
+
+      if ((monthMatch || yearMatch) && curr?.user_name) {
         if (!acc[curr.user_name]) {
           acc[curr.user_name] = [];
         }
         acc[curr.user_name].push(curr);
       }
+
       return acc;
     }, {});
 
@@ -39,7 +51,7 @@ const UserSingleWFHDSalaryTab = ({ salaryData }) => {
 
   return (
     <div className="container">
-      {/* Search Bar */}
+      {/* Search Input */}
       <div className="search-bar">
         <input
           type="text"
@@ -51,33 +63,31 @@ const UserSingleWFHDSalaryTab = ({ salaryData }) => {
       </div>
 
       {/* Employee Cards */}
-      {Object.keys(filteredData).map((userName) => {
-        const userSalaryData = filteredData[userName];
+      {Object?.keys(filteredData || {})?.map((userName) => {
+        const userSalaryData = filteredData?.[userName] || [];
 
-        // Calculate totals for the summary card
+        // Safe reduce with fallback to 0
         const totalPresentDays = userSalaryData.reduce(
-          (sum, row) => sum + row.presentDays,
+          (sum, row) => sum + (row?.presentDays || 0),
           0
         );
         const totalBonus = userSalaryData.reduce(
-          (sum, row) => sum + Number(row.bonus),
+          (sum, row) => sum + Number(row?.bonus || 0),
           0
         );
         const totalTDS = userSalaryData.reduce(
-          (sum, row) => sum + Number(row.tds_deduction),
+          (sum, row) => sum + Number(row?.tds_deduction || 0),
           0
         );
         const totalToPay = userSalaryData.reduce(
-          (sum, row) => sum + Number(row.toPay),
+          (sum, row) => sum + Number(row?.toPay || 0),
           0
         );
 
         return (
           <div key={userName} className="employee-card">
-            {/* Employee Name */}
             <h3 className="employee-name">{userName}</h3>
 
-            {/* Summary Card */}
             <div className="summary-card">
               <p>
                 <strong>Total To Pay:</strong> {totalToPay} ₹
@@ -93,36 +103,36 @@ const UserSingleWFHDSalaryTab = ({ salaryData }) => {
               </p>
             </div>
 
-            {/* Salary Records in Flexbox Row */}
             <div className="salary-details">
               {userSalaryData.map((row, index) => (
                 <div key={index} className="salary-item">
                   <p>
-                    <strong>Month:</strong> {row.month}
+                    <strong>Month:</strong> {row?.month || "-"}
                   </p>
                   <p>
-                    <strong>Year:</strong> {row.year}
+                    <strong>Year:</strong> {row?.year || "-"}
                   </p>
                   <p>
-                    <strong>Work Days:</strong> {row.presentDays}
+                    <strong>Work Days:</strong> {row?.presentDays || 0}
                   </p>
                   <p>
-                    <strong>Absents:</strong> {row.noOfabsent}
+                    <strong>Absents:</strong> {row?.noOfabsent || 0}
                   </p>
                   <p>
-                    <strong>Total Payout:</strong> {row.total_salary} ₹
+                    <strong>Total Payout:</strong> {row?.total_salary || 0} ₹
                   </p>
                   <p>
-                    <strong>Bonus:</strong> {row.bonus} ₹
+                    <strong>Bonus:</strong> {row?.bonus || 0} ₹
                   </p>
                   <p>
-                    <strong>Net Payout:</strong> {row.net_salary?.toFixed()} ₹
+                    <strong>Net Payout:</strong>{" "}
+                    {row?.net_salary?.toFixed?.() || 0} ₹
                   </p>
                   <p>
-                    <strong>TDS:</strong> {row.tds_deduction} ₹
+                    <strong>TDS:</strong> {row?.tds_deduction || 0} ₹
                   </p>
                   <p>
-                    <strong>To Pay:</strong> {row.toPay?.toFixed()} ₹
+                    <strong>To Pay:</strong> {row?.toPay?.toFixed?.() || 0} ₹
                   </p>
                 </div>
               ))}
