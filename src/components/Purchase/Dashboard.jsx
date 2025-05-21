@@ -47,11 +47,11 @@ const Dashboard = () => {
     isLoading: isVendorDetailLoading,
     isFetching: isVendorDetailFetching,
   } = useGetVendorOutstandingQuery(range);
-    const {
-      data: ledgerAmountData,
-      isLoading: isLedgerLoading,
-      isFetching: isLedgerFetching,
-    } = useGetLedgerAmountByVendorQuery("66827bcf8e6fbfb72f5c8b6d") //creative-fuel id
+  const {
+    data: ledgerAmountData,
+    isLoading: isLedgerLoading,
+    isFetching: isLedgerFetching,
+  } = useGetLedgerAmountByVendorQuery("66827bcf8e6fbfb72f5c8b6d") //creative-fuel id
   const { data: unregisteredPages } = useGetCountOfUnregisteredPagesQuery();
   const { data: platform } = useGetPmsPlatformQuery();
   const platformData = platform?.data;
@@ -72,7 +72,7 @@ const Dashboard = () => {
     queryParams.startDate = new Date(startDate).toISOString().split("T")[0];
     queryParams.endDate = new Date(endDate).toISOString().split("T")[0];
   }
-console.log("ledgerAmountData",ledgerAmountData);
+  console.log("ledgerAmountData", ledgerAmountData);
   const {
     data: vendorLedgerMonthWise,
     isLoading: isVendorLedgerMonthWiseLoading,
@@ -323,7 +323,7 @@ console.log("ledgerAmountData",ledgerAmountData);
                         <h6 className="colorMedium">Total Outstanding</h6>
                         <h6 className="mt4 fs_16">
                           {/* ₹{formatIndianNumber(Math.floor(data?.total_outstanding))} */}
-                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding + data?.total_pending_link_amt + data?.total_audited_link_amt))}
+                          ₹{formatIndianNumber(Math.floor(data?.total_outstanding + data?.total_pending_link_amt + data?.total_audited_link_amt - ledgerAmountData?.balance))}
                         </h6>
                       </div>
                     </Link>
@@ -881,6 +881,7 @@ console.log("ledgerAmountData",ledgerAmountData);
             isVendorAdvancedDetailFetching ||
             isVendorAdvancedDetailLoading
           }
+          // showTotal={true}
           title="Vendor Overview"
           rowSelectable={true}
           pagination={[100, 200, 1000]}

@@ -8,6 +8,7 @@ const BulkCampaignUpdate = ({
   selectedData,
   setToggleModal,
   refetchPlanData,
+  setSelectedData
 }) => {
   const [SelectedCampaign, setSelectedCampaign] = useState("");
   const { toastAlert, toastError } = useGlobalContext();
@@ -34,6 +35,7 @@ const BulkCampaignUpdate = ({
       await refetchPlanData();
       toastAlert("Data Updated");
       setToggleModal(false);
+      setSelectedData([])
     } catch (err) {
       toastError("Error Uploading Data");
     }

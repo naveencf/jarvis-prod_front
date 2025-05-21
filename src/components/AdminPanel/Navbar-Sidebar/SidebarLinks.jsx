@@ -129,6 +129,8 @@ const SidebarLinks = () => {
   const hrms = [6, 20, 37, 38, 53, 5, 8, 9, 18, 20, 21].some(
     (index) => contextData[index]?.view_value === 1
   );
+  const pantry = [15, 71].some((index) => contextData[index]?.view_value === 1);
+
   const activelink = useLocation().pathname;
   return (
     <>
@@ -2338,43 +2340,46 @@ const SidebarLinks = () => {
           </Link>
         </li>
       )} */}
-      <li className="nav-item">
-        <Link
-          className="nav-link nav-btn collapsed"
-          data-toggle="collapse"
-          data-target="#collapsePantry"
-          aria-expanded="true"
-          aria-controls="collapsePantry"
-        >
-          <i className="ph">
-            <MaskHappy size={32} />
-          </i>
-          <span>Pantry</span>
-        </Link>
-        <div
-          id="collapsePantry"
-          className="collapse"
-          aria-labelledby="headingBoosting"
-          data-parent="#accordionSidebar"
-        >
-          <div className="internal collapse-inner">
-            {contextData &&
-              contextData[15] &&
-              contextData[15]?.view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pantry">
-                  <i className="bi bi-plus-circle"></i> Pantry
-                </NavLink>
-              )}
-            {contextData &&
-              contextData[71] &&
-              contextData[71]?.view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pantry-admin">
-                  <i className="bi bi-graph-up"></i> Pantry Admin
-                </NavLink>
-              )}
+
+      {pantry && (
+        <li className="nav-item">
+          <Link
+            className="nav-link nav-btn collapsed"
+            data-toggle="collapse"
+            data-target="#collapsePantry"
+            aria-expanded="true"
+            aria-controls="collapsePantry"
+          >
+            <i className="ph">
+              <MaskHappy size={32} />
+            </i>
+            <span>Pantry</span>
+          </Link>
+          <div
+            id="collapsePantry"
+            className="collapse"
+            aria-labelledby="headingBoosting"
+            data-parent="#accordionSidebar"
+          >
+            <div className="internal collapse-inner">
+              {contextData &&
+                contextData[15] &&
+                contextData[15]?.view_value === 1 && (
+                  <NavLink className="collapse-item" to="/admin/pantry">
+                    <i className="bi bi-plus-circle"></i> Pantry
+                  </NavLink>
+                )}
+              {contextData &&
+                contextData[71] &&
+                contextData[71]?.view_value === 1 && (
+                  <NavLink className="collapse-item" to="/admin/pantry-admin">
+                    <i className="bi bi-graph-up"></i> Pantry Admin
+                  </NavLink>
+                )}
+            </div>
           </div>
-        </div>
-      </li>
+        </li>
+      )}
     </>
   );
 };

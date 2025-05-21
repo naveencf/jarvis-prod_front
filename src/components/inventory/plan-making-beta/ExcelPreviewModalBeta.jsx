@@ -295,7 +295,6 @@ const ExcelPreviewModalBeta = ({
       return;
     }
     const categoryId = matchedCategory._id;
-    console.log("matchCate", matchedCategory);
     setRenamedCategories((prev) => ({
       ...prev,
       [categoryId]: newCategoryName,

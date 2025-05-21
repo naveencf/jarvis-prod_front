@@ -832,10 +832,6 @@ const VendorMaster = () => {
           toastError("IFSC Code is mandatory");
           return;
         } else if (
-          !invalidBank.pan_card ||
-          invalidBank.pan_card.trim() === ""
-        ) {
-        } else if (
           !invalidBank.account_holder_name ||
           invalidBank.account_holder_name.trim() === ""
         ) {

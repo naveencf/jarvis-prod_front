@@ -313,6 +313,7 @@ const AuditPurchase = () => {
     } catch (err) {
       console.error("Failed to fetch price:", err);
     }
+    setSelectedData([])
   };
 
   const fetchFilteredPosts = async () => {
@@ -1838,6 +1839,7 @@ const AuditPurchase = () => {
         tableName={"PlanX-execution"}
         isLoading={isFetchingPostDetails || loadingPlanData || fetchingPlanData}
         pagination={[50, 100, 200]}
+        tableSelectedRows={selectedData}
         addHtml={
           <div className="flexCenterBetween colGap8 ml-auto">
             <button

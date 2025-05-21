@@ -47,8 +47,8 @@ const AdvancePurchaseOverview = () => {
     }
   };
 
-  const pagesWithoutUpfront = pageData?.filter((item) => item.is_upfront === false)
-  const pagesWithUpfront = pageData?.filter((item) => item.is_upfront === true)
+  const pagesWithoutUpfront = pageData?.filter((item) => item.is_upfront === false && item.base_amount > 0)
+  const pagesWithUpfront = pageData?.filter((item) => item.is_upfront === true && item.base_amount > 0)
   const isDefaultView = !selectedFilter;
   const isLoading =
     selectedFilter !== null

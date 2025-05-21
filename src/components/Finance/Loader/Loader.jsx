@@ -5,15 +5,15 @@ import cfloader from "../../../assets/imgs/other/cf-loader.gif";
 import logo from "../../../assets/logo.png";
 
 const Loader = () => {
-  useEffect(() => {
-    const loader = document.querySelector(".loader");
-    // console.log(loader, "loader>>");
-    const delay = +loader?.dataset?.delay || 200;
-    const dots = loader?.querySelectorAll(".loader .dot");
-    dots?.forEach((dot, index) => {
-      dot.style = `--delay: ${delay * index}`;
-    });
-  }, []);
+  // useEffect(() => {
+  //   const loader = document.querySelector(".loader");
+  //   // console.log(loader, "loader>>");
+  //   const delay = +loader?.dataset?.delay || 200;
+  //   const dots = loader?.querySelectorAll(".loader .dot");
+  //   dots?.forEach((dot, index) => {
+  //     dot.style = `--delay: ${delay * index}`;
+  //   });
+  // }, []);
   return (
     <>
       {/* <div className="loader-overlay">

@@ -205,6 +205,7 @@ const LinkUpload = ({
     } catch (err) {
       toastError("Error Fetching Pricing");
     }
+    setSelectedData([])
   }
 
   const extractShortCodes = () => {

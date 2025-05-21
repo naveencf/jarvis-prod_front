@@ -89,6 +89,7 @@ const Navbar = () => {
       const responseOutstanding = await axios.get(
         baseUrl +
         `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
+        // `sales/invoice_outstanding_amount${RoleID != 1 ? `?userId=${loginUserId}` : ""
         }`,
         {
           headers: {
@@ -105,7 +106,7 @@ const Navbar = () => {
 
       const badgeDataRes = responseBadges.data.data;
       const userBadgeRes = responseOutstanding.data.data;
-      // console.log(userBadgeRes, "userBadgeRes")
+      console.log(userBadgeRes, "userBadgeRes")
       const userBadge = badgeDataRes.filter(
         (item) =>
           item.max_rate_amount > userBadgeRes.totalCampaignAmount &&
