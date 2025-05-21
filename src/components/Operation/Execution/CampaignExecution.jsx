@@ -1862,6 +1862,7 @@ const CampaignExecution = () => {
           selectedData={selectedData}
           refetchPlanData={refetchPlanData}
           setToggleModal={setToggleModal}
+          setSelectedData={setSelectedData}
         />
       );
     return null;
@@ -2036,6 +2037,7 @@ const CampaignExecution = () => {
         pagination={[50, 100, 200]}
         selectedData={(data) => setSelectedData(data)}
         showTotal={true}
+        tableSelectedRows={selectedData}
         addHtml={
           <div className="d-flex sb w-100">
             <div></div>

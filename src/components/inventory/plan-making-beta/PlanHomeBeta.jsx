@@ -348,11 +348,11 @@ function PlanHomeBeta() {
       if (page) queryParams.push(`page=${page}`);
       if (limit) queryParams.push(`limit=${limit}`);
       if (search) queryParams.push(`plan_name=${encodeURIComponent(search)}`);
-      if(!search){
+      if (!search) {
         if (startDate) queryParams.push(`startDate=${startDate}`);
         if (endDate) queryParams.push(`endDate=${endDate}`);
       }
-  
+
       const queryString =
         queryParams.length > 0 ? `?${queryParams.join("&")}` : "";
 
@@ -731,7 +731,7 @@ function PlanHomeBeta() {
   const sortedPlanRows = planRows.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
 
   const finalPlanList = filteredPlans.length ? filteredPlans : sortedPlanRows;
-  const dateWiseFilteredData = filteredPlanRows?.reverse();
+  const dateWiseFilteredData = filteredPlanRows;
   useEffect(() => {
     if (inputValue <= 100) {
       setSuggestions(generateSuggestions(inputValue));
@@ -747,7 +747,7 @@ function PlanHomeBeta() {
       console.error("Update failed", error);
     }
   };
- 
+
   return (
     <div>
       <PageDialog

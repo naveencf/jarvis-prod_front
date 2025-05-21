@@ -500,7 +500,7 @@ const VendorOverview = () => {
     },
     {
       key: "vendor_category",
-      name: "Vendor Category.",
+      name: "Vendor Category",
       width: 150,
     },
     {

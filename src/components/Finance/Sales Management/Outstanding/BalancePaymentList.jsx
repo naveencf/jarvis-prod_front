@@ -201,7 +201,7 @@ const BalancePaymentList = () => {
     setDiscardSaleBookingId(rowData.sale_booking_id);
     setDiscardDialog(true);
   };
-
+  console.log(allOutstandingList?.length, "allOutstandingList")
   const getData = () => {
     if (!allOutstandingList) return;
     const transformedData = allOutstandingList?.reduce((acc, object) => {
@@ -223,6 +223,8 @@ const BalancePaymentList = () => {
           created_by_name: object.created_by_name,
           paid_amount: object.paid_amount,
           invoice_id: object._id,
+          invoice_requested_amount: object.invoice_requested_amount,
+          connected_booking_id: object.connected_booking_id
         }));
         acc?.push(...invoices);
       } else {
@@ -233,6 +235,7 @@ const BalancePaymentList = () => {
       }
       return acc;
     }, []);
+    console.log(transformedData, "transformedData")
     const reversedData = transformedData?.reverse();
     setData(reversedData);
     setFilterData(reversedData);
@@ -372,14 +375,20 @@ const BalancePaymentList = () => {
 
     const conditions = {
       0: (invc) =>
-        invc.invoice_type_id === "tax-invoice" &&
-        invc.invoice_creation_status !== "pending" &&
-        invc.gst_status === true &&
-        invc.invoice_status !== 'close',
+        invc.invoice_status == 'open' &&
+        invc.invoice_type_id === "tax-invoice",
+      // invc.invoice_creation_status !== "pending" &&
+      // invc.gst_status === true &&
+      // invc.invoice_status !== 'close',
       // invc.paid_amount <= invc.campaign_amount * 0.9,
       1: (invc) =>
-        invc.invoice_type_id !== "tax-invoice" ||
-        invc.invoice_creation_status === "pending",
+        invc.gst_status == true &&
+        invc.connected_booking_id == 0 &&
+        // invc.invoice_type_id != "credit_note" &&
+        // (invc?.invoice_request_status === "pending" || invc?.invoice_request_status === "uploaded") &&
+        invc.invoice_requested_amount == 0,
+      // (invc?.connected_booking_id == 0 || invc?.connected_booking_id == invc?.sale_booking_id),
+      // invc?.incentive_earning_status == "un-earned",
       3: (invc) => invc.invoice_type_id !== "proforma",
       4: (invc) =>
         invc.gst_status === false &&
@@ -393,7 +402,7 @@ const BalancePaymentList = () => {
   };
 
   const filteredData = getFilteredData(activeAccordionIndex, filterData);
-  // console.log(filteredData, "hghjdghjg")
+  console.log(filteredData, "hghjdghjg")
   return (
     <div>
       {activeAccordionIndex === 2 ? (

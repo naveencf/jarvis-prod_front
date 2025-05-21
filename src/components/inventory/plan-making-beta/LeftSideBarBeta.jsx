@@ -475,7 +475,6 @@ const LeftSideBarBeta = ({
   };
   const groupCategoriesByPlatform = (rows, isPageCategory) => {
     const platformWiseCategories = {};
-
     rows.forEach((row) => {
       const platform = row?.platform_name || "Unknown Platform";
       const category = isPageCategory
@@ -497,7 +496,6 @@ const LeftSideBarBeta = ({
   };
   const platformCategories = groupCategoriesByPlatform(selectedRows, true);
   const platfromSubCategory = groupCategoriesByPlatform(selectedRows, false);
-
   return (
     <div className="planLeftSideWrapper">
       <div className="planLeftSideBody">
@@ -760,74 +758,7 @@ const LeftSideBarBeta = ({
             Meme
             <span>1</span>
           </h6> */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "1rem",
-              backgroundColor: "#111C42",
-              borderRadius: "2px",
-            }}
-          >
-            {Object.entries(platformCategories)?.map(
-              ([platform, categories]) => (
-                <div
-                  key={platform}
-                  style={{
-                    flex: "1 1 300px",
-                    padding: "0.4rem",
-                    backgroundColor: "#1D284C",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      color: "white",
-                      marginLeft: "0.6rem",
-                    }}
-                  >
-                    Categories
-                  </span>
-                  <h6
-                    onClick={handleToggleBtn}
-                    style={{
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      color: "white",
-                      cursor: "pointer",
-                      marginBottom: "0.8rem",
-                      borderBottom: "2px solid #666",
-                    }}
-                  >
-                    {formatString(platform)}
-                  </h6>
-                  {Object.entries(categories).map(([category, count]) => (
-                    <div
-                      key={category}
-                      style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
-                    >
-                      <p
-                        style={{
-                          margin: 0,
-                          color: "white",
-                          fontSize: "1rem",
-                          lineHeight: "1.4",
-                        }}
-                      >
-                        {formatString(category)}:{" "}
-                        <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
-                          {count}
-                        </span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )
-            )}
-          </div>
+         
         </div>
         <div
           style={{
@@ -899,6 +830,75 @@ const LeftSideBarBeta = ({
             )
           )}
         </div>
+        <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "1rem",
+              backgroundColor: "#111C42",
+              borderRadius: "2px",
+            }}
+          >
+            {Object.entries(platformCategories)?.map(
+              ([platform, categories]) => (
+                <div
+                  key={platform}
+                  style={{
+                    flex: "1 1 300px",
+                    padding: "0.4rem",
+                    backgroundColor: "#1D284C",
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      color: "white",
+                      marginLeft: "0.6rem",
+                    }}
+                  >
+                    Categories
+                  </span>
+                  <h6
+                    onClick={handleToggleBtn}
+                    style={{
+                      fontSize: "1.2rem",
+                      fontWeight: "bold",
+                      color: "white",
+                      cursor: "pointer",
+                      marginBottom: "0.8rem",
+                      borderBottom: "2px solid #666",
+                      marginLeft:"0.6rem"
+                    }}
+                  >
+                    {formatString(platform)}
+                  </h6>
+                  {Object.entries(categories).map(([category, count]) => (
+                    <div
+                      key={category}
+                      style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          color: "white",
+                          fontSize: "1rem",
+                          lineHeight: "1.4",
+                        }}
+                      >
+                        {formatString(category)}:{" "}
+                        <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
+                          {count}
+                        </span>
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )
+            )}
+          </div>
         <ExcelPreviewModalBeta
           open={openPreviewModal}
           sellingPrice={planDetails && planDetails?.[0]?.selling_price}
