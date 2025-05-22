@@ -531,7 +531,7 @@ const ViewSaleBooking = () => {
           row?.campaign_amount == row?.invoice_requested_amount &&
             "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
-          ) : row.invoice_request_status !== "requested" && row.connected_booking_id == 0 ? (
+          ) : row?.invoice_requested_amount < row?.campaign_amount && row.invoice_request_status !== "requested" && row.connected_booking_id == 0 ? (
             <>
               <div
                 style={{ color: "blue", cursor: "pointer" }}

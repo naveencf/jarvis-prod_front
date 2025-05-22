@@ -7,6 +7,14 @@ import axios from "axios";
 import { baseUrl } from "../../../utils/config";
 import jwtDecode from "jwt-decode";
 import formatString from "../../../utils/formatString";
+import {
+  Select,
+  MenuItem,
+  Typography,
+  Box,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
 const VendorOutstandingOverview = () => {
   const navigate = useNavigate();
@@ -34,6 +42,21 @@ const VendorOutstandingOverview = () => {
       fetchVendors("abh");
     }
   }, []);
+
+  const formatToIndianCurrency = (amount) => {
+    if (!amount || isNaN(amount)) return "₹0";
+
+    const crore = 10000000;
+    const lakh = 100000;
+
+    if (amount >= crore) {
+      return `₹${(amount / crore).toFixed(2)} Cr`;
+    } else if (amount >= lakh) {
+      return `₹${(amount / lakh).toFixed(2)} L`;
+    } else {
+      return `₹${amount.toLocaleString("en-IN")}`;
+    }
+  };
 
   const fetchVendors = useCallback(
     debounce(async (search, includeOutstandingFilter = false) => {
@@ -67,21 +90,44 @@ const VendorOutstandingOverview = () => {
               { label: "1L–2L", min: 100000, max: 200000 },
               { label: "1L–5L", min: 100000, max: 500000 },
               { label: "5L+", min: 500000, max: Infinity },
+              { label: "10L+", min: 1000000, max: Infinity },
             ];
 
             const counts = ranges.map((range) => {
-              const count = data.filter(
+              const filteredItems = data.filter(
                 (item) =>
                   item.vendor_outstandings &&
                   item.vendor_outstandings > range.min &&
                   item.vendor_outstandings <= range.max
-              ).length;
+              );
+
+              const count = filteredItems.length;
+              const totalOutstanding = filteredItems.reduce(
+                (sum, item) => sum + (item.vendor_outstandings || 0),
+                0
+              );
+
               return {
                 ...range,
                 count,
-
+                totalOutstanding,
               };
             });
+
+            setRangeCounts(counts);
+
+            // const counts = ranges.map((range) => {
+            //   const count = data.filter(
+            //     (item) =>
+            //       item.vendor_outstandings &&
+            //       item.vendor_outstandings > range.min &&
+            //       item.vendor_outstandings <= range.max
+            //   ).length;
+            //   return {
+            //     ...range,
+            //     count,
+            //   };
+            // });
 
             setRangeCounts(counts);
           } else {
@@ -126,11 +172,11 @@ const VendorOutstandingOverview = () => {
 
   const filteredData = selectedRange
     ? vendorData.filter(
-      (item) =>
-        item.vendor_outstandings &&
-        item.vendor_outstandings > selectedRange.min &&
-        item.vendor_outstandings <= selectedRange.max
-    )
+        (item) =>
+          item.vendor_outstandings &&
+          item.vendor_outstandings > selectedRange.min &&
+          item.vendor_outstandings <= selectedRange.max
+      )
     : vendorData;
 
   const columns = [
@@ -156,7 +202,7 @@ const VendorOutstandingOverview = () => {
       name: "Outstanding",
       width: 200,
       renderRowCell: (row) => Math.round(row.vendor_outstandings ?? 0),
-      getTotal: true
+      getTotal: true,
     },
     {
       key: "vendor_total_remaining_advance_amount",
@@ -259,7 +305,7 @@ const VendorOutstandingOverview = () => {
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
-              {rangeCounts.map((range) => (
+              {/* {rangeCounts.map((range) => (
                 <Button
                   key={range.label}
                   variant={
@@ -269,9 +315,40 @@ const VendorOutstandingOverview = () => {
                   }
                   onClick={() => handleRangeFilter(range)}
                 >
-                  {range.label} ({range.count})
+                  {range.label} ({range.count}) -{" "}
+                  {formatToLakh(range.totalOutstanding)}
                 </Button>
-              ))}
+              ))} */}
+              <FormControl size="small" sx={{ minWidth: 250 }}>
+                <InputLabel>Filter by Outstanding Range</InputLabel>
+                <Select
+                  value={selectedRange?.label || ""}
+                  onChange={(e) => {
+                    const range = rangeCounts.find(
+                      (r) => r.label === e.target.value
+                    );
+                    handleRangeFilter(range);
+                  }}
+                  label="Filter by Outstanding Range"
+                >
+                  {rangeCounts.map((range) => (
+                    <MenuItem key={range.label} value={range.label}>
+                      <Box
+                        display="flex"
+                        justifyContent="space-between"
+                        width="100%"
+                      >
+                        <Typography>{range.label}</Typography>
+                        <Typography>
+                          ({range.count}) -{" "}
+                          {formatToIndianCurrency(range.totalOutstanding)}
+                        </Typography>
+                      </Box>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
               {selectedRange && (
                 <Button
                   variant="text"

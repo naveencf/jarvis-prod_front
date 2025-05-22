@@ -117,7 +117,7 @@ function DialogforBalancePaymentUpdate(props) {
 
   // TDS DIALOG FUNCTION:-
   const handleOpenTDSFields = (row) => {
-    if (!paymentDetails) {
+    if (!paymentDetails && paidPercentage < 90) {
       toastError("Please Fill Payment Details");
     } else {
       setImageModalOpen(false);
@@ -252,7 +252,7 @@ function DialogforBalancePaymentUpdate(props) {
                       />
                     </div>
                   </div>
-                  <div className="col-md-12 ">
+                  {/* <div className="col-md-12 ">
                     <div className="form-group">
                       <label htmlFor="images">Paid Percentage %</label>
                       <input
@@ -265,7 +265,7 @@ function DialogforBalancePaymentUpdate(props) {
                         required
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               )}
 

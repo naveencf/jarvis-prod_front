@@ -53,7 +53,13 @@ const EarnedAndUnearned = () => {
           },
         }
       );
-      setEarnedAndUnearnedData(response.data.data.dataArray);
+      const uniqueData = response.data.data.dataArray.filter((item, index, self) =>
+        index === self.findIndex(obj => obj.sale_booking_id === item.sale_booking_id)
+      );
+
+      setEarnedAndUnearnedData(uniqueData);
+
+      // setEarnedAndUnearnedData(response.data.data.dataArray);
     } catch (error) {
       console.error(error);
     } finally {
@@ -101,6 +107,13 @@ const EarnedAndUnearned = () => {
 
       width: 100,
     },
+    // {
+    //   key: "earned_incentive_amount",
+    //   name: "Earn Incentive",
+    //   getTotal: true,
+
+    //   width: 100,
+    // },
     {
       key: "incentive_earning_status",
       name: "Incentive Earning Status",
@@ -112,26 +125,33 @@ const EarnedAndUnearned = () => {
       key: "incentive_percentage",
       name: "Incentive Percentage",
       width: 100,
-      renderRowCell: (row) => `${row.incentive_percentage}%`,
-    },
-    {
-      key: "paid_amount",
-      name: "Paid Amount",
-      getTotal: true,
+      compare: true,
+      // renderRowCell: (row) => ((row.earned_incentive_amount / (row.campaign_amount / 1.18)) * 100).toFixed(2),
+      renderRowCell: (row) => {
 
-      width: 100,
-    },
-    {
-      key: "paid_percentage",
-      name: "Paid Percentage",
-      width: 100,
-      renderRowCell: (row) => `${row.paid_percentage.toFixed(2)}%`,
-    },
-    {
-      key: "record_service_amount",
-      name: "Record Service Amount",
-      getTotal: true,
+        const percentage = (row.earned_incentive_amount / row.base_amount) * 100;
+        return percentage.toFixed(2);
+      }
 
+    },
+    // {
+    //   key: "paid_amount",
+    //   name: "Paid Amount",
+    //   getTotal: true,
+
+    //   width: 100,
+    // },
+    {
+      key: "sale_booking_id",
+      name: "Booking",
+      width: 100,
+      // renderRowCell: (row) => row.sale_booking_id,
+    },
+    {
+      key: "base_amount",
+      name: "Base Amount",
+      getTotal: true,
+      // renderRowCell: (row) => row.base_amount,
       width: 100,
     },
     {

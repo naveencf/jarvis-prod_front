@@ -79,7 +79,7 @@ function TDSDialog(props) {
       formData.append("created_by", loginUserId);
       formData.append("invoice_req_id", singleRow._id);
 
-      await updateOutstandingBalancePayment(formData).unwrap();
+      paymentDetails && await updateOutstandingBalancePayment(formData).unwrap();
 
       const tdsClosePayload = {
         id: tdsFieldSaleBookingId,

@@ -2289,6 +2289,7 @@ export const outstandingColumns = ({
       key: "base_amount_new",
       name: "Base Amount",
       getTotal: true,
+      compare: true,
       renderRowCell: (row) => (row?.invoice_amount * 100) / 118,
     },
     {

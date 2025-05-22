@@ -17,11 +17,8 @@ import { FaEye } from "react-icons/fa6";
 
 const accordionButtons = [
   "Pending Verify",
-  // "Proceed to Bank",
   "Payment Released",
   "Failed Transactions",
-  // "TDS",
-  // "Non-TDS",
 ];
 
 export default function FinanceWFHDashboard() {
@@ -31,13 +28,9 @@ export default function FinanceWFHDashboard() {
   const [departmentData, setDepartmentData] = useState([]);
   const [departmentFilter, setDepartmentFilter] = useState("");
 
-  const [months, setMonths] = useState("");
-  const [years, setYears] = useState("");
-
   const [rowSelectionModel, setRowSelectionModel] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [id, setId] = useState("");
-  // const [dataRow, setDataRow] = useState({});
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
   const [rowForPayment, setRowForPayment] = useState([]);
@@ -51,42 +44,33 @@ export default function FinanceWFHDashboard() {
   const { toastAlert, toastError } = useGlobalContext();
 
   const monthOptions = [
-    { value: "January", label: "January (15Jan - 15Feb)" },
-    { value: "February", label: "February (15Feb - 15Mar)" },
-    { value: "March", label: "March (15Mar - 15Apr)" },
-    { value: "April", label: "April (15Apr - 15May)" },
-    { value: "May", label: "May (15May - 15Jun)" },
-    { value: "June", label: "June (15Jun - 15Jul)" },
-    { value: "July", label: "July (15Jul - 15Aug)" },
-    { value: "August", label: "August (15Aug - 15Sep)" },
-    { value: "September", label: "September (15Sep - 15Oct)" },
-    { value: "October", label: "October (15Oct - 15Nov)" },
-    { value: "November", label: "November (15Nov - 15Dec)" },
-    { value: "December", label: "December (15Dec - 15Jan)" },
+    { value: "January", label: "January (16Jan - 15Feb)" },
+    { value: "February", label: "February (16Feb - 15Mar)" },
+    { value: "March", label: "March (16Mar - 15Apr)" },
+    { value: "April", label: "April (16Apr - 15May)" },
+    { value: "May", label: "May (16May - 15Jun)" },
+    { value: "June", label: "June (16Jun - 15Jul)" },
+    { value: "July", label: "July (16Jul - 15Aug)" },
+    { value: "August", label: "August (16Aug - 15Sep)" },
+    { value: "September", label: "September (16Sep - 15Oct)" },
+    { value: "October", label: "October (16Oct - 15Nov)" },
+    { value: "November", label: "November (16Nov - 15Dec)" },
+    { value: "December", label: "December (16Dec - 15Jan)" },
   ];
+  const currentDate = new Date();
+  const currentMonthName = currentDate.toLocaleString("default", {
+    month: "long",
+  });
+  const currentYear = currentDate.getFullYear().toString();
+
+  const [years, setYears] = useState(currentYear);
+  const [months, setMonths] = useState(currentMonthName);
 
   const yearOptions = [
-    // { value: "2010", label: "2010" },
-    // { value: "2011", label: "2011" },
-    // { value: "2012", label: "2012" },
-    // { value: "2013", label: "2013" },
-    // { value: "2014", label: "2014" },
-    // { value: "2015", label: "2015" },
-    // { value: "2016", label: "2016" },
-    // { value: "2017", label: "2017" },
-    // { value: "2018", label: "2018" },
-    // { value: "2019", label: "2019" },
-    // { value: "2020", label: "2020" },
-    // { value: "2021", label: "2021" },
-    // { value: "2022", label: "2022" },
     { value: "2023", label: "2023" },
     { value: "2024", label: "2024" },
     { value: "2025", label: "2025" },
     { value: "2026", label: "2026" },
-    // { value: "2027", label: "2027" },
-    // { value: "2028", label: "2028" },
-    // { value: "2029", label: "2029" },
-    // { value: "2030", label: "2030" },
   ];
 
   const handSearchleClick = () => {
@@ -154,7 +138,7 @@ export default function FinanceWFHDashboard() {
   const handleDownloadIPayoutReleased = async () => {
     try {
       await downloadSelectedInvoices(rowForPayment);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   const handleUTRupload = async (e, row) => {
@@ -228,31 +212,8 @@ export default function FinanceWFHDashboard() {
       }, 1000);
     } catch (error) {
       console.error("Error sending to bank:", error);
-      // Handle any errors related to sending to bank here
     }
   };
-
-  // const handleDownloadExcel = () => {
-  //   const formattedData = rowForPayment?.map((row, index) => ({
-  //     "S.No": index + 1,
-  //     Name: row.user_name,
-  //     Department: row.dept_name,
-  //     Month: row.month,
-  //     Year: row.year,
-  //     Salary: row.total_salary,
-  //     "Net Salary": row.net_salary,
-  //     "TDS Deduction": row.tds_deduction,
-  //     "To Pay": row.toPay,
-  //     Status: row.attendence_status_flow,
-  //     "Attendence ID": row.attendence_id,
-  //     utr: "",
-  //   }));
-  //   const fileName = "AllSalary.xlsx";
-  //   const worksheet = XLSX.utils.json_to_sheet(formattedData);
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-  //   XLSX.writeFile(workbook, fileName);
-  // };
 
   function convertDateToDDMMYYYY(dateString) {
     if (String(dateString).startsWith("0000-00-00")) {
@@ -260,7 +221,7 @@ export default function FinanceWFHDashboard() {
     }
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // January is 0!
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
 
     if (day == "NaN" || month == "NaN" || year == "NaN") {
@@ -271,41 +232,25 @@ export default function FinanceWFHDashboard() {
   }
 
   const handleDownloadExcel = () => {
-    // return console.log(rowForPayment,"rowForPayment");
     const formattedData = rowForPayment?.map((row, index) => ({
-      "PYMT_PROD_TYPE_CODE \n Fixed Value: PAB_VENDOR (All in block letters)":
-        "PAB_VENDOR",
-      "PYMT_MODE Allowed values: FT, NEFT, RTGS, IMPS  (All in block letters; FT: for Fund Transfer to ICICI Acc. ; No special Characters)":
-        row.bank_name == "ICICI Bank" ? "FT" : "NEFT",
-      "DEBIT_ACC_NO Allowed values: 12 digit ICICI Bank Account number; No special Characters":
-        "004105018735",
-      "BNF_NAME Name of Beneficiary    (No Special Characters; Max 500 Alphabetical Characters allowed)":
+      "Beneficiary Name (Mandatory) Special characters not supported":
         row.beneficiary_name,
-      "BENE_ACC_NO Account number of Beneficiary (Max 32 Numeric Characters allowed only)":
+      "Beneficiary's Account Number (Mandatory) Typically 9-18 digits":
         row.account_no,
-      "BENE_IFSC IFSC code of Beneficiary (Enter ICIC0000011 for FT; Alphanumeric only; No special characters)":
+      "IFSC Code (Mandatory) 11 digit code of the beneficiary’s bank account. Eg. HDFC0004277":
         row.ifsc_code,
-      "AMOUNT Numeric value with decimal up to 2 places": row.toPay?.toFixed(0),
-      "DEBIT_NARR 30 Alphanumeric Characters; No special characters allowed":
-        row.user_name,
-      "CREDIT_NARR 30 Alphanumeric Characters; No special characters allowed":
-        "",
-      "MOBILE_NUM Mobile no of Bene.10 Digit Numeric values allowed":
-        row.user_contact_no,
-      "EMAIL_ID Email Id of Bene.500 Characters allowed": row.user_email_id,
-      "REMARK Non-Mandatory field (For Internal Use Only)": "",
-      "PYMT_DATE Date format  DD-MM-YYYY": convertDateToDDMMYYYY(new Date()),
-      "REF_NO Non-Mandatory field (30 Characters Alphanumeric Allowed)": "",
-      "ADDL_INFO1 Non-Mandatory field (500 Characters Alphanumeric Allowed)":
-        "",
-      "ADDL_INFO2 Non-Mandatory field (500 Characters Alphanumeric Allowed)":
-        "",
-      "ADDL_INFO3 Non-Mandatory field (500 Characters Alphanumeric Allowed)":
-        "",
-      "ADDL_INFO4 Non-Mandatory field (500 Characters Alphanumeric Allowed)":
-        "",
-      "ADDL_INFO5 Non-Mandatory field (500 Characters Alphanumeric Allowed)":
-        "",
+      "Payout Amount (Mandatory) Amount should be in rupees":
+        row.toPay?.toFixed(0),
+      "Payout Mode (Mandatory) Select IMPS/NEFT/RTGS": "MPS",
+      "Payout Narration (Optional) Will appear on bank statement (max 30 char with no special characters)":
+        "test",
+      "Notes (Optional) A note for internal reference": "Sample Note",
+      "Phone Number (Optional)": row.user_contact_no,
+      "Email ID (Optional)": row.user_email_id,
+      "Contact Reference ID (Optional) Eg: Employee ID or Customer ID":
+        row.user_id,
+      "Payout Reference ID (Optional) Eg: Bill no or Invoice No or Pay ID":
+        row.invoiceNo,
     }));
     const fileName = "AllSalary.xlsx";
     const worksheet = XLSX.utils.json_to_sheet(formattedData);
@@ -313,63 +258,6 @@ export default function FinanceWFHDashboard() {
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
     XLSX.writeFile(workbook, fileName);
   };
-
-  // const handleDownloadExcel = () => {
-  //   const formattedData = rowForPayment?.map((row, index) => ({
-  //     "PYMT_PROD_TYPE_CODE \n Fixed Value: PAB_VENDOR (All in block letters)": "PAB_VENDOR",
-  //     "PYMT_MODE Allowed values: FT, NEFT, RTGS, IMPS  (All in block letters; FT: for Fund Transfer to ICICI Acc. ; No special Characters)": row.bank_name === "ICICI" ? "FT" : "NEFT",
-  //     "DEBIT_ACC_NO Allowed values: 12 digit ICICI Bank Account number; No special Characters": "004105018735",
-  //     "BNF_NAME Name of Beneficiary    (No Special Characters; Max 500 Alphabetical Characters allowed)": row.beneficiary_name,
-  //     "BENE_ACC_NO Account number of Beneficiary (Max 32 Numeric Characters allowed only)": row.account_no,
-  //     "BENE_IFSC IFSC code of Beneficiary (Enter ICIC0000011 for FT; Alphanumeric only; No special characters)": row.ifsc_code,
-  //     "AMOUNT Numeric value with decimal up to 2 places": row.toPay,
-  //     "DEBIT_NARR 30 Alphanumeric Characters; No special characters allowed": row.user_name,
-  //     "CREDIT_NARR 30 Alphanumeric Characters; No special characters allowed": "",
-  //     "MOBILE_NUM Mobile no of Bene.10 Digit Numeric values allowed": row.user_contact_no,
-  //     "EMAIL_ID Email Id of Bene.500 Characters allowed": row.user_email_id,
-  //     "REMARK Non-Mandatory field (For Internal Use Only)": "",
-  //     "PYMT_DATE Date format  DD-MM-YYYY": convertDateToDDMMYYYY(row.date),
-  //     "REF_NO Non-Mandatory field (30 Characters Alphanumeric Allowed)": "",
-  //     "ADDL_INFO1 Non-Mandatory field (500 Characters Alphanumeric Allowed)": "",
-  //     "ADDL_INFO2 Non-Mandatory field (500 Characters Alphanumeric Allowed)": "",
-  //     "ADDL_INFO3 Non-Mandatory field (500 Characters Alphanumeric Allowed)": "",
-  //     "ADDL_INFO4 Non-Mandatory field (500 Characters Alphanumeric Allowed)": "",
-  //     "ADDL_INFO5 Non-Mandatory field (500 Characters Alphanumeric Allowed)": ""
-  //   }));
-
-  //   const fileName = "AllSalary.xlsx";
-
-  //   // Create a new sheet with an empty header row
-  //   const worksheet = XLSX.utils.json_to_sheet([]);
-
-  //   const formattedHeaders = [
-  //     "PYMT_PROD_TYPE_CODE \n Fixed Value: PAB_VENDOR (All in block letters)",
-  //     "PYMT_MODE Allowed values: FT, NEFT, RTGS, IMPS  (All in block letters; FT: for Fund Transfer to ICICI Acc. ; No special Characters)",
-  //     // ... other headers ...
-  //   ];
-
-  //   // Ensure at least an empty header row exists
-  //   worksheet['!ref'] = { v: formattedHeaders[0], t: 's' }; // Set first header value and type (string)
-
-  //   // ... (Rest of the code
-
-  //   // Update reference to include all headers
-  //   worksheet['!ref'] = XLSX.utils.encode_cell({ c: formattedHeaders.length - 1, r: 0 });
-
-  //   // Create a merge range for headers
-  //   const mergeRange = XLSX.utils.decode_cell(worksheet['!ref']) + ':' + XLSX.utils.encode_cell({ c: formattedHeaders.length - 1, r: 0 });
-  //   worksheet['!merges'] = [{ s: { c: 0, r: 0 }, e: { c: formattedHeaders.length - 1, r: 0 } }];
-
-  //   // Set header cell style (replace with your desired red color)
-  //   const headerStyle = { fgColor: { rgb: 'FF0000' }, alignment: { wrapText: true } }; // Red background, wrap text
-  //   for (let i = 0; i < formattedHeaders.length; i++) {
-  //     worksheet[XLSX.utils.encode_cell({ c: i, r: 0 })].i = headerStyle;
-  //   }
-
-  //   const workbook = XLSX.utils.book_new();
-  //   XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-  //   XLSX.writeFile(workbook, fileName);
-  // };
 
   const handleRowSelectionModelChange = async (rowIds) => {
     setRowSelectionModel(rowIds);
@@ -513,13 +401,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-              .filter((item) => item.status_ === 0)
-              .indexOf(params.row)
+                .filter((item) => item.status_ === 0)
+                .indexOf(params.row)
             : activeAccordionIndex == 1
-              ? filterData
+            ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-              : filterData
+            : filterData
                 .filter((item) => item.status_ === 2)
                 .indexOf(params.row);
         return <div>{rowIndex + 1}</div>;
@@ -575,13 +463,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-              .filter((item) => item.status_ === 0)
-              .indexOf(params.row)
+                .filter((item) => item.status_ === 0)
+                .indexOf(params.row)
             : activeAccordionIndex == 1
-              ? filterData
+            ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-              : filterData
+            : filterData
                 ?.filter(
                   (item) => item.attendence_status_flow == "Payment Failed"
                 )
@@ -677,64 +565,6 @@ export default function FinanceWFHDashboard() {
         return params.row.attendence_status_flow;
       },
     },
-    // {
-    //   headerName: "Action",
-    //   field: "action",
-    //   width: 150,
-    //   renderCell: (params) => {
-    //     return (
-    //       <>
-    //         {activeAccordionIndex != 2 && (
-    //           <button
-    //             className="btn btn-primary"
-    //             data-toggle="modal"
-    //             data-target="#exampleModal"
-    //             onClick={(e) =>
-    //               activeAccordionIndex == 0
-    //                 ? handlePay(params.row, e)
-    //                 : handlePayVerify(params.row, e)
-    //             }
-    //           >
-    //             Verify
-    //           </button>
-    //         )}
-
-    //         {params.row?.invoice_template_no !== "0" && (
-    //           <button
-    //             className="btn btn-outline-primary btn-sm"
-    //             title="Download Invoice"
-    //             type="button"
-    //             onClick={() => {
-    //               generatePDF(params.row);
-    //             }}
-    //           >
-    //             <CloudDownloadIcon />
-    //           </button>
-    //         )}
-    //       </>
-    //     );
-    //   },
-    // },
-
-    // {
-    //   headerName: "UTR",
-    //   width: 250,
-    //   renderCell: (params) => {
-    //     return (
-    //       <div>
-    //        <form method="post"
-    //         // onSubmit={(e)=>handleUTRupload(e,params.row)}
-    //          className="d-flex ">
-    //         <input className="form-control" type="text" id="utr" name="utr"  />
-    //         <button className="btn btn-primary " type="submit">
-    //           Submit
-    //         </button>
-    //       </form>
-
-    //       </div>
-    //     );
-    //   },
-    // },
   ];
 
   if (activeAccordionIndex === 1 || activeAccordionIndex === 2) {
@@ -756,8 +586,8 @@ export default function FinanceWFHDashboard() {
                   params.row.utr
                     ? params.row.utr
                     : params.row.utr || rowUTR.row?.id === params.row.id
-                      ? rowUTR.value
-                      : ""
+                    ? rowUTR.value
+                    : ""
                 }
                 disabled={params.row.utr}
                 type="text"
@@ -809,29 +639,6 @@ export default function FinanceWFHDashboard() {
       renderCell: (params) => {
         return (
           <>
-            {/* {activeAccordionIndex != 2 && (
-              <button
-                className="btn cmnbtn btn_sm btn-outline-primary"
-                data-toggle="modal"
-                data-target="#exampleModal"
-                onClick={(e) => console.log(params.row.image_url)}
-              >
-                view
-              </button>
-            )} */}
-
-            {/* {params.row?.invoice_template_no !== "0" && (
-              <button
-                className="btn cmnbtn btn_sm btn-outline-primary tableIconBtn ml8"
-                title="Download Invoice"
-                type="button"
-                onClick={() => {
-                  generatePDF(params.row);
-                }}
-              >
-                <CloudDownloadIcon />
-              </button>
-            )} */}
             {params.row?.invoice_template_no !== "0" && (
               <button
                 className="btn cmnbtn btn_sm btn-outline-primary tableIconBtn ml8"
@@ -1148,24 +955,8 @@ export default function FinanceWFHDashboard() {
             </div>
           </>
         )}
-        {/* <div style={{ height: "50px" }} className="d-flex">
-          {rowForPayment.length > 0 && (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              sx={{ width: "100px" }}
-              className="ml-3 mb-2"
-              onClick={handleDownloadInvoices}
-            >
-              Download Invoice 
-            </Button>
-          )}
-        </div> */}
-        {/* <h1>Payout Released</h1> */}
         <div className="card-body thm_table">
           <DataGrid
-            // rows={filterData?.filter((item) => item.status_ === 1 || item.attendence_status_flow == "Payment Released")}
             rows={filterData?.filter(
               (item) => item.attendence_status_flow == "Proceeded to bank"
             )}
@@ -1200,46 +991,6 @@ export default function FinanceWFHDashboard() {
 
   const failedTransaction = (
     <div>
-      {/* <div style={{ height: "50px" }}>
-        {rowForPayment.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ width: "100px" }}
-            className="ml-3 mb-2"
-            onClick={handleDownloadInvoices}
-          >
-            Download Invoice 
-          </Button>
-        )}
-
-        {rowForPayment.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ width: "100px" }}
-            className="ml-3 mb-2"
-            onClick={handleDownloadExcel}
-          >
-            Download Excel
-          </Button>
-        )}
-
-        {rowForPayment.length > 0 && (
-          <Button
-            variant="contained"
-            color="primary"
-            size="small"
-            sx={{ width: "100px" }}
-            className="ml-3 mb-2"
-            onClick={handleSendToBank}
-          >
-            Send to Bank
-          </Button>
-        )}
-      </div> */}
       <div className="card-body thm_table">
         <DataGrid
           rows={filterData?.filter(
@@ -1273,91 +1024,6 @@ export default function FinanceWFHDashboard() {
     </div>
   );
 
-  // const verified = (
-  //   <div>
-  //     <div style={{ height: "50px" }}>
-  //       {rowForPayment.length > 0 && (
-  //         <Button
-  //           variant="contained"
-  //           color="primary"
-  //           size="small"
-  //           sx={{ width: "100px" }}
-  //           className="ml-3 mb-2"
-  //           onClick={(e) => handleVerifyAll(e)}
-  //         >
-  //           Verify All
-  //         </Button>
-  //       )}
-  //     </div>
-  //     <DataGrid
-  //       rows={filterData.filter((item) => item.status_ === 1)}
-  //       columns={pendingColumns}
-  //       getRowId={(row) => row.id}
-  //       initialState={{
-  //         pagination: {
-  //           paginationModel: {
-  //             pageSize: 50,
-  //           },
-  //         },
-  //       }}
-  //       slots={{ toolbar: GridToolbar, columnMenu: CustomColumnMenu }}
-  //       pageSizeOptions={[5, 25, 50, 100, 500]}
-  //       checkboxSelection
-  //       // disableRowSelectionOnClick
-  //       onRowSelectionModelChange={(rowIds) => {
-  //         handleRowSelectionModelChange(rowIds);
-  //         // console.log(rowIds);
-  //       }}
-  //       rowSelectionModel={rowSelectionModel}
-
-  //     />
-  //   </div>
-  // );
-
-  // const payoutReleased = (
-  //   <>
-  //     <div>
-  //       <div style={{ height: "50px" }} className="d-flex">
-  //         {rowForPayment.length > 0 && (
-  //           <Button
-  //             variant="contained"
-  //             color="primary"
-  //             size="small"
-  //             sx={{ width: "100px" }}
-  //             className="ml-3 mb-2"
-  //             onClick={handleDownloadInvoices}
-  //           >
-  //             Download Invoice
-  //           </Button>
-  //         )}
-  //       </div>
-  //       {/* <h1>Payout Released</h1> */}
-
-  //       <DataGrid
-  //         rows={filterData.filter((item) => item.status_ === 2)}
-  //         columns={pendingColumns}
-  //         getRowId={(row) => row.id}
-  //         initialState={{
-  //           pagination: {
-  //             paginationModel: {
-  //               pageSize: 50,
-  //             },
-  //           },
-  //         }}
-  //         slots={{ toolbar: GridToolbar, columnMenu: CustomColumnMenu }}
-  //         pageSizeOptions={[5, 25, 50, 100, 500]}
-  //         checkboxSelection
-  //         // disableRowSelectionOnClick
-  //         onRowSelectionModelChange={(rowIds) => {
-  //           handleRowSelectionModelChange(rowIds);
-  //           // console.log(rowIds);
-  //         }}
-  //         rowSelectionModel={rowSelectionModel}
-  //       />
-  //     </div>
-  //   </>
-  // );
-
   return (
     <div>
       <FormContainer
@@ -1387,11 +1053,11 @@ export default function FinanceWFHDashboard() {
                       departmentFilter === ""
                         ? { value: "", label: "All" }
                         : {
-                          value: departmentFilter,
-                          label: departmentData.find(
-                            (dept) => dept.dept_id === departmentFilter
-                          )?.dept_name,
-                        }
+                            value: departmentFilter,
+                            label: departmentData.find(
+                              (dept) => dept.dept_id === departmentFilter
+                            )?.dept_name,
+                          }
                     }
                     onChange={(selectedOption) => {
                       const selectedValue = selectedOption
@@ -1405,41 +1071,6 @@ export default function FinanceWFHDashboard() {
                     required
                   />
                 </div>
-                {/* <div className="form-group col-3">
-                  <label className="form-label">
-                    Designation<sup style={{ color: "red" }}>*</sup>
-                  </label>
-                  <Select
-                    options={[
-                      { value: "", label: "All" },
-                      ...designationData.map((option) => ({
-                        value: option.desi_id,
-                        label: option.desi_name,
-                      })),
-                    ]}
-                    value={
-                      designationFilter === ""
-                        ? { value: "", label: "All" }
-                        : {
-                            value: designationFilter,
-                            label:
-                              designationData.find(
-                                (option) => option.desi_id === designationFilter
-                              )?.desi_name || "Select...",
-                          }
-                    }
-                    onChange={(selectedOption) => {
-                      const newValue = selectedOption
-                        ? selectedOption.value
-                        : "";
-                      setDesignationFilter(newValue);
-                      if (newValue === "") {
-                        designationAPI();
-                      }
-                    }}
-                    required
-                  />
-                </div> */}
                 <div className="form-group col-3">
                   <label className="form-label">
                     Months<sup style={{ color: "red" }}>*</sup>
@@ -1467,16 +1098,6 @@ export default function FinanceWFHDashboard() {
                     options={yearOptions}
                   />
                 </div>
-
-                {/* <div className="form-group col-3">
-                  <button
-                    onClick={handSearchleClick}
-                    disabled={!years || !months || !departmentFilter}
-                    className="btn cmnbtn btn-primary mt-4"
-                  >
-                    Show TDS Users
-                  </button>
-                </div> */}
               </div>
             </div>
           </div>
@@ -1486,8 +1107,9 @@ export default function FinanceWFHDashboard() {
       <div className="tab">
         {accordionButtons.map((button, index) => (
           <div
-            className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
-              }`}
+            className={`named-tab ${
+              activeAccordionIndex === index ? "active-tab" : ""
+            }`}
             onClick={() => {
               handleAccordionButtonClick(index);
             }}
@@ -1499,8 +1121,9 @@ export default function FinanceWFHDashboard() {
 
       <div className="card">
         <div
-          className={`${activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
-            }`}
+          className={`${
+            activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
+          }`}
         >
           {activeAccordionIndex === 1 && (
             <div className="card-header">
@@ -1527,11 +1150,8 @@ export default function FinanceWFHDashboard() {
           {invoice}
 
           {activeAccordionIndex === 0 && pending}
-          {/* {activeAccordionIndex === 1 && verified} */}
           {activeAccordionIndex === 1 && payoutReleased}
           {activeAccordionIndex === 2 && failedTransaction}
-          {/* {activeAccordionIndex === 3 && TDS}
-              {activeAccordionIndex === 4 && NonTDS} */}
         </div>
         {showModal && (
           <div
@@ -1609,7 +1229,7 @@ export default function FinanceWFHDashboard() {
                     <button
                       type="submit"
                       className="btn btn-primary"
-                    // onClick={handlePayOut}
+                      // onClick={handlePayOut}
                     >
                       Pay
                     </button>
@@ -1631,8 +1251,6 @@ export default function FinanceWFHDashboard() {
             }}
             fullWidth={true}
             maxWidth="lg"
-            // handleFullWidthChange={handleFullWidthChange}
-            // handleMaxWidthChange={handleMaxWidthChange}
             rows={filterData}
             columns={TDSUserCol}
             slots={{ toolbar: GridToolbar }}
