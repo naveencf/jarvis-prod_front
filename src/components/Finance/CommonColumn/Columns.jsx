@@ -2246,13 +2246,13 @@ export const outstandingColumns = ({
         </div>
       ),
     },
-    // {
-    //   key: "campaign_amount",
-    //   name: "Campaign Amount",
-    //   width: 190,
-    //   getTotal: true,
-    //   renderRowCell: (row) => row?.campaign_amount,
-    // },
+    {
+      key: "invoice_tds_amount",
+      name: "Tds",
+      width: 190,
+      // getTotal: true,
+      // renderRowCell: (row) => row?.campaign_amount,
+    },
     {
       key: "invoice_amount",
       name: "Invoice Amount",
@@ -2283,7 +2283,7 @@ export const outstandingColumns = ({
       key: "Balance Amount",
       compare: true,
       getTotal: true,
-      renderRowCell: (row) => row?.invoice_amount - row?.invoice_approved_amount || 0,
+      renderRowCell: (row) => row?.invoice_amount - row?.invoice_approved_amount - row.invoice_tds_amount || 0,
     },
     {
       key: "base_amount_new",
