@@ -17,6 +17,8 @@ import {
   // useUpdateOutstandingSaleBookingCloseMutation,
 } from "../../../../../Store/API/Finance/OutstandingApi";
 import { useUpdateOutstandingBalancePaymentMutation, useUpdateOutstandingSaleBookingCloseMutation } from "../../../../../Store/API/Finance/OutstandingNew";
+import { useState } from "react";
+import { useEffect } from "react";
 
 function TDSDialog(props) {
   const { toastAlert, toastError } = useGlobalContext();
@@ -32,12 +34,17 @@ function TDSDialog(props) {
     paymentRefNo,
     paymentDetails,
     paymentRefImg,
-    setPaymentRefImg,
+    setPaymentRefImg, setTDSPercentage, baseAmount
   } = props;
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken?.id;
-
+  const [tdsAmount, setTdsAmount] = useState(0);
+  useEffect(() => {
+    setTdsAmount(balAmount)
+    setTDSPercentage((balAmount / baseAmount) * 100)
+  }, [balAmount, paidAmount])
+  console.log(balAmount, "balAmount", paidAmount, baseAmount, singleRow)
   const [
     updateOutstandingBalancePayment,
     {
@@ -46,7 +53,6 @@ function TDSDialog(props) {
       isSuccess: updateOutstandingBalancePaymentSuccess,
     },
   ] = useUpdateOutstandingBalancePaymentMutation();
-
   const [
     updateOutstandingSaleBookingClose,
     {
@@ -79,13 +85,13 @@ function TDSDialog(props) {
       formData.append("created_by", loginUserId);
       formData.append("invoice_req_id", singleRow._id);
 
-      await updateOutstandingBalancePayment(formData).unwrap();
+      paymentDetails && await updateOutstandingBalancePayment(formData).unwrap();
 
       const tdsClosePayload = {
         id: tdsFieldSaleBookingId,
-        // tds_amount: balAmount - paidAmount,
+        // tds_amount: tdsAmount,
         // tds_percentage: tdsPercentage,
-        invoice_tds_amount: balAmount - paidAmount,
+        invoice_tds_amount: tdsAmount,
         invoice_tds_percentage: tdsPercentage,
         invoice_req_id: singleRow._id
       };
@@ -103,7 +109,14 @@ function TDSDialog(props) {
       toastAlert("Failed to save TDS. Please try again.", "error");
     }
   };
+  const handleTdsChange = (e) => {
+    console.log(e.target.value)
+    // if (e.target.value) {
 
+    setTdsAmount(e.target.value)
+    setTDSPercentage((e.target.value / baseAmount) * 100)
+    // }
+  }
   return (
     <Dialog
       open={closeDialog}
@@ -142,9 +155,9 @@ function TDSDialog(props) {
                 className="form-control"
                 id="TDS Amount"
                 name="TDS Amount"
-                value={(balAmount - paidAmount).toFixed(2)}
-                readOnly
-                // onChange={(e) => e.target.value}
+                value={(tdsAmount)}
+                // readOnly
+                onChange={(e) => handleTdsChange(e)}
                 required
               />
             </div>
@@ -167,11 +180,11 @@ function TDSDialog(props) {
         <div className="pack w-100 mt-3 sb">
           <div></div>
           <div className="pack gap16">
-            <Button variant="contained" onClick={(e) => handleSaveTDS(e)}>
-              YES
-            </Button>
+            {tdsAmount > 0 && tdsPercentage <= 10 && <Button variant="contained" onClick={(e) => handleSaveTDS(e)}>
+              Update
+            </Button>}
             <Button variant="contained" onClick={handleCloseTDSFields}>
-              NO
+              Cancel
             </Button>
           </div>
         </div>

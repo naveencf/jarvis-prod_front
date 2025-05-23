@@ -201,7 +201,7 @@ const BalancePaymentList = () => {
     setDiscardSaleBookingId(rowData.sale_booking_id);
     setDiscardDialog(true);
   };
-  console.log(allOutstandingList?.length, "allOutstandingList")
+  // console.log(allOutstandingList?.length, "allOutstandingList")
   const getData = () => {
     if (!allOutstandingList) return;
     const transformedData = allOutstandingList?.reduce((acc, object) => {
@@ -224,7 +224,8 @@ const BalancePaymentList = () => {
           paid_amount: object.paid_amount,
           invoice_id: object._id,
           invoice_requested_amount: object.invoice_requested_amount,
-          connected_booking_id: object.connected_booking_id
+          connected_booking_id: object.connected_booking_id,
+          // invoice_tds_amount: object.invoice_tds_amount
         }));
         acc?.push(...invoices);
       } else {
@@ -235,7 +236,7 @@ const BalancePaymentList = () => {
       }
       return acc;
     }, []);
-    console.log(transformedData, "transformedData")
+    // console.log(transformedData, "transformedData")
     const reversedData = transformedData?.reverse();
     setData(reversedData);
     setFilterData(reversedData);
@@ -267,7 +268,7 @@ const BalancePaymentList = () => {
   const handleImageClick = (e, row) => {
     console.log(e, row, "row")
     e.preventDefault();
-    setBalAmount(row?.invoice_amount - row?.invoice_approved_amount);
+    setBalAmount(row?.invoice_amount - row?.invoice_approved_amount - row.invoice_tds_amount);
     setBaseAmount((row?.invoice_amount * 100) / 118);
     setPaidAmountData(row?.invoice_approved_amount);
     setCampaignAmountData(row.invoice_amount);
@@ -402,7 +403,7 @@ const BalancePaymentList = () => {
   };
 
   const filteredData = getFilteredData(activeAccordionIndex, filterData);
-  console.log(filteredData, "hghjdghjg")
+  // console.log(filteredData, "hghjdghjg")
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -456,6 +457,8 @@ const BalancePaymentList = () => {
               paymentDate={paymentDate}
               tdsFieldSaleBookingId={tdsFieldSaleBookingId}
               getData={refetchOutstandingList}
+              setTDSPercentage={setTDSPercentage}
+              baseAmount={baseAmount}
             />
           )}
 

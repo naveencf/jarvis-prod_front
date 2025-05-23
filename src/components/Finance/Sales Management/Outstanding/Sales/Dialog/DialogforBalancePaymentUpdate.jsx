@@ -117,12 +117,12 @@ function DialogforBalancePaymentUpdate(props) {
 
   // TDS DIALOG FUNCTION:-
   const handleOpenTDSFields = (row) => {
-    if (!paymentDetails) {
-      toastError("Please Fill Payment Details");
-    } else {
-      setImageModalOpen(false);
-      setCloseDialog(true);
-    }
+    // if (!paymentDetails && paidPercentage < 90) {
+    //   toastError("Please Fill Payment Details");
+    // } else {
+    setImageModalOpen(false);
+    setCloseDialog(true);
+    // }
   };
 
   const handleCloseTDSFields = () => {
@@ -252,7 +252,7 @@ function DialogforBalancePaymentUpdate(props) {
                       />
                     </div>
                   </div>
-                  <div className="col-md-12 ">
+                  {/* <div className="col-md-12 ">
                     <div className="form-group">
                       <label htmlFor="images">Paid Percentage %</label>
                       <input
@@ -265,7 +265,7 @@ function DialogforBalancePaymentUpdate(props) {
                         required
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               )}
 
@@ -364,13 +364,13 @@ function DialogforBalancePaymentUpdate(props) {
             "Save"
           )}
         </Button>
-        {paidPercentage >= 90 ? (
-          <Button variant="contained" color="success" autoFocus onClick={handleOpenTDSFields}>
-            Close
-          </Button>
-        ) : (
+        {/* {paidPercentage >= 90 ? ( */}
+        {singleRow?.invoice_tds_amount == 0 && <Button variant="contained" color="success" autoFocus onClick={handleOpenTDSFields}>
+          TdS
+        </Button>}
+        {/* ) : (
           ""
-        )}
+        )} */}
       </DialogActions>
     </Dialog>
   );

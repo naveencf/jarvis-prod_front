@@ -28,6 +28,13 @@ const OutstandingNewApi = createApi({
         body: data,
       }),
     }),
+    updateOutstandingRevert: builder.mutation({
+      query: (data) => ({
+        url: `sales/sale_balance_update_revert`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -36,6 +43,7 @@ export const {
   useGetUserWieOutStandingQuery,
   useUpdateOutstandingBalancePaymentMutation,
   useUpdateOutstandingSaleBookingCloseMutation,
+  useUpdateOutstandingRevertMutation,
 } = OutstandingNewApi;
 
 export default OutstandingNewApi;

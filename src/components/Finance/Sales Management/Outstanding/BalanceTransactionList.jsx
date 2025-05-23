@@ -7,6 +7,7 @@ import moment from "moment";
 import FormContainer from "../../../AdminPanel/FormContainer";
 import { useGetAllTransactionListQuery } from "../../../Store/API/Sales/PaymentUpdateApi";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
+import { useUpdateOutstandingRevertMutation } from "../../../Store/API/Finance/OutstandingNew";
 
 const BalanceTransactionList = () => {
   const { sale_booking_id } = useParams();
@@ -27,7 +28,7 @@ const BalanceTransactionList = () => {
     error: allPaymentModeError,
     isLoading: allPaymentModeLoading,
   } = useGetAllPaymentModesQuery();
-
+  const [updateOutstandingRevert] = useUpdateOutstandingRevertMutation();
   const [paymentMode, setPaymentMode] = useState([]);
   const token = sessionStorage.getItem("token");
 
@@ -115,7 +116,40 @@ const BalanceTransactionList = () => {
       headerName: "Reference Number",
       renderCell: (params) => params.row.payment_ref_no,
     },
+    {
+      field: "action",
+      headerName: "Action",
+      renderCell: (params) => {
+        return (
+
+          <button
+            variant="contained"
+            autoFocus
+            className="icon-1"
+            title="Delete"
+            onClick={() => handleRevert(params.row)}
+          >
+            <i className="bi bi-trash"></i>
+          </button>
+        );
+      },
+    },
   ];
+
+  console.log(allTransactionList, "allTransactionList")
+
+  const handleRevert = async (row) => {
+    console.log(row, "row")
+    // return;
+    try {
+      await updateOutstandingRevert({
+        sale_booking_id: row.sale_booking_id, payment_update_id: row.payment_detail._id
+        , invoice_req_id: ''
+      });
+    } catch (error) {
+      console.error("Revert failed:", error);
+    }
+  };
 
   return (
     <div>

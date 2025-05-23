@@ -295,7 +295,7 @@ const IncentiveDashboard = () => {
                 state: {
                   name: "Unearned",
                   id: row.user_id,
-                  status: "unearned",
+                  status: "un-earned",
                   flag: 1,
                 },
               })
