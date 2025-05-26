@@ -3,28 +3,47 @@ import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import { baseUrl } from "../../../../utils/config";
 
 const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
-  console.log(documents, "documents");
-  const [documentCount, setDocumentCount] = useState("");
+  const [documentCounts, setDocumentCounts] = useState([]);
+  const [selectedType, setSelectedType] = useState(""); // 🔹 For storing clicked type
+  const token = sessionStorage.getItem("token");
 
-  const fetchVendorCounts = async () => {
+  const fetchVendorCounts = async (type = "") => {
     try {
       const response = await fetch(
-        `${baseUrl}v1/count_documents/${documentCount}`
+        `${baseUrl}v1/get_vendor_document_count${type ? `?type=${type}` : ""}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
       );
-      const json = await response.json();
-      if (json.success) {
-        setVendorDocsCountData(json.data.vendors);
+
+      const data = await response.json();
+      console.log(data?.data?.documentCount[0], "Document Count");
+
+      const counts = data?.data?.documentCount?.[0];
+
+      if (counts) {
+        const transformed = Object.entries(counts).map(([key, value]) => ({
+          label: key,
+          count: value,
+        }));
+        setDocumentCounts(transformed);
+        setVendorDocsCountData(data.data.vendorData);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching vendor counts:", error);
     }
   };
 
   useEffect(() => {
-    if (documentCount) {
-      fetchVendorCounts();
-    }
-  }, [documentCount]);
+    fetchVendorCounts(); // Initial load without any type filter
+  }, []);
+
+  const handleCardClick = (label) => {
+    setSelectedType(label); // Save selected type
+    fetchVendorCounts(label); // Fetch data with query param
+  };
 
   return (
     <div>
@@ -34,7 +53,7 @@ const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
         </div>
         <div className="card-body">
           <div className="row">
-            {documents?.map((item, index) => (
+            {documentCounts.map((item, index) => (
               <div
                 className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-12"
                 key={index}
@@ -47,18 +66,16 @@ const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
                       </span>
                     </div>
                     <div>
-                      <h6 className="text-primary mb-2 ">
+                      <h6 className="text-primary mb-2">
                         <button
-                          className="btn btn-sm btn-outline-primary"
-                          onClick={() =>
-                            setDocumentCount(item.documentCountKey)
-                          }
+                          className={`btn btn-sm ${
+                            selectedType === item.label
+                              ? "btn-primary"
+                              : "btn-outline-primary"
+                          }`}
+                          onClick={() => handleCardClick(item.label)}
                         >
-                          Document{" "}
-                          {item?.documentCount === "morethan3"
-                            ? "3+"
-                            : item.documentCount}
-                          : {item.vendorCount}
+                          {item.label}: {item.count}
                         </button>
                       </h6>
                     </div>
@@ -66,6 +83,11 @@ const VendorDocCount = ({ documents, setVendorDocsCountData }) => {
                 </div>
               </div>
             ))}
+            {documentCounts.length === 0 && (
+              <div className="col-12 text-center">
+                <p>No document data available.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

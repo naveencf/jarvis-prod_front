@@ -136,6 +136,12 @@ const PaymentUpdateApi = createApi({
       transformResponse: (response) => response?.data,
       keepUnusedDataFor: 60 * 60 * 24,
     }),
+    getInvoiceTransactionList: builder.query({
+      query: ({ id, status }) =>
+        `sales/transaction_details?invoice_req_id=${id}`,
+      transformResponse: (response) => response?.data,
+      keepUnusedDataFor: 60 * 60 * 24,
+    }),
   }),
 });
 
@@ -151,6 +157,7 @@ export const {
   useGetAllPendingSalesBookingPaymentsQuery,
   useGetAllRejectedSalesBookingPaymentsQuery,
   useGetAllTransactionListQuery,
+  useGetInvoiceTransactionListQuery,
 } = PaymentUpdateApi;
 
 export default PaymentUpdateApi;

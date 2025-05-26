@@ -5,20 +5,20 @@ import { useParams } from "react-router-dom";
 import { baseUrl } from "../../../../utils/config";
 import moment from "moment";
 import FormContainer from "../../../AdminPanel/FormContainer";
-import { useGetAllTransactionListQuery } from "../../../Store/API/Sales/PaymentUpdateApi";
+import { useGetAllTransactionListQuery, useGetInvoiceTransactionListQuery } from "../../../Store/API/Sales/PaymentUpdateApi";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 import { useUpdateOutstandingRevertMutation } from "../../../Store/API/Finance/OutstandingNew";
 
 const BalanceTransactionList = () => {
-  const { sale_booking_id } = useParams();
-
+  const { invoice_req_id } = useParams();
+  console.log(invoice_req_id, "invoice_req_id")
   const {
     refetch: refetchTransactionList,
     data: allTransactionList,
     error: allTransactionListError,
     isLoading: allTransactionListLoading,
-  } = useGetAllTransactionListQuery({
-    id: sale_booking_id,
+  } = useGetInvoiceTransactionListQuery({
+    id: invoice_req_id,
     status: "approval",
   });
 
@@ -143,8 +143,8 @@ const BalanceTransactionList = () => {
     // return;
     try {
       await updateOutstandingRevert({
-        sale_booking_id: row.sale_booking_id, payment_update_id: row.payment_detail._id
-        , invoice_req_id: ''
+        sale_booking_id: row.sale_booking_id, payment_update_id: row._id
+        , invoice_req_id: invoice_req_id
       });
     } catch (error) {
       console.error("Revert failed:", error);

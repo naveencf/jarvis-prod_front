@@ -487,7 +487,7 @@ const ViewSaleBooking = () => {
     },
     {
       key: "campaign_amount",
-      name: "Campaign Amount / Net Amount",
+      name: "Campaign Amount",
       renderRowCell: (row) => row.campaign_amount,
       showCol: true,
       width: 100,
@@ -621,9 +621,9 @@ const ViewSaleBooking = () => {
       compare: true,
     },
     {
-      key: "Outstanding_Amount",
+      key: "Outstanding_Amount_temp",
       name: "Outstanding Amount",
-      renderRowCell: (row) => row.campaign_amount - row.approved_amount,
+      renderRowCell: (row) => row.tds_status == "close" ? 0 : row.campaign_amount - row.approved_amount,
       width: 100,
       getTotal: true,
       compare: true,
@@ -639,6 +639,13 @@ const ViewSaleBooking = () => {
     {
       key: "incentive_amount",
       name: "Incentive Amount",
+      showCol: true,
+      width: 100,
+      getTotal: true,
+    },
+    {
+      key: "invoice_requested_amount",
+      name: "Invoice Amount",
       showCol: true,
       width: 100,
       getTotal: true,

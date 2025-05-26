@@ -2395,7 +2395,7 @@ export const outstandingColumns = ({
             ""
           )}
           <Link
-            to={`/admin/finance-transaction-list/${row?.sale_booking_id}`}
+            to={`/admin/finance-transaction-list/${row?._id}`}
             className="link-primary"
           >
             {row?.paid_amount > 0 ? (

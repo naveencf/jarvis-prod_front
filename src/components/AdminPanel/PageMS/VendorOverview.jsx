@@ -92,7 +92,6 @@ const VendorOverview = () => {
   const { data: vendorWithoutWhatsappLinkData } =
     useGetVendorWithoutWhatsappLinkQuery();
 
- 
   const vendorStaticCount = vendorStaticCountData?.vendor_category;
   const vendorCountWithPlatform = vendorStaticCountData?.vendor_platforms;
 
@@ -701,6 +700,7 @@ const VendorOverview = () => {
   // }, [tabFilterData]);
 
   // for platform statistics
+  console.log(tabFilterData, "tabfilter is no");
   useEffect(() => {
     const platformCountsMap = {};
     for (const vendor of tabFilterData) {
@@ -746,7 +746,6 @@ const VendorOverview = () => {
     // setActiveSection(key);
     // setLoading(true);
   };
-
 
   const vendorWithNoPages = () => {
     const vendorwithnopages = tabFilterData.filter(

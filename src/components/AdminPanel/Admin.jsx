@@ -945,8 +945,8 @@ const Admin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                        <Route path="/user" element={<UserMaster />} />
-                      )}
+                          <Route path="/user" element={<UserMaster />} />
+                        )}
 
                       {/* User Profile Routing Here  */}
                       <Route path="/user-timeline" element={<Timeline />} />
@@ -1381,7 +1381,7 @@ const Admin = () => {
                       element={<VendorStatementView />}
                     />
                     <Route
-                      path="/finance-transaction-list/:sale_booking_id"
+                      path="/finance-transaction-list/:invoice_req_id"
                       element={<BalanceTransactionList />}
                     />
 
