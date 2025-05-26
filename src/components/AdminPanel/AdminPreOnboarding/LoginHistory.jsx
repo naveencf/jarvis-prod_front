@@ -57,7 +57,7 @@ const LoginHistory = () => {
 
   function formatTimestamp(timestamp) {
     if (timestamp == null) {
-      return 'N/A'
+      return "N/A";
     }
     const date = new Date(timestamp);
 
@@ -224,7 +224,7 @@ const LoginHistory = () => {
     const result = data.filter((d) => {
       return (
         new Date(d.login_date).getTime() >=
-        new Date(startFormattedDate).getTime() &&
+          new Date(startFormattedDate).getTime() &&
         new Date(d.login_date).getTime() <= new Date(endFormattedDate).getTime()
       );
     });
@@ -265,7 +265,6 @@ const LoginHistory = () => {
 
   return (
     <div>
-
       <FormContainer
         mainTitle="Onboarding user login history"
         title="Pre Onboard User Login History"
@@ -273,7 +272,16 @@ const LoginHistory = () => {
         // handleSubmit={handleSubmit}
         TitleHeaderComponentDisplay="flex"
         Titleheadercomponent={
-          <div style={{ display: "flex", width: "100%", justifyContent: "center", alignItems: "center", flexDirection: "row", gap: "10px" }} >
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              gap: "10px",
+            }}
+          >
             <div className="d-flex" style={{ display: "flex", gap: "10px" }}>
               <Autocomplete
                 className=""
@@ -292,11 +300,7 @@ const LoginHistory = () => {
 
               {durationFilter === "Start To End Date" && (
                 <>
-
-                  <LocalizationProvider
-                    className=""
-                    dateAdapter={AdapterDayjs}
-                  >
+                  <LocalizationProvider className="" dateAdapter={AdapterDayjs}>
                     <DatePicker
                       value={startDate}
                       format="DD/MM/YY"
@@ -311,7 +315,9 @@ const LoginHistory = () => {
                         format="DD/MM/YY"
                         onChange={(e) => handleEndDateChange(e)}
                         label="To"
-                        minDate={startDate ? dayjs(startDate).add(1, "day") : null}
+                        minDate={
+                          startDate ? dayjs(startDate).add(1, "day") : null
+                        }
                         disabled={!startDate}
                       />
                     </LocalizationProvider>
@@ -352,26 +358,17 @@ const LoginHistory = () => {
         }
         submitButton={false}
       >
-
-
-
-
         <div className="thm_table">
           <DataTable
-
             columns={columns}
             data={filterdata}
             // fixedHeader
             pagination
-          // selectableRows
-          // fixedHeaderScrollHeight="64vh"
-          // highlightOnHover
-
-
+            // selectableRows
+            // fixedHeaderScrollHeight="64vh"
+            // highlightOnHover
           />
         </div>
-
-
       </FormContainer>
     </div>
   );

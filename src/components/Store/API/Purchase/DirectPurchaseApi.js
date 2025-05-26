@@ -6,19 +6,19 @@ const DirectPurchaseApi = createApi({
   baseQuery: authBaseQuery,
   endpoints: (builder) => ({
     getVendors: builder.query({
-      query: () => `v1/vendor`,
-      transformResponse: (response) => response?.data,
+      query: () => `v1/vendor_v2`,
+      transformResponse: (response) => response?.data.data,
     }),
     getVendorsWithSearch: builder.query({
       query: (query) => {
         if (typeof query === "string" && query.trim() !== "") {
-          return `v1/vendor?search=${encodeURIComponent(
+          return `v1/vendor_v2?search=${encodeURIComponent(
             query
           )}&page=1&limit=10`;
         }
-        return `v1/vendor?page=1&limit=10`;
+        return `v1/vendor_v2?page=1&limit=10`;
       },
-      transformResponse: (response) => response?.data,
+      transformResponse: (response) => response?.data?.data,
     }),
     addService: builder.mutation({
       query: (data) => ({
@@ -176,7 +176,7 @@ const DirectPurchaseApi = createApi({
           },
         },
       }),
-    }),    
+    }),
     // api/purchase/advanced_payment/66827bcf8e6fbfb72f5c8afe?startDate=2025-03-04&&endDate=2025-03-04
   }),
 });

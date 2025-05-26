@@ -225,7 +225,7 @@ const BalancePaymentList = () => {
           invoice_id: object._id,
           invoice_requested_amount: object.invoice_requested_amount,
           connected_booking_id: object.connected_booking_id,
-          // invoice_tds_amount: object.invoice_tds_amount
+          // invoice_req_id: object._id
         }));
         acc?.push(...invoices);
       } else {
@@ -377,6 +377,7 @@ const BalancePaymentList = () => {
     const conditions = {
       0: (invc) =>
         invc.invoice_status == 'open' &&
+        invc.invoice_creation_status == "uploaded" &&
         invc.invoice_type_id === "tax-invoice",
       // invc.invoice_creation_status !== "pending" &&
       // invc.gst_status === true &&
@@ -403,7 +404,7 @@ const BalancePaymentList = () => {
   };
 
   const filteredData = getFilteredData(activeAccordionIndex, filterData);
-  // console.log(filteredData, "hghjdghjg")
+  console.log(filteredData, "invoice_req_id")
   return (
     <div>
       {activeAccordionIndex === 2 ? (
@@ -526,7 +527,7 @@ const BalancePaymentList = () => {
           activeAccordionIndex === 5 ||
           activeAccordionIndex === 0 ||
           activeAccordionIndex === 1) &&
-          filteredData.length > 0 && (
+          (
             <View
               columns={outstandingColumns({
                 filterData,
@@ -540,7 +541,7 @@ const BalancePaymentList = () => {
                 handleOpenCreditNote,
               })}
               data={filteredData}
-              isLoading={isLoading}
+              isLoading={isLoading || filteredData?.length === 0}
               title={"Outstanding"}
               rowSelectable={true}
               showTotal={true}

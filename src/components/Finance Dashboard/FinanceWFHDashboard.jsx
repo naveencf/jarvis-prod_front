@@ -243,7 +243,7 @@ export default function FinanceWFHDashboard() {
         row.toPay?.toFixed(0),
       "Payout Mode (Mandatory) Select IMPS/NEFT/RTGS": "MPS",
       "Payout Narration (Optional) Will appear on bank statement (max 30 char with no special characters)":
-        "test",
+        "Test",
       "Notes (Optional) A note for internal reference": "Sample Note",
       "Phone Number (Optional)": row.user_contact_no,
       "Email ID (Optional)": row.user_email_id,

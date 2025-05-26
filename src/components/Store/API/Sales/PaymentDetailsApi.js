@@ -119,9 +119,9 @@ const PaymentDetailsApi = createApi({
             query
           )}&page=1&limit=10`;
         }
-        return `v1/vendor?page=1&limit=10`;
+        return `v1/vendor_v2?page=1&limit=10`;
       },
-      transformResponse: (response) => response?.data,
+      transformResponse: (response) => response?.data || response?.data.data,
     }),
 
     getAccountStatement: builder.query({

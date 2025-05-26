@@ -77,10 +77,16 @@ const VendorOutstandingOverview = () => {
         }
 
         const res = await axios.get(
-          `${baseUrl}v1/vendor?${queryParams.toString()}`
+          `${baseUrl}v1/vendor_v2?${queryParams.toString()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (res.status === 200) {
-          const data = res.data.data;
+          const data = res.data?.data.data;
+          console.log(res.data.data.data, "welcome bonusssss");
           setVendorData(data);
           if (includeOutstandingFilter) {
             const ranges = [

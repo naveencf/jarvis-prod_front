@@ -87,6 +87,69 @@ const UserLoginHistory = () => {
       width: 20,
     },
     {
+      key: "image_url",
+      name: "Profile",
+      renderRowCell: (row) => {
+        const getInitials = (name) => {
+          const parts = name.trim().split(" ");
+          const firstInitial = parts[0]?.[0] || "";
+          const lastInitial =
+            parts.length > 1 ? parts[parts.length - 1][0] : "";
+          return (firstInitial + lastInitial).toUpperCase();
+        };
+
+        const getRandomColor = (str) => {
+          let hash = 0;
+          for (let i = 0; i < str.length; i++) {
+            hash = str.charCodeAt(i) + ((hash << 5) - hash);
+          }
+          const hue = Math.abs(hash) % 360;
+          return `hsl(${hue}, 70%, 50%)`;
+        };
+
+        const showImage = row.image && row.image.trim() !== "";
+
+        if (showImage) {
+          return (
+            <img
+              style={{
+                borderRadius: "50%",
+                height: "50px",
+                width: "50px",
+                objectFit: "cover",
+              }}
+              src={row.image_url}
+              alt="profile"
+            />
+          );
+        } else {
+          const initials = getInitials(row.name || "");
+          const bgColor = getRandomColor(row.name || "");
+
+          return (
+            <div
+              style={{
+                borderRadius: "50%",
+                height: "50px",
+                width: "50px",
+                backgroundColor: bgColor,
+                color: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: "",
+                fontSize: "15px",
+                textTransform: "uppercase",
+              }}
+            >
+              {initials}
+            </div>
+          );
+        }
+      },
+      width: 100,
+    },
+    {
       key: "name",
       name: "EMPLOYEE NAME",
       width: 100,

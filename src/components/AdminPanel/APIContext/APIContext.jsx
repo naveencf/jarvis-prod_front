@@ -24,7 +24,11 @@ const APIContext = ({ children }) => {
   // ✅ Function to fetch and update user context data
   const getUserContextData = async () => {
     try {
-      const res = await axios.get(baseUrl + "get_all_users");
+      const res = await axios.get(baseUrl + "get_all_users_new", {
+        headers: {
+          Authorization: `Bearer ${storedToken}`,
+        },
+      });
       setUserContextData(res?.data.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
