@@ -4,12 +4,16 @@ import DeleteButton from "../../DeleteButton";
 import { FaEdit } from "react-icons/fa";
 import { useGetAllTagCategoryQuery } from "../../../Store/API/Inventory/TagCategoryAPI"; 
 import TagCategoryModal from "./TagCategoryModal";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
 const TagCategory = () => {
   const [openModal, setOpenModal] = useState(false);
   const { data: TagCategory, isLoading } = useGetAllTagCategoryQuery();
   const [rowData, setRowData] = useState("");
+  const { contextData } = useAPIGlobalContext();
 
+  const showExport =
+    contextData && contextData[72] && contextData[72].view_value === 1;
   const groupByPageName = (data) => {
     const groupedData = {};
   
@@ -102,6 +106,7 @@ const TagCategory = () => {
           title={"Tag Category"}
           pagination={[100, 200, 1000]}
           tableName={"Tag Category"}
+          showExport={showExport}
         />
       
     </div>

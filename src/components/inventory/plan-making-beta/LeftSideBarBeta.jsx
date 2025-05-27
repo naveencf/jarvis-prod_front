@@ -266,7 +266,6 @@ const LeftSideBarBeta = ({
       );
       const formData = new FormData();
       formData.append("file", result);
-
       try {
         await uploadExcel(formData).unwrap();
         alert("File uploaded successfully!");

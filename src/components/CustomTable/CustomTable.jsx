@@ -36,7 +36,8 @@ const CustomTable = ({
     currentPage: 1,
   },
   tableSelectedRows,
-  setTableSelectedRows
+  setTableSelectedRows,
+  showExport
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -636,6 +637,7 @@ const CustomTable = ({
         originalData1={originalData}
         sortedData={sortedData}
         fetchCreatedTable={fetchCreatedTable}
+        showExport={showExport}
       />
       {showTotal && (
         <TotalRow

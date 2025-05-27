@@ -16,19 +16,21 @@ const WFHDSheetTemplete = ({ filterData }) => {
       "bonus",
       "arrear_from_last_month",
       "salary_deduction",
+      "salary_status",
     ];
 
     // Map filterData to match the headers
     const data = filterData.map((item, index) => ({
       "S.No": index + 1,
       user_name: item.user_name || "",
-      user_id: item.user_id || "",
-      total_days:"",
-      absent_days: "",
+      user_id: item.user_id || 0,
+      total_days: 0,
+      absent_days: 0,
       salary: item.salary || "",
-      bonus: "",
-      arrear_from_last_month: "",
-      salary_deduction: "",
+      bonus: 0,
+      arrear_from_last_month: 0,
+      salary_deduction: 0,
+      salary_status: "approved",
     }));
 
     // Convert JSON data into Excel sheet

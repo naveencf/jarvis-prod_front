@@ -8,6 +8,7 @@ import FormContainer from "../../../FormContainer";
 import { useGlobalContext } from "../../../../../Context/Context";
 import DeleteButton from "../../../DeleteButton";
 import { baseUrl } from "../../../../../utils/config";
+import { useAPIGlobalContext } from "../../../APIContext/APIContext";
 
 const VenderOverView = () => {
   const { toastAlert } = useGlobalContext();
@@ -168,7 +169,7 @@ const VenderOverView = () => {
                     fixedHeaderScrollHeight="64vh"
                     exportToCSV
                     highlightOnHover
-
+                    showExport={showExport}
 
 
                   />

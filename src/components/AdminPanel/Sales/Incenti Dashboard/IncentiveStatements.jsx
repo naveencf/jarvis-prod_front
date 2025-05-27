@@ -39,7 +39,7 @@ const IncentiveStatements = () => {
       name: "Finance Status",
       renderRowCell: (row) => (
         <span
-          class={`badge rounded-pill ${row?.finance_status === "approved"
+          className={`badge rounded-pill ${row?.finance_status === "approved"
             ? "btn-success"
             : row?.finance_status === "pending"
               ? "btn-warning"

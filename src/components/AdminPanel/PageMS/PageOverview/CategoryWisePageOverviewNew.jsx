@@ -28,6 +28,7 @@ const CategoryWisePageOverviewNew = ({
   dataTable,
   platformName,
   setPlanFormName,
+  showExport
 }) => {
   const [viewState, setViewState] = useState("main"); // State for controlling views
   const [pagequery, setPagequery] = useState("");
@@ -254,6 +255,7 @@ const totalPageCount = useMemo(() => {
                   <p>| Total Page Count <strong>{totalPageCount}</strong></p>
                 </div>
               }
+              showExport={showExport}
             />
           </div>
         ) : (
@@ -271,6 +273,7 @@ const totalPageCount = useMemo(() => {
                 isLoading={false}
                 pagination={[100, 200, 1000]}
                 tableName={"Sub Category Wise Overview"}
+                showExport={showExport}
               />
             ) : (
               <Loader />

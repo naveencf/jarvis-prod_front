@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import {
   useAuditReportMutation,
   useGetVendorsWithSearchQuery,
@@ -10,6 +10,8 @@ import { TextField } from "@mui/material";
 import { DatePicker } from "antd";
 import View from "../../AdminPanel/Sales/Account/View/View";
 import { Spinner } from "react-bootstrap";
+import { ctrlKey } from "jodit/esm/core/helpers";
+import CampaignReport from "./CampaignReport";
 
 const PurchaseReport = () => {
   const [currentTab, setCurrentTab] = useState("Tab1");
@@ -50,7 +52,7 @@ const PurchaseReport = () => {
     setTabData((prev) => ({ ...prev, [currentTab]: response?.data }));
   };
 
-  console.log("tabData", tabData);
+  
   const handleTabClick = (tab) => {
     setCurrentTab(tab);
     setFilters({
@@ -220,151 +222,165 @@ const PurchaseReport = () => {
     Tab2: columnsFlag2,
     Tab3: columnsFlag3,
   };
-  console.log(
-    "tabData[currentTab]?.data?.data",
-    tabData[currentTab]?.data?.data
-  );
+   
 
   return (
     <div className="card">
+      {/* Tabs */}
       <div className="card-header pt16 pb16">
         <div className="tabs sm m0">
-          {["Tab1", "Tab2", "Tab3"].map((tab, index) => (
+          {["Tab1", "Tab2", "Tab3", "Tab4"].map((tab, index) => (
             <button
               key={index}
               className={currentTab === tab ? "active btn btn-primary" : "btn"}
               onClick={() => handleTabClick(tab)}
             >
-              {tab === "Tab1"
-                ? "Overview Report"
-                : tab === "Tab2"
-                ? "Phase Wise"
-                : "Detailed Records"}
+              {
+                {
+                  Tab1: "Overview Report",
+                  Tab2: "Phase Wise",
+                  Tab3: "Detailed Records",
+                  Tab4: "Campaign Report",
+                }[tab]
+              }
             </button>
           ))}
         </div>
       </div>
-      <div className="card-body">
-        <div className="row">
-          <div className="col-12">
-            <Calendar
-              startDate={filters.startDate}
-              endDate={filters.endDate}
-              setStartDate={(date) =>
-                setFilters((prev) => ({ ...prev, startDate: date }))
-              }
-              setEndDate={(date) =>
-                setFilters((prev) => ({ ...prev, endDate: date }))
-              }
-            />
-          </div>
-          <div className="col-md-6 col-12">
-            <div className="form-group">
-              <label>Select Vendor</label>
-              <Autocomplete
-                fullWidth
-                options={vendorsList}
-                getOptionLabel={(option) => option.vendor_name}
-                value={
-                  vendorsList?.find(
-                    (item) => item._id === filters?.selectedVendorId
-                  ) || null
+
+      {/* Filters and data view for Tab1, Tab2, Tab3 */}
+      {(currentTab === "Tab1" ||
+        currentTab === "Tab2" ||
+        currentTab === "Tab3") && (
+        <div className="card-body">
+          <div className="row">
+            <div className="col-12">
+              <Calendar
+                startDate={filters.startDate}
+                endDate={filters.endDate}
+                setStartDate={(date) =>
+                  setFilters((prev) => ({ ...prev, startDate: date }))
                 }
-                onChange={(event, newValue) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    selectedVendorId: newValue?._id || null,
-                  }))
+                setEndDate={(date) =>
+                  setFilters((prev) => ({ ...prev, endDate: date }))
                 }
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select Vendor"
-                    variant="outlined"
-                  />
-                )}
               />
             </div>
-          </div>
-          <div className="col-md-6 col-12">
-            <div className="form-group">
-              <label>Select Plans</label>
-              <Autocomplete
-                fullWidth
-                options={
-                  campaignList?.filter(
-                    (data) => data?.is_sale_booking_created
-                  ) || []
-                }
-                getOptionLabel={(option) => option.exe_campaign_name || ""}
-                value={
-                  campaignList?.find(
-                    (option) => option._id === filters.selectedPlan
-                  ) || null
-                }
-                onChange={(event, newValue) =>
-                  setFilters((prev) => ({
-                    ...prev,
-                    selectedPlan: newValue ? newValue._id : null,
-                  }))
-                }
-                renderInput={(params) => (
-                  <TextField {...params} label="Plans" variant="outlined" />
-                )}
-                clearOnEscape
-              />
+
+            <div className="col-md-6 col-12">
+              <div className="form-group">
+                <label>Select Vendor</label>
+                <Autocomplete
+                  fullWidth
+                  options={vendorsList}
+                  getOptionLabel={(option) => option.vendor_name}
+                  value={
+                    vendorsList?.find(
+                      (item) => item._id === filters?.selectedVendorId
+                    ) || null
+                  }
+                  onChange={(event, newValue) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      selectedVendorId: newValue?._id || null,
+                    }))
+                  }
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select Vendor"
+                      variant="outlined"
+                    />
+                  )}
+                />
+              </div>
+            </div>
+
+            <div className="col-md-6 col-12">
+              <div className="form-group">
+                <label>Select Plans</label>
+                <Autocomplete
+                  fullWidth
+                  options={
+                    campaignList?.filter(
+                      (data) => data?.is_sale_booking_created
+                    ) || []
+                  }
+                  getOptionLabel={(option) => option.exe_campaign_name || ""}
+                  value={
+                    campaignList?.find(
+                      (option) => option._id === filters.selectedPlan
+                    ) || null
+                  }
+                  onChange={(event, newValue) =>
+                    setFilters((prev) => ({
+                      ...prev,
+                      selectedPlan: newValue ? newValue._id : null,
+                    }))
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params} label="Plans" variant="outlined" />
+                  )}
+                  clearOnEscape
+                />
+              </div>
+            </div>
+
+            <div className="col-md-6 col-12 p0">
+              <div className="form-group">
+                <label>Select Date</label>
+                <DatePicker
+                  value={filters.selectedDate}
+                  onChange={(date) =>
+                    setFilters((prev) => ({ ...prev, selectedDate: date }))
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="col-12 p0">
+              <button onClick={fetchData} className="btn cmnbtn btn-primary">
+                Fetch Report
+              </button>
             </div>
           </div>
-        </div>
-        <div className="col-md-6 col-12 p0">
-          <div className="form-group">
-            <label>Select Date</label>
-            <DatePicker
-              value={filters.selectedDate}
-              onChange={(date) =>
-                setFilters((prev) => ({ ...prev, selectedDate: date }))
-              }
-            />
-          </div>
-        </div>
-        <div className="col-12 p0">
-          <button onClick={fetchData} className="btn cmnbtn btn-primary">
-            Fetch Report
-          </button>
-        </div>
 
-        {isLoading ? (
-          <Spinner />
-        ) : tabData[currentTab] ? (
-          <div>
-            {currentTab === "Tab1" && (
-              <p>
-                Total Amount
-                {tabData[currentTab]?.data?.data?.calculatedData?.totalAmount}
-              </p>
-            )}
+          {/* Report Section */}
+          {isLoading ? (
+            <Spinner />
+          ) : tabData[currentTab] ? (
+            <div>
+              {currentTab === "Tab1" && (
+                <p>
+                  Total Amount:{" "}
+                  {tabData[currentTab]?.data?.data?.calculatedData?.totalAmount}
+                </p>
+              )}
+              <View
+                columns={columnsMap[currentTab]}
+                data={
+                  currentTab === "Tab1"
+                    ? tabData[currentTab]?.data?.data?.calculatedData
+                        ?.priceDetails
+                    : tabData[currentTab]?.data?.data || []
+                }
+                title={`${currentTab} Report`}
+                pagination={[5, 10]}
+                tableName="Report Summary"
+              />
+            </div>
+          ) : (
+            <div className="mb16 mt16">
+              <h6 className="fw_400">
+                No data available. Click 'Fetch Report' to load.
+              </h6>
+            </div>
+          )}
+        </div>
+      )}
 
-            <View
-              columns={columnsMap[currentTab]}
-              data={
-                currentTab === "Tab1"
-                  ? tabData[currentTab]?.data?.data?.calculatedData
-                      ?.priceDetails
-                  : tabData[currentTab]?.data?.data || []
-              }
-              title={`${currentTab} Report`}
-              pagination={[5, 10]}
-              tableName="Report Summary"
-            />
-          </div>
-        ) : (
-          <div className="mb16 mt16">
-            <h6 className="fw_400">
-              No data available. Click 'Fetch Report' to load.
-            </h6>
-          </div>
-        )}
-      </div>
+      {/* Tab4 Component */}
+      {currentTab === "Tab4" && <CampaignReport />}
     </div>
   );
 };

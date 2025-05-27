@@ -24,6 +24,7 @@ const CustomTableV2 = ({
   getFilteredData = (filterData) => {
     return filterData;
   },
+  showExport
 }) => {
   const tableref = useRef();
   const headref = useRef();
@@ -474,6 +475,7 @@ const CustomTableV2 = ({
         originalData1={originalData}
         sortedData={sortedData}
         fetchCreatedTable={fetchCreatedTable}
+        showExport={showExport}
       />
       {showTotal && (
         <TotalRow

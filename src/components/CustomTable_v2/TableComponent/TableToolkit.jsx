@@ -40,6 +40,7 @@ const TableToolkit = ({
   originalData1,
   sortedData,
   fetchCreatedTable,
+  showExport,
 }) => {
   const containerRef = useRef(null);
   const [ModalOpen, setModalOpen] = useState(false);
@@ -353,9 +354,11 @@ const TableToolkit = ({
             setDragFlag={setDragFlag}
           />
         </Dropdown>
-        <button className="tool-btn" onClick={() => handleExport()}>
-          Export
-        </button>
+        {showExport && (
+          <button className="tool-btn" onClick={() => handleExport()}>
+            Export
+          </button>
+        )}
         <Dropdown
           tableref={tableref}
           btnHtml={<button className="dropdown-btn">Saved Filter</button>}

@@ -57,6 +57,7 @@ function PageOverviewHeader({
   selectedData,
   setSelectedData,
   activeTabName = (val) => val,
+  showExport,
 }) {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
@@ -802,6 +803,7 @@ function PageOverviewHeader({
               title={"Deleted Pages"}
               pagination={[100, 200, 1000]}
               tableName={"Deleted Pages"}
+              showExport={showExport}
             />
           </Box>
         </Modal>

@@ -140,7 +140,7 @@ const PageMaster = () => {
   const [rowCount, setRowCount] = useState([
     { page_price_type_name: "", page_price_type_id: "", price: "" },
   ]);
-  console.log(rowCount, 'rowCount');
+
 
   const dispatch = useDispatch();
   const { data: ownerShipData } = useGetOwnershipTypeQuery();
@@ -152,7 +152,7 @@ const PageMaster = () => {
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
   const { data: vendor } = useGetAllVendorQuery();
-  const vendorData = vendor || [];
+  const vendorData = vendor?.data || [];
   const {
     data: singlePageData,
     isLoading: singlePageLoading,
@@ -551,11 +551,9 @@ const PageMaster = () => {
     const newRowCount = [...rowCount];
     newRowCount[index].page_price_type_id = e.value;
     newRowCount[index].page_price_type_name = e.label;
-    console.log("newRowCount", newRowCount);
     setRowCount(newRowCount);
   };
 
-  console.log("rowCount----", rowCount);
   //Milion convert format function
   const formatNumber = (value) => {
     if (value >= 1000000) {

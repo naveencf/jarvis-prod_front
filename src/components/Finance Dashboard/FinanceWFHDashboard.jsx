@@ -44,18 +44,18 @@ export default function FinanceWFHDashboard() {
   const { toastAlert, toastError } = useGlobalContext();
 
   const monthOptions = [
-    { value: "January", label: "January (16Jan - 15Feb)" },
-    { value: "February", label: "February (16Feb - 15Mar)" },
-    { value: "March", label: "March (16Mar - 15Apr)" },
-    { value: "April", label: "April (16Apr - 15May)" },
-    { value: "May", label: "May (16May - 15Jun)" },
-    { value: "June", label: "June (16Jun - 15Jul)" },
-    { value: "July", label: "July (16Jul - 15Aug)" },
-    { value: "August", label: "August (16Aug - 15Sep)" },
-    { value: "September", label: "September (16Sep - 15Oct)" },
-    { value: "October", label: "October (16Oct - 15Nov)" },
-    { value: "November", label: "November (16Nov - 15Dec)" },
-    { value: "December", label: "December (16Dec - 15Jan)" },
+    { value: "January", label: "January" },
+    { value: "February", label: "February)" },
+    { value: "March", label: "March" },
+    { value: "April", label: "April" },
+    { value: "May", label: "May" },
+    { value: "June", label: "June" },
+    { value: "July", label: "July" },
+    { value: "August", label: "August" },
+    { value: "September", label: "September" },
+    { value: "October", label: "October" },
+    { value: "November", label: "November" },
+    { value: "December", label: "December" },
   ];
   const currentDate = new Date();
   const currentMonthName = currentDate.toLocaleString("default", {

@@ -2257,7 +2257,7 @@ export const outstandingColumns = ({
       key: "invoice_amount",
       name: "Invoice Amount",
       width: 190,
-      getTotal: true,
+      // getTotal: true,
       renderRowCell: (row) => row?.invoice_amount,
     },
     {
@@ -2288,7 +2288,7 @@ export const outstandingColumns = ({
     {
       key: "base_amount_new",
       name: "Base Amount",
-      getTotal: true,
+      // getTotal: true,
       compare: true,
       renderRowCell: (row) => (row?.invoice_amount * 100) / 118,
     },

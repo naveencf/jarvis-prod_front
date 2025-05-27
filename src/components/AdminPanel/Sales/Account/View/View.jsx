@@ -26,7 +26,8 @@ const View = ({
     currentPage: 1,
   },
   tableSelectedRows,
-  setTableSelectedRows
+  setTableSelectedRows,
+  showExport
 }) => {
   const Version = useCallback(!version ? CustomTableV2 : CustomTable, [
     version,
@@ -50,6 +51,7 @@ const View = ({
         pageNavigator={pageNavigator}
         tableSelectedRows={tableSelectedRows}
         setTableSelectedRows={setTableSelectedRows}
+        showExport={showExport}
       />
     </CustomTableWrapper>
   );

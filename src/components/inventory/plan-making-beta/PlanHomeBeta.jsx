@@ -1100,6 +1100,7 @@ function PlanHomeBeta() {
                     totalRows: totalPages?.totalRecords || 0,
                     currentPage: totalPages?.page,
                   }}
+                  showExport={isShowPlan}
                 />
               </div>
             )}
@@ -1119,6 +1120,7 @@ function PlanHomeBeta() {
                   pagination={[100, 200]}
                   tableName={"PlanMakingDetails"}
                   version={1}
+                  showExport={isShowPlan}
                 />
               </div>
             )}
