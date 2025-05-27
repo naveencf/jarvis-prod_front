@@ -34,6 +34,7 @@ function PageOverviewWithoutHealth({
   filterFollowers,
   setFilterFollowers,
   latestPageObject,
+  showExport
 }) {
   const token = sessionStorage.getItem("token");
   const [activeTab, setActiveTab] = useState("");
@@ -130,6 +131,7 @@ function PageOverviewWithoutHealth({
         filterFollowers={filterFollowers}
         setFilterFollowers={setFilterFollowers}
         activeTabName={setActiveTab}
+        showExport={showExport}
       />
       {/* <div className="tabs">
         <button className={activeTab === 'Tab0' ? 'active btn btn-primary' : 'btn'} onClick={() => setActiveTab('Tab0')}>
@@ -190,6 +192,7 @@ function PageOverviewWithoutHealth({
                   />
                 </>
               }
+              showExport={showExport}
             />
           }
           {/* <button

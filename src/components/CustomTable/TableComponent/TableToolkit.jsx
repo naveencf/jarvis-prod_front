@@ -5,6 +5,7 @@ import Modal from "react-modal";
 import { baseUrl } from "../../../utils/config";
 import axios from "axios";
 import ExcelJS from "exceljs";
+import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
 
 const TableToolkit = ({
   exportData,
@@ -42,6 +43,7 @@ const TableToolkit = ({
   sortedData,
   fetchCreatedTable,
   showTotal,
+  showExport
 }) => {
   const containerRef = useRef(null);
   const [ModalOpen, setModalOpen] = useState(false);
@@ -271,7 +273,7 @@ const TableToolkit = ({
 
   //   XLSX.writeFile(workbook, fileName);
   // };
-
+ 
   function calculateTotalAmount(func, rowData) {
     let amounts;
     if (typeof func !== "function") {
@@ -604,7 +606,7 @@ const TableToolkit = ({
             setDragFlag={setDragFlag}
           />
         </Dropdown>
-        {exportData() && (
+        {showExport&&exportData() && (
           <button className="tool-btn" onClick={() => handleExport()}>
             Export
           </button>

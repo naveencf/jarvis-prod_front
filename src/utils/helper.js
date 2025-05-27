@@ -97,3 +97,11 @@ export function formatPageLabel(name) {
 
   return name[0].toUpperCase() + name.slice(1);
 }
+
+export function debounce(func, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+}

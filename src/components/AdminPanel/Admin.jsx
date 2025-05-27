@@ -24,7 +24,7 @@ import OpCalender from "../AbOpreation/Calender/OpCalender";
 import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstandingOverview";
 import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater";
 import CampaignExecution from "../Operation/Execution/CampaignExecution";
-import UnfetchedPages from "../inventory/plan-pricing/UnFetchPages";
+ 
 import SittingRoomWise from "./HRMS/Sitting/SittingRoomWise";
 // import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
 import UserLoginHistory from "./HRMS/User/UserDashboard/LoginHistory/UserLoginHistory";
@@ -48,6 +48,7 @@ import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
 import PantryAdminDashboard from "../Pantry/PantryAdminDashboard.jsx";
 import VendorStatement from "../Finance/Sales Management/Outstanding/VendorStatement.jsx";
 import VendorStatementView from "../Finance/Sales Management/Outstanding/VendorStatementView.jsx";
+import UnfetchedPages from "./PageMS/InventoryDashboard/UnfetchedPages.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -109,7 +110,6 @@ const UserResponsbilityUpdate = lazy(() =>
 const UserAuthDetail = lazy(() =>
   import("./HRMS/UserAuthDetail/UserAuthDetail")
 );
-
 const ObjectMaster = lazy(() => import("./Object/ObjectMaster"));
 const ObjectOverview = lazy(() => import("./Object/ObjectOverview"));
 const ObjectUpdate = lazy(() => import("./Object/ObjectUpdate"));
@@ -1946,7 +1946,7 @@ const Admin = () => {
                       element={<SubCategoryOverview />}
                     />
                     <Route
-                      path="/pms-unFatched-pages"
+                      path="/pms-unfetch-pages"
                       element={<UnfetchedPages />}
                     />
                     <Route path="/pms-tag-Category" element={<TagCategory />} />

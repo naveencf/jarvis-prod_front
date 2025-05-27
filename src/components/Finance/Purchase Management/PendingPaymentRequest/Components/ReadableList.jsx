@@ -12,13 +12,14 @@ import { useEffect } from "react";
 import { useGlobalContext } from "../../../../../Context/Context";
 import pdfImg from "../../../pdf-file.png";
 import ImageView from "../../../ImageView";
+import RecentInvoices from "./RecentInvoices";
 
 {/* <Alert severity="success">This is a success Alert.</Alert>
 <Alert severity="info">This is an info Alert.</Alert>
 <Alert severity="warning">This is a warning Alert.</Alert>
 <Alert severity="error">This is an error Alert.</Alert> */}
 
-export default function ReadableList({ extractedData, rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex, openImageDialog, setOpenImageDialog }) {
+export default function ReadableList({ handleTDSLogic, extractedData, rowData, vendorBankDetail, selectedBankIndex, setSelectedBankIndex, openImageDialog, setOpenImageDialog }) {
   const { toastAlert, toastError } = useGlobalContext();
   const [openDialog, setOpenDialog] = useState(false);
   // const [openImageDialog, setOpenImageDialog] = useState(true);
@@ -36,10 +37,12 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
         index = 0; // Default to first option if no match
         toastError("Bank Details does not matched with requested detail")
       }
-
+      // console.log(index, "index")
       setSelectedBankIndex(index);
+      // handleTDSLogic();
     }
   }, [rowData, vendorBankDetail, setSelectedBankIndex]);
+  // console.log(vendorBankDetail, "vendorBankDetail")
 
   const openImgDialog = () => {
     setOpenDialog(true);
@@ -130,7 +133,7 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
                 <BeachAccessIcon />
               </Avatar>
             </ListItemAvatar>
-            <ListItemText primary={`PAN : ${rowData?.pan}`} secondary={`GST : ${rowData?.gst}`} />
+            <ListItemText primary={`PAN : ${vendorBankDetail[selectedBankIndex]?.pan_card}`} secondary={`GST : ${vendorBankDetail[selectedBankIndex]?.gst_no}`} />
           </ListItem>
           <ListItem>
             <ListItemAvatar>
@@ -146,7 +149,10 @@ export default function ReadableList({ extractedData, rowData, vendorBankDetail,
           )}
         </List>
       </Stack>
+      <Stack spacing={2}>
 
+        <RecentInvoices rowData={rowData} setOpenImageDialog={setOpenImageDialog} setViewImgSrc={setViewImgSrc} />
+      </Stack>
     </>
   );
 }

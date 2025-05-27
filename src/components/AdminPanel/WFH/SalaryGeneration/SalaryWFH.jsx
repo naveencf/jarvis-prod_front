@@ -356,28 +356,6 @@ const SalaryWFH = () => {
     }
   }
 
-  // const handleCardSelect = (index, data) => {
-  //   const monthMap = {
-  //     January: 'February',
-  //     February: 'March',
-  //     March: 'April',
-  //     April: 'May',
-  //     May: 'June',
-  //     June: 'July',
-  //     July: 'August',
-  //     August: 'September',
-  //     September: 'October',
-  //     October: 'November',
-  //     November: 'December',
-  //     December: 'January'
-  //   };
-  // setSelectedCardIndex(index);
-  // setYear(data.year);
-  // setMonth(data.month);
-  // setMonth(monthMap[data.month]);
-  // setSelectedYear(data.year);
-  // setSelectedMonth(data.month);
-  // };
   const handleCardSelect = (index, data) => {
     setSelectedCardIndex(index);
     setYear(data.year);
@@ -485,29 +463,6 @@ const SalaryWFH = () => {
       })
       .then((res) => setDeptSalary(res.data));
   }
-
-  // const handleAttendance = async () => {
-  //   try {
-  //     await axios.post(baseUrl + "add_attendance", {
-  //       dept: department,
-  //       user_id: userName.user_id,
-  //       noOfabsent: 0,
-  //       month: month,
-  //       year: year,
-  //     });
-  //     await axios.put(baseUrl + "update_attendence_status", {
-  //       month: month,
-  //       year: Number(year),
-  //       dept: department,
-  //     });
-
-  //     setNoOfAbsent("");
-  //     handleSubmit();
-  //     toastAlert("Submitted success");
-  //   } catch (error) {
-  //     toastError("Billing header not set for this department");
-  //   }
-  // };
 
   const handleAttendance = async () => {
     try {
@@ -753,77 +708,9 @@ const SalaryWFH = () => {
       console.error("Error Downloading Invoices", error);
     }
   }
-  // async function handleBulkSendToFinance() {
-  //   try {
-  //     for (const row of selectedRows) {
-  //       console.log(row , 'row is here ok')
-  //       await axios.post(`${baseUrl}add_finance`, {
-  //         attendence_id: row.attendence_id,
-  //       });
 
-  //       await axios.put(`${baseUrl}update_salary`, {
-  //         attendence_id: row.attendence_id,
-  //         sendToFinance: 1,
-  //         month: row.month,
-  //       });
-  //     }
-
-  //     handleSubmit();
-  //     setSelectedRows([]);
-  //     toastAlert("All selected rows have been sent to Finance successfully.");
-  //   } catch (error) {
-  //     console.error("Error sending data to finance:", error);
-  //     toastAlert("An error occurred while sending data to Finance."); // Show error message
-  //   }
-
-  //   Promise.all(sendToFinancePromises)
-  //     .then(() => {
-  //       handleSubmit();
-  //       toastAlert("Sent To Finance");
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error sending data to finance:", error);
-  //       toastAlert("Failed to send to finance");
-  //     });
-  // }
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-  // async function handleBulkSendToFinance() {
-  //     setIsButtonDisabled(true);
 
-  //     try {
-  //         const sendToFinancePromises = selectedRows.map(async (row) => {
-  //           console.log(selectedRows , 'row select')
-
-  //             // Post request to add to finance
-  //             // await axios.post(`${baseUrl}add_finance`, {
-  //             //     attendence_id: row.attendence_id,
-  //             // });
-
-  //             // Put request to update salary
-  //             // await axios.put(`${baseUrl}update_salary`, {
-  //             //     attendence_id: row.attendence_id,
-  //             //     sendToFinance: 1,
-  //             //     month: row.month,
-  //             // });
-  //             await axios.put(`${baseUrl}update_all_salary_with_finance`, {
-  //                 attendence_id: row.attendence_id,
-  //                 sendToFinance: 1,
-  //             });
-  //         });
-
-  //         // Wait for all promises to be resolved
-  //         await Promise.all(sendToFinancePromises);
-
-  //         handleSubmit();
-  //         setSelectedRows([]);
-  //         toastAlert("All selected rows have been sent to Finance successfully.");
-  //     } catch (error) {
-  //         console.error("Error sending data to finance:", error);
-  //         toastAlert("An error occurred while sending data to Finance.");
-  //     } finally {
-  //         setIsButtonDisabled(false);
-  //     }
-  // }
   async function handleBulkSendToFinance() {
     setIsButtonDisabled(true);
 
@@ -1065,6 +952,24 @@ const SalaryWFH = () => {
       width: "120px",
     },
     {
+      name: "Attendance Status",
+      cell: (row) => {
+        const status = row.attendence_status;
+
+        return (
+          <div>
+            {status === 0 ? (
+              <span className="badge badge-success">Approved</span>
+            ) : status === 1 ? (
+              <span className="badge badge-warning">Hold</span>
+            ) : (
+              <span className="badge badge-secondary">Unknown</span>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       name: "Total Salary",
       width: "120px",
 
@@ -1131,85 +1036,6 @@ const SalaryWFH = () => {
         </>
       ),
     },
-    // {
-    //   name: "Action",
-    //   width: "200px",
-    //   cell: (row) => (
-    //     <>
-    //       {!row?.invoice_template_no ? (
-    //         <button
-    //           type="button"
-    //           title="Select Invoice"
-    //           className=" icon-1"
-    //           data-toggle="modal"
-    //           data-target="#exampleModalCenter"
-    //           onClick={() => handleInvoice(row)}
-    //         >
-    //           <FileOpenIcon />
-    //         </button>
-    //       ) : (
-    //         !row?.sendToFinance && (
-    //           <button
-    //             title="Send to Finance"
-    //             className="icon-1"
-    //             onClick={(e) => handleSendToFinance(e, row)}
-    //           >
-    //             <i className="bi bi-cloud-arrow-up" />
-    //           </button>
-    //         )
-    //       )}
-
-    //       {row.sendToFinance == 1 && row.status_ == 1 && (
-    //         <button
-    //           className="btn cmnbtn btn_sm btn-outline-primary ml-2 "
-    //           data-toggle="modal"
-    //           data-target="#exampleModal"
-    //           onClick={() => setRowDataModal(row)}
-    //         >
-    //           Paid
-    //         </button>
-    //       )}
-    //       {row.sendToFinance == 1 && row.status_ == 0 && (
-    //         <button className="btn cmnbtn btn_sm btn-danger ml-2 ">
-    //           Pending
-    //         </button>
-    //       )}
-
-    //       {row?.invoice_template_no !== "0" && row?.digital_signature_image && (
-    //         <button
-    //           className="icon-1"
-    //           title="Download Invoice"
-    //           type="button"
-    //           onClick={() => generatePDF(row)}
-    //         >
-    //           <i className="bi bi-cloud-arrow-down" />
-    //         </button>
-    //       )}
-    //     </>
-    //   ),
-    // },
-    // roleID == 2 && {
-    //   name: "separation",
-    //   cell: (row) => (
-    //     <Button
-    //       className="btn  cmnbtn btn_sm btn-primary"
-    //       data-toggle="modal"
-    //       data-target="#exampleModalSepration"
-    //       size="small"
-    //       variant="contained"
-    //       color="primary"
-    //       onClick={() =>
-    //         handleSeprationReason(
-    //           row.user_id,
-    //           row.user_name,
-    //           row.user_contact_no
-    //         )
-    //       }
-    //     >
-    //       Sep
-    //     </Button>
-    //   ),
-    // },
   ];
 
   const handleExport = () => {
@@ -1348,8 +1174,9 @@ const SalaryWFH = () => {
                   ${data.deptCount == departmentdata?.length && "completed"} 
                   ${selectedCardIndex === index ? "selected" : ""}
                 ${getClassName(data, index, selectedCardIndex)}
-               ${currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
-                  } 
+               ${
+                 currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
+               } 
                 ${isFutureCard && "disabled"}`}
                 onClick={() => {
                   if (!isFutureCard) handleCardSelect(index, data);
@@ -1384,8 +1211,8 @@ const SalaryWFH = () => {
                   {data.deptCount == departmentdata?.length
                     ? "Completed"
                     : currentMonthNumber - 5 - index < 0
-                      ? "Upcoming"
-                      : "Pending"}
+                    ? "Upcoming"
+                    : "Pending"}
                   {/* {data.atdGenerated == 1
                   ? "Completed"
                   : currentMonthNumber - 4 - index < 0
@@ -1403,25 +1230,6 @@ const SalaryWFH = () => {
         <div className="card-header d-flex justify-content-between">
           <h4>Department</h4>
           <span className="d-flex gap4">
-            {/* {data?.length == 0 &&
-              department &&
-              selectedMonth &&
-              selectedYear && (
-                <button
-                  onClick={handleAttendance}
-                  className="btn cmnbtn btn_sm btn-danger"
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
-                  // style={{ marginTop: "25px" }}
-                >
-                  No Absents, Create Attendance{" "}
-                  <i className="bi bi-arrow-right"></i>
-                </button>
-              )} */}
             {contextData &&
               contextData[38] &&
               contextData[38].view_value === 1 && (
@@ -1439,35 +1247,6 @@ const SalaryWFH = () => {
                   </button>
                 </Link>
               )}
-            {/* <button
-              className="btn cmnbtn btn_sm btn-outline-primary "
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "4px",
-              }}
-              onClick={() => BankExcelConverter(salaryMonthYearData)}
-            >
-              Export Excel Button <i className="bi bi-file-spreadsheet"></i>
-            </button>
-
-            {deptSalary?.length !== departmentdata?.length &&
-              (RoleIDContext == 1 || RoleIDContext == 5) && (
-                <button
-                  className="btn cmnbtn btn_sm btn-primary "
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    gap: "4px",
-                  }}
-                  onClick={handleAllDepartmentSalary}
-                >
-                  Create All Department Salary{" "}
-                  <i className="bi bi-check-all"></i>
-                </button>
-              )} */}
           </span>
         </div>
         <div className="card-body">
@@ -1482,12 +1261,13 @@ const SalaryWFH = () => {
 
               return (
                 <div
-                  className={`card hover body-padding ${department === option.dept_id
+                  className={`card hover body-padding ${
+                    department === option.dept_id
                       ? "btn-primary"
                       : isDeptInSalary
-                        ? "btn-success"
-                        : "btn-outline-primary"
-                    }`}
+                      ? "btn-success"
+                      : "btn-outline-primary"
+                  }`}
                   style={{
                     height: "100px",
                     minWidth: "300px",
@@ -1536,65 +1316,6 @@ const SalaryWFH = () => {
       >
         <div className="card-body p-0">
           <div className="row gap_24_0">
-            {/* <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-              <div className="salary_dtlCard">
-                <div className="salary_dtlCard_head">
-                  <h2>Current Month All Dept</h2>
-                </div>
-                <div className="salary_dtlCard_info">
-                  <ul>
-                    <li>
-                      <span>Total Payout Incurred :</span>
-                      {showAlldeptMonthWiseData[0]?.totalSalary}
-                    </li>
-                    <li>
-                      <span>Net Salary</span>
-                      {showAlldeptMonthWiseData[0]?.netSalary?.toFixed(0)}
-                    </li>
-                    <li>
-                      <span>Total Bonus</span>
-                      {showAlldeptMonthWiseData[0]?.totalBonus}
-                    </li>
-                    <li>
-                      <span>Total Deductions</span>
-                      {showAlldeptMonthWiseData[0]?.totalTdsDeduction}
-                    </li>
-                    <li>
-                      <span>Total TDS Deducted</span>
-                      {showAlldeptMonthWiseData[0]?.totalSalaryDeduction}
-                    </li>
-                    
-                  </ul>
-                </div>
-              </div>
-            </div> */}
-            {/* <div className="col-xl-6 col-lg-6 col-md-6 col-sm-12 col-12">
-              <div className="salary_dtlCard">
-                <div className="salary_dtlCard_head">
-                  <h2>This Year Selected Dept</h2>
-                </div>
-                <div className="salary_dtlCard_info">
-                  <ul>
-                    <li>
-                      <span>Total Payout Incurred :</span>
-                      {singleDeptWholeYearSalaryData[0]?.totalsalary}
-                    </li>
-                    <li>
-                      <span>Total Bonus</span>
-                      {singleDeptWholeYearSalaryData[0]?.totalBonus}
-                    </li>
-                    <li>
-                      <span>Total Deductions</span>
-                      {singleDeptWholeYearSalaryData[0]?.totaltdsdeduction}
-                    </li>
-                    <li>
-                      <span>Total TDS Deducted</span>
-                      {singleDeptWholeYearSalaryData[0]?.totalsalarydeduction}
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div> */}
             <div className="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-12">
               <div className="salary_dtlCard">
                 <div className="salary_dtlCard_head">
@@ -1648,19 +1369,6 @@ const SalaryWFH = () => {
                       <span>Total Bonus</span>
                       {card2Data?.totalBonus}
                     </li>
-                    {/* <li className="bold">
-                      <span >Total Payout :</span>
-                      {card2Data?.totalToPay}
-                    </li> */}
-
-                    {/* <li>
-                      <span>Total Deductions</span>
-                      {card2Data?.totalsalarydeduction}
-                    </li>
-                    <li>
-                      <span>Total TDS Deducted</span>
-                      {card2Data?.totaltdsdeduction}
-                    </li> */}
                   </ul>
                 </div>
               </div>
@@ -1676,14 +1384,7 @@ const SalaryWFH = () => {
                       <span>Total Employees:</span>
                       {allWFHUsers.length}
                     </li>
-                    {/* <li>
-                      <span className="bold">Active Mark :</span>
-                      {activeusers?.length}
-                    </li> */}
-                    {/* <li>
-                      <span>Calander Days</span>
-                      30
-                    </li> */}
+
                     <li
                       className="color_primary"
                       data-toggle="modal"
@@ -1744,12 +1445,14 @@ const SalaryWFH = () => {
             <div className="card-header">
               <h5>Salary Overview</h5>
               <div className="pack w-75">
-                <button
-                  className="btn  cmnbtn btn_sm btn-danger mr-2"
-                  onClick={handleDeleteSalary}
-                >
-                  Delete Salary
-                </button>
+                {activeTab == 0 && (
+                  <button
+                    className="btn  cmnbtn btn_sm btn-danger mr-2"
+                    onClick={handleDeleteSalary}
+                  >
+                    Delete Salary
+                  </button>
+                )}
                 {selectedRows?.length > 0 && activeTab === 0 && (
                   <>
                     <button
@@ -2130,13 +1833,13 @@ const SalaryWFH = () => {
               {(separationStatus === "On Long Leave" ||
                 separationStatus === "Subatical" ||
                 separationStatus === "Suspended") && (
-                  <FieldContainer
-                    label="Reinstated Date"
-                    type="date"
-                    value={separationReinstateDate}
-                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                  />
-                )}
+                <FieldContainer
+                  label="Reinstated Date"
+                  type="date"
+                  value={separationReinstateDate}
+                  onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                />
+              )}
               {separationStatus == "Resign Accepted" && (
                 <input
                   label="Last Working Day"

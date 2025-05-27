@@ -1,5 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import authBaseQuery from "../../../../utils/authBaseQuery";
+import jwtDecode from 'jwt-decode';
 
 const DirectPurchaseApi = createApi({
   reducerPath: "DirectPuchaseApi",
@@ -176,6 +177,38 @@ const DirectPurchaseApi = createApi({
           },
         },
       }),
+    }),    
+    getPurchaseOverviewWithPagination: builder.query({
+      queryFn: async ({ startDate, endDate, page, limit ,search} = {}, _queryApi, _extraOptions, baseQuery) => {
+        const storedToken = sessionStorage.getItem('token');
+        if (!storedToken) {
+          return { error: { status: 401, message: 'No token found' } };
+        }
+    
+        jwtDecode(storedToken);
+    
+        const queryParams = [];
+        if (startDate) queryParams.push(`startDate=${encodeURIComponent(startDate)}`);
+        if (endDate) queryParams.push(`endDate=${encodeURIComponent(endDate)}`);
+        if (page) queryParams.push(`page=${page}`);
+        if (limit) queryParams.push(`limit=${limit}`);
+        if(search) queryParams.push(`search=${search}`)
+    
+        const queryString = queryParams.length > 0 ? `?${queryParams.join('&')}` : '';
+    
+        const res = await baseQuery({
+          url: `sales/purchase_overview${queryString}`,
+          method: 'GET',
+        });
+    
+        if (res.error) {
+          return { error: res.error };
+        }
+    
+        return { data: res.data || res.data };
+      },
+      keepUnusedDataFor: 60 * 10,
+      providesTags: ['purchaseOverview'],
     }),
     // api/purchase/advanced_payment/66827bcf8e6fbfb72f5c8afe?startDate=2025-03-04&&endDate=2025-03-04
   }),
@@ -206,6 +239,7 @@ export const {
   useGetLedgerAmountByVendorQuery,
   useLazyGetAdvancePaymentsByPageAndVendorQuery,
   useGetLinksOnConditionQuery,
+  useGetPurchaseOverviewWithPaginationQuery
 } = DirectPurchaseApi;
 
 export default DirectPurchaseApi;

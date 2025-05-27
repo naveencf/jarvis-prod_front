@@ -30,9 +30,10 @@ import { cleanDigitSectionValue } from "@mui/x-date-pickers/internals/hooks/useF
 import ImageView from "../../../ImageView";
 import PDFExtractorForInvoice from "./PDFExtractorForInvoice";
 import { useGetVendorDocumentByVendorDetailQuery } from '../../../../Store/reduxBaseURL';
+import { useGetVendorRecentInvoicesDetailQuery } from "../../../../Store/API/Purchase/PurchaseRequestPaymentApi";
+import RecentInvoices from "./RecentInvoices";
 
 function PayVendorDialog(props) {
-  const { toastAlert, toastError } = useGlobalContext();
   const {
     rowData,
     paymentAmout,
@@ -48,7 +49,9 @@ function PayVendorDialog(props) {
     filterData, GSTHoldAmount, setGSTHoldAmount, setRefetch, refetch
 
   } = props;
-
+  const { toastAlert, toastError } = useGlobalContext();
+  const { data: InvoiceDetails, isLoading: invoicesRequestLoading, error, refetch: refetchInvoicesDetail, isFetching: vendorRequestFetching } = useGetVendorRecentInvoicesDetailQuery(rowData?.vendor_obj_id);
+  // console.log(InvoiceDetails?.recent_invoices, "data")
   // getVendorFinancialDetail
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
@@ -56,8 +59,8 @@ function PayVendorDialog(props) {
   const userEmail = decodedToken.email;
   const [TDSDeduction, setTDSDeduction] = useState(false);
   const [TDSPercentage, setTDSPercentage] = useState(1);
-  const [isTDSMandatory, setIsTDSMandatory] = useState(false);
-  const [isTDSDeducted, setIsTDSDeducted] = useState(false);
+  const [isTDSError, setIsTDSError] = useState(false);
+  // const [isTDSDeducted, setIsTDSDeducted] = useState(false);
   const [adjustAmount, setAdjustAmount] = useState(0);
   const [gstHold, setGstHold] = useState(false);
   const [paymentModeData, setPaymentModeData] = useState([]);
@@ -70,7 +73,7 @@ function PayVendorDialog(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [vendorDetail, setVendorDetail] = useState({});
   const [vendorBankDetail, setVendorBankDetail] = useState([]);
-  const [selectedBankIndex, setSelectedBankIndex] = useState(0);
+  const [selectedBankIndex, setSelectedBankIndex] = useState(null);
   // const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [payThroughVendor, setPayThroughVendor] = useState(false);
   const [gatewayPaymentMode, setGatewayPaymentMode] = useState("NEFT");
@@ -88,36 +91,96 @@ function PayVendorDialog(props) {
   // const { data: vendorInvoices, isLoading: requestLoading, } = useGetVendorFinancialDetail(vendorDetail?.vendor_obj_id);
   // console.log(vendorInvoices, "vendorInvoices")
   const { data: vendorDocuments, isLoading: isVendorDocumentsLoading } =
-    useGetVendorDocumentByVendorDetailQuery(vendorDetail?._id);
-  // console.log(vendorDetail)
-  useEffect(() => {
-    if (vendorDocuments && vendorDocuments.length > 0) {
-      const hasGST = vendorDocuments.find(
-        (doc) => doc.document_name === "GST" && doc.document_no !== ""
-      );
+    useGetVendorDocumentByVendorDetailQuery(rowData?.vendor_obj_id);
+  // console.log(vendorDetail, "vendorDetail")
+  // useEffect(() => {
+  const fetchExtractedDataForTDS = async () => {
+    if (!InvoiceDetails || InvoiceDetails.bank_details.length === 0) return 0; // Default
 
-      const panCard = vendorDocuments.find(
-        (doc) => doc.document_name === "Pan Card" && doc.document_no !== ""
-      );
+    // const hasGST = vendorDocuments.find(
+    //   (doc) => doc.document_name === "GST" && doc.document_no?.trim() !== ""
+    // );
+    const hasGST = InvoiceDetails.bank_details[selectedBankIndex]?.gst_no?.trim()
+    const panCard = InvoiceDetails.bank_details[selectedBankIndex]?.pan_card?.trim()
+    // const hasGST = vendorBankDetail[selectedBankIndex]?.gst_no?.trim()
+    // const panCard = vendorBankDetail[selectedBankIndex]?.pan_card?.trim()
 
-      let tdsPercentage = 2; // Default TDS if no documents available
+    // const panCard = vendorDocuments.find(
+    //   (doc) => doc.document_name === "Pan Card" && doc.document_no?.trim() !== ""
+    // );
 
-      if (hasGST) {
-        const seventhChar = hasGST.document_no.charAt(6).toUpperCase(); // Get 7th character of GST
-        tdsPercentage = seventhChar === "P" ? 1 : 2;
-      } else if (panCard) {
-        const fifthChar = panCard.document_no.charAt(4).toUpperCase(); // Get 5th character of PAN
-        tdsPercentage = (fifthChar === "F" || fifthChar === "C") ? 2 : 1;
-      }
-      setTDSPercentage(tdsPercentage);
-      console.log(`TDS Percentage: ${tdsPercentage}`);
+    let tdsPercentage = 0; // Default if nothing matches
+
+    if (hasGST && hasGST != "") {
+      const seventhChar = hasGST.charAt(6).toUpperCase(); // 7th char
+      tdsPercentage = seventhChar === "P" ? 1 : 2;
+    } else if (panCard && panCard !== "") {
+      const fifthChar = panCard.charAt(4).toUpperCase(); // 5th char
+      tdsPercentage = (fifthChar === "F" || fifthChar === "C") ? 2 : 1;
     }
-  }, [vendorDocuments]);
 
+    // console.log(`TDS Percentage: ${tdsPercentage}`);
+    return tdsPercentage;
+  };
+
+
+
+  const handleTDSLogic = async () => {
+    if (
+      InvoiceDetails && selectedBankIndex &&
+      InvoiceDetails?.recent_invoices &&
+      InvoiceDetails?.recent_invoices.length > 0
+    ) {
+      const invoices = InvoiceDetails.recent_invoices;
+      const tempTdsPercent = await fetchExtractedDataForTDS(); // Await here
+      const { tds, total_outstanding } = shouldDeductTDS(invoices);
+
+      if (tds) {
+        if (tempTdsPercent === 0) {
+          toastError("Vendor Pan Card or GST is not available, in account details, TDS will not be deducted");
+          setIsTDSError(true)
+          // return;
+          setTDSPercentage(1);
+          console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan_card")
+        } else {
+          setIsTDSError(false)
+          setTDSPercentage(tempTdsPercent);
+        }
+        handleTDSDeduction(true);
+        // Optionally: setTDSValue((tempTdsPßercent / 100) * total_outstanding);
+      } else if (rowData.request_amount == (rowData.outstandings - rowData.tds_deduction) && rowData.request_amount >= 30000) {
+        if (tempTdsPercent === 0) {
+          toastError("Vendor Pan Card or GST is not available, in account details, TDS will not be deducted");
+          console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan", selectedBankIndex, InvoiceDetails.bank_details)
+          setIsTDSError(true)
+          setTDSPercentage(1);
+          // return;
+        } else {
+          setIsTDSError(false)
+          setTDSPercentage(tempTdsPercent);
+        }
+        handleTDSDeduction(true);
+
+      }
+      // console.log(tempTdsPercent, "tempTdsPercent", tds, total_outstanding);
+      // console.log(selectedBankIndex, "selectedBankIndex", InvoiceDetails.bank_details[selectedBankIndex]?.pan_card)
+
+    }
+    setVendorBankDetail(InvoiceDetails?.bank_details || []);
+    // console.log(InvoiceDetails, "InvoiceDetails")
+  };
+  useEffect(() => {
+    // if (selectedBankIndex) {
+    handleTDSLogic(); // Call the async function
+    // }
+    // console.log("first", selectedBankIndex)
+  }, [InvoiceDetails, selectedBankIndex]);
+  // console.log(selectedBankIndex, "selectedBankIndex")
   useEffect(() => {
     let verify = viewImgSrc?.split(".")?.pop()?.toLowerCase() === "pdf";
     setIsPDF(verify);
   }, [viewImgSrc]);
+
   useEffect(() => {
     handleCalculatePaymentAmount();
     if (paymentAmout > 0 && paymentAmout <= 1000) {
@@ -137,18 +200,18 @@ function PayVendorDialog(props) {
       }
     });
 
-    axios.get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${rowData?.vendor_id}?isNumberId=true`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((res) => {
-      if (res.status == 200) {
-        // setVendorDetail(res.data.data)
-        // if(res.data.data)
-        setVendorBankDetail(res.data.data)
-        // console.log(res.data.data, "res.data.data")
-      }
-    });
+    // axios.get(`${baseUrl}` + `v1/bank_details_by_vendor_id/${rowData?.vendor_id}?isNumberId=true`, {
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // }).then((res) => {
+    //   if (res.status == 200) {
+    //     // setVendorDetail(res.data.data)
+    //     // if(res.data.data)
+    //     setVendorBankDetail(res.data.data)
+    //     // console.log(res.data.data, "res.data.data")
+    //   }
+    // });
     axios.get(`${baseUrl}` + `v1/vendordata/${rowData?.vendor_id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -163,18 +226,33 @@ function PayVendorDialog(props) {
 
   }, []);
 
-  // console.log(venodrDocuments, "venodrDocuments", rowData)
-  const findPhpOutstanding = (vendorDetailfromphp) => {
-    axios
-      .post(phpBaseUrl + `?view=getvendorDataListvid`, {
-        vendor_id: vendorDetailfromphp?.vendor_id,
-      })
-      .then((res) => {
-        if (res.status == 200) {
-          setVendorPhpDetail(res.data.body);
-          // console.log(res.data.body, 'vendorDetail', vendorDetail);
-        }
-      });
+
+  function shouldDeductTDS(invoices) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const fyStart = new Date(now.getMonth() >= 3 ? currentYear : currentYear - 1, 3, 1); // April 1
+    const fyEnd = new Date(now.getMonth() >= 3 ? currentYear + 1 : currentYear, 2, 31); // March 31
+
+    let totalOutstandingFY = 0;
+    let tdsAlreadyDeducted = false;
+
+    for (let invoice of invoices) {
+      const invDate = new Date(invoice.invc_date);
+
+      // If any invoice has tds_deduction > 0, set tdsAlreadyDeducted to true
+      if (invoice.tds_deduction && invoice.tds_deduction > 0) {
+        tdsAlreadyDeducted = true;
+      }
+
+      if (invDate >= fyStart && invDate <= fyEnd) {
+        totalOutstandingFY += invoice.outstandings || 0;
+      }
+    }
+
+    return {
+      tds: tdsAlreadyDeducted || totalOutstandingFY >= 100000,
+      total_outstanding: totalOutstandingFY
+    };
   }
 
   const handleFileChange = (e) => {
@@ -222,8 +300,10 @@ function PayVendorDialog(props) {
     phpFormData.append("tds_Deduction_Bool", TDSDeduction ? 1 : 0);
     phpFormData.append("tds_percentage", TDSPercentage);
     phpFormData.append("payment_getway_status", "SUCCESS");
-    phpFormData.append("accountNumber", rowData.accountNumber?.trim(),);
-    phpFormData.append("branchCode", rowData.branchCode?.trim());
+    phpFormData.append("accountNumber", vendorBankDetail[selectedBankIndex]?.account_number.trim());
+    phpFormData.append("branchCode", vendorBankDetail[selectedBankIndex]?.ifsc?.trim());
+    // accountNumber: vendorBankDetail[selectedBankIndex]?.account_number.trim(),
+    // branchCode: vendorBankDetail[selectedBankIndex]?.ifsc?.trim(),
     // phpFormData.append("getway_process_amt", paymentAmout);
 
     // payment_getway_status,
@@ -269,10 +349,10 @@ function PayVendorDialog(props) {
     // });
   };
   // console.log(vendorBankDetail, "vendorBankDetail")
-  const handleTDSDeduction = (e) => {
-    // console.log(e.target.checked, "e.target.checked", TDSPercentage, TDSValue);
-    setTDSDeduction(e.target.checked);
-    setTDSPercentage(1);
+  const handleTDSDeduction = (event) => {
+    // console.log(event, "e.target.checked", TDSPercentage, TDSValue);
+    setTDSDeduction(event);
+    // setTDSPercentage(1);
   };
 
   const handleCalculatePaymentAmount = () => {
@@ -352,11 +432,7 @@ function PayVendorDialog(props) {
       toastAlert("You are allow to pay below 20,00,000")
       return;
     }
-    // else if (!rowSelectionModel || rowSelectionModel[0]?.mob1?.length != 10) {
-    //   console.log(rowSelectionModel, "rowSelectionModel")
-    //   toastError("Invalid Mobile Number")
-    //   return;
-    // }
+
     else if (!paymentAmout || paymentAmout == "" || !paymentAmout > 0) {
       toastError("Invalid Amount")
       return;
@@ -432,7 +508,7 @@ function PayVendorDialog(props) {
               </>
             }
           </Stack>
-          <Stack>
+          <Stack minWidth='50%'>
             <DialogTitle>Vendor Payment</DialogTitle>
             {
               extractedData && extractedData != {} && (
@@ -452,9 +528,14 @@ function PayVendorDialog(props) {
               <CloseIcon />
             </IconButton>
             <DialogContent>
-              <ReadableList extractedData={extractedData} rowData={rowData} vendorDetail={vendorDetail} vendorBankDetail={vendorBankDetail} selectedBankIndex={selectedBankIndex}
+              <ReadableList handleTDSLogic={handleTDSLogic} extractedData={extractedData} rowData={rowData} vendorDetail={vendorDetail} vendorBankDetail={vendorBankDetail} selectedBankIndex={selectedBankIndex}
                 setSelectedBankIndex={setSelectedBankIndex} openImageDialog={openImageDialog} setOpenImageDialog={setOpenImageDialog} />
               <Divider />
+              {/* <Stack width='50%' direction="row" spacing={2} sx={{ mt: 2 }}>
+
+                <RecentInvoices rowData={rowData} setOpenImageDialog={setOpenImageDialog} setViewImgSrc={setViewImgSrc} />
+              </Stack> */}
+              {/* <Divider /> */}
 
 
 
@@ -463,14 +544,18 @@ function PayVendorDialog(props) {
                   <FormControlLabel
                     control={
                       <Checkbox
-                        onChange={handleTDSDeduction}
+                        onChange={(e) => handleTDSDeduction(e.target?.checked)}
                         checked={TDSDeduction}
                         disabled={rowData?.tds_deduction > 0}
                       />
+
                     }
                     label="TDS Deduction"
                   />
 
+                  {isTDSError && <Alert severity={"error"}>
+                    TDS Deduction will be applied on the basis of Vendor Pan Card or GST.
+                  </Alert>}
                   {TDSDeduction && (
                     <>
                       <Autocomplete

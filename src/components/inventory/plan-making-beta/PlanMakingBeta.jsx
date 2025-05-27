@@ -45,6 +45,7 @@ import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { calculatePrice, ButtonTitle } from "../plan-making/helper";
 import LeftSideBarBeta from "./LeftSideBarBeta";
+import { useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
 // import CustomTable from '../../CustomTable/CustomTable';
 
 const PlanMakingBeta = () => {
@@ -144,6 +145,7 @@ const PlanMakingBeta = () => {
   const { data: category } = useGetAllPageCategoryQuery();
   const categoryData = category?.data || [];
   const { versionData } = useGetPlanPages(id, selectedVersion?.version);
+  const { contextData } = useAPIGlobalContext();
 
   const { descriptions } = useFetchPlanDescription();
 
@@ -177,9 +179,8 @@ const PlanMakingBeta = () => {
   const cat = pageCate?.data;
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
-  const { data: vendor, isLoading: VendorLoading } = useGetAllVendorQuery();
-  const vendorData = vendor;
 
+ 
   const getPriceDetail = (priceDetails, key) => {
     const keyType = key?.split("_")[1];
     const detail = priceDetails?.find((item) => {
@@ -665,7 +666,6 @@ const PlanMakingBeta = () => {
   };
 
   const { dataGridColumns } = DataGridColumns({
-    vendorData,
     filterData,
     selectedRows,
     shortcutTriggered,
@@ -752,7 +752,7 @@ const PlanMakingBeta = () => {
           return;
         }
 
-        processedPages.add(pageKey); 
+        processedPages.add(pageKey);
 
         if (incomingPage.category_name) {
           matchingPage.page_sub_category_name = incomingPage.category_name;
@@ -761,7 +761,6 @@ const PlanMakingBeta = () => {
           if (matchingSubCategoryId)
             matchingPage.page_sub_category_id = matchingSubCategoryId;
         }
-        
 
         updatedPostValues[matchingPage._id] = incomingPage.post_count || 0;
         updatedStoryValues[matchingPage._id] = incomingPage.story_count || 0;
@@ -1005,6 +1004,7 @@ const PlanMakingBeta = () => {
       .filter(Boolean);
 
     setSearchPages(searchTerms);
+    console.log("searchTerms", searchTerms);
     filterAndSelectRows(searchTerms);
   };
 
@@ -1341,7 +1341,8 @@ const PlanMakingBeta = () => {
       handleAutomaticSelection(versionData);
     }
   }, [versionData]);
-
+  const showExport =
+    contextData && contextData[72] && contextData[72].view_value === 1;
   // const versionPages = versionData ? versionData : tableData;
   const layeringMapping = {
     1: sarcasmNetwork,
@@ -1548,6 +1549,7 @@ const PlanMakingBeta = () => {
                 tableName={"PlanMakingDetails"}
                 getFilteredData={setGetTableData}
                 showTotal={true}
+                showExport={showExport}
               />
               {/* ) : (
                 <Loader />

@@ -58,7 +58,7 @@ const ExcelPreviewModalBeta = ({
   deliverableText,
   setDeliverableText,
   handleGetSpreadSheet,
-  setRenamedCategories
+  setRenamedCategories,
 }) => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [categoryData, setCategoryData] = useState({});
@@ -73,7 +73,7 @@ const ExcelPreviewModalBeta = ({
   const [newCategoryName, setNewCategoryName] = useState("");
   const { id } = useParams();
   const { sendPlanDetails, planSuccess } = useSendPlanDetails(id);
- 
+
   useEffect(() => {
     // const categorizedData = {};
     // previewData?.forEach((item) => {
@@ -86,14 +86,13 @@ const ExcelPreviewModalBeta = ({
     // });
     const grouped = {};
 
-
     previewData.forEach((item) => {
       const key = item.page_sub_category_name;
-    
+
       if (!grouped[key]) {
         grouped[key] = [];
       }
-    
+
       grouped[key].push(item);
     });
     setCategoryData(grouped);
@@ -169,11 +168,9 @@ const ExcelPreviewModalBeta = ({
   const handleMergedCategoriesChange = (event) => {
     setMergedCategories(event.target.value);
   };
-
   const handleMergeCategories = () => {
     if (!mainCategory || mergedCategories.length === 0) return;
 
-    // Normalize and build categoryMap
     const categoryMap = subCategory?.reduce((acc, cat) => {
       acc[cat.page_sub_category.trim().toLowerCase()] = cat._id;
       return acc;
@@ -190,64 +187,40 @@ const ExcelPreviewModalBeta = ({
       return;
     }
 
-    // Normalize categoryData keys
-    const normalizeCategoryDataKeys = (data) => {
-      const normalized = {};
-      Object.keys(data).forEach((key) => {
-        const normalizedKey = key.trim().toLowerCase();
-        if (!normalized[normalizedKey]) {
-          normalized[normalizedKey] = [];
-        }
-        normalized[normalizedKey] = [
-          ...normalized[normalizedKey],
-          ...data[key],
-        ];
-      });
-      return normalized;
-    };
-
-    const updatedCategoryData = normalizeCategoryDataKeys({ ...categoryData });
-    const updatedPreviewData = [...previewData];
-
-    // Merge categories
-    normalizedMergedCategories.forEach((categoryName) => {
-      if (updatedCategoryData[categoryName]) {
-        updatedCategoryData[categoryName].forEach((item) => {
-          const index = updatedPreviewData.findIndex((data) => data === item);
-          if (index !== -1) {
-            updatedPreviewData[index].category = mainCategoryId;
-          }
-        });
-
-        updatedCategoryData[normalizedMainCategory] = [
-          ...(updatedCategoryData[normalizedMainCategory] || []),
-          ...updatedCategoryData[categoryName],
-        ];
-
-        delete updatedCategoryData[categoryName];
+    const updatedPreviewData = previewData.map((item) => {
+      const itemCategory = item.page_sub_category_name?.trim().toLowerCase();
+      if (normalizedMergedCategories.includes(itemCategory)) {
+        return {
+          ...item,
+          category: mainCategoryId,
+          page_sub_category_name: mainCategory,
+        };
       }
+      return item;
     });
 
-    // Transform updatedPreviewData to include dynamic fields
-    const finalPreviewData = updatedPreviewData.map((item) => {
-      const categoryName =
-        subCategory?.find((cat) => cat._id === item.category)?.page_sub_category ||
-        "Unknown";
-      return {
+    const newGrouped = {};
+    updatedPreviewData.forEach((item) => {
+      const key = item.page_sub_category_name;
+      if (!newGrouped[key]) newGrouped[key] = [];
+      newGrouped[key].push(item);
+    });
+
+    setCategoryData(newGrouped);
+    setUpdatedCategoryData(true);
+    setMergedCategories([]);
+
+    sendPlanDetails(
+      updatedPreviewData.map((item) => ({
         page_name: item["Page Name"] || "Unknown Page",
         post_count: item["Post Count"] || 0,
         story_count: item["Story Count"] || 0,
         _id: item["page_id"] || "Unknown ID",
-        category_name: categoryName,
+        category_name: item.page_sub_category_name,
         platform_name: item["Platform"]?.toLowerCase(),
         platform_id: item["platform_id"],
-      };
-    });
-
-    setUpdatedCategoryData(true);
-    setCategoryData(updatedCategoryData);
-    sendPlanDetails(finalPreviewData);
-    setMergedCategories([]);
+      }))
+    );
   };
 
   const handleClose = () => {
@@ -257,6 +230,7 @@ const ExcelPreviewModalBeta = ({
     }
     setUpdatedCategoryData(false);
   };
+
   const handleCategoryChange = (event, newValue) => {
     setMainCategory(newValue.toLowerCase());
   };
@@ -285,11 +259,12 @@ const ExcelPreviewModalBeta = ({
   // };
   const renameCategory = (oldCategoryName, newCategoryName) => {
     if (!oldCategoryName || !newCategoryName) return;
-  
-    const matchedCategory = subCategory.find(
-      (cat) => cat.page_sub_category.toLowerCase() === oldCategoryName.toLowerCase()
+
+    const matchedCategory = subCategory?.find(
+      (cat) =>
+        cat.page_sub_category.toLowerCase() === oldCategoryName.toLowerCase()
     );
-  
+
     if (!matchedCategory) {
       console.warn(`Category "${oldCategoryName}" not found.`);
       return;
@@ -299,19 +274,19 @@ const ExcelPreviewModalBeta = ({
       ...prev,
       [categoryId]: newCategoryName,
     }));
-  
+
     setCategoryData((prevData) => {
       const updated = { ...prevData };
-  
+
       if (updated[oldCategoryName]) {
         updated[newCategoryName] = updated[oldCategoryName];
         delete updated[oldCategoryName];
       }
-  
+
       return updated;
     });
   };
-  
+
   const handleRenameCategory = () => {
     renameCategory(oldCategoryName, newCategoryName);
     setOldCategoryName("");
@@ -655,22 +630,36 @@ const ExcelPreviewModalBeta = ({
                 <div className="form-group">
                   <label>Merge Sub Categories</label>
                   <Autocomplete
-                    // value={`${mergedCategories}`}
-                    // getOptionLabel={(option) => option.label}
-                    onChange={(event, newValue) =>
-                      setMergedCategories([newValue] || [])
-                    }
-                    options={Object.keys(categoryData).filter(
-                      (categoryName) =>
-                        formatString(categoryName) !==
-                        formatString(mainCategory)
-                    )}
+                    multiple
+                    disableCloseOnSelect
+                    value={mergedCategories}
+                    onChange={(event, newValue) => {
+                      if (newValue.includes("All")) {
+                        const allOthers = Object.keys(categoryData).filter(
+                          (categoryName) =>
+                            formatString(categoryName) !==
+                            formatString(mainCategory)
+                        );
+                        setMergedCategories(allOthers);
+                      } else {
+                        setMergedCategories(newValue);
+                      }
+                    }}
+                    options={[
+                      "All",
+                      ...Object.keys(categoryData).filter(
+                        (categoryName) =>
+                          formatString(categoryName) !==
+                          formatString(mainCategory)
+                      ),
+                    ]}
                     renderInput={(params) => (
                       <TextField {...params} variant="outlined" />
                     )}
                   />
                 </div>
               </div>
+
               <div className="col-lg-4 col-md-4 col-sm-12 col-12">
                 <div>
                   <Button

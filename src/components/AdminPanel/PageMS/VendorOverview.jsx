@@ -51,6 +51,7 @@ import VendorDocCount from "./Vendor/VendorDocCount";
 import { useGlobalContext } from "../../../Context/Context";
 import { set } from "date-fns";
 import VendorStaticsModel from "./PageOverview/VendorStaticsModel";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const style = {
   position: "absolute",
@@ -68,7 +69,10 @@ const VendorOverview = () => {
   const storedToken = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(storedToken);
   const dispatch = useDispatch();
+  const { contextData } = useAPIGlobalContext();
 
+  const showExport =
+    contextData && contextData[72] && contextData[72].view_value === 1;
   const { data: getStateandCityVendoData } =
     useGetStateandCityVendoDataCountQuery();
 
@@ -424,9 +428,7 @@ const VendorOverview = () => {
       key: "sno",
       name: "S.NO",
       width: 80,
-      renderRowCell: (row, index) => {
-        return index + 1;
-      },
+      renderRowCell: (row, index) => index + 1,
     },
     {
       key: "vendorPercentage",
@@ -440,110 +442,87 @@ const VendorOverview = () => {
           "home_address",
           "payment_method",
           "Pincode",
+          "home_city",
+          "home_state",
+          "vendor_type",
         ];
-        const totalFields = fields?.length;
-        let filledFields = 0;
-
-        fields.forEach((field) => {
-          if (row[field] && row[field] !== 0) {
-            filledFields++;
-          }
-        });
-
+        const totalFields = fields.length;
+        let filledFields = fields.filter((field) => row[field] && row[field] !== 0).length;
         const percentage = (filledFields / totalFields) * 100;
-
-        if (percentage === 100) {
-          return "Full";
-        } else if (percentage > 50) {
-          return "More than Partial";
-        } else {
-          return "Less than Partial";
-        }
+  
+        if (percentage === 100) return "Full";
+        else if (percentage > 50) return "More than Partial";
+        else return "Less than Partial";
       },
     },
     {
       key: "vendor_name",
       name: "Vendor Name",
       width: 200,
-      // editable: true,
-      renderRowCell: (row) => {
-        return (
-          <div
-            onClick={() => handleClickVendorName(row)}
-            className="link-primary cursor-pointer text-truncate"
-          >
-            {formatString(row.vendor_name)}
-          </div>
-        );
-      },
+      renderRowCell: (row) => (
+        <div
+          onClick={() => handleClickVendorName(row)}
+          className="link-primary cursor-pointer text-truncate"
+          style={{color:'#0B58CA', cursor:"pointer"}}
+        >
+          {formatString(row.vendor_name)}
+        </div>
+      ),
     },
     {
       key: "Price_Update",
       name: "Price Update",
-      renderRowCell: (row) => {
-        return (
-          <div>
-            {
-              <button
-                title="Price Update"
-                onClick={() => handleUpdateVendorMPrice(row)}
-                className="btn cmnbtn btn_sm btn-outline-primary"
-              >
-                Price Update
-              </button>
-            }
-          </div>
-        );
-      },
+      renderRowCell: (row) => (
+        <button
+          title="Price Update"
+          onClick={() => handleUpdateVendorMPrice(row)}
+          className="btn cmnbtn btn_sm btn-outline-primary"
+        >
+          Price Update
+        </button>
+      ),
       width: "20%",
     },
     {
       key: "vendor_category",
       name: "Vendor Category",
       width: 150,
+      renderRowCell: (row) => row.vendor_category,
     },
     {
       key: "primary_page",
-      name: "Primary Page.",
+      name: "Primary Page",
       width: 200,
-      renderRowCell: (row) => {
-        // let name = pageList?.data?.find(
-        //   (ele) => ele._id === row.primary_page
-        // )?.page_name;
-        // return name ?? 'NA';
-        return formatString(row?.primary_page_name);
-      },
+      renderRowCell: (row) => formatString(row?.primary_page_name),
     },
     {
       key: "page_count",
       name: "Page Count",
-      renderRowCell: (row) => {
-        return (
-          <button
-            title="Page Count"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={() => showPagesOfVendor(row)}
-            data-toggle="modal"
-            data-target="#myModal"
-          >
-            {row.page_count}
-            {/* <OpenWithIcon /> */}
-          </button>
-        );
-      },
+      renderRowCell: (row) => (
+        <button
+          title="Page Count"
+          className="btn btn-outline-primary btn-sm user-button"
+          onClick={() => showPagesOfVendor(row)}
+          data-toggle="modal"
+          data-target="#myModal"
+        >
+          {row.page_count}
+        </button>
+      ),
     },
     {
       key: "mobile",
       name: "Mobile",
       width: 200,
       editable: true,
-      // compare:true
+      renderRowCell: (row) => `+${row.country_code} ${row.mobile}`,
     },
     {
       key: "email",
       name: "Email",
       width: 200,
       editable: true,
+      renderRowCell: (row) => row.email || "N/A",
     },
     {
       key: "Pincode",
@@ -572,10 +551,8 @@ const VendorOverview = () => {
     {
       key: "vendor_type",
       name: "Vendor Type",
-      renderRowCell: (row) => {
-        return typeData?.find((item) => item?._id == row?.vendor_type)
-          ?.type_name;
-      },
+      renderRowCell: (row) =>
+        typeData?.find((item) => item?._id === row?.vendor_type)?.type_name,
       width: 200,
       editable: true,
     },
@@ -583,12 +560,10 @@ const VendorOverview = () => {
       key: "vendor_platform1",
       name: "Platform",
       compare: true,
-      renderRowCell: (row) => {
-        const fun = platformData?.find(
-          (item) => item?._id == row?.vendor_platform
-        )?.platform_name;
-        return formatString(fun);
-      },
+      renderRowCell: (row) =>
+        formatString(
+          platformData?.find((item) => item?._id === row?.vendor_platform)?.platform_name
+        ),
       width: 200,
       editable: true,
     },
@@ -596,44 +571,43 @@ const VendorOverview = () => {
       key: "pay_cycle",
       name: "Cycle",
       width: 200,
-      renderRowCell: (row) => {
-        return cycleData?.find((item) => item?._id == row?.pay_cycle)
-          ?.cycle_name;
-      },
-
+      renderRowCell: (row) =>
+        cycleData?.find((item) => item?._id === row?.pay_cycle)?.cycle_name,
       editable: true,
     },
+    // {
+    //   key: "vendor_customer_outstanding",
+    //   name: "Customer Outstanding",
+    //   width: 200,
+    //   renderRowCell: (row) => `₹${row.vendor_customer_outstanding?.toLocaleString()}`,
+    // },
     {
       key: "Bank Details",
       name: "Bank Details",
       width: 200,
-      renderRowCell: (row) => {
-        return (
-          <button
-            title="Bank Details"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={handleOpenBankDetailsModal(row)}
-          >
-            <OpenWithIcon />
-          </button>
-        );
-      },
+      renderRowCell: (row) => (
+        <button
+          title="Bank Details"
+          className="btn btn-outline-primary btn-sm user-button"
+          onClick={() => handleOpenBankDetailsModal(row)} // fixed handler
+        >
+          <OpenWithIcon />
+        </button>
+      ),
     },
     {
       key: "whatsapp_link",
       name: "Whatsapp Link",
       width: 200,
-      renderRowCell: (row) => {
-        return (
-          <button
-            title="Whatsapp Link"
-            className="btn btn-outline-primary btn-sm user-button"
-            onClick={handleOpenWhatsappModal(row)}
-          >
-            <OpenWithIcon />
-          </button>
-        );
-      },
+      renderRowCell: (row) => (
+        <button
+          title="Whatsapp Link"
+          className="btn btn-outline-primary btn-sm user-button"
+          onClick={() => handleOpenWhatsappModal(row)}
+        >
+          <OpenWithIcon />
+        </button>
+      ),
     },
     {
       key: "action",
@@ -641,29 +615,21 @@ const VendorOverview = () => {
       width: 200,
       renderRowCell: (row) => (
         <>
-          {/* {contextData && ( */}
           <Link to={`/admin/pms-vendor-master/${row._id}`}>
-            <button
-              title="Edit"
-              className="btn btn-outline-primary btn-sm user-button"
-            >
-              <FaEdit />{" "}
+            <button title="Edit" className="btn btn-outline-primary btn-sm user-button">
+              <FaEdit />
             </button>
           </Link>
-          {/* )} */}
           {decodedToken.role_id == 1 && (
             <div onClick={() => deletePhpData(row)}>
-              <DeleteButton
-                endpoint="v1/vendor"
-                id={row._id}
-                getData={getData}
-              />
+              <DeleteButton endpoint="v1/vendor" id={row._id} getData={getData} />
             </div>
           )}
         </>
       ),
     },
   ];
+  
 
   const deletePhpData = async (row) => {
     await axios.delete(baseUrl + `node_data_to_php_delete_vendor`, {
@@ -1061,6 +1027,7 @@ const VendorOverview = () => {
                           />
                         </>
                       }
+                      showExport={showExport}
                     />
                   )}
 

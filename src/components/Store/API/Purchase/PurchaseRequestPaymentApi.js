@@ -54,6 +54,14 @@ const PurchaseRequestPaymentApi = createApi({
             }),
             transformResponse: (response) => response.data// Optional: transform the response
         }),
+        // get vendor recent Invoices detail
+        getVendorRecentInvoicesDetail: builder.query({
+            query: (_id) => ({
+                url: `v1/get_vendor_recent_invoice/${_id}`,
+                method: "GET",
+            }),
+            transformResponse: (response) => response.data// Optional: transform the response
+        }),
         // Update a vendor payment request
         updatePurchaseRequest: builder.mutation({
             query: ({ _id, formData }) => ({
@@ -125,6 +133,8 @@ export const {
     useGetVendorPaymentRequestsQuery,
     useGetPaymentRequestTransactionsQuery,
     useGetVendorFinancialDetailQuery,
+    // getVendorRecentInvoicesDetail
+    useGetVendorRecentInvoicesDetailQuery,
     useUpdatePurchaseRequestMutation,
     useDeletePurchaseRequestMutation,
     useGetAdvancedPaymentQuery,

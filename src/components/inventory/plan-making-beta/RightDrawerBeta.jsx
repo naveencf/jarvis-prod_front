@@ -185,34 +185,30 @@ const RightDrawerBeta = ({
   };
 
   const deSelectAllRows = () => {
-    // Filter out rows that are part of the current table data
-    const filtered = selectedRows?.filter((row) => !getTableData.some((page) => page.page_name === row.page_name));
-    
-    // Create updated state objects for resetting values
+    const filtered = selectedRows?.filter(
+      (row) => !getTableData?.some((page) => page._id === row._id)
+    );
+  
     const updatedPostValues = { ...postPerPageValues };
     const updatedStoryValues = { ...storyPerPageValues };
     const updatedShowTotalCost = { ...showTotalCost };
-
-    // Iterate over the current table data to reset their values
+  
     getTableData?.forEach((row) => {
-      // Remove post and story values for this row
       delete updatedPostValues[row._id];
       delete updatedStoryValues[row._id];
-
-      // Hide total cost for this row
       updatedShowTotalCost[row._id] = false;
     });
-
-    // Update the state with filtered rows and reset values
+  
     setSelectedRows(filtered);
     setPostPerPageValues(updatedPostValues);
     setStoryPerPageValues(updatedStoryValues);
     setShowTotalCost(updatedShowTotalCost);
-    setTotalDeliverables(0)
-    // Send updated filtered data to the backend or relevant handler
+    setTotalDeliverables(0);
+    console.log("filtred", filtered);
     sendPlanDetails(filtered);
   };
-
+  
+  
   const applyFollowerRangeFilter = (data) => {
     if (!selectedFollowers?.length) return data;
 

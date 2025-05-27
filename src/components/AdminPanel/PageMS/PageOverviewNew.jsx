@@ -39,6 +39,7 @@ import StatsOfOverview from "./PageOverview/StatsOfOverview";
 import PageEdit from "./PageEdit";
 import CategoryWisePageOverviewNew from "./PageOverview/CategoryWisePageOverviewNew";
 import PageLogsModel from "./PageLogsModel";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const PageOverviewNew = () => {
   const { toastAlert, toastError } = useGlobalContext();
@@ -49,7 +50,10 @@ const PageOverviewNew = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { contextData } = useAPIGlobalContext();
 
+  const showExport =
+    contextData && contextData[72] && contextData[72].view_value === 1;
   const [vendorDetails, setVendorDetails] = useState(null);
   const [activeTab, setActiveTab] = useState("Tab0");
   const [user, setUser] = useState();
@@ -801,10 +805,9 @@ const PageOverviewNew = () => {
     {
       key: "page_status",
       name: "Page Status",
-      renderRowCell:(row)=>{
-        return formatString(row.page_status)
-      }
-       
+      renderRowCell: (row) => {
+        return formatString(row.page_status);
+      },
     },
     // {
     //   key: "max_cost_price",
@@ -843,7 +846,7 @@ const PageOverviewNew = () => {
     //   compare: true,
     // },
     {
-      key: "link",
+      key: "page_link",
       name: "Link",
       width: 80,
       renderRowCell: (row) => {
@@ -1568,7 +1571,7 @@ const PageOverviewNew = () => {
       key: "sub_category_name",
       name: "Sub Category Name",
       width: 200,
-      renderRowCell:(row) => formatString(row.sub_category_name)
+      renderRowCell: (row) => formatString(row.sub_category_name),
     },
     {
       key: "page_count",
@@ -1711,6 +1714,7 @@ const PageOverviewNew = () => {
                   filterFollowers={filterFollowers}
                   setFilterFollowers={setFilterFollowers}
                   setPlanFormName={setPlanFormName}
+                  showExport={showExport}
                 />
               </>
             )}
@@ -1765,6 +1769,7 @@ const PageOverviewNew = () => {
                           rowSelectable={true}
                           pagination={[100, 200, 1000]}
                           tableName={"Page Health"}
+                          showExport={showExport}
                         />
                       )}
                     </div>
@@ -1781,6 +1786,7 @@ const PageOverviewNew = () => {
                 dataTable={pageColumns}
                 platformName={platformName}
                 setPlanFormName={setPlanFormName}
+                showExport={showExport}
               />
             )}
             {activeTab === "Tab7" && (
@@ -1805,6 +1811,7 @@ const PageOverviewNew = () => {
                     )}
                   </div>
                 }
+                showExport={showExport}
               />
             )}
             {activeTab === "Tab4" && <PageClosedByDetails />}
@@ -1838,6 +1845,7 @@ const PageOverviewNew = () => {
               )}
             </div>
           }
+          showExport={showExport}
         />
       )}
     </>

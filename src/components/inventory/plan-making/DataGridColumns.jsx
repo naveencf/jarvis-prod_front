@@ -5,9 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import { calculatePrice } from './helper';
 import { formatIndianNumber } from '../../../utils/formatIndianNumber';
 import { formatPageLabel } from '../../../utils/helper';
+import { useGetAllVendorQuery } from '../../Store/reduxBaseURL';
 
 const DataGridColumns = ({
-  vendorData,
   // filterData,
   selectedRows,
   handleCheckboxChange,
@@ -36,6 +36,9 @@ const DataGridColumns = ({
     if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
     return num;
   };
+
+  const { data: vendor, isLoading: VendorLoading } = useGetAllVendorQuery();
+  const vendorData = vendor?.data;
 
   const navigate = useNavigate();
   const token = sessionStorage.getItem('token');

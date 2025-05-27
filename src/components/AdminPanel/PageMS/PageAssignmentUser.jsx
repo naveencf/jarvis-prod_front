@@ -10,10 +10,15 @@ import { useGetAllCatAssignmentQuery } from "../../Store/API/Inventory/CatAssign
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import formatString from "../../../utils/formatString";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const PageAssignmentUser = () => {
   const { toastAlert } = useGlobalContext();
   const { data: authData, isLoading } = useGetAllCatAssignmentQuery();
+  const { contextData } = useAPIGlobalContext();
+
+  const showExport =
+    contextData && contextData[72] && contextData[72].view_value === 1;
   const [openModal, setOpenModal] = useState(false);
   const [openCategoryModal, setOpenCategoryModal] = useState(false); // State for category modal
   const [selectedRowData, setSelectedRowData] = useState(null);
@@ -191,6 +196,7 @@ const PageAssignmentUser = () => {
                 title={"Page Category Assignment To User"}
                 pagination={[100, 200, 1000]}
                 tableName={"Page Category Assignment To User"}
+                showExport={showExport}
               />
             </div>
           </div>
