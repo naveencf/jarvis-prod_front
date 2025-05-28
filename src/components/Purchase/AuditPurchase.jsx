@@ -1835,6 +1835,7 @@ const AuditPurchase = () => {
         columns={columns}
         title={`Records`}
         rowSelectable={true}
+        showExport={true}
         selectedData={handleSelection}
         tableName={"PlanX-execution"}
         isLoading={isFetchingPostDetails || loadingPlanData || fetchingPlanData}

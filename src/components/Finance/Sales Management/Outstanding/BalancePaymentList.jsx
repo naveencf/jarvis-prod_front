@@ -548,6 +548,7 @@ const BalancePaymentList = () => {
               pagination={[100, 200]}
               tableName={"sales_booking_outstanding_for_finanace"}
               selectedData={setSelectedData}
+              showExport={true}
               addHtml={
                 <>
                   <button

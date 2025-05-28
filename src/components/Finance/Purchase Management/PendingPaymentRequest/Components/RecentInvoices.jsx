@@ -97,7 +97,7 @@ function RecentInvoices({ rowData, setOpenImageDialog, setViewImgSrc }) {
 
         },
     ]
-    console.log(InvoiceDetails?.recent_invoices, "InvoiceDetails?.recent_invoices ")
+    // console.log(InvoiceDetails?.recent_invoices, "InvoiceDetails?.recent_invoices ")
     return (
         <div>
             <Accordion  >

@@ -84,6 +84,7 @@ function VendorAdavanceRequest({ formData, setFormData, vendorId }) {
                     value={formData?.at_price || ""}
                     onChange={handleAdvanceChange}
                     fullWidth
+                    onWheel={(e) => e.target.blur()}  // 👈 Prevent scroll change
                 />
                 <TextField
                     label="No of Posts"
@@ -92,6 +93,7 @@ function VendorAdavanceRequest({ formData, setFormData, vendorId }) {
                     value={formData?.no_of_post || ""}
                     onChange={handleAdvanceChange}
                     fullWidth
+                    onWheel={(e) => e.target.blur()}  // 👈 Prevent scroll change
                 />
             </Stack>
         </>

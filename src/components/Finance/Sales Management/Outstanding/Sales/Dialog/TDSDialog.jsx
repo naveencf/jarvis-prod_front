@@ -180,7 +180,7 @@ function TDSDialog(props) {
         <div className="pack w-100 mt-3 sb">
           <div></div>
           <div className="pack gap16">
-            {tdsAmount > 0 && tdsPercentage <= 10 && <Button variant="contained" onClick={(e) => handleSaveTDS(e)}>
+            {tdsAmount > 0 && tdsPercentage <= 20 && <Button variant="contained" onClick={(e) => handleSaveTDS(e)}>
               Update
             </Button>}
             <Button variant="contained" onClick={handleCloseTDSFields}>
