@@ -3,12 +3,13 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { useGlobalContext } from '../../../Context/Context';
 
-function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMandatory }) {
+function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMandatory, rowData }) {
     //   const { data: InvoiceDetails, isLoading: invoicesRequestLoading, error, refetch: refetchInvoicesDetail, isFetching: vendorRequestFetching } = useGetVendorRecentInvoicesDetailQuery(rowData?.vendor_obj_id);
-    // console.log(InvoiceDetails?.recent_invoices, "data")
+    // // console.log(InvoiceDetails?.recent_invoices, "data")
     const [TDSPercentage, setTDSPercentage] = useState(1);
     const [isTDSError, setIsTDSError] = useState(false);
     const { toastAlert, toastError } = useGlobalContext();
+    // console.log(rowData, "rowData")
     const fetchExtractedDataForTDS = async () => {
         if (!InvoiceDetails || InvoiceDetails.bank_details.length === 0) return 0; // Default
 
@@ -17,7 +18,7 @@ function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMa
         // );
         const hasGST = InvoiceDetails.bank_details[selectedBankIndex]?.gst_no?.trim()
         const panCard = InvoiceDetails.bank_details[selectedBankIndex]?.pan_card?.trim()
-        console.log(panCard, "panCardyou")
+        // // console.log(panCard, "panCardyou")
 
         let tdsPercentage = 0; // Default if nothing matches
 
@@ -29,7 +30,7 @@ function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMa
             tdsPercentage = (fifthChar === "F" || fifthChar === "C") ? 2 : 1;
         }
 
-        // console.log(`TDS Percentage: ${tdsPercentage}`);
+        // // console.log(`TDS Percentage: ${tdsPercentage}`);
         return tdsPercentage;
     };
 
@@ -62,10 +63,6 @@ function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMa
     }
 
     const handleTDSLogic = async () => {
-        // console.log(InvoiceDetails, "firstChar", selectedBankIndex, "firstChar", InvoiceDetails?.recent_invoices)
-        console.log("DEBUG → InvoiceDetails:", InvoiceDetails);
-        console.log("DEBUG → selectedBankIndex:", selectedBankIndex);
-        console.log("DEBUG → recent_invoices:", InvoiceDetails?.recent_invoices);
 
         if (
 
@@ -80,12 +77,12 @@ function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMa
             selectedBankIndex >= 0
 
         ) {
-            // console.log("✅ Passed all checks");
-            // console.log(tds, "tds")
+            // // console.log("✅ Passed all checks");
+            // // console.log(tds, "tds")
             const invoices = InvoiceDetails.recent_invoices;
             const tempTdsPercent = await fetchExtractedDataForTDS(); // Await here
             const { tds, total_outstanding } = shouldDeductTDS(invoices);
-            console.log(tds, "tds", tempTdsPercent)
+            // // console.log(tds, "tds", tempTdsPercent)
             if (tds) {
                 if (tempTdsPercent === 0) {
                     toastError("Vendor Pan Card or GST is not available, in account details, TDS will not be deducted");
@@ -93,27 +90,28 @@ function VendorValidation({ InvoiceDetails, selectedBankIndex, setTdsDeductionMa
                     // return;
                     setTDSPercentage(1);
                     setTdsDeductionMandatory(true);
-                    console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan_card")
+                    // console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan_card")
                 } else {
                     setIsTDSError(false)
                     setTDSPercentage(tempTdsPercent);
                 }
                 // handleTDSDeduction(true);
                 // Optionally: setTDSValue((tempTdsPßercent / 100) * total_outstanding);
-            } else if (rowData.request_amount == (rowData.outstandings - rowData.tds_deduction) && rowData.request_amount >= 30000) {
-                if (tempTdsPercent === 0) {
-                    toastError("Vendor Pan Card or GST is not available, in account details, TDS will not be deducted");
-                    console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan", selectedBankIndex, InvoiceDetails.bank_details)
-                    setIsTDSError(true)
-                    setTDSPercentage(1);
-                    // return;
-                } else {
-                    setIsTDSError(false)
-                    setTDSPercentage(tempTdsPercent);
-                }
-                // handleTDSDeduction(true);
-
             }
+            // else if (rowData.request_amount == (rowData.outstandings - rowData.tds_deduction) && rowData.request_amount >= 30000) {
+            //     if (tempTdsPercent === 0) {
+            //         toastError("Vendor Pan Card or GST is not available, in account details, TDS will not be deducted");
+            //         // console.log(InvoiceDetails.bank_details[selectedBankIndex]?.pan_card, "pan", selectedBankIndex, InvoiceDetails.bank_details)
+            //         setIsTDSError(true)
+            //         setTDSPercentage(1);
+            //         // return;
+            //     } else {
+            //         setIsTDSError(false)
+            //         setTDSPercentage(tempTdsPercent);
+            //     }
+            //     // handleTDSDeduction(true);
+
+            // }
         }
 
     };

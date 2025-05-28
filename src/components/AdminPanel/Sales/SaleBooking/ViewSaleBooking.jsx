@@ -1123,6 +1123,7 @@ const ViewSaleBooking = () => {
         pagination={[100, 200]}
         tableName={"SaleBookingView"}
         showTotal={true}
+        showExport={true}
         addHtml={
           loginUserRole === 1 && (
             <CustomSelect

@@ -54,7 +54,7 @@ const PaymentRequestFromPurchase = ({
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(vendorDetail._id);
   const { data: InvoiceDetails, isLoading: invoicesRequestLoading, refetch: refetchInvoicesDetail, isFetching: vendorRequestFetching } = useGetVendorRecentInvoicesDetailQuery(vendorDetail?._id);
-  // // console.log(InvoiceDetails?.recent_invoices, "data")
+  // // // console.log(InvoiceDetails?.recent_invoices, "data")
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   const [addPurchase, { isLoading, isSuccess, isError }] =
@@ -122,9 +122,10 @@ const PaymentRequestFromPurchase = ({
 
   useEffect(() => {
 
-    if (InvoiceDetails && InvoiceDetails?.pending_partial_invoices && InvoiceDetails?.pending_partial_invoices.length > 0) {
-      // const totals = getInvoiceTotals(InvoiceDetails?.pending_partial_invoices);
-      // // console.log(totals);
+    if (
+      InvoiceDetails
+    ) {
+      // console.log("pass all checks");
       const VendorCurrentOutstanding = getOutstandingText();
       let tempTotalPaidWithPendingAmount = InvoiceDetails.totalBaseAmount - InvoiceDetails.totalPaidWithPendingAmount;
       if (tempTotalPaidWithPendingAmount < 0) {
@@ -134,6 +135,7 @@ const PaymentRequestFromPurchase = ({
       setVendorBankDetail(InvoiceDetails?.bank_details || []);
       // console.log(InvoiceDetails.vendor_outstandings - tempTotalPaidWithPendingAmount, "maxAllowedOutstanding", tempTotalPaidWithPendingAmount, "InvoiceDetails.vendor_outstandings", InvoiceDetails.vendor_outstandings);
     }
+    // console.log(InvoiceDetails, "InvoiceDetails")
   }, [vendorInvoices, InvoiceDetails]);
 
 
@@ -158,7 +160,7 @@ const PaymentRequestFromPurchase = ({
   //     //   .then((res) => {
   //     //     if (res.status == 200) {
   //     //       setVendorPhpDetail(res.data.body);
-  //     //       // // console.log(res.data.body, 'vendorDetail', vendorDetail);
+  //     //       // // // console.log(res.data.body, 'vendorDetail', vendorDetail);
   //     //     }
   //     //   });
   //     // axios
@@ -174,7 +176,7 @@ const PaymentRequestFromPurchase = ({
   //     //   .then((res) => {
   //     //     if (res.status == 200) {
   //     //       setVendorBankDetail(res.data.data);
-  //     //       // // console.log(res.data.data, 'res.data.data');
+  //     //       // // // console.log(res.data.data, 'res.data.data');
   //     //     }
   //     //   });
   //   }
@@ -184,7 +186,7 @@ const PaymentRequestFromPurchase = ({
     const date = new Date(dateStr);
     return date.toISOString().split("T")[0]; // gives YYYY-MM-DD
   };
-  // // console.log(maxAllowedOutstanding, "maxAllowedOutstanding")
+  // console.log(maxAllowedOutstanding, "maxAllowedOutstanding")
   const handleChange = (e) => {
     const { name, value } = e.target;
     const numericValue = parseFloat(value) || 0;
@@ -240,7 +242,7 @@ const PaymentRequestFromPurchase = ({
       return updatedData;
     });
   };
-  // console.log(vendorDetail, "vendorDetail");
+  // // console.log(vendorDetail, "vendorDetail");
   useEffect(() => {
     // Request Edit Case
     if (vendorDetail && vendorDetail.request_id && vendorBankDetail) {
@@ -274,7 +276,7 @@ const PaymentRequestFromPurchase = ({
         setIsGSTAvailable(true);
       }
     } else {
-      // // console.log("Adding Request");
+      // // // console.log("Adding Request");
       // setSelectedBankIndex(""); // Reset when adding a new request
     }
   }, [vendorDetail, vendorBankDetail]);
@@ -294,13 +296,13 @@ const PaymentRequestFromPurchase = ({
       // Check if both documents are available
       if (hasGST || hasPanCard) {
         setMandateDocuments(true);
-        // console.log("Both documents available");
+        // // console.log("Both documents available");
       }
     }
   }, [venodrDocuments]); // Updated dependency to watch vendorDocuments
 
   const handleGSTChange = (isChecked) => {
-    // // console.log(isChecked, "hasGST")
+    // // // console.log(isChecked, "hasGST")
     setIsGSTAvailable(isChecked);
     setFormData((prev) => {
       const requestAmount = parseFloat(prev.request_amount) || 0;
@@ -345,7 +347,7 @@ const PaymentRequestFromPurchase = ({
     }
     return "";
   };
-  console.log(tdsDeductionMandatory, "tdsDeductionMandatory")
+  // console.log(tdsDeductionMandatory, "tdsDeductionMandatory")
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -353,7 +355,7 @@ const PaymentRequestFromPurchase = ({
       toastError("For Tds, GST or PAN required in Vendor Account Detail, Vendor Payment limit reached");
       return;
     } else if (selectedFileName != "") {
-      // // console.log(selectedFileName, "selectedFileName")
+      // // // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
         toastError("Invoice number is required.");
         return;
@@ -406,7 +408,7 @@ const PaymentRequestFromPurchase = ({
     payload.append("vpa", selectedBank?.upi_id || "");
     payload.append("is_bank_verified", selectedBank?.is_verified);
 
-    // console.log(formData.invc_date, "payload");
+    // // console.log(formData.invc_date, "payload");
     try {
       await addPurchase(payload).unwrap();
       toastAlert("Payment requested successfully!");
@@ -426,7 +428,7 @@ const PaymentRequestFromPurchase = ({
       setSelectedFileName("");
       setReqestPaymentDialog(false);
     } catch (error) {
-      // console.error("Failed to add purchase:", error);
+      // // console.error("Failed to add purchase:", error);
     }
   };
   const handleEditSubmit = async (e) => {
@@ -435,7 +437,7 @@ const PaymentRequestFromPurchase = ({
       toastError("For tds GST or PAN required as Vendor Payment limit reached");
       return;
     } else if (selectedFileName != "") {
-      // // console.log(selectedFileName, "selectedFileName")
+      // // // console.log(selectedFileName, "selectedFileName")
       if (!formData.invc_no) {
         toastError("Invoice number is required.");
         return;
@@ -502,7 +504,7 @@ const PaymentRequestFromPurchase = ({
       setSelectedFileName("");
       setReqestPaymentDialog(false);
     } catch (error) {
-      // console.error("Failed to add purchase:", error);
+      // // console.error("Failed to add purchase:", error);
     }
   };
   const handleCloseDialog = () => {
@@ -535,7 +537,7 @@ const PaymentRequestFromPurchase = ({
         setSelectedFileName("");
         setReqestPaymentDialog(false);
       } catch (error) {
-        // console.error("Error deleting purchase request:", error);
+        // // console.error("Error deleting purchase request:", error);
       }
     }
   };
@@ -589,7 +591,7 @@ const PaymentRequestFromPurchase = ({
           }
         });
     } catch (error) {
-      // console.log(error);
+      // // console.log(error);
     }
   };
   const handleRemoveFile = () => {
@@ -622,7 +624,7 @@ const PaymentRequestFromPurchase = ({
       maxWidth={openImageDialog ? "xl" : "md"} // Dynamically set maxWidth
       fullWidth
     >
-      <VendorValidation InvoiceDetails={InvoiceDetails} selectedBankIndex={selectedBankIndex} setTdsDeductionMandatory={setTdsDeductionMandatory} />
+      <VendorValidation rowData={rowData} InvoiceDetails={InvoiceDetails} selectedBankIndex={selectedBankIndex} setTdsDeductionMandatory={setTdsDeductionMandatory} />
       <Stack direction="row" spacing={2}>
         {openImageDialog && (
           <Stack minWidth="50%">
