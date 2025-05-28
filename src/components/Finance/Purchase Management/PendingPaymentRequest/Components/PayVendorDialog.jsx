@@ -92,8 +92,7 @@ function PayVendorDialog(props) {
   // console.log(vendorInvoices, "vendorInvoices")
   const { data: vendorDocuments, isLoading: isVendorDocumentsLoading } =
     useGetVendorDocumentByVendorDetailQuery(rowData?.vendor_obj_id);
-  // console.log(vendorDetail, "vendorDetail")
-  // useEffect(() => {
+
   const fetchExtractedDataForTDS = async () => {
     if (!InvoiceDetails || InvoiceDetails.bank_details.length === 0) return 0; // Default
 
@@ -102,12 +101,7 @@ function PayVendorDialog(props) {
     // );
     const hasGST = InvoiceDetails.bank_details[selectedBankIndex]?.gst_no?.trim()
     const panCard = InvoiceDetails.bank_details[selectedBankIndex]?.pan_card?.trim()
-    // const hasGST = vendorBankDetail[selectedBankIndex]?.gst_no?.trim()
-    // const panCard = vendorBankDetail[selectedBankIndex]?.pan_card?.trim()
 
-    // const panCard = vendorDocuments.find(
-    //   (doc) => doc.document_name === "Pan Card" && doc.document_no?.trim() !== ""
-    // );
 
     let tdsPercentage = 0; // Default if nothing matches
 
@@ -123,6 +117,33 @@ function PayVendorDialog(props) {
     return tdsPercentage;
   };
 
+  function shouldDeductTDS(invoices) {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const fyStart = new Date(now.getMonth() >= 3 ? currentYear : currentYear - 1, 3, 1); // April 1
+    const fyEnd = new Date(now.getMonth() >= 3 ? currentYear + 1 : currentYear, 2, 31); // March 31
+
+    let totalOutstandingFY = 0;
+    let tdsAlreadyDeducted = false;
+
+    for (let invoice of invoices) {
+      const invDate = new Date(invoice.invc_date);
+
+      // If any invoice has tds_deduction > 0, set tdsAlreadyDeducted to true
+      if (invoice.tds_deduction && invoice.tds_deduction > 0) {
+        tdsAlreadyDeducted = true;
+      }
+
+      if (invDate >= fyStart && invDate <= fyEnd) {
+        totalOutstandingFY += invoice.outstandings || 0;
+      }
+    }
+
+    return {
+      tds: tdsAlreadyDeducted || totalOutstandingFY >= 100000,
+      total_outstanding: totalOutstandingFY
+    };
+  }
 
 
   const handleTDSLogic = async () => {
@@ -227,33 +248,7 @@ function PayVendorDialog(props) {
   }, []);
 
 
-  function shouldDeductTDS(invoices) {
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const fyStart = new Date(now.getMonth() >= 3 ? currentYear : currentYear - 1, 3, 1); // April 1
-    const fyEnd = new Date(now.getMonth() >= 3 ? currentYear + 1 : currentYear, 2, 31); // March 31
 
-    let totalOutstandingFY = 0;
-    let tdsAlreadyDeducted = false;
-
-    for (let invoice of invoices) {
-      const invDate = new Date(invoice.invc_date);
-
-      // If any invoice has tds_deduction > 0, set tdsAlreadyDeducted to true
-      if (invoice.tds_deduction && invoice.tds_deduction > 0) {
-        tdsAlreadyDeducted = true;
-      }
-
-      if (invDate >= fyStart && invDate <= fyEnd) {
-        totalOutstandingFY += invoice.outstandings || 0;
-      }
-    }
-
-    return {
-      tds: tdsAlreadyDeducted || totalOutstandingFY >= 100000,
-      total_outstanding: totalOutstandingFY
-    };
-  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];

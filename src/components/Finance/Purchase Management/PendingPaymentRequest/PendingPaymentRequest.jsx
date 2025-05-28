@@ -309,17 +309,7 @@ export default function PendingPaymentRequest() {
         const startOfMonth = now.clone().startOf('month');
         const endOfMonth = now.clone().endOf('month');
         return apiData.filter((item) => moment(item.request_date).isBetween(startOfMonth, endOfMonth, 'day', '[]'));
-      // case "nextMonth":
-      //   const startOfNextMonth = now.clone().add(1, "months").startOf("month");
-      //   const endOfNextMonth = now.clone().add(1, "months").endOf("month");
-      //   return apiData.filter((item) =>
-      //     moment(item.request_date).isBetween(
-      //       startOfNextMonth,
-      //       endOfNextMonth,
-      //       "day",
-      //       "[]"
-      //     )
-      //   );
+
       case 'currentQuarter':
         const quarterStart = moment().startOf('quarter');
         const quarterEnd = moment().endOf('quarter');
