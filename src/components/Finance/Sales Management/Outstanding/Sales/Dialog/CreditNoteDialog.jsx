@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -14,6 +14,8 @@ import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../../utils/config";
 import axios from "axios";
 import { useUpdateCreditNoteMutation } from "../../../../../Store/API/Finance/CreditNoteApi";
+import { useEffect } from "react";
+import { Stack } from "react-bootstrap";
 
 const CreditNoteDialog = (props) => {
   const {
@@ -33,9 +35,10 @@ const CreditNoteDialog = (props) => {
       isSuccess: updateCreditNoteSuccess,
     },
   ] = useUpdateCreditNoteMutation();
-
+  console.log(rowDataForCreditNote, "rowDataForCreditNote")
   const { toastAlert, toastError } = useGlobalContext();
   const [creditNoteReason, setCreditNoteReason] = useState("");
+  const [creditNoteAmount, setCreditNoteAmount] = useState(0);
   const [creditNoteFile, setCreditNoteFile] = useState("");
   const [preview, setPreview] = useState(null);
   const [isPDF, setIsPDF] = useState(false);
@@ -44,6 +47,9 @@ const CreditNoteDialog = (props) => {
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
 
+  useEffect(() => {
+    setCreditNoteAmount(rowDataForCreditNote?.invoice_amount)
+  }, [rowDataForCreditNote]);
   const handleCloseCreditNote = () => {
     setCreditNotesDialog(false);
 
@@ -74,12 +80,17 @@ const CreditNoteDialog = (props) => {
       `Are you sure you want to mark this sale booking of ${rowDataForCreditNote?.campaign_amount} as a credit note?`
     );
     if (!confirmation) return;
-
+    let partialCreditNote = true;
+    if (creditNoteAmount === rowDataForCreditNote?.invoice_amount) {
+      partialCreditNote = false;
+    }
     const formData = new FormData();
     formData.append("invoice_action_reason", creditNoteReason);
     formData.append("updated_by", loginUserId);
     formData.append("credit_note_file", creditNoteFile);
-
+    formData.append("is_partial_credit_note", partialCreditNote);
+    formData.append("credit_note_amount", creditNoteAmount);
+    // Cancelled
     try {
       await updateCreditNoteForOutstanding({
         id: rowDataForCreditNote?._id,
@@ -123,9 +134,12 @@ const CreditNoteDialog = (props) => {
         </IconButton>
         <DialogContent
           dividers={true}
-          sx={{ maxHeight: "80vh", overflowY: "auto" }}
+        // sx={{ maxHeight: "80vh", overflowY: "auto" }}
         >
-          <div className="row">
+          {/* <div className="row"> */}
+          <Stack direction="column" spacing={2}>
+
+
             <TextField
               value={rowDataForCreditNote?.invoice_number}
               style={{ background: "#F0F0F0" }}
@@ -141,6 +155,13 @@ const CreditNoteDialog = (props) => {
               value={creditNoteReason}
               className="mt-3"
               onChange={(e) => setCreditNoteReason(e.target.value)}
+            />
+            <TextField
+              type="text"
+              label="Credit Note Amount"
+              value={creditNoteAmount}
+              className="mt-3"
+              onChange={(e) => setCreditNoteAmount(e.target.value)}
             />
             <div className="col-3">
               <label className="form-label mt-2">
@@ -167,7 +188,8 @@ const CreditNoteDialog = (props) => {
                 </div>
               )}
             </div>
-          </div>
+          </Stack>
+          {/* </div> */}
           <div className="d-flex">
             <Button
               type="button"
@@ -188,7 +210,7 @@ const CreditNoteDialog = (props) => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </div >
   );
 };
 

@@ -237,9 +237,9 @@ const UserAuthDetail = () => {
   //   toastAlert("Updated Successfully");
   // }
 
-  if (isSubmitted) {
-    return <Navigate to={`/admin/user-overview/${"Active"}`} />;
-  }
+  // if (isSubmitted) {
+  //   return <Navigate to={`/admin/user-overview/${"Active"}`} />;
+  // }
   return (
     <>
       <div className="form-heading">

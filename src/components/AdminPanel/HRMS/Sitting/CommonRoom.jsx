@@ -16,10 +16,29 @@ import parkingBalcony from "../../../../assets/imgs/sitting/parking-balcony.png"
 import { Link } from "react-router-dom";
 import { baseUrl } from "../../../../utils/config";
 import axios from "axios";
+import { useAPIGlobalContext } from "../../APIContext/APIContext";
+import Select from "react-select";
+import {
+  Card,
+  CardContent,
+  Avatar,
+  Typography,
+  Box,
+  CircularProgress,
+} from "@mui/material";
 
 const CommonRoom = () => {
+  const { userContextData } = useAPIGlobalContext();
+  const [userList, setUserList] = useState("");
+  const UserList = userContextData?.filter(
+    (user) => user.user_status === "Active" && user.job_type === "WFO"
+  );
+  const [getDataofSelectedUser, setGetDataofSelectedUser] = useState([]);
+
+  console.log(getDataofSelectedUser, "getDataofSelectedUser");
   const [totalSittingCount, setTotalSittingCount] = useState({});
   const [selectedShift, setSelectedShift] = useState(1); // Default shift
+  const token = sessionStorage.getItem("token");
 
   const totalSittingDataCount = async () => {
     try {
@@ -31,8 +50,36 @@ const CommonRoom = () => {
   };
 
   useEffect(() => {
+    const fetchUserSittingData = async () => {
+      if (!userList) return;
+
+      try {
+        const res = await axios.get(
+          `${baseUrl}get_user_sitting_data?user_id=${userList}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setGetDataofSelectedUser(res.data.data);
+        console.log("User Sitting Data:", res.data.data);
+      } catch (error) {
+        console.error("Error fetching user sitting data:", error);
+      }
+    };
+
+    fetchUserSittingData();
+  }, [userList]);
+
+  useEffect(() => {
     totalSittingDataCount();
   }, []);
+
+  const matchedUser = UserList?.find(
+    (user) => user.user_id == getDataofSelectedUser?.userData?.user_id || ""
+  );
+  console.log(matchedUser, "matchedUser");
 
   return (
     <div className="card">
@@ -132,7 +179,6 @@ const CommonRoom = () => {
           </div>
         </div>
       </div>
-
       {/* Shift Selection Buttons */}
       <div className="card-header flexCenterBetween">
         <h5 className="card-title">Creativefuel (Indore)</h5>
@@ -141,7 +187,75 @@ const CommonRoom = () => {
             Customize Rooms
           </button>
         </Link>
+
+        <div className="col-3">
+          <label className="form-label">User List</label>
+          <Select
+            className=""
+            options={UserList.map((option) => ({
+              value: option.user_id,
+              label: `${option.user_name}`,
+            }))}
+            value={{
+              value: userList,
+              label:
+                UserList.find((user) => user.user_id === userList)?.user_name ||
+                "",
+            }}
+            onChange={(e) => {
+              setUserList(e.value);
+            }}
+          />
+        </div>
       </div>
+      <Box mt={2}>
+        {!getDataofSelectedUser?.userData && userList ? (
+          <Card sx={{ maxWidth: 345, boxShadow: 3, mt: 2 }}>
+            <CardContent>
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                height={100}
+              >
+                <CircularProgress />
+              </Box>
+            </CardContent>
+          </Card>
+        ) : (
+          matchedUser?.user_id &&
+          getDataofSelectedUser?.userData && (
+            <Card sx={{ maxWidth: 345, boxShadow: 3, mt: 2 }}>
+              <CardContent>
+                <Box display="flex" alignItems="center" gap={2}>
+                  <Avatar
+                    src={matchedUser?.image_url}
+                    alt={matchedUser?.user_name}
+                    sx={{ width: 64, height: 64 }}
+                  />
+                  <Box>
+                    <Typography variant="h6" fontWeight="bold">
+                      {getDataofSelectedUser?.userData?.employee}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {getDataofSelectedUser?.shift_id === 1
+                        ? "Day Shift"
+                        : "Night Shift"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Seat No:{" "}
+                      {getDataofSelectedUser?.userData?.seat_no || "N/A"}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Room: {getDataofSelectedUser?.roomName || "N/A"}
+                    </Typography>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          )
+        )}
+      </Box>
 
       {/* Floor Plan */}
       <div className="card-body">
