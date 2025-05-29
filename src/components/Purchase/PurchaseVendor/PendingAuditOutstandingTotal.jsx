@@ -80,67 +80,67 @@ const PendingAuditOutstandingTotal = () => {
     },
     ...(audit_status === "audited"
       ? [
-          {
-            key: "auditedCount",
-            name: "Audited Count",
-            renderRowCell: (row) => (
-                <button
-                  onClick={() => handleRowClick(row)}
-                  style={{
-                    color: "blue",
-                    textDecoration: "underline",
-                    backgroundColor: "transparent",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
-                >
-                  {row.auditedCount}
-                </button>
-              ),
-          },
-        ]
+        {
+          key: "auditedCount",
+          name: "Audited Count",
+          renderRowCell: (row) => (
+            <button
+              onClick={() => handleRowClick(row)}
+              style={{
+                color: "blue",
+                textDecoration: "underline",
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {row.auditedCount}
+            </button>
+          ),
+        },
+      ]
       : []),
 
     ...(audit_status === "pending"
       ? [
-          {
-            key: "pendingCount",
-            name: "Pending Count",
-            renderRowCell: (row) => (
-              <button
-                onClick={() => handleRowClick(row)}
-                style={{
-                  color: "blue",
-                  textDecoration: "underline",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                {row.pendingCount}
-              </button>
-            ),
-          },
-        ]
+        {
+          key: "pendingCount",
+          name: "Pending Count",
+          renderRowCell: (row) => (
+            <button
+              onClick={() => handleRowClick(row)}
+              style={{
+                color: "blue",
+                textDecoration: "underline",
+                backgroundColor: "transparent",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              {row.pendingCount}
+            </button>
+          ),
+        },
+      ]
       : []),
     ...(audit_status === "audited"
       ? [
-          {
-            key: "auditedAmount",
-            name: "Audited Amount (₹)",
-            renderRowCell: (row) => Math.floor(row.auditedAmount),
-          },
-        ]
+        {
+          key: "auditedAmount",
+          name: "Audited Amount (₹)",
+          renderRowCell: (row) => Math.floor(row.auditedAmount),
+        },
+      ]
       : []),
 
     ...(audit_status === "pending"
       ? [
-          {
-            key: "pendingAmount",
-            name: "Pending Amount (₹)",
-            renderRowCell: (row) => Math.floor(row.pendingAmount),
-          },
-        ]
+        {
+          key: "pendingAmount",
+          name: "Pending Amount (₹)",
+          renderRowCell: (row) => Math.floor(row.pendingAmount),
+        },
+      ]
       : []),
   ];
   const columns = [
@@ -288,6 +288,7 @@ const PendingAuditOutstandingTotal = () => {
         pagination={[100, 200, 1000]}
         tableName="Pending Audit Outstanding Total"
         selectedData={setSelectedRows}
+        showExport={true}
         tableSelectedRows={selectedRows}
         addHtml={
           <>

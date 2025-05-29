@@ -585,7 +585,7 @@ const LinkUploadOperation = ({
               </p>
             )}
           </div>
-          {vendorListData?.length > 0 && record != 0 && (
+          {/* {vendorListData?.length > 0 && record != 0 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -603,7 +603,7 @@ const LinkUploadOperation = ({
                 <p className="form-error">Please select the vendor</p>
               )}
             </div>
-          )}
+          )} */}
 
           {record == 0 && (
             <>

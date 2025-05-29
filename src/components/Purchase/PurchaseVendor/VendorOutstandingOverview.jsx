@@ -178,11 +178,11 @@ const VendorOutstandingOverview = () => {
 
   const filteredData = selectedRange
     ? vendorData.filter(
-        (item) =>
-          item.vendor_outstandings &&
-          item.vendor_outstandings > selectedRange.min &&
-          item.vendor_outstandings <= selectedRange.max
-      )
+      (item) =>
+        item.vendor_outstandings &&
+        item.vendor_outstandings > selectedRange.min &&
+        item.vendor_outstandings <= selectedRange.max
+    )
     : vendorData;
 
   const columns = [
@@ -301,6 +301,7 @@ const VendorOutstandingOverview = () => {
           pagination={[100, 200, 1000]}
           onPaginationChange={handlePaginationChange}
           showTotal={true}
+          showExport={true}
           tableName="Vendor Overview"
           addHtml={
             <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem" }}>

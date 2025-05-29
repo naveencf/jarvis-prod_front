@@ -350,37 +350,6 @@ export default function PendingPaymentRequest() {
     [data]
   );
 
-  // Use the function for partialData and instantData
-  // const partialResults = processData(filterData, '3');
-  // const instantResults = processData(filterData, '0');
-
-  // Destructure the results as needed
-  // const { pendingCount: pendingPartialCount, uniqueVendorCount: uniqueVendorPartialCount, pendingAmount: pendingAmountPartial, balanceAmount: balanceAmountPartial, nonGstCount: nonGstPartialCount, withInvcImage: withInvcPartialImage, withoutInvcImage: withoutInvcPartialImage, tdsDeduction: partialTDSDeduction } = partialResults;
-
-  // const { pendingCount: pendingInstantCount, uniqueVendorCount: uniqueVendorsInstantCount, pendingAmount: pendingAmountInstant, balanceAmount: balanceAmountInstant, nonGstCount: nonGstInstantCount, withInvcImage: withInvcInstantImage, withoutInvcImage: withoutInvcInstantImage, tdsDeduction: instantTDSDeduction } = instantResults;
-
-  // useEffect(() => {
-  //   const getUniqueVendorNames = (filterCondition) => {
-  //     const filteredData = filterCondition ? data?.filter(filterCondition) : data;
-  //     const uniqueVendorNames = [...new Set(filteredData?.map((d) => d?.vendor_name))];
-  //     setVendorNameList(uniqueVendorNames);
-  //   };
-
-  //   switch (activeAccordionIndex) {
-  //     case 0:
-  //       getUniqueVendorNames();
-  //       break;
-  //     case 1:
-  //       getUniqueVendorNames((d) => d?.status === '3');
-  //       break;
-  //     case 2:
-  //       getUniqueVendorNames((d) => d?.status === '0');
-  //       break;
-  //     default:
-  //       setVendorNameList([]);
-  //   }
-  // }, [activeAccordionIndex, data]);
-
   useEffect(() => {
     if (data?.length > 0) {
       const uniqueVendorNames = [
@@ -467,7 +436,10 @@ export default function PendingPaymentRequest() {
   const handlePaymentRequest = (row) => {
     if (!row) { return; }
     setReqestPaymentDialog(true)
-    setVendorDetail(row);
+    setVendorDetail({ ...row, _id: row.vendor_obj_id });
+
+    // setVendorDetail(row);
+    // console.log(row, "row")
   }
 
   const handleZohoStatusUpload = async (row) => {
