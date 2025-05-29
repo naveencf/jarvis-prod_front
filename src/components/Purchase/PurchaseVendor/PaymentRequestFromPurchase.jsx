@@ -66,7 +66,7 @@ const PaymentRequestFromPurchase = ({
     isLoading: requestLoading,
     error,
     refetch: refetchPaymentRequest,
-  } = useGetVendorPaymentRequestsQuery();
+  } = useGetVendorPaymentRequestsQuery('pending=true');
   const [vendorPhpDetail, setVendorPhpDetail] = useState("");
   const [vendorBankDetail, setVendorBankDetail] = useState("");
   const [selectedBankIndex, setSelectedBankIndex] = useState(0);
@@ -211,11 +211,12 @@ const PaymentRequestFromPurchase = ({
           "Payment is not allowed more than outstanding. You can request Advance or Upfront Payment"
         );
         return prev; // Preserve previous state
-      } else if (selectedPaymentType === "payment" && numericValue > maxAllowedOutstanding) {
+      }
+      else if (selectedPaymentType === "payment" && numericValue > maxAllowedOutstanding) {
         toastError(
           "You are not allowed to request more than " + maxAllowedOutstanding
         );
-        return prev;
+        return updatedData;
       }
       // Handle GST Calculation Logic
       if (name === "base_amount") {

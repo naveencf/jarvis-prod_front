@@ -1254,6 +1254,14 @@ const PageOverviewNew = () => {
       name: "Whatsapp Link",
     },
     {
+      key: "vendor_type_name",
+      width: 150,
+      name: "Vendor Type",
+      // renderRowCell: (row) => {
+      //   return row.vendor_type_name || "NA";
+      // },
+    },
+    {
       key: "Price_logs",
       name: "Price Logs",
       width: 200,
