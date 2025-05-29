@@ -483,7 +483,7 @@ const PaymentRequestFromPurchase = ({
 
     try {
       await updatePurchaseRequest({
-        _id: vendorDetail._id,
+        _id: vendorDetail.requestId,
         formData: payload,
       }).unwrap();
 
@@ -519,7 +519,7 @@ const PaymentRequestFromPurchase = ({
       window.confirm("Are you sure you want to delete this purchase request?")
     ) {
       try {
-        await deletePurchaseRequest(vendorDetail._id).unwrap();
+        await deletePurchaseRequest(vendorDetail.requestId).unwrap();
         toastAlert("Purchase request deleted successfully!");
         refetchPaymentRequest();
         setFormData({

@@ -436,7 +436,7 @@ export default function PendingPaymentRequest() {
   const handlePaymentRequest = (row) => {
     if (!row) { return; }
     setReqestPaymentDialog(true)
-    setVendorDetail({ ...row, _id: row.vendor_obj_id });
+    setVendorDetail({ ...row, _id: row.vendor_obj_id, requestId: row._id });
 
     // setVendorDetail(row);
     // console.log(row, "row")
