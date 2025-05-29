@@ -40,6 +40,7 @@ const PendingInvoiceDiscard = (props) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append("invoice_action_reason", reason);
+    formData.append("invoice_creation_status", "rejected");
 
     const confirmation = confirm("Are you sure you want to reject this data?");
     if (!confirmation) return;

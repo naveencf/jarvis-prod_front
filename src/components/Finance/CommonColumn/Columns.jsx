@@ -2370,7 +2370,7 @@ export const outstandingColumns = ({
             className="btn cmnbtn btn_sm btn-outline-primary ms-2"
             onClick={(e) => handleOpenCreditNote(e, row)}
           >
-            Credit Note
+            Invoice Update
           </button>
         </div>
       ),
@@ -2381,19 +2381,19 @@ export const outstandingColumns = ({
       width: 190,
       renderRowCell: (row) => (
         <div className="flex-row">
-          {row?.gst_status === false ? (
-            <button
-              variant="contained"
-              autoFocus
-              className="icon-1"
-              title="Discard"
-              onClick={(e) => handleDiscardOpenDialog(e, params.row)}
-            >
-              <i className="bi bi-trash"></i>
-            </button>
-          ) : (
+          {/* {row?.gst_status === false ? ( */}
+          {/* <button
+            variant="contained"
+            autoFocus
+            className="icon-1"
+            title="Discard"
+            onClick={(e) => handleDiscardOpenDialog(e, params.row)}
+          >
+            <i className="bi bi-trash"></i>
+          </button> */}
+          {/* ) : (
             ""
-          )}
+          )} */}
           <Link
             to={`/admin/finance-transaction-list/${row?._id}`}
             className="link-primary"

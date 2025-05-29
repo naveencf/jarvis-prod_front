@@ -866,6 +866,11 @@ const AuditPurchase = () => {
       key: "shortCode",
       width: 100,
     },
+    {
+      name: "ref_link",
+      key: "Link",
+      width: 100,
+    },
 
     {
       name: "Phase Date",
@@ -918,6 +923,7 @@ const AuditPurchase = () => {
         );
       },
       width: 100,
+      compare: true,
     },
     {
       key: "campaign_name",
