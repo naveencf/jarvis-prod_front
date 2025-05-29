@@ -848,8 +848,6 @@ const ViewSaleBooking = () => {
         <>
           {!row?.is_dummy_sale_booking && (
             <div className="flex-row">
-              {/* {row.incentive_earning_status === "un-earned" &&  */}
-              {/* {(row.sale_booking_id > 2370 || loginUserId == 62) && ( */}
               <Link
                 title="Edit sale booking"
                 to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
@@ -858,8 +856,6 @@ const ViewSaleBooking = () => {
                   <i className="bi bi-pencil" />
                 </div>
               </Link>
-              {/* )} */}
-              {/* } */}
 
               {loginUserRole == 1 && (
                 <DeleteButton
@@ -869,7 +865,7 @@ const ViewSaleBooking = () => {
                 />
               )}
 
-              {/* {row?.campaign_amount >= row?.approved_amount && (
+              {row?.campaign_amount > row?.approved_amount && row.gst_amount == 0 && (
                 <button
                   title="Payment Update"
                   className="icon-1"
@@ -884,7 +880,7 @@ const ViewSaleBooking = () => {
                 >
                   <i className="bi bi-credit-card-2-back" />
                 </button>
-              )} */}
+              )}
               {isAdmin && (
                 <button
                   className="icon-1"
