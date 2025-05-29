@@ -113,7 +113,7 @@ const EditInvoiceActionDialog = (props) => {
       setIsPDF(isFilePDF);
     }
   };
-  console.log(invcNumber, "invcNumber")
+  // console.log(invcNumber, "invcNumber")
   const handleInvoiceEditFields = async (e) => {
     e.preventDefault();
     if (!imageInvoice) {
@@ -125,7 +125,7 @@ const EditInvoiceActionDialog = (props) => {
       return;
 
     }
-    console.log(invcNumber, "invcNumber")
+    // console.log(invcNumber, "invcNumber")
     const confirmation = confirm("Are you sure you want to submit this data?");
     if (confirmation) {
       const formData = new FormData();

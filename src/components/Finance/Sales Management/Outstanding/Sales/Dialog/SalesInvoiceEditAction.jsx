@@ -14,7 +14,7 @@ import dayjs from "dayjs";
 import jwtDecode from "jwt-decode";
 import ImageView from "../../../../ImageView";
 import pdf from "../../../../pdf-file.png";
-import { useUpdatePendingInvoiceReqMutation } from "../../../../../Store/API/Finance/InvoiceRequestApi";
+import { useDeletePendingInvoiceMutation, useUpdatePendingInvoiceReqMutation } from "../../../../../Store/API/Finance/InvoiceRequestApi";
 import { useGlobalContext } from "../../../../../../Context/Context";
 
 function SalesInvoiceEditAction(props) {
@@ -37,6 +37,14 @@ function SalesInvoiceEditAction(props) {
       isSuccess: updateInvoiceRequestSuccess,
     },
   ] = useUpdatePendingInvoiceReqMutation();
+  const [
+    deletePendingInvoiceReq,
+    {
+      isLoading: deleteInvoiceRequestLoading,
+      isError: deleteInvoiceRequestError,
+      isSuccess: deleteInvoiceRequestSuccess,
+    },
+  ] = useDeletePendingInvoiceMutation();
 
   const { toastAlert, toastError } = useGlobalContext();
   const token = sessionStorage.getItem("token");
@@ -132,6 +140,30 @@ function SalesInvoiceEditAction(props) {
     // Check if the uploaded file is a PDF
     const isFilePDF = file.type === "application/pdf";
     setIsPDF(isFilePDF);
+  };
+  const handleCancelInvoice = async (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    // formData.append("invoice_action_reason", reason);
+    formData.append("invoice_creation_status", "cancelled");
+
+    const confirmation = confirm("Are you sure you want to cancel this invoice?");
+    if (!confirmation) return;
+
+    try {
+      const cancelInvoice = await deletePendingInvoiceReq({
+        id: outstandingRowData?._id,
+        data: formData,
+      }).unwrap();
+      console.log(cancelInvoice, "cancelInvoice")
+      toastAlert("Invoice Cancelled Successfully");
+
+      handleCloseEditAction();
+    } catch (error) {
+      console.error("Error rejecting data:", error);
+      toastAlert("Failed to cancel Invoice, please try again.");
+      // handleCloseEditAction();
+    }
   };
 
   return (
@@ -235,6 +267,14 @@ function SalesInvoiceEditAction(props) {
           >
             Update Invoice
           </Button>
+          {/* <Button
+            type="button"
+            className="mt-3"
+            variant="contained"
+            onClick={handleCancelInvoice}
+          >
+            Cancel Invoice
+          </Button> */}
         </div>
         {viewImgDialog && (
           <ImageView

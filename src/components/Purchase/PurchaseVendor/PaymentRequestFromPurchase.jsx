@@ -135,7 +135,7 @@ const PaymentRequestFromPurchase = ({
       setVendorBankDetail(InvoiceDetails?.bank_details || []);
       // console.log(InvoiceDetails.vendor_outstandings - tempTotalPaidWithPendingAmount, "maxAllowedOutstanding", tempTotalPaidWithPendingAmount, "InvoiceDetails.vendor_outstandings", InvoiceDetails.vendor_outstandings);
     }
-    // console.log(InvoiceDetails, "InvoiceDetails")
+    console.log(InvoiceDetails, "InvoiceDetails")
   }, [vendorInvoices, InvoiceDetails]);
 
 

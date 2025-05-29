@@ -5,10 +5,11 @@ import {
   DialogContent,
   Button,
   TextField,
+  Box,
 } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-import { useGlobalContext } from "../../../../../../Context/Context";
+// import { useGlobalContext } from "../../../../../../Context/Context";
 import { ErrorBar } from "recharts";
 import jwtDecode from "jwt-decode";
 import { baseUrl } from "../../../../../../utils/config";
@@ -16,8 +17,10 @@ import axios from "axios";
 import { useUpdateCreditNoteMutation } from "../../../../../Store/API/Finance/CreditNoteApi";
 import { useEffect } from "react";
 import { Stack } from "react-bootstrap";
+import { useGlobalContext } from "../../../../../../Context/Context";
 
 const CreditNoteDialog = (props) => {
+
   const {
     setCreditNotesDialog,
     creditNotesDialog,
@@ -35,7 +38,7 @@ const CreditNoteDialog = (props) => {
       isSuccess: updateCreditNoteSuccess,
     },
   ] = useUpdateCreditNoteMutation();
-  console.log(rowDataForCreditNote, "rowDataForCreditNote")
+  // console.log(rowDataForCreditNote, "rowDataForCreditNote")
   const { toastAlert, toastError } = useGlobalContext();
   const [creditNoteReason, setCreditNoteReason] = useState("");
   const [creditNoteAmount, setCreditNoteAmount] = useState(0);
@@ -73,11 +76,16 @@ const CreditNoteDialog = (props) => {
     }
   };
 
-  const handleCreditNoteUpdate = async (e) => {
+  const handleCreditNoteUpdate = async (e, inputValue) => {
     e?.preventDefault();
+    // console.log(e, "e")
 
+    if (creditNoteAmount <= 0) {
+      toastError("Credit Note Amount must be greater than 0");
+      return;
+    }
     const confirmation = confirm(
-      `Are you sure you want to mark this sale booking of ${rowDataForCreditNote?.campaign_amount} as a credit note?`
+      `Are you sure you want to mark this sale booking of ${inputValue == 'creditNote' ? creditNoteAmount : rowDataForCreditNote?.campaign_amount} as a ${inputValue}?`
     );
     if (!confirmation) return;
     let partialCreditNote = true;
@@ -85,19 +93,28 @@ const CreditNoteDialog = (props) => {
       partialCreditNote = false;
     }
     const formData = new FormData();
-    formData.append("invoice_action_reason", creditNoteReason);
-    formData.append("updated_by", loginUserId);
-    formData.append("credit_note_file", creditNoteFile);
-    formData.append("is_partial_credit_note", partialCreditNote);
-    formData.append("credit_note_amount", creditNoteAmount);
+    if (inputValue === 'cancelled') {
+      formData.append("invoice_action_reason", creditNoteReason);
+      formData.append("invoice_type_id", "cancelled");
+    } else if (inputValue === 'creditNote') {
+      formData.append("invoice_type_id", "credit_note");
+      formData.append("invoice_action_reason", creditNoteReason);
+      formData.append("updated_by", loginUserId);
+      formData.append("credit_note_file", creditNoteFile);
+      formData.append("is_partial_credit_note", partialCreditNote);
+      formData.append("credit_note_amount", creditNoteAmount);
+    } else {
+      toastError("Invalid action type");
+      return;
+    }
     // Cancelled
     try {
-      await updateCreditNoteForOutstanding({
+      const InvoiceUpdateResponse = await updateCreditNoteForOutstanding({
         id: rowDataForCreditNote?._id,
         data: formData,
       }).unwrap();
-
-      toastAlert("Credit Note Data Updated Successfully");
+      console.log(InvoiceUpdateResponse, "InvoiceUpdateResponse")
+      toastAlert("Invoice Updated Successfully");
       handleCloseCreditNote();
       getData();
     } catch (err) {
@@ -107,19 +124,9 @@ const CreditNoteDialog = (props) => {
   };
 
   return (
-    <div>
-      <Dialog
-        open={creditNotesDialog}
-        onClose={handleCloseCreditNote}
-        fullWidth
-        maxWidth="md"
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <DialogTitle>Invoice Update</DialogTitle>
+    <Dialog open={creditNotesDialog} onClose={handleCloseCreditNote} fullWidth maxWidth="sm">
+      <DialogTitle>
+        Invoice Update
         <IconButton
           aria-label="close"
           onClick={handleCloseCreditNote}
@@ -132,85 +139,81 @@ const CreditNoteDialog = (props) => {
         >
           <CloseIcon />
         </IconButton>
-        <DialogContent
-          dividers={true}
-        // sx={{ maxHeight: "80vh", overflowY: "auto" }}
-        >
-          {/* <div className="row"> */}
-          <Stack direction="column" spacing={2}>
+      </DialogTitle>
+
+      <DialogContent dividers>
+        <Stack direction="column" spacing={2} >
+          <TextField
+            label="Invoice Number"
+            value={rowDataForCreditNote?.invoice_number || ""}
+            InputProps={{ readOnly: true }}
+            fullWidth
+            sx={{ backgroundColor: "#F0F0F0", mb: 2 }}
+          />
+
+          <TextField
+            type="number"
+            // label="Credit Note Amount"
+            label={
+              <span>
+                Credit Note Amount <sup style={{ color: "red" }}>*</sup>
+              </span>
+            }
+            value={creditNoteAmount}
+            onChange={(e) => setCreditNoteAmount(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <TextField
+            type="text"
+            label="Reason"
+            value={creditNoteReason}
+            onChange={(e) => setCreditNoteReason(e.target.value)}
+            fullWidth
+            sx={{ mb: 2 }}
+          />
+
+          <Box sx={{ mb: 2 }}>
+            <label className="form-label">
+              File <sup style={{ color: "red" }}>*</sup>
+            </label>
+            <input type="file" onChange={handleFileChange} />
+
+            {preview && (
+              <Box mt={1}>
+                {!isPDF ? (
+                  <img
+                    src={preview}
+                    alt="Preview"
+                    style={{ maxWidth: "70px", cursor: "pointer" }}
+                    onClick={() => setViewImgDialog(true)}
+                  />
+                ) : (
+                  <img
+                    src="/pdf-icon.png"
+                    alt="PDF Preview"
+                    style={{ maxWidth: "40px", cursor: "pointer" }}
+                    onClick={() => setViewImgDialog(true)}
+                  />
+                )}
+              </Box>
+            )}
+          </Box>
+        </Stack>
+
+        <Stack direction="row" spacing={4} mt={3}>
+          <Button sx={{ mr: 2 }} variant="contained" onClick={(e) => handleCreditNoteUpdate(e, 'creditNote')}>
+            Credit Note
+          </Button>
+          {rowDataForCreditNote.invoice_approved_amount === 0 && <Button variant="contained" onClick={(e) => handleCreditNoteUpdate(e, 'cancelled')}>
+            Cancel Invoice
+          </Button>}
+        </Stack>
+      </DialogContent>
+    </Dialog>
 
 
-            <TextField
-              value={rowDataForCreditNote?.invoice_number}
-              style={{ background: "#F0F0F0" }}
-              label="Invoice Number"
-              disable={true}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
-            <TextField
-              type="text"
-              label="Reason"
-              value={creditNoteReason}
-              className="mt-3"
-              onChange={(e) => setCreditNoteReason(e.target.value)}
-            />
-            <TextField
-              type="text"
-              label="Credit Note Amount"
-              value={creditNoteAmount}
-              className="mt-3"
-              onChange={(e) => setCreditNoteAmount(e.target.value)}
-            />
-            <div className="col-3">
-              <label className="form-label mt-2">
-                File <sup style={{ color: "red" }}>*</sup>
-              </label>
-              <input type="file" onChange={(e) => handleFileChange(e)} />
-              {preview && (
-                <div className="mt-2">
-                  {!isPDF ? (
-                    <img
-                      src={preview}
-                      alt="Preview"
-                      style={{ maxWidth: "70px", cursor: "pointer" }}
-                      onClick={() => setViewImgDialog(true)}
-                    />
-                  ) : (
-                    <img
-                      src="/pdf-icon.png"
-                      alt="PDF Preview"
-                      style={{ maxWidth: "40px", cursor: "pointer" }}
-                      onClick={() => setViewImgDialog(true)}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          </Stack>
-          {/* </div> */}
-          <div className="d-flex">
-            <Button
-              type="button"
-              className="mt-3"
-              variant="contained"
-              onClick={(e) => handleCreditNoteUpdate(e)}
-            >
-              YES
-            </Button>
-            <Button
-              type="button"
-              className="mt-3 ms-3"
-              variant="contained"
-              onClick={(e) => handleCloseCreditNote(e)}
-            >
-              No
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div >
   );
 };
 
