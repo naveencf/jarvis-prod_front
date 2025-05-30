@@ -421,32 +421,34 @@ How are you doing today?`}
               colorclassName="bgTertiary"
             />
           </div>
-          <div className="row mt20">
-            <MonthlyWeeklyCard
-              data={weekMonthCard?.halfYearlyData}
-              previousData={weekMonthCard?.lastHalfYearData}
-              title="Half Yearly"
-              cardclassName="bgTertiary"
-              titleclassName="colorTertiary"
-              colorclassName="bgTertiary"
-            />
-            <MonthlyWeeklyCard
-              data={weekMonthCard?.yearlyData}
-              previousData={weekMonthCard?.lastYearData}
-              title="Yearly"
-              cardclassName="bgTertiary"
-              titleclassName="colorTertiary"
-              colorclassName="bgTertiary"
-            />
-            <MonthlyWeeklyCard
-              data={weekMonthCard?.totalData}
-              previousData={weekMonthCard?.Last}
-              title="Total"
-              cardclassName="bgTertiary"
-              titleclassName="colorTertiary"
-              colorclassName="bgTertiary"
-            />
-          </div>
+          {loginUserRole == 1 && (
+            <div className="row mt20">
+              <MonthlyWeeklyCard
+                data={weekMonthCard?.halfYearlyData}
+                previousData={weekMonthCard?.lastHalfYearData}
+                title="Half Yearly"
+                cardclassName="bgTertiary"
+                titleclassName="colorTertiary"
+                colorclassName="bgTertiary"
+              />
+              <MonthlyWeeklyCard
+                data={weekMonthCard?.yearlyData}
+                previousData={weekMonthCard?.lastYearData}
+                title="Yearly"
+                cardclassName="bgTertiary"
+                titleclassName="colorTertiary"
+                colorclassName="bgTertiary"
+              />
+              <MonthlyWeeklyCard
+                data={weekMonthCard?.totalData}
+                previousData={weekMonthCard?.Last}
+                title="Total"
+                cardclassName="bgTertiary"
+                titleclassName="colorTertiary"
+                colorclassName="bgTertiary"
+              />
+            </div>
+          )}
         </>
       )}
       <div className="row">

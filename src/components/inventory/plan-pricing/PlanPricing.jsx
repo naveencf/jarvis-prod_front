@@ -726,7 +726,7 @@ const PlanPricing = () => {
       posts_per_profile: parseInt(row['Posts Per Profile'], 10) || 0,
       stories_per_profile: parseInt(row['Stories Per Profile'], 10) || 0,
     }));
-
+    console.log("data",data);
     filterAndSelectRowsNew(normalizedData);
   };
   const handleCloseUnfetched = () => setUnfetchedData(null);
@@ -754,7 +754,7 @@ const PlanPricing = () => {
       map[sanitizedPageName].push(page);
       return map;
     }, {});
-
+console.log("csvData",csvData);
     csvData.forEach((csvRow) => {
       const sanitizedCsvPageName = sanitizePageName(csvRow.page_name);
       const csvPlatform = csvRow.profile_link ? getPlatformNameFromLink(csvRow.profile_link.toLowerCase()) : null;
@@ -778,6 +778,8 @@ const PlanPricing = () => {
         }
       });
     });
+    console.log("totalFetchedPagesCount", totalFetchedPagesCount);
+    console.log("notFoundPages", notFoundPages);
     // Set unfetched data
     setUnfetchedData({
       totalFetchedPagesCount,
@@ -805,13 +807,17 @@ const PlanPricing = () => {
 
       // Extract and validate data from all subsheets
       workbook.SheetNames.forEach((sheetName) => {
-        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-        const isValidSheet = sheetData.some((row) => requiredHeaders.every((header) => Object.keys(row).includes(header)));
-
+        const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
+        if (sheetData.length === 0) return;
+      
+        const actualHeaders = Object.keys(sheetData[0]).filter(h => h);
+        const isValidSheet = requiredHeaders.every(h => actualHeaders.includes(h));
+      
         if (isValidSheet) {
           allData.push(...sheetData);
         }
       });
+      
 
       processCSVData(allData);
     };

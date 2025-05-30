@@ -198,7 +198,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     isLoading: vendorIsLoading,
   } = useGetAllVendorQuery();
 
-  const vendorData = vendor || [];
+  const vendorData = vendor?.data || [];
 
   const {
     data: profile,
@@ -314,7 +314,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     "67480efc7bd2057dd708d246": "thread_comment",
     "67480fe67bd2057dd708d249": "x_quote",
   };
-
+ 
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMasterId}`, {
