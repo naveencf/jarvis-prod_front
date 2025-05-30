@@ -49,6 +49,7 @@ import PantryAdminDashboard from "../Pantry/PantryAdminDashboard.jsx";
 import VendorStatement from "../Finance/Sales Management/Outstanding/VendorStatement.jsx";
 import VendorStatementView from "../Finance/Sales Management/Outstanding/VendorStatementView.jsx";
 import UnfetchedPages from "./PageMS/InventoryDashboard/UnfetchedPages.jsx";
+import VendorInventory from "./VendorSales/VendorInventory.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
   import("./Sales/Incenti Dashboard/IncentiveStatements")
@@ -1477,6 +1478,12 @@ const Admin = () => {
                       path="/audited-outstanding-total"
                       element={<PendingAuditOutstandingTotal />}
                     />
+                    
+                    <Route
+                      path="/vendor-inventory"
+                      element={<VendorInventory />}
+                    />
+
                     <Route
                       path="/pending-outstanding-total"
                       element={<PendingAuditOutstandingTotal />}
