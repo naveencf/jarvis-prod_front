@@ -3,6 +3,7 @@ import { useBulkCampaignUpdateMutation } from "../../Store/API/Operation/Operati
 import CustomSelect from "../../ReusableComponents/CustomSelect.jsx";
 import { useGetExeCampaignsNameWiseDataQuery } from "../../Store/API/Sales/ExecutionCampaignApi.js";
 import { useGlobalContext } from "../../../Context/Context.jsx";
+import { useUpdatePurchasedStatusDataMutation } from "../../Store/API/Purchase/DirectPurchaseApi.js";
 
 const BulkCampaignUpdate = ({
   selectedData,
@@ -19,6 +20,10 @@ const BulkCampaignUpdate = ({
       isSuccess: bulkCampaignUpdateSuccess,
     },
   ] = useBulkCampaignUpdateMutation();
+  
+   const [updatePurchasedStatus, { isLoading
+    : isUpdatingPurchasedStatus }] =
+      useUpdatePurchasedStatusDataMutation();
 
   const { data: planData, isLoading: PlanDataLoading } =
     useGetExeCampaignsNameWiseDataQuery();
@@ -49,7 +54,7 @@ const BulkCampaignUpdate = ({
             x
           </button>
         </div>
-        <div className="card-body ">
+        <div className="card-body">
           <div className="row">
             <CustomSelect
               fieldGrid={12}

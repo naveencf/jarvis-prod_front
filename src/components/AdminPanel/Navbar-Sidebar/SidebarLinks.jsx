@@ -2168,19 +2168,9 @@ const SidebarLinks = () => {
                   <i className="bi bi-dot"></i>Overview
                 </NavLink>
               </div>
-            </div>
-            <div
-              id="collapseVendorSales"
-              className="collapse"
-              aria-labelledby="headingVendorSales"
-              data-parent="#accordionSidebar"
-            >
               <div className="internal collapse-inner">
-                <NavLink
-                  className="collapse-item"
-                  to="/admin/vendor-inventory"
-                >
-                  <i className="bi bi-dot"></i>Vendor Inventory
+                <NavLink className="collapse-item" to="/admin/vendor-inventory">
+                  <i className="bi bi-dot"></i>Vednor Inventory
                 </NavLink>
               </div>
             </div>

@@ -211,7 +211,7 @@ const PageMaster = () => {
       // // console.log("Condition not met");                                                                                  
     }
   }, [platformPriceData, isPriceLoading]);
-
+ 
   useEffect(() => {
     if (rowCount.every(row => row.page_price_type_id)) return;
 
@@ -295,7 +295,7 @@ const PageMaster = () => {
   };
 
 
-   const handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (pageName === "") {
@@ -397,18 +397,18 @@ const PageMaster = () => {
     let pagePriceList = rowCount.map((item) => ({
       [item.page_price_type_name]: Number(item.price),
     }));
-    
-     const postPriceItems = rowCount.filter((item) => item.page_price_type_name === "instagram_post");
-    
+
+    const postPriceItems = rowCount.filter((item) => item.page_price_type_name === "instagram_post");
+
     if (postPriceItems?.length > 0) {
       postPriceItems.forEach((postItem) => {
         const postPrice = Number(postItem.price);
-    
-         if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_carousel"))) {
+
+        if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_carousel"))) {
           pagePriceList.push({ instagram_carousel: postPrice });
         }
-    
-         if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_reel"))) {
+
+        if (!pagePriceList.some((obj) => obj.hasOwnProperty("instagram_reel"))) {
           pagePriceList.push({ instagram_reel: postPrice });
         }
       });
@@ -1207,9 +1207,9 @@ const PageMaster = () => {
                 <label className="form-label">Tags</label>
                 <Select
                   isMulti
-                  options={categoryData.map((option) => ({
+                  options={subCategoryData.map((option) => ({
                     value: option._id,
-                    label: option.page_category,
+                    label: option.page_sub_category,
                   }))}
                   required={true}
                   value={tag}

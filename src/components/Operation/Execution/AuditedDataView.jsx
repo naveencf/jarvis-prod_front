@@ -1,166 +1,265 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FormContainer from "../../AdminPanel/FormContainer";
 
-const AuditedDataView = ({ columns, modalData, setToggleModal }) => {
+const AuditedDataView = ({
+  columns,
+  modalData,
+  setToggleModal,
+  postLinks,
+  initialIndex = 0,
+  updateData,
+  updateLocalData,
+  allPages,
+}) => {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentPost, setCurrentPost] = useState({ ...modalData });
+  const [originalPost, setOriginalPost] = useState({ ...modalData });
+  const [isEdit, setIsEdit] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const goToPrevious = () => {
+    if (currentIndex > 0) {
+      const newIndex = currentIndex - 1;
+      setCurrentIndex(newIndex);
+      setCurrentPost({ ...postLinks[newIndex] });
+      setOriginalPost({ ...postLinks[newIndex] });
+      setIsEdit(false);
+    }
+  };
+
+  const goToNext = () => {
+    if (currentIndex < postLinks.length - 1) {
+      const newIndex = currentIndex + 1;
+      setCurrentIndex(newIndex);
+      setCurrentPost({ ...postLinks[newIndex] });
+      setOriginalPost({ ...postLinks[newIndex] });
+      setIsEdit(false);
+    }
+  };
+
+  useEffect(() => {
+    if (postLinks && postLinks.length > 0) {
+      setCurrentPost({ ...postLinks[currentIndex] });
+      setOriginalPost({ ...postLinks[currentIndex] });
+      setIsEdit(false);
+    }
+  }, [currentIndex, postLinks]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "ArrowLeft") {
+        goToPrevious();
+      } else if (e.key === "ArrowRight") {
+        goToNext();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentIndex, postLinks]);
+
+  const handleInputChange = (value, key) => {
+    setCurrentPost((prev) => ({
+      ...prev,
+      [key]:
+        typeof value === "object" && value?.target ? value.target.value : value,
+    }));
+  };
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+
+      const updatedFields = {};
+      for (const key in currentPost) {
+        const originalValue = originalPost[key];
+        const newValue = currentPost[key];
+
+        if (JSON.stringify(originalValue) !== JSON.stringify(newValue)) {
+          updatedFields[key] = newValue;
+        }
+      }
+
+      updatedFields["_id"] = String(currentPost._id);
+      updatedFields["audit_status"] = String(currentPost.audit_status);
+      updatedFields["sponsored"] = true;
+
+      const formData = new FormData();
+      for (const key in updatedFields) {
+        const val = updatedFields[key];
+        formData.append(
+          key,
+          typeof val === "object" ? JSON.stringify(val) : val
+        );
+      }
+
+      const res = await updateData(formData);
+
+      if (res?.error) {
+        const errorMessage =
+          typeof res.error === "string" ? res.error : JSON.stringify(res.error);
+        throw new Error(errorMessage);
+      }
+
+      const updated = res.data?.data || currentPost;
+      updateLocalData(updated);
+      setCurrentPost(updated);
+      setOriginalPost(updated);
+      setIsEdit(false);
+      alert("✅ Updated successfully!");
+    } catch (err) {
+      console.error("❌ Save error", err);
+      alert(`Failed to update.\n\n${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <div className="flexCenterBetween formHeadingM0 mb16">
-        <FormContainer mainTitle={"Audited Data"} link={"true"} />
-        <div className="icon-1" onClick={() => setToggleModal(false)}>
-          X
+        <FormContainer
+          mainTitle={`Audited Data (${currentIndex + 1}/${postLinks.length})`}
+          link="true"
+        />
+        <div className="flexCenter colGap16">
+          <div className="text-center flexCenter colGap4">
+            <button
+              className="btn cmnbtn btn_sm btn-outline-primary mr-2"
+              onClick={goToPrevious}
+              disabled={currentIndex === 0}
+            >
+              ⬅ Previous
+            </button>
+            <button
+              className="btn cmnbtn btn_sm btn-outline-primary mr-2"
+              onClick={goToNext}
+              disabled={currentIndex === postLinks.length - 1}
+            >
+              Next ➡
+            </button>
+            {!isEdit ? (
+              <button
+                className="btn cmnbtn btn_sm btn-primary"
+                onClick={() => setIsEdit(true)}
+              >
+                ✏️ Edit
+              </button>
+            ) : (
+              <button
+                className="btn btn cmnbtn btn_sm btn-success"
+                onClick={handleSave}
+                disabled={loading}
+              >
+                ✅ Save
+              </button>
+            )}
+          </div>
+          <div className="icon-1" onClick={() => setToggleModal(false)}>
+            X
+          </div>
         </div>
       </div>
+
       <div className="card shadow-none m0">
         <div className="row auditedDataViewModal">
-          {modalData?.postImage && (
+          {currentPost?.postImage && (
             <div className="col-md-2">
               <div className="auditedDataViewBox">
                 <p>Post Image :</p>
                 <img
-                  src={modalData?.postImage}
-                  style={{
-                    width: "100px",
-                    aspectRatio: "6/9",
-                  }}
+                  src={currentPost?.postImage}
+                  style={{ aspectRatio: "6/9" }}
                 />
               </div>
             </div>
           )}
-          {modalData?.story_image && (
+
+          {currentPost?.story_image && (
             <div className="col-md-2">
               <div className="auditedDataViewBox">
                 <p>Story Image :</p>
                 <img
-                  src={modalData?.story_image}
-                  style={{
-                    width: "100px",
-                    aspectRatio: "6/9",
-                  }}
+                  src={currentPost?.story_image}
+                  style={{ width: "100px", aspectRatio: "6/9" }}
                 />
               </div>
             </div>
           )}
-          <div className="col-md-8">
+
+          <div className="col">
             <div className="auditedDataViewBox">
               <ul>
-                {columns?.map((col) => {
-                  if (
-                    col.key != "Sr.No" &&
-                    col.key != "action" &&
-                    col.key != "pageedits" &&
-                    col.key != "postLinks" &&
-                    col.key != "Pageedits" &&
-                    col.key !== "postStatus" &&
-                    col.key !== "postImage" &&
-                    col.key !== "story_image" &&
-                    col.key !== "price_key"
-                  ) {
+                {columns?.map((col, index) => {
+                  const excludedKeys = [
+                    "Sr.No",
+                    "action",
+                    "pageedits",
+                    "postLinks",
+                    "Pageedits",
+                    "postStatus",
+                    "postImage",
+                    "story_image",
+                    "price_key",
+                    "post_dec",
+                  ];
+                  if (!excludedKeys.includes(col.key)) {
                     return (
-                      <li>
-                        <span>{col.name} : </span>
-                        {modalData[col.key]}
+                      <li key={index} className="">
+                        <span
+                          className="auditedDataViewBoxLabel"
+                          style={{ minWidth: "140px" }}
+                        >
+                          {col.name}:
+                        </span>
+                        <div
+                          className="auditedDataViewBoxInput"
+                          style={{ flexGrow: 1 }}
+                        >
+                          {isEdit ? (
+                            col.customEditElement ? (
+                              col.customEditElement(
+                                currentPost,
+                                currentIndex,
+                                () => {},
+                                currentIndex,
+                                (value, i, column, saveNow, overrideKey) => {
+                                  if (typeof value === "object") {
+                                    Object.entries(value).forEach(([k, v]) =>
+                                      handleInputChange(v, k)
+                                    );
+                                  } else {
+                                    const key = overrideKey || column.key;
+                                    handleInputChange(value, key);
+                                  }
+                                },
+                                col,
+                                currentPost[col.key],
+                                currentPost.vendor_id,
+                                allPages
+                              )
+                            ) : (
+                              <input
+                                className="form-control"
+                                type="text"
+                                value={currentPost[col.key] ?? ""}
+                                onChange={(e) =>
+                                  handleInputChange(e.target.value, col.key)
+                                }
+                              />
+                            )
+                          ) : (
+                            <span>{currentPost[col.key]}</span>
+                          )}
+                        </div>
                       </li>
                     );
                   }
                 })}
               </ul>
             </div>
-          </div>
-          {/* <div className="col-md-8">
-            <div className="auditedDataViewBox">
-              <ul>
-                <li>
-                  <span>Platform : </span>instagram
-                </li>
-                <li>
-                  <span>Vendor Name : </span>adultsociety (rohit)
-                </li>
-                <li>
-                  <span>Short Code : </span>DGql2kxTUMU
-                </li>
-                <li>
-                  <span>Phase Date : </span>01-03-2025
-                </li>
-                <li>
-                  <span>Caption : </span>
-                </li>
-                <li>
-                  <span>Like Count : </span>15151
-                </li>
-                <li>
-                  <span>Posted On : </span>02/03/2025
-                </li>
-                <li>
-                  <span>Story Link : </span>
-                </li>
-                <li>
-                  <span>Link : </span>
-                  https://www.instagram.com/reel/DGql2kxTUMU/?igsh=MTFrYXlvOGZhcGRzNw==
-                </li>
-                <li>
-                  <span>Page Name : </span>adultsociety
-                </li>
-                <li>
-                  <span>Campaign Name : </span>66bf5bc094ecc3848a21db9c
-                </li>
-                <li>
-                  <span>Amount : </span>0
-                </li>
-                <li>
-                  <span>Comment Count : </span>150
-                </li>
-                <li>
-                  <span>Play Count : </span>982333
-                </li>
-                <li>
-                  <span>Post Type : </span>REEL
-                </li>
-              </ul>
-            </div>
-          </div> */}
-        </div>
-      </div>
-      <div className="card d-none">
-        <div className="card-body">
-          <div className="row">
-            {columns?.map((col) => {
-              if (
-                col.key != "Sr.No" &&
-                col.key != "action" &&
-                col.key != "pageedits" &&
-                col.key != "postLinks" &&
-                col.key != "Pageedits" &&
-                col.key !== "postStatus"
-              ) {
-                if (col.key === "postImage") {
-                  return (
-                    <div className="col-md-6">
-                      <div className="flex-row">
-                        <p className="mr-2">{col.name}</p>:
-                        <img
-                          src={modalData[col.key]}
-                          alt="postImage"
-                          style={{
-                            width: "100px",
-                            // height: "100px",
-                            aspectRatio: "6/9",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  );
-                }
-
-                return (
-                  <div className="col-md-6">
-                    <div className="flex-row">
-                      <p className="mr-2">{col.name}</p>:
-                      <p className="ml-2">{modalData[col.key]}</p>
-                    </div>
-                  </div>
-                );
-              }
-            })}
           </div>
         </div>
       </div>

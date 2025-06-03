@@ -1487,7 +1487,7 @@ const VendorSalesOverview = () => {
           visibleTabs={visibleTabs}
           setVisibleTabs={setVisibleTabs}
           selectedPlan={selectedPlan}
-          PlanData={PlanData}
+          PlanData={vendorSalesPostLinks}
         />
       )}
 
