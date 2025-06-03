@@ -23835,21 +23835,107 @@ hr.cardBodyHr {
     ul {
       border: 1px solid var(--border);
       border-radius: var(--radiusS);
+      display: flex;
+      flex-wrap: wrap;
 
       li {
         font-size: 14px;
         line-height: 20px;
         color: var(--dark);
         border-bottom: 1px solid var(--border);
+        border-right: 1px solid var(--border);
         padding: 6px 12px;
         display: flex;
+        align-items: center;
+        width: 50%;
+        min-height: 41px;
 
         &:nth-last-child(1) {
           border-bottom: none;
         }
 
+        &:nth-child(2n) {
+          border-right: none;
+        }
+
         span {
           min-width: 20%;
+        }
+
+        .auditedDataViewBoxInput {
+          padding: 0px 0px;
+        }
+
+        input.form-control {
+          min-height: 22px;
+          height: auto;
+          padding: 0px 0px;
+          border: none !important;
+        }
+
+        .form-group {
+          margin: 0;
+          padding: 0;
+
+          label {
+            display: none;
+          }
+        }
+
+        .css-13cymwt-control {
+          min-height: auto;
+          height: auto;
+          border: none !important;
+
+          .css-hlgwow {
+            padding: 0px 0px;
+          }
+
+
+          .css-1xc3v61-indicatorContainer {
+            padding: 0px 6px;
+          }
+        }
+
+        .cmnbtn {
+          height: auto;
+          padding: 5px 12px !important;
+          min-height: auto;
+          font-size: 12px !important;
+        }
+
+        .MuiFormControl-root {
+          .MuiFormLabel-root {
+            display: none;
+          }
+
+          .MuiInputBase-root {
+            min-height: 26px !important;
+            height: auto !important;
+            padding: 0px 0px !important;
+
+            .MuiInputBase-input {
+              padding: 0px 0px;
+              font-size: 14px;
+              line-height: 20px;
+              color: var(--dark);
+            }
+
+            .MuiOutlinedInput-notchedOutline {
+              border: none !important;
+            }
+          }
+        }
+
+        .form-group {
+          .custom-btn-2 {
+            position: relative;
+            bottom: 0px;
+            right: -10px;
+            height: 30px;
+            width: 42px;
+            display: none;
+          }
         }
       }
     }
@@ -24129,7 +24215,7 @@ hr.cardBodyHr {
           .badge {
             padding: 4px 8px;
             font-size: 10px;
-        }
+          }
         }
 
         ul {

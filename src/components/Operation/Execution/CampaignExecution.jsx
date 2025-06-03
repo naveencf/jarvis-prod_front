@@ -104,7 +104,9 @@ const CampaignExecution = () => {
   const [linkData, setLinkData] = useState([]);
   const [vendorId, setVendorId] = useState(null);
   const [platfromId, setPlatformId] = useState(null);
-  const [allPages, setAllpages]= useState([])
+  const [allPages, setAllpages] = useState([]);
+  const [localPlanData, setLocalPlanData] = useState([]);
+  const [localLinkData, setLocalLinkData] = useState([]);
   const vendorList = useRef(null);
   const maxTabs = useRef(4);
   const memoValue = useRef(null);
@@ -113,6 +115,7 @@ const CampaignExecution = () => {
   const [visibleTabs, setVisibleTabs] = useState(
     Array.from({ length: maxTabs.current }, (_, i) => i)
   );
+  const [planData, setPlanData] = useState([]);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const page_id = useRef(null);
   const token = getDecodedToken();
@@ -340,10 +343,20 @@ const CampaignExecution = () => {
     setActTab("");
   }, [selectedPlan]);
 
+  useEffect(() => {
+    if (PlanData?.length) {
+      setLocalPlanData(PlanData);
+      setPlanData(PlanData);
+    }
+  }, [PlanData]);
+
+  useEffect(() => {
+    if (linkData?.length) setLocalLinkData(linkData);
+  }, [linkData]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!vendorId || !platfromId) return; 
+      if (!vendorId || !platfromId) return;
 
       const payload = {
         vendor_id: vendorId,
@@ -351,15 +364,14 @@ const CampaignExecution = () => {
       };
       try {
         const response = await getData(payload);
-        setAllpages(response.data.data)
+        setAllpages(response.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
     };
-  
+
     fetchData();
   }, [platfromId, vendorId]);
-  
 
   useEffect(() => {
     if (deleteStorySuccess) {
@@ -497,7 +509,7 @@ const CampaignExecution = () => {
   //     ? allPages.pageData?.filter((data) => data?.temp_vendor_id === vendorName)
   //     : [];
   // }, [allPages, vendorName]);
-// console.log("pageesOnvendor",pageesOnvendor);
+  // console.log("pageesOnvendor",pageesOnvendor);
   useEffect(() => {
     if (duplicateMsg) {
       setToggleModal(true);
@@ -565,32 +577,59 @@ const CampaignExecution = () => {
         data.campaignId != null
     );
   }
+  // const phaseWiseData = useMemo(() => {
+  //   let phasedData = [];
+  //   // console.log(activeTab);
+  //   if (
+  //     PlanData?.length > 0 &&
+  //     !PlanData.some((data) => data.phaseDate == activeTab)
+  //   ) {
+  //     return PlanData;
+  //   }
+  //   if (actTab != 5) {
+  //     phasedData = PlanData?.filter((data) => {
+  //       if (activeTab === "all") {
+  //         return true;
+  //       }
+  //       return data.phaseDate === activeTab;
+  //     });
+  //   } else
+  //     phasedData = linkData?.filter((data) => {
+  //       if (activeTab === "all") {
+  //         return true;
+  //       }
+  //       return data.phaseDate === activeTab;
+  //     });
+  //   return phasedData;
+  // }, [PlanData, activeTab, fetchingPlanData, loadingPlanData, linkData]);
   const phaseWiseData = useMemo(() => {
+    // Always use localData if available (fallback to PlanData/linkData)
+    const currentPlanData = localPlanData?.length ? localPlanData : PlanData;
+    const currentLinkData = localLinkData?.length ? localLinkData : linkData;
+  
     let phasedData = [];
-    // console.log(activeTab);
+  
     if (
-      PlanData?.length > 0 &&
-      !PlanData.some((data) => data.phaseDate == activeTab)
+      currentPlanData?.length > 0 &&
+      !currentPlanData.some((data) => data.phaseDate === activeTab)
     ) {
-      return PlanData;
+      return currentPlanData;
     }
-    if (actTab != 5) {
-      phasedData = PlanData?.filter((data) => {
-        if (activeTab === "all") {
-          return true;
-        }
-        return data.phaseDate === activeTab;
+  
+    if (actTab !== 5) {
+      phasedData = currentPlanData?.filter((data) => {
+        return activeTab === "all" || data.phaseDate === activeTab;
       });
-    } else
-      phasedData = linkData?.filter((data) => {
-        if (activeTab === "all") {
-          return true;
-        }
-        return data.phaseDate === activeTab;
+    } else {
+      phasedData = currentLinkData?.filter((data) => {
+        return activeTab === "all" || data.phaseDate === activeTab;
       });
+    }
+  
     return phasedData;
-  }, [PlanData, activeTab, fetchingPlanData, loadingPlanData, linkData]);
-
+  }, [PlanData,linkData,localPlanData, localLinkData, activeTab, actTab, fetchingPlanData,loadingPlanData]);
+  
+  console.log("linkedData", linkData);
   // useEffect(() => {
   //   if (selectedPrice) {
   //     handlePriceUpdate(selectedPrice);
@@ -926,31 +965,37 @@ const CampaignExecution = () => {
         setEditFlag,
         editflag,
         handelchange,
-        column
+        column,
+        selectedValue
       ) => {
         setVendorName(row.vendor_id);
         setVendorId(row.vendorId);
+
         return (
           <div className="row" style={{ width: "300px", display: "flex" }}>
             <CustomSelect
               fieldGrid={12}
               dataArray={vendorsList}
-              optionId={"vendor_id"}
-              optionLabel={"vendor_name"}
-              selectedId={row?.vendor_id}
-              setSelectedId={(name) => {
+              optionId="vendor_id"
+              optionLabel="vendor_name"
+              selectedId={row.vendor_id || selectedValue}
+              setSelectedId={(vendor_id) => {
                 const vendorDetail = vendorsList.find(
-                  (item) => item.vendor_id === name
+                  (item) => item.vendor_id === vendor_id
                 );
 
-                const vendorData = {
-                  vendor_id: vendorDetail.vendor_id,
-                  vendor_name: vendorDetail.vendor_name,
-                };
+                if (!vendorDetail) return;
 
-                setVendorName(vendorDetail.temp_vendor_id);
-                setVendorId(vendorDetail._id);
-                handelchange(vendorData, index, column, true);
+                handelchange(
+                  {
+                    vendor_id: vendorDetail.vendor_id,
+                    vendor_name: vendorDetail.vendor_name,
+                    vendorId: vendorDetail._id,
+                  },
+                  index,
+                  column,
+                  true
+                );
               }}
             />
           </div>
@@ -959,11 +1004,12 @@ const CampaignExecution = () => {
       width: 100,
       editable: true,
     },
+
     {
       key: "page_name",
       name: "Page Name",
       width: 100,
-      renderRowCell: (row) => row?.owner_info?.username,
+      renderRowCell: (row) => row?.owner_info?.username || row?.page_name,
       compare: true,
       editable: true,
       customEditElement: (
@@ -972,51 +1018,45 @@ const CampaignExecution = () => {
         setEditFlag,
         editflag,
         handelchange,
-        column
+        column,
+        selectedValue,
+        selectedVendorId,
+        allPages
       ) => {
-        // if (!platformName || allPagesFetching || allPagesLoading)
-        //   return <p>Please select the platform</p>;
+        const filteredPages =
+          allPages?.filter((page) => page.vendor_id === selectedVendorId) || [];
+
+        const selectedPageObj = filteredPages.find(
+          (page) => page.page_name === selectedValue || page._id === row.page_id
+        );
+
         return (
           <div style={{ position: "relative", width: "100%" }}>
-            {/* <input
-              className="form-control"
-              type="text"
-              placeholder={row?.page_name}
-              value={row?.owner_info?.username}
-              onChange={(e) => {
-                const data = {
-                  ...row?.owner_info,
-                  username: e.target.value,
-                };
-
-                handelchange({ owner_info: data }, index, column, true);
-              }}
-            /> */}
             <Autocomplete
-              options={allPages}
+              options={filteredPages}
               getOptionLabel={(option) => option.page_name || ""}
-              // getOptionKey={(option) => option.page_name}
-              renderInput={(params) => {
-                return (
-                  <TextField {...params} label="Page Name" variant="outlined" />
-                );
-              }}
-              value={pageName || row?.page_name}
+              isOptionEqualToValue={(option, value) => option._id === value._id}
+              renderInput={(params) => (
+                <TextField {...params} label="Page Name" variant="outlined" />
+              )}
+              value={selectedPageObj || null}
               onChange={(event, newValue) => {
-                page_id.current = newValue?._id;
-                setPageName(newValue);
-                const data = {
-                  page_name: newValue?.page_name,
-                };
-                setVendorName(newValue?.page_name);
-                handelchange(data, index, column, true);
+                if (!newValue) return;
+                handelchange(
+                  {
+                    page_name: newValue.page_name,
+                    page_id: newValue._id,
+                  },
+                  index,
+                  column,
+                  true
+                );
               }}
             />
           </div>
         );
       },
     },
-
     {
       name: "Post Status",
       key: "postStatus",
@@ -1758,7 +1798,8 @@ const CampaignExecution = () => {
     ],
     [campaignList]
   );
-
+console.log("localLinked", localLinkData);
+console.log("localPlanData", localPlanData);
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1766,6 +1807,31 @@ const CampaignExecution = () => {
           columns={columns}
           modalData={modalData}
           setToggleModal={setToggleModal}
+          allPages={allPages}
+          postLinks={actTab === 5 ? localLinkData : localPlanData}
+          initialIndex={phaseWiseData.findIndex(
+            (post) => post._id === modalData._id
+          )}
+          updateData={updateData}
+          updateLocalData={(updatedItem) => {
+            // if (actTab === 5) {
+              setLocalLinkData((prevData) =>
+                prevData.map((item) =>
+                  String(item._id) === String(updatedItem._id)
+                    ? updatedItem
+                    : item
+                )
+              );
+            // } else {
+              setLocalPlanData((prevData) =>
+                prevData.map((item) =>
+                  String(item._id) === String(updatedItem._id)
+                    ? updatedItem
+                    : item
+                )
+              );
+            // }
+          }}
         />
       );
     else if (name === "PageEdit")

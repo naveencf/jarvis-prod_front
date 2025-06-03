@@ -35,6 +35,18 @@ const vendorSaleApi = createApi({
         body,
       }),
     }),
+    getVendorInventory: builder.query({
+      query: (id) =>
+        `/v1/sales/vendor_sales/inventory?vendor_customer_id=${id}`,
+    }),
+
+    addVendorInventory: builder.mutation({
+      query: (payload) => ({
+        url: "/v1/sales/vendor_sales/inventory",
+        method: "POST",
+        body: payload,
+      }),
+    }),
     
   }),
 });
@@ -44,7 +56,9 @@ export const {
   useGetAllVendorSalesPostLinksQuery,
   useAddPostStatsMutation,
   useGetAllVendorSalesPostLinksByVendorIdQuery,
-  useUpdateVendorSalesPostLinkByIdMutation
+  useUpdateVendorSalesPostLinkByIdMutation,
+  useGetVendorInventoryQuery,
+  useAddVendorInventoryMutation
 } = vendorSaleApi;
 
 export default vendorSaleApi;
