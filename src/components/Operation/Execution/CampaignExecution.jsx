@@ -241,8 +241,7 @@ const CampaignExecution = () => {
 
       if (errors.length > 0) {
         invalidReasons.push(
-          `Post ${index + 1} (${
-            item.shortCode || item.page_name
+          `Post ${index + 1} (${item.shortCode || item.page_name
           }): ${errors.join(", ")}`
         );
       }
@@ -455,12 +454,12 @@ const CampaignExecution = () => {
           row?.postType == "REEL"
             ? key[2].price_key
             : row?.postType == "CAROUSEL"
-            ? key[3].price_key
-            : row?.postType === "IMAGE"
-            ? key[0].price_key
-            : row?.story_link && row?.ref_link
-            ? key[4].price_key
-            : key[1].price_key
+              ? key[3].price_key
+              : row?.postType === "IMAGE"
+                ? key[0].price_key
+                : row?.story_link && row?.ref_link
+                  ? key[4].price_key
+                  : key[1].price_key
         );
       }
     }
@@ -606,16 +605,16 @@ const CampaignExecution = () => {
     // Always use localData if available (fallback to PlanData/linkData)
     const currentPlanData = localPlanData?.length ? localPlanData : PlanData;
     const currentLinkData = localLinkData?.length ? localLinkData : linkData;
-  
+
     let phasedData = [];
-  
+
     if (
       currentPlanData?.length > 0 &&
       !currentPlanData.some((data) => data.phaseDate === activeTab)
     ) {
       return currentPlanData;
     }
-  
+
     if (actTab !== 5) {
       phasedData = currentPlanData?.filter((data) => {
         return activeTab === "all" || data.phaseDate === activeTab;
@@ -625,10 +624,10 @@ const CampaignExecution = () => {
         return activeTab === "all" || data.phaseDate === activeTab;
       });
     }
-  
+
     return phasedData;
-  }, [PlanData,linkData,localPlanData, localLinkData, activeTab, actTab, fetchingPlanData,loadingPlanData]);
-  
+  }, [PlanData, linkData, localPlanData, localLinkData, activeTab, actTab, fetchingPlanData, loadingPlanData]);
+
   console.log("linkedData", linkData);
   // useEffect(() => {
   //   if (selectedPrice) {
@@ -644,14 +643,14 @@ const CampaignExecution = () => {
           row?.postType == ""
             ? ""
             : row?.postType == "REEL"
-            ? key[2].price_key
-            : row?.postType == "CAROUSEL"
-            ? key[3].price_key
-            : row?.postType === "IMAGE"
-            ? key[0].price_key
-            : row?.story_link && row?.ref_link
-            ? key[4].price_key
-            : key[1].price_key,
+              ? key[2].price_key
+              : row?.postType == "CAROUSEL"
+                ? key[3].price_key
+                : row?.postType === "IMAGE"
+                  ? key[0].price_key
+                  : row?.story_link && row?.ref_link
+                    ? key[4].price_key
+                    : key[1].price_key,
       };
       if (!data.platform_name) {
         toastError("Please select the platform");
@@ -667,7 +666,7 @@ const CampaignExecution = () => {
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) {}
+    } catch (error) { }
   }
 
   async function handleBulkAudit() {
@@ -823,19 +822,19 @@ const CampaignExecution = () => {
       data =
         actTab == 4 && selectedData.length > 0
           ? {
-              userId: token.id,
+            userId: token.id,
 
-              isVendorWise: true,
-              vendor_id: vendorList.current,
-              shortCodes: selectedData.map((data) => data.shortCode),
-            }
+            isVendorWise: true,
+            vendor_id: vendorList.current,
+            shortCodes: selectedData.map((data) => data.shortCode),
+          }
           : actTab == 5 && selectedData.length === 1
-          ? {
+            ? {
               userId: token.id,
               shortCodes: selectedData.map((data) => data.shortCode),
               campaignId: selectedData[0].campaignId,
             }
-          : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+            : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
             // ?
             {
               userId: token.id,
@@ -941,8 +940,8 @@ const CampaignExecution = () => {
               row?.postType == "REEL"
                 ? Reel
                 : row?.postType == "CAROUSEL"
-                ? Carousel
-                : Image
+                  ? Carousel
+                  : Image
             }
             style={{ width: "20px", height: "20px" }}
             alt=""
@@ -1179,9 +1178,9 @@ const CampaignExecution = () => {
             <button
               title={
                 row.audit_status === "purchased" ||
-                row.amount < 0 ||
-                row?.vendor_name == "" ||
-                row?.campaignId == null
+                  row.amount < 0 ||
+                  row?.vendor_name == "" ||
+                  row?.campaignId == null
                   ? "Amount should be greater than or equal to 0 and select the vendor for the page or this link is not present in any campaign"
                   : ""
               }
@@ -1200,8 +1199,8 @@ const CampaignExecution = () => {
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                      ? "pending"
-                      : row.audit_status,
+                        ? "pending"
+                        : row.audit_status,
                 };
                 handleSingleAuditPending({
                   ...row,
@@ -1209,13 +1208,12 @@ const CampaignExecution = () => {
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${
-                row.audit_status === "pending"
+              className={`pointer badge ${row.audit_status === "pending"
                   ? "btn btn-sm cmnbtn btn-primary"
                   : row.audit_status !== "audited"
-                  ? "bg-success"
-                  : "btn btn-sm cmnbtn btn-primary"
-              }`}
+                    ? "bg-success"
+                    : "btn btn-sm cmnbtn btn-primary"
+                }`}
             >
               {row.audit_status}
             </button>
@@ -1798,8 +1796,8 @@ const CampaignExecution = () => {
     ],
     [campaignList]
   );
-console.log("localLinked", localLinkData);
-console.log("localPlanData", localPlanData);
+  console.log("localLinked", localLinkData);
+  console.log("localPlanData", localPlanData);
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1815,21 +1813,21 @@ console.log("localPlanData", localPlanData);
           updateData={updateData}
           updateLocalData={(updatedItem) => {
             // if (actTab === 5) {
-              setLocalLinkData((prevData) =>
-                prevData.map((item) =>
-                  String(item._id) === String(updatedItem._id)
-                    ? updatedItem
-                    : item
-                )
-              );
+            setLocalLinkData((prevData) =>
+              prevData.map((item) =>
+                String(item._id) === String(updatedItem._id)
+                  ? updatedItem
+                  : item
+              )
+            );
             // } else {
-              setLocalPlanData((prevData) =>
-                prevData.map((item) =>
-                  String(item._id) === String(updatedItem._id)
-                    ? updatedItem
-                    : item
-                )
-              );
+            setLocalPlanData((prevData) =>
+              prevData.map((item) =>
+                String(item._id) === String(updatedItem._id)
+                  ? updatedItem
+                  : item
+              )
+            );
             // }
           }}
         />
@@ -1873,7 +1871,7 @@ console.log("localPlanData", localPlanData);
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-            modalData?.data?.data?.requestStatsUpdate?.length ? (
+              modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1973,7 +1971,7 @@ console.log("localPlanData", localPlanData);
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                  ?.exe_campaign_name}
+                ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -2103,6 +2101,7 @@ console.log("localPlanData", localPlanData);
         pagination={[50, 100, 200]}
         selectedData={(data) => setSelectedData(data)}
         showTotal={true}
+        showExport={true}
         tableSelectedRows={selectedData}
         addHtml={
           <div className="d-flex sb w-100">
@@ -2111,11 +2110,10 @@ console.log("localPlanData", localPlanData);
               <button
                 title="Bulk Upload"
                 disabled={selectedData.length === 0}
-                className={`mr-3 cmnbtn btn btn-sm ${
-                  selectedData.length === 0
+                className={`mr-3 cmnbtn btn btn-sm ${selectedData.length === 0
                     ? "btn-outline-primary"
                     : "btn-primary"
-                }`}
+                  }`}
                 onClick={() => {
                   setModalName("bulkUpload");
                   setToggleModal(true);
@@ -2147,9 +2145,8 @@ console.log("localPlanData", localPlanData);
               {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${
-                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                  }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                    }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -2158,9 +2155,8 @@ console.log("localPlanData", localPlanData);
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${
-                  fetchingPlanData && "animate_rotate"
-                }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
+                  }`}
                 onClick={actTab == 5 ? handleFilterLinks : refetchPlanData}
               >
                 <ArrowClockwise />
