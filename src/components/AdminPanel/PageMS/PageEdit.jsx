@@ -314,7 +314,7 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     "67480efc7bd2057dd708d246": "thread_comment",
     "67480fe67bd2057dd708d249": "x_quote",
   };
- 
+
   useEffect(() => {
     axios
       .get(baseUrl + `v1/pageMaster/${pageMasterId}`, {
@@ -771,9 +771,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
         </label>
         <Select
           isMulti
-          options={categoryData.map((option) => ({
+          options={subCategoryData.map((option) => ({
             value: option._id,
-            label: option.page_category,
+            label: option.page_sub_category,
           }))}
           required={false}
           value={tag}
