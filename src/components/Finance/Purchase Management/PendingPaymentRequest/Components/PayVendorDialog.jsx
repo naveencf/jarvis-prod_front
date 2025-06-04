@@ -196,7 +196,7 @@ function PayVendorDialog(props) {
     // }
     // console.log("first", selectedBankIndex)
   }, [InvoiceDetails, selectedBankIndex]);
-  // console.log(selectedBankIndex, "selectedBankIndex")
+
   useEffect(() => {
     let verify = viewImgSrc?.split(".")?.pop()?.toLowerCase() === "pdf";
     setIsPDF(verify);
