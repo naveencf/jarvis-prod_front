@@ -1,4 +1,4 @@
-export const baseUrl = "fhttps://jarvis.work:8080/api/"; // for production
+export const baseUrl = "https://jarvis.work:8080/api/"; // for production
 // export const baseUrl = "http://34.42.47.106:8080/api/"; // for development
 // export const baseUrl = "http://localhost:8080/api/"; // for naveen
 // export const baseUrl = "http://192.168.29.104:8080/api/"; // for aman
