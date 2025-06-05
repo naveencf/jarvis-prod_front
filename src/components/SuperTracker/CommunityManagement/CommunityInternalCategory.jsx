@@ -16,6 +16,7 @@ import {
   useGetAllCommunityInternalCatsQuery,
   useUpdateCommunityInternalCatByIdMutation,
 } from "../../Store/API/Community/CommunityInternalCatApi";
+import formatString from "../../../utils/formatString";
 
 const CommunityInternalCategory = () => {
   const { data: fetchedCategories = [], isLoading } = useGetAllCommunityInternalCatsQuery();
@@ -143,7 +144,7 @@ const CommunityInternalCategory = () => {
           {categories.map((cat) => (
             <Paper key={cat._id} sx={{ p: 2, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <Box>
-                <Typography variant="subtitle1" fontWeight="bold">{cat.internal_category_name}</Typography>
+                <Typography variant="subtitle1" fontWeight="bold">{formatString(cat.internal_category_name)}</Typography>
                 <Typography variant="body2" color="text.secondary">{cat.description}</Typography>
               </Box>
               <Box>

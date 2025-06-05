@@ -18,6 +18,7 @@ function CommunityHeader({
   reloadpagecategory,
   setReloadpagecategory,
   communityInternalCats,
+  selectedRows,
 }) {
   const [teamCreated, setTeamCreated] = useState({ totalCor: 0, teamCount: 0 });
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -95,20 +96,30 @@ function CommunityHeader({
     setRows(createdTeam);
   };
   const handleUpdateInternalCategory = async () => {
-    if (selectedInternalCategory == null) {
+    if (!selectedInternalCategory) {
       alert("Please select an internal category first.");
       return;
     }
-  
+
     const selectedInternalCatId =
       selectedInternalCategory._id || selectedInternalCategory;
-    const selectedPageNames = rowSelectionModel;
+
+    const selectedPageNames = selectedRows.map((row) =>
+      row.creatorName?.toLowerCase()
+    );
+
+    console.log("selectedpage", selectedPageNames);
     const pagesToUpdate = projectxpages.filter((page) =>
       selectedPageNames.includes(page.page_name)
     );
-  
+
+    if (pagesToUpdate.length === 0) {
+      alert("No matching pages found for the selected rows.");
+      return;
+    }
+
     let allSucceeded = true;
-  
+
     for (const page of pagesToUpdate) {
       try {
         const response = await projectxUpdate({
@@ -116,27 +127,26 @@ function CommunityHeader({
             id: page.id,
             page_internal_category_id: selectedInternalCatId,
           },
-        }).unwrap();  
-  
+        }).unwrap();
+        
+
         if (!response?.success) {
           allSucceeded = false;
-          console.error(`Server returned error for ${page.page_name}`, response);
+          console.error(`Update failed for ${page.page_name}`, response);
         }
       } catch (error) {
-        console.error(
-          `Failed to update internal category for ${page.page_name}`,
-          error
-        );
+        console.error(`API error updating ${page.page_name}`, error);
         allSucceeded = false;
       }
     }
-  
+
     if (allSucceeded) {
-      setReload(!reload);
       alert("Internal Category Updated Successfully.");
+      setReload(!reload);
+    } else {
+      alert("Some updates failed. Check the console for more details.");
     }
   };
-  
 
   const handleCategoryChange = (event, value) => {
     if (value) {
@@ -154,7 +164,7 @@ function CommunityHeader({
             record.projectxRecord?.pageCategoryId ===
             selectedCategoryObject.category_id
         );
-        if (rowSelectionModel.length === 0) {
+        if (selectedRows.length === 0) {
           setRows(filteredRows);
         }
         setSelectedCategory(selectedCategoryObject);
@@ -177,7 +187,7 @@ function CommunityHeader({
             record.projectxRecord?.pageInternalCategoryId === selected._id
         );
 
-        if (rowSelectionModel.length === 0) {
+        if (selectedRows.length === 0) {
           setRows(filteredRows);
         }
 
@@ -198,7 +208,10 @@ function CommunityHeader({
       return;
     }
 
-    const selectedPageNames = rowSelectionModel;
+
+    const selectedPageNames = selectedRows.map((row) =>
+      row.creatorName?.toLowerCase()
+    );
     const pagesToUpdate = projectxpages.filter((page) =>
       selectedPageNames.includes(page.page_name)
     );
@@ -219,7 +232,7 @@ function CommunityHeader({
   };
 
   const categoryOptions =
-    rowSelectionModel.length === 0
+    selectedRows.length === 0
       ? Object.entries(filteredPageCategory || {})
           .map(([key, count]) => {
             const category = pagecategory.find(
@@ -275,7 +288,10 @@ function CommunityHeader({
           onChange={handleCategoryChange}
           renderInput={(params) => <TextField {...params} label="Category" />}
         />
-
+        <AddProjectxpageCategory
+          setReloadpagecategory={setReloadpagecategory}
+          reloadpagecategory={reloadpagecategory}
+        />
         <Autocomplete
           disablePortal
           id="internal-category-dropdown"
@@ -286,23 +302,18 @@ function CommunityHeader({
             <TextField {...params} label="Internal Category" />
           )}
         />
-
-        <AddProjectxpageCategory
-          setReloadpagecategory={setReloadpagecategory}
-          reloadpagecategory={reloadpagecategory}
-        />
       </div>
 
       <div className="flexCenter colGap8">
-        {teamCreated?.totalCor > 0 && (
+        {/* {teamCreated?.totalCor > 0 && (
           <Chip label={`COR : ${formatNumber(teamCreated?.totalCor)}`} />
         )}
         {teamCreated?.totalPaidPost > 0 && (
           <Chip
             label={`Paid-Post : ${formatNumber(teamCreated?.totalPaidPost)}`}
           />
-        )}
-        {rowSelectionModel?.length > 0 && (
+        )} */}
+        {selectedRows?.length > 0 && (
           <>
             <Button
               className="btn btn_sm cmnbtn btn-primary"
