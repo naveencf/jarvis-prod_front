@@ -23,6 +23,7 @@ import PantryApi from "./API/Pantry/PantryApi";
 import BoostingApi from "./API/Boosting/BoostingApi";
 import UsersApi from "./API/HRMS/User";
 import vendorSaleApi from "./API/VendorSale/VendorSaleApi";
+import communityInternalCatApi from "./API/Community/CommunityInternalCatApi";
 
 const store = configureStore({
   reducer: {
@@ -43,6 +44,7 @@ const store = configureStore({
     [BoostingApi.reducerPath]: BoostingApi.reducer,
     [UsersApi.reducerPath]: UsersApi.reducer,
     [vendorSaleApi.reducerPath]: vendorSaleApi.reducer,
+    [communityInternalCatApi.reducerPath]: communityInternalCatApi.reducer,
 
     executon,
     PageOverview,
@@ -68,7 +70,8 @@ const store = configureStore({
       .concat(PantryApi.middleware)
       .concat(BoostingApi.middleware)
       .concat(UsersApi.middleware)
-      .concat(vendorSaleApi.middleware),
+      .concat(vendorSaleApi.middleware)
+      .concat(communityInternalCatApi.middleware),
 });
 setupListeners(store.dispatch);
 

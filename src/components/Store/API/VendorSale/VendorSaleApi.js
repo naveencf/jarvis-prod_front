@@ -12,7 +12,7 @@ const vendorSaleApi = createApi({
       providesTags: ["vendorSales"],
     }),
     getAllVendorSalesPostLinks: builder.query({
-      query: () => "/get_all_vendor_sales_post_links",
+      query: () => "/v1/get_all_vendor_sales_post_links",
     }),
     addPostStats: builder.mutation({
       query: (body) => ({

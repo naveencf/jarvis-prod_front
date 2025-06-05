@@ -39,7 +39,7 @@ const PreviewModal = ({
   const cycleData = cycle?.data;
   const { data: vendor } = useGetAllVendorTypeQuery();
   const typeData = vendor?.data;
-
+console.log("docDetails",docDetails);
   return (
     <Modal
       open={open}

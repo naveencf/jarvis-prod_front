@@ -7,7 +7,6 @@ const EditVendorModal = ({
   onClose,
   data,
   onSubmit,
-  campaignList = [],
   pageOptions = [],
 }) => {
   const [editForm, setEditForm] = useState({});

@@ -92,13 +92,13 @@ const LinkUploadVendorSales = ({
   //   }
   // }, [shortCodes]);
 
-  useEffect(() => {
-    if (vendor) {
-      platformID.current = vendorListData?.find(
-        (data) => data.vendor_id == vendor
-      ).vendor_platform;
-    }
-  }, [vendor]);
+  // useEffect(() => {
+  //   if (vendor) {
+  //     platformID.current = vendorListData?.find(
+  //       (data) => data.vendor_id == vendor
+  //     ).vendor_platform;
+  //   }
+  // }, [vendor]);
 
   useEffect(() => {
     if(shortCodes.length){
@@ -124,9 +124,9 @@ const LinkUploadVendorSales = ({
     } else setRecord(0);
   }, [selectedPlan]);
 
-  const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
-    skip: record == 0,
-  });
+  // const { data: vendorListData, isLoading: loading } = useGetVendorsQuery({
+  //   skip: record == 0,
+  // });
 
   const {
     data: campaignsNameWiseData,
@@ -339,7 +339,7 @@ const LinkUploadVendorSales = ({
       //     (data) => data._id == selectedPlan
       //   )?.exe_campaign_name,
     //   postData: otherPlatform,
-      vendor_customer_id: vendorId,
+      vendor_for_sales: vendorId,
       platform_id:  currentPlatformId,
       shortCodes:shortCodes,
       department: token.dept_id
@@ -347,10 +347,10 @@ const LinkUploadVendorSales = ({
     if (record == 3) {
       otherData = {
         ...otherData,
-        vendorId: vendorListData?.find((data) => data.vendor_id == vendor)?._id,
-        vendor_name: vendorListData?.find((data) => data.vendor_id == vendor)
-          ?.vendor_name,
-        vendor_id: vendor,
+        // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)?._id,
+        // vendor_name: vendorListData?.find((data) => data.vendor_id == vendor)
+        //   ?.vendor_name,
+        // vendor_id: vendor,
       };
       delete otherData.phaseDate;
       delete otherData.campaignId;
@@ -361,11 +361,11 @@ const LinkUploadVendorSales = ({
       record == 2
         ? {
             vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
+            // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+            //   ?._id,
+            // vendor_name: vendorListData?.find(
+            //   (data) => data.vendor_id == vendor
+            // )?.vendor_name,
             amount: amount,
             service_description: serviceName,
             ref_link: links,
@@ -404,11 +404,11 @@ const LinkUploadVendorSales = ({
           }
         : {
             vendor_id: vendor,
-            vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-              ?._id,
-            vendor_name: vendorListData?.find(
-              (data) => data.vendor_id == vendor
-            )?.vendor_name,
+            // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+            //   ?._id,
+            // vendor_name: vendorListData?.find(
+            //   (data) => data.vendor_id == vendor
+            // )?.vendor_name,
             shortCodes: shortCodes,
             department: token.dept_id,
             userId: token.id,
@@ -495,13 +495,13 @@ const LinkUploadVendorSales = ({
     }
   }
 
-  useEffect(() => {
-    if (record == 4)
-      vendorList.current = vendorListData?.find(
-        (item) => item._id == selectedVendor
-      )?.vendor_id;
-    else vendorList.current = null;
-  }, [selectedVendor]);
+  // useEffect(() => {
+  //   if (record == 4)
+  //     vendorList.current = vendorListData?.find(
+  //       (item) => item._id == selectedVendor
+  //     )?.vendor_id;
+  //   else vendorList.current = null;
+  // }, [selectedVendor]);
 
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
@@ -729,7 +729,7 @@ const LinkUploadVendorSales = ({
               )}
             </div>
           )}
-          {vendorListData?.length > 0 && record != 0 && record != 5 && (
+          {/* {vendorListData?.length > 0 && record != 0 && record != 5 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -747,7 +747,7 @@ const LinkUploadVendorSales = ({
                 <p className="form-error">Please select the vendor</p>
               )}
             </div>
-          )}
+          )} */}
 
           {record == 0 && (
             <>
@@ -861,7 +861,7 @@ const LinkUploadVendorSales = ({
               setSelectedId={setSelectedCampaign}
             />
           )}
-          {/* {record != 2 && record != 3 && record != 4 && record != 5 && (
+          {record != 2 && record != 3 && record != 4 && record != 5 && (
             <div className="col-md-6">
               <CustomSelect
                 fieldGrid={12}
@@ -875,8 +875,8 @@ const LinkUploadVendorSales = ({
                 }}
               />
             </div>
-          )} */}
-          {/* {(record == 0 || record == 3) && (
+          )}
+          {(record == 0 || record == 3) && (
             <>
               <button
                 className="btn cmnbtn btn-primary mt-4 ml-3"
@@ -901,7 +901,7 @@ const LinkUploadVendorSales = ({
                 Add Multiple Story
               </button>
             </>
-          )} */}
+          )}
 
           {record == 4 && (
             <>
@@ -991,7 +991,7 @@ const LinkUploadVendorSales = ({
               "Update Vendor"
             )}
           </button>
-          {/* <div className="col-lg-6 col-md-6 col-12">
+          <div className="col-lg-6 col-md-6 col-12">
             <div className="row">
               <div className="col-md-10">
                 <div className="form-group">
@@ -1014,7 +1014,7 @@ const LinkUploadVendorSales = ({
                 </button>
               </div>
             </div>
-          </div> */}
+          </div>
           {record == 5 && (
             <button
               className="btn-primary cmnbtn mt-4 ml-3"
