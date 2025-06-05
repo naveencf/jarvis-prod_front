@@ -154,7 +154,7 @@ const VendorMaster = () => {
     altMobile: false,
   });
   const [isContactTouched1, setisContactTouched1] = useState(false);
-
+console.log("docDetails", docDetails);
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
   const vendorTypeData = [
     { value: "Individual Vendor", label: "Individual Vendor" },
@@ -162,11 +162,11 @@ const VendorMaster = () => {
     { value: "Multiple Pages Vendor", label: "Multiple Pages Vendor" },
   ];
 
-  const {
-    data: allVendorData,
-    isLoading: loading,
-    refetch: refetchVendor,
-  } = useGetAllVendorQuery();
+  // const {
+  //   data: allVendorData,
+  //   isLoading: loading,
+  //   refetch: refetchVendor,
+  // } = useGetAllVendorQuery();
 
   const { data: platformData } = useGetPmsPlatformQuery();
 
@@ -952,8 +952,8 @@ const VendorMaster = () => {
         const res = await addVendor(previewData);
         setIsFormSubmitting(false);
         const resID = res.data.data._id;
-
-        if (res?.status === 200) {
+        if (res?.data?.success) {
+          console.log("trueeee");
           setIsFormSubmitted(true);
           setOpenPreviewModal(false);
           toastAlert("Data Submitted Successfully");
@@ -1062,7 +1062,7 @@ const VendorMaster = () => {
         }
 
         handleSuccess("Data Updated Successfully");
-        navigate("/admin/pms-vendor-overview");
+        // navigate("/admin/pms-vendor-overview"); 
       } catch (err) {
         handleError(err);
       }
@@ -1195,9 +1195,9 @@ const VendorMaster = () => {
     }
   };
 
-  if (isFormSubmitted) {
-    return <Navigate to="/admin/pms-vendor-overview" />;
-  }
+  // if (isFormSubmitted) {
+  //   return <Navigate to="/admin/pms-vendor-overview" />;
+  // }
 
   const goBack = () => {
     navigate(-1);
@@ -1668,9 +1668,9 @@ const VendorMaster = () => {
                       }}
                     ></Select>
                   </div>
-                  <div class="input-group-append">
+                  <div className="input-group-append">
                     <button
-                      class="btn icon"
+                      className="btn icon"
                       type="button"
                       onClick={handleAddPlatformClick}
                       title="Add Platform.."
@@ -1678,7 +1678,7 @@ const VendorMaster = () => {
                       <AddIcon />
                     </button>
                     <button
-                      class="btn icon"
+                      className="btn icon"
                       type="button"
                       onClick={handlePlatformInfoClick}
                       title="Platform Info.."
@@ -1733,7 +1733,7 @@ const VendorMaster = () => {
           <div className="row">
             {bankRows?.map((row, i) => (
               <>
-                <div className="col-lg-4 col-md-4 col-12">
+                <div className="col-lg-4 col-md-4 col-12" key={i}>
                   <div className="form-group">
                     <label className="form-label">
                       Payment Method <sup style={{ color: "red" }}>*</sup>
@@ -1774,9 +1774,9 @@ const VendorMaster = () => {
                           isDisabled={row.is_verified} // Disable if _id exists
                         ></Select>
                       </div>
-                      <div class="input-group-append">
+                      <div className="input-group-append">
                         <button
-                          class="btn icon"
+                          className="btn icon"
                           type="button"
                           onClick={handleAddPaymentMethodClick}
                           title="Add Payment Method.."
@@ -1784,7 +1784,7 @@ const VendorMaster = () => {
                           <AddIcon />
                         </button>
                         <button
-                          class="btn icon"
+                          className="btn icon"
                           type="button"
                           onClick={handlePaymentMethodInfoClick}
                           title="Payment Method Info.."
@@ -1833,9 +1833,9 @@ const VendorMaster = () => {
                               isDisabled={row.is_verified} // Disable if _id exists
                             />
                           </div>
-                          <div class="input-group-append">
+                          <div className="input-group-append">
                             <button
-                              class="btn icon"
+                              className="btn icon"
                               type="button"
                               onClick={handleAddBankNameClick}
                               title="Add Bank Detail.."
@@ -1843,7 +1843,7 @@ const VendorMaster = () => {
                               <AddIcon />
                             </button>
                             <button
-                              class="btn icon"
+                              className="btn icon"
                               type="button"
                               onClick={handleBankNameInfoClick}
                               title="Bank Detail Info.."
@@ -1993,9 +1993,9 @@ const VendorMaster = () => {
                       }}
                     ></Select>
                   </div>
-                  <div class="input-group-append">
+                  <div className="input-group-append">
                     <button
-                      class="btn icon"
+                      className="btn icon"
                       type="button"
                       onClick={handleAddPayCycleClick}
                       title="Add Pay Cycle.."
@@ -2003,7 +2003,7 @@ const VendorMaster = () => {
                       <AddIcon />
                     </button>
                     <button
-                      class="btn icon"
+                      className="btn icon"
                       type="button"
                       onClick={handlePayCycleInfoClick}
                       title="Pay Cycle Info.."
@@ -2092,27 +2092,27 @@ const VendorMaster = () => {
                   }}
                 />
                 <div
-                  class="btn-group mt12"
+                  className="btn-group mt12"
                   role="group"
                   aria-label="Basic example"
                 >
                   <button
                     type="button"
-                    class="btn cmnbtn btn-outline-dark"
+                    className="btn cmnbtn btn-outline-dark"
                     onClick={() => setLimit(50000)}
                   >
                     50K
                   </button>
                   <button
                     type="button"
-                    class="btn cmnbtn btn-outline-dark"
+                    className="btn cmnbtn btn-outline-dark"
                     onClick={() => setLimit(100000)}
                   >
                     100K
                   </button>
                   <button
                     type="button"
-                    class="btn cmnbtn btn-outline-dark"
+                    className="btn cmnbtn btn-outline-dark"
                     onClick={() => setLimit(200000)}
                   >
                     200K
@@ -2322,9 +2322,9 @@ const VendorMaster = () => {
                       </div>
                       {index == 0 && (
                         <>
-                          <div class="input-group-append">
+                          <div className="input-group-append">
                             <button
-                              class="btn icon"
+                              className="btn icon"
                               type="button"
                               onClick={handleAddWhatsappGroupLinkTypeClick}
                               title="Add Pay Cycle.."
@@ -2332,7 +2332,7 @@ const VendorMaster = () => {
                               <AddIcon />
                             </button>
                             <button
-                              class="btn icon"
+                              className="btn icon"
                               type="button"
                               onClick={handleWhatsappGroupLinkTypeInfoClick}
                               title="Pay Cycle Info.."

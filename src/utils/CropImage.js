@@ -95,9 +95,8 @@ export default async function getCroppedImg(
 
   // As a blob
   return new Promise((resolve, reject) => {
-    const date = new Date();
     croppedCanvas.toBlob((file) => {
-      const newFile = new File([file], fileNames.replace(/\s+/g, "") + date, {
+      const newFile = new File([file], fileNames.replace(/\s+/g, ""), {
         type: "image/jpeg",
       });
       resolve(newFile);

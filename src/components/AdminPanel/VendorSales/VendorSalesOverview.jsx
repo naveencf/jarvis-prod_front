@@ -1,15 +1,7 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
-  useBulkCampaignUpdateMutation,
-  useGetAllPagessByPlatformQuery,
   useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
   useGetPostDetailofPagenVendorMutation,
@@ -18,25 +10,20 @@ import {
   useUpdateMultipleAuditStatusMutation,
   useUpdatePriceforPostMutation,
   useUpdateVendorMutation,
-  useVendorDataQuery,
 } from "../../Store/API/Operation/OperationApi";
 
 import View from "../../AdminPanel/Sales/Account/View/View";
-import CustomSelect from "../../ReusableComponents/CustomSelect";
 import getDecodedToken from "../../../utils/DecodedToken";
 import { useGlobalContext } from "../../../Context/Context";
-import FieldContainer from "../../AdminPanel/FieldContainer";
 import { formatDate, formatDateAsDDMMYY } from "../../../utils/formatDate";
 import Modal from "react-modal";
 import {
   useGetAdvancedPaymentsByVendorQuery,
-  useGetExeCampaignsNameWiseDataQuery,
+
   useVerifyAdvancePurchaseMutation,
 } from "../../Store/API/Sales/ExecutionCampaignApi";
-import { ArrowClockwise, Pencil, Star } from "@phosphor-icons/react";
+import { ArrowClockwise, Pencil } from "@phosphor-icons/react";
 import PageEdit from "../../AdminPanel/PageMS/PageEdit";
-import PurchasePagesStats from "../../Purchase/PurchaseVendor/PurchasePagesStats";
-import PostGenerator from "../../InstaPostGenerator/PostGenerator";
 import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
 import { Autocomplete } from "@mui/lab";
 import { TextField } from "@mui/material";
@@ -46,7 +33,6 @@ import {
   useUpdateMultiplePurchasedStatusDataMutation,
 } from "../../Store/API/Purchase/DirectPurchaseApi";
 import formatDataObject from "../../../utils/formatDataObject";
-import { set } from "date-fns";
 import StringLengthLimiter from "../../../utils/StringLengthLimiter.js";
 import Carousel from "/copy.png";
 import Reel from "/reel.png";
@@ -66,7 +52,6 @@ import BulkCampaignUpdate from "../../Operation/Execution/BulkCampaignUpdate.jsx
 import {
   useGetAllVendorSalesPostLinksByVendorIdQuery,
   useGetAllVendorSalesPostLinksQuery,
-  useGetVendorSalesInventoryQuery,
   useUpdateVendorSalesPostLinkByIdMutation,
 } from "../../Store/API/VendorSale/VendorSaleApi.js";
 import { debounce } from "../../../utils/helper.js";
@@ -104,7 +89,6 @@ const VendorSalesOverview = () => {
   const [links, setLinks] = useState("");
   const [phaseDate, setPhaseDate] = useState("");
   const [selectedData, setSelectedData] = useState([]);
-  const [platformName, setPlatformName] = useState("");
   const [pageName, setPageName] = useState({ page_name: "" });
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
@@ -131,8 +115,7 @@ const VendorSalesOverview = () => {
   const [activeTabIndex, setActiveTabIndex] = useState(0);
   const page_id = useRef(null);
   const token = getDecodedToken();
-  const { data: allVendorsList, isLoading: allVendorsLoading } =
-    useGetVendorsQuery();
+ 
   const [verifyAdvancePurchase] = useVerifyAdvancePurchaseMutation();
 
   // const {
@@ -140,19 +123,9 @@ const VendorSalesOverview = () => {
   //   isLoading: allPagesLoading,
   //   isFetching: allPagesFetching,
   // } = useGetAllPagessByPlatformQuery(platformName, { skip: !platformName });
-  const [getData, { isLoading: gettingData, isError: gettingError }] =
-    useGetPostDetailofPagenVendorMutation();
+ 
 
-  const [
-    updatePurchasedStatusMultiple,
-    { isLoading: isUpdatingPurchasedStatusMultiple },
-  ] = useUpdateMultiplePurchasedStatusDataMutation();
-
-  const {
-    data: pmsPlatform,
-    isLoading: pmsPlatformLoading,
-    isFetching: pmsPlatformFetching,
-  } = useGetPmsPlatformQuery();
+ 
 
   const { data: vendorsList, isLoading: vendorsLoading } =
     useGetVendorsWithSearchQuery(vendorSearchQuery);
@@ -163,19 +136,11 @@ const VendorSalesOverview = () => {
   //   isFetching: allVendorsFetching,
   // } = useGetVendorSalesInventoryQuery();
 
-  const { data: linksData, isLoading: loadingLinks } =
-    useGetAllVendorSalesPostLinksQuery();
-
+ 
   const [
     bulkAudit,
     { isLoading: bulkAuditLoading, isSuccess: bulkAuditSuccess },
   ] = useUpdateMultipleAuditStatusMutation();
-
-  const {
-    data: campaignList,
-    isFetching: fetchingCampaignList,
-    isLoading: loadingCampaignList,
-  } = useGetExeCampaignsNameWiseDataQuery();
 
   const {
     data: advancedPayments,
@@ -205,8 +170,7 @@ const VendorSalesOverview = () => {
   } = useGetAllVendorSalesPostLinksByVendorIdQuery(selectedVendorId);
   // } =   useGetAllVendorSalesPostLinksByVendorIdQuery(selectedVendorId);
 
-  const [updateData, { isLoading, isSuccess }] = usePostDataUpdateMutation();
-  const [uploadAudetedData, { isLoading: AuditedUploading }] =
+   const [uploadAudetedData, { isLoading: AuditedUploading }] =
     useAuditedDataUploadMutation();
 
   const [
@@ -227,9 +191,9 @@ const VendorSalesOverview = () => {
       isLoading: isUpdatingPostLink,
       isError: isPostLinkUpdateError,
       data: updatedPostLinkData,
-    }
+    },
   ] = useUpdateVendorSalesPostLinkByIdMutation();
-  
+
   const [
     updateVendor,
     { error: vendorError, isLoading: vendorLoading, isSuccess: vendorSuccess },
@@ -384,36 +348,34 @@ const VendorSalesOverview = () => {
     return changes;
   };
 
-  
   const handleEditVendorSubmit = async (updatedData) => {
     try {
       if (!updatedData?._id) {
         toastError("No ID found for update.");
         return;
       }
-  
+
       const changedFields = getChangedFields(editData, updatedData);
-  
+
       if (Object.keys(changedFields).length === 0) {
         toastAlert("No changes detected.");
         return;
       }
-  
+
       const res = await updateVendorSalesPostLinkById({
         id: updatedData._id,
         body: changedFields,
       });
-  
+
       if (res?.error) throw new Error(res.error);
       toastAlert("Post link updated successfully!");
-      await refetchVendorSalesPostLinks(); // Refresh the table
+      await refetchVendorSalesPostLinks();
     } catch (error) {
       console.error("Update failed:", error);
       toastError("Failed to update vendor sales post link.");
     }
   };
-  
-  
+
   async function handleFilterLinks(codes, tab) {
     setActTab(!memoValue?.current?.tab ? tab : memoValue?.current?.tab);
     try {
@@ -438,24 +400,24 @@ const VendorSalesOverview = () => {
     setActTab("");
   }, [selectedPlan]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!vendorId || !platfromId) return;
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (!vendorId || !platfromId) return;
 
-      const payload = {
-        vendor_id: vendorId,
-        platform_id: platfromId,
-      };
-      try {
-        const response = await getData(payload);
-        setAllpages(response.data.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
+  //     const payload = {
+  //       vendor_id: vendorId,
+  //       platform_id: platfromId,
+  //     };
+  //     try {
+  //       const response = await getData(payload);
+  //       setAllpages(response.data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     }
+  //   };
 
-    fetchData();
-  }, [platfromId, vendorId]);
+  //   fetchData();
+  // }, [platfromId, vendorId]);
 
   useEffect(() => {
     if (deleteStorySuccess) {
@@ -505,89 +467,6 @@ const VendorSalesOverview = () => {
     }
   }, [phaseList]);
 
-  async function handledataUpdate(row, setEditFlag) {
-    const data = columns.reduce((acc, col) => {
-      if (
-        col.key !== "Sr.No" &&
-        col.key !== "action" &&
-        col.key !== "postedOn1" &&
-        col.key !== "phaseDate1" &&
-        col.key != "postLinks" &&
-        col.key !== "pageedits" &&
-        col.key !== "postStatus"
-      ) {
-        acc[col.key] = row[col.key];
-      }
-      return acc;
-    }, {});
-
-    const formData = new FormData();
-    formData.append("sponsored", true);
-    formData.append("_id", row._id);
-    formData.append("postedOn", row.postedOn);
-    formData.append("phaseDate", row.phaseDate);
-    formData.append("campaignId", row.campaignId);
-    row?.platform_id && formData.append("platform_id", row?.platform_id);
-
-    if (row.postTypeDecision == -1) {
-      if (row.postType == "") {
-        toastError("Please select the post type");
-        return;
-      } else {
-        formData.append(
-          "price_key",
-          row?.postType == "REEL"
-            ? key[2].price_key
-            : row?.postType == "CAROUSEL"
-            ? key[3].price_key
-            : row?.postType === "IMAGE"
-            ? key[0].price_key
-            : row?.story_link && row?.ref_link
-            ? key[4].price_key
-            : key[1].price_key
-        );
-      }
-    }
-
-    if (vendorName) {
-      formData.append(
-        "vendor_id",
-        vendorsList?.find((item) => item.vendor_name === row.vendor_name)
-          ?.vendor_id
-      );
-      formData.append(
-        "vendorId",
-        vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
-      );
-    }
-
-    Object.entries(data).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        if (key === "postImage") {
-          formData.append("image", value);
-        } else formData.append(key, value);
-        if (!pageName) {
-          formData.delete("page_name");
-        }
-      }
-    });
-
-    try {
-      const res = await updateData(formatDataObject(formData));
-      if (res?.error) throw new Error(res.error);
-      if (actTab == 5) handleFilterLinks();
-      else await refetchVendorSalesPostLinks();
-
-      toastAlert("Data Updated with amount " + row.amount);
-      setToggleModal(false);
-      setEditFlag && setEditFlag(false);
-      setVendorName("");
-      setPageName("");
-    } catch (err) {
-      toastError("Error while Uploading");
-    }
-  }
-
   useEffect(() => {
     if (duplicateMsg) {
       setToggleModal(true);
@@ -634,17 +513,6 @@ const VendorSalesOverview = () => {
       setPhaseList([]);
     }
   }, [selectedPlan, fetchingPlanData, linkData]);
-
-  function utcToIst(utcDate) {
-    let date = new Date(utcDate);
-    date.setHours(date.getHours() + 5, date.getMinutes() + 30); // IST is UTC +5:30
-
-    let day = String(date.getDate()).padStart(2, "0");
-    let month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
-    let year = date.getFullYear();
-
-    return `${day}/${month}/${year}`;
-  }
 
   function checkAbletoAudit() {
     return selectedData.every(
@@ -797,36 +665,6 @@ const VendorSalesOverview = () => {
     }
   }
 
-  async function handleSingleAuditPending(item) {
-    try {
-      if (!item?.campaignId) {
-        toastAlert("Please select the campaign");
-        return;
-      }
-      if (item?.amount <= 0) {
-        toastAlert("Please enter the amount grater than 0");
-        return;
-      }
-      if (!item?.vendor_name) {
-        toastAlert("Please select the vendor");
-        return;
-      }
-
-      const data = {
-        audit_status: item?.audit_status,
-        shortCodes: [item?.shortCode],
-      };
-
-      const res = await bulkAudit(data);
-      if (res.error) throw new Error(res.error);
-      if (actTab == 5) handleFilterLinks();
-      else await refetchVendorSalesPostLinks();
-      toastAlert("Status Updated");
-    } catch (err) {
-      toastError("Error Uploading Data");
-    }
-  }
-
   const handlePriceChange = (e) => {
     const value = e.target.value;
     const regex = /^[0-9]*\.?[0-9]*$/;
@@ -896,13 +734,7 @@ const VendorSalesOverview = () => {
       toastError("Error Uploading Data");
     }
   }
-  function istToUtc(istDate) {
-    let [day, month, year] = istDate.split("/").map(Number);
-    let date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0));
-    date.setHours(date.getHours() - 5, date.getMinutes() - 30); // Convert IST to UTC
 
-    return date.toISOString(); // Returns ISO UTC string
-  }
   let columns = [
     {
       name: "Sr.No",
@@ -1023,7 +855,7 @@ const VendorSalesOverview = () => {
             backgroundColor: "transparent",
             border: "2px solid lightGray",
           }}
-          disabled={row.status==="sales"}
+          disabled={row.status === "sales"}
           onClick={() => {
             setEditData(row);
             setShowEditModal(true);
@@ -1152,14 +984,7 @@ const VendorSalesOverview = () => {
     {
       name: "Posted On",
       key: "postedOn1",
-      renderRowCell: (
-        row,
-        index,
-        setEditFlag,
-        editflag,
-        handelchange,
-        column
-      ) => {
+      renderRowCell: (row) => {
         // return ConvertDateToOpposite(utcToIst(row.postedOn));
         return ConvertDateToOpposite(
           formatDateAsDDMMYY(row.phaseDate)?.replace(/T.*Z/, "").trim()
@@ -1236,18 +1061,6 @@ const VendorSalesOverview = () => {
       } else return false;
     }
   }
-  const CampaignSelection = useMemo(
-    () => [
-      {
-        _id: 0,
-        exe_campaign_name: "Vendor Wise Data",
-      },
-      ...(campaignList
-        ? campaignList.filter((data) => data?.is_sale_booking_created)
-        : []),
-    ],
-    [campaignList]
-  );
 
   function modalViewer(name) {
     if (name === "auditedData")
@@ -1265,26 +1078,7 @@ const VendorSalesOverview = () => {
           handleEditClose={() => setToggleModal(false)}
         />
       );
-    else if (name == "duplicacyModal") {
-      return (
-        <DuplicayModal
-          duplicateMsg={duplicateMsg}
-          setToggleModal={setToggleModal}
-          setLinks={setLinks}
-          refetchPlanData={refetchVendorSalesPostLinks}
-          phaseDate={phaseDate}
-          setPhaseDate={setPhaseDate}
-          token={token}
-          selectedPlan={selectedPlan}
-          setModalName={setModalName}
-          setModalData={setModalData}
-          campaignName={
-            campaignList.find((data) => data._id == selectedPlan)
-              ?.exe_campaign_name
-          }
-        />
-      );
-    } else if (name == "uploadMessage") {
+    else if (name == "uploadMessage") {
       return (
         <>
           <button
@@ -1360,6 +1154,7 @@ const VendorSalesOverview = () => {
   if (advancedPaymentLoading) {
     return <Loader />;
   }
+  console.log("vendorsList", vendorsList);
   return (
     <>
       <Modal
@@ -1394,23 +1189,17 @@ const VendorSalesOverview = () => {
         onClose={() => setShowEditModal(false)}
         data={editData}
         onSubmit={handleEditVendorSubmit}
-        campaignList={campaignList}
         pageOptions={phaseWiseData}
       />
 
       <FormContainer mainTitle={"Vendor Sales"} link={"true"} />
       <div className="card">
         <div className="card-body row">
-          <div className="col-md-6">
-            {selectedPlan == 0
-              ? "Vendor Wise Data"
-              : campaignList?.find((data) => data?._id == selectedPlan)
-                  ?.exe_campaign_name}
-          </div>
+       
           <div style={{ width: "20rem" }}>
             <Autocomplete
               fullWidth
-              options={vendorsList}
+              options={Array.isArray(vendorsList) ? vendorsList : []}
               getOptionLabel={(option) => option.vendor_name}
               value={vendorsList?.find(
                 (item) => item.vendor_id === selectedVendorId

@@ -96,6 +96,7 @@ const CampaignExecution = () => {
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [selectedVendorId, setSelectedVendorId]= useState(null)
   const [startDate, setStartDate] = useState("");
   const [price, setPrice] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -419,7 +420,7 @@ const CampaignExecution = () => {
       }
     }
   }, [phaseList]);
-
+ console.log("pageName", pageName);
   async function handledataUpdate(row, setEditFlag) {
     const data = columns.reduce((acc, col) => {
       if (
@@ -475,12 +476,15 @@ const CampaignExecution = () => {
         vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
       );
     }
+console.log("data",data);
+console.log("row",row);
 
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         if (key === "postImage") {
           formData.append("image", value);
         } else formData.append(key, value);
+        console.log("key", key, "value", value);
         if (!pageName) {
           formData.delete("page_name");
         }
@@ -628,7 +632,6 @@ const CampaignExecution = () => {
     return phasedData;
   }, [PlanData, linkData, localPlanData, localLinkData, activeTab, actTab, fetchingPlanData, loadingPlanData]);
 
-  console.log("linkedData", linkData);
   // useEffect(() => {
   //   if (selectedPrice) {
   //     handlePriceUpdate(selectedPrice);
@@ -1018,19 +1021,17 @@ const CampaignExecution = () => {
         editflag,
         handelchange,
         column,
-        selectedValue,
-        selectedVendorId,
-        allPages
+        selectedValue
       ) => {
-        const filteredPages =
-          allPages?.filter((page) => page.vendor_id === selectedVendorId) || [];
-
+        const filteredPages = allPages || [];
+      
         const selectedPageObj = filteredPages.find(
-          (page) => page.page_name === selectedValue || page._id === row.page_id
+          (page) =>
+            page.page_name === selectedValue || page._id === row.page_id
         );
-
+      
         return (
-          <div style={{ position: "relative", width: "100%" }}>
+          <div style={{ position: "relative", width: "10rem" }}>
             <Autocomplete
               options={filteredPages}
               getOptionLabel={(option) => option.page_name || ""}
@@ -1050,6 +1051,8 @@ const CampaignExecution = () => {
                   column,
                   true
                 );
+                console.log("newValue", newValue);
+                setPageName(newValue.page_name);
               }}
             />
           </div>
@@ -1796,8 +1799,7 @@ const CampaignExecution = () => {
     ],
     [campaignList]
   );
-  console.log("localLinked", localLinkData);
-  console.log("localPlanData", localPlanData);
+ 
   function modalViewer(name) {
     if (name === "auditedData")
       return (

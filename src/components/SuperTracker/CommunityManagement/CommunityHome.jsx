@@ -21,7 +21,15 @@ import dayjs from "dayjs";
 import { formatUTCDate } from "../../../utils/formatUTCDate";
 import CommunityReport from "./CommunityReport";
 import jwtDecode from "jwt-decode";
-import { ApiContextData, useAPIGlobalContext } from "../../AdminPanel/APIContext/APIContext";
+import {
+  ApiContextData,
+  useAPIGlobalContext,
+} from "../../AdminPanel/APIContext/APIContext";
+import {
+  useGetAllCommunityInternalCatsQuery,
+  useProjectxUpdateMutation,
+} from "../../Store/API/Community/CommunityInternalCatApi";
+import View from "../../AdminPanel/Sales/Account/View/View";
 
 function CustomToolbar({
   setFilterButtonEl,
@@ -35,6 +43,7 @@ function CustomToolbar({
   setTeamDetail,
 }) {
   const { userContextData } = useContext(ApiContextData);
+
   const handleTeam = useCallback(async () => {
     if (rowSelectionModel.length === 0) {
       alert("Please select the Page first.");
@@ -160,6 +169,12 @@ function CommunityHome() {
   const [reportView, setReportView] = useState(false);
   const [communityManagerCategory, setCommunityManagerCategory] = useState();
   const minSelectableDate = dayjs("2023-11-01");
+  const {
+    data: communityInternalCats,
+    isLoading: isCommunityCatsLoading,
+    error: communityCatsError,
+    refetch: refetchCommunityCats,
+  } = useGetAllCommunityInternalCatsQuery();
 
   const getCommunityManagerCategory = async () => {
     try {
@@ -196,7 +211,7 @@ function CommunityHome() {
       console.error("Error fetching Data: ", error);
     }
   };
-
+  console.log("rows", rows);
   const fetchCategory = async () => {
     try {
       const res = await axios.get(
@@ -259,328 +274,120 @@ function CommunityHome() {
   });
   const columns = [
     {
-      field: "sno",
-      headerName: "S No",
+      key: "sno",
+      name: "S.No",
       width: 70,
-      valueGetter: (params) => rows.indexOf(params.row),
-      renderCell: (params) => {
-        const rowIndex = rows.indexOf(params.row);
-        return (
-          <div style={{ textAlign: "center", marginLeft: 10 }}>
-            {rowIndex + 1}
-          </div>
+      renderRowCell: (row, index) => index + 1,
+    },
+    {
+      key: "creatorName",
+      name: "Page Name",
+      width: 220,
+    },
+    {
+      key: "followersCount",
+      name: "Followers",
+      width: 100,
+      renderRowCell: (row) =>
+        formatNumber(row.creatorInfo?.followersCount) || 0,
+    },
+    {
+      key: "followingCount",
+      name: "Following",
+      width: 100,
+      renderRowCell: (row) => row.creatorInfo?.followingCount || 0,
+    },
+    {
+      key: "category",
+      name: "Category",
+      width: 220,
+      renderRowCell: (row) => {
+        const category = pagecategory.find(
+          (cat) => cat.category_id === row.projectxRecord?.pageCategoryId
         );
+        return category?.category_name || "N/A";
       },
     },
     {
-      field: "avatar",
-      headerName: "Avatar",
+      key: "internal_category",
+      name: "Internal Category",
+      width: 220,
+      renderRowCell: (row) => {
+        const internalCat = communityInternalCats?.find(
+          (cat) => cat._id === row.projectxRecord?.pageInternalCategoryId
+        );
+        return internalCat?.internal_category_name || "N/A";
+      },
+    },
+
+    {
+      key: "postcount",
+      name: "Total Posts",
+      width: 100,
+    },
+    {
+      key: "page_status",
+      name: "Status",
+      width: 100,
+      renderRowCell: (row) => row.projectxRecord?.page_status || "N/A",
+    },
+    {
+      key: "todayPostCount",
+      name: "Y-Day Posts",
+      width: 130,
+      renderRowCell: (row) =>
+        row.reportStatus?.previousDay?.todayPostCount || 0,
+    },
+    {
+      key: "followerGrowth",
+      name: "Y-Day Follower Growth",
+      width: 170,
+      renderRowCell: (row) =>
+        row.reportStatus?.previousDay?.todayVsYesterdayFollowersCountDiff || 0,
+    },
+    {
+      key: "followerDiff",
+      name: "Follower Diff",
+      width: 130,
+      renderRowCell: (row) =>
+        (row.reportStatus?.endDate?.followersCount || 0) -
+        (row.reportStatus?.startDate?.followersCount || 0),
+    },
+    {
+      key: "teamType",
+      name: "Page Type",
+      width: 140,
+      renderRowCell: (row) => {
+        const count = row.teamInfo?.team?.team_count || 0;
+        return count > 1
+          ? "Team"
+          : count === 1
+          ? "Individual"
+          : "Team Not Created";
+      },
+    },
+
+    {
+      key: "avatar",
+      name: "Avatar",
       width: 70,
-      renderCell: (params) => {
-        const instagramProfileUrl = `https://www.instagram.com/${params.row.creatorName}/`;
+      renderRowCell: (row) => {
+        const instagramProfileUrl = `https://www.instagram.com/${row.creatorName}/`;
+        const avatarSrc = `https://storage.googleapis.com/insights_backend_bucket/cr/${row.creatorName?.toLowerCase()}.jpeg`;
         return (
-          <Link
-            className="ml-auto mr-auto"
-            to={instagramProfileUrl}
+          <a
+            href={instagramProfileUrl}
             target="_blank"
             rel="noopener noreferrer"
+            style={{ display: "flex", justifyContent: "center" }}
           >
-            <Avatar
-              src={`https://storage.googleapis.com/insights_backend_bucket/cr/${params.row.creatorName.toLowerCase()}.jpeg`}
+            <img
+              src={avatarSrc}
+              alt={row.creatorName}
+              style={{ width: 36, height: 36, borderRadius: "50%" }}
             />
-          </Link>
+          </a>
         );
-      },
-    },
-    // {
-    //   field: "logoDownload",
-    //   headerName: "Logo Download",
-    //   width: 140,
-    //   renderCell: (params) => {
-    //     const logoUrl = `https://storage.googleapis.com/insights_backend_bucket/cr/${params.row.creatorName.toLowerCase()}.jpeg`;
-    //     return (
-    //       <a
-    //         className="ml-auto mr-auto"
-    //         href={logoUrl}
-    //         download={`${params.row.creatorName}_logo.jpeg`}
-    //         style={{ textDecoration: "none" }}
-    //       >
-    //         {/* <Button className="btn tableIconBtn btn_sm" variant="outlined">
-    //           <DownloadIcon />
-    //         </Button> */}
-    //         <button className="icon-1">
-    //           <DownloadIcon />
-    //         </button>
-    //       </a>
-    //     );
-    //   },
-    // },
-    {
-      field: "creatorName",
-      headerName: "Page name",
-      width: 220,
-      valueGetter: (params) => formatString(params.row.creatorName) || "",
-      renderCell: (params) => {
-        const instagramProfileUrl = `/admin/instaapi/community/manager/${params.row.creatorName}`;
-        return (
-          <Link to={instagramProfileUrl} rel="noopener noreferrer">
-            {formatString(params.row.creatorName)}
-          </Link>
-        );
-      },
-    },
-    {
-      field: "projectxRecord?.pageCategoryId",
-      headerName: "Category",
-      width: 220,
-      valueGetter: (params) =>
-        pagecategory.find(
-          (category) =>
-            category.category_id === params.row.projectxRecord?.pageCategoryId
-        )?.category_name,
-      renderCell: (params) => {
-        const CategoryName = pagecategory.find(
-          (category) =>
-            category.category_id === params.row.projectxRecord?.pageCategoryId
-        );
-        return CategoryName?.category_name;
-      },
-    },
-    {
-      field: "followersCount",
-      headerName: "Follower",
-      width: 100,
-      valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row.creatorInfo?.followersCount || 0;
-        return formatNumber(instagramfollowerCount);
-      },
-    },
-    {
-      field: "yesterdaypost",
-      headerName: "YesterDay-Post-Count",
-      width: 150,
-      valueGetter: (params) =>
-        params.row.reportStatus?.previousDay?.todayPostCount || 0,
-    },
-    {
-      field: "yesterdayFollowerGrowth",
-      headerName: "YesterDay-Follower-Growth",
-      width: 150,
-      valueGetter: (params) =>
-        params.row.reportStatus?.previousDay
-          ?.todayVsYesterdayFollowersCountDiff || 0,
-      renderCell: (params) => {
-        const growth = params.value || 0;
-        return (
-          <div
-            style={{
-              color: growth > 0 ? "green" : growth < 0 ? "red" : "black",
-            }}
-          >
-            {growth}
-          </div>
-        );
-      },
-    },
-    {
-      field: "followerdiff",
-      headerName: "FollowerDifference",
-      width: 100,
-      // valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row?.reportStatus?.endDate?.followersCount -
-          params.row?.reportStatus?.startDate?.followersCount;
-        return formatNumber(instagramfollowerCount);
-      },
-    },
-    {
-      field: "teamtype",
-      headerName: "Page Type",
-      width: 200,
-      valueGetter: (params) => params.row.teamInfo?.team?.team_count || 0,
-      renderCell: (params) => {
-        const pageType =
-          params.row.teamInfo?.team?.team_count > 1
-            ? "Team"
-            : params.row.teamInfo?.team?.team_count == 1
-              ? "Individual"
-              : "Team Not Created";
-        return pageType;
-      },
-    },
-    {
-      field: "teammanager",
-      headerName: "Manager",
-      width: 200,
-      valueGetter: (params) => params.row.teamInfo?.teamManager?.user_id || 0,
-      renderCell: (params) =>
-        userContextData?.find(
-          (user) => user.user_id === params.row.teamInfo?.teamManager?.user_id
-        )?.user_name || "N/A",
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      width: 200,
-      renderCell: (params) => {
-        const status = params.row.projectxRecord.page_status;
-
-        if (status == 1) {
-          return (
-            <Button className="statusBadge" color="info">
-              Private
-            </Button>
-          );
-        } else if (status == 2) {
-          return (
-            <Button className="statusBadge" color="error">
-              Disabled
-            </Button>
-          );
-        } else if (status == 3) {
-          return (
-            <Button className="statusBadge" color="success">
-              Active
-            </Button>
-          );
-        } else {
-          return "N/A";
-        }
-      },
-    },
-    {
-      field: "Date ",
-      headerName: "Date",
-      width: 200,
-      // valueGetter: (params) => params.row.projectxRecord?.created_at,
-      renderCell: (params) => {
-        return new Date(params.row.projectxRecord?.created_at)
-          .toLocaleDateString("en-GB", { timeZone: "IST" })
-          .replace(/(\d+)\/(\d+)\/(\d+)/, "$3/$2/$1");
-      },
-    },
-
-    {
-      field: "teamcount",
-      headerName: "Team-Count",
-      width: 100,
-      valueGetter: (params) => params.row.teamInfo?.team?.team_count || 0,
-    },
-    {
-      field: "teamcost",
-      headerName: "COR",
-      width: 100,
-      valueGetter: (params) => params.row.teamInfo?.team?.cost_of_running || 0,
-    },
-
-    {
-      field: "followingCount",
-      headerName: "Following",
-      width: 100,
-      valueGetter: (params) => params.row.creatorInfo?.followingCount || 0,
-      renderCell: (params) => {
-        const instagramfollowingCount =
-          params.row.creatorInfo?.followingCount || 0;
-        return formatNumber(instagramfollowingCount);
-      },
-    },
-    {
-      field: "mediaCount",
-      headerName: "Media",
-      width: 100,
-      valueGetter: (params) => params.row.creatorInfo?.postCount || 0,
-      renderCell: (params) => {
-        const mediaCount = params.row.creatorInfo?.postCount || 0;
-        return formatNumber(mediaCount);
-      },
-    },
-    // {
-    //   field: "nonPaidPosts.allLikes",
-    //   headerName: "Np-Likes",
-    //   width: 100,
-    //   valueGetter: (params) => params.row.nonPaidPosts?.allLikes || 0,
-    //   renderCell: (params) => {
-    //     const nonpaidlikes = params.row.nonPaidPosts?.allLikes || 0;
-    //     return formatNumber(nonpaidlikes);
-    //   },
-    // },
-    // {
-    //   field: "allViews",
-    //   headerName: "Np-Views",
-    //   width: 100,
-    //   valueGetter: (params) => params.row.nonPaidPosts?.allViews || 0,
-    //   renderCell: (params) => {
-    //     const npViews = params.row.nonPaidPosts?.allViews || 0;
-    //     return formatNumber(npViews);
-    //   },
-    // },
-    // {
-    //   field: "allComments",
-    //   headerName: "Np-Comments",
-    //   width: 100,
-    //   valueGetter: (params) => params.row.nonPaidPosts?.allComments || 0,
-    //   renderCell: (params) => {
-    //     const allComments = params.row.nonPaidPosts?.allComments || 0;
-    //     return formatNumber(allComments);
-    //   },
-    // },
-
-    {
-      field: "followerStartdate",
-      headerName: "StartDate-Follower",
-      width: 100,
-      // valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row?.reportStatus?.startDate?.followersCount || 0;
-        return instagramfollowerCount;
-      },
-    },
-    {
-      field: "followerEnddate",
-      headerName: "EndDate-Follower",
-      width: 130,
-      // valueGetter: (params) => params.row.creatorInfo?.followersCount || 0,
-      renderCell: (params) => {
-        const instagramfollowerCount =
-          params.row?.reportStatus?.endDate?.followersCount || 0;
-        return instagramfollowerCount;
-      },
-    },
-    {
-      field: "Image",
-      headerName: "Static",
-      width: 110,
-      renderCell: (params) => {
-        const imagePost = params.row.postTypes?.find(
-          (post) => post.type === "IMAGE"
-        );
-        return imagePost?.count || "-";
-      },
-    },
-    {
-      field: "Carousel",
-      headerName: "Carousel",
-      width: 110,
-      renderCell: (params) => {
-        const carouselPost = params.row.postTypes?.find(
-          (post) => post.type === "CAROUSEL"
-        );
-        return carouselPost?.count || "-";
-      },
-    },
-    {
-      field: "Reel",
-      headerName: "Reel",
-      width: 110,
-      renderCell: (params) => {
-        const reelPost = params.row.postTypes?.find(
-          (post) => post.type === "REEL"
-        );
-        return reelPost?.count || "-";
       },
     },
   ];
@@ -650,6 +457,18 @@ function CommunityHome() {
               <h2 className="mb0 mt-1">Community Overview</h2>
             </div>
             <div className="action_btns">
+            <Link
+                className="btn cmnbtn btn-primary btn_sm"
+                to={"/admin/instaapi/community/community-pages"}
+              >
+                Community Pages List
+              </Link>
+              <Link
+                className="btn cmnbtn btn-primary btn_sm"
+                to={"/admin/instaapi/community/internal-category"}
+              >
+                Add Internal Categories
+              </Link>
               <Button
                 className="btn cmnbtn btn-primary btn_sm"
                 onClick={() => setReportView(false)}
@@ -732,6 +551,7 @@ function CommunityHome() {
                       reload={reload}
                       setReload={setReload}
                       pagecategory={pagecategory}
+                      communityInternalCats={communityInternalCats}
                       rowSelectionModel={rowSelectionModel}
                       projectxpages={projectxpages}
                       setReloadpagecategory={setReloadpagecategory}
@@ -763,42 +583,17 @@ function CommunityHome() {
                   />
                 )}
               </div>
-              <div className="card-body p0 flex_center_between table table-responsive">
-                <div className="thmTable">
-                  <DataGrid
-                    rows={rows}
+              <div className="">
+                <div className="">
+                  <View
+                    version={1}
                     columns={columns}
-                    getRowId={(row) => row.creatorName}
-                    initialState={{
-                      pagination: { paginationModel: { pageSize: 100 } },
-                    }}
-                    slots={{ toolbar: CustomToolbar }}
-                    slotProps={{
-                      panel: { anchorEl: filterButtonEl },
-                      toolbar: {
-                        setFilterButtonEl,
-                        setOpenTeam,
-                        rowSelectionModel,
-                        setLeft,
-                        setRight,
-                        setSelectedManager,
-                        setUserNumbers,
-                        setEditMode,
-                        setTeamDetail,
-                      },
-                    }}
-                    pageSizeOptions={[10, 25, 50, 100]}
-                    checkboxSelection
-                    filterModel={filterModel}
-                    onFilterModelChange={(model) => setFilterModel(model)}
-                    onRowSelectionModelChange={(newRowSelectionModel) =>
-                      setRowSelectionModel(newRowSelectionModel)
-                    }
-                    rowSelectionModel={rowSelectionModel}
-                    columnVisibilityModel={columnVisibilityModel}
-                    onColumnVisibilityModelChange={(newModel) =>
-                      setColumnVisibilityModel(newModel)
-                    }
+                    data={rows}
+                    isLoading={isCommunityCatsLoading}
+                    title="Community Pages"
+                    rowSelectable={true}
+                    pagination={[ 50, 100,200]}
+                    tableName="Community Pages"
                   />
                 </div>
               </div>

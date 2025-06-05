@@ -51,6 +51,7 @@ import UnfetchedPages from "./PageMS/InventoryDashboard/UnfetchedPages.jsx";
 import VendorInventory from "./VendorSales/VendorInventory.jsx";
 import VendorInventoryDetails from "./VendorSales/VendorInventoryDetails.jsx";
 import AddVendorPage from "./VendorSales/AddVendorPage.jsx";
+import CommunityRoutes from "../../routes/CommunityRoutes.jsx";
 // import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
 const IncentiveStatements = lazy(() =>
     import("./Sales/Incenti Dashboard/IncentiveStatements.jsx")
@@ -1955,50 +1956,8 @@ const Admin = () => {
 
                                         {/* Community Management */}
 
-                                        {contextData &&
-                                            contextData[25] &&
-                                            contextData[25]?.view_value == 1 && (
-                                                <>
-                                                    <Route
-                                                        path="/instaapi/community"
-                                                        element={<CommunityHome />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/manager"
-                                                        element={<CommunityManager />}
-                                                    />
+                                        {CommunityRoutes({ contextData })}
 
-                                                    <Route
-                                                        path="/instaapi/community/manager/:creatorName"
-                                                        element={<CommunityPageView />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/user"
-                                                        element={<CommunityUser />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/allAssignedcategory"
-                                                        element={<AllAssignedCategory />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/managerView"
-                                                        element={<CommunityManagerView />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/categoryWise/pagesHistoey"
-                                                        element={<CategoryWisePagesHistoey />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/meetingPage"
-                                                        element={<MeetingPagesOverView />}
-                                                    />
-                                                    <Route
-                                                        path="/instaapi/community/overviewMeetingVia"
-                                                        element={<OverviewMeetingVia />}
-                                                    />
-                                                </>
-                                            )}
-                                        {/* Sarcasm Start*/}
                                         {contextData &&
                                             contextData[29] &&
                                             contextData[29]?.view_value === 1 && (
