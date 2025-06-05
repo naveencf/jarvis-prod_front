@@ -18,7 +18,7 @@ import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest.jsx
 import CalenderCreation from "../Operation/Calender/CalenderCreation.jsx";
 import PurchaseTransactions from "../Purchase/PurchaseTransactions.jsx";
 // import PlanPricingHome from "../inventory/plan-pricing/PlanPricingHome.jsx";
-// import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions.jsx";
+import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions.jsx";
 import OpCalender from "../AbOpreation/Calender/OpCalender.jsx";
 import VendorOutstandingOverview from "../Purchase/PurchaseVendor/VendorOutstandingOverview.jsx";
 import OperationShortcodeUpdater from "../AbOpreation/OperationShortcodeUpdater.jsx";
@@ -2227,9 +2227,9 @@ export default Admin;
                                             element={<CampaignExecutions />}
                                         /> */}
 {/* <Route
-                                            path="/campaign_executions"
-                                            element={<NewCampaignExecutions />}
-                                        /> */}
+    path="/campaign_executions"
+    element={<NewCampaignExecutions />}
+/> */}
 
 {/* new pla over view  */ }
 {/* <Route
@@ -2260,9 +2260,9 @@ export default Admin;
                                             element={<PhaseCreation />}
                                         /> */}
 {/* <Route
-                                            path="/op-campaign-executions"
-                                            element={<CampaignExecutions />}
-                                        /> */}
+    path="/op-campaign-executions"
+    element={<CampaignExecutions />}
+/> */}
 {/* <Route
                                             path="/campaign_executions"
                                             element={<NewCampaignExecutions />}

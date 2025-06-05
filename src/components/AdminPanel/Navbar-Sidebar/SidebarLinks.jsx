@@ -137,9 +137,8 @@ const SidebarLinks = () => {
       {deptId !== 36 && (
         <li className="nav-item nav-item-single">
           <Link
-            className={`nav-btn nav-link ${
-              activelink === "/admin" ? "active" : ""
-            }`}
+            className={`nav-btn nav-link ${activelink === "/admin" ? "active" : ""
+              }`}
             to="/admin"
           >
             <i className="ph">
@@ -1336,9 +1335,8 @@ const SidebarLinks = () => {
                 {/* </div> */}
 
                 <Link
-                  className={`nav-btn nav-link ${
-                    deptId == 36 ? "" : "collapsed"
-                  }`}
+                  className={`nav-btn nav-link ${deptId == 36 ? "" : "collapsed"
+                    }`}
                   data-toggle="collapse"
                   data-target="#collapsInnerEightFinanceEdit"
                   aria-expanded="true"
@@ -1352,7 +1350,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceEdit"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
+                // data-parent="#accordionSidebar"
                 >
                   <div className="collapse-inner">
                     <>
@@ -1606,7 +1604,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinance"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
+                // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1674,7 +1672,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinancePayout"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
+                // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1712,7 +1710,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceTask"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
+                // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
@@ -1904,9 +1902,9 @@ const SidebarLinks = () => {
               )} */}
               {/* Plan X Beta */}
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
-              contextData &&
-              contextData[4] &&
-              contextData[4].insert_value === 1 ? (
+                contextData &&
+                contextData[4] &&
+                contextData[4].insert_value === 1 ? (
                 <NavLink
                   className="collapse-item"
                   to="/admin/pms-plan-making-beta"
@@ -2048,7 +2046,7 @@ const SidebarLinks = () => {
             id="cummunity"
             className="collapse"
             aria-labelledby="headingFive"
-            // data-parent="#accordionSidebar"
+          // data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
               {contextData &&
@@ -2088,7 +2086,7 @@ const SidebarLinks = () => {
             data-target="#sarcasm"
             aria-expanded="false"
             aria-controls="sarcasm"
-            // to="/admin/sarcasm"
+          // to="/admin/sarcasm"
           >
             <i className="ph">
               <MaskHappy size={32} />

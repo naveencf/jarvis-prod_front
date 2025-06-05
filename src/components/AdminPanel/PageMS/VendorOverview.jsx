@@ -666,6 +666,7 @@ const VendorOverview = () => {
   // }, [tabFilterData]);
 
   // for platform statistics
+  console.log(tabFilterData, "tabfilter is no");
   useEffect(() => {
     const platformCountsMap = {};
     for (const vendor of tabFilterData) {
@@ -693,18 +694,18 @@ const VendorOverview = () => {
     setPlatformCounts(platformCountsArray);
   }, [tabFilterData, platformData]);
 
-  // const vendorWithNoMobileNum = () => {
-  //   const vendorwithnomobilenum = tabFilterData.filter(
-  //     (item) => item.mobile == 0
-  //   );
-  //   setFilterData(vendorwithnomobilenum);
-  //   setActiveTab("Tab1");
-  // };
-  // const vendorWithNoEmail = () => {
-  //   const vendorwithnoemail = tabFilterData.filter((item) => item.email == "");
-  //   setFilterData(vendorwithnoemail);
-  //   setActiveTab("Tab1");
-  // };
+  const vendorWithNoMobileNum = () => {
+    const vendorwithnomobilenum = tabFilterData.filter(
+      (item) => item.mobile == 0
+    );
+    setFilterData(vendorwithnomobilenum);
+    setActiveTab("Tab1");
+  };
+  const vendorWithNoEmail = () => {
+    const vendorwithnoemail = tabFilterData.filter((item) => item.email == "");
+    setFilterData(vendorwithnoemail);
+    setActiveTab("Tab1");
+  };
   const vendorWithoutLink = (key) => {
     setFilterData(vendorWithoutWhatsappLinkData);
     setActiveTab("Tab1");
@@ -712,13 +713,13 @@ const VendorOverview = () => {
     // setLoading(true);
   };
 
-  // const vendorWithNoPages = () => {
-  //   const vendorwithnopages = tabFilterData.filter(
-  //     (item) => item.page_count == 0
-  //   );
-  //   setFilterData(vendorwithnopages);
-  //   setActiveTab("Tab1");
-  // };
+  const vendorWithNoPages = () => {
+    const vendorwithnopages = tabFilterData.filter(
+      (item) => item.page_count == 0
+    );
+    setFilterData(vendorwithnopages);
+    setActiveTab("Tab1");
+  };
 
   useEffect(() => {
     if (filterData?.length > 0) {
@@ -801,9 +802,9 @@ const VendorOverview = () => {
     }
   }, [vendorDocsCountData]);
 
-  // const ExportData = () => {
-  //   return decodedToken?.role_id == 1; // returns false if role_id is not 1, otherwise true
-  // };
+  const ExportData = () => {
+    return decodedToken?.role_id == 1; // returns false if role_id is not 1, otherwise true
+  };
 
   const dataVendorDeletedcolumns = [
     {
@@ -990,7 +991,7 @@ const VendorOverview = () => {
                     </Box>
                   ) : (
                     <View
-                      // version={1}
+                      version={1}
                       columns={dataGridcolumns}
                       data={
                         filterStateData?.length ? filterStateData : filterData

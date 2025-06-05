@@ -27,116 +27,122 @@ import {
 } from "../../AdminPanel/APIContext/APIContext";
 import {
   useGetAllCommunityInternalCatsQuery,
+  useGetAllProjectxPagesQuery,
+  useGetCategoryManagerByUserQuery,
+  useGetPageCategoriesQuery,
+  useGetSuperTrackerPostAnalyticsMutation,
+  useLazyGetTeamByPageNameQuery,
+  useGetTeamUsersByPageNameMutation,
   useProjectxUpdateMutation,
 } from "../../Store/API/Community/CommunityInternalCatApi";
 import View from "../../AdminPanel/Sales/Account/View/View";
 
-function CustomToolbar({
-  setFilterButtonEl,
-  setOpenTeam,
-  rowSelectionModel,
-  setLeft,
-  setRight,
-  setSelectedManager,
-  setUserNumbers,
-  setEditMode,
-  setTeamDetail,
-}) {
-  const { userContextData } = useContext(ApiContextData);
+// function CustomToolbar({
+//   setFilterButtonEl,
+//   setOpenTeam,
+//   rowSelectionModel,
+//   setLeft,
+//   setRight,
+//   setSelectedManager,
+//   setUserNumbers,
+//   setEditMode,
+//   setTeamDetail,
+// }) {
+//   const { userContextData } = useContext(ApiContextData);
 
-  const handleTeam = useCallback(async () => {
-    if (rowSelectionModel.length === 0) {
-      alert("Please select the Page first.");
-      return;
-    } else if (rowSelectionModel.length > 1) {
-      alert("Please select only one Page.");
-      return;
-    }
-    const pageName = rowSelectionModel[0].toLowerCase();
-    try {
-      const res = await axios.get(
-        `https://insights.ist:8080/api/v1/community/team_by_page_name/${pageName}`
-      );
-      if (res.data.success) {
-        alert("Team is already created for this page.");
-      } else {
-        setOpenTeam(true);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [rowSelectionModel, setOpenTeam]);
+//   const handleTeam = useCallback(async () => {
+//     if (rowSelectionModel.length === 0) {
+//       alert("Please select the Page first.");
+//       return;
+//     } else if (rowSelectionModel.length > 1) {
+//       alert("Please select only one Page.");
+//       return;
+//     }
+//     const pageName = rowSelectionModel[0].toLowerCase();
+//     try {
+//       const res = await axios.get(
+//         `https://insights.ist:8080/api/v1/community/team_by_page_name/${pageName}`
+//       );
+//       if (res.data.success) {
+//         alert("Team is already created for this page.");
+//       } else {
+//         setOpenTeam(true);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }, [rowSelectionModel, setOpenTeam]);
 
-  const handleEditTeam = useCallback(async () => {
-    if (rowSelectionModel.length === 0) {
-      alert("Please select the Page first.");
-      return;
-    } else if (rowSelectionModel.length > 1) {
-      alert("Please select only one Page.");
-      return;
-    }
-    const pageName = rowSelectionModel[0].toLowerCase();
-    try {
-      const response = await axios.get(
-        `https://insights.ist:8080/api/v1/community/team_by_page_name/${pageName}`
-      );
-      if (!response.data.success) {
-        alert("Team is not created yet.");
-      } else {
-        const res = await axios.post(
-          `https://insights.ist:8080/api/v1/community/team_users`,
-          { page_name: pageName }
-        );
-        const teamData = res.data.data;
-        const tempUserNumber = {};
-        const detailedTeamData = teamData.map((teamUser) => {
-          const userDetails = userContextData?.find(
-            (user) => user.user_id === teamUser.user_id
-          );
-          tempUserNumber[teamUser.user_id] = teamUser?.cost_of_running;
-          return {
-            ...teamUser,
-            ...userDetails,
-            teamID: response.data.data?._id,
-          };
-        });
-        setUserNumbers(tempUserNumber);
-        const manager = detailedTeamData?.find((user) => user.role === 1);
-        if (manager) setSelectedManager(manager);
-        setRight(detailedTeamData);
-        setTeamDetail(response.data.data);
-        setOpenTeam(true);
-        setEditMode(true);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [
-    rowSelectionModel,
-    setEditMode,
-    setOpenTeam,
-    setRight,
-    setSelectedManager,
-    setUserNumbers,
-    userContextData,
-  ]);
+//   const handleEditTeam = useCallback(async () => {
+//     if (rowSelectionModel.length === 0) {
+//       alert("Please select the Page first.");
+//       return;
+//     } else if (rowSelectionModel.length > 1) {
+//       alert("Please select only one Page.");
+//       return;
+//     }
+//     const pageName = rowSelectionModel[0].toLowerCase();
+//     try {
+//       const response = await axios.get(
+//         `https://insights.ist:8080/api/v1/community/team_by_page_name/${pageName}`
+//       );
+//       if (!response.data.success) {
+//         alert("Team is not created yet.");
+//       } else {
+//         const res = await axios.post(
+//           `https://insights.ist:8080/api/v1/community/team_users`,
+//           { page_name: pageName }
+//         );
+//         const teamData = res.data.data;
+//         const tempUserNumber = {};
+//         const detailedTeamData = teamData.map((teamUser) => {
+//           const userDetails = userContextData?.find(
+//             (user) => user.user_id === teamUser.user_id
+//           );
+//           tempUserNumber[teamUser.user_id] = teamUser?.cost_of_running;
+//           return {
+//             ...teamUser,
+//             ...userDetails,
+//             teamID: response.data.data?._id,
+//           };
+//         });
+//         setUserNumbers(tempUserNumber);
+//         const manager = detailedTeamData?.find((user) => user.role === 1);
+//         if (manager) setSelectedManager(manager);
+//         setRight(detailedTeamData);
+//         setTeamDetail(response.data.data);
+//         setOpenTeam(true);
+//         setEditMode(true);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   }, [
+//     rowSelectionModel,
+//     setEditMode,
+//     setOpenTeam,
+//     setRight,
+//     setSelectedManager,
+//     setUserNumbers,
+//     userContextData,
+//   ]);
 
-  return (
-    <GridToolbarContainer>
-      <GridToolbarColumnsButton />
-      <GridToolbarDensitySelector />
-      <GridToolbarFilterButton ref={setFilterButtonEl} />
-      <GridToolbarExport />
+//   return (
+//     <GridToolbarContainer>
+//       <GridToolbarColumnsButton />
+//       <GridToolbarDensitySelector />
+//       <GridToolbarFilterButton ref={setFilterButtonEl} />
+//       <GridToolbarExport />
 
-      <Button variant="contained" onClick={handleTeam}>
-        Create Team
-      </Button>
-      <Button variant="contained" onClick={handleEditTeam}>
-        Show/Edit Team
-      </Button>
-    </GridToolbarContainer>
-  );
-}
+//       <Button variant="contained" onClick={handleTeam}>
+//         Create Team
+//       </Button>
+//       <Button variant="contained" onClick={handleEditTeam}>
+//         Show/Edit Team
+//       </Button>
+//     </GridToolbarContainer>
+//   );
+// }
 
 function CommunityHome() {
   const navigate = useNavigate();
@@ -160,14 +166,16 @@ function CommunityHome() {
   const [filterModel, setFilterModel] = useState({
     items: [{ id: 1, field: "creatorName", operator: "contains" }],
   });
-  const [pagecategory, setPageCategory] = useState([]);
+  // const [pagecategory, setPageCategory] = useState([]);
   const [reloadpagecategory, setReloadpagecategory] = useState(false);
-  const [projectxpages, setProjectxpages] = useState([]);
+  // const [projectxpages, setProjectxpages] = useState([]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [teamDetail, setTeamDetail] = useState(null);
   const [reportView, setReportView] = useState(false);
-  const [communityManagerCategory, setCommunityManagerCategory] = useState();
+  const [selectedRows, setSelectedRows] = useState([]);
+  // const [communityManagerCategory, setCommunityManagerCategory] = useState();
+
   const minSelectableDate = dayjs("2023-11-01");
   const {
     data: communityInternalCats,
@@ -176,55 +184,61 @@ function CommunityHome() {
     refetch: refetchCommunityCats,
   } = useGetAllCommunityInternalCatsQuery();
 
-  const getCommunityManagerCategory = async () => {
-    try {
-      const res = await axios.get(
-        `https://insights.ist:8080/api/v1/community/category_manager_by_user/${loginUserId}`
-      );
-      setCommunityManagerCategory(res.data.data);
-    } catch (error) {
-      console.error("Error fetching community manager category:", error);
-    }
-  };
+  const { data: pagecategory = [] } = useGetPageCategoriesQuery();
+
+  const { data: projectxpages = [] } = useGetAllProjectxPagesQuery();
+
+  const { data: communityManagerCategory } = useGetCategoryManagerByUserQuery(loginUserId);
+
+  const [getAnalytics] = useGetSuperTrackerPostAnalyticsMutation();
+
+  const [triggerGetTeamByPageName] = useLazyGetTeamByPageNameQuery();
+
+  const [getTeamUsersByPageName] = useGetTeamUsersByPageNameMutation();
+
+  // const getCommunityManagerCategory = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       `https://insights.ist:8080/api/v1/community/category_manager_by_user/${loginUserId}`
+  //     );
+  //     setCommunityManagerCategory(res.data.data);
+  //   } catch (error) {
+  //     console.error("Error fetching community manager category:", error);
+  //   }
+  // };
 
   const fetchRows = async () => {
     try {
-      const res = await axios.post(
-        "https://insights.ist:8080/api/v1/community/super_tracker_post_analytics",
-        {
-          startDate: startDate,
-          endDate: endDate,
-        }
-      );
-      if (res.status === 200) {
-        let filteredData = res?.data?.data;
-        if (loginUserId === communityManagerCategory?.userId) {
-          const pageCategoryIds = communityManagerCategory?.pageCategoryIds;
-          filteredData = filteredData?.filter((item) =>
-            pageCategoryIds?.includes(item?.projectxRecord?.pageCategoryId)
-          );
-        }
-        setRows(filteredData);
-        setAllRows(res?.data?.data);
+      const res = await getAnalytics({ startDate, endDate }).unwrap();
+      let filteredData = res?.data;
+  
+      if (loginUserId === communityManagerCategory?.userId) {
+        const pageCategoryIds = communityManagerCategory?.pageCategoryIds;
+        filteredData = filteredData?.filter((item) =>
+          pageCategoryIds?.includes(item?.projectxRecord?.pageCategoryId)
+        );
       }
+  
+      setRows(filteredData);
+      setAllRows(res?.data);
     } catch (error) {
-      console.error("Error fetching Data: ", error);
+      console.error("Error fetching data:", error);
     }
   };
-  console.log("rows", rows);
-  const fetchCategory = async () => {
-    try {
-      const res = await axios.get(
-        `https://insights.ist:8080/api/projectxpagecategory`
-      );
+  
+  // const fetchCategory = async () => {
+  //   try {
+  //     const res = await axios.get(
+  //       `https://insights.ist:8080/api/projectxpagecategory`
+  //     );
 
-      if (res.status === 200) {
-        setPageCategory(res.data.data);
-      }
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
+  //     if (res.status === 200) {
+  //       setPageCategory(res.data.data);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+  // };
 
   useEffect(() => {
     if (startDate) {
@@ -234,44 +248,44 @@ function CommunityHome() {
   }, [reload, startDate, endDate]);
   useEffect(() => {
     handleOverViewChange("e", 2);
-    fetchCategory();
+    // fetchCategory();
   }, [reloadpagecategory]);
 
-  useEffect(() => {
-    try {
-      axios.get("https://insights.ist:8080/api/getallprojectx").then((res) => {
-        if (res.status === 200) {
-          setProjectxpages(res.data.data);
-        }
-      });
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-    getCommunityManagerCategory();
-  }, []);
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState({
-    S_No: true,
-    avatar: true,
-    creatorName: true,
-    projectxRecord: true,
-    followersCount: true,
-    yesterdaypost: true,
-    yesterdayFollowerGrowth: true,
-    followerdiff: true,
-    teamtype: true,
-    teammanager: true,
-    status: false,
-    Date: false,
-    teamcount: true,
-    teamcost: false,
-    followingCount: true,
-    mediaCount: false,
-    followerStartdate: false,
-    followerEnddate: false,
-    Image: false,
-    Carousel: false,
-    Reel: false,
-  });
+  // useEffect(() => {
+  //   try {
+  //     axios.get("https://insights.ist:8080/api/getallprojectx").then((res) => {
+  //       if (res.status === 200) {
+  //         setProjectxpages(res.data.data);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+  //   getCommunityManagerCategory();
+  // }, []);
+  // const [columnVisibilityModel, setColumnVisibilityModel] = useState({
+  //   S_No: true,
+  //   avatar: true,
+  //   creatorName: true,
+  //   projectxRecord: true,
+  //   followersCount: true,
+  //   yesterdaypost: true,
+  //   yesterdayFollowerGrowth: true,
+  //   followerdiff: true,
+  //   teamtype: true,
+  //   teammanager: true,
+  //   status: false,
+  //   Date: false,
+  //   teamcount: true,
+  //   teamcost: false,
+  //   followingCount: true,
+  //   mediaCount: false,
+  //   followerStartdate: false,
+  //   followerEnddate: false,
+  //   Image: false,
+  //   Carousel: false,
+  //   Reel: false,
+  // });
   const columns = [
     {
       key: "sno",
@@ -448,6 +462,76 @@ function CommunityHome() {
     setOverViewValue(newValue);
   };
 
+  const handleTeam = async () => {
+    if (selectedRows.length === 0) {
+      alert("Please select the Page first.");
+      return;
+    } else if (selectedRows.length > 1) {
+      alert("Please select only one Page.");
+      return;
+    }
+  
+    const pageName = selectedRows[0].creatorName.toLowerCase();
+  
+    try {
+      const res = await triggerGetTeamByPageName(pageName).unwrap();
+      if (res?.success) {
+        alert("Team is already created for this page.");
+      } else {
+        setOpenTeam(true);
+      }
+    } catch (error) {
+      console.error("Error checking team by page name:", error);
+    }
+  };
+  
+  const handleEditTeam = async () => {
+    if (selectedRows.length === 0) {
+      alert("Please select the Page first.");
+      return;
+    } else if (selectedRows.length > 1) {
+      alert("Please select only one Page.");
+      return;
+    }
+  
+    const pageName = selectedRows[0].creatorName.toLowerCase();
+  
+    try {
+      const response = await triggerGetTeamByPageName(pageName).unwrap();
+  
+      if (!response.success) {
+        alert("Team is not created yet.");
+      } else {
+        const res = await getTeamUsersByPageName(pageName).unwrap();
+        const teamData = res.data;
+  
+        const tempUserNumber = {};
+        const detailedTeamData = teamData.map((teamUser) => {
+          const userDetails = userContextData?.find(
+            (user) => user.user_id === teamUser.user_id
+          );
+          tempUserNumber[teamUser.user_id] = teamUser?.cost_of_running;
+          return {
+            ...teamUser,
+            ...userDetails,
+            teamID: response.data?._id,
+          };
+        });
+  
+        setUserNumbers(tempUserNumber);
+        const manager = detailedTeamData?.find((user) => user.role === 1);
+        if (manager) setSelectedManager(manager);
+        setRight(detailedTeamData);
+        setTeamDetail(response.data);
+        setOpenTeam(true);
+        setEditMode(true);
+      }
+    } catch (error) {
+      console.error("Error fetching/editing team:", error);
+    }
+  };
+  
+  
   return (
     <div className="workWrapper">
       {allRows.length > 0 ? (
@@ -457,7 +541,7 @@ function CommunityHome() {
               <h2 className="mb0 mt-1">Community Overview</h2>
             </div>
             <div className="action_btns">
-            <Link
+              <Link
                 className="btn cmnbtn btn-primary btn_sm"
                 to={"/admin/instaapi/community/community-pages"}
               >
@@ -556,6 +640,7 @@ function CommunityHome() {
                       projectxpages={projectxpages}
                       setReloadpagecategory={setReloadpagecategory}
                       reloadpagecategory={reloadpagecategory}
+                      selectedRows={selectedRows}
                     />
                   )}
               </div>
@@ -592,8 +677,28 @@ function CommunityHome() {
                     isLoading={isCommunityCatsLoading}
                     title="Community Pages"
                     rowSelectable={true}
-                    pagination={[ 50, 100,200]}
+                    selectedData={setSelectedRows}
+                    pagination={[50, 100, 200]}
                     tableName="Community Pages"
+                    addHtml={
+                      <div className="flexCenter colGap8">
+                        <Button
+                          variant="contained"
+                          onClick={handleTeam}
+                          className="btn btn_sm cmnbtn btn-primary"
+                        >
+                          Create Team
+                        </Button>
+                        <Button
+                          variant="contained"
+                          onClick={handleEditTeam}
+                          className="btn btn_sm cmnbtn btn-secondary"
+                        >
+                          Show/Edit Team
+                        </Button>
+                      </div>
+                    }
+                    
                   />
                 </div>
               </div>

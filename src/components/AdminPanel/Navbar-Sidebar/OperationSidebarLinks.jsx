@@ -8,8 +8,15 @@ const OperationSidebarLinks = () => {
     <>
       <NavLink className="collapse-item" to="/admin/record-campaign">
         <i className="bi bi-dot"></i>
-        Record Campaign
+        Record Campaigns
       </NavLink>
+      <NavLink
+        className="collapse-item"
+        to="/admin/exeexecution/pending"
+      >
+        <i className="bi bi-dot"></i> Pending
+      </NavLink>
+
       {/* <NavLink className="collapse-item" to="/admin/op-calender">
       <i className="bi bi-dot"></i>
       Calender
