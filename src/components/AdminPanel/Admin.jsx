@@ -1275,7 +1275,7 @@ const Admin = () => {
                                             )}
 
 
-                                        {/* <Route path="/pantry-home" element={<PantryHome />} /> */}
+
 
 
                                         <Route

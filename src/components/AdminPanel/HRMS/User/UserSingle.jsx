@@ -25,6 +25,7 @@ import { useGlobalContext } from "../../../../Context/Context";
 import { calculateEMPPF } from "../../../../utils/CalculateEMPPF";
 const UserSingle = () => {
   const [loading, setLoading] = useState(false);
+  const [loadingOfferLetter, setLoadingOfferLetter] = useState(false);
   const { toastAlert, toastError } = useGlobalContext();
   const whatsappApi = WhatsappAPI();
   const [KRIData, setKRIData] = useState([]);
@@ -45,6 +46,8 @@ const UserSingle = () => {
 
   const [salaryData, setSalaryData] = useState([]);
   const [salaryFilterData, setSalaryFilterData] = useState([]);
+
+  const [isOfferVisible, setIsOfferVisible] = useState(false);
 
   const handelClose = () => {
     setpreview(!previewOffer);
@@ -157,6 +160,44 @@ const UserSingle = () => {
     }
   };
 
+  useEffect(() => {
+    if (user?.pan_validate === "show") {
+      setIsOfferVisible(true);
+    } else {
+      setIsOfferVisible(false);
+    }
+  }, [user?.pan_validate]);
+
+  const handleSwitchOfferLetter = async () => {
+    setLoadingOfferLetter(true);
+    const formData = new FormData();
+    formData.append("user_id", id);
+    formData.append("pan_validate", isOfferVisible ? "hide" : "show"); // switch logic
+
+    try {
+      const response = await axios.put(`${baseUrl}update_user`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (response.status === 200) {
+        toastAlert(
+          `User Offer Letter successfully ${
+            isOfferVisible ? "hidden" : "shown"
+          }!`
+        );
+        getData();
+        setIsOfferVisible(!isOfferVisible); // toggle state
+      } else {
+        toastError("Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error updating user:", error);
+      toastError("Error switching Offer Letter. Please check your connection.");
+    } finally {
+      setLoadingOfferLetter(false);
+    }
+  };
+
   return (
     <>
       <div className="box">
@@ -227,6 +268,23 @@ const UserSingle = () => {
                 <i title="Download NDA" className="bi bi-cloud-arrow-down"></i>
               </button>
             )}
+            <button
+              onClick={handleSwitchOfferLetter}
+              disabled={loadingOfferLetter}
+              className={`btn cmnbtn btn_sm ml-2 ${
+                isOfferVisible ? "btn-secondary" : "btn-danger"
+              }`}
+            >
+              {loadingOfferLetter
+                ? "Processing..."
+                : isOfferVisible
+                ? "Hide Offer Letter"
+                : "Show Offer Letter"}{" "}
+              <i
+                className="bi bi-cloud-arrow-down"
+                title="Toggle Offer Letter"
+              ></i>
+            </button>
           </div>
           <FormContainer
             submitButton={false}
