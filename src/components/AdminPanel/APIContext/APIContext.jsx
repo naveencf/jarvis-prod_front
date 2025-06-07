@@ -29,12 +29,12 @@ const APIContext = ({ children }) => {
           Authorization: `Bearer ${storedToken}`,
         },
       });
-      setUserContextData(res?.data.data);
+      // console.log(res?.data, "res?.data")
+      setUserContextData(res?.data?.data?.paginatedUsers || []);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
-
   useEffect(() => {
     if (userID && contextData?.length === 0) {
       axios

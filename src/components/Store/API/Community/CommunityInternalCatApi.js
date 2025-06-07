@@ -110,6 +110,23 @@ const communityInternalCatApi = createApi({
       query: (userId) => `/v1/community/category_manager_by_user/${userId}`,
       transformResponse: (response) => response?.data,
     }),
+    // ── ASSIGN MANAGERS TO INTERNAL CATEGORY
+    assignInternalCategoryManagers: builder.mutation({
+      query: (payload) => ({
+        url: "/v1/community/internal_category_assign_manager",
+        method: "PUT",
+        body: payload,
+      }),
+    }),
+
+    // ── UNASSIGN MANAGERS FROM INTERNAL CATEGORY
+    unassignInternalCategoryManagers: builder.mutation({
+      query: (payload) => ({
+        url: "/v1/community/internal_category_unassign_manager",
+        method: "PUT",
+        body: payload,
+      }),
+    }),
   }),
 });
 
@@ -126,6 +143,8 @@ export const {
   useGetPageCategoriesQuery,
   useGetSuperTrackerPostAnalyticsMutation,
   useGetCategoryManagerByUserQuery,
+  useAssignInternalCategoryManagersMutation,
+  useUnassignInternalCategoryManagersMutation,
 } = communityInternalCatApi;
 
 export default communityInternalCatApi;

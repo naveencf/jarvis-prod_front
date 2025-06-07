@@ -24,6 +24,8 @@ import Login from "./Login/Login";
 import ForgetPassword from "./Login/Forget/ForgetPassword";
 import Protected from "./Login/Protected";
 import Loader from "./components/Finance/Loader/Loader";
+import LoaderTwo from "./utils/LoaderTwo";
+import LoaderOne from "./utils/LoaderOne";
 
 function App() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -71,7 +73,7 @@ function App() {
       {/* Optional: show a banner if offline */}
       {!isOnline && <div className="offline-banner">⚠ No Internet Connection</div>}
 
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<LoaderTwo />}>
         <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<Login />} />
@@ -100,26 +102,26 @@ function App() {
           <Route
             path="/admin/*"
             element={
-              <Suspense fallback={<Loader />}>
-                <AppProvider>
-                  <APIContext>
-                    <Admin />
-                  </APIContext>
-                </AppProvider>
-              </Suspense>
+              // <Suspense fallback={<LoaderTwo />}>
+              <AppProvider>
+                <APIContext>
+                  <Admin />
+                </APIContext>
+              </AppProvider>
+              // </Suspense>
             }
           />
 
           <Route
             path="/sales-account-info/:id"
             element={
-              <Suspense fallback={<Loader />}>
-                <AppProvider>
-                  <APIContext>
-                    <AccountInfo />
-                  </APIContext>
-                </AppProvider>
-              </Suspense>
+              // <Suspense fallback={<Loader />}>
+              <AppProvider>
+                <APIContext>
+                  <AccountInfo />
+                </APIContext>
+              </AppProvider>
+              // </Suspense>S
             }
           />
 

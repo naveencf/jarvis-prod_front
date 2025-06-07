@@ -105,8 +105,8 @@ function PlanRequest() {
   };
   const { data: pageList, isLoading: isPageListLoading } = useGetAllPageListQuery({ decodedToken, id, pagequery });
 
-  const {userContextData} = useAPIGlobalContext()
-
+  const { userContextData } = useAPIGlobalContext()
+  // console.log(userContextData,"userContextData")
   const { contextData } = useAPIGlobalContext();
   const isSalesAdmin = contextData?.find((item) => item?._id === 63)?.view_value;
 
@@ -260,7 +260,7 @@ function PlanRequest() {
     if (!planDetails.salesExecutiveId) newErrors.salesExecutiveId = 'Sales Executive is required';
     return newErrors;
   };
- 
+
   const fetchPlans = async () => {
     setLoading(true);
     try {
@@ -349,13 +349,13 @@ function PlanRequest() {
       brand_id: row.brand_id,
       planStatus: row.plan_status,
       planSaved: false,
-      createdBy: row.created_by, 
+      createdBy: row.created_by,
       accountName: selectedAccount ? selectedAccount.account_name : '',
       salesExecutiveName: selectedUser ? selectedUser.user_name : '',
     });
-    setSelectedPlanId(row.id);  
-    setIsEdit(true);  
-    setOpenDialog(true);  
+    setSelectedPlanId(row.id);
+    setIsEdit(true);
+    setOpenDialog(true);
   };
 
   // Fetch accounts data from API
@@ -536,7 +536,7 @@ function PlanRequest() {
   const handleStatusChange = (row) => {
     setStatusDialog(true);
     setStatusDialogPlan(row);
-    setSelectedPlanId(row.id); 
+    setSelectedPlanId(row.id);
   };
 
   const { columns } = DataGridOverviewColumnsPlanRequest({
@@ -673,7 +673,7 @@ function PlanRequest() {
             <Autocomplete
               options={searchInput ? globalFilteredUsers : salesUsers}
               getOptionLabel={(option) => option.user_name || ''}
-              defaultValue={userContextData.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
+              defaultValue={userContextData?.find((user) => user.user_id === planDetails.salesExecutiveId) || null}
               isOptionEqualToValue={(option, value) => option._id === value._id}
               onInputChange={(event, value) => setSearchInput(value)}
               onChange={(event, value) => {
