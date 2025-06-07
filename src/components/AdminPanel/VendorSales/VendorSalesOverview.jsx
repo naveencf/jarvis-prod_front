@@ -1154,7 +1154,7 @@ const VendorSalesOverview = () => {
   if (advancedPaymentLoading) {
     return <Loader />;
   }
-  console.log("vendorsList", vendorsList);
+
   return (
     <>
       <Modal

@@ -65,7 +65,7 @@ const UserOverview = () => {
 
   const [isSummaryModal, setIsSummaryModal] = useState(false);
   const [historyData, setHistoryData] = useState([]);
-
+  console.log(userContextData, "userContextData")
   // toggle button
   const handleRadioChange = (value) => {
     setActiveButton(value);
@@ -291,7 +291,9 @@ const UserOverview = () => {
   // };
 
   useEffect(() => {
-    getData();
+    if (userContextData && userContextData.length > 0) {
+      getData();
+    }
   }, [userContextData]);
 
   function convertDateToDDMMYYYY(dateString) {
@@ -895,14 +897,14 @@ const UserOverview = () => {
                     </label>
                     <Select
                       className=""
-                      options={transferToUser.map((option) => ({
+                      options={transferToUser?.map((option) => ({
                         value: option.user_id,
                         label: `${option.user_name}`,
                       }))}
                       value={{
                         value: transferTo,
                         label:
-                          transferToUser.find(
+                          transferToUser?.find(
                             (user) => user.user_id === transferTo
                           )?.user_name || "",
                       }}
@@ -1017,13 +1019,13 @@ const UserOverview = () => {
               {(separationStatus === "On Long Leave" ||
                 separationStatus === "Subatical" ||
                 separationStatus === "Suspended") && (
-                <FieldContainer
-                  label="Reinstated Date"
-                  type="date"
-                  value={separationReinstateDate}
-                  onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                />
-              )}
+                  <FieldContainer
+                    label="Reinstated Date"
+                    type="date"
+                    value={separationReinstateDate}
+                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                  />
+                )}
 
               {/* {separationStatus == "Resigned" && ( */}
               <FieldContainer
