@@ -36,64 +36,64 @@ function LoaderTwo() {
                             <circle r="3" cx="71" cy="3" />
                         </symbol>
                         <symbol id="line-1">
-                            <polyline points="12 54,12 46,3 46,3 38" stroke-dasharray="42 42" />
+                            <polyline points="12 54,12 46,3 46,3 38" strokeDasharray="42 42" />
                         </symbol>
                         <symbol id="line-2">
-                            <polyline points="29 54,3 54" stroke-dasharray="42 42" />
+                            <polyline points="29 54,3 54" strokeDasharray="42 42" />
                         </symbol>
                         <symbol id="line-3">
-                            <polyline points="12 54,12 62,3 62,3 70" stroke-dasharray="42 42" />
+                            <polyline points="12 54,12 62,3 62,3 70" strokeDasharray="42 42" />
                         </symbol>
                         <symbol id="line-4">
-                            <polyline points="28 20,28 12,20 12,20 3" stroke-dasharray="60 60" />
+                            <polyline points="28 20,28 12,20 12,20 3" strokeDasharray="60 60" />
                         </symbol>
                         <symbol id="line-5">
-                            <polyline points="37 29,37 20,3 20,3 3" stroke-dasharray="60 60" />
+                            <polyline points="37 29,37 20,3 20,3 3" strokeDasharray="60 60" />
                         </symbol>
                         <symbol id="line-6">
-                            <polyline points="15 20,15 30,3 30" stroke-dasharray="60 60" />
+                            <polyline points="15 20,15 30,3 30" strokeDasharray="60 60" />
                         </symbol>
                         <symbol id="line-7">
-                            <polyline points="54 12,37 12,37 3" stroke-dasharray="43 43" />
+                            <polyline points="54 12,37 12,37 3" strokeDasharray="43 43" />
                         </symbol>
                         <symbol id="line-8">
-                            <polyline points="54 29,54 3" stroke-dasharray="43 43" />
+                            <polyline points="54 29,54 3" strokeDasharray="43 43" />
                         </symbol>
                         <symbol id="line-9">
-                            <polyline points="54 12,71 12,71 3" stroke-dasharray="43 43" />
+                            <polyline points="54 12,71 12,71 3" strokeDasharray="43 43" />
                         </symbol>
                         <symbol id="spark-1">
-                            <polyline points="12 54,12 46,3 46,3 38" stroke-dasharray="15 69" />
+                            <polyline points="12 54,12 46,3 46,3 38" strokeDasharray="15 69" />
                         </symbol>
                         <symbol id="spark-2">
-                            <polyline points="29 54,3 54" stroke-dasharray="15 69" />
+                            <polyline points="29 54,3 54" strokeDasharray="15 69" />
                         </symbol>
                         <symbol id="spark-3">
-                            <polyline points="12 54,12 62,3 62,3 70" stroke-dasharray="15 69" />
+                            <polyline points="12 54,12 62,3 62,3 70" strokeDasharray="15 69" />
                         </symbol>
                         <symbol id="spark-4">
-                            <polyline points="28 20,28 12,20 12,20 3" stroke-dasharray="15 105" />
+                            <polyline points="28 20,28 12,20 12,20 3" strokeDasharray="15 105" />
                         </symbol>
                         <symbol id="spark-5">
-                            <polyline points="37 29,37 20,3 20,3 3" stroke-dasharray="15 105" />
+                            <polyline points="37 29,37 20,3 20,3 3" strokeDasharray="15 105" />
                         </symbol>
                         <symbol id="spark-6">
-                            <polyline points="15 20,15 30,3 30" stroke-dasharray="15 105" />
+                            <polyline points="15 20,15 30,3 30" strokeDasharray="15 105" />
                         </symbol>
                         <symbol id="spark-7">
-                            <polyline points="54 12,37 12,37 3" stroke-dasharray="15 71" />
+                            <polyline points="54 12,37 12,37 3" strokeDasharray="15 71" />
                         </symbol>
                         <symbol id="spark-8">
-                            <polyline points="54 29,54 3" stroke-dasharray="15 71" />
+                            <polyline points="54 29,54 3" strokeDasharray="15 71" />
                         </symbol>
                         <symbol id="spark-9">
-                            <polyline points="54 12,71 12,71 3" stroke-dasharray="15 71" />
+                            <polyline points="54 12,71 12,71 3" strokeDasharray="15 71" />
                         </symbol>
                         <symbol id="wave">
                             <rect x="3" y="3" rx="2.5" ry="2.5" width="44" height="44" />
                         </symbol>
                         <g transform="translate(10,10)">
-                            <g className="microchip__lines" stroke-linecap="round" stroke-linejoin="round">
+                            <g className="microchip__lines" strokeLinecap="round" strokeLinejoin="round">
                                 <g>
                                     <g fill="none" stroke="currentcolor">
                                         <use className="microchip__line microchip__line--1" href="#line-1" />
@@ -217,7 +217,7 @@ function LoaderTwo() {
                             </g>
                             <g transform="translate(29,29)">
                                 <g className="microchip__center">
-                                    <g fill="none" stroke="currentcolor" stroke-width="6">
+                                    <g fill="none" stroke="currentcolor" strokeWidth="6">
                                         <use className="microchip__wave microchip__wave--1" href="#wave" />
                                         <use className="microchip__wave microchip__wave--2" href="#wave" />
                                     </g>

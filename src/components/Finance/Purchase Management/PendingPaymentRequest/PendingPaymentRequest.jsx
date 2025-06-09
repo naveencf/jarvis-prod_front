@@ -1,44 +1,63 @@
-import { useCallback, useEffect, useState } from 'react';
-import FormContainer from '../../../AdminPanel/FormContainer';
-import axios from 'axios';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import logo from '../../../../../public/logo.png';
-import { Button } from '@mui/material';
-import DiscardConfirmation from './Components/DiscardConfirmation';
-import jwtDecode from 'jwt-decode';
-import ImageView from '../../ImageView';
-import { useGlobalContext } from '../../../../Context/Context';
-import { baseUrl, insightsBaseUrl, phpBaseUrl } from '../../../../utils/config';
-import ShowDataModal from './Components/ShowDataModal';
-import WhatsappAPI from '../../../WhatsappAPI/WhatsappAPI';
-import moment from 'moment';
-import PayVendorDialog from '././Components/PayVendorDialog';
-import CommonDialogBox from './Components/CommonDialogBox';
-import BankDetailPendingPaymentDialog from './Components/BankDetailPendingPaymentDialog';
-import PayThroughVendorDialog from './Components/PayThroughVendorDialog';
-import BulkPayThroughVendorDialog from './Components/BulkPayThroughVendorDialog';
-import OverviewContainedDialog from './Components/OverviewContainedDialog';
-import PendingPaymentReqFilters from './Components/PendingPaymentReqFilters';
-import { pendingPaymentDetailColumns, pendingPaymentReqRemainderDialogColumns, pendingPaymentRequestColumns, pendingPaymentUniqueVendorColumns } from '../../CommonColumn/Columns';
-import View from '../../../AdminPanel/Sales/Account/View/View';
-import ZohoBillCreation from './Components/ZohoBillCreation';
-import { Balance } from '@mui/icons-material';
-import { formatNumber } from '../../../../utils/formatNumber';
-import { useGetVendorPaymentRequestsQuery, useUpdatePurchaseRequestMutation } from '../../../Store/API/Purchase/PurchaseRequestPaymentApi';
-import PaymentRequestFromPurchase from '../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase';
-import { useAPIGlobalContext } from '../../../AdminPanel/APIContext/APIContext';
+import { useCallback, useEffect, useState } from "react";
+import FormContainer from "../../../AdminPanel/FormContainer";
+import axios from "axios";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import logo from "../../../../../public/logo.png";
+import { Button } from "@mui/material";
+import DiscardConfirmation from "./Components/DiscardConfirmation";
+import jwtDecode from "jwt-decode";
+import ImageView from "../../ImageView";
+import { useGlobalContext } from "../../../../Context/Context";
+import { baseUrl, insightsBaseUrl, phpBaseUrl } from "../../../../utils/config";
+import ShowDataModal from "./Components/ShowDataModal";
+import WhatsappAPI from "../../../WhatsappAPI/WhatsappAPI";
+import moment from "moment";
+import PayVendorDialog from "././Components/PayVendorDialog";
+import CommonDialogBox from "./Components/CommonDialogBox";
+import BankDetailPendingPaymentDialog from "./Components/BankDetailPendingPaymentDialog";
+import PayThroughVendorDialog from "./Components/PayThroughVendorDialog";
+import BulkPayThroughVendorDialog from "./Components/BulkPayThroughVendorDialog";
+import OverviewContainedDialog from "./Components/OverviewContainedDialog";
+import PendingPaymentReqFilters from "./Components/PendingPaymentReqFilters";
+import {
+  pendingPaymentDetailColumns,
+  pendingPaymentReqRemainderDialogColumns,
+  pendingPaymentRequestColumns,
+  pendingPaymentUniqueVendorColumns,
+} from "../../CommonColumn/Columns";
+import View from "../../../AdminPanel/Sales/Account/View/View";
+import ZohoBillCreation from "./Components/ZohoBillCreation";
+import { Balance } from "@mui/icons-material";
+import { formatNumber } from "../../../../utils/formatNumber";
+import {
+  useGetVendorPaymentRequestsQuery,
+  useUpdatePurchaseRequestMutation,
+} from "../../../Store/API/Purchase/PurchaseRequestPaymentApi";
+import PaymentRequestFromPurchase from "../../../Purchase/PurchaseVendor/PaymentRequestFromPurchase";
+import { useAPIGlobalContext } from "../../../AdminPanel/APIContext/APIContext";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import CommonPDFDownload from "./CommonPDFDownload";
 
 export default function PendingPaymentRequest() {
   // const whatsappApi = WhatsappAPI();
   const { contextData } = useAPIGlobalContext();
   const { toastAlert, toastError } = useGlobalContext();
-  const [vendorPaymentRequestQuery, setVendorPaymentRequestQuery] = useState('pending=true');
-  const { data, isLoading: requestLoading, error, refetch: refetchPaymentRequest, isFetching: vendorRequestFetching } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
+  const [vendorPaymentRequestQuery, setVendorPaymentRequestQuery] =
+    useState("pending=true");
+  const {
+    data,
+    isLoading: requestLoading,
+    error,
+    refetch: refetchPaymentRequest,
+    isFetching: vendorRequestFetching,
+  } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
   // const { data, isLoading: transactionLoading,  } = useGetVendorPaymentRequestsQuery(vendorPaymentRequestQuery);
-  const [updatePurchaseRequest, { isLoading: updateLoading, error: updateError }] = useUpdatePurchaseRequestMutation();
-  const token = sessionStorage.getItem('token');
+  const [
+    updatePurchaseRequest,
+    { isLoading: updateLoading, error: updateError },
+  ] = useUpdatePurchaseRequestMutation();
+  const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userID = decodedToken.id;
   const userName = decodedToken.name;
@@ -49,7 +68,7 @@ export default function PendingPaymentRequest() {
   const [showDisCardModal, setShowDiscardModal] = useState(false);
   const [paymentAmout, setPaymentAmount] = useState(0);
   const [openImageDialog, setOpenImageDialog] = useState(false);
-  const [viewImgSrc, setViewImgSrc] = useState('');
+  const [viewImgSrc, setViewImgSrc] = useState("");
   // const [userName, setUserName] = useState("");
   const [uniqueVendorCount, setUniqueVendorCount] = useState(0);
   const [pendingRequestCount, setPendingRequestCount] = useState(0);
@@ -64,12 +83,12 @@ export default function PendingPaymentRequest() {
   const [nodeData, setNodeData] = useState([]);
   const [phpData, setPhpData] = useState([]);
   const [phpRemainderData, setPhpRemainderData] = useState([]);
-  const [historyType, setHistoryType] = useState('');
+  const [historyType, setHistoryType] = useState("");
   const [historyData, setHistoryData] = useState([]);
   const [baseAmount, setBaseAmount] = useState(0);
   const [bankDetailRowData, setBankDetailRowData] = useState([]);
 
-  const [dateFilter, setDateFilter] = useState('');
+  const [dateFilter, setDateFilter] = useState("");
   const [invoiceCount, setInvoiceCount] = useState(0);
   const [nonInvoiceCount, setNonInvoiceCount] = useState(0);
 
@@ -79,26 +98,26 @@ export default function PendingPaymentRequest() {
 
   const [overviewDialog, setOverviewDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [netAmount, setNetAmount] = useState('');
+  const [netAmount, setNetAmount] = useState("");
   const [tdsDeductedCount, setTdsDeductedCount] = useState(0);
-  const accordionButtons = ['Pending', 'Partial', 'All'];
+  const accordionButtons = ["Pending", "Partial", "All"];
   const [payThroughVendor, setPayThroughVendor] = useState(false);
-  const [bulkPayThroughVendor, setBulkPayThroughVendor] = useState('');
-  const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState('');
+  const [bulkPayThroughVendor, setBulkPayThroughVendor] = useState("");
+  const [isZohoStatusFileUploaded, setIsZohoStatusFileUploaded] = useState("");
   const [selectedRows, setSelectedRows] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [GSTHoldAmount, setGSTHoldAmount] = useState(0);
   const [filterQuery, setFilterQuery] = useState("");
   const [refetch, setRefetch] = useState(false);
   const [yesBankBalance, setYesBankBalance] = useState(0);
-  const [yesBankBalanceProcessing, setYesBankBalanceProcessing] = useState(false);
+  const [yesBankBalanceProcessing, setYesBankBalanceProcessing] =
+    useState(false);
   const [vendorDetail, setVendorDetail] = useState("");
   const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
 
   var handleAcknowledgeClick = () => {
     setAknowledgementDialog(true);
   };
-
 
   const callApi = async () => {
     refetchPaymentRequest();
@@ -107,10 +126,10 @@ export default function PendingPaymentRequest() {
   useEffect(() => {
     // callApi();
     if (data?.length > 0) {
-      console.log(filterQuery, "filterQuery")
+      console.log(filterQuery, "filterQuery");
       // console.log(data, "filterdata")
       // const requestPayments = data.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null) && (res.status == 0 || res.status == 3));
-      const requestPayments = data
+      const requestPayments = data;
       setPhpData(requestPayments);
       setIsLoading(false);
       // setData(requestPayments);
@@ -123,8 +142,6 @@ export default function PendingPaymentRequest() {
     setReminderData(reaminderData);
     setRemainderDialog(true);
   };
-
-
 
   const calculateTotals = (data) => {
     return (
@@ -141,7 +158,8 @@ export default function PendingPaymentRequest() {
       ) || { totalPendingAmount: 0, totalBalanceAmount: 0 }
     );
   };
-  const { totalPendingAmount, totalBalanceAmount } = calculateTotals(filterData);
+  const { totalPendingAmount, totalBalanceAmount } =
+    calculateTotals(filterData);
 
   const handleDiscardClick = (e, row) => {
     e.preventDefault();
@@ -200,7 +218,9 @@ export default function PendingPaymentRequest() {
   const handleOpenSameVender = (vendorName) => {
     setSameVendorDialog(true);
 
-    const sameNameVendors = data.filter((item) => item.vendor_name === vendorName);
+    const sameNameVendors = data.filter(
+      (item) => item.vendor_name === vendorName
+    );
     setFilterData(sameNameVendors);
     handleCloseUniqueVendor();
   };
@@ -224,18 +244,30 @@ export default function PendingPaymentRequest() {
     const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
     const currentYear = new Date().getFullYear();
 
-    const startDate = new Date(`04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1}`);
-    const endDate = new Date(`03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear}`);
+    const startDate = new Date(
+      `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1}`
+    );
+    const endDate = new Date(
+      `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear}`
+    );
 
     const dataFY = nodeData.filter((e) => {
       const paymentDate = new Date(e.request_date);
-      return paymentDate >= startDate && paymentDate <= endDate && e.vendor_name === row.vendor_name && e.status != 0 && e.status != 2;
+      return (
+        paymentDate >= startDate &&
+        paymentDate <= endDate &&
+        e.vendor_name === row.vendor_name &&
+        e.status != 0 &&
+        e.status != 2
+      );
     });
 
     const dataTP = nodeData.filter((e) => {
-      return e.vendor_name === row.vendor_name && e.status != 0 && e.status != 2;
+      return (
+        e.vendor_name === row.vendor_name && e.status != 0 && e.status != 2
+      );
     });
-    setHistoryData(type == 'FY' ? dataFY : dataTP);
+    setHistoryData(type == "FY" ? dataFY : dataTP);
   };
   const handleClosePaymentHistory = () => {
     setPaymentHistory(false);
@@ -252,40 +284,56 @@ export default function PendingPaymentRequest() {
       const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
       const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-      const formattedStartDate = startDate.toISOString().split('T')[0];
-      const formattedEndDate = endDate.toISOString().split('T')[0];
+      const formattedStartDate = startDate.toISOString().split("T")[0];
+      const formattedEndDate = endDate.toISOString().split("T")[0];
 
-      setVendorPaymentRequestQuery(`startDate=${formattedStartDate}&&endDate=${formattedEndDate}`);
+      setVendorPaymentRequestQuery(
+        `startDate=${formattedStartDate}&&endDate=${formattedEndDate}`
+      );
     }
   };
 
   const getStatusText = (status) => {
     switch (status) {
-      case '0':
-        return 'Pending';
-      case '1':
-        return 'Paid';
-      case '2':
-        return 'Discard';
-      case '3':
-        return 'Partial';
+      case "0":
+        return "Pending";
+      case "1":
+        return "Paid";
+      case "2":
+        return "Discard";
+      case "3":
+        return "Partial";
       default:
-        return '';
+        return "";
     }
   };
 
   const calculateTotalFY = (data) => {
     const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
     const currentYear = new Date().getFullYear();
-    const startDate = new Date(`04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1}`);
-    const endDate = new Date(`03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear}`);
+    const startDate = new Date(
+      `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1}`
+    );
+    const endDate = new Date(
+      `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear}`
+    );
 
     const dataFY = nodeData.filter((e) => {
       const paymentDate = new Date(e?.request_date);
-      return paymentDate >= startDate && paymentDate <= endDate && e?.vendor_name === data?.vendor_name && e.status !== 0 && e.status !== 2 && e.status !== 3;
+      return (
+        paymentDate >= startDate &&
+        paymentDate <= endDate &&
+        e?.vendor_name === data?.vendor_name &&
+        e.status !== 0 &&
+        e.status !== 2 &&
+        e.status !== 3
+      );
     });
 
-    const totalFY = dataFY?.reduce((acc, item) => acc + parseFloat(item?.payment_amount), 0);
+    const totalFY = dataFY?.reduce(
+      (acc, item) => acc + parseFloat(item?.payment_amount),
+      0
+    );
 
     return totalFY;
   };
@@ -293,29 +341,76 @@ export default function PendingPaymentRequest() {
   const filterDataBasedOnSelection = (apiData) => {
     const now = moment();
     switch (dateFilter) {
-      case 'last7Days':
-        return apiData.filter((item) => moment(item.request_date).isBetween(now.clone().subtract(7, 'days'), now, 'day', '[]'));
-      case 'last30Days':
-        return apiData.filter((item) => moment(item.request_date).isBetween(now.clone().subtract(30, 'days'), now, 'day', '[]'));
-      case 'thisWeek':
-        const startOfWeek = now.clone().startOf('week');
-        const endOfWeek = now.clone().endOf('week');
-        return apiData.filter((item) => moment(item.request_date).isBetween(startOfWeek, endOfWeek, 'day', '[]'));
-      case 'lastWeek':
-        const startOfLastWeek = now.clone().subtract(1, 'weeks').startOf('week');
-        const endOfLastWeek = now.clone().subtract(1, 'weeks').endOf('week');
-        return apiData.filter((item) => moment(item.request_date).isBetween(startOfLastWeek, endOfLastWeek, 'day', '[]'));
-      case 'currentMonth':
-        const startOfMonth = now.clone().startOf('month');
-        const endOfMonth = now.clone().endOf('month');
-        return apiData.filter((item) => moment(item.request_date).isBetween(startOfMonth, endOfMonth, 'day', '[]'));
+      case "last7Days":
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            now.clone().subtract(7, "days"),
+            now,
+            "day",
+            "[]"
+          )
+        );
+      case "last30Days":
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            now.clone().subtract(30, "days"),
+            now,
+            "day",
+            "[]"
+          )
+        );
+      case "thisWeek":
+        const startOfWeek = now.clone().startOf("week");
+        const endOfWeek = now.clone().endOf("week");
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            startOfWeek,
+            endOfWeek,
+            "day",
+            "[]"
+          )
+        );
+      case "lastWeek":
+        const startOfLastWeek = now
+          .clone()
+          .subtract(1, "weeks")
+          .startOf("week");
+        const endOfLastWeek = now.clone().subtract(1, "weeks").endOf("week");
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            startOfLastWeek,
+            endOfLastWeek,
+            "day",
+            "[]"
+          )
+        );
+      case "currentMonth":
+        const startOfMonth = now.clone().startOf("month");
+        const endOfMonth = now.clone().endOf("month");
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            startOfMonth,
+            endOfMonth,
+            "day",
+            "[]"
+          )
+        );
 
-      case 'currentQuarter':
-        const quarterStart = moment().startOf('quarter');
-        const quarterEnd = moment().endOf('quarter');
-        return apiData.filter((item) => moment(item.request_date).isBetween(quarterStart, quarterEnd, 'day', '[]'));
-      case 'today':
-        return apiData.filter((item) => moment(item.request_date).isSame(now, 'day'));
+      case "currentQuarter":
+        const quarterStart = moment().startOf("quarter");
+        const quarterEnd = moment().endOf("quarter");
+        return apiData.filter((item) =>
+          moment(item.request_date).isBetween(
+            quarterStart,
+            quarterEnd,
+            "day",
+            "[]"
+          )
+        );
+      case "today":
+        return apiData.filter((item) =>
+          moment(item.request_date).isSame(now, "day")
+        );
       default:
         return apiData;
     }
@@ -327,14 +422,28 @@ export default function PendingPaymentRequest() {
       // Calculate the counts
       const pendingCount = filteredData?.length;
       // Aggregate other metrics
-      const uniqueVendorCount = new Set(filteredData?.map((item) => item.vendor_name));
-      const pendingAmount = filteredData?.reduce((total, item) => total + parseFloat(item.request_amount), 0);
-      const balanceAmount = filteredData?.reduce((total, item) => total + parseFloat(item.outstandings), 0);
-      const nonGstCount = filteredData?.filter((gst) => gst.gstHold === '0');
+      const uniqueVendorCount = new Set(
+        filteredData?.map((item) => item.vendor_name)
+      );
+      const pendingAmount = filteredData?.reduce(
+        (total, item) => total + parseFloat(item.request_amount),
+        0
+      );
+      const balanceAmount = filteredData?.reduce(
+        (total, item) => total + parseFloat(item.outstandings),
+        0
+      );
+      const nonGstCount = filteredData?.filter((gst) => gst.gstHold === "0");
 
-      const withInvcImage = filteredData?.filter((item) => item.invc_img && item.invc_img.length > 0);
-      const withoutInvcImage = filteredData?.filter((item) => !item.invc_img || item.invc_img.length === 0);
-      const tdsDeduction = filteredData?.filter((item) => item?.TDSDeduction === '1' || item?.TDSDeduction === null);
+      const withInvcImage = filteredData?.filter(
+        (item) => item.invc_img && item.invc_img.length > 0
+      );
+      const withoutInvcImage = filteredData?.filter(
+        (item) => !item.invc_img || item.invc_img.length === 0
+      );
+      const tdsDeduction = filteredData?.filter(
+        (item) => item?.TDSDeduction === "1" || item?.TDSDeduction === null
+      );
 
       return {
         pendingCount,
@@ -356,15 +465,12 @@ export default function PendingPaymentRequest() {
         ...new Set(
           data
             .map((d) => d.vendor_name)
-            .filter((name) => typeof name === 'string' && name.trim() !== "")
+            .filter((name) => typeof name === "string" && name.trim() !== "")
         ),
       ];
       setVendorNameList(uniqueVendorNames);
     }
   }, [activeAccordionIndex, data]);
-
-
-
 
   const handleDownloadInvoices = async () => {
     const zip = new JSZip();
@@ -380,14 +486,16 @@ export default function PendingPaymentRequest() {
           const response = await axios.post(
             `${baseUrl}v1/download_image`,
             { imageUrl: row.invoice_file_url },
-            { responseType: 'blob' } // This is KEY!
+            { responseType: "blob" } // This is KEY!
           );
 
           const blob = response.data; // axios returns the blob as `data`
-          const fileName = `${row.vendor_name || "Vendor"}_${row.invc_no || "Invoice"}.pdf`;
+          const fileName = `${row.vendor_name || "Vendor"}_${
+            row.invc_no || "Invoice"
+          }.pdf`;
           zip.file(fileName, blob);
           // setSelectedRows([]);
-          setSelectedRows([])
+          setSelectedRows([]);
         } catch (err) {
           console.error(`Fetch error for ${row.invoice_file_url}`, err);
         }
@@ -405,7 +513,6 @@ export default function PendingPaymentRequest() {
     }
   };
 
-
   const handleClearSameRecordFilter = (e) => {
     e.preventDefault();
     setFilterData(data);
@@ -413,20 +520,24 @@ export default function PendingPaymentRequest() {
   const handleCheckBalance = async () => {
     setYesBankBalanceProcessing(true);
     // Step 1: Get the JWT token
-    const getTokenResponse = await axios.get(insightsBaseUrl + `v1/payment_gateway_access_token`);
+    const getTokenResponse = await axios.get(
+      insightsBaseUrl + `v1/payment_gateway_access_token`
+    );
 
     if (getTokenResponse.status == 200) {
       const token = getTokenResponse?.data?.data;
       const tempBalance = axios
         .get(insightsBaseUrl + `v1/get_balance`, {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         })
         .then((res) => {
-          console.log(res.data.data.balance.value, 'tempBalance');
-          const tempYesBankBalance = formatNumber(res.data.data.balance.value / 100);
+          console.log(res.data.data.balance.value, "tempBalance");
+          const tempYesBankBalance = formatNumber(
+            res.data.data.balance.value / 100
+          );
           setYesBankBalance(tempYesBankBalance);
           setYesBankBalanceProcessing(false);
         });
@@ -434,13 +545,15 @@ export default function PendingPaymentRequest() {
   };
 
   const handlePaymentRequest = (row) => {
-    if (!row) { return; }
-    setReqestPaymentDialog(true)
+    if (!row) {
+      return;
+    }
+    setReqestPaymentDialog(true);
     setVendorDetail({ ...row, _id: row.vendor_obj_id, requestId: row._id });
 
     // setVendorDetail(row);
     // console.log(row, "row")
-  }
+  };
 
   const handleZohoStatusUpload = async (row) => {
     // e.preventDefault();
@@ -449,10 +562,15 @@ export default function PendingPaymentRequest() {
     // zoho_status
     // console.log(updatedStatus, "updatedStatus")
     try {
-      await updatePurchaseRequest({ _id: row._id, formData: { zoho_status: row.zoho_status ? 'false' : 'true', invc_img: row.invc_img || "" } }).unwrap();
+      await updatePurchaseRequest({
+        _id: row._id,
+        formData: {
+          zoho_status: row.zoho_status ? "false" : "true",
+          invc_img: row.invc_img || "",
+        },
+      }).unwrap();
       toastAlert("Zoho Status updated successfully!");
       // refetchPaymentRequest();
-
     } catch (err) {
       console.error("Failed to update request:", err);
     }
@@ -460,7 +578,6 @@ export default function PendingPaymentRequest() {
   // console.log(requestLoading, "requestLoading")
   return (
     <div>
-
       {reqestPaymentDialog && (
         <PaymentRequestFromPurchase
           reqestPaymentDialog={reqestPaymentDialog}
@@ -472,7 +589,11 @@ export default function PendingPaymentRequest() {
       )}
       {/* Bank Details 14 */}
 
-      <BankDetailPendingPaymentDialog bankDetail={bankDetail} handleCloseBankDetail={handleCloseBankDetail} bankDetailRowData={bankDetailRowData} />
+      <BankDetailPendingPaymentDialog
+        bankDetail={bankDetail}
+        handleCloseBankDetail={handleCloseBankDetail}
+        bankDetailRowData={bankDetailRowData}
+      />
       {/* Payment History */}
       <CommonDialogBox
         dialog={paymentHistory}
@@ -520,22 +641,41 @@ export default function PendingPaymentRequest() {
           handleZohoStatusUpload,
           nodeData,
           contextData,
-          handlePaymentRequest
+          handlePaymentRequest,
         })}
       />
 
-      <PendingPaymentReqFilters vendorPaymentRequestQuery={vendorPaymentRequestQuery} setDateFilter={setDateFilter} dateFilter={dateFilter} data={data} setVendorPaymentRequestQuery={setVendorPaymentRequestQuery} setVendorNameList={setVendorNameList} vendorNameList={vendorNameList} setOverviewDialog={setOverviewDialog} setFilterData={setFilterData} handleOpenOverview={handleOpenOverview} />
+      <PendingPaymentReqFilters
+        vendorPaymentRequestQuery={vendorPaymentRequestQuery}
+        setDateFilter={setDateFilter}
+        dateFilter={dateFilter}
+        data={data}
+        setVendorPaymentRequestQuery={setVendorPaymentRequestQuery}
+        setVendorNameList={setVendorNameList}
+        vendorNameList={vendorNameList}
+        setOverviewDialog={setOverviewDialog}
+        setFilterData={setFilterData}
+        handleOpenOverview={handleOpenOverview}
+      />
 
       <>
         <div className="tab">
           {accordionButtons.map((button, index) => (
-            <div key={index} className={`named-tab ${activeAccordionIndex === index ? 'active-tab' : ''}`} onClick={() => handleAccordionButtonClick(index)}>
+            <div
+              key={index}
+              className={`named-tab ${
+                activeAccordionIndex === index ? "active-tab" : ""
+              }`}
+              onClick={() => handleAccordionButtonClick(index)}
+            >
               {button}
             </div>
           ))}
         </div>
         <div>
-          {(activeAccordionIndex === 0 || activeAccordionIndex === 1 || activeAccordionIndex === 2) && (
+          {(activeAccordionIndex === 0 ||
+            activeAccordionIndex === 1 ||
+            activeAccordionIndex === 2) && (
             <View
               columns={pendingPaymentRequestColumns({
                 activeAccordionIndex,
@@ -553,36 +693,72 @@ export default function PendingPaymentRequest() {
                 handleZohoStatusUpload,
                 nodeData,
                 contextData,
-                handlePaymentRequest
+                handlePaymentRequest,
               })}
-              data={activeAccordionIndex === 0 ? filterData.filter((res) => (res.proccessingAmount == 0 || res.proccessingAmount == null)) : activeAccordionIndex === 1 ? filterData?.filter((d) => d.status === 3 && (d.proccessingAmount == 0 || d.proccessingAmount == null)) : activeAccordionIndex === 2 ? filterData : []}
+              data={
+                activeAccordionIndex === 0
+                  ? filterData.filter(
+                      (res) =>
+                        res.proccessingAmount == 0 ||
+                        res.proccessingAmount == null
+                    )
+                  : activeAccordionIndex === 1
+                  ? filterData?.filter(
+                      (d) =>
+                        d.status === 3 &&
+                        (d.proccessingAmount == 0 ||
+                          d.proccessingAmount == null)
+                    )
+                  : activeAccordionIndex === 2
+                  ? filterData
+                  : []
+              }
               isLoading={requestLoading || vendorRequestFetching}
               showTotal={true}
-              title={'Pending Payment Request'}
+              title={"Pending Payment Request"}
               rowSelectable={true}
               pagination={[100, 200]}
-              tableName={'finance-pending-payment-request'}
+              tableName={"finance-pending-payment-request"}
               selectedData={setSelectedRows} // Setter function
               tableSelectedRows={selectedRows} // Getter function
-
               addHtml={
                 <>
-                  {contextData && contextData[67]?.view_value && <>
-                    <p className="btn cmnbtn btn_sm ms-2">{yesBankBalance}</p>
+                  {contextData && contextData[67]?.view_value && (
+                    <>
+                      <p className="btn cmnbtn btn_sm ms-2">{yesBankBalance}</p>
 
-                    <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={(e) => handleCheckBalance(e)} disabled={yesBankBalanceProcessing}>
-                      Check Balance
-                    </button>
-                  </>}
-                  <button className="btn cmnbtn btn_sm btn-primary ms-2" onClick={() => refetchPaymentRequest()}>
+                      <button
+                        className="btn cmnbtn btn_sm btn-primary ms-2"
+                        onClick={(e) => handleCheckBalance(e)}
+                        disabled={yesBankBalanceProcessing}
+                      >
+                        Check Balance
+                      </button>
+                    </>
+                  )}
+                  <button
+                    className="btn cmnbtn btn_sm btn-primary ms-2"
+                    onClick={() => refetchPaymentRequest()}
+                  >
                     Refetch
                   </button>
-                  <button className="btn cmnbtn btn_sm btn-secondary ms-2" onClick={(e) => handleClearSameRecordFilter(e)}>
+                  <button
+                    className="btn cmnbtn btn_sm btn-secondary ms-2"
+                    onClick={(e) => handleClearSameRecordFilter(e)}
+                  >
                     Clear
                   </button>
-                  <button className="btn btn-success cmnbtn btn_sm ms-2" variant="contained" color="primary" size="small" onClick={handleDownloadInvoices}>
+                  <button
+                    className="btn btn-success cmnbtn btn_sm ms-2"
+                    variant="contained"
+                    color="primary"
+                    size="small"
+                    onClick={handleDownloadInvoices}
+                  >
                     Download Invoice
                   </button>
+
+                  <CommonPDFDownload selectedRows={selectedRows} />
                 </>
               }
             />
@@ -590,10 +766,56 @@ export default function PendingPaymentRequest() {
           {/* {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />} */}
         </div>
 
-        {openImageDialog && <ImageView viewImgSrc={viewImgSrc} fullWidth={true} maxWidth={'md'} setViewImgDialog={setOpenImageDialog} openImageDialog={openImageDialog} />}
-        {payThroughVendor && <PayThroughVendorDialog setPayThroughVendor={setPayThroughVendor} payThroughVendor={payThroughVendor} rowSelectionModel={selectedRows} filterData={filterData} />}
-        {bulkPayThroughVendor && <BulkPayThroughVendorDialog setBulkPayThroughVendor={setBulkPayThroughVendor} bulkPayThroughVendor={bulkPayThroughVendor} rowSelectionModel={selectedRows} filterData={filterData} />}
-        {payDialog && <PayVendorDialog callApi={refetchPaymentRequest} userName={userName} loading={loading} setLoading={setLoading} phpRemainderData={phpRemainderData} rowData={rowData} setRowData={setRowData} paymentAmout={paymentAmout} setPaymentAmount={setPaymentAmount} netAmount={netAmount} setNetAmount={setNetAmount} baseAmount={baseAmount} setBaseAmount={setBaseAmount} payDialog={payDialog} setPayDialog={setPayDialog} rowSelectionModel={selectedRows} filterData={filterData} GSTHoldAmount={GSTHoldAmount} setGSTHoldAmount={setGSTHoldAmount} refetch={refetch} setRefetch={refetchPaymentRequest} />}
+        {openImageDialog && (
+          <ImageView
+            viewImgSrc={viewImgSrc}
+            fullWidth={true}
+            maxWidth={"md"}
+            setViewImgDialog={setOpenImageDialog}
+            openImageDialog={openImageDialog}
+          />
+        )}
+        {payThroughVendor && (
+          <PayThroughVendorDialog
+            setPayThroughVendor={setPayThroughVendor}
+            payThroughVendor={payThroughVendor}
+            rowSelectionModel={selectedRows}
+            filterData={filterData}
+          />
+        )}
+        {bulkPayThroughVendor && (
+          <BulkPayThroughVendorDialog
+            setBulkPayThroughVendor={setBulkPayThroughVendor}
+            bulkPayThroughVendor={bulkPayThroughVendor}
+            rowSelectionModel={selectedRows}
+            filterData={filterData}
+          />
+        )}
+        {payDialog && (
+          <PayVendorDialog
+            callApi={refetchPaymentRequest}
+            userName={userName}
+            loading={loading}
+            setLoading={setLoading}
+            phpRemainderData={phpRemainderData}
+            rowData={rowData}
+            setRowData={setRowData}
+            paymentAmout={paymentAmout}
+            setPaymentAmount={setPaymentAmount}
+            netAmount={netAmount}
+            setNetAmount={setNetAmount}
+            baseAmount={baseAmount}
+            setBaseAmount={setBaseAmount}
+            payDialog={payDialog}
+            setPayDialog={setPayDialog}
+            rowSelectionModel={selectedRows}
+            filterData={filterData}
+            GSTHoldAmount={GSTHoldAmount}
+            setGSTHoldAmount={setGSTHoldAmount}
+            refetch={refetch}
+            setRefetch={refetchPaymentRequest}
+          />
+        )}
         {/* <ZohoBillCreation
           rowData={rowData}
           paymentAmout={paymentAmout}
@@ -602,7 +824,15 @@ export default function PendingPaymentRequest() {
           TDSValue={TDSValue} setTDSValue={setTDSValue}
         /> */}
 
-        {showDisCardModal && <DiscardConfirmation userName={userName} rowData={rowData} setShowDiscardModal={setShowDiscardModal} userID={userID} callApi={refetchPaymentRequest} />}
+        {showDisCardModal && (
+          <DiscardConfirmation
+            userName={userName}
+            rowData={rowData}
+            setShowDiscardModal={setShowDiscardModal}
+            userID={userID}
+            callApi={refetchPaymentRequest}
+          />
+        )}
 
         {remainderDialog && (
           <ShowDataModal

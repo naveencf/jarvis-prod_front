@@ -1,18 +1,11 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Route, Routes, } from 'react-router-dom'
 const SalesDashboard = lazy(() => import('../components/AdminPanel/Sales/SalesDashboard'));
-// const SalesServicesOverview = lazy(() => import('../components/AdminPanel/Sales/SalesServices/SalesServicesOverview'));
-// const CreditApprovalReasonCreate = lazy(() => import('../components/AdminPanel/Sales/CreditApprovalReason/CreditApprovalReasonCreate'));
-// const CreditApprovalReasonUpdate = lazy(() => import('../components/AdminPanel/Sales/CreditApprovalReason/CreditApprovalReasonUpdate'));
 const ViewSaleBooking = lazy(() => import('../components/AdminPanel/Sales/SaleBooking/ViewSaleBooking'));
 const SalesReport = lazy(() => import('../components/AdminPanel/Sales/SaleBooking/SalesReport'));
 const IncentiveDashboard = lazy(() => import('../components/AdminPanel/Sales/Incenti Dashboard/IncentiveDashboard'));
-// const SalesBonusSummary = lazy(() => import('../components/AdminPanel/Sales/ Bonus/SalesBonusSummary'));
-// const IncentiveStatements = lazy(() => import('../components/AdminPanel/Sales/Incenti Dashboard/IncentiveStatements'));
 const MonthWiseSalesView = lazy(() => import('../components/AdminPanel/Sales/SaleBooking/MonthWiseSalesView'));
 const ViewInvoiceRequest = lazy(() => import('../components/AdminPanel/Sales/Invoice/ViewInvoiceRequest'));
-
-// import SalesDashboard from '../components/AdminPanel/Sales/SalesDashboard'
 import SalesServicesCreate from '../components/AdminPanel/Sales/SalesServices/SalesServicesCreate';
 import SalesServicesUpdate from '../components/AdminPanel/Sales/SalesServices/SalesServicesUpdate';
 import SalesServicesOverview from '../components/AdminPanel/Sales/SalesServices/SalesServicesOverview';
@@ -22,7 +15,6 @@ import IncentiveRequest from '../components/AdminPanel/Sales/Incenti Dashboard/I
 import IncentiveSettlement from '../components/AdminPanel/Sales/Incentive Settlement/IncentiveSettlement';
 import CreditApprovalReasonUpdate from '../components/AdminPanel/Sales/CreditApprovalReason/CreditApprovalReasonUpdate';
 import CreateSaleBooking from '../components/AdminPanel/Sales/SaleBooking/CreateSaleBooking';
-// import ViewSaleBooking from '../components/AdminPanel/Sales/SaleBooking/ViewSaleBooking';
 import UserIncentive from '../components/AdminPanel/Sales/Incenti Dashboard/UserIncentive';
 import PlanRequest from '../components/Finance/Sales Management/PlanRequest/PlanRequest';
 import SalesBonusSlab from '../components/AdminPanel/Sales/ Bonus/SaleBonusSlab';
@@ -32,7 +24,6 @@ import BonusSlabOverview from '../components/AdminPanel/Sales/ Bonus/BonusSlabMa
 import BonusMastOverview from '../components/AdminPanel/Sales/ Bonus/BonusMast/BonusMastOverview';
 import SalesBonusOverview from '../components/AdminPanel/Sales/ Bonus/SalesBonusOverview';
 import SalesBonusSummary from '../components/AdminPanel/Sales/ Bonus/SalesBonusSummary';
-// import SalesReport from '../components/AdminPanel/Sales/SaleBooking/SalesReport';
 import ViewSalesPoc from '../components/AdminPanel/Sales/ViewSalesPoc';
 import CreatePaymentMode from '../components/AdminPanel/Sales/PaymentMode/CreatePaymentMode';
 import EarnedAndUnearned from '../components/AdminPanel/Sales/Incenti Dashboard/EarnedAndUnearned';
@@ -45,7 +36,6 @@ import EditPaymentDetails from '../components/AdminPanel/Sales/PaymentDetails/Ed
 import CreatePaymentUpdate from '../components/AdminPanel/Sales/PaymentUpdate/CreatePaymentUpdate';
 import ViewPaymentUpdate from '../components/AdminPanel/Sales/PaymentUpdate/ViewPaymentUpdate';
 import PaymentUpdateBankWise from '../components/AdminPanel/Sales/PaymentUpdate/PaymentUpdateBankWise';
-// import ViewInvoiceRequest from '../components/AdminPanel/Sales/Invoice/ViewInvoiceRequest';
 import DeletedSaleBooking from '../components/AdminPanel/Sales/SaleBooking/DeletedSaleBooking';
 import PendingPaymentRequestSales from '../components/AdminPanel/Sales/PaymentRequest/PendingPaymentRequestSales';
 import RejectedPaymentRequest from '../components/AdminPanel/Sales/PaymentRequest/RejectedPaymentRequest';
@@ -55,9 +45,7 @@ import CreateSalesAccount from '../components/AdminPanel/Sales/Account/CreateSal
 import SalesAccountOverview from '../components/AdminPanel/Sales/Account/SalesAccountOverview';
 import CreateDocumentType from '../components/AdminPanel/Sales/Account/CreateDocumentType';
 import DocumentTypeOverview from '../components/AdminPanel/Sales/Account/DocumentTypeOverview';
-// import IncentiveDashboard from '../components/AdminPanel/Sales/Incenti Dashboard/IncentiveDashboard';
 import ViewTargetCompetition from '../components/AdminPanel/Sales/TargetCompetition/ViewTargetCompetition';
-// import MonthWiseSalesView from '../components/AdminPanel/Sales/SaleBooking/MonthWiseSalesView';
 import SalesProductOverview from '../components/AdminPanel/Sales/Product/SalesProductOverview';
 import SalesProductCU from '../components/AdminPanel/Sales/Product/SalesProductCU';
 import IncentiveStatements from '../components/AdminPanel/Sales/Incenti Dashboard/IncentiveStatements';
