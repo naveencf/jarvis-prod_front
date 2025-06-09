@@ -101,8 +101,8 @@ export default function TaskDone() {
       activeAccordionIndex == 0
         ? zohoDoneData.map((item) => item.vendor_name)
         : activeAccordionIndex == 1
-        ? gstDoneData.map((item) => item.vendor_name)
-        : tdsDoneData.map((item) => item.vendor_name)
+          ? gstDoneData.map((item) => item.vendor_name)
+          : tdsDoneData.map((item) => item.vendor_name)
     );
     let uvData = [];
     uniqueVendorCountae.forEach((vendorName) => {
@@ -117,10 +117,10 @@ export default function TaskDone() {
       return activeAccordionIndex === 0
         ? item?.zoho_status === "Done"
         : activeAccordionIndex === 1
-        ? item?.gst_status === "Done"
-        : activeAccordionIndex === 2
-        ? item?.tds_status === "Done"
-        : "";
+          ? item?.gst_status === "Done"
+          : activeAccordionIndex === 2
+            ? item?.tds_status === "Done"
+            : "";
     });
 
     setUniqueVendorCount(lengthData.length);
@@ -131,9 +131,9 @@ export default function TaskDone() {
 
   // pending data submit
 
-  useEffect(() => {
-    callApi();
-  }, []);
+  // useEffect(() => {
+  //   callApi();
+  // }, []);
 
   const convertDateToDDMMYYYY = (date) => {
     const date1 = new Date(date);
@@ -609,8 +609,8 @@ export default function TaskDone() {
               {item.status == 0
                 ? "Pending"
                 : item.status == 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -630,10 +630,10 @@ export default function TaskDone() {
           activeAccordionIndex === 0
             ? zohoDoneData.indexOf(params.row)
             : activeAccordionIndex === 1
-            ? gstDoneData.indexOf(params.row)
-            : activeAccordionIndex === 2
-            ? tdsDoneData.indexOf(params.row)
-            : "";
+              ? gstDoneData.indexOf(params.row)
+              : activeAccordionIndex === 2
+                ? tdsDoneData.indexOf(params.row)
+                : "";
         return <div>{rowIndex + 1}</div>;
       },
     },
@@ -780,13 +780,11 @@ export default function TaskDone() {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
           }`
         );
         const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
           }`
         );
         const dataFY = nodeData.filter((e) => {
@@ -1133,12 +1131,12 @@ export default function TaskDone() {
               activeAccordionIndex == 2
                 ? uniqueVendorTDSdoneData
                 : uniqueVendorData.filter((e) =>
-                    activeAccordionIndex == 0
-                      ? e.zoho_status == "Done"
-                      : activeAccordionIndex == 1
+                  activeAccordionIndex == 0
+                    ? e.zoho_status == "Done"
+                    : activeAccordionIndex == 1
                       ? e.gst_status == "Done"
                       : ""
-                  )
+                )
             }
             columns={uniqueVendorColumns}
             pageSize={5}

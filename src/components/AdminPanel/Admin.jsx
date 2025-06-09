@@ -4,13 +4,8 @@ import { Route, Routes, useLocation } from "react-router-dom";
 import Loader from "../Finance/Loader/Loader.jsx";
 import Profile from "./HRMS/Pantry/UserPanel/Profile/Profile.jsx";
 import PostStats from "../Stats/PostStats.jsx";
-import InventoryDashboard from "./PageMS/InventoryDashboard/InventoryDashboard.jsx";
-import CategoryOverview from "./PageMS/Category/CategoryOverview.jsx";
-import SubCategoryOverview from "./PageMS/SubCategory/SubCategoryOverview.jsx";
 import OutstandingPaymentReceiveReport from "../Finance/Sales Management/PaymentReleaseReport/OutstandingPaymentReceiveReport.jsx";
-import AllVendorWiseList from "./PageMS/Vendor/BulkVendor/AllVendorWiseList.jsx";
 import ErrorPage from "../../ErrorPage.jsx";
-import TagCategory from "./PageMS/InventoryDashboard/TagCategory.jsx";
 import CalenderCreation from "../Operation/Calender/CalenderCreation.jsx";
 import PurchaseTransactions from "../Purchase/PurchaseTransactions.jsx";
 import OpCalender from "../AbOpreation/Calender/OpCalender.jsx";
@@ -24,22 +19,26 @@ import CommonRoom from "./HRMS/Sitting/CommonRoom.jsx";
 import Ledger from "../Purchase/PurchaseVendor/Ledger.jsx";
 import HomePantry from "../NewPantry/HomePantry.jsx";
 import PantryUserDashboard from "../Pantry/PantryUserDashboard.jsx";
-import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
 import PantryAdminDashboard from "../Pantry/PantryAdminDashboard.jsx";
 import VendorStatement from "../Finance/Sales Management/Outstanding/VendorStatement.jsx";
 import VendorStatementView from "../Finance/Sales Management/Outstanding/VendorStatementView.jsx";
-import UnfetchedPages from "./PageMS/InventoryDashboard/UnfetchedPages.jsx";
 import VendorInventory from "./VendorSales/VendorInventory.jsx";
 import VendorInventoryDetails from "./VendorSales/VendorInventoryDetails.jsx";
 import AddVendorPage from "./VendorSales/AddVendorPage.jsx";
 import CommunityRoutes from "../../routes/CommunityRoutes.jsx";
 import SalesRoutes from "../../routes/SalesRoutes.jsx";
+import UnfetchedPages from "./PageMS/InventoryDashboard/UnfetchedPages.jsx";
+import PageLogs from "./PageMS/PageOverview/PageLogs.jsx";
 // const SalesRoutes = lazy(() =>
 //     import("../../routes/SalesRoutes.jsx")
 // );
 import LoaderTwo from "../../utils/LoaderTwo.jsx";
 
+
 import { useAPIGlobalContext } from "./APIContext/APIContext.jsx";
+import InventoryRoutes from "../../routes/InventoryRoutes.jsx";
+import Miscellaneous from "../../routes/Miscellaneous.jsx";
+import FinanceRoutes from "../../routes/FinanceRoutes.jsx";
 const PendingAuditOutstandingTotal = lazy(() =>
     import("../Purchase/PurchaseVendor/PendingAuditOutstandingTotal.jsx")
 );
@@ -361,19 +360,9 @@ const GSThold = lazy(() =>
     import("../Finance/Purchase Management/GSTHold/GSThold.jsx")
 );
 
-const GroupLinkType = lazy(() => import("./PageMS/GroupLinkType.jsx"));
-const VendorMaster = lazy(() => import("./PageMS/VendorMaster.jsx"));
-const VendorOverview = lazy(() => import("./PageMS/VendorOverview.jsx"));
-const PageMaster = lazy(() => import("./PageMS/PageMaster.jsx"));
-const PageOverviewNew = lazy(() => import("./PageMS/PageOverviewNew.jsx"));
-const PageAssignmentUser = lazy(() => import("./PageMS/PageAssignmentUser.jsx"));
-const PageAssignmentUserAdd = lazy(() =>
-    import("./PageMS/PageAssignmentUserAdd.jsx")
-);
 const RepairRetrunSummary = lazy(() =>
     import("./HRMS/Sim/RepairRetrunSummary.jsx")
 );
-const PageEdit = lazy(() => import("./PageMS/PageEdit.jsx"));
 const AnnouncementPost = lazy(() => import("./Announcement/AnnoucementPost.jsx"));
 const AnnouncementView = lazy(() => import("./Announcement/AnnouncementView.jsx"));
 
@@ -428,34 +417,12 @@ const PaymentDoneTransactionList = lazy(() =>
     )
 );
 const PageStats = lazy(() => import("./PageMS/PageStats.jsx"));
-const PlanMaking = lazy(() => import("../inventory/plan-making/index"));
-const PlanMakingBeta = lazy(() =>
-    import("../inventory/plan-making-beta/index")
-);
-const PlanMakingTableBeta = lazy(() =>
-    import("../inventory/plan-making-beta/PlanMakingBeta.jsx")
-);
-const PlanMakingPricing = lazy(() =>
-    import("../inventory/plan-pricing/PlanPricing.jsx")
-);
-const PlanPricing = lazy(() => import("../inventory/plan-pricing/index"));
-const PlanMakingTable = lazy(() =>
-    import("../inventory/plan-making/PlanMaking.jsx")
-);
 
-const PlanUpload = lazy(() =>
-    import("./Inventory/Plan-upload/index")
-);
+
+
+
 const NewDocumentCom = lazy(() => import("./WFH/NewDocumentCom.jsx"));
-const ExpenseMangementMaster = lazy(() =>
-    import("./ExpenseManagement/ExpenseMangementMaster.jsx")
-);
-const ExpenseOverview = lazy(() =>
-    import("./ExpenseManagement/ExpenseOverview.jsx")
-);
-const ExpenseManagementUpdate = lazy(() =>
-    import("./ExpenseManagement/ExpenseManagementUpdate.jsx")
-);
+
 const AnalyticDashboard = lazy(() =>
     import("./HRMS/WFH/AnalyticDashboard/AnalyticDashboard.jsx")
 );
@@ -472,313 +439,6 @@ const PageAddition = lazy(() => import("../Boosting/PageAddition.jsx"));
 const RecentlyBoosted = lazy(() => import("../Boosting/RecentlyBoosted.jsx"));
 const DefaultService = lazy(() => import("../Boosting/DefaultService.jsx"));
 
-// const IncentiveStatements = lazy(() =>
-//     import("./Sales/Incenti Dashboard/IncentiveStatements.jsx")
-// );
-// const SalesProductCU = lazy(() => import("./Sales/Product/SalesProductCU.jsx"));
-// const SalesProductOverview = lazy(() =>
-//     import("./Sales/Product/SalesProductOverview.jsx")
-// );
-// const ViewSalesPoc = lazy(() => import("./Sales/ViewSalesPoc.jsx"));
-// import MonthWiseSalesView from "./Sales/SaleBooking/MonthWiseSalesView.jsx";
-// import PlanRequest from "../Finance/Sales Management/PlanRequest/PlanRequest.jsx";
-// import SalesBonusOverview from "./Sales/ Bonus/SalesBonusOverview.jsx";
-// import SalesBonusSlab from "./Sales/ Bonus/SaleBonusSlab.jsx";
-// import BonusMastAddEdit from "./Sales/ Bonus/BonusMast/BonusMastAddEdit.jsx";
-// import BonusMastOverview from "./Sales/ Bonus/BonusMast/BonusMastOverview.jsx";
-// import SalesBonusSummary from "./Sales/ Bonus/SalesBonusSummary.jsx";
-// import BonusSlabMastAddEdit from "./Sales/ Bonus/BonusSlabMast/BonusSlabMastAddEdit.jsx";
-// import BonusSlabOverview from "./Sales/ Bonus/BonusSlabMast/BonusSlabOverview.jsx";
-// import RecordServiceDistribution from "./Sales/SaleBooking/RecordServiceDistribution.jsx";
-// import BulkVendor from "./PageMS/Vendor/BulkVendor/BulkVendor.jsx";
-// import CategoryWisePagesHistoey from "../SuperTracker/CommunityManagement/CategoryWisePagesHistoey.jsx";
-// import PlanPricingHome from "../inventory/plan-pricing/PlanPricingHome.jsx";
-// import NewCampaignExecutions from "../AbOpreation/NewCampaignExecutions.jsx";
-// import UserLoginHistory from "./User/UserDashboard/LoginHistory/UserLoginHistory";
-// import OperationDashboard from "../UnusedCode/UnusedOp/OperationDashboard/OperationDashboard.jsx";
-// import OperationDashboard from "../UnusedCode/Plan/OperationDashboard/OperationDashboard";
-// import PendingAuditOutstandingTotal from "../Purchase/PurchaseVendor/PendingAuditOutstandingTotal";
-// 
-// const PantryHome = lazy(() => import("./HRMS/Pantry/PantryHome/PantryHome.jsx"));
-// const LeadApp = lazy(() => import("../LeadManagement/LeadApp.jsx"));
-// const LeadManagement = lazy(() => import("../LeadManagement/LeadManagement.jsx"));
-// const EditLead = lazy(() => import("../LeadManagement/EditLead.jsx"));
-// const LeadHome = lazy(() => import("../LeadManagement/LeadHome.jsx"));
-// const SELeadTable = lazy(() => import("../LeadManagement/SELeadTable.jsx"));
-// const OverviewIndex = lazy(() => import("../Execution/overview/OverviewIndex.jsx"));
-// const ExecutionDetail = lazy(() => import("../Execution/ExecutionDetail.jsx"));
-// const BrandMaster = lazy(() => import("./RegisterCampaign/BrandMaster"));
-// const ExecutionAll = lazy(() => import("../Execution/ExecutionAll.jsx"));
-// const ExecutionOwn = lazy(() => import("../Execution/ExecutionOwn.jsx"));
-// const ExecutionOther = lazy(() => import("../Execution/ExecutionOther.jsx"));
-// const PlanOverview = lazy(() => import("./RegisterCampaign/PlanOverview"));
-// const ExeUPdate = lazy(() => import("../Execution/ExeUPdate.jsx"));
-// const ExeHistory = lazy(() => import("../Execution/ExeHistory.jsx"));
-// const StatsAllPagesDetail = lazy(() =>
-//     import("../Execution/StatsAllPagesDetail.jsx")
-// );
-// const ExecutionDashboard = lazy(() =>
-//     import("../Execution/ExecutionDashboard.jsx")
-// );
-// const SaleBookingClose = lazy(() =>
-//     import("../Finance/Sales Management/SaleBooking/Components/SaleBookingClose.jsx")
-// );
-// const SaleBookingVerify = lazy(() =>
-//     import("../Finance/Sales Management/SaleBooking/Components/SaleBookingVerify.jsx")
-// );
-// const Experties = lazy(() => import("./RegisterCampaign/Experties/Experties"));
-// const PagePerformanceDashboard = lazy(() =>
-//     import("../Execution/PagePerformanceDashboard.jsx")
-// );
-
-// );
-// const CreateAssign = lazy(() => import("./RegisterCampaign/CreateAssign"));
-// const PagePerformanceAnalytics = lazy(() =>
-//     import("../Execution/PagePerformanceAnalytics.jsx")
-// );
-// const ManagerDashboard = lazy(() =>
-//   import("./RegisterCampaign/ManagerDashboard/ManagerDashboard")
-// );
-// const ManagerCampaign = lazy(() =>
-//     import("../UnusedCode/UnusedOp/ManagerCampaignDashboard/ManagerCampaign.jsx")
-// );
-// const PlancreationNew = lazy(() =>
-//   import("./RegisterCampaign/PlancreationNew")
-// );
-// const TempPlanCreation = lazy(() =>
-//   import("./RegisterCampaign/tempPlan/TempPlanCreation")
-// );
-// const PhasecreationNew = lazy(() =>
-//   import("./RegisterCampaign/PhasecreationNew")
-// );
-// const TaskStatusDeptWiseMaster = lazy(() =>
-//     import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster.jsx")
-// );
-// const TaskStatusDeptWiseOverview = lazy(() =>
-//     import(
-//         "../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseOverview.jsx"
-//     )
-// );
-// const TaskStatusDeptWiseUpdate = lazy(() =>
-//     import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseUpdate.jsx")
-// );
-// const TaskPending = lazy(() => import("../Finance/TaskPending.jsx"));
-// const TaskDone = lazy(() => import("../Finance/TaskDone.jsx"));
-// const AccountType = lazy(() => import("./Customer/AccountType.jsx"));
-// const AccountMaster = lazy(() => import("./Customer/BrandNameType.jsx"));
-// const OwnershipMaster = lazy(() => import("./Customer/OwnershipMaster.jsx"));
-// const OpsCustomerMast = lazy(() => import("./Customer/OpsCustomerMast.jsx"));
-// const OpsCustomerOverview = lazy(() =>
-//     import("./Customer/OpsCustomerOverview.jsx")
-// );
-// const OpsCustomerUpdate = lazy(() => import("./Customer/OpsCustomerUpdate.jsx"));
-// const CustomerContOverview = lazy(() =>
-//     import("./Customer/CustomerContOverview.jsx")
-// );
-// const CustomerContMaster = lazy(() => import("./Customer/CustomerContMaster.jsx"));
-// const CustomerContUpdate = lazy(() => import("./Customer/CustomerContUpdate.jsx"));
-// const OpsDocMast = lazy(() => import("./Customer/OpsDocMast.jsx"));
-// const VendorType = lazy(() => import("./PageMS/VendorType.jsx"));
-// const PageCategory = lazy(() => import("./PageMS/PageCategory.jsx"));
-// const ProfileType = lazy(() => import("./PageMS/ProfileType.jsx"));
-// const PageOwnership = lazy(() => import("./PageMS/PageOwnership.jsx"));
-// const PmsPlatform = lazy(() => import("./PageMS/PmsPlatform.jsx"));
-// const PayMethod = lazy(() => import("./PageMS/PayMethod.jsx"));
-// const PayCycle = lazy(() => import("./PageMS/PayCycle.jsx"));
-
-// const VendorEdit = lazy(() => import("./PageMS/VendorEdit.jsx"));
-// const PMSpriceTypeMast = lazy(() => import("./PageMS/PMSpriceTypeMast.jsx"));
-// const PMSplatformPriceTypeMast = lazy(() =>
-//     import("./PageMS/PMSplatformPriceTypeMast.jsx")
-// );
-// const VendorGroupLink = lazy(() => import("./PageMS/VendorGroupLink.jsx"));
-// const VendorPagePriceOverview = lazy(() =>
-//     import("./PageMS/VendorPagePriceOverview.jsx")
-// );
-// const VendorPagePriceMaster = lazy(() =>
-//     import("./PageMS/VendorPagePriceMaster.jsx")
-// );
-// const EditVendorPagePrice = lazy(() => import("./PageMS/EditVendorPagePrice.jsx"));
-// const PMSmaster = lazy(() => import("./PageMS/PMSmaster.jsx"));
-// const SalesDashboard = lazy(() => import("./Sales/SalesDashboard.jsx"));
-// const SalesServicesOverview = lazy(() =>
-//     import("./Sales/SalesServices/SalesServicesOverview.jsx")
-// );
-// const SalesServicesCreate = lazy(() =>
-//     import("./Sales/SalesServices/SalesServicesCreate.jsx")
-// );
-// const SalesServicesUpdate = lazy(() =>
-//     import("./Sales/SalesServices/SalesServicesUpdate.jsx")
-// );
-// const CreditApprovalReasonCreate = lazy(() =>
-//     import("./Sales/CreditApprovalReason/CreditApprovalReasonCreate.jsx")
-// );
-// const CreditApprovalReasonView = lazy(() =>
-//     import("./Sales/CreditApprovalReason/CreditApprovalReasonView.jsx")
-// );
-// const CreditApprovalReasonUpdate = lazy(() =>
-//     import("./Sales/CreditApprovalReason/CreditApprovalReasonUpdate.jsx")
-// );
-// const CustomerDocumentMaster = lazy(() =>
-//     import("./Customer/CustomerDocumentMaster.jsx")
-// );
-// const CustomerDocumentOverview = lazy(() =>
-//     import("./Customer/CustomerDocumentOverview.jsx")
-// );
-
-// const IncentiveCreate = lazy(() =>
-//     import("./Sales/IncentivePlan/IncentiveCreate.jsx")
-// );
-// const IncentiveOverview = lazy(() =>
-//     import("./Sales/IncentivePlan/IncentiveOverview.jsx")
-// );
-// const IncentiveUpdate = lazy(() =>
-//     import("./Sales/IncentivePlan/IncentiveUpdate.jsx")
-// );
-// const CustomerContactDetails = lazy(() =>
-//     import("./Customer/Contectdetailes/CustomerContactDetails.jsx")
-// );
-// const PageAssignmentUpdate = lazy(() =>
-//     import("./ExpenseManagement/ExpenseManagementUpdate.jsx")
-// );
-// const CustomerDocumentDetails = lazy(() =>
-//     import("./Customer/DocumentDetails/CustomerDocumentDetails.jsx")
-// );
-// const CustomerDocumentUpdate = lazy(() =>
-//     import("./Customer/CustomerDocumentUpdate.jsx")
-// );
-
-// const CreateSaleBooking = lazy(() =>
-//     import("./Sales/SaleBooking/CreateSaleBooking.jsx")
-// );
-// const ViewSaleBooking = lazy(() =>
-//     import("./Sales/SaleBooking/ViewSaleBooking.jsx")
-// );
-// const OperationMasters = lazy(() =>
-//     import("./Operation/Masters/OperationMasters.jsx")
-// );
-// const RegisteredCampaigns = lazy(() =>
-//     import("./Operation/RegisteredCampaigns.jsx")
-// );
-// const PlanCreation = lazy(() => import("./Operation/PlanCreation.jsx"));
-// const PhaseCreation = lazy(() => import("./Operation/PhaseCreation.jsx"));
-// const CampaignExecutions = lazy(() =>
-//     import("./Operation/CampaignExecutionOverview/CampaignExecutions.jsx")
-// );
-
-// const CreatePaymentUpdate = lazy(() =>
-//     import("./Sales/PaymentUpdate/CreatePaymentUpdate.jsx")
-// );
-// const CreatePaymentMode = lazy(() =>
-//     import("./Sales/PaymentMode/CreatePaymentMode.jsx")
-// );
-// const ViewPaymentMode = lazy(() =>
-//     import("./Sales/PaymentMode/ViewPaymentMode.jsx")
-// );
-// const EditPaymentMode = lazy(() =>
-//     import("./Sales/PaymentMode/EditPaymentMode.jsx")
-// );
-// const CreatePaymentDetails = lazy(() =>
-//     import("./Sales/PaymentDetails/CreatePaymentDetails.jsx")
-// );
-// const ViewPaymentDetails = lazy(() =>
-//     import("./Sales/PaymentDetails/ViewPaymentDetails.jsx")
-// );
-// const EditPaymentDetails = lazy(() =>
-//     import("./Sales/PaymentDetails/EditPayementDetails.jsx")
-// );
-// const DeletedSaleBooking = lazy(() =>
-//     import("./Sales/SaleBooking/DeletedSaleBooking.jsx")
-// );
-// const RejectedPaymentRequest = lazy(() =>
-//     import("./Sales/PaymentRequest/RejectedPaymentRequest.jsx")
-// );
-// const PendingPaymentRequestSales = lazy(() =>
-//     import("./Sales/PaymentRequest/PendingPaymentRequestSales.jsx")
-// );
-// const RecordServices = lazy(() =>
-//     import("./Sales/RecordService/RecordServices.jsx")
-// );
-// const RegisterCampaigns = lazy(() => import("./Operation/RegisterCampaigns.jsx"));
-// const CreditApproval = lazy(() =>
-//     import("../Finance/CreditApproval/CreditApproval.jsx")
-// );
-// const ViewPaymentUpdate = lazy(() =>
-//     import("./Sales/PaymentUpdate/ViewPaymentUpdate.jsx")
-// );
-// const CreateSalesAccount = lazy(() =>
-//     import("./Sales/Account/CreateSalesAccount.jsx")
-// );
-// const SalesAccountOverview = lazy(() =>
-//     import("./Sales/Account/SalesAccountOverview.jsx")
-// );
-// const CreateDocumentType = lazy(() =>
-//     import("./Sales/Account/CreateDocumentType.jsx")
-// );
-// const DocumentTypeOverview = lazy(() =>
-//     import("./Sales/Account/DocumentTypeOverview.jsx")
-// );
-// const PlanOverView = lazy(() => import("./Operation/Plan/CampPlanOverview.jsx"));
-// const CampPlanOverview = lazy(() =>
-//     import("./Operation/Plan/CampPlanOverview.jsx")
-// );
-// const EditPage = lazy(() => import("./PageMS/EditPage/EditPage.jsx"));
-// const ViewOutstanding = lazy(() =>
-//     import("./Sales/SaleBooking/Outstanding/ViewOutstanding.jsx")
-// );
-// const IncentiveDashboard = lazy(() =>
-//     import("./Sales/Incenti Dashboard/IncentiveDashboard.jsx")
-// );
-// const UserIncentive = lazy(() =>
-//     import("./Sales/Incenti Dashboard/UserIncentive.jsx")
-// );
-// const EarnedAndUnearned = lazy(() =>
-//     import("./Sales/Incenti Dashboard/EarnedAndUnearned.jsx")
-// );
-// const IncentiveRequest = lazy(() =>
-//     import("./Sales/Incenti Dashboard/IncentiveRequest.jsx")
-// );
-// const IncentiveSettlement = lazy(() =>
-//     import("./Sales/Incentive Settlement/IncentiveSettlement.jsx")
-// );
-// const CreateTargetCompetition = lazy(() =>
-//     import("./Sales/TargetCompetition/CreateTargetCompetition.jsx")
-// );
-// const ViewTargetCompetition = lazy(() =>
-//     import("./Sales/TargetCompetition/ViewTargetCompetition.jsx")
-// );
-// const ViewInvoiceRequest = lazy(() =>
-//     import("./Sales/Invoice/ViewInvoiceRequest.jsx")
-// );
-
-// const CommunityManager = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/CommunityManager.jsx")
-// );
-// const CommunityPageView = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/CommunityPageView.jsx")
-// );
-// const CommunityHome = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/CommunityHome.jsx")
-// );
-// const CommunityUser = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/CommunityUser.jsx")
-// );
-// const CommunityManagerView = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/CommunityManagerView.jsx")
-// );
-// const MeetingPagesOverView = lazy(() =>
-//     import("../SuperTracker/MeetingPages/MeetingPagesOverView.jsx")
-// );
-// const OverviewMeetingVia = lazy(() =>
-//     import("../SuperTracker/MeetingPages/OverviewMeetingVia.jsx")
-// );
-// const PaymentUpdateBankWise = lazy(() =>
-//     import("./Sales/PaymentUpdate/PaymentUpdateBankWise.jsx")
-// );
-// const AllAssignedCategory = lazy(() =>
-//     import("../SuperTracker/CommunityManagement/AllAssignedCategory.jsx")
-// );
-// const SalesReport = lazy(() => import("./Sales/SaleBooking/SalesReport.jsx"));
 
 const Admin = () => {
     // const [contextData, setData] = useState([]);
@@ -1305,6 +965,10 @@ const Admin = () => {
                                             path="/pre-onboard-all-notifications"
                                             element={<NotificationHistory />}
                                         />
+
+
+
+                                        {/* 
                                         <Route
                                             path="/finance-alltransactions"
                                             element={<AllTransactions />}
@@ -1394,7 +1058,7 @@ const Admin = () => {
                     path="/finance-salebookingverify"
                     element={<SaleBookingVerify />}
                   /> */}
-                                        <Route
+                                        {/* <Route
                                             path="/finance-pruchasemanagement-pendingpaymentrequest"
                                             element={<PendingPaymentRequest />}
                                         />
@@ -1470,8 +1134,7 @@ const Admin = () => {
 
 
 
-                                        {/*  ==============*/}
-                                        {/* GST Nongst Incentive Report */}
+                                      
                                         <Route
                                             path="/finance-gst-nongst-incentive-report"
                                             element={<GstNongstIncentiveReport />}
@@ -1480,11 +1143,14 @@ const Admin = () => {
                                             path="/finance-incentive-parent"
                                             element={<IncentiveParent />}
                                         />
-                                        {/* ========================== */}
+                                     
                                         <Route
                                             path="/payment-summary/:id"
                                             element={<PaymentSummary />}
-                                        />
+                                        /> */}
+
+
+
                                         <Route
                                             path="/pre-onboard-coc-update/:id"
                                             element={<CocUpdate />}
@@ -1542,18 +1208,7 @@ const Admin = () => {
                                             path="/sub-department-update/:id"
                                             element={<SubDepartmentUpdate />}
                                         />
-                                        {/* <Route
-                      path="/operation-campaigns"
-                      element={<OperationCampaigns />}
-                    /> */}
-                                        {/* <Route
-                      path="/operation-dashboards"
-                      element={<OperationDashboards />}
-                    /> */}
-                                        {/* <Route
-                      path="/operation-contents"
-                      element={<OperationContents />}
-                    /> */}
+
                                         <Route path="/calender" element={<CalenderCreation />} />
                                         <Route
                                             path="/record-campaign"
@@ -1604,368 +1259,14 @@ const Admin = () => {
                                             element={<ExecutionRejected />}
                                         />
 
-                                        <Route
-                                            path="/pms-bulk-vendor-overview"
-                                            element={<AllVendorWiseList />}
-                                        />
-                                        {/* <Route
-                                            path="/pms-bulk-vendor-overview"
-                                            element={<BulkVendor />}
-                                        /> */}
-                                        <Route
-                                            path="/pms-inventory-dashboard"
-                                            element={<InventoryDashboard />}
-                                        />
-                                        <Route
-                                            path="/pms-inventory-category-overview"
-                                            element={<CategoryOverview />}
-                                        />
 
-                                        {/* <Route path="/pms-vendor-type" element={<VendorType />} /> */}
-                                        {/* <Route
-                                            path="/pms-page-category"
-                                            element={<PageCategory />}
-                                        /> */}
-                                        <Route
-                                            path="/pms-page-sub-category"
-                                            element={<SubCategoryOverview />}
-                                        />
-                                        <Route
-                                            path="/pms-unfetch-pages"
-                                            element={<UnfetchedPages />}
-                                        />
-                                        <Route path="/pms-tag-Category" element={<TagCategory />} />
-                                        {/* <Route path="/pms-profile-type" element={<ProfileType />} /> */}
-                                        {/* <Route
-                                            path="/pms-page-ownership"
-                                            element={<PageOwnership />}
-                                        /> */}
-                                        {/* <Route path="/pms-platform" element={<PmsPlatform />} /> */}
-                                        {/* <Route path="/pms-pay-method" element={<PayMethod />} /> */}
-                                        {/* <Route path="/pms-pay-cycle" element={<PayCycle />} /> */}
-                                        <Route
-                                            path="/pms-group-link-type"
-                                            element={<GroupLinkType />}
-                                        />
-                                        {/* <Route
-                    path="/pms-vendor-edit/:_id"
-                    element={<VendorEdit />}
-                  /> */}
-                                        <Route
-                                            path="/pms-vendor-master"
-                                            element={<VendorMaster />}
-                                        />
-                                        <Route path="/pms-plan-making" element={<PlanMaking />} />
-                                        <Route
-                                            path="/pms-plan-making-beta"
-                                            element={<PlanMakingBeta />}
-                                        />
-                                        <Route
-                                            path="/pms-plan-making-beta/:id"
-                                            element={<PlanMakingTableBeta />}
-                                        />
-
-                                        <Route path="/pms-plan-pricing" element={<PlanPricing />} />
-                                        <Route
-                                            path="/pms-plan-pricing/:id"
-                                            element={<PlanMakingPricing />}
-                                        />
-                                        <Route
-                                            path="/pms-plan-making/:id"
-                                            element={<PlanMakingTable />}
-                                        />
-                                        <Route path="/pms-plan-upload" element={<PlanUpload />} />
-                                        <Route
-                                            path="/pms-vendor-master/:_id"
-                                            element={<VendorMaster />}
-                                        />
-                                        <Route
-                                            path="/pms-vendor-overview"
-                                            element={<VendorOverview />}
-                                        />
-
-                                        {/* /> */}
-                                        <Route path="/pms-page-master" element={<PageMaster />} /> // Page Master on jarvis
-                                        <Route
-                                            path="/pms-page-cat-assignment-overview"
-                                            element={<PageAssignmentUser />}
-                                        />
-                                        <Route
-                                            path="/pms-page-cat-assignment-add"
-                                            element={<PageAssignmentUserAdd />}
-                                        />
-                                        <Route
-                                            path="/pms-page-overview"
-                                            element={<PageOverviewNew />}
-                                        />
-                                        <Route path="/pms-page-logs" element={<PageLogs />} />
-                                        <Route
-                                            path="/pms-purchase-price/:id"
-                                            element={<PurchasePrice />}
-                                        />
-                                        <Route
-                                            path="/pms-page-edit/:pageMast_id"
-                                            element={<PageEdit />}
-                                        />
 
                                         {SalesRoutes({ contextData })}
-                                        {/* <SalesRoutes contextData={contextData} /> */}
-                                        {/* Sales Module Routing here start-------------------  */}
-
-                                        {/* <Route
-                                            path="/sales-dashboard"
-                                            element={<SalesDashboard />}
-                                        /> */}
-                                        {/* <Route
-                                            path="/create-sales-services/:id/:method"
-                                            element={<SalesServicesCreate />}
-                                        /> 
-                                        <Route
-                                            path="/create-sales-services"
-                                            element={<SalesServicesCreate />}
-                                        />
-                                        <Route
-                                            path="/update-sales-services/:id/:post"
-                                            element={<SalesServicesUpdate />}
-                                        />
-                                        <Route
-                                            path="/sales-services-overview"
-                                            element={<SalesServicesOverview />}
-                                        />
-                                        */}
-
-                                        {/* Sales  Pratyush start*/}
-                                        {/* <Route
-                                            path="/create-credit-reason-approval"
-                                            element={<CreditApprovalReasonCreate />}
-                                        />
-                                        <Route
-                                            path="/view-credit-reason-approval"
-                                            element={<CreditApprovalReasonView />}
-                                        />
-                                        <Route
-                                            path="/user-incenitve"
-                                            element={<IncentiveRequest />}
-                                        />
-                                        <Route
-                                            path="/sales-incentive-settlement-overview"
-                                            element={<IncentiveSettlement />}
-                                        />
-                                        <Route
-                                            path="/update-credit-reason-approval/:id"
-                                            element={<CreditApprovalReasonUpdate />}
-                                        />
-                                        <Route
-                                            path="/create-sales-booking/:editId/:un_id"
-                                            element={<CreateSaleBooking />}
-                                        />
-                                        <Route
-                                            path="/create-sales-booking"
-                                            element={<CreateSaleBooking />}
-                                        />
-                                        <Route
-                                            path="/view-sales-booking"
-                                            element={<ViewSaleBooking />}
-                                        />
-                                        <Route
-                                            path="/sales-user-incentve"
-                                            element={<UserIncentive />}
-                                        />
-                                        <Route
-                                            path="/sales-plan-request"
-                                            element={<PlanRequest />}
-                                        />
-
-                                        <Route
-                                            path="/sales-bonus-slab/:id"
-                                            element={<SalesBonusSlab />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-master-add-edit/:id"
-                                            element={<BonusMastAddEdit />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-slab-master-add-edit/:id"
-                                            element={<BonusSlabMastAddEdit />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-salb-overview"
-                                            element={<BonusSlabOverview />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-list"
-                                            element={<BonusMastOverview />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-overview"
-                                            element={<SalesBonusOverview />}
-                                        />
-                                        <Route
-                                            path="/sales-bonus-summary/:id"
-                                            element={<SalesBonusSummary />}
-                                        />
-                                        <Route
-                                            path="/sales-user-report"
-                                            element={<SalesReport />}
-                                        />
-                                        <Route
-                                            path="/Sales-Point-Of-Contact"
-                                            element={<ViewSalesPoc />}
-                                        />
-                                        <Route
-                                            path="/create-payment-mode"
-                                            element={<CreatePaymentMode />}
-                                        />
-                                        <Route
-                                            path="/incentive-status/:id"
-                                            element={<EarnedAndUnearned />}
-                                        />
-                                        <Route
-                                            path="/view-payment-mode"
-                                            element={<ViewPaymentMode />}
-                                        />
-                                        <Route
-                                            path="/edit-payment-mode/:id"
-                                            element={<EditPaymentMode />}
-                                        />
-                                        <Route
-                                            path="/create-payment-details"
-                                            element={<CreatePaymentDetails />}
-                                        />
-                                        <Route
-                                            path="/view-payment-details"
-                                            element={<ViewPaymentDetails />}
-                                        />
-                                        <Route
-                                            path="/view-Outstanding-details"
-                                            element={<ViewOutstanding />}
-                                        />
-                                        <Route
-                                            path="/edit-payment-details/:id"
-                                            element={<EditPaymentDetails />}
-                                        />
-
-                                        <Route
-                                            path="/create-payment-update/:id"
-                                            element={<CreatePaymentUpdate />}
-                                        />
-                                        <Route
-                                            path="/view-payment-update"
-                                            element={<ViewPaymentUpdate />}
-                                        />
-                                        <Route
-                                            path="/payment-update-bank-wise/:id"
-                                            element={<PaymentUpdateBankWise />}
-                                        />
-                                        <Route
-                                            path="/view-invoice-request"
-                                            element={<ViewInvoiceRequest />}
-                                        />
-
-                                        <Route
-                                            path="/deleted-sales-booking"
-                                            element={<DeletedSaleBooking />}
-                                        />
-                                        <Route
-                                            path="/pending-payment-request-sales"
-                                            element={<PendingPaymentRequestSales />}
-                                        />
-
-                                        <Route
-                                            path="/rejected-payment-request-sales"
-                                            element={<RejectedPaymentRequest />}
-                                        />
-
-                                        <Route
-                                            path="/record-servcies"
-                                            element={<RecordServices />}
-                                        />
-
-                                        <Route
-                                            path="/credit-approval"
-                                            element={<CreditApproval />}
-                                        />
-                                        <Route
-                                            path="/create-sales-account/:id"
-                                            element={<CreateSalesAccount />}
-                                        />
-
-                                        <Route
-                                            path="/sales-account-overview"
-                                            element={<SalesAccountOverview />}
-                                        />
-
-                                        <Route
-                                            path="/sales-document-type-master"
-                                            element={<CreateDocumentType />}
-                                        />
-                                        <Route
-                                            path="/sales-document-type-overview"
-                                            element={<DocumentTypeOverview />}
-                                        />
-                                        <Route
-                                            path="/sales-incentive-dashboard"
-                                            element={<IncentiveDashboard />}
-                                        />
-                                        <Route
-                                            path="/create-target-competition"
-                                            element={<CreateTargetCompetition />}
-                                        />
-                                        <Route
-                                            path="/create-target-competition/:id"
-                                            element={<CreateTargetCompetition />}
-                                        />
-                                        <Route
-                                            path="/view-target-competition"
-                                            element={<ViewTargetCompetition />}
-                                        />
-                                        <Route
-                                            path="/monthwise-sales-booking"
-                                            element={<MonthWiseSalesView />}
-                                        />
-                                        <Route path="/product" element={<SalesProductOverview />} />
-                                        <Route path="/product/:task" element={<SalesProductCU />} />
-                                        <Route
-                                            path="/incentive-statement"
-                                            element={<IncentiveStatements />}
-                                        />
-                                        <Route
-                                            path="/sales-service-distribution"
-                                            element={<RecordServiceDistribution />}
-                                        /> */}
-
-                                        {/* Sales Pratyush end */}
-                                        {/* <Route
-                                            path="/sales-incentive-create"
-                                            element={<IncentiveCreate />}
-                                        />
-                                        <Route
-                                            path="/sales-incentive-overview"
-                                            element={<IncentiveOverview />}
-                                        />
-                                        <Route
-                                            path="/sales-incentive-update/:id"
-                                            element={<IncentiveUpdate />}
-                                        /> */}
-                                        {/* Expense Routing here  */}
-                                        <Route
-                                            path="/expense-Overview"
-                                            element={<ExpenseOverview />}
-                                        />
-                                        <Route
-                                            path="/create-expenseMangementMaster"
-                                            element={<ExpenseMangementMaster />}
-                                        />
-                                        <Route
-                                            path="/update-expense/:id"
-                                            element={<ExpenseManagementUpdate />}
-                                        />
-
-
-
-                                        {/* Community Management */}
-
+                                        {InventoryRoutes()}
                                         {CommunityRoutes({ contextData })}
+                                        {Miscellaneous()}
+                                        {FinanceRoutes()}
+
 
                                         {contextData &&
                                             contextData[29] &&
@@ -2067,238 +1368,29 @@ const Admin = () => {
 };
 export default Admin;
 
+
+
+{/* Expense Routing here  */ }
 {/* <Route
-                    path="/pms-page-edit/:pageMast_id"
-                    element={<EditPage />}
-                  /> */}
-{/* <Route
-                                            path="/pms-vendor-page-price-overview"
-                                            element={<VendorPagePriceOverview />}
-                                        /> */}
-{/* <Route
-                                            path="/pms-vendor-page-price-master"
-                                            element={<VendorPagePriceMaster />}
+                                            path="/expense-Overview"
+                                            element={<ExpenseOverview />}
                                         />
                                         <Route
-                                            path="/pms-vendor-page-price-master/:vendorMast_name"
-                                            element={<VendorPagePriceMaster />}
+                                            path="/create-expenseMangementMaster"
+                                            element={<ExpenseMangementMaster />}
                                         />
                                         <Route
-                                            path="/pms-vendor-page-price-master/:vendorMast_name"
-                                            element={<VendorPagePriceMaster />}
-                                        /> */}
-{/* <Route
-                                            path="/pms-vendor-page-price-master/:id"
-                                            element={<EditVendorPagePrice />}
-                                        /> */}
-{/* <Route path="/pms-master" element={<PMSmaster />} /> */ }
-
-{/* <Route
-                                            path="/exeinventory"
-                                            element={
-                                                <ExecutionInventory />
-
-                                                // </LeadApp>
-                                            }
-                                        /> */}
-{/* <Route
-                                            path="/exeexecution/:id"
-                                            element={<ExecutionDetail />}
+                                            path="/update-expense/:id"
+                                            element={<ExpenseManagementUpdate />}
                                         /> */}
 
-{/* TASK MANAGEMENT */ }
 
-{/* <Route
-                                            path="/task-status-dept-wise-master"
-                                            element={<TaskStatusDeptWiseMaster />}
-                                        />
-                                        <Route
-                                            path="/task-status-dept-wise-overview"
-                                            element={<TaskStatusDeptWiseOverview />}
-                                        />
-                                        <Route
-                                            path="/task-status-update-dept-wise/:id"
-                                            element={<TaskStatusDeptWiseUpdate />}
-                                        /> */}
-{/* TASK MANAGEMENT */ }
-
-{/* <Route path="/account-type" element={<AccountType />} />
-                                        <Route path="/account-master" element={<AccountMaster />} />
-                                        <Route
-                                            path="/ownership-master"
-                                            element={<OwnershipMaster />}
-                                        />
-                                        <Route
-                                            path="/ops-customer-mast"
-                                            element={<OpsCustomerMast />}
-                                        />
-                                        <Route
-                                            path="/ops-customer-overview"
-                                            element={<OpsCustomerOverview />}
-                                        />
-                                        <Route
-                                            path="/ops-customer-update/:id"
-                                            element={<OpsCustomerUpdate />}
-                                        /> */}
-{/* <Route
-                                            path="/customer-cont-overview"
-                                            element={<CustomerContOverview />}
-                                        />
-                                        <Route
-                                            path="/customer-cont-master"
-                                            element={<CustomerContMaster />}
-                                        />
-                                        <Route
-                                            path="/customer-cont-update/:id"
-                                            element={<CustomerContUpdate />}
-                                        />
-                                        <Route path="/ops-doc-mast" element={<OpsDocMast />} />
-                                        <Route
-                                            path="/customer-document-master"
-                                            element={<CustomerDocumentMaster />}
-                                        />
-                                        <Route
-                                            path="/customer-contact-details/:customer_id"
-                                            element={<CustomerContactDetails />}
-                                        /> */}
-{/* <Route
-                                            path="/customer-document-overview"
-                                            element={<CustomerDocumentOverview />}
-                                        />
-                                        <Route
-                                            path="/customer-document-update/:id"
-                                            element={<CustomerDocumentUpdate />}
-                                        />
-                                        <Route
-                                            path="/customer-document-master"
-                                            element={<CustomerDocumentMaster />}
-                                        />
-                                        <Route
-                                            path="/customer-document-details/:customer_id"
-                                            element={<CustomerDocumentDetails />}
-                                        />
-*/}
-{/* <Route
-                                            path="/exeexecution/dashboard"
-                                            element={<ExecutionDashboard />}
-                                        />
-                                        <Route
-                                            path="/exeexecution/PagePerformanceDashboard"
-                                            element={<PagePerformanceDashboard />}
-                                        /> */}
-{/* <Route
-                                            path="/exeexecution/PagePerformanceAnalytics"
-                                            element={<PagePerformanceAnalytics />}
-                                        /> */}
-{/* <Route path="/exe-update/:id" element={<ExeUPdate />} />
-                                        <Route path="/exe-history/:id" element={<ExeHistory />} />
-                                        <Route path="/execution" element={<OverviewIndex />} />
-                                        <Route
-                                            path="/exeexecution/all"
-                                            element={<ExecutionAll />}
-                                        /> */}
-{/* <Route
-                                            path="/exeexecution/allpagesdetail"
-                                            element={<StatsAllPagesDetail />}
-                                        /> */}
-{/* <Route
-                                            path="/exeexecution/own"
-                                            element={<ExecutionOwn />}
-                                        /> */}
-{/* <Route
-                                            path="/exeexecution/other"
-                                            element={<ExecutionOther />}
-                                        /> */}
-{/* //exe operation */ }
-{/* <Route
-                                            path="/exeoperation/master"
-                                            element={<OperationMasters />}
-                                        /> */}
-{/* <Route
-                                            path="/op-register-campaign"
-                                            element={<RegisterCampaigns />}
-                                        />
-                                        <Route
-                                            path="/op-registered-campaign"
-                                            element={<RegisteredCampaigns />}
-                                        />
-                                        <Route
-                                            path="/op-plan-creation/:id"
-                                            element={<PlanCreation />}
-                                        /> */}
-
-{/* <Route
-                                            path="/op-phase-creation/:id"
-                                            element={<PhaseCreation />}
-                                        /> */}
-{/* <Route
-                                            path="/op-campaign-executions"
-                                            element={<CampaignExecutions />}
-                                        /> */}
-{/* <Route
-    path="/campaign_executions"
-    element={<NewCampaignExecutions />}
-/> */}
-
-{/* new pla over view  */ }
-{/* <Route
-                                            path="/op-plan-overview/:id"
-                                            element={<CampPlanOverview />}
-                                        /> */}
-
-{/* //exe operation */ }
-{/* <Route
-                                            path="/exeoperation/master"
-                                            element={<OperationMasters />}
-                                        /> */}
-{/* <Route
-                                            path="/op-register-campaign"
-                                            element={<RegisterCampaigns />}
-                                        />
-                                        <Route
-                                            path="/op-registered-campaign"
-                                            element={<RegisteredCampaigns />}
-                                        />
-                                        <Route
-                                            path="/op-plan-creation/:id"
-                                            element={<PlanCreation />}
-                                        /> */}
-
-{/* <Route
-                                            path="/op-phase-creation/:id"
-                                            element={<PhaseCreation />}
-                                        /> */}
-{/* <Route
-    path="/op-campaign-executions"
-    element={<CampaignExecutions />}
-/> */}
-{/* <Route
-                                            path="/campaign_executions"
-                                            element={<NewCampaignExecutions />}
-                                        /> */}
-
-{/* new pla over view  */ }
-{/* <Route
-                                            path="/op-plan-overview/:id"
-                                            element={<CampPlanOverview />}
-                                        /> */}
-
-{/* <Route
-                                            path="/pms-price-type"
-                                            element={<PMSpriceTypeMast />}
-                                        /> */}
-{/* <Route
-                                            path="/pms-platform-price-type"
-                                            element={<PMSplatformPriceTypeMast />}
-                                        /> */}
-{/* <Route
-                                            path="/pms-vendor-group-link"
-                                            element={<VendorGroupLink />}
-                                        /> */}
-{/* <Route
-                                            path="/pms-vendor-group-link/:vendorMast_name"
-                                            element={<VendorGroupLink />}
-                                        />
-                                        <Route
-                                            path="/pms-vendor-group-link/:vendorMast_name"
-                                            element={<VendorGroupLink />} */}
+// const ExpenseMangementMaster = lazy(() =>
+//     import("./ExpenseManagement/ExpenseMangementMaster.jsx")
+// );
+// const ExpenseOverview = lazy(() =>
+//     import("./ExpenseManagement/ExpenseOverview.jsx")
+// );
+// const ExpenseManagementUpdate = lazy(() =>
+//     import("./ExpenseManagement/ExpenseManagementUpdate.jsx")
+// );
