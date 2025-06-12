@@ -6,7 +6,7 @@ import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 
 import { useGlobalContext } from "../../../Context/Context";
-import { baseUrl } from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 import TextEditor from "../../ReusableComponents/TextEditor";
 
 const CocUpdate = () => {
@@ -20,21 +20,19 @@ const CocUpdate = () => {
   const loginUserId = decodedToken.id;
 
   useEffect(() => {
-    axios
-      .get(`${baseUrl}` + `newcoc/${id}`)
-      .then((res) => {
-        const fetchedData = res.data.data;
-        setCocContent(fetchedData.coc_content)
-      });
+    axios.get(`${baseUrl}` + `newcoc/${id}`).then((res) => {
+      const fetchedData = res.data.data;
+      setCocContent(fetchedData.coc_content);
+    });
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('console here')
+    console.log("console here");
     await axios.put(`${baseUrl}` + `newcoc/`, {
       _id: id,
       updated_by: loginUserId,
-      coc_content: cocContent
+      coc_content: cocContent,
     });
 
     toastAlert("Coc created");
@@ -42,7 +40,7 @@ const CocUpdate = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/pre-onboard-coc-overview" />;
+    return <Navigate to="/admin/preonboard/pre-onboard-coc-overview" />;
   }
 
   return (

@@ -2,7 +2,7 @@ import { Autocomplete, IconButton, TextField } from "@mui/material";
 import React from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FieldContainer from "../../FieldContainer";
- import EducationList from "../../../../assets/js/EducationList";
+import EducationList from "../../../../utils/EducationList";
 
 const EducationDynamic = ({
   educationDetails,

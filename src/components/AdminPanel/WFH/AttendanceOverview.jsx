@@ -19,9 +19,7 @@ const AttendanceOverview = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}`+`get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setDatas(res.data);
         });
@@ -29,12 +27,10 @@ const AttendanceOverview = () => {
   }, [userID]);
 
   function getData() {
-    axios
-      .get(baseUrl+"all_attendence_mast_data")
-      .then((res) => {
-        setData(res.data);
-        setFilterData(res.data);
-      });
+    axios.get(baseUrl + "all_attendence_mast_data").then((res) => {
+      setData(res.data);
+      setFilterData(res.data);
+    });
   }
 
   useEffect(() => {
@@ -85,7 +81,7 @@ const AttendanceOverview = () => {
           {/* {contextData &&
             contextData[10] &&
             contextData[10].update_value === 1 && (
-              <Link to={`/admin/designation-update/${row.desi_id}`}>
+              <Link to={`/admin/user/designation-update/${row.desi_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button"
@@ -115,7 +111,7 @@ const AttendanceOverview = () => {
     <>
       <FormContainer
         mainTitle="Attendance"
-        link="/admin/attendence-mast"
+        link="/admin/wfhd/attendence-mast"
         buttonAccess={
           contextData &&
           contextData[10] &&

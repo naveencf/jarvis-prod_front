@@ -88,9 +88,10 @@ const Navbar = () => {
     try {
       const responseOutstanding = await axios.get(
         baseUrl +
-        `sales/badges_sales_booking_data${RoleID != 1 ? `?userId=${loginUserId}` : ""
-        // `sales/invoice_outstanding_amount${RoleID != 1 ? `?userId=${loginUserId}` : ""
-        }`,
+          `sales/badges_sales_booking_data${
+            RoleID != 1 ? `?userId=${loginUserId}` : ""
+            // `sales/invoice_outstanding_amount${RoleID != 1 ? `?userId=${loginUserId}` : ""
+          }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -106,7 +107,7 @@ const Navbar = () => {
 
       const badgeDataRes = responseBadges.data.data;
       const userBadgeRes = responseOutstanding.data.data;
-      console.log(userBadgeRes, "userBadgeRes")
+      console.log(userBadgeRes, "userBadgeRes");
       const userBadge = badgeDataRes.filter(
         (item) =>
           item.max_rate_amount > userBadgeRes.totalCampaignAmount &&
@@ -123,9 +124,9 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    console.log("first")
+    console.log("first");
     if (isSalesRoute) {
-      console.log("first")
+      console.log("first");
       getUserBadge();
     }
     // getAdjustment();
@@ -200,14 +201,14 @@ const Navbar = () => {
               <li className="nav-item" id="salesBadge">
                 <div
                   className="navBadge"
-                // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
+                  // title={`₹ ${userBadgeData?.totalOutstandingAmount || 0}`}
                 >
                   <div className="navBadgeImg">
                     <img src={rupee} alt="badge" />
                   </div>
                   <div className="navBadgeTxt">
                     {/* /* <h5>{badge}</h5> */}
-                    <Link to="/admin/view-Outstanding-details">
+                    <Link to="/admin/sales/view-Outstanding-details">
                       <div
                         id="carouselExampleSlidesOnly"
                         className="carousel slide"
@@ -235,7 +236,7 @@ const Navbar = () => {
                               TDS Outstanding: ₹
                               {formatNumber(
                                 userBadgeData?.totalOutstandingAmount -
-                                userBadgeData?.totalUnEarnedOutstandingAmount
+                                  userBadgeData?.totalUnEarnedOutstandingAmount
                               ) || 0}
                             </h4>
                           </div>
@@ -254,11 +255,11 @@ const Navbar = () => {
                         Un-Billed Outstanding: ₹
                         {formatNumber(
                           userBadgeData?.totalUnEarnedOutstandingAmount -
-                          userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
+                            userBadgeData?.totalUnEarnedWithInvoiceUploadedOutstandingAmount
                         ) || 0}
                       </h4>
                     </div>
-                    <Link to="/admin/view-Outstanding-details">
+                    <Link to="/admin/sales/view-Outstanding-details">
                       <div
                         id="carouselExampleSlidesOnly"
                         className="carousel slide"
@@ -349,7 +350,7 @@ const Navbar = () => {
                       ))}
                     </div>
                   </div>
-                  <Link to={`/admin/pre-onboard-all-notifications/`}>
+                  <Link to={`/admin/preonboard/pre-onboard-all-notifications/`}>
                     <div className="all-notification">
                       See all notifications
                     </div>
@@ -369,7 +370,7 @@ const Navbar = () => {
                   ))} 
 
                 {/* <button type="button" className="btn btn-success btn-xs">
-                    <Link to={`/admin/pre-onboard-all-notifications/`}>
+                    <Link to={`/admin/preonboard/pre-onboard-all-notifications/`}>
                       See All
                     </Link>
                   </button> 
@@ -484,13 +485,13 @@ const Navbar = () => {
                 </div>
               </div> */}
               <div className="pack">
-                <Link to="/admin/user-profile">
+                <Link to="/admin/user/user-profile">
                   <div className="pro-btn">
                     <i className="bi bi-person"></i>
                     <p>My profile</p>
                   </div>
                 </Link>
-                <Link to="/admin/user-timeline">
+                <Link to="/admin/user/user-timeline">
                   <div className="pro-btn">
                     <i className="bi bi-gear"></i>
                     <p>Timeline</p>

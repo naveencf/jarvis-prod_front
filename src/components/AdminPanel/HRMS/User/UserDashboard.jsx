@@ -168,7 +168,7 @@ const UserDashboard = () => {
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
       >
         <div className="card text-center">
-          <Link to={`/admin/user-overview/${link}`}>
+          <Link to={`/admin/user/user-overview/${link}`}>
             <div className="card-body pb20">
               <div className={`iconBadge bg${title}Light`}>
                 <span>{icon}</span>
@@ -196,7 +196,7 @@ const UserDashboard = () => {
           }}
         >
           <div>
-            <Link to="/admin/user-login-history">
+            <Link to="/admin/user/user-login-history">
               <button className="btn btn-primary btn-sm">Login History</button>
             </Link>
           </div>

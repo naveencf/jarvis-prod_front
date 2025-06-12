@@ -199,7 +199,7 @@ const MeetingPagesOverView = () => {
                 <Button
                     variant="outlined"
                     color="inherit"
-                    onClick={() => navigate("/admin/instaapi/community/manager/pasandidddaaurat")}
+                    onClick={() => navigate("/admin/community/manager/pasandidddaaurat")}
                 >
                     Go Pages
                 </Button>

@@ -63,7 +63,7 @@ const HRTemplateOverview = () => {
           <FormContainer mainTitle={"Invoice"} link={true} />
         </div>
         <div className="action_btns">
-          <Link to="/admin/billing-overview">
+          <Link to="/admin/wfhd/billing-overview">
             <button type="button" className="btn cmnbtn btn_sm btn-primary">
               Billing
             </button>

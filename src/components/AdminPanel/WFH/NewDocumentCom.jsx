@@ -76,8 +76,8 @@ const NewDocumentCom = () => {
         });
       }
 
-      setIsFormSubmitted(true)
-      // navigate("/admin/wfhd-overview");
+      setIsFormSubmitted(true);
+      // navigate("/admin/wfhd/wfhd-overview");
       toastAlert("Documents Updated");
       getDocuments();
     } catch (error) {
@@ -88,7 +88,7 @@ const NewDocumentCom = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/wfhd-overview" />;
+    return <Navigate to="/admin/wfhd/wfhd-overview" />;
   }
   return (
     <div className="table-wrap-user">

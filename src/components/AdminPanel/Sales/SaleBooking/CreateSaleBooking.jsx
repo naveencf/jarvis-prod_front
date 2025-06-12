@@ -52,7 +52,6 @@ const CreateSaleBooking = () => {
   const token = getDecodedToken();
   const loginUserId = token.id;
 
-
   let newSaleBookingData;
 
   let loginUserIdForApi;
@@ -73,8 +72,6 @@ const CreateSaleBooking = () => {
 
   const [addsaledata, { isLoading: addsaleLoading, error: addsaleError }] =
     useAddSaleBookingMutation();
-
-
 
   const [
     updateRecordServices,
@@ -123,7 +120,7 @@ const CreateSaleBooking = () => {
   const [bookingDate, setBookingDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [selectedCategory, setSelectedCategory] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [validateService, setValidateService] = useState([]);
   const [baseAmount, setBaseAmount] = useState(0);
   const [gstAmount, setGstAmount] = useState(0);
@@ -181,7 +178,6 @@ const CreateSaleBooking = () => {
 
   const [submitDialog, setSubmitDialog] = useState(false);
   const paymentStatusList = [
-
     {
       value: "sent_for_payment_approval",
       label: "Sent For Payment Approval",
@@ -205,15 +201,16 @@ const CreateSaleBooking = () => {
     refetch: getIncentiveSharingDetails,
     data: getincentiveSharingData,
     isError: getincentiveSharingError,
-    isLoading: getincentiveSharingLoading
-  } = useGetIncentiveSharingDetailsQuery(selectedAccount, { skip: !selectedAccount });
+    isLoading: getincentiveSharingLoading,
+  } = useGetIncentiveSharingDetailsQuery(selectedAccount, {
+    skip: !selectedAccount,
+  });
 
   const {
     data: allCreditApprovals,
     error: allCreditApprovalsError,
     isLoading: allCreditApprovalsLoading,
   } = useGetAllCreditApprovalsQuery();
-
 
   useEffect(() => {
     const fetchcampaign = async () => {
@@ -412,10 +409,6 @@ const CreateSaleBooking = () => {
     return errors;
   };
 
-
-
-
-
   useEffect(() => {
     if (
       singleDocumentOverviewData?.data?.length > 0 &&
@@ -452,13 +445,7 @@ const CreateSaleBooking = () => {
     }
   }, [baseAmount, addGst]);
 
-
-
-
-
   const handleSubmit = async (e, draft) => {
-
-
     e.preventDefault();
 
     if (!selectedAccount) {
@@ -571,9 +558,6 @@ const CreateSaleBooking = () => {
         return;
       }
 
-
-
-
       const formData = new FormData();
       formData.append("plan_link", planLink);
       formData.append("account_id", selectedAccount);
@@ -609,7 +593,6 @@ const CreateSaleBooking = () => {
         );
       }
 
-
       formData.append("brand_id", selectedBrand || "");
       formData.append("balance_payment_ondate", balancePayDate);
       formData.append(
@@ -621,16 +604,23 @@ const CreateSaleBooking = () => {
         toastError("Base amount cannot be 0");
         return;
       }
-      (getincentiveSharingData?.services?.length > 0) ? (formData.append("is_incentive_sharing", true), formData.append("account_percentage", getincentiveSharingData?.account_percentage)) : formData.append("is_incentive_sharing", false);
+      getincentiveSharingData?.services?.length > 0
+        ? (formData.append("is_incentive_sharing", true),
+          formData.append(
+            "account_percentage",
+            getincentiveSharingData?.account_percentage
+          ))
+        : formData.append("is_incentive_sharing", false);
       const recServiceData = recServices.map((record) => {
         return {
           ...record,
           service_percentage: getincentiveSharingData?.services?.find(
             (data) => data.service_id === record?.sales_service_master_id
           )?.service_percentage,
-          incentive_sharing_users_array: getincentiveSharingData?.services?.find(
-            (data) => data?.service_id === record?.sales_service_master_id
-          )?.incentive_sharing_users,
+          incentive_sharing_users_array:
+            getincentiveSharingData?.services?.find(
+              (data) => data?.service_id === record?.sales_service_master_id
+            )?.incentive_sharing_users,
         };
       });
 
@@ -657,7 +647,8 @@ const CreateSaleBooking = () => {
           id: editId,
           record_services: recServiceData,
           is_incentive_sharing: getincentiveSharingData?.services?.length > 0,
-          account_percentage: getincentiveSharingData?.account_percentage || 100,
+          account_percentage:
+            getincentiveSharingData?.account_percentage || 100,
 
           old_sales_booking_created_by: salesdata.created_by,
           updated_by: loginUserId,
@@ -671,19 +662,18 @@ const CreateSaleBooking = () => {
       openModal("SalesSumitDialog");
 
       // if (selectedPaymentStatus?.value === "sent_for_payment_approval") {
-      //   navigate(`/admin/create-payment-update/0`, {
+      //   navigate(`/admin/sales/create-payment-update/0`, {
       //     state: { sales_user: newSaleBookingData }, // your additional data here
       //   });
       // } else {
-      //   navigate("/admin/view-sales-booking");
+      //   navigate("/admin/sales/view-sales-booking");
       // }
     } catch (error) {
       console.error(error);
       if (error.response && error.response.status === 666) {
         toastError("Sale booking created but email not sent");
-        navigate("/admin/view-sales-booking");
+        navigate("/admin/sales/view-sales-booking");
         return;
-
       }
 
       toastError(
@@ -736,7 +726,6 @@ const CreateSaleBooking = () => {
         deliverables_info: "",
         remarks: "",
         created_by: loginUserId,
-
       },
     ]);
   };
@@ -783,9 +772,22 @@ const CreateSaleBooking = () => {
   const renderModalContent = () => {
     switch (modalContentType) {
       case "SheetLink":
-        return <FetchSheet closeModal={closeModal} setExcelFile={setExcelFile} excelFile={excelFile} setPlanLink={setPlanLink} />;
+        return (
+          <FetchSheet
+            closeModal={closeModal}
+            setExcelFile={setExcelFile}
+            excelFile={excelFile}
+            setPlanLink={setPlanLink}
+          />
+        );
       case "ShareIncentive":
-        return <ShareIncentive setIncentiveSharing={setIncentiveSharing} incentiveSharing={incentiveSharing} closeModal={closeModal} />;
+        return (
+          <ShareIncentive
+            setIncentiveSharing={setIncentiveSharing}
+            incentiveSharing={incentiveSharing}
+            closeModal={closeModal}
+          />
+        );
       case "SalesSumitDialog":
         return (
           <SalesSubmitDialog
@@ -819,21 +821,23 @@ const CreateSaleBooking = () => {
           />
         );
       case "addBrand":
-        return <CreateBrand
-          allBrandCatType={allBrandCatType}
-          loginUserId={loginUserId}
-          closeModal={closeModal}
-          accountName={allAccounts?.find(item => item?.account_id === selectedAccount)?.account_name}
-          setSelectedBrand={setSelectedBrand}
-
-
-          setSelectedCategoryParent={setSelectedCategory}
-          id={0}
-          selectedBrand={selectedBrand}
-        />
+        return (
+          <CreateBrand
+            allBrandCatType={allBrandCatType}
+            loginUserId={loginUserId}
+            closeModal={closeModal}
+            accountName={
+              allAccounts?.find((item) => item?.account_id === selectedAccount)
+                ?.account_name
+            }
+            setSelectedBrand={setSelectedBrand}
+            setSelectedCategoryParent={setSelectedCategory}
+            id={0}
+            selectedBrand={selectedBrand}
+          />
+        );
     }
   };
-
 
   return (
     <>
@@ -953,7 +957,7 @@ const CreateSaleBooking = () => {
                   disabled={
                     (account_info?.state &&
                       account_info?.state?.account_data?.account_type_name !==
-                      "Agency") ||
+                        "Agency") ||
                     allAccounts?.find(
                       (item) => item?.account_id == selectedAccount
                     )?.account_type_name !== "Agency"
@@ -1130,7 +1134,6 @@ const CreateSaleBooking = () => {
             {
               <>
                 <div className="col-4">
-
                   <FieldContainer
                     label="GST Amount"
                     fieldGrid={12}
@@ -1143,7 +1146,6 @@ const CreateSaleBooking = () => {
                   </span>
                 </div>
                 <div className="col-4">
-
                   <FieldContainer
                     label="Net / Campaign Amount"
                     fieldGrid={12}

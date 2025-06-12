@@ -483,7 +483,7 @@ function PlanRequest() {
         if (isEdit) {
           fetchPlans();
         } else {
-          // navigate(`/admin/pms-plan-making/${planId}`);
+          // navigate(`/admin/inventory/pms-plan-making/${planId}`);
           setOpenDialog(false);
         }
       } else {

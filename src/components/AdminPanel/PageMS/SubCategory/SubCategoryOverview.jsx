@@ -18,7 +18,7 @@ import MergeSubCategory from "../InventoryDashboard/MergeSubCategory";
 import Swal from "sweetalert2";
 import moment from "moment/moment";
 import { FormatName } from "../../../../utils/FormatName";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SubCategoryOverview = () => {
   const navigate = useNavigate()
@@ -155,7 +155,7 @@ const SubCategoryOverview = () => {
           </button>
           {/* <button
             className="btn cmnbtn btn-primary btn_sm"
-            onClick={() => navigate("/admin/pms-inventory-category-overview")}
+            onClick={() => navigate("/admin/inventory/pms-inventory-category-overview")}
           >
              Category
           </button> */}

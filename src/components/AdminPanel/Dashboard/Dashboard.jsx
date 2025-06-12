@@ -11,7 +11,7 @@ import { Avatar, Box, Button } from "@mui/material";
 import ChatApplication from "../../Common/ChatApplication";
 import { useLocation } from "react-router-dom";
 import titleimg from "/bg-img.png";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import { Details } from "@mui/icons-material";
 import WFHDDahboard from "./WFHDDahboard";
@@ -249,7 +249,7 @@ function Dashboard() {
               <div className="d_infocard card shadow">
                 <div
                   className="card-body"
-                  onClick={() => navigate("/admin/accounts-finance-overview")}
+                  onClick={() => navigate("/admin/finance/accounts-finance-overview")}
                 >
                   <div className="d_infocard_txt">
                     <h3>Pending WFH Payments</h3>
@@ -270,7 +270,7 @@ function Dashboard() {
             //   <div className="d_infocard card shadow">
             //     <div
             //       className="card-body"
-            //       onClick={() => navigate("/admin/accounts-finance-dashboard")}
+            //       onClick={() => navigate("/admin/finance/accounts-finance-dashboard")}
             //     >
             //       <div className="d_infocard_txt">
             //         <h2>Finance Dashboard</h2>
@@ -284,7 +284,7 @@ function Dashboard() {
             //     </div>
             //   </div>
             // </div>
-            navigate("/admin/finance-dashboard")}
+            navigate("/admin/finance/finance-dashboard")}
         </div>
 
         {RoleIDContext == constant.CONST_MANAGER_ROLE && <OrgTree />}

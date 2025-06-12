@@ -149,7 +149,7 @@ const DesignationOverview = () => {
           {contextData &&
             contextData[10] &&
             contextData[10].update_value === 1 && (
-              <Link to={`/admin/designation-update/${row.desi_id}`}>
+              <Link to={`/admin/user/designation-update/${row.desi_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button"
@@ -197,7 +197,7 @@ const DesignationOverview = () => {
       {/* FormContainer for main title and link */}
       <FormContainer
         mainTitle="Designation"
-        link="/admin/designation-master"
+        link="/admin/user/designation-master"
         buttonAccess={
           contextData &&
           contextData[10] &&

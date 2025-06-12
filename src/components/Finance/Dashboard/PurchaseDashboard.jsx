@@ -327,7 +327,7 @@ const PurchaseDashboard = () => {
   };
 
   const handleClick = (selectedRange) => {
-    navigate("/admin/finance-overview", {
+    navigate("/admin/finance/finance-overview", {
       state: {
         selectedRange: selectedRange,
         pendingReqData: pendingReqData && pendingReqData,
@@ -422,7 +422,7 @@ const PurchaseDashboard = () => {
         </div>
       </div>
       <div className="cardGrdnt orangeGrdnt">
-        <Link to="/admin/finance-pruchasemanagement-pendingpaymentrequest">
+        <Link to="/admin/finance/finance-pruchasemanagement-pendingpaymentrequest">
           <div className="row align-items-center p-2">
             <div className="col-md-6 financeCardBox border-right ">
               <div className="financeCardBoxIn p0">
@@ -532,7 +532,7 @@ const PurchaseDashboard = () => {
       <div className="row">
         <Link
           className="col-md-6 mb-4"
-          to="/admin/finance-pruchasemanagement-paymentdone"
+          to="/admin/finance/finance-pruchasemanagement-paymentdone"
         >
           <div className="pack flex-row " style={{ gap: "16px" }}>
             <div className="fin-card w-100">
@@ -777,7 +777,7 @@ const PurchaseDashboard = () => {
         </Link>{" "}
         <Link
           className="col-md-6"
-          to="/admin/finance-pruchasemanagement-discardpayment"
+          to="/admin/finance/finance-pruchasemanagement-discardpayment"
         >
           <div className="pack flex-row" style={{ gap: "16px" }}>
             <div className="fin-card w-100">

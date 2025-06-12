@@ -23,20 +23,20 @@ const PantryHome = () => {
   // }, []);
 
   const handleAllOrder = () => {
-    navigate("/admin/all-order");
+    navigate("/admin/miscellaneous/all-order");
   };
   const handlePendingOrder = () => {
-    navigate("/admin/all-pending-order");
+    navigate("/admin/miscellaneous/all-pending-order");
   };
   const handleDeliverdOrder = () => {
-    navigate("/admin/all-deliverd-order");
+    navigate("/admin/miscellaneous/all-deliverd-order");
   };
   const handleDeclinedOrder = () => {
-    navigate("/admin/all-declined-order");
+    navigate("/admin/miscellaneous/all-declined-order");
   };
 
   const handleTransferReq = () => {
-    navigate("/admin/transfer-req");
+    navigate("/admin/miscellaneous/transfer-req");
   };
 
   useEffect(() => {

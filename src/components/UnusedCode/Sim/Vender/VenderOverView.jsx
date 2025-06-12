@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import axios from "axios";
 import { FaEdit } from "react-icons/fa";
-import UserNav from "../../Pantry/UserPanel/UserNav";
-import FormContainer from "../../../FormContainer";
-import { useGlobalContext } from "../../../../../Context/Context";
-import DeleteButton from "../../../DeleteButton";
-import { baseUrl } from "../../../../../utils/config";
-import { useAPIGlobalContext } from "../../../APIContext/APIContext";
+import UserNav from "../../../AdminPanel/HRMS/Pantry/UserPanel/UserNav";
+import FormContainer from "../../../AdminPanel/FormContainer";
+import { useGlobalContext } from "../../../../Context/Context";
+import DeleteButton from "../../../AdminPanel/DeleteButton";
+import { baseUrl } from "../../../../utils/config";
+import { useAPIGlobalContext } from "../../../AdminPanel/APIContext/APIContext";
 
 const VenderOverView = () => {
   const { toastAlert } = useGlobalContext();
@@ -84,7 +84,6 @@ const VenderOverView = () => {
       selector: (row) => row.company_name,
       sortable: true,
       width: "250px",
-
     },
     {
       name: " Address",
@@ -170,8 +169,6 @@ const VenderOverView = () => {
                     exportToCSV
                     highlightOnHover
                     showExport={showExport}
-
-
                   />
                 </div>
               </div>

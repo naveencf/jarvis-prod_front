@@ -150,7 +150,7 @@ const ExpenseOverview = () => {
               <i className="fa-solid fa-ellipsis"></i>
             </button>
             <div className="dropdown-menu dropdown-menu-right">
-              <Link to={`/admin/update-expense/${row._id}`}>
+              <Link to={`/admin/miscellaneous/update-expense/${row._id}`}>
                 <button className="dropdown-item">Edit</button>
               </Link>
               <DeleteButton
@@ -171,7 +171,7 @@ const ExpenseOverview = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Expense Management"
-            link="/admin/create-expenseMangementMaster"
+            link="/admin/miscellaneous/create-expenseMangementMaster"
             buttonAccess={true}
             submitButton={true}
           />

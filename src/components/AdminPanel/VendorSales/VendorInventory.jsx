@@ -35,7 +35,7 @@ const VendorInventory = () => {
     contextData && contextData[72] && contextData[72].view_value === 1;
 
   const handleClickVendorName = (params) => {
-    naviagte(`/admin/vendor-inventory/${params._id}`);
+    naviagte(`/admin/vendor-sale/vendor-inventory/${params._id}`);
   };
 
   const debouncedSearch = useCallback(

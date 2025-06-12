@@ -1,7 +1,7 @@
 import React from "react";
 import "../assets/css/Template.css";
 import "../assets/css/media-query.css";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 const InvoiceTemplate9 = ({ data }) => {
   const handleImageError = (e) => {

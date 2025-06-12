@@ -201,7 +201,7 @@ export default function VendorDetails({
             </button>
             <ul>
               <li>
-                <Link to={`/admin/pms-page-master?${queryParams}`}>
+                <Link to={`/admin/inventory/pms-page-master?${queryParams}`}>
                   <button className="btn cmnbtn btn_sm btn-primary ml-2">
                     Add Page
                   </button>
@@ -209,11 +209,10 @@ export default function VendorDetails({
               </li>
               <li>
                 <Link
-                  to={`/admin/pms-vendor-master/${
-                    tab1 === "tab1"
+                  to={`/admin/inventory/pms-vendor-master/${tab1 === "tab1"
                       ? vendorDetails?.vendor_id
                       : vendorDetails?._id
-                  }`}
+                    }`}
                 >
                   <button className="btn cmnbtn btn_sm btn-primary ml-2">
                     <i className="bi bi-pencil" />

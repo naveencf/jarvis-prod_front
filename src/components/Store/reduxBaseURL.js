@@ -309,7 +309,13 @@ export const reduxBaseURL = createApi({
       }),
       invalidatesTags: ["addBankName"],
     }),
+    getVendorById: builder.query({
+      query: (vendorId) => `v1/vendor/${vendorId}`,
+    }),
 
+    getBankDetailsByVendorId: builder.query({
+      query: (vendorId) => `v1/bank_details_by_vendor_id/${vendorId}`,
+    }),
     updateBankNameDetail: builder.mutation({
       query: (data) => ({
         // url: `updatePayCycle/${data._id}`,
@@ -392,6 +398,8 @@ export const {
   useUpdateVenodrMutation,
   useGetBankNameDetailQuery,
   useAddBankNameDetailMutation,
+  useGetVendorByIdQuery,
+  useGetBankDetailsByVendorIdQuery,
   useUpdateBankNameDetailMutation,
   useGetVendorDocumentByVendorDetailQuery,
   useAddVendorDocumentMutation,

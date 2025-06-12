@@ -252,7 +252,7 @@ const VendorEdit = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/pms-vendor-overview" />;
+    return <Navigate to="/admin/inventory/pms-vendor-overview" />;
   }
 
   const handlePanChange = (e) => {

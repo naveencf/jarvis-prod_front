@@ -32,7 +32,6 @@ const RejectedPaymentRequest = () => {
     setRejectedPaymentData(result);
   }, [search]);
 
-
   const columns = [
     {
       name: "S.no",
@@ -98,7 +97,7 @@ const RejectedPaymentRequest = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Rejected Payment Request"
-            link="/admin/create-sales-booking"
+            link="/admin/sales/create-sales-booking"
             buttonAccess={true}
             submitButton={false}
           />

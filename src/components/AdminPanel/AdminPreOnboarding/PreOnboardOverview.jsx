@@ -75,7 +75,7 @@ const PreOnboardOverview = () => {
           const userRole = decodedToken.role_id;
           const onboardStatus = decodedToken.onboard_status;
           if (deptId == 36 && onboardStatus == 1) {
-            window.open("/admin/sales-dashboard", "_blank");
+            window.open("/admin/sales/sales-dashboard", "_blank");
           } else if (deptId === 20) {
             navigate("/admin/pantry");
           } else {
@@ -83,7 +83,7 @@ const PreOnboardOverview = () => {
           }
           sessionStorage.setItem("token", oldToken);
         } else {
-          navigate("/admin/user-overview");
+          navigate("/admin/user/user-overview");
         }
       });
   };
@@ -130,7 +130,7 @@ const PreOnboardOverview = () => {
       name: "User Name",
       selector: (row) => (
         <>
-          <Link to={`/admin/user-single/${row.user_id}`}>
+          <Link to={`/admin/user/user-single/${row.user_id}`}>
             <span style={{ color: "blue" }}>{row.user_name}</span>
           </Link>
         </>

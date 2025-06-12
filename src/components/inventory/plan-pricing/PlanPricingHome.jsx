@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect, useContext } from 'react';
 // import PlanPricing from './PlanPricing';
 import { baseUrl } from '../../../utils/config';
-import {  useGlobalContext } from '../../../Context/Context';
+import { useGlobalContext } from '../../../Context/Context';
 // import { FaEdit } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import View from '../../AdminPanel/Sales/Account/View/View';
@@ -98,7 +98,7 @@ function PlanPricingHome() {
     setSuggestions([]); // Clear suggestions after selection
   };
 
-  const {userContextData} = useAPIGlobalContext()
+  const { userContextData } = useAPIGlobalContext()
 
   // const userID = decodedToken.id;
 
@@ -208,7 +208,7 @@ function PlanPricingHome() {
   // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
-    navigate(`/admin/pms-plan-pricing/${planId}`);
+    navigate(`/admin/inventory/pms-plan-pricing/${planId}`);
   };
 
   const handleEditClick = (row) => {
@@ -360,7 +360,7 @@ function PlanPricingHome() {
         //   }`,
         //   preConfirm: () => {
         //     const planId = result.data._id;
-        //     isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
+        //     isEdit ? '' : navigate(`/admin/inventory/pms-plan-making/${planId}`);
         //   },
         // });
         setSubmitLoader(false);
@@ -368,7 +368,7 @@ function PlanPricingHome() {
         if (isEdit) {
           fetchPlans();
         } else {
-          navigate(`/admin/pms-plan-making/${planId}`);
+          navigate(`/admin/inventory/pms-plan-making/${planId}`);
         }
       } else {
         Swal.fire({

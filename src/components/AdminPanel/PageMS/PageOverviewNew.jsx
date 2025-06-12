@@ -297,7 +297,7 @@ const PageOverviewNew = () => {
         const totalPercentage = row.totalPercentage;
         return (
           <>
-            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
+            <Link to={{ pathname: `/admin/operation/pageStats/${row._id}` }}>
               <button
                 type="button"
                 className="btn cmnbtn btn_sm btn-outline-primary"
@@ -335,7 +335,7 @@ const PageOverviewNew = () => {
           row?.pageId && (
             <Link
               to={{
-                pathname: `/admin/pageStats/${row.pageId}`,
+                pathname: `/admin/operation/pageStats/${row.pageId}`,
                 state: { update: true },
               }}
             >
@@ -1381,6 +1381,7 @@ const PageOverviewNew = () => {
           let price = 0;
 
           if (rateType === "Variable") {
+            console.log("followersCount/1000000", followersCount / 1000000);
             price = ((postPrice || 0) * followersCount) / 1000000;
           } else {
             price = postPrice > 0 ? Number(postPrice) : 0;
@@ -1467,8 +1468,19 @@ const PageOverviewNew = () => {
           const reelData = row?.page_price_list?.find(
             (item) => item?.instagram_reel !== undefined
           );
-          const reelPrice = reelData ? reelData?.instagram_reel : 0;
-          return reelPrice > 0 ? Number(reelPrice) : 0;
+          const reelPrice = reelData ? reelData.instagram_reel : 0;
+          const followersCount = row?.followers_count || 0;
+          const rateType = row?.rate_type;
+
+          let price = 0;
+
+          if (rateType === "Variable") {
+            price = ((reelPrice || 0) * followersCount) / 1_000_000;
+          } else {
+            price = reelPrice > 0 ? Number(reelPrice) : 0;
+          }
+
+          return Number.isInteger(price) ? price : Number(price.toFixed(0));
         },
         compare: true,
       });

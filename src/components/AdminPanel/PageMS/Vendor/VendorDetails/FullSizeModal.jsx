@@ -118,7 +118,7 @@ export default function FullSizeModal() {
                 </div>
               </div>
             </div>
-            
+
             <div className="sales-accountinfo-view">
               <div className="actionNavbar">
                 <button className="icon" onClick={() => handleClose()}>
@@ -128,7 +128,7 @@ export default function FullSizeModal() {
                   <li>
                     <a
                       className="btn cmnbtn btn_sm btn-primary ml-2"
-                      // onClick={() =>  navigate(`/admin/create-sales-account/${SingleAccount?._id}`)
+                      // onClick={() =>  navigate(`/admin/sales/create-sales-account/${SingleAccount?._id}`)
                       // }
                     >
                       + Add Pages
@@ -137,7 +137,7 @@ export default function FullSizeModal() {
                   <li>
                     <a
                       className="btn cmnbtn btn_sm btn-primary ml-2 "
-                      // onClick={() => navigate(`/admin/create-sales-account/${SingleAccount?._id}`)
+                      // onClick={() => navigate(`/admin/sales/create-sales-account/${SingleAccount?._id}`)
                       // }
                     >
                       <i className="bi bi-pencil" />

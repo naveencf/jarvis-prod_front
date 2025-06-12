@@ -2,12 +2,12 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import { BlobProvider, PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
-import AppointmentLetter from "../../../../../PreOnboarding/AppointmentLetter";
-import OfferLetter from "../../../../../PreOnboarding/OfferLetter";
-import FormContainer from "../../../../FormContainer";
+import AppointmentLetter from "../../../PreOnboarding/AppointmentLetter";
+import OfferLetter from "../../../PreOnboarding/OfferLetter";
+import FormContainer from "../../FormContainer";
 import ProfileSection from "./ProfileSection/ProfileSection";
 import JobSection from "./ProfileSection/JobSection";
-import DocumentTab from "../../../../../PreOnboarding/DocumentTab";
+import DocumentTab from "../../../PreOnboarding/DocumentTab";
 import {
   Briefcase,
   Check,
@@ -17,11 +17,11 @@ import {
   Phone,
 } from "@phosphor-icons/react";
 import AboutSection from "./ProfileSection/AboutSection";
-import AssetSingleUser from "../../../Sim/AssetSingeUser/AssetSingleUser";
+// import AssetSingleUser from "../../../Sim/AssetSingeUser/AssetSingleUser";
 import { CircularProgress } from "@mui/material";
-import { useGlobalContext } from "../../../../../../Context/Context";
-import { baseUrl } from "../../../../../../utils/config";
-import { calculateEMPPF } from "../../../../../../utils/CalculateEMPPF";
+import { useGlobalContext } from "../../../../Context/Context";
+import { baseUrl } from "../../../../utils/config";
+import { calculateEMPPF } from "../../../../utils/CalculateEMPPF";
 
 // import GoogleSheetDownloader from "./googlesheet";
 
@@ -47,7 +47,13 @@ const Profile = () => {
   const handleAccordionButtonClick = (index) => {
     setActiveAccordionIndex(index);
   };
-  const accordionButtons = ["About", "Profile", "Job", "Document", "Assets"];
+  const accordionButtons = [
+    "About",
+    "Profile",
+    "Job",
+    "Document",
+    // "Assets"
+  ];
 
   const [error, setError] = useState("");
   const MAX_FILE_SIZE = 500 * 1024; // 500KB
@@ -142,7 +148,7 @@ const Profile = () => {
       />
     </div>
   );
-  const tab5 = <AssetSingleUser />;
+  // const tab5 = <AssetSingleUser />;
   function handleGetData() {
     axios.get(`${baseUrl}` + `get_single_user/${loginUserId}`).then((res) => {
       setUserData(res.data);

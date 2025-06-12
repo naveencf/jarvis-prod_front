@@ -63,7 +63,7 @@ const RoleOverView = () => {
           {contextData &&
             contextData[4] &&
             contextData[4].update_value === 1 && (
-              <Link to="/admin/role-update">
+              <Link to="/admin/user/role-update">
                 <button
                   title="Edit"
                   className=" icon-1"
@@ -130,7 +130,7 @@ const RoleOverView = () => {
     <>
       <FormContainer
         mainTitle="Role"
-        link="/admin/role"
+        link="/admin/user/role"
         buttonAccess={
           contextData &&
           contextData[4] &&

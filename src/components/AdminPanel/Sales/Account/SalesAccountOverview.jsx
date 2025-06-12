@@ -183,16 +183,16 @@ const SalesAccountOverview = () => {
   if (allAccountError) {
     toastError(
       allAccountError.data?.message ||
-        allAccountError.error ||
-        "An error occurred"
+      allAccountError.error ||
+      "An error occurred"
     );
   }
 
   if (allBrandCatTypeError) {
     toastError(
       allBrandCatTypeError.data?.message ||
-        allBrandCatTypeError.error ||
-        "An error occurred"
+      allBrandCatTypeError.error ||
+      "An error occurred"
     );
   }
 
@@ -462,7 +462,7 @@ const SalesAccountOverview = () => {
       name: "Actions",
       renderRowCell: (row) => (
         <div className="flex-row">
-          <Link to={`/admin/create-sales-account/${row?._id}`}>
+          <Link to={`/admin/sales/create-sales-account/${row?._id}`}>
             <button className="icon-1" title="Edit">
               <i className="bi bi-pencil"></i>
             </button>
@@ -471,7 +471,7 @@ const SalesAccountOverview = () => {
             className="icon-1"
             title="Create Sales Booking"
             onClick={() =>
-              navigate("/admin/create-sales-booking", {
+              navigate("/admin/sales/create-sales-booking", {
                 state: {
                   account_data: row,
                 },
@@ -618,25 +618,25 @@ const SalesAccountOverview = () => {
             </button>
           )}
 
-          <Link to="/admin/view-Outstanding-details">
+          <Link to="/admin/sales/view-Outstanding-details">
             <button className="btn cmnbtn btn-primary btn_sm">
               Outstanding
             </button>
           </Link>
 
-          <Link to={"/admin/view-sales-booking"}>
+          <Link to={"/admin/sales/view-sales-booking"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Sale Booking
             </button>
           </Link>
           {loginUserRole === 1 && (
-            <Link to={"/admin/sales-document-type-overview"}>
+            <Link to={"/admin/sales/sales-document-type-overview"}>
               <button className="btn cmnbtn btn-primary btn_sm">
                 Document Type
               </button>
             </Link>
           )}
-          <Link to={"/admin/create-sales-account/0"}>
+          <Link to={"/admin/sales/create-sales-account/0"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Add account
             </button>
@@ -807,7 +807,7 @@ const SalesAccountOverview = () => {
               <button
                 className="btn cmnbtn btn-primary btn_sm"
                 onClick={() =>
-                  navigate("/admin/create-sales-booking", {
+                  navigate("/admin/sales/create-sales-booking", {
                     state: {
                       account_data: selectedData[0],
                     },

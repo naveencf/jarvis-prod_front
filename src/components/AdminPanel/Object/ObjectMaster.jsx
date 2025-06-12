@@ -6,7 +6,7 @@ import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
 import Select from "react-select";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const ObjectMaster = () => {
   const { toastAlert } = useGlobalContext();
@@ -28,7 +28,7 @@ const ObjectMaster = () => {
 
   useEffect(() => {
     axios
-      .get(baseUrl+"get_all_departments")
+      .get(baseUrl + "get_all_departments")
       .then((res) => setDeptData(res.data));
   }, []);
 
@@ -55,7 +55,7 @@ const ObjectMaster = () => {
       return toastError("Fill Required Fields");
     }
     axios
-      .post(baseUrl+"add_obj", {
+      .post(baseUrl + "add_obj", {
         obj_name: objectName,
         soft_name: softwareName,
         dept_id: selectedDepartment,
@@ -71,7 +71,7 @@ const ObjectMaster = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/object-overview" />;
+    return <Navigate to="/admin/user/object-overview" />;
   }
   return (
     <>
@@ -81,55 +81,54 @@ const ObjectMaster = () => {
         handleSubmit={handleSubmit}
       >
         <div className="form-group col-6">
-        <FieldContainer
-        required={false}
-          label="Object Name"
-          fieldGrid={12}
-          value={objectName}
-          astric
-          onChange={(e) =>{
-             setObjectName(e.target.value)
-             if (e.target.value === "") {
-              setIsRequired((prev) => ({
-                ...prev,
-                objectName: true,
-              }));
-            } else {
-              setIsRequired((prev) => ({
-                ...prev,
-                objectName: false,
-              }));
-            }
+          <FieldContainer
+            required={false}
+            label="Object Name"
+            fieldGrid={12}
+            value={objectName}
+            astric
+            onChange={(e) => {
+              setObjectName(e.target.value);
+              if (e.target.value === "") {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  objectName: true,
+                }));
+              } else {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  objectName: false,
+                }));
+              }
             }}
-        />
-        {isRequired.objectName && (
+          />
+          {isRequired.objectName && (
             <p className="form-error">Please Enter Object Name</p>
           )}
-          </div>
-        
+        </div>
 
-          <div className="form-group col-6">
-        <FieldContainer
-          label="Software Name"
-          astric
-          required={false}
-          value={softwareName}
-          onChange={(e) =>{
-             setSoftwareName(e.target.value)
-             if (e.target.value === "") {
-              setIsRequired((prev) => ({
-                ...prev,
-                softwareName: true,
-              }));
-            } else {
-              setIsRequired((prev) => ({
-                ...prev,
-                softwareName: false,
-              }));
-            }
+        <div className="form-group col-6">
+          <FieldContainer
+            label="Software Name"
+            astric
+            required={false}
+            value={softwareName}
+            onChange={(e) => {
+              setSoftwareName(e.target.value);
+              if (e.target.value === "") {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  softwareName: true,
+                }));
+              } else {
+                setIsRequired((prev) => ({
+                  ...prev,
+                  softwareName: false,
+                }));
+              }
             }}
-        />
-        {isRequired.softwareName && (
+          />
+          {isRequired.softwareName && (
             <p className="form-error">Please Enter Software Name</p>
           )}
         </div>

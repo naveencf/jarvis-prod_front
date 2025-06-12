@@ -5,7 +5,7 @@ import { useGlobalContext } from "../../../Context/Context";
 import { baseUrl } from "../../../utils/config";
 import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
-import IndianBankList from "../../../assets/js/IndianBankList";
+import IndianBankList from "../../../utils/IndianBankList";
 import IndianStates from "../../ReusableComponents/IndianStates";
 import { useLocation } from "react-router-dom";
 import titleimg from "/bg-img.png";
@@ -33,7 +33,7 @@ const WFHDBankUpdate = () => {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [upi, setUpi] = useState("");
-  const [ctc, setCTC] = useState(0)
+  const [ctc, setCTC] = useState(0);
   //--------------------Address Info State End
 
   const [isRequired, setIsRequired] = useState({
@@ -69,7 +69,7 @@ const WFHDBankUpdate = () => {
         permanent_pin_code,
         pan_no,
         upi_Id,
-        ctc
+        ctc,
       } = fetchedData;
 
       setBankName(bank_name);
@@ -82,11 +82,11 @@ const WFHDBankUpdate = () => {
       setPincode(permanent_pin_code);
       setPanNo(pan_no);
       setUpi(upi_Id);
-      setCTC(ctc)
+      setCTC(ctc);
     });
   }, []);
 
-  console.log(ctc)
+  console.log(ctc);
   const handleSubmit = async () => {
     if (bankName == "") {
       setIsRequired((perv) => ({ ...perv, bankName: true }));
@@ -117,7 +117,9 @@ const WFHDBankUpdate = () => {
     }
 
     if (ctc >= 100000 && panNo === "") {
-      return toastError("Pan No is required because CTC is greater than or equal to 100000");
+      return toastError(
+        "Pan No is required because CTC is greater than or equal to 100000"
+      );
     }
     try {
       const response = axios.put(baseUrl + "update_user", {
@@ -134,7 +136,7 @@ const WFHDBankUpdate = () => {
         upi_Id: upi,
       });
 
-      navigate("/admin/wfhd-overview");
+      navigate("/admin/wfhd/wfhd-overview");
       toastAlert("Details Updated");
     } catch (error) {
       console.error("Error submitting documents", error);

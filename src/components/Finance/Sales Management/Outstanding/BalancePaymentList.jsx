@@ -1,42 +1,31 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { FaRegFilePdf } from "react-icons/fa";
-import { FaFileExcel } from "react-icons/fa";
-import jwtDecode from "jwt-decode";
-import FormContainer from "../../../AdminPanel/FormContainer";
+import { lazy } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useGlobalContext } from "../../../../Context/Context";
-import { Autocomplete, Button, TextField } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { styled } from "@mui/material/styles";
 import Dialog from "@mui/material/Dialog";
-import { baseUrl } from "../../../../utils/config";
 import ImageView from "../../ImageView";
-import pdf from "../../pdf-file.png";
-import moment from "moment";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
-import dayjs from "dayjs";
-import { Link } from "react-router-dom";
 import Tab from "../../../Tab/Tab";
-import ApprovedList from "../../ApprovedList";
+// import ApprovedList from "../../ApprovedList";
 import EditButtonActionDialog from "../../CommonDialog/EditButtonActionDialog";
 import FormatString from "../../FormateString/FormatString";
 import BalancePaymentListCardHeader from "../Outstanding/Sales/BalancePaymentListCardHeader";
+import BalancePaymentListFilter from "../Outstanding/Sales/BalancePaymentListFilter";
+import { Diversity1Rounded } from "@mui/icons-material";
+import { useGetAllInvoiceRequestQuery } from "../../../Store/API/Finance/InvoiceRequestApi";
 import UniqueSalesExecutiveDialog from "../Outstanding/Sales/Dialog/UniqueSalesExecutiveDialog";
 import UniqueSalesCustomerDialog from "../Outstanding/Sales/Dialog/UniqueSalesCustomerDialog";
 import SalesInvoiceEditAction from "../Outstanding/Sales/Dialog/SalesInvoiceEditAction";
-import BalancePaymentListFilter from "../Outstanding/Sales/BalancePaymentListFilter";
 import TDSDialog from "../Outstanding/Sales/Dialog/TDSDialog";
 import DialogforBalancePaymentUpdate from "../Outstanding/Sales/Dialog/DialogforBalancePaymentUpdate";
 import { outstandingColumns } from "../../CommonColumn/Columns";
 import View from "../../../AdminPanel/Sales/Account/View/View";
 import CreditNoteDialog from "./Sales/Dialog/CreditNoteDialog";
-import { Diversity1Rounded } from "@mui/icons-material";
-import { useGetAllInvoiceRequestQuery } from "../../../Store/API/Finance/InvoiceRequestApi";
 import { useGetAllPaymentModesQuery } from "../../../Store/API/Sales/PaymentModeApi";
 import { useGetPaymentDetailListQuery } from "../../../Store/API/Sales/PaymentDetailsApi";
 import { useGetAllOutstandingListNewQuery } from "../../../Store/API/Finance/OutstandingNew";
 import OutstandingComp from "../../../AdminPanel/Sales/OutstandingComp";
+// Lazy import
+const ApprovedList = lazy(() => import('../../ApprovedList'));
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -437,7 +426,7 @@ const BalancePaymentList = () => {
           /> */}
 
           {/* <Button variant="contained" className="mb-4">
-            <Link to="/admin/finance-pendingapproveupdate/">
+            <Link to="/admin/finance/finance-pendingapproveupdate/">
               Pending Approval ({totalCount})
             </Link>
           </Button> */}
@@ -562,7 +551,10 @@ const BalancePaymentList = () => {
             />
           )}
 
-        {activeAccordionIndex === 2 && <ApprovedList />}
+        {/* {activeAccordionIndex === 2 && <ApprovedList />} */}
+        {activeAccordionIndex === 2 && <Suspense fallback={<div>Loading...</div>}>
+          <ApprovedList />
+        </Suspense>}
         {activeAccordionIndex === 6 && <OutstandingComp />}
       </div>
 

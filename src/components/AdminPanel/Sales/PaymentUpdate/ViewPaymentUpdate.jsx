@@ -108,9 +108,10 @@ const ViewPaymentUpdate = () => {
       name: "Customer Name",
       renderRowCell: (row) => (
         <Link
-          to={`/sales-account-info/${allAccountData?.find((data) => data?.account_id === row?.account_id)
+          to={`/sales-account-info/${
+            allAccountData?.find((data) => data?.account_id === row?.account_id)
               ?._id
-            }`}
+          }`}
         >
           {row.account_name}
         </Link>
@@ -218,7 +219,7 @@ const ViewPaymentUpdate = () => {
               <i className="bi bi-arrow-return-left"></i>
             </button>
           ) : (
-            <Link to={`/admin/create-payment-update/${row._id}`}>
+            <Link to={`/admin/sales/create-payment-update/${row._id}`}>
               <div className="icon-1">
                 <i className="bi bi-pencil"></i>
               </div>
@@ -254,7 +255,7 @@ const ViewPaymentUpdate = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Payment Update"
-            link="/admin/create-payment-update/0"
+            link="/admin/sales/create-payment-update/0"
             buttonAccess={false}
             submitButton={false}
           />

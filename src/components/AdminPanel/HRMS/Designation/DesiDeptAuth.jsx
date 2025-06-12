@@ -186,7 +186,7 @@ const DesiDeptAuth = () => {
   }
 
   // if (isSubmitted) {
-  //   return <Navigate to="/admin/user-overview" />;
+  //   return <Navigate to="/admin/user/user-overview" />;
   // }
   return (
     <>

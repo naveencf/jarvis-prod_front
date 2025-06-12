@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import DateFormattingComponent from "../../../../../../DateFormator/DateFormared";
-import EducationFields from "../../../../../../PreOnboarding/EducationFields";
+// import EducationFields from "../../../../../../PreOnboarding/EducationFields";
+const EducationFields = lazy(() => import("../../../../../../PreOnboarding/EducationFields"));
+
 import jwtDecode from "jwt-decode";
 import axios from "axios";
 import FamilyFields from "../../../../../../PreOnboarding/FamilyFields";
 import { useGlobalContext } from "../../../../../../../Context/Context";
 import { baseUrl } from "../../../../../../../utils/config";
+import { lazy } from "react";
 
 //Family
 const initialFamilyDetailsGroup = {
@@ -422,14 +425,17 @@ const AboutSection = ({ educationData, familyData }) => {
                     padding: "10px",
                   }}
                 >
-                  <EducationFields
-                    educationDetails={educationDetails}
-                    educationDispalyFields={educationDispalyFields}
-                    educationFieldLabels={educationFieldLabels}
-                    handleEducationDetailsChange={handleEducationDetailsChange}
-                    handleAddEducationDetails={handleAddEducationDetails}
-                    handleRemoveEducationDetails={handleRemoveEducationDetails}
-                  />
+                  <Suspense fallback={"Loading..."}>
+
+                    <EducationFields
+                      educationDetails={educationDetails}
+                      educationDispalyFields={educationDispalyFields}
+                      educationFieldLabels={educationFieldLabels}
+                      handleEducationDetailsChange={handleEducationDetailsChange}
+                      handleAddEducationDetails={handleAddEducationDetails}
+                      handleRemoveEducationDetails={handleRemoveEducationDetails}
+                    />
+                  </Suspense>
                   <button
                     type="button"
                     className="btn btn-primary ml-2"

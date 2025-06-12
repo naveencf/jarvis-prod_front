@@ -423,7 +423,7 @@ const Viewer = ({
           )}
           {selectedRoom && (
             <Link
-              to={`/admin/office-sitting-room-wise/${selectedRoom}/${shift}`}
+              to={`/admin/user/office-sitting-room-wise/${selectedRoom}/${shift}`}
             >
               <h5 className="card-title">{`${selectedRoom}(Department wise)`}</h5>
             </Link>

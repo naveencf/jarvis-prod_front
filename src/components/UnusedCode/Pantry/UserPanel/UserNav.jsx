@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import jwtDecode from "jwt-decode";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import logo from '../../../../../assets/img/logo/logo-icon.png'
+import logo from "../../../../../assets/img/logo/logo-icon.png";
 import imageTest1 from "../../../../../assets/img/product/Avtrar1.png";
 import { baseUrl } from "../../../../../utils/config";
 
@@ -22,7 +22,7 @@ const UserNav = () => {
   const [loginUserData, setLoginUserData] = useState([]);
   useEffect(() => {
     axios
-      .post(baseUrl+"login_user_data", {
+      .post(baseUrl + "login_user_data", {
         user_id: loginUserId,
       })
       .then((res) => setLoginUserData(res.data));

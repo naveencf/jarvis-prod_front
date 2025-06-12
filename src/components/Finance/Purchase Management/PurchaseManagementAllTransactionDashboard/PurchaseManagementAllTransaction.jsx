@@ -24,7 +24,7 @@ import NotificationsActiveTwoToneIcon from "@mui/icons-material/NotificationsAct
 import ShowDataModal from "../PendingPaymentRequest/Components/ShowDataModal";
 import jwtDecode from "jwt-decode";
 import moment from "moment";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 
@@ -371,8 +371,8 @@ export default function PurchaseManagementAllTransaction() {
               {item.status == 0
                 ? "Pending"
                 : item.status == 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -1012,8 +1012,8 @@ export default function PurchaseManagementAllTransaction() {
               {item.status === 0
                 ? "Pending"
                 : item.status === 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -1262,7 +1262,7 @@ export default function PurchaseManagementAllTransaction() {
     <div>
       <FormContainer
         mainTitle="Purchase Dashboard"
-        link="/admin/finance-pruchasemanagement-alltransaction"
+        link="/admin/finance/finance-pruchasemanagement-alltransaction"
         uniqueVendorCount={uniqueVendorCount}
         totalRequestAmount={totalRequestAmount}
         pendingRequestCount={pendingRequestCount}
@@ -1538,17 +1538,17 @@ export default function PurchaseManagementAllTransaction() {
               <h4 className="font-weight-bold mt8">
                 {filterData.length > 0
                   ? filterData
-                      .filter((item) => {
-                        return (
-                          parseFloat(item.status) === 0 &&
-                          !nodeData.some(
-                            (item2) => item.request_id === item2.request_id
-                          )
-                        );
-                      })
-                      ?.reduce((total, currentItem) => {
-                        return total + parseFloat(currentItem?.request_amount);
-                      }, 0)
+                    .filter((item) => {
+                      return (
+                        parseFloat(item.status) === 0 &&
+                        !nodeData.some(
+                          (item2) => item.request_id === item2.request_id
+                        )
+                      );
+                    })
+                    ?.reduce((total, currentItem) => {
+                      return total + parseFloat(currentItem?.request_amount);
+                    }, 0)
                   : 0}
               </h4>
             </div>
@@ -1571,16 +1571,16 @@ export default function PurchaseManagementAllTransaction() {
               <h4 className="font-weight-bold mt8">
                 {filterData.length > 0
                   ? filterData
-                      .filter(
-                        (item) =>
-                          parseInt(item.status) === 1 &&
-                          !nodeData.some(
-                            (item2) => item.request_id === item2.request_id
-                          )
-                      )
-                      ?.reduce((total, currentItem) => {
-                        total + parseFloat(currentItem.request_amount);
-                      }, 0)
+                    .filter(
+                      (item) =>
+                        parseInt(item.status) === 1 &&
+                        !nodeData.some(
+                          (item2) => item.request_id === item2.request_id
+                        )
+                    )
+                    ?.reduce((total, currentItem) => {
+                      total + parseFloat(currentItem.request_amount);
+                    }, 0)
                   : 0}
               </h4>
             </div>
@@ -1607,17 +1607,17 @@ export default function PurchaseManagementAllTransaction() {
                 {" "}
                 {filterData.length > 0
                   ? filterData
-                      .filter((item) => {
-                        return (
-                          parseFloat(item.status) === 2 &&
-                          !nodeData.some(
-                            (item2) => item.request_id === item2.request_id
-                          )
-                        );
-                      })
-                      ?.reduce((total, currentItem) => {
-                        return total + parseFloat(currentItem.request_amount);
-                      }, 0)
+                    .filter((item) => {
+                      return (
+                        parseFloat(item.status) === 2 &&
+                        !nodeData.some(
+                          (item2) => item.request_id === item2.request_id
+                        )
+                      );
+                    })
+                    ?.reduce((total, currentItem) => {
+                      return total + parseFloat(currentItem.request_amount);
+                    }, 0)
                   : 0}
               </h4>
             </div>

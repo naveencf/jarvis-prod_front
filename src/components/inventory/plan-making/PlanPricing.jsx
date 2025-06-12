@@ -659,7 +659,7 @@ const PlanPricing = () => {
     <>
       <div className="tabs">
         <h4>Plan Making</h4>
-        {/* <Link to="/admin/pms-plan-upload">Plan Upload</Link> */}
+        {/* <Link to="/admin/inventory/pms-plan-upload">Plan Upload</Link> */}
       </div>
       <h1>Filterable List</h1>
 
@@ -788,7 +788,7 @@ const PlanPricing = () => {
                                   id="categoryFilter"
                                   value={selectedCategory}
                                   onChange={handleCategoryChange}
-                                  // multiple
+                                // multiple
                                 >
                                   <option value="">Select a category</option>
                                   {cat?.map((category) => (

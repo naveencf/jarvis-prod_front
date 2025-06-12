@@ -121,7 +121,7 @@ const SalesServicesUpdate = () => {
     }
   };
   if (isFormSubmitted) {
-    return <Navigate to="/admin/sales-services-overview" />;
+    return <Navigate to="/admin/sales/sales-services-overview" />;
   }
   return (
     <>

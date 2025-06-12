@@ -115,7 +115,7 @@ const DepartmentOverview = () => {
           {contextData &&
             contextData[3] &&
             contextData[3].update_value === 1 && (
-              <Link to="/admin/department-update">
+              <Link to="/admin/user/department-update">
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button icon-1"
@@ -196,7 +196,7 @@ const DepartmentOverview = () => {
     <div>
       <FormContainer
         mainTitle="Department"
-        link="/admin/department-master"
+        link="/admin/user/department-master"
         buttonAccess={
           contextData &&
           contextData[3] &&
@@ -206,7 +206,7 @@ const DepartmentOverview = () => {
       />
 
       <div className="d-flex">
-        <Link to="/admin/sub-department-overview">
+        <Link to="/admin/user/sub-department-overview">
           <button
             onClick={() => getData()}
             type="button"
@@ -215,7 +215,7 @@ const DepartmentOverview = () => {
             Sub Department
           </button>
         </Link>
-        <Link to="/admin/major-department-overview">
+        <Link to="/admin/user/major-department-overview">
           <button
             type="button"
             className="btn btn_sm cmnbtn btn-outline-primary btn-sm mb-4"
@@ -224,7 +224,7 @@ const DepartmentOverview = () => {
           </button>
         </Link>
 
-        <Link to="/admin/designation-overview">
+        <Link to="/admin/user/designation-overview">
           <button
             type="button"
             className="btn btn_sm cmnbtn btn-outline-primary btn-sm mb-4 ml-2"

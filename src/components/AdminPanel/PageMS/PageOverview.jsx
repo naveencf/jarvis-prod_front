@@ -466,7 +466,7 @@ const PageOverview = () => {
         const totalPercentage = row.totalPercentage;
         return (
           <>
-            <Link to={{ pathname: `/admin/pageStats/${row._id}` }}>
+            <Link to={{ pathname: `/admin/operation/pageStats/${row._id}` }}>
               <button
                 type="button"
                 className="btn cmnbtn btn_sm btn-outline-primary"
@@ -504,7 +504,7 @@ const PageOverview = () => {
           row?.pageId && (
             <Link
               to={{
-                pathname: `/admin/pageStats/${row.pageId}`,
+                pathname: `/admin/operation/pageStats/${row.pageId}`,
                 state: { update: true },
               }}
             >
@@ -1420,13 +1420,13 @@ const PageOverview = () => {
                 </h5>
                 <div className="flexCenter colGap8">
                   <Link
-                    to={`/admin/pms-page-master`}
+                    to={`/admin/inventory/pms-page-master`}
                     className="btn cmnbtn btn_sm btn-outline-primary"
                   >
                     Add Profile <AddIcon />
                   </Link>
                   <Link
-                    to={`/admin/pms-vendor-overview`}
+                    to={`/admin/inventory/pms-vendor-overview`}
                     className="btn cmnbtn btn_sm btn-outline-primary"
                   >
                     Vendor <KeyboardArrowRightIcon />

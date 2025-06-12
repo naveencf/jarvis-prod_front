@@ -97,8 +97,8 @@ export default function TaskPending() {
       activeAccordionIndex == 0
         ? e?.zoho_status !== "Done"
         : activeAccordionIndex == 1
-        ? e?.gst_status !== "Done"
-        : e?.tds_status !== "Done"
+          ? e?.gst_status !== "Done"
+          : e?.tds_status !== "Done"
     );
 
     setUniqueVendorData(uvData);
@@ -138,7 +138,7 @@ export default function TaskPending() {
       const response = await axios
         .put(baseUrl + "phpvendorpaymentrequest", payload)
         .then((res) => {
-          res.data.success ? navigate(`/admin/finance-task-done/${type}`) : "";
+          res.data.success ? navigate(`/admin/finance/finance-task-done/${type}`) : "";
           // setFilterData((prevData) =>
           //   prevData.filter(
           //     (item) => item.request_id !== parseFloat(res.data.request_id)
@@ -439,8 +439,8 @@ export default function TaskPending() {
             activeAccordionIndex == 0
               ? e.zoho_status !== "Done"
               : activeAccordionIndex == 1
-              ? e.gst_status !== "Done"
-              : e.tds_status !== "Done"
+                ? e.gst_status !== "Done"
+                : e.tds_status !== "Done"
           )
           .indexOf(params.row);
         return <div>{rowIndex + 1}</div>;
@@ -621,8 +621,8 @@ export default function TaskPending() {
               {item.status == 0
                 ? "Pending"
                 : item.status == 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -641,17 +641,17 @@ export default function TaskPending() {
         const rowIndex =
           activeAccordionIndex === 0
             ? //  filterData.indexOf(params.row)
-              filterData
-                .filter((item) => {
-                  return nodeData.some(
-                    (item2) =>
-                      item.request_id == item2.request_id &&
-                      item2.zoho_status != "Done"
-                  );
-                })
-                .indexOf(params.row)
+            filterData
+              .filter((item) => {
+                return nodeData.some(
+                  (item2) =>
+                    item.request_id == item2.request_id &&
+                    item2.zoho_status != "Done"
+                );
+              })
+              .indexOf(params.row)
             : activeAccordionIndex === 1
-            ? // filterData.indexOf(params.row)
+              ? // filterData.indexOf(params.row)
 
               filterData
                 .filter((item) => {
@@ -662,18 +662,18 @@ export default function TaskPending() {
                   );
                 })
                 .indexOf(params.row)
-            : activeAccordionIndex === 2
-            ? filterData
-                .filter((item) => {
-                  return nodeData.some(
-                    (item2) =>
-                      item.request_id == item2.request_id &&
-                      item2.tds_status != "Done"
-                  );
-                })
-                .indexOf(params.row)
-            : // filterData.indexOf(params.row)
-              "";
+              : activeAccordionIndex === 2
+                ? filterData
+                  .filter((item) => {
+                    return nodeData.some(
+                      (item2) =>
+                        item.request_id == item2.request_id &&
+                        item2.tds_status != "Done"
+                    );
+                  })
+                  .indexOf(params.row)
+                : // filterData.indexOf(params.row)
+                "";
         return <div>{rowIndex + 1}</div>;
       },
     },
@@ -832,13 +832,11 @@ export default function TaskPending() {
         const isCurrentMonthGreaterThanMarch = new Date().getMonth() + 1 > 3;
         const currentYear = new Date().getFullYear();
         const startDate = new Date(
-          `04/01/${
-            isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
+          `04/01/${isCurrentMonthGreaterThanMarch ? currentYear : currentYear - 1
           }`
         );
         const endDate = new Date(
-          `03/31/${
-            isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
+          `03/31/${isCurrentMonthGreaterThanMarch ? currentYear + 1 : currentYear
           }`
         );
         const dataFY = nodeData.filter((e) => {
@@ -1019,7 +1017,7 @@ export default function TaskPending() {
     <div>
       <FormContainer
         mainTitle="Pending"
-        link="/admin/finance-pruchasemanagement-paymentdone"
+        link="/admin/finance/finance-pruchasemanagement-paymentdone"
         uniqueVendorCount={uniqueVendorCount}
         totalRequestAmount={totalRequestAmount}
         pendingRequestCount={pendingRequestCount}
@@ -1194,8 +1192,8 @@ export default function TaskPending() {
               activeAccordionIndex == 0
                 ? e.zoho_status !== "Done"
                 : activeAccordionIndex == 1
-                ? e.gst_status !== "Done"
-                : e.tds_status !== "Done"
+                  ? e.gst_status !== "Done"
+                  : e.tds_status !== "Done"
             )}
             columns={uniqueVendorColumns}
             pageSize={5}
@@ -1391,12 +1389,12 @@ export default function TaskPending() {
                           row.gstHold !== null &&
                           row.gstHold === 1
                       ) ||
-                      nodeData.some(
-                        (row) =>
-                          row.gst_Hold_Bool !== undefined &&
-                          row.gst_Hold_Bool !== null &&
-                          row.gst_Hold_Bool === true
-                      ) ? (
+                        nodeData.some(
+                          (row) =>
+                            row.gst_Hold_Bool !== undefined &&
+                            row.gst_Hold_Bool !== null &&
+                            row.gst_Hold_Bool === true
+                        ) ? (
                         <DataGrid
                           rows={filterData.filter((item) => {
                             return nodeData.some(
@@ -1431,12 +1429,12 @@ export default function TaskPending() {
                           row.TDSDeduction !== null &&
                           row.TDSDeduction === 1
                       ) ||
-                      nodeData.some(
-                        (row) =>
-                          row.tds_Deduction_Bool !== undefined &&
-                          row.tds_Deduction_Bool !== null &&
-                          row.tds_Deduction_Bool === true
-                      ) ? (
+                        nodeData.some(
+                          (row) =>
+                            row.tds_Deduction_Bool !== undefined &&
+                            row.tds_Deduction_Bool !== null &&
+                            row.tds_Deduction_Bool === true
+                        ) ? (
                         <DataGrid
                           rows={filterData.filter((item) => {
                             return nodeData.some(

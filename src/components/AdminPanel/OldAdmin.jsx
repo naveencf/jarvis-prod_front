@@ -95,7 +95,9 @@ const DepartmentUpdate = lazy(() =>
 const ProductMaster = lazy(() => import("./Product/ProductMaster.jsx"));
 const ProductOverview = lazy(() => import("./Product/ProductOverview.jsx"));
 const ProductUpdate = lazy(() => import("./Product/ProductUpdate.jsx"));
-const SittingOverview = lazy(() => import("./HRMS/Sitting/SittingOverview.jsx"));
+const SittingOverview = lazy(() =>
+  import("./HRMS/Sitting/SittingOverview.jsx")
+);
 const OfficeMastOverview = lazy(() =>
   import("./HRMS/Sitting/OfficeMastOverview.jsx")
 );
@@ -122,7 +124,9 @@ const PendingOrder = lazy(() =>
   import("./HRMS/Pantry/PendingOrder/PendingOrder.jsx")
 );
 const Dashboard = lazy(() => import("./Dashboard/Dashboard.jsx"));
-const TransferReq = lazy(() => import("./HRMS/Pantry/TransferReq/TransferReq.jsx"));
+const TransferReq = lazy(() =>
+  import("./HRMS/Pantry/TransferReq/TransferReq.jsx")
+);
 const AllOrder = lazy(() => import("./HRMS/Pantry/AllOrders/AllOrders.jsx"));
 const DesignationOverview = lazy(() =>
   import("./HRMS/Designation/DesignationOverview.jsx")
@@ -140,7 +144,9 @@ const LogoCategoryOverview = lazy(() =>
 const LogoCategoryUpdate = lazy(() =>
   import("./LogoCategory/LogoCategoryUpdate.jsx")
 );
-const PantryHome = lazy(() => import("./HRMS/Pantry/PantryHome/PantryHome.jsx"));
+const PantryHome = lazy(() =>
+  import("./HRMS/Pantry/PantryHome/PantryHome.jsx")
+);
 const ResponsibilityMast = lazy(() =>
   import("./HRMS/UserResponsbility/Responsbility/ResponsibilityMast.jsx")
 );
@@ -177,7 +183,9 @@ const UserWiseDashboard = lazy(() =>
   import("./HRMS/User/UserWIseDashboard/UserWiseDashboard.jsx")
 );
 const SalaryWFH = lazy(() => import("./WFH/SalaryGeneration/SalaryWFH.jsx"));
-const SalarySummary = lazy(() => import("./WFH/SalarySummary/SalarySummary.jsx"));
+const SalarySummary = lazy(() =>
+  import("./WFH/SalarySummary/SalarySummary.jsx")
+);
 const UserHierarchy = lazy(() => import("./HRMS/User/UserHierarchy.jsx"));
 const UserSingle = lazy(() => import("./HRMS/User/UserSingle.jsx"));
 
@@ -187,7 +195,9 @@ const DashboardWFHCardDetails = lazy(() =>
 );
 const WFHDOverview = lazy(() => import("./WFH/WFHDOverview.jsx"));
 const LeadApp = lazy(() => import("../LeadManagement/LeadApp.jsx"));
-const LeadManagement = lazy(() => import("../LeadManagement/LeadManagement.jsx"));
+const LeadManagement = lazy(() =>
+  import("../LeadManagement/LeadManagement.jsx")
+);
 const EditLead = lazy(() => import("../LeadManagement/EditLead.jsx"));
 const LeadHome = lazy(() => import("../LeadManagement/LeadHome.jsx"));
 const SELeadTable = lazy(() => import("../LeadManagement/SELeadTable.jsx"));
@@ -204,8 +214,12 @@ const SubDepartmentUpdate = lazy(() =>
 const ExecutionInventory = lazy(() =>
   import("../Execution/ExecutionInventory.jsx")
 );
-const ExecutionPending = lazy(() => import("../Execution/ExecutionPending.jsx"));
-const OverviewIndex = lazy(() => import("../Execution/overview/OverviewIndex.jsx"));
+const ExecutionPending = lazy(() =>
+  import("../Execution/ExecutionPending.jsx")
+);
+const OverviewIndex = lazy(() =>
+  import("../Execution/overview/OverviewIndex.jsx")
+);
 const ExecutionDetail = lazy(() => import("../Execution/ExecutionDetail.jsx"));
 const PreOnboardVerifyDetails = lazy(() =>
   import("./AdminPreOnboarding/PreOnboardVerifyDetails.jsx")
@@ -259,7 +273,9 @@ const BillingUpdate = lazy(() =>
 const AccountsOverviewWFH = lazy(() =>
   import("./AccountsDepartment/AccountsOverviewWFH.jsx")
 );
-const WFHSingleUser = lazy(() => import("./WFH/WFHSingleUser/WFHSingleUser.jsx"));
+const WFHSingleUser = lazy(() =>
+  import("./WFH/WFHSingleUser/WFHSingleUser.jsx")
+);
 const ExecutionAll = lazy(() => import("../Execution/ExecutionAll.jsx"));
 const ExecutionOwn = lazy(() => import("../Execution/ExecutionOwn.jsx"));
 const ExecutionOther = lazy(() => import("../Execution/ExecutionOther.jsx"));
@@ -270,15 +286,21 @@ const NotificationHistory = lazy(() =>
   import("./AdminPreOnboarding/NotificationHistory.jsx")
 );
 const CocHistory = lazy(() => import("./AdminPreOnboarding/CocHistory.jsx"));
-const LoginHistory = lazy(() => import("./AdminPreOnboarding/LoginHistory.jsx"));
+const LoginHistory = lazy(() =>
+  import("./AdminPreOnboarding/LoginHistory.jsx")
+);
 const PreonboardingDocuments = lazy(() =>
   import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocuments.jsx")
 );
 const PreonboardingDocumentOverview = lazy(() =>
-  import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentOverview.jsx")
+  import(
+    "./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentOverview.jsx"
+  )
 );
 const PreonboardingDocumentsUpdate = lazy(() =>
-  import("./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentsUpdate.jsx")
+  import(
+    "./AdminPreOnboarding/AdminPreDocuments/PreonboardingDocumentsUpdate.jsx"
+  )
 );
 // const PlanOverview = lazy(() => import("./RegisterCampaign/PlanOverview"));
 const ExeUPdate = lazy(() => import("../Execution/ExeUPdate.jsx"));
@@ -315,14 +337,20 @@ const PendingApprovalsUpdate = lazy(() =>
   )
 );
 const PendingInvoice = lazy(() =>
-  import("../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoice.jsx")
+  import(
+    "../Finance/Sales Management/Invoice/PendingInvoice/PendingInvoice.jsx"
+  )
 );
 const RefundRequests = lazy(() => import("../Finance/RefundRequests.jsx"));
 const SaleBookingClose = lazy(() =>
-  import("../Finance/Sales Management/SaleBooking/Components/SaleBookingClose.jsx")
+  import(
+    "../Finance/Sales Management/SaleBooking/Components/SaleBookingClose.jsx"
+  )
 );
 const SaleBookingVerify = lazy(() =>
-  import("../Finance/Sales Management/SaleBooking/Components/SaleBookingVerify.jsx")
+  import(
+    "../Finance/Sales Management/SaleBooking/Components/SaleBookingVerify.jsx"
+  )
 );
 const PaymentSummary = lazy(() => import("../Finance/PaymentSummary.jsx"));
 const PendingInvoiceCustomerDeatils = lazy(() =>
@@ -331,7 +359,9 @@ const PendingInvoiceCustomerDeatils = lazy(() =>
   )
 );
 const InvoiceCreated = lazy(() =>
-  import("../Finance/Sales Management/Invoice/InvoiceCreated/InvoiceCreated.jsx")
+  import(
+    "../Finance/Sales Management/Invoice/InvoiceCreated/InvoiceCreated.jsx"
+  )
 );
 const PendingPaymentsList = lazy(() =>
   import("../Finance/PendingPaymentsList.jsx")
@@ -370,9 +400,13 @@ const IncompleteProfileUsers = lazy(() =>
 
 const UserGraphs = lazy(() => import("./HRMS/User/UserGraphs.jsx"));
 const Hobbies = lazy(() => import("./HRMS/Hobbies/Hobbies.jsx"));
-const HobbiesOverview = lazy(() => import("./HRMS/Hobbies/HobbiesOverview.jsx"));
+const HobbiesOverview = lazy(() =>
+  import("./HRMS/Hobbies/HobbiesOverview.jsx")
+);
 const AddEmailTemp = lazy(() => import("./HRMS/User/AddEmailTemp.jsx"));
-const EmailTempOverview = lazy(() => import("./HRMS/User/EmailTempOverview.jsx"));
+const EmailTempOverview = lazy(() =>
+  import("./HRMS/User/EmailTempOverview.jsx")
+);
 const EditEmailTemp = lazy(() => import("./HRMS/User/EditEmailTemp.jsx"));
 // const ManagerDashboard = lazy(() =>
 //   import("./RegisterCampaign/ManagerDashboard/ManagerDashboard")
@@ -391,7 +425,9 @@ const AssetSingleUser = lazy(() =>
 const AssetVisibleToHr = lazy(() =>
   import("./HRMS/Sim/AssetVisibleToHr/AssetVisibleToHr.jsx")
 );
-const AssetManager = lazy(() => import("./HRMS/Sim/AssetManager/AssetManager.jsx"));
+const AssetManager = lazy(() =>
+  import("./HRMS/Sim/AssetManager/AssetManager.jsx")
+);
 const WFHAllSalary = lazy(() => import("./WFH/WFHAllSalary.jsx"));
 
 const PendingPaymentRequest = lazy(() =>
@@ -419,7 +455,9 @@ const WFHTemplateOverview = lazy(() =>
   import("./WFH/WFHSingleUser/WFHTemplateOverview.jsx")
 );
 const ViewEditDigiSignature = lazy(() =>
-  import("./HRMS/WFH/AnalyticDashboard/DigitalSignature/ViewEditDigiSignature.jsx")
+  import(
+    "./HRMS/WFH/AnalyticDashboard/DigitalSignature/ViewEditDigiSignature.jsx"
+  )
 );
 // const PlancreationNew = lazy(() =>
 //   import("./RegisterCampaign/PlancreationNew")
@@ -430,9 +468,7 @@ const ViewEditDigiSignature = lazy(() =>
 // const PhasecreationNew = lazy(() =>
 //   import("./RegisterCampaign/PhasecreationNew")
 // );
-const DesiDeptAuth = lazy(() =>
-  import("./HRMS/Designation/DesiDeptAuth.jsx")
-);
+const DesiDeptAuth = lazy(() => import("./HRMS/Designation/DesiDeptAuth.jsx"));
 // const PlanDashboard = lazy(() =>
 //   import("../UnusedCode/PlanDashboard/PlanDashboard")
 // );
@@ -459,7 +495,9 @@ const DesiDeptAuth = lazy(() =>
 //   import("./RegisterCampaign/Masters/ServicesOverview")
 // );
 const TaskStatusDeptWiseMaster = lazy(() =>
-  import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster.jsx")
+  import(
+    "../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseMaster.jsx"
+  )
 );
 const TaskStatusDeptWiseOverview = lazy(() =>
   import(
@@ -467,7 +505,9 @@ const TaskStatusDeptWiseOverview = lazy(() =>
   )
 );
 const TaskStatusDeptWiseUpdate = lazy(() =>
-  import("../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseUpdate.jsx")
+  import(
+    "../TaskManagement/Pages/TaskStatusDeptWise/TaskStatusDeptWiseUpdate.jsx"
+  )
 );
 const DisputeOverview = lazy(() => import("./WFH/Dispute/DisputeOverview.jsx"));
 const FinanceDashboard = lazy(() =>
@@ -522,12 +562,18 @@ const OpsCustomerMast = lazy(() => import("./Customer/OpsCustomerMast.jsx"));
 const OpsCustomerOverview = lazy(() =>
   import("./Customer/OpsCustomerOverview.jsx")
 );
-const OpsCustomerUpdate = lazy(() => import("./Customer/OpsCustomerUpdate.jsx"));
+const OpsCustomerUpdate = lazy(() =>
+  import("./Customer/OpsCustomerUpdate.jsx")
+);
 const CustomerContOverview = lazy(() =>
   import("./Customer/CustomerContOverview.jsx")
 );
-const CustomerContMaster = lazy(() => import("./Customer/CustomerContMaster.jsx"));
-const CustomerContUpdate = lazy(() => import("./Customer/CustomerContUpdate.jsx"));
+const CustomerContMaster = lazy(() =>
+  import("./Customer/CustomerContMaster.jsx")
+);
+const CustomerContUpdate = lazy(() =>
+  import("./Customer/CustomerContUpdate.jsx")
+);
 const OpsDocMast = lazy(() => import("./Customer/OpsDocMast.jsx"));
 const VendorType = lazy(() => import("./PageMS/VendorType.jsx"));
 const PageCategory = lazy(() => import("./PageMS/PageCategory.jsx"));
@@ -547,7 +593,9 @@ const PMSplatformPriceTypeMast = lazy(() =>
 const VendorGroupLink = lazy(() => import("./PageMS/VendorGroupLink.jsx"));
 const PageMaster = lazy(() => import("./PageMS/PageMaster.jsx"));
 const PageOverviewNew = lazy(() => import("./PageMS/PageOverviewNew.jsx"));
-const PageAssignmentUser = lazy(() => import("./PageMS/PageAssignmentUser.jsx"));
+const PageAssignmentUser = lazy(() =>
+  import("./PageMS/PageAssignmentUser.jsx")
+);
 const PageAssignmentUserAdd = lazy(() =>
   import("./PageMS/PageAssignmentUserAdd.jsx")
 );
@@ -560,10 +608,16 @@ const VendorPagePriceOverview = lazy(() =>
 const VendorPagePriceMaster = lazy(() =>
   import("./PageMS/VendorPagePriceMaster.jsx")
 );
-const EditVendorPagePrice = lazy(() => import("./PageMS/EditVendorPagePrice.jsx"));
+const EditVendorPagePrice = lazy(() =>
+  import("./PageMS/EditVendorPagePrice.jsx")
+);
 const PageEdit = lazy(() => import("./PageMS/PageEdit.jsx"));
-const AnnouncementPost = lazy(() => import("./Announcement/AnnoucementPost.jsx"));
-const AnnouncementView = lazy(() => import("./Announcement/AnnouncementView.jsx"));
+const AnnouncementPost = lazy(() =>
+  import("./Announcement/AnnoucementPost.jsx")
+);
+const AnnouncementView = lazy(() =>
+  import("./Announcement/AnnouncementView.jsx")
+);
 const PMSmaster = lazy(() => import("./PageMS/PMSmaster.jsx"));
 // const OperationCampaigns = lazy(() =>
 //   import("./RegisterCampaign/OperationCampaigns")
@@ -720,7 +774,9 @@ const ReleasedAmountIncentive = lazy(() =>
   import("../Finance/ReleasedAmountIncentive.jsx")
 );
 const RefundPayment = lazy(() => import("../Finance/RefundPayment.jsx"));
-const RegisterCampaigns = lazy(() => import("./Operation/RegisterCampaigns.jsx"));
+const RegisterCampaigns = lazy(() =>
+  import("./Operation/RegisterCampaigns.jsx")
+);
 const CreditApproval = lazy(() =>
   import("../Finance/CreditApproval/CreditApproval.jsx")
 );
@@ -754,16 +810,16 @@ const PlanMakingTable = lazy(() =>
   import("../inventory/plan-making/PlanMaking.jsx")
 );
 
-const PlanUpload = lazy(() =>
-  import("./Inventory/Plan-upload/index")
-);
+const PlanUpload = lazy(() => import("./Inventory/Plan-upload/index"));
 const CreateDocumentType = lazy(() =>
   import("./Sales/Account/CreateDocumentType.jsx")
 );
 const DocumentTypeOverview = lazy(() =>
   import("./Sales/Account/DocumentTypeOverview.jsx")
 );
-const PlanOverView = lazy(() => import("./Operation/Plan/CampPlanOverview.jsx"));
+const PlanOverView = lazy(() =>
+  import("./Operation/Plan/CampPlanOverview.jsx")
+);
 const CampPlanOverview = lazy(() =>
   import("./Operation/Plan/CampPlanOverview.jsx")
 );
@@ -961,8 +1017,8 @@ const OldAdmin = () => {
                         (contextData &&
                           contextData[38] &&
                           contextData[38].view_value === 1)) && (
-                          <Route path="/user" element={<UserMaster />} />
-                        )}
+                        <Route path="/user" element={<UserMaster />} />
+                      )}
 
                       {contextData &&
                         contextData[0] &&
@@ -1612,7 +1668,6 @@ const OldAdmin = () => {
                       element={<Discard />}
                     />
 
-
                     {/* task components */}
                     {/* <Route
                       path="/finance-task-pending"
@@ -1622,7 +1677,6 @@ const OldAdmin = () => {
                       path="/finance-task-done/:id"
                       element={<TaskDone />}
                     /> */}
-
 
                     {/*  ==============*/}
                     {/* GST Nongst Incentive Report */}
@@ -1896,11 +1950,11 @@ const OldAdmin = () => {
                       element={<ExecutionDone />}
                     />
                     <Route
-                      path="/exeexecution/accepted"
+                      path="/admin/accepted"
                       element={<ExecutionAccepted />}
                     />
                     <Route
-                      path="/exeexecution/rejected"
+                      path="/admin/rejected"
                       element={<ExecutionRejected />}
                     />
                     <Route
@@ -2287,7 +2341,7 @@ const OldAdmin = () => {
                     />
 
                     <Route
-                      path="/deleted-sales-booking"
+                      path="//admin/sales/deleted-sales-booking"
                       element={<DeletedSaleBooking />}
                     />
                     <Route
@@ -2328,7 +2382,7 @@ const OldAdmin = () => {
                       element={<DocumentTypeOverview />}
                     />
                     <Route
-                      path="/sales-incentive-dashboard"
+                      path="/sales-document-type-overview"
                       element={<IncentiveDashboard />}
                     />
                     <Route

@@ -529,6 +529,7 @@ const AuditPurchase = () => {
       setCampainPlanData(response.data);
     }
   };
+  console.log("selectedPlan",selectedPlan);
   const handleUpdateStatus = async (vendorId) => {
     let uniqueVendor =
       new Set(selectedData.map((item) => item.vendor_name)).size === 1;
@@ -585,10 +586,16 @@ const AuditPurchase = () => {
         }
 
         if (response?.data?.success) {
-          const refetchResponse = await refetchPlanData();
-          if (refetchResponse.isSuccess && refetchResponse.data) {
-            setCampainPlanData(refetchResponse.data);
+          // const refetchResponse = await refetchPlanData();
+          const response = await fetchFilteredPosts();
+          if (response.isSuccess && response.data) {
+            setCampainPlanData(response.data);
+            setSelectedData([])
           }
+          console.log('response',response);
+          // if (refetchResponse.isSuccess && refetchResponse.data) {
+          //   setCampainPlanData(refetchResponse.data);
+          // }
 
           Swal.fire({
             title: "Updated!",

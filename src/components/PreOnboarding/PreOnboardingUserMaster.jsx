@@ -49,7 +49,7 @@ import FAQTab from "./FAQTab";
 import ReadyToOnboardContent from "./ReadyToOnboardContent";
 import IndianCitiesMui from "../ReusableComponents/IndianCitiesMui";
 import FamilyFields from "./FamilyFields";
-import EducationFields from "./EducationFields";
+
 import CocTabPreonboarding from "./CocTabPreonboarding";
 import { baseUrl } from "../../utils/config";
 import ImageSelector from "./ImageSelector";
@@ -61,7 +61,8 @@ import IdentityDetails from "./OnboardingForms/IdentityDetails";
 import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
 import { useGlobalContext } from "../../Context/Context";
 import JobSection from "./OnboardingForms/JobSection";
-import WorkExperience from "./OnboardingForms/WorkExperience";
+import EducationFields from "./EducationFields";
+// import WorkExperience from "./OnboardingForms/WorkExperience";
 
 var settings = {
   arrows: false,
@@ -1959,6 +1960,7 @@ const PreOnboardingUserMaster = () => {
                             <IdentityDetails />
                             <div className="board_form board_form_flex">
                               <h2>Education Details</h2>
+
                               <EducationFields
                                 educationDetails={educationDetails}
                                 educationDispalyFields={educationDispalyFields}

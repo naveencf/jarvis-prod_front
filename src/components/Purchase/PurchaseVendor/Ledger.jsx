@@ -118,7 +118,7 @@ const Ledger = () => {
   const handleVendorChange = (event, newValue) => {
     setSelectedVendor(newValue);
     if (newValue?._id !== undefined) {
-      navigate(`/admin/ledger/${newValue?._id}`);
+      navigate(`/admin/purchase/ledger/${newValue?._id}`);
     }
     // setSelectedVendorId?.(newValue?._id); // Pass selected _id to parent
   };

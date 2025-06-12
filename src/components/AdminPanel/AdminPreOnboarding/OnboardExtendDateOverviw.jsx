@@ -4,12 +4,12 @@ import DataTable from "react-data-table-component";
 import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
 import WhatsappAPI from "../../WhatsappAPI/WhatsappAPI";
-import { baseUrl } from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 import { ApiContextData } from "../APIContext/APIContext";
 
 const OnboardExtendDateOverview = () => {
   const whatsappApi = WhatsappAPI();
-  const { userContextData } = ApiContextData()
+  const { userContextData } = ApiContextData();
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
   const [filterdata, setFilterData] = useState([]);
@@ -21,11 +21,9 @@ const OnboardExtendDateOverview = () => {
 
   useEffect(() => {
     if (userID && contextData.length === 0) {
-      axios
-        .get(`${baseUrl}` + `userauth/${userID}`)
-        .then((res) => {
-          setDatas(res.data);
-        });
+      axios.get(`${baseUrl}` + `userauth/${userID}`).then((res) => {
+        setDatas(res.data);
+      });
     }
   }, []);
 
@@ -111,7 +109,8 @@ const OnboardExtendDateOverview = () => {
     {
       name: "Prove of Doc",
       // selector: (row) => row.joining_extend_document_url,
-      selector: (row) => `<img src="${row.joining_extend_document_url}" alt="Proof of Document" />`,
+      selector: (row) =>
+        `<img src="${row.joining_extend_document_url}" alt="Proof of Document" />`,
       sortable: true,
     },
     {
@@ -152,10 +151,10 @@ const OnboardExtendDateOverview = () => {
   ];
 
   return (
-    <div >
+    <div>
       <FormContainer
         mainTitle="Extend Date Overview"
-        link="/admin/designation-master"
+        link="/admin/user/designation-master"
         buttonAccess={
           contextData &&
           contextData[10] &&
@@ -186,7 +185,6 @@ const OnboardExtendDateOverview = () => {
           />
         </div>
       </div>
-
     </div>
   );
 };

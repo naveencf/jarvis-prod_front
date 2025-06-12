@@ -28,10 +28,10 @@ const FinanceDashboard = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/finance" />;
+    return <Navigate to="/admin/finance/finance" />;
   }
 
-  const handleDateChange = (e) => {};
+  const handleDateChange = (e) => { };
 
   return (
     <>

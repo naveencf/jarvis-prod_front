@@ -64,7 +64,7 @@ export default function MajorDepartmentOverview() {
           {contextData &&
             contextData[3] &&
             contextData[3].update_value === 1 && (
-              <Link to={`/admin/major-department-update/${row.m_dept_id}`}>
+              <Link to={`/admin/user/major-department-update/${row.m_dept_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button icon-1"
@@ -93,7 +93,7 @@ export default function MajorDepartmentOverview() {
     <div>
       <FormContainer
         mainTitle="Major-Department"
-        link="/admin/major-department-mast"
+        link="/admin/user/major-department-mast"
         buttonAccess={
           contextData &&
           contextData[3] &&

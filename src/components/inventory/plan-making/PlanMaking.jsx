@@ -972,7 +972,7 @@ const PlanMaking = () => {
   }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
   // useEffect(() => {
-  //   const currentRouteBase = '/admin/pms-plan-making';
+  //   const currentRouteBase = '/admin/inventory/pms-plan-making';
   //   const planStatus = planDetails && planDetails[0].plan_status;
   //   const payload = {
   //     id: id,
@@ -987,7 +987,7 @@ const PlanMaking = () => {
 
   //   const handleRouteChange = async () => {
   //     if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
-  //       // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+  //       // console.log(`User navigated away from /admin/inventory/pms-plan-making/${id}`);
   //       sendPlanxLogs('v1/planxlogs', payload);
   //     }
   //   };

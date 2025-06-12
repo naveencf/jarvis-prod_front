@@ -31,9 +31,9 @@ import imageTest30 from "../../../../assets/img/product/Avtar30.png";
 import Select from "react-select";
 import { Autocomplete, IconButton, TextField } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import familyRelationList from "../../../../assets/js/familyRelationList";
-import OccupationList from "../../../../assets/js/OccupationList";
-import IndianBankList from "../../../../assets/js/IndianBankList";
+import familyRelationList from "../../../../utils/familyRelationList";
+import OccupationList from "../../../../utils/OccupationList";
+import IndianBankList from "../../../../utils/IndianBankList";
 import { ToastContainer } from "react-toastify";
 import { User } from "@phosphor-icons/react";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
@@ -850,7 +850,7 @@ const UserMaster = () => {
   };
 
   if (isFormSubmitted) {
-    // return <Navigate to="/admin/user-overview" />;
+    // return <Navigate to="/admin/user/user-overview" />;
   }
 
   const disableFutureDates = (date) => {
@@ -1530,7 +1530,7 @@ const UserMaster = () => {
               value={personalContact}
               required={false}
               onChange={handlePersonalContactChange}
-            // onBlur={(e) => handleContentBlur(e, "personalContact")}
+              // onBlur={(e) => handleContentBlur(e, "personalContact")}
             />
             {(isContactTouched1 || personalContact.length >= 10) &&
               !isValidcontact1 && (
@@ -1583,7 +1583,7 @@ const UserMaster = () => {
               value={alternateContact}
               required={false}
               onChange={handleAlternateContactChange}
-            // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
+              // onBlur={(e) => handleAlternateBlur(e, "alternateContact")}
             />
             {(isAlternateTouched1 || alternateContact.length >= 10) &&
               !isValidcontact3 && (
@@ -2002,9 +2002,9 @@ const UserMaster = () => {
               value={
                 selectedRole
                   ? {
-                    value: selectedRole.role_id,
-                    label: selectedRole.Role_name,
-                  }
+                      value: selectedRole.role_id,
+                      label: selectedRole.Role_name,
+                    }
                   : null
               }
               onChange={(e) => {
@@ -3094,20 +3094,21 @@ const UserMaster = () => {
         {accordionButtons.map((button, index) => (
           <div className="flex-row align-items-center w-100 gap-4" key={index}>
             <button
-              className={`tab ${activeAccordionIndex === index
+              className={`tab ${
+                activeAccordionIndex === index
                   ? "active"
                   : userResID !== ""
-                    ? "completed"
-                    : "disabled"
-                }`}
+                  ? "completed"
+                  : "disabled"
+              }`}
               onClick={() => handleAccordionButtonClick(index)}
             >
               <div className="gap-1 flex-row">
                 {activeAccordionIndex === index
                   ? indicator.active
                   : userResID !== ""
-                    ? indicator.completed
-                    : indicator.disabled}
+                  ? indicator.completed
+                  : indicator.disabled}
                 <p>{button}</p>
               </div>
               {accordionButtonstitle[index]}
@@ -3127,8 +3128,9 @@ const UserMaster = () => {
                     fill-rule="evenodd"
                     clip-rule="evenodd"
                     d="M6.51171 4.43057C6.8262 4.161 7.29968 4.19743 7.56924 4.51192L13.5692 11.5119C13.81 11.7928 13.81 12.2072 13.5692 12.4881L7.56924 19.4881C7.29968 19.8026 6.8262 19.839 6.51171 19.5695C6.19721 19.2999 6.16079 18.8264 6.43036 18.5119L12.012 12L6.43036 5.48811C6.16079 5.17361 6.19721 4.70014 6.51171 4.43057ZM10.5119 4.43068C10.8264 4.16111 11.2999 4.19753 11.5694 4.51202L17.5694 11.512C17.8102 11.7929 17.8102 12.2073 17.5694 12.4882L11.5694 19.4882C11.2999 19.8027 10.8264 19.8391 10.5119 19.5696C10.1974 19.3 10.161 18.8265 10.4306 18.512L16.0122 12.0001L10.4306 5.48821C10.161 5.17372 10.1974 4.70024 10.5119 4.43068Z"
-                    fill={`${activeAccordionIndex === index ? "var(--primary)" : ""
-                      }`}
+                    fill={`${
+                      activeAccordionIndex === index ? "var(--primary)" : ""
+                    }`}
                   />
                 </g>
               </svg>

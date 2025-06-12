@@ -238,7 +238,7 @@ const UserAuthDetail = () => {
   // }
 
   // if (isSubmitted) {
-  //   return <Navigate to={`/admin/user-overview/${"Active"}`} />;
+  //   return <Navigate to={`/admin/user/user-overview/${"Active"}`} />;
   // }
   return (
     <>

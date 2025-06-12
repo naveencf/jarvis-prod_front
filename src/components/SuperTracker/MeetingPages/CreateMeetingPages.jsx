@@ -156,7 +156,7 @@ const CreateMeetingPages = ({ open, onClose, onCreate, creatorDetail }) => {
                                         variant="contained"
                                         color="primary"
                                         aria-label="Meeting Modes Info"
-                                        onClick={() => navigate("/admin/instaapi/community/overviewMeetingVia")}
+                                        onClick={() => navigate("/admin/community/overviewMeetingVia")}
                                     >
                                         <InfoIcon />
                                     </IconButton>

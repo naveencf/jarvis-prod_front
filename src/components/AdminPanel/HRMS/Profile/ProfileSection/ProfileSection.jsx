@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import DateFormattingComponent from "../../../../../../DateFormator/DateFormared";
+import DateFormattingComponent from "../../../../DateFormator/DateFormared";
 import AboutSection from "./AboutSection";
 import { Autocomplete, MenuItem, TextField } from "@mui/material";
 import AddressSection from "./AddressSection";
 import axios from "axios";
-import { baseUrl } from "../../../../../../../utils/config";
-import { useGlobalContext } from "../../../../../../../Context/Context";
+import { baseUrl } from "../../../../../utils/config";
+import { useGlobalContext } from "../../../../../Context/Context";
 
 const ProfileSection = ({ userData, educationData, familyData }) => {
   const { toastAlert, toastError } = useGlobalContext();

@@ -51,7 +51,7 @@ const HobbiesOverview = () => {
         <div className="d-flex">
           <button
             className="icon-1"
-            onClick={() => navigate(`/admin/hobbies/${row.hobby_id}`)}
+            onClick={() => navigate(`/admin/user/hobbies/${row.hobby_id}`)}
           >
             <i className="bi bi-pencil"></i>
           </button>
@@ -70,7 +70,7 @@ const HobbiesOverview = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Hobbies"
-            link="/admin/hobbies/0"
+            link="/admin/user/hobbies/0"
             buttonAccess={true}
             submitButton={false}
           />

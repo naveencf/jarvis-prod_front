@@ -98,9 +98,9 @@ const Login = () => {
         sessionStorage.setItem("token", token);
 
         if (deptId === 36 && (onboardStatus === 0 || onboardStatus === 1)) {
-          navigate("/admin/sales-dashboard");
+          navigate("/admin/sales/sales-dashboard");
         } else if (deptId === 20) {
-          navigate("/admin/pantry");
+          navigate("/admin/pantry/pantry");
         } else {
           navigate("/");
         }
@@ -136,7 +136,7 @@ const Login = () => {
 
       if (status === "Active") {
         if (deptId === 36 && (onboardStatus === 1 || onboardStatus === 0)) {
-          navigate("/admin/sales-dashboard");
+          navigate("/admin/sales/sales-dashboard");
         } else if (deptId === 20) {
           navigate("/admin/pantry");
         } else {
@@ -151,7 +151,10 @@ const Login = () => {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Google Login failed:", error.response?.data?.message || error.message);
+      console.error(
+        "Google Login failed:",
+        error.response?.data?.message || error.message
+      );
       setIsError(error.response?.data?.message || error.message);
       // setIsError("Google login failed. Please try again.");
     }
@@ -243,7 +246,7 @@ const Login = () => {
             </form>
 
             {/* 🔹 Google Login Section */}
-            <div className="google-login-section" style={{ marginTop: "10px",marginBottom: "10px", textAlign: "center" }}>
+            <div className="google-login-section" style={{ marginTop: "10px", marginBottom: "10px", textAlign: "center" }}>
               <p style={{ marginBottom: "10px", fontWeight: "bold" }}>OR</p>
               <GoogleLogin
                 onSuccess={handleGoogleLoginSuccess}

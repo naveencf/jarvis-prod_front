@@ -42,7 +42,7 @@ const UserOverview = () => {
 
       <div className="action_heading" style={{ margin: "10px 0 30px 0" }}>
         <div className="action_btns">
-          <Link to="/admin/user-hierarchy">
+          <Link to="/admin/user/user-hierarchy">
             <button type="button" className="btn btn-outline-primary btn-sm">
               User Hierarchy
             </button>
@@ -107,7 +107,9 @@ const UserOverview = () => {
                           <span>{detail.user_name}</span>
                         </h5>
                         <div className="summary_cardaction">
-                          <Link to={`/admin/user-single/${detail.user_id}`}>
+                          <Link
+                            to={`/admin/user/user-single/${detail.user_id}`}
+                          >
                             <button
                               className="btn btn-sm btn-outline-primary"
                               title="Short View"

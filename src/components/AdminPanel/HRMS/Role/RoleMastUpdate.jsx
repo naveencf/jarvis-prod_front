@@ -53,7 +53,7 @@ function RoleMastUpdate() {
     setUpdatedDate(localStorage.getItem("Last_updated_date").substring(0, 10));
   }, []);
   if (isFormSubmitted) {
-    return <Navigate to="/admin/role-overview" />;
+    return <Navigate to="/admin/user/role-overview" />;
   }
   return (
     <>

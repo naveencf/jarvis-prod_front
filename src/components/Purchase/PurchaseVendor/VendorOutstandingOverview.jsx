@@ -21,7 +21,9 @@ const VendorOutstandingOverview = () => {
   const token = sessionStorage.getItem("token");
   const decodedToken = jwtDecode(token);
   const userName = decodedToken.name;
-
+  const location = useLocation();
+  const isAdvanceOutstandingRoute =
+    location.pathname === "/admin/purchase/vendor-advance-outstanding";
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
@@ -30,6 +32,7 @@ const VendorOutstandingOverview = () => {
   const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
   const [rangeCounts, setRangeCounts] = useState([]);
   const [selectedRange, setSelectedRange] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
 
   const { search } = useLocation();
   const params = new URLSearchParams(search);
@@ -59,12 +62,20 @@ const VendorOutstandingOverview = () => {
   };
 
   const fetchVendors = useCallback(
-    debounce(async (search, includeOutstandingFilter = false) => {
+    debounce(async (search, includeOutstandingFilter = false,vendorContactType = "all") => {
       try {
         const queryParams = new URLSearchParams();
-
-        if (includeOutstandingFilter) {
+        if (isAdvanceOutstandingRoute) {
+          queryParams.append("vendor_contact_type", vendorContactType);
+          if(search!==""){
+            queryParams.append("search", search);
+          }
+          queryParams.append("page", page);
+          queryParams.append("limit", limit);
+        }
+        else if (includeOutstandingFilter) {
           queryParams.append("vendor_outstandings", "true");
+          queryParams.append("search", search);
         } else {
           if (search.length >= 3) {
             queryParams.append("search", search);
@@ -75,7 +86,7 @@ const VendorOutstandingOverview = () => {
             return;
           }
         }
-
+      
         const res = await axios.get(
           `${baseUrl}v1/vendor_v2?${queryParams.toString()}`,
           {
@@ -86,7 +97,6 @@ const VendorOutstandingOverview = () => {
         );
         if (res.status === 200) {
           const data = res.data?.data.data;
-          console.log(res.data.data.data, "welcome bonusssss");
           setVendorData(data);
           if (includeOutstandingFilter) {
             const ranges = [
@@ -178,11 +188,11 @@ const VendorOutstandingOverview = () => {
 
   const filteredData = selectedRange
     ? vendorData.filter(
-      (item) =>
-        item.vendor_outstandings &&
-        item.vendor_outstandings > selectedRange.min &&
-        item.vendor_outstandings <= selectedRange.max
-    )
+        (item) =>
+          item.vendor_outstandings &&
+          item.vendor_outstandings > selectedRange.min &&
+          item.vendor_outstandings <= selectedRange.max
+      )
     : vendorData;
 
   const columns = [
@@ -263,7 +273,7 @@ const VendorOutstandingOverview = () => {
       name: "Ledger",
       width: 200,
       renderRowCell: (row) => (
-        <Link to={`/admin/ledger/${row._id}`}>
+        <Link to={`/admin/purchase/ledger/${row._id}`}>
           <button
             style={{
               color: "#1876D1",
@@ -289,8 +299,47 @@ const VendorOutstandingOverview = () => {
           vendorDetail={vendorDetail}
           setVendorDetail={setVendorDetail}
           userName={userName}
+          isAdvanced ={isAdvanceOutstandingRoute}
         />
       )}
+      {isAdvanceOutstandingRoute && (
+        <div className="tabs mb-4 flex gap-4">
+          <button
+            className={
+              activeTab === "all" ? "btn btn-primary" : "btn btn-outline"
+            }
+            onClick={() => {
+              setActiveTab("all");
+              fetchVendors(searchTerm, false, "all");
+            }}
+          >
+            All
+          </button>
+          <button
+            className={
+              activeTab === "active" ? "btn btn-primary" : "btn btn-outline"
+            }
+            onClick={() => {
+              setActiveTab("active");
+              fetchVendors(searchTerm, false, "active");
+            }}
+          >
+            Active
+          </button>
+          <button
+            className={
+              activeTab === "in-active" ? "btn btn-primary" : "btn btn-outline"
+            }
+            onClick={() => {
+              setActiveTab("in-active");
+              fetchVendors(searchTerm, false, "in-active");
+            }}
+          >
+            Inactive
+          </button>
+        </div>
+      )}
+
       <div className="card">
         <View
           version={1}
@@ -326,7 +375,7 @@ const VendorOutstandingOverview = () => {
                   {formatToLakh(range.totalOutstanding)}
                 </Button>
               ))} */}
-              <FormControl size="small" sx={{ minWidth: 250 }}>
+            {!isAdvanceOutstandingRoute&&  <FormControl size="small" sx={{ minWidth: 250 }}>
                 <InputLabel>Filter by Outstanding Range</InputLabel>
                 <Select
                   value={selectedRange?.label || ""}
@@ -355,12 +404,16 @@ const VendorOutstandingOverview = () => {
                   ))}
                 </Select>
               </FormControl>
-
+}
               {selectedRange && (
                 <Button
                   variant="text"
                   color="error"
-                  onClick={() => setSelectedRange(null)}
+                  onClick={() => {
+                    setSelectedRange(null);
+                    fetchVendors("", filter === "outstandingGreaterThanZero"); 
+                  }}
+                  
                 >
                   Clear Filter
                 </Button>

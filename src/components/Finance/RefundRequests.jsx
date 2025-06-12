@@ -186,7 +186,7 @@ const RefundRequests = () => {
   function getData() {
     axios
       .post(baseUrl + "add_php_payment_refund_data_in_node")
-      .then((res) => {});
+      .then((res) => { });
     setTimeout(() => {
       axios.get(baseUrl + "get_all_php_payment_refund_data").then((res) => {
         setData(res.data.data);
@@ -676,7 +676,7 @@ const RefundRequests = () => {
     <div>
       <FormContainer
         mainTitle="Payment Refund List"
-        link="/admin/finance-refundrequests"
+        link="/admin/finance/finance-refundrequests"
         buttonAccess={
           contextData &&
           contextData[2] &&
@@ -827,10 +827,10 @@ const RefundRequests = () => {
                 ₹
                 {datas.length > 0
                   ? datas
-                      .filter((item) => item.finance_refund_status == 1)
-                      .reduce((total, currentItem) => {
-                        return total + currentItem.refund_amount * 1;
-                      }, 0)
+                    .filter((item) => item.finance_refund_status == 1)
+                    .reduce((total, currentItem) => {
+                      return total + currentItem.refund_amount * 1;
+                    }, 0)
                   : ""}
               </h4>
             </div>
@@ -854,10 +854,10 @@ const RefundRequests = () => {
                 ₹
                 {datas.length > 0
                   ? datas
-                      .filter((item) => item.finance_refund_status == 2)
-                      .reduce((total, currentItem) => {
-                        return total + currentItem.refund_amount * 1;
-                      }, 0)
+                    .filter((item) => item.finance_refund_status == 2)
+                    .reduce((total, currentItem) => {
+                      return total + currentItem.refund_amount * 1;
+                    }, 0)
                   : ""}
               </h4>
             </div>

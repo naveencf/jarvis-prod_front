@@ -154,7 +154,7 @@ const VendorMaster = () => {
     altMobile: false,
   });
   const [isContactTouched1, setisContactTouched1] = useState(false);
-console.log("docDetails", docDetails);
+  console.log("docDetails", docDetails);
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
   const vendorTypeData = [
     { value: "Individual Vendor", label: "Individual Vendor" },
@@ -783,7 +783,7 @@ console.log("docDetails", docDetails);
       _id: resID,
     };
     const queryParams = new URLSearchParams(sendingId).toString();
-    navigate(`/admin/pms-page-master?${queryParams}`);
+    navigate(`/admin/inventory/pms-page-master?${queryParams}`);
   };
 
   const handleSubmit = async (e) => {
@@ -996,7 +996,7 @@ console.log("docDetails", docDetails);
           toastError(res?.error?.data?.message);
         } else {
           handleSuccess("Vendor data added successfully!");
-          // navigate('/admin/pms-vendor-overview');
+          // navigate('/admin/inventory/pms-vendor-overview');
           setIsFormSubmitted(true);
         }
       } catch (err) {
@@ -1062,7 +1062,7 @@ console.log("docDetails", docDetails);
         }
 
         handleSuccess("Data Updated Successfully");
-        // navigate("/admin/pms-vendor-overview"); 
+        // navigate("/admin/inventory/pms-vendor-overview"); 
       } catch (err) {
         handleError(err);
       }
@@ -1196,7 +1196,7 @@ console.log("docDetails", docDetails);
   };
 
   // if (isFormSubmitted) {
-  //   return <Navigate to="/admin/pms-vendor-overview" />;
+  //   return <Navigate to="/admin/inventory/pms-vendor-overview" />;
   // }
 
   const goBack = () => {
@@ -1440,10 +1440,10 @@ console.log("docDetails", docDetails);
                   maxLength={6}
                   fieldGrid={4}
                   onChange={handleCompPincode}
-                  // onChange={(e) => {
-                  //   if (isNaN(e.target.value)) return;
-                  //   setCompPin(e.target.value);
-                  // }}
+                // onChange={(e) => {
+                //   if (isNaN(e.target.value)) return;
+                //   setCompPin(e.target.value);
+                // }}
                 />
               </div>
             </>
@@ -1474,7 +1474,7 @@ console.log("docDetails", docDetails);
                 <>
                   <small style={{ color: messageColor }}>{existError}</small>
                   {messageColor == "red" ? (
-                    <Link to="/admin/pms-page-master" style={{ color: "blue" }}>
+                    <Link to="/admin/inventory/pms-page-master" style={{ color: "blue" }}>
                       Add Page
                     </Link>
                   ) : (
@@ -1935,16 +1935,16 @@ console.log("docDetails", docDetails);
 
                 {(bankRows[i].payment_method == "66681c3c4366007df1df1481" ||
                   bankRows[i].payment_method == "666856624366007df1dfacc8") && (
-                  <FieldContainer
-                    label={"Registered Mobile Number"}
-                    value={bankRows[i].registered_number}
-                    required={false}
-                    fieldGrid={4}
-                    type="number"
-                    onChange={(e) => handleRegisteredMobileChange(e, i)}
-                    disabled={row.is_verified} // Disable if _id exists
-                  />
-                )}
+                    <FieldContainer
+                      label={"Registered Mobile Number"}
+                      value={bankRows[i].registered_number}
+                      required={false}
+                      fieldGrid={4}
+                      type="number"
+                      onChange={(e) => handleRegisteredMobileChange(e, i)}
+                      disabled={row.is_verified} // Disable if _id exists
+                    />
+                  )}
                 <Divider sx={{ mb: 2 }} />
                 {i > 0 && (
                   <IconButton
@@ -2031,7 +2031,7 @@ console.log("docDetails", docDetails);
                   value={{
                     value: userId,
                     label:
-                      userContextData.find((user) => user.user_id === userId)
+                      userContextData?.find((user) => user.user_id === userId)
                         ?.user_name || "",
                   }}
                   onChange={(e) => {

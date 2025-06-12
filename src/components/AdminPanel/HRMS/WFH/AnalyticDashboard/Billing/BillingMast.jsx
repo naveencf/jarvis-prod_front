@@ -101,7 +101,7 @@ const BillingMast = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/billing-overview" />;
+    return <Navigate to="/admin/wfhd/billing-overview" />;
   }
 
   const options = showAllDepartments

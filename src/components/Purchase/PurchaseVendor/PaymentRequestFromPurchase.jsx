@@ -49,6 +49,7 @@ const PaymentRequestFromPurchase = ({
   vendorDetail,
   setVendorDetail,
   userName,
+  isAdvanced
 }) => {
   const token = sessionStorage.getItem("token");
   const { data: venodrDocuments, isLoading: isVendorDocumentsLoading } =
@@ -302,6 +303,16 @@ const PaymentRequestFromPurchase = ({
     }
   }, [venodrDocuments]); // Updated dependency to watch vendorDocuments
 
+  useEffect(() => {
+    if (isAdvanced) {
+      setSelectedPaymentType("advanced");
+      setFormData((prev) => ({
+        ...prev,
+        payment_type: "advanced",
+      }));
+    }
+  }, [isAdvanced]);
+  
   const handleGSTChange = (isChecked) => {
     // // // console.log(isChecked, "hasGST")
     setIsGSTAvailable(isChecked);

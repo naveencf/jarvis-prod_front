@@ -293,20 +293,20 @@ const CommunityUser = () => {
         <div className="action_btns">
           <Button
             className="btn cmnbtn btn-primary btn_sm"
-            onClick={() => navigate("/admin/instaapi/community")}
+            onClick={() => navigate("/admin/community/community-home")}
           >
             Pages
           </Button>
           <Button
             className="btn cmnbtn btn-primary btn_sm"
-            onClick={() => navigate("/admin/instaapi/community/user")}
+            onClick={() => navigate("/admin/community/user")}
           >
             Users
           </Button>
           <Button
             className="btn cmnbtn btn-primary btn_sm"
             onClick={() =>
-              navigate("/admin/instaapi/community/allAssignedcategory")
+              navigate("/admin/community/allAssignedcategory")
             }
           >
             View All Assigned Categories

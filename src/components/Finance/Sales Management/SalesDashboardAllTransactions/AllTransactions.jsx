@@ -336,10 +336,10 @@ const AllTransactions = () => {
                   ? pdfImg
                   : params.row.payment_screenshot
               }
-              //   row.payment_screenshot
-              //     ? `https://sales.creativefuel.io/${row.payment_screenshot}`
-              //     : ""
-              // }
+            //   row.payment_screenshot
+            //     ? `https://sales.creativefuel.io/${row.payment_screenshot}`
+            //     : ""
+            // }
             />
           </div>
         ) : (
@@ -398,8 +398,8 @@ const AllTransactions = () => {
           {params.row.payment_approval_status === "approval"
             ? "Approved"
             : params.row.payment_approval_status === "reject"
-            ? "Rejected"
-            : ""}
+              ? "Rejected"
+              : ""}
         </div>
       ),
     },
@@ -509,10 +509,10 @@ const AllTransactions = () => {
                   ? pdfImg
                   : params.row.payment_screenshot
               }
-              //   row.payment_screenshot
-              //     ? `https://sales.creativefuel.io/${row.payment_screenshot}`
-              //     : ""
-              // }
+            //   row.payment_screenshot
+            //     ? `https://sales.creativefuel.io/${row.payment_screenshot}`
+            //     : ""
+            // }
             />
           </div>
         ) : (
@@ -571,8 +571,8 @@ const AllTransactions = () => {
           {params.row.payment_approval_status === "approval"
             ? "Approved"
             : params.row.payment_approval_status === "reject"
-            ? "Rejected"
-            : ""}
+              ? "Rejected"
+              : ""}
         </div>
       ),
     },
@@ -768,8 +768,8 @@ const AllTransactions = () => {
           {params.row.payment_approval_status === "approval"
             ? "Approved"
             : params.row.payment_approval_status === "reject"
-            ? "Rejected"
-            : ""}
+              ? "Rejected"
+              : ""}
         </div>
       ),
     },
@@ -898,7 +898,7 @@ const AllTransactions = () => {
     <div>
       <FormContainer
         mainTitle="Dashboard"
-        link="/admin/finance-alltransaction"
+        link="/admin/finance/finance-alltransaction"
         buttonAccess={
           contextData &&
           contextData[2] &&
@@ -1024,12 +1024,12 @@ const AllTransactions = () => {
                 ₹
                 {datas.length > 0
                   ? datas
-                      .filter(
-                        (item) => item.payment_approval_status == "approval"
-                      )
-                      .reduce((total, currentItem) => {
-                        return total + currentItem.payment_amount * 1;
-                      }, 0)
+                    .filter(
+                      (item) => item.payment_approval_status == "approval"
+                    )
+                    .reduce((total, currentItem) => {
+                      return total + currentItem.payment_amount * 1;
+                    }, 0)
                   : ""}
               </h4>
             </div>
@@ -1080,12 +1080,12 @@ const AllTransactions = () => {
                 ₹
                 {datas.length > 0
                   ? datas
-                      .filter(
-                        (item) => item.payment_approval_status == "reject"
-                      )
-                      .reduce((total, currentItem) => {
-                        return total + currentItem.payment_amount * 1;
-                      }, 0)
+                    .filter(
+                      (item) => item.payment_approval_status == "reject"
+                    )
+                    .reduce((total, currentItem) => {
+                      return total + currentItem.payment_amount * 1;
+                    }, 0)
                   : ""}
               </h4>
             </div>
@@ -1281,8 +1281,8 @@ const AllTransactions = () => {
                         option?.title === "approval"
                           ? "Approved"
                           : option?.title === "reject"
-                          ? "Rejected"
-                          : ""
+                            ? "Rejected"
+                            : ""
                       }
                       renderInput={(params) => (
                         <div ref={params.InputProps.ref}>

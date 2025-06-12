@@ -655,7 +655,7 @@ const GstNongstIncentiveReport = () => {
     <div>
       {/* <FormContainer
         mainTitle="Incentive Reports"
-        link="/admin/finance-pruchasemanagement-paymentdone"
+        link="/admin/finance/finance-pruchasemanagement-paymentdone"
         uniqueCustomerCount={uniqueCustomerCount}
         totalBaseAmount={totalBaseAmount}
         handleOpenUniqueSalesExecutive={handleOpenUniqueSalesExecutive}

@@ -7,7 +7,7 @@ import FormContainer from "../FormContainer";
 import jwtDecode from "jwt-decode";
 import Modal from "react-modal";
 import Select from "react-select";
-import { baseUrl } from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 export const SelfAudit = () => {
   const [search, setSearch] = useState("");
@@ -40,15 +40,11 @@ export const SelfAudit = () => {
     formData.append("sim_id", sim_id);
     formData.append("uploaded_by", userID);
     formData.append("type", type);
-    await axios.post(
-      baseUrl + "add_assets_images",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    await axios.post(baseUrl + "add_assets_images", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     setImageModalOpen(false);
   };
   //
@@ -62,9 +58,7 @@ export const SelfAudit = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}` + `get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setDatas(res.data);
         });
@@ -146,7 +140,7 @@ export const SelfAudit = () => {
     <>
       <FormContainer
         mainTitle="Self Audit Overview"
-        link="/admin/object-master"
+        link="/admin/user/object-master"
         buttonAccess={
           contextData &&
           contextData[2] &&
@@ -167,17 +161,16 @@ export const SelfAudit = () => {
           />
         </div>
         <div className="card-body thm_table">
-          < DataTable
+          <DataTable
             // title="Self Audit"
             columns={columns}
             data={filterData}
             // fixedHeader
             pagination
             selectableRows
-          // fixedHeaderScrollHeight="64vh"
-          // highlightOnHover
-          // subHeader
-
+            // fixedHeaderScrollHeight="64vh"
+            // highlightOnHover
+            // subHeader
           />
         </div>
         {/* <div className="data_tbl table-responsive">

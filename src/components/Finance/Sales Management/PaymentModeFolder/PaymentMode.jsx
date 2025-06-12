@@ -264,7 +264,7 @@ const PaymentMode = () => {
         return (
           <div className="d-flex gap-10">
             <Link
-              to={`/admin/finance-payment-mode-transactionlist/${row?._id}`}
+              to={`/admin/finance/finance-payment-mode-transactionlist/${row?._id}`}
               className="link-primary"
             >
               <button className="icon-1" title="Transaction History">
@@ -348,7 +348,7 @@ const PaymentMode = () => {
     <div>
       <FormContainer
         mainTitle="Payment Mode"
-        link="/admin/finance-paymentmode"
+        link="/admin/finance/finance-paymentmode"
         buttonAccess={
           contextData &&
           contextData[2] &&

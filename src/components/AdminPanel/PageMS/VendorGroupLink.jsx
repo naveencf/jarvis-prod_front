@@ -103,7 +103,7 @@ const VendorGroupLink = () => {
         setVendorId('')
         setLinkTypeId('')
         getData()
-        navigate("/admin/pms-vendor-overview")
+        navigate("/admin/inventory/pms-vendor-overview")
       }).catch((error) => {
         toastError(error.response.data.message);
         console.log(error.response.data.message)

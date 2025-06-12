@@ -1,5 +1,5 @@
 import React from "react";
-import DateFormattingComponent from "../../../../../../DateFormator/DateFormared";
+import DateFormattingComponent from "../../../../DateFormator/DateFormared";
 
 const JobSection = ({ userData }) => {
   return (

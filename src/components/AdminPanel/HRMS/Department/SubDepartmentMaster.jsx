@@ -70,7 +70,7 @@ export default function SubDepartmentMaster() {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/sub-department-overview" />;
+    return <Navigate to="/admin/user/sub-department-overview" />;
   }
   return (
     <>

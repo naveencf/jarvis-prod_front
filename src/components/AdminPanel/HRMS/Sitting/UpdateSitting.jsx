@@ -333,7 +333,9 @@ const UpdateSitting = ({
           <div className="card-body roomLayoutCardIn row">
             <div className="roomLayoutCardLeft col">
               {selectedRoom && (
-                <Link to={`/admin/office-sitting-room-wise/${selectedRoom}`}>
+                <Link
+                  to={`/admin/user/office-sitting-room-wise/${selectedRoom}`}
+                >
                   <h5 className="card-title mb16">{selectedRoom}</h5>
                 </Link>
               )}

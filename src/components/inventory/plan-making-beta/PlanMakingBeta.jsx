@@ -180,7 +180,7 @@ const PlanMakingBeta = () => {
   const { data: subCategory } = useGetAllPageSubCategoryQuery();
   const subCategoryData = subCategory?.data || [];
 
- 
+
   const getPriceDetail = (priceDetails, key) => {
     const keyType = key?.split("_")[1];
     const detail = priceDetails?.find((item) => {
@@ -292,10 +292,10 @@ const PlanMakingBeta = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${priceType}`)
           : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              priceType
-            );
+            rate_type,
+            { page_price_list, followers_count },
+            priceType
+          );
 
       return {
         _id,
@@ -369,18 +369,18 @@ const PlanMakingBeta = () => {
           const postPrice = isFixedRate
             ? getPriceDetail(page_price_list, "instagram_post")
             : calculatePrice(
-                rate_type,
-                { page_price_list, followers_count },
-                "post"
-              );
+              rate_type,
+              { page_price_list, followers_count },
+              "post"
+            );
 
           const storyPrice = isFixedRate
             ? getPriceDetail(page_price_list, "instagram_story")
             : calculatePrice(
-                rate_type,
-                { page_price_list, followers_count },
-                "story"
-              );
+              rate_type,
+              { page_price_list, followers_count },
+              "story"
+            );
 
           return {
             _id,
@@ -479,10 +479,10 @@ const PlanMakingBeta = () => {
           isFixedRate
             ? getPriceDetail(page_price_list, `instagram_${type}`)
             : calculatePrice(
-                rate_type,
-                { page_price_list, followers_count },
-                type
-              );
+              rate_type,
+              { page_price_list, followers_count },
+              type
+            );
 
         return {
           // _id,
@@ -844,10 +844,10 @@ const PlanMakingBeta = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              type
-            );
+            rate_type,
+            { page_price_list, followers_count },
+            type
+          );
 
       return {
         page_name,
@@ -967,10 +967,10 @@ const PlanMakingBeta = () => {
         isFixedRate
           ? getPriceDetail(page_price_list, `instagram_${type}`)
           : calculatePrice(
-              rate_type,
-              { page_price_list, followers_count },
-              type
-            );
+            rate_type,
+            { page_price_list, followers_count },
+            type
+          );
 
       return {
         page_name,
@@ -1302,7 +1302,7 @@ const PlanMakingBeta = () => {
   }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
   // useEffect(() => {
-  //   const currentRouteBase = '/admin/pms-plan-making';
+  //   const currentRouteBase = '/admin/inventory/pms-plan-making';
   //   const planStatus = planDetails && planDetails[0].plan_status;
   //   const payload = {
   //     id: id,
@@ -1317,7 +1317,7 @@ const PlanMakingBeta = () => {
 
   //   const handleRouteChange = async () => {
   //     if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
-  //       // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+  //       // console.log(`User navigated away from /admin/inventory/pms-plan-making/${id}`);
   //       sendPlanxLogs('v1/planxlogs', payload);
   //     }
   //   };
@@ -1358,9 +1358,9 @@ const PlanMakingBeta = () => {
   const tableData = showUnChecked
     ? unCheckedPages
     : layeringMapping[layering] ??
-      (showOwnPage
-        ? ownPages
-        : toggleShowBtn
+    (showOwnPage
+      ? ownPages
+      : toggleShowBtn
         ? selectedRows
         : filterRowsBySelection(filterData, selectedRows));
 
@@ -1402,10 +1402,9 @@ const PlanMakingBeta = () => {
                   style={{ border: "none", borderRight: "1px solid lightGray" }}
                   onClick={() => handlePlatform(item.platform_name)}
                 >
-                  {`${
-                    item.platform_name.charAt(0).toUpperCase() +
+                  {`${item.platform_name.charAt(0).toUpperCase() +
                     item.platform_name.slice(1)
-                  } ${pageCount || 0}`}
+                    } ${pageCount || 0}`}
                 </button>
               );
             })}

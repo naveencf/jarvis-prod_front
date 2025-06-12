@@ -313,7 +313,7 @@ export default function PaymentDone() {
     <div>
       <FormContainer
         mainTitle="Payment Done"
-        link="/admin/finance-pruchasemanagement-paymentdone"
+        link="/admin/finance/finance-pruchasemanagement-paymentdone"
         uniqueVendorCount={uniqueVendorCount}
         totalRequestAmount={totalRequestAmount}
         pendingRequestCount={pendingRequestCount}

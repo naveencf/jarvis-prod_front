@@ -56,7 +56,7 @@ const PaymentModeTransactionList = () => {
     <div>
       <FormContainer
         mainTitle="Transaction List"
-        link="/admin/finance-transaction-list"
+        link="/admin/finance/finance-transaction-list"
       />
       <div className="card" style={{ height: "600px" }}>
         <div className="card-body thm_table">

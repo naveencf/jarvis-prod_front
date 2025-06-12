@@ -98,7 +98,7 @@ const AnalyticDashboard = () => {
           <FormContainer mainTitle={"WFHD Dashboard"} link={true} />
         </div>
         <div className="action_btns">
-          <Link to="/admin/wfhd-register">
+          <Link to="/admin/wfhd/wfhd-register">
             <button
               type="button"
               className="btn cmnbtn btn_sm btn-outline-primary"
@@ -106,7 +106,7 @@ const AnalyticDashboard = () => {
               Add Buddy
             </button>
           </Link>
-          <Link to="/admin/wfhd-overview">
+          <Link to="/admin/wfhd/wfhd-overview">
             <button
               type="button"
               className="btn cmnbtn btn_sm btn-outline-primary"
@@ -114,7 +114,7 @@ const AnalyticDashboard = () => {
               My Team
             </button>
           </Link>
-          <Link to="/admin/attendence-mast">
+          <Link to="/admin/wfhd/attendence-mast">
             <button
               type="button"
               className="btn cmnbtn btn_sm btn-outline-primary"
@@ -122,7 +122,7 @@ const AnalyticDashboard = () => {
               Create Attendance
             </button>
           </Link>
-          <Link to="/admin/salaryWFH">
+          <Link to="/admin/wfhd/salaryWFH">
             <button
               type="button"
               className="btn cmnbtn btn_sm btn-outline-primary"

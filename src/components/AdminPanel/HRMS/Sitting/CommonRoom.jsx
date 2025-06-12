@@ -182,7 +182,7 @@ const CommonRoom = () => {
       {/* Shift Selection Buttons */}
       <div className="card-header flexCenterBetween">
         <h5 className="card-title">Creativefuel (Indore)</h5>
-        <Link to={`/admin/sitting-overview/${selectedShift}`}>
+        <Link to={`/admin/user/sitting-overview/${selectedShift}`}>
           <button className="btn cmnbtn btn_sm btn-primary">
             Customize Rooms
           </button>
@@ -285,7 +285,7 @@ const CommonRoom = () => {
             </div>
             <div className="floorPlanUp">
               <Link
-                to={`/admin/office-mast-overview/Room_104/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_104/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room104} alt="Room 104" />
@@ -295,21 +295,21 @@ const CommonRoom = () => {
                 <img src={cabin104} alt="Cabin 104" />
               </div>
               <Link
-                to={`/admin/office-mast-overview/Room_105(A)/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_105(A)/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room105A} alt="Room 105(A)" />
                 </div>
               </Link>
               <Link
-                to={`/admin/office-mast-overview/Room_105(B)/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_105(B)/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room105B} alt="Room 105(B)" />
                 </div>
               </Link>
               <Link
-                to={`/admin/office-mast-overview/Room_106/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_106/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room106} alt="Room 106" />
@@ -330,14 +330,14 @@ const CommonRoom = () => {
                 <img src={kitchen} alt="Kitchen" />
               </div>
               <Link
-                to={`/admin/office-mast-overview/Room_101/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_101/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room101} alt="Room 101" />
                 </div>
               </Link>
               <Link
-                to={`/admin/office-mast-overview/Room_102/${selectedShift}`}
+                to={`/admin/user/office-mast-overview/Room_102/${selectedShift}`}
               >
                 <div className="room roomEnable">
                   <img src={room102} alt="Room 102" />

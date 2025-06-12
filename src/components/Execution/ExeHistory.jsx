@@ -360,43 +360,43 @@ export default function ExeHistory({ pageRow }) {
       headerName: "Age 18-24 %",
       width: 150,
       renderCell: (params) => {
-        return params.row?.Age_18_24_percent ?? "NA"
-      }
+        return params.row?.Age_18_24_percent ?? "NA";
+      },
     },
     {
       field: "Age_25_34_percent",
       headerName: "Age 25-34 %",
       renderCell: (params) => {
         return params.row?.Age_25_34_percent ?? "NA";
-      }
+      },
     },
     {
       field: "Age_35_44_percent",
       headerName: "Age 35-44 %",
       renderCell: (params) => {
         return params.row?.Age_35_44_percent ?? "NA";
-      }
+      },
     },
     {
       field: "Age_45_54_percent",
       headerName: "Age 45-54 %",
       renderCell: (params) => {
         return params.row?.Age_45_54_percent ?? "NA";
-      }
+      },
     },
     {
       field: "Age_55_64_percent",
       headerName: "Age 55-64 %",
       renderCell: (params) => {
         return params.row?.Age_55_64_percent ?? "NA";
-      }
+      },
     },
     {
       field: "Age_65_plus_percent",
       headerName: "Age 65+ %",
-      renderCell: params => {
+      renderCell: (params) => {
         return params.row?.Age_65_plus_percent ?? "NA";
-      }
+      },
     },
     {
       field: "start_date",
@@ -450,11 +450,10 @@ export default function ExeHistory({ pageRow }) {
       renderCell: (params) => {
         return (
           <>
-            <Button
-              variant="contained"
-              color="primary"
-            >
-              <Link to={`/admin/pageStats/${params.row._id}`}>Edit</Link>
+            <Button variant="contained" color="primary">
+              <Link to={`/admin/operation/pageStats/${params.row._id}`}>
+                Edit
+              </Link>
             </Button>
             <Button
               onClick={() => handleDeleteRowData(params.row)}
@@ -478,32 +477,28 @@ export default function ExeHistory({ pageRow }) {
       />
       <div className="card body-padding fx-head nt-head">
         {console.log(data[0]?._id, "nnnnnnnnnnnnnnnnnn")}
-        {
-          data[0]?._id ? (
-            <DataGrid
-              rows={data}
-              columns={columns}
-              pageSize={10}
-              rowsPerPageOptions={[10]}
-              checkboxSelection
-              getRowId={(row) => row._id}
-            />
-          ) : (
-            <>
-
-              <h3 className="text-center">No Data Found</h3>
-              <Link to={{ pathname: `/admin/pageStats/${id}` }}>
-                <button
-                  type="button"
-                  className="btn cmnbtn btn_sm btn-outline-primary"
-
-                >
-                  Add Stats
-                </button>
-              </Link>
-            </>
-          )
-        }
+        {data[0]?._id ? (
+          <DataGrid
+            rows={data}
+            columns={columns}
+            pageSize={10}
+            rowsPerPageOptions={[10]}
+            checkboxSelection
+            getRowId={(row) => row._id}
+          />
+        ) : (
+          <>
+            <h3 className="text-center">No Data Found</h3>
+            <Link to={{ pathname: `/admin/operation/pageStats/${id}` }}>
+              <button
+                type="button"
+                className="btn cmnbtn btn_sm btn-outline-primary"
+              >
+                Add Stats
+              </button>
+            </Link>
+          </>
+        )}
       </div>
 
       <DeleteHistoryConfirmation
@@ -515,5 +510,5 @@ export default function ExeHistory({ pageRow }) {
         apiCall={apiCall}
       />
     </div>
-  )
+  );
 }

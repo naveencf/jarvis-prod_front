@@ -19,12 +19,12 @@ import * as XLSX from "xlsx";
 import { Document, PDFDownloadLink, Page, View } from "@react-pdf/renderer";
 import { Text, StyleSheet } from "@react-pdf/renderer";
 import { Button } from "@mui/material";
-import { generatePDF } from "./pdfGenerator";
 import { useLocation, Link } from "react-router-dom";
 import FieldContainer from "../../FieldContainer";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 import { baseUrl } from "../../../../utils/config";
-import { downloadSelectedInvoices } from "./ZipGenerator";
+
+
 import { FaEye } from "react-icons/fa6";
 
 const images = [
@@ -102,6 +102,12 @@ const SalaryWFH = () => {
   const [workDaysLastDate, setWorkDaysLastDate] = useState(0);
 
   const [pendingFinanceCount, setPendingFinanceCount] = useState("");
+
+  const generatePDF = async (row) => {
+    const module = await import("../../WFH/SalaryGeneration/pdfGenerator");
+    return module.generatePDF(row);
+  };
+
 
   var settings = {
     dots: false,
@@ -1118,7 +1124,7 @@ const SalaryWFH = () => {
         <FormContainer mainTitle="Payout Summary" link="/admin" />
       </div>
       <div className="action_btns">
-        <Link to="/admin/attendence-mast">
+        <Link to="/admin/wfhd/attendence-mast">
           <button
             type="button"
             className="btn cmnbtn btn_sm btn-outline-primary"
@@ -1174,9 +1180,8 @@ const SalaryWFH = () => {
                   ${data.deptCount == departmentdata?.length && "completed"} 
                   ${selectedCardIndex === index ? "selected" : ""}
                 ${getClassName(data, index, selectedCardIndex)}
-               ${
-                 currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
-               } 
+               ${currentMonthForDis === cardMonth + 1 && "current" // this code for current month card select blue card
+                  } 
                 ${isFutureCard && "disabled"}`}
                 onClick={() => {
                   if (!isFutureCard) handleCardSelect(index, data);
@@ -1211,8 +1216,8 @@ const SalaryWFH = () => {
                   {data.deptCount == departmentdata?.length
                     ? "Completed"
                     : currentMonthNumber - 5 - index < 0
-                    ? "Upcoming"
-                    : "Pending"}
+                      ? "Upcoming"
+                      : "Pending"}
                   {/* {data.atdGenerated == 1
                   ? "Completed"
                   : currentMonthNumber - 4 - index < 0
@@ -1233,7 +1238,7 @@ const SalaryWFH = () => {
             {contextData &&
               contextData[38] &&
               contextData[38].view_value === 1 && (
-                <Link to="/admin/salary-summary">
+                <Link to="/admin/wfhd/salary-summary">
                   <button
                     className="btn cmnbtn btn_sm btn-outline-primary "
                     style={{
@@ -1261,13 +1266,12 @@ const SalaryWFH = () => {
 
               return (
                 <div
-                  className={`card hover body-padding ${
-                    department === option.dept_id
-                      ? "btn-primary"
-                      : isDeptInSalary
+                  className={`card hover body-padding ${department === option.dept_id
+                    ? "btn-primary"
+                    : isDeptInSalary
                       ? "btn-success"
                       : "btn-outline-primary"
-                  }`}
+                    }`}
                   style={{
                     height: "100px",
                     minWidth: "300px",
@@ -1833,13 +1837,13 @@ const SalaryWFH = () => {
               {(separationStatus === "On Long Leave" ||
                 separationStatus === "Subatical" ||
                 separationStatus === "Suspended") && (
-                <FieldContainer
-                  label="Reinstated Date"
-                  type="date"
-                  value={separationReinstateDate}
-                  onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                />
-              )}
+                  <FieldContainer
+                    label="Reinstated Date"
+                    type="date"
+                    value={separationReinstateDate}
+                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                  />
+                )}
               {separationStatus == "Resign Accepted" && (
                 <input
                   label="Last Working Day"

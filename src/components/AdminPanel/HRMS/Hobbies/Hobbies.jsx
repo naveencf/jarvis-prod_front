@@ -51,7 +51,7 @@ const Hobbies = () => {
       }
       toastAlert("Submited Succesfully");
       setHobby("");
-      navigate("/admin/hobbies-overview");
+      navigate("/admin/user/hobbies-overview");
     } catch (error) {
       console.error(error);
       alert(error.response.data.message);

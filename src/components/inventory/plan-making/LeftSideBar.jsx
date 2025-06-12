@@ -114,7 +114,7 @@ const LeftSideBar = ({
         reverseButtons: true,
       });
       const planStatus = result.isConfirmed ? 'open' : 'close';
-       const payload = {
+      const payload = {
         id: id,
         plan_status: isPlanPrice ? 'open' : planStatus,
         plan_saved: true,
@@ -133,7 +133,7 @@ const LeftSideBar = ({
           icon: 'success',
           confirmButtonText: 'OK',
         }).then(() => {
-          navigate('/admin/pms-plan-making');
+          navigate('/admin/inventory/pms-plan-making');
         });
       } else {
         Swal.fire({
@@ -225,7 +225,7 @@ const LeftSideBar = ({
         category: page.page_category_id,
       };
     });
-     setPreviewData(preview);
+    setPreviewData(preview);
     setOpenPreviewModal(true);
   };
 
@@ -303,7 +303,7 @@ const LeftSideBar = ({
     return inputString?.length > maxLength ? inputString?.slice(0, maxLength) + '...' : inputString;
   }
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     setLeftSideBarDataUpdate(true)
     const payload = {
       id: planDetails && planDetails[0]._id,
@@ -317,19 +317,19 @@ const LeftSideBar = ({
       // no_of_pages: selectedRows?.length,
       // cost_price: totalCost,
     };
-   const response =await sendPlanxLogs('v1/planxlogs', payload);
-   if (response.status === 400) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Duplicate Entry',
-      text: 'Plan with the same name already exists',
-      confirmButtonText: 'OK',
-    });
-    setPlanName(planDetails?.[0]?.plan_name)
-  }
+    const response = await sendPlanxLogs('v1/planxlogs', payload);
+    if (response.status === 400) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Duplicate Entry',
+        text: 'Plan with the same name already exists',
+        confirmButtonText: 'OK',
+      });
+      setPlanName(planDetails?.[0]?.plan_name)
+    }
     setIsEditing(false);
   };
-   const ownPagesCost = ownershipCounts.own.totalCost;
+  const ownPagesCost = ownershipCounts.own.totalCost;
   useEffect(() => {
     handleTotalOwnCostChange(ownPagesCost);
   }, [ownPagesCost]);
@@ -358,7 +358,7 @@ const LeftSideBar = ({
 
     return platformWiseCategories;
   };
-   const platformCategories = groupCategoriesByPlatform(selectedRows);
+  const platformCategories = groupCategoriesByPlatform(selectedRows);
 
   return (
     <div className="planLeftSideWrapper">

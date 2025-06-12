@@ -102,7 +102,7 @@ const SalesServicesCreate = ({ service_name }) => {
 
   useEffect(() => {
     if (isFormSubmitted && task != "create" && !service_name)
-      navigate("/admin/product");
+      navigate("/admin/sales/product");
   }, [isFormSubmitted]);
 
   useEffect(() => {

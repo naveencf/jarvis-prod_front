@@ -16,9 +16,9 @@ export default function Invoice() {
   const [campaignAmountTotal, setCampaignAmountTotal] = useState(0);
 
   const [handleOpenUniqueCustomerClick, setHandleOpenUniqueCustomerClick] =
-    useState(() => () => {});
+    useState(() => () => { });
   const [handleOpenUniqueSalesExecutive, setHandleOpenUniqueSalesExecutive] =
-    React.useState(() => () => {});
+    React.useState(() => () => { });
   const accordionButtons = ["Pending Invoice", "Invoice Created"];
 
   // accordin function:-
@@ -30,7 +30,7 @@ export default function Invoice() {
     <div>
       <FormContainer
         mainTitle="Invoice"
-        link="admin/finance-invoice"
+        link="admin/finance/finance-invoice"
         buttonAccess={buttonaccess}
         uniqueCustomerCount={uniqueCustomerCount}
         baseAmountTotal={baseAmountTotal}

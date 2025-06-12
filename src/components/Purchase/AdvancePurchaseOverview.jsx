@@ -78,7 +78,6 @@ const AdvancePurchaseOverview = () => {
   const calculateRemainingAdvanceAmount = (row) => {
     if (activeTab !== "Tab1") {
       const val = (row?.remaining_advance_amount || 0) - (row?.gst_amount || 0);
-      console.log("val", row);
       return Math.floor(val);
     } else {
       const val =
@@ -103,7 +102,7 @@ const AdvancePurchaseOverview = () => {
       renderRowCell: (row) =>
         row?.vendor_name ? (
           <span
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer" , color:"blue"}}
             onClick={() =>
               handleNameClick({
                 vendor_obj_id: row.vendor_obj_id,
@@ -127,7 +126,7 @@ const AdvancePurchaseOverview = () => {
           renderRowCell: (row) =>
             row?.page_name ? (
               <span
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer" ,color:"blue"}}
                 onClick={() => handleNameClick({ page_name: row.page_name })}
                 disabled={!isDefaultView}
               >
@@ -149,17 +148,37 @@ const AdvancePurchaseOverview = () => {
       ? [
         {
           key: "remaining_advance_amount",
-          name: "Remaining Post",
+          name: "Remaining Percentage",
           width: 180,
-          renderRowCell: (row) =>
-            Math.floor(
-              ((row?.remaining_advance_amount || 0) -
-                (row?.gst_amount || 0)) /
-              (row?.at_price || 1)
-            ) || 0,
-        },
+          renderRowCell: (row) => {
+            const advance = row?.advance_amount || 0;
+            const remaining = row?.remaining_advance_amount || 0;
+        
+            if (advance === 0) return "0%";
+        
+            const percentage = ((advance - remaining) / advance) * 100;
+            return `${Math.round(percentage)}%`;
+          },
+        }
+        
+           
       ]
       : []),
+      ...(activeTab !== "Tab1"
+        ? [
+          {
+            key: "remaining_advance_amount",
+            name: "Remaining Post",
+            width: 180,
+            renderRowCell: (row) =>
+              Math.floor(
+                ((row?.remaining_advance_amount || 0) -
+                  (row?.gst_amount || 0)) /
+                (row?.at_price || 1)
+              ) || 0,
+          },
+        ]
+        : []),
     {
       key: 'remaining_advance_amount',
       name: 'Remaining Advance',
@@ -215,7 +234,7 @@ const AdvancePurchaseOverview = () => {
             setSelectedFilter(null);
           }}
         >
-          Vendor Wise
+          Ongoing Advanced
         </button>
         <button
           className={activeTab === 'Tab2' ? 'btn btn-primary' : 'btn btn-outline'}

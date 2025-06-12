@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
-import { baseUrl } from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const ProductUpdate = () => {
   // const [categoryNames, setCategoryNames] = useState({});
@@ -94,11 +94,9 @@ const ProductUpdate = () => {
     var data = await axios
       .delete(`${baseUrl}` + `delete_propdelete/${propid}`, null)
       .then((crash) => {
-        axios
-          .get(`${baseUrl}` + `get_single_productdata/${id}`)
-          .then((res) => {
-            setInputFields(res.data.Product_Prop);
-          });
+        axios.get(`${baseUrl}` + `get_single_productdata/${id}`).then((res) => {
+          setInputFields(res.data.Product_Prop);
+        });
       });
   };
 
@@ -132,11 +130,9 @@ const ProductUpdate = () => {
 
   useEffect(() => {
     if (localStorage.getItem("product_id")) {
-      axios
-        .get(`${baseUrl}` + `get_single_productdata/${id}`)
-        .then((res) => {
-          setInputFields(res.data.Product_Prop);
-        });
+      axios.get(`${baseUrl}` + `get_single_productdata/${id}`).then((res) => {
+        setInputFields(res.data.Product_Prop);
+      });
     }
   }, [id]);
 
@@ -164,7 +160,7 @@ const ProductUpdate = () => {
   }, []);
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/product-overview" />;
+    return <Navigate to="/admin/sales/product-overview" />;
   }
   return (
     <>

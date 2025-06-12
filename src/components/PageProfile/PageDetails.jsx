@@ -53,7 +53,7 @@ function PageDetails({ creatorDetail, setCreatorDetail }) {
 
   const handlePageChange = (event, newValue) => {
     if (newValue) {
-      const pageUrl = `/admin/instaapi/community/manager/${newValue}`;
+      const pageUrl = `/admin/community/manager/${newValue}`;
       window.open(pageUrl, '_blank');
     }
   };

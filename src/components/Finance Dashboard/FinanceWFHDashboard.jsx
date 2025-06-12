@@ -4,8 +4,6 @@ import axios from "axios";
 import { DataGrid, GridColumnMenu, GridToolbar } from "@mui/x-data-grid";
 import CloudDownloadIcon from "@mui/icons-material/CloudDownload";
 import { Button } from "@mui/material";
-import { downloadSelectedInvoices } from "../AdminPanel/WFH/SalaryGeneration/ZipGenerator";
-import { generatePDF } from "../AdminPanel/WFH/SalaryGeneration/pdfGenerator";
 import { useGlobalContext } from "../../Context/Context";
 import { baseUrl } from "../../utils/config";
 import Select from "react-select";
@@ -122,24 +120,41 @@ export default function FinanceWFHDashboard() {
       });
   }, [showFilterModal]);
 
+
+
+  const loadZipDownloader = async () => {
+    const module = await import("../AdminPanel/WFH/SalaryGeneration/ZipGenerator");
+    return module.downloadSelectedInvoices;
+  };
+
   const handleDownloadInvoices = async () => {
     const handleError = (error) => {
-      var err = error.toString();
-      if (err === "RangeError: Array buffer allocation failed")
+      const err = error.toString();
+      if (err === "RangeError: Array buffer allocation failed") {
         toastError("Please select only 40 invoices at a time");
+      } else {
+        toastError("Something went wrong during ZIP download");
+      }
     };
+
     try {
+      const downloadSelectedInvoices = await loadZipDownloader();
       await downloadSelectedInvoices(rowForPayment, handleError);
     } catch (error) {
       console.error("Error downloading invoices:", error);
+      toastError("Failed to download ZIP. Please try again.");
     }
   };
 
   const handleDownloadIPayoutReleased = async () => {
     try {
+      const downloadSelectedInvoices = await loadZipDownloader();
       await downloadSelectedInvoices(rowForPayment);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error downloading invoices:", error);
+    }
   };
+
 
   const handleUTRupload = async (e, row) => {
     e.preventDefault();
@@ -391,6 +406,10 @@ export default function FinanceWFHDashboard() {
         getData();
       });
   }
+  const generatePDF = async (row) => {
+    const module = await import("../AdminPanel/WFH/Templates/Component/InvoicePdfGenerator");
+    return module.generatePDF(row);
+  };
 
   const TDSUserCol = [
     {
@@ -401,13 +420,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-                .filter((item) => item.status_ === 0)
-                .indexOf(params.row)
+              .filter((item) => item.status_ === 0)
+              .indexOf(params.row)
             : activeAccordionIndex == 1
-            ? filterData
+              ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-            : filterData
+              : filterData
                 .filter((item) => item.status_ === 2)
                 .indexOf(params.row);
         return <div>{rowIndex + 1}</div>;
@@ -463,13 +482,13 @@ export default function FinanceWFHDashboard() {
         const rowIndex =
           activeAccordionIndex == 0
             ? filterData
-                .filter((item) => item.status_ === 0)
-                .indexOf(params.row)
+              .filter((item) => item.status_ === 0)
+              .indexOf(params.row)
             : activeAccordionIndex == 1
-            ? filterData
+              ? filterData
                 .filter((item) => item.status_ === 1)
                 .indexOf(params.row)
-            : filterData
+              : filterData
                 ?.filter(
                   (item) => item.attendence_status_flow == "Payment Failed"
                 )
@@ -586,8 +605,8 @@ export default function FinanceWFHDashboard() {
                   params.row.utr
                     ? params.row.utr
                     : params.row.utr || rowUTR.row?.id === params.row.id
-                    ? rowUTR.value
-                    : ""
+                      ? rowUTR.value
+                      : ""
                 }
                 disabled={params.row.utr}
                 type="text"
@@ -1053,11 +1072,11 @@ export default function FinanceWFHDashboard() {
                       departmentFilter === ""
                         ? { value: "", label: "All" }
                         : {
-                            value: departmentFilter,
-                            label: departmentData.find(
-                              (dept) => dept.dept_id === departmentFilter
-                            )?.dept_name,
-                          }
+                          value: departmentFilter,
+                          label: departmentData.find(
+                            (dept) => dept.dept_id === departmentFilter
+                          )?.dept_name,
+                        }
                     }
                     onChange={(selectedOption) => {
                       const selectedValue = selectedOption
@@ -1107,9 +1126,8 @@ export default function FinanceWFHDashboard() {
       <div className="tab">
         {accordionButtons.map((button, index) => (
           <div
-            className={`named-tab ${
-              activeAccordionIndex === index ? "active-tab" : ""
-            }`}
+            className={`named-tab ${activeAccordionIndex === index ? "active-tab" : ""
+              }`}
             onClick={() => {
               handleAccordionButtonClick(index);
             }}
@@ -1121,9 +1139,8 @@ export default function FinanceWFHDashboard() {
 
       <div className="card">
         <div
-          className={`${
-            activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
-          }`}
+          className={`${activeAccordionIndex === 1 || activeAccordionIndex === 0 ? "" : ""
+            }`}
         >
           {activeAccordionIndex === 1 && (
             <div className="card-header">
@@ -1229,7 +1246,7 @@ export default function FinanceWFHDashboard() {
                     <button
                       type="submit"
                       className="btn btn-primary"
-                      // onClick={handlePayOut}
+                    // onClick={handlePayOut}
                     >
                       Pay
                     </button>

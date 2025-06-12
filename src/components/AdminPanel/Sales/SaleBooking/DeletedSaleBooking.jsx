@@ -299,7 +299,7 @@ const DeletedSaleBooking = () => {
     <div>
       <FormContainer
         mainTitle="Deleted Sale Booking"
-        link="/admin/create-sales-booking"
+        link="/admin/sales/create-sales-booking"
       />
 
       <View

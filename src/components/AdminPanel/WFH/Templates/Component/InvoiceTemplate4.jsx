@@ -1,7 +1,7 @@
 import React from "react";
 import headerImg from "../assets/images/photostudio/header-img.svg";
 import footerImg from "../assets/images/photostudio/footer-img.svg";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 const InvoiceTemplate4 = ({ data }) => {
   const handleImageError = (e) => {

@@ -6,18 +6,15 @@ import { useAPIGlobalContext } from "../APIContext/APIContext";
 const OperationSidebarLinks = () => {
   return (
     <>
-      <NavLink className="collapse-item" to="/admin/record-campaign">
+      <NavLink className="collapse-item" to="/admin/operation/record-campaign">
         <i className="bi bi-dot"></i>
         Record Campaigns
       </NavLink>
-      <NavLink
-        className="collapse-item"
-        to="/admin/exeexecution/pending"
-      >
+      <NavLink className="collapse-item" to="/admin/operation/pending">
         <i className="bi bi-dot"></i> Pending
       </NavLink>
 
-      {/* <NavLink className="collapse-item" to="/admin/op-calender">
+      {/* <NavLink className="collapse-item" to="/admin/operation/op-calender">
       <i className="bi bi-dot"></i>
       Calender
     </NavLink>

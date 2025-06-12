@@ -46,7 +46,7 @@ const DeliveryData = () => {
         } else {
         }
       })
-      .catch((error) => { });
+      .catch((error) => {});
   }
 
   useEffect(() => {

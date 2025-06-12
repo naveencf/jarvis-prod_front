@@ -108,7 +108,7 @@ const SalesProductCU = () => {
   };
 
   if (isFormSubmitted) {
-    navigate("/admin/product");
+    navigate("/admin/sales/product");
   }
 
   console.log(servicename);
@@ -126,7 +126,9 @@ const SalesProductCU = () => {
         <div className="action_btns">
           {!isClone && task !== "create" && (
             <>
-              <Link to={`/admin/create-sales-services/${servicename}/${"put"}`}>
+              <Link
+                to={`/admin/sales/create-sales-services/${servicename}/${"put"}`}
+              >
                 <button className="btn cmnbtn btn-primary btn_sm ">Edit</button>
               </Link>
 

@@ -238,7 +238,7 @@ const CreatePaymentUpdate = () => {
 
       refetchSaleBooking();
       toastAlert("Successfull", "Payment updated successfully");
-      navigate("/admin/view-sales-booking");
+      navigate("/admin/sales/view-sales-booking");
     } catch (error) {
       toastError(error.message || "Error updating payment");
     }
@@ -256,7 +256,8 @@ const CreatePaymentUpdate = () => {
     setPayAmt(campaignAmount - userdata?.approved_amount);
     if (campaignAmount - userdata?.approved_amount < paymentAmount) {
       toastError(
-        `Payment amount should be less than or equal to ${campaignAmount - userdata?.approved_amount
+        `Payment amount should be less than or equal to ${
+          campaignAmount - userdata?.approved_amount
         } amount`
       );
     }
@@ -276,11 +277,13 @@ const CreatePaymentUpdate = () => {
                   salebookID: option?.sale_booking_id,
                   accountID: option?.account_id,
                 },
-                label: `${allAccountData?.find(
-                  (data) => data.account_id === option.account_id
-                )?.account_name
-                  } | ${DateISOtoNormal(option?.sale_booking_date)} | ${option?.campaign_amount
-                  }`,
+                label: `${
+                  allAccountData?.find(
+                    (data) => data.account_id === option.account_id
+                  )?.account_name
+                } | ${DateISOtoNormal(option?.sale_booking_date)} | ${
+                  option?.campaign_amount
+                }`,
               }))}
               value={{
                 value: selectedSaleBooking,
@@ -288,22 +291,24 @@ const CreatePaymentUpdate = () => {
                   (item) =>
                     item?.sale_booking_id === selectedSaleBooking?.salebookID
                 )
-                  ? `${accountData?.find(
-                    (item) =>
-                      item.account_id === selectedSaleBooking?.accountID
-                  )?.account_name
-                  } | ${DateISOtoNormal(
-                    saleBookingData.find(
-                      (item) =>
-                        item.sale_booking_id ===
-                        selectedSaleBooking?.salebookID
-                    )?.sale_booking_date
-                  )} | ${saleBookingData.find(
-                    (item) =>
-                      item.sale_booking_id ===
-                      selectedSaleBooking?.salebookID
-                  )?.campaign_amount
-                  }`
+                  ? `${
+                      accountData?.find(
+                        (item) =>
+                          item.account_id === selectedSaleBooking?.accountID
+                      )?.account_name
+                    } | ${DateISOtoNormal(
+                      saleBookingData.find(
+                        (item) =>
+                          item.sale_booking_id ===
+                          selectedSaleBooking?.salebookID
+                      )?.sale_booking_date
+                    )} | ${
+                      saleBookingData.find(
+                        (item) =>
+                          item.sale_booking_id ===
+                          selectedSaleBooking?.salebookID
+                      )?.campaign_amount
+                    }`
                   : "",
               }}
               onChange={(e) => {
@@ -358,11 +363,11 @@ const CreatePaymentUpdate = () => {
                       (item) =>
                         item.sale_booking_id === selectedSaleBooking?.salebookID
                     )?.campaign_amount -
-                    saleBookingData.find(
-                      (item) =>
-                        item.sale_booking_id ===
-                        selectedSaleBooking?.salebookID
-                    )?.requested_amount
+                      saleBookingData.find(
+                        (item) =>
+                          item.sale_booking_id ===
+                          selectedSaleBooking?.salebookID
+                      )?.requested_amount
                   );
                 }
               }}

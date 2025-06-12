@@ -475,7 +475,7 @@ const WFHDOverview = () => {
       name: "User Name",
       cell: (row) => (
         <Link
-          to={`/admin/user-single/${row.user_id}`}
+          to={`/admin/user/user-single/${row.user_id}`}
           style={{ color: "blue" }}
         >
           {row.user_name}
@@ -573,7 +573,7 @@ const WFHDOverview = () => {
                 className="btn btn-primary mr-1"
               >
               </button> */}
-              <Link to={`/admin/wfhd-update/${row.user_id}`}>
+              <Link to={`/admin/wfhd/wfhd-update/${row.user_id}`}>
                 {/* <EditIcon /> */}
                 <div className="icon-1" title="Edit User">
                   <i className="bi bi-pencil"></i>
@@ -585,7 +585,7 @@ const WFHDOverview = () => {
                 className="btn btn-primary mr-1"
               >
               </button> */}
-              <Link to={`/admin/wfhd-bank-update/${row.user_id}`}>
+              <Link to={`/admin/wfhd/wfhd-bank-update/${row.user_id}`}>
                 {/* <DetailsIcon /> */}
                 <div className="icon-1" title="Bank details">
                   <i className="bi bi-info-square"></i>
@@ -651,13 +651,13 @@ const WFHDOverview = () => {
               >
                 Sep
               </button>
-              <Link to={`/admin/wfhd-bank-update/${row.user_id}`}>
+              <Link to={`/admin/wfhd/wfhd-bank-update/${row.user_id}`}>
                 {/* <DetailsIcon /> */}
                 <div className="icon-1" title="Bank details">
                   <i className="bi bi-info-square"></i>
                 </div>
               </Link>
-              <Link to={`/admin/wfhd-update/${row.user_id}`}>
+              <Link to={`/admin/wfhd/wfhd-update/${row.user_id}`}>
                 {/* <EditIcon /> */}
                 <div className="icon-1" title="Edit User">
                   <i className="bi bi-pencil"></i>

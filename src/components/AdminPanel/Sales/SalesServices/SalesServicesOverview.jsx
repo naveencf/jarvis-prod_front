@@ -182,11 +182,15 @@ const SalesServicesOverview = () => {
               <i className="fa-solid fa-ellipsis"></i>
             </button>
             <div className="dropdown-menu dropdown-menu-right">
-              <Link to={`/admin/create-sales-services/${row._id}/${"put"}`}>
+              <Link
+                to={`/admin/sales/create-sales-services/${row._id}/${"put"}`}
+              >
                 <button className="dropdown-item ">Edit</button>
               </Link>
 
-              <Link to={`/admin/create-sales-services/${row._id}/${post}`}>
+              <Link
+                to={`/admin/sales/create-sales-services/${row._id}/${post}`}
+              >
                 <button className="dropdown-item ">Clone</button>
               </Link>
             </div>
@@ -207,7 +211,7 @@ const SalesServicesOverview = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Services"
-            link="/admin/create-sales-services"
+            link="/admin/sales/create-sales-services"
             buttonAccess={true}
             submitButton={false}
           />

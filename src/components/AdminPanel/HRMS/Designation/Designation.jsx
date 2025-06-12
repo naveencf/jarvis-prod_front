@@ -90,7 +90,7 @@ const Designation = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/designation-overview" />;
+    return <Navigate to="/admin/user/designation-overview" />;
   }
   return (
     <div>

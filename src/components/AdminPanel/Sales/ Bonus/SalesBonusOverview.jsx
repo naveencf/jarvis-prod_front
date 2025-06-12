@@ -38,8 +38,8 @@ const SalesBonusOverview = () => {
       name: "Bonus Details",
       renderRowCell: (row) => (
         <>
-          {/* <Link to={`/admin/sales-bonus-slab/${row.user_id}`}> */}
-          <Link to={`/admin/sales-bonus-summary/${row.user_id}`}>
+          {/* <Link to={`/admin/sales/sales-bonus-slab/${row.user_id}`}> */}
+          <Link to={`/admin/sales/sales-bonus-summary/${row.user_id}`}>
             <button className="btn cmnbtn btn-primary btn_sm mr-2">
               Details
             </button>

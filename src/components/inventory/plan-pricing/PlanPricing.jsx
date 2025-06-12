@@ -726,7 +726,7 @@ const PlanPricing = () => {
       posts_per_profile: parseInt(row['Posts Per Profile'], 10) || 0,
       stories_per_profile: parseInt(row['Stories Per Profile'], 10) || 0,
     }));
-    console.log("data",data);
+    console.log("data", data);
     filterAndSelectRowsNew(normalizedData);
   };
   const handleCloseUnfetched = () => setUnfetchedData(null);
@@ -754,7 +754,7 @@ const PlanPricing = () => {
       map[sanitizedPageName].push(page);
       return map;
     }, {});
-console.log("csvData",csvData);
+    console.log("csvData", csvData);
     csvData.forEach((csvRow) => {
       const sanitizedCsvPageName = sanitizePageName(csvRow.page_name);
       const csvPlatform = csvRow.profile_link ? getPlatformNameFromLink(csvRow.profile_link.toLowerCase()) : null;
@@ -809,15 +809,15 @@ console.log("csvData",csvData);
       workbook.SheetNames.forEach((sheetName) => {
         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], { defval: "" });
         if (sheetData.length === 0) return;
-      
+
         const actualHeaders = Object.keys(sheetData[0]).filter(h => h);
         const isValidSheet = requiredHeaders.every(h => actualHeaders.includes(h));
-      
+
         if (isValidSheet) {
           allData.push(...sheetData);
         }
       });
-      
+
 
       processCSVData(allData);
     };
@@ -1062,7 +1062,7 @@ console.log("csvData",csvData);
   }, [notFoundPages, allNotFoundUnfetched, unfetechedPages]);
 
   //   useEffect(() => {
-  //     const currentRouteBase = '/admin/pms-plan-making';
+  //     const currentRouteBase = '/admin/inventory/pms-plan-making';
   //     const payload = {
   //       id: id,
   //       plan_status: 'open',
@@ -1076,7 +1076,7 @@ console.log("csvData",csvData);
 
   //     const handleRouteChange = async () => {
   //       if (!location.pathname.startsWith(`${currentRouteBase}/${id}`)) {
-  //         // console.log(`User navigated away from /admin/pms-plan-making/${id}`);
+  //         // console.log(`User navigated away from /admin/inventory/pms-plan-making/${id}`);
   //         sendPlanxLogs('v1/planxlogs', payload);
   //       }
   //     };
