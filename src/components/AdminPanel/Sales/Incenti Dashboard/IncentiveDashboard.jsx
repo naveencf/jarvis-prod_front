@@ -191,7 +191,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate(`/admin/sales-user-incentve`, {
+              navigate(`/admin/sales/sales-user-incentive`, {
                 state: { id: row.user_id, name: "monthwise" },
               })
             }
@@ -210,7 +210,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate(`/admin/sales-user-incentve`, {
+              navigate(`/admin/sales/sales-user-incentive`, {
                 state: { id: row.user_id, name: "monthwise" },
               })
             }
@@ -230,7 +230,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate(`/admin/sales-user-incentve`, {
+              navigate(`/admin/sales/sales-user-incentive`, {
                 state: { id: row.user_id, name: "monthwise" },
               })
             }
@@ -248,7 +248,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate(`/admin/sales-user-incentve`, {
+              navigate(`/admin/sales/sales-user-incentive`, {
                 state: { id: row.user_id, name: "monthwise" },
               })
             }
@@ -267,7 +267,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate("/admin/incentive-status/earned", {
+              navigate("/admin/sales/incentive-status/earned", {
                 state: {
                   name: "Earned",
                   id: row.user_id,
@@ -291,7 +291,7 @@ const IncentiveDashboard = () => {
           <div
             style={{ cursor: "pointer" }}
             onClick={() =>
-              navigate("/admin/incentive-status/earned", {
+              navigate("/admin/sales/incentive-status/earned", {
                 state: {
                   name: "Unearned",
                   id: row.user_id,
@@ -318,7 +318,7 @@ const IncentiveDashboard = () => {
       renderRowCell: (row) => (
         <div
           onClick={() =>
-            navigate("/admin/user-incenitve", {
+            navigate("/admin/sales/user-incenitve", {
               state: {
                 id: row.user_id,
                 name: row.user_name,
@@ -378,7 +378,7 @@ const IncentiveDashboard = () => {
       renderRowCell: (row) => (
         <div
           onClick={() =>
-            navigate("/admin/user-incenitve", {
+            navigate("/admin/sales/user-incenitve", {
               state: {
                 id: row.user_id,
                 name: row.user_name,
@@ -557,9 +557,7 @@ const IncentiveDashboard = () => {
                 </span>
               </div>
               <div>
-                <h6 className="colorMedium">
-                  Earned Incentive Pending
-                </h6>
+                <h6 className="colorMedium">Earned Incentive Pending</h6>
                 <h6 className="mt4 fs_16">
                   {formatNumber(
                     incentiveTotalData?.totalIncentiveRequestPendingAmount

@@ -7,7 +7,6 @@ import FieldContainer from "../../FieldContainer";
 import FormContainer from "../../FormContainer";
 import DeleteButton from "../../DeleteButton";
 
-
 const PreonboardingDocumentOverview = () => {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
@@ -23,7 +22,7 @@ const PreonboardingDocumentOverview = () => {
     {
       name: "Document Name",
       selector: (row) => row.doc_name,
-      sortable: true
+      sortable: true,
     },
     {
       name: "Document Type",
@@ -54,7 +53,9 @@ const PreonboardingDocumentOverview = () => {
       name: "Action",
       cell: (row) => (
         <>
-          <Link to={`/admin/preonboarding-documents-update/${row?._id}`}>
+          <Link
+            to={`/admin/preonboard/preonboarding-documents-update/${row?._id}`}
+          >
             <div className="icon-1" title="Edit User">
               <i className="bi bi-pencil"></i>
             </div>
@@ -99,7 +100,7 @@ const PreonboardingDocumentOverview = () => {
     <>
       <FormContainer
         mainTitle="Pre Onboarding Document"
-        link="/admin/preonboarding-documents"
+        link="/admin/preonboard/preonboarding-documents"
         buttonAccess={true}
       />
       <div className="page_height">
@@ -120,7 +121,7 @@ const PreonboardingDocumentOverview = () => {
               data={filterData}
               pagination
               paginationPerPage={100}
-            // selectableRows
+              // selectableRows
             />
           </div>
           <div className="data_tbl table-responsive"></div>

@@ -4,7 +4,7 @@ import "../assets/css/media-query.css";
 import blackImg1 from "../assets/images/bus/black-img1.svg";
 import blackImg2 from "../assets/images/bus/black-img2.svg";
 import pinkImg from "../assets/images/bus/pink-img.svg";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 const InvoiceTemplate3 = ({ data }) => {
   const handleImageError = (e) => {

@@ -51,7 +51,7 @@ const CreditApprovalReasonView = () => {
       cell: (row) =>
         row.reason_type !== "own reason" && (
           <>
-            <Link to={`/admin/update-credit-reason-approval/${row._id}`}>
+            <Link to={`/admin/sales/update-credit-reason-approval/${row._id}`}>
               <div className="icon-1">
                 <i className="bi bi-pencil" />
               </div>
@@ -71,7 +71,7 @@ const CreditApprovalReasonView = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Credit Approval Reasons"
-            link="/admin/create-credit-reason-approval"
+            link="/admin/sales/create-credit-reason-approval"
             buttonAccess={true}
             submitButton={false}
           />

@@ -589,7 +589,7 @@ const AnnouncementView = () => {
             <button
               className="btn cmnbtn btn_sm btn-outline-primary"
               onClick={() => {
-                navigate("/admin/announcement-post");
+                navigate("/admin/preonboard/announcement-post");
               }}
             >
               + Add Announcement

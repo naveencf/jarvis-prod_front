@@ -242,7 +242,7 @@ const AddVendorPage = () => {
           justifyContent: "flex-end",
         }}
       >
-        <Link to="/admin/vendor-inventory">
+        <Link to="/admin/vendor-sale/vendor-inventory">
           {" "}
           <ArrowLeft size={20} weight="bold" />
           All Vendor

@@ -479,7 +479,7 @@ const PurchaseTransactions = () => {
     <div>
       {/* <FormContainer
                 mainTitle="Transaction List"
-                link="/admin/finance-pruchasemanagement-paymentdone-transactionlist/:request_id"
+                link="/admin/finance/finance-pruchasemanagement-paymentdone-transactionlist/:request_id"
             /> */}
       <div className="card" style={{ height: "600px" }}>
         <div className="card-body thm_table">

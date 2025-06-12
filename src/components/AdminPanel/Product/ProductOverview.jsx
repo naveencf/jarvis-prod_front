@@ -23,9 +23,7 @@ const ProductOverview = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}`+`get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setDatas(res.data);
         });
@@ -37,7 +35,7 @@ const ProductOverview = () => {
   }, []);
 
   function getData() {
-    axios.get(baseUrl+"get_all_products").then((res) => {
+    axios.get(baseUrl + "get_all_products").then((res) => {
       setData(res.data);
       setFilterData(res.data);
     });
@@ -103,8 +101,11 @@ const ProductOverview = () => {
           {contextData &&
             contextData[5] &&
             contextData[5].update_value === 1 && (
-              <Link to="/admin/product-update">
-                <div className="icon-1"  title="Edit" onClick={() => {
+              <Link to="/admin/sales/product-update">
+                <div
+                  className="icon-1"
+                  title="Edit"
+                  onClick={() => {
                     setToLocalStorage(
                       row.product_id,
                       row.Product_name,
@@ -124,9 +125,10 @@ const ProductOverview = () => {
                       row.Last_updated_by,
                       row.Last_updated_date
                     );
-                  }}>
-                    <i className="bi bi-pencil"></i>
-                  </div>
+                  }}
+                >
+                  <i className="bi bi-pencil"></i>
+                </div>
                 {/* <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button"
@@ -204,7 +206,7 @@ const ProductOverview = () => {
     <>
       <FormContainer
         mainTitle="Product"
-        link="/admin/product-master"
+        link="/admin/sales/product-master"
         buttonAccess={
           contextData &&
           contextData[5] &&
@@ -216,7 +218,6 @@ const ProductOverview = () => {
       <div className="card">
         <div className="card-header sb">
           Product Overview
-
           <input
             type="text"
             placeholder="Search here"
@@ -226,17 +227,14 @@ const ProductOverview = () => {
           />
         </div>
         <div className="card-body">
-
           <DataTable
-         
             columns={columns}
             data={filterData}
-            pagination 
+            pagination
             selectableRows
           />
         </div>
-        <div className="data_tbl table-responsive">
-        </div>
+        <div className="data_tbl table-responsive"></div>
       </div>
 
       <Modal

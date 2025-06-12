@@ -595,7 +595,7 @@ const PendingApprovalRefund = () => {
     <div>
       <FormContainer
         mainTitle="Payment Refund List"
-        link="/admin/finance-pedingapprovalrefund"
+        link="/admin/finance/finance-pedingapprovalrefund"
         buttonAccess={
           contextData &&
           contextData[2] &&

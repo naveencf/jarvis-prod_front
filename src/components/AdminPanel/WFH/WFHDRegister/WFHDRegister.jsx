@@ -798,7 +798,7 @@ const WFHDRegister = ({ userUpdateID }) => {
   // }
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/wfhd-overview" />;
+    return <Navigate to="/admin/wfhd/wfhd-overview" />;
   }
 
   // Password Auto Genrate
@@ -979,7 +979,7 @@ const WFHDRegister = ({ userUpdateID }) => {
       <FormContainer
         mainTitle="WFHD User"
         submitButton={false}
-        link={"/admin/wfhd-overview"}
+        link={"/admin/wfhd/wfhd-overview"}
       />
       <div className="card">
         <div className="card-header">

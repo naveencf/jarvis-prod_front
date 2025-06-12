@@ -543,13 +543,13 @@ function CommunityHome() {
             <div className="action_btns">
               <Link
                 className="btn cmnbtn btn-primary btn_sm"
-                to={"/admin/instaapi/community/community-pages"}
+                to={"/admin/community/community-pages"}
               >
                 Community Pages List
               </Link>
               <Link
                 className="btn cmnbtn btn-primary btn_sm"
-                to={"/admin/instaapi/community/internal-category"}
+                to={"/admin/community/internal-category"}
               >
                 Add Internal Categories
               </Link>
@@ -567,14 +567,14 @@ function CommunityHome() {
               </Button>
               <Button
                 className="btn cmnbtn btn-primary btn_sm"
-                onClick={() => navigate("/admin/instaapi/community/user")}
+                onClick={() => navigate("/admin/community/user")}
               >
                 Users
               </Button>
               <Button
                 className="btn cmnbtn btn-primary btn_sm"
                 onClick={() =>
-                  navigate("/admin/instaapi/community/managerView")
+                  navigate("/admin/community/managerView")
                 }
               >
                 Manager View

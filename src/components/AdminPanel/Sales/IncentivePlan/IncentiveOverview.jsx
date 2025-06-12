@@ -81,7 +81,7 @@ const IncentiveOverview = () => {
 
       renderRowCell: (row) => (
         <div className="flex-row">
-          <Link to={`/admin/sales-incentive-update/${row._id}`}>
+          <Link to={`/admin/sales/sales-incentive-update/${row._id}`}>
             <div className="icon-1">
               <i className="bi bi-pencil"></i>
             </div>
@@ -98,7 +98,7 @@ const IncentiveOverview = () => {
         <div className="action_title">
           <FormContainer
             mainTitle={`Incentive Plan`}
-            link="/admin/sales-incentive-create"
+            link="/admin/sales/sales-incentive-create"
             buttonAccess={loginUserRole === 1}
             submitButton={false}
           />
@@ -106,8 +106,9 @@ const IncentiveOverview = () => {
       </div>
       <View
         version={1}
-        title={`Incentive Overview (${allIncentiveData?.length
-          }) - ${"There will be no incentive for competitive plan"}`}
+        title={`Incentive Overview (${
+          allIncentiveData?.length
+        }) - ${"There will be no incentive for competitive plan"}`}
         data={incentiveData}
         columns={columns}
         isLoading={incentiveLoading}

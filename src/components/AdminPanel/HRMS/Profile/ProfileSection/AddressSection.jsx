@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import IndianStatesMui from "../../../../../../ReusableComponents/IndianStatesMui";
-import IndianCitiesMui from "../../../../../../ReusableComponents/IndianCitiesMui";
+import IndianStatesMui from "../../../../ReusableComponents/IndianStatesMui";
+import IndianCitiesMui from "../../../../ReusableComponents/IndianCitiesMui";
 import { TextField } from "@mui/material";
-import { baseUrl } from "../../../../../../../utils/config";
+import { baseUrl } from "../../../../../utils/config";
 import axios from "axios";
-import { useGlobalContext } from "../../../../../../../Context/Context";
+import { useGlobalContext } from "../../../../../Context/Context";
 
 const AddressSection = ({ userData }) => {
   const { toastAlert, toastError } = useGlobalContext();

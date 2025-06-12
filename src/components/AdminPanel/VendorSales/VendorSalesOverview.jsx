@@ -400,6 +400,17 @@ const VendorSalesOverview = () => {
     setActTab("");
   }, [selectedPlan]);
 
+  useEffect(() => {
+    const cachedData = JSON.parse(localStorage.getItem("tab"));
+    if (cachedData) {
+      const firstKey = Object.keys(cachedData)[0];
+      setSelectedPlan(firstKey && firstKey !== "null" ? firstKey : "dummy"); // dummy or some real fallback ID
+    } else {
+      setSelectedPlan("dummy");
+    }
+  }, []);
+
+  
   // useEffect(() => {
   //   const fetchData = async () => {
   //     if (!vendorId || !platfromId) return;
@@ -1000,7 +1011,7 @@ const VendorSalesOverview = () => {
       width: 100,
     },
   ];
-
+ 
   const handleConfirmUpdate = async () => {
     try {
       setShowModal(false);

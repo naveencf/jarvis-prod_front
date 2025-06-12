@@ -64,7 +64,7 @@ export default function MajorDepartmentMast() {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/major-department-overview" />;
+    return <Navigate to="/admin/user/major-department-overview" />;
   }
   return (
     <>

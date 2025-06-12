@@ -58,7 +58,7 @@ const BonusSlabOverview = () => {
       <div className="action_title d-flex justify-content-between">
         <FormContainer mainTitle={"Slab Overview"} link={true} />
         {/* <div className="d-flex ">
-          <Link to={`/admin/sales-bonus-slab-master-add-edit/${0}`}>
+          <Link to={`/admin/sales/sales-bonus-slab-master-add-edit/${0}`}>
             <button className="btn cmnbtn btn-primary btn_sm mr-2">
               Add Slab
             </button>

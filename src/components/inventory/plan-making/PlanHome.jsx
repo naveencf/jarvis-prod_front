@@ -348,7 +348,7 @@ function PlanHome() {
   // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
-    navigate(`/admin/pms-plan-making/${planId}`);
+    navigate(`/admin/inventory/pms-plan-making/${planId}`);
   };
 
   const handleEditClick = (row) => {
@@ -505,7 +505,7 @@ function PlanHome() {
         //   }`,
         //   preConfirm: () => {
         //     const planId = result.data._id;
-        //     isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
+        //     isEdit ? '' : navigate(`/admin/inventory/pms-plan-making/${planId}`);
         //   },
         // });
         setSubmitLoader(false);
@@ -513,7 +513,7 @@ function PlanHome() {
         if (isEdit) {
           fetchPlans();
         } else {
-          navigate(`/admin/pms-plan-making/${planId}`);
+          navigate(`/admin/inventory/pms-plan-making/${planId}`);
         }
       } else {
         Swal.fire({
@@ -752,7 +752,7 @@ function PlanHome() {
                 Create Plan <AddIcon />
               </button>
             </Link>
-            <Link to="/admin/pms-plan-pricing">
+            <Link to="/admin/inventory/pms-plan-pricing">
               <button className="btn cmnbtn btn-primary btn_sm">Plan Pricing</button>
             </Link>
           </div>

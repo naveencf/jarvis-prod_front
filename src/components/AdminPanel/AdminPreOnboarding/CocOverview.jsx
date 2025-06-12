@@ -9,7 +9,6 @@ import DateISOtoNormal from "../../../utils/DateISOtoNormal";
 import DeleteButton from "../DeleteButton";
 import FormContainer from "../FormContainer";
 
-
 const CocOverview = () => {
   const { toastAlert } = useGlobalContext();
   const [search, setSearch] = useState("");
@@ -69,7 +68,7 @@ const CocOverview = () => {
       name: "Action",
       cell: (row) => (
         <>
-          <Link to={`/admin/pre-onboard-coc-update/${row._id}`}>
+          <Link to={`/admin/preonboard/pre-onboard-coc-update/${row._id}`}>
             <div className="icon-1" title="Edit">
               <i className="bi bi-pencil"></i>
             </div>
@@ -107,18 +106,19 @@ const CocOverview = () => {
     <>
       <FormContainer
         mainTitle="Coc Overview"
-        link="/admin/pre-onboard-coc-master"
+        link="/admin/preonboard/pre-onboard-coc-master"
       />
       <Link
         className="btn cmnbtn btn-primary btn-sm "
-        to="/admin/pre-onboard-coc-master"
+        to="/admin/preonboard/pre-onboard-coc-master"
       >
         New Coc
       </Link>
 
       <div className="card">
         <div className="card-header sb">
-          Coc Overview <input
+          Coc Overview{" "}
+          <input
             type="text"
             placeholder="Search here"
             className="w-25 form-control"
@@ -128,14 +128,10 @@ const CocOverview = () => {
         </div>
         <div className="card-body body-padding thm_table">
           <DataTable
-
             columns={columns}
             data={filterdata}
-
             pagination
-
             highlightOnHover
-
           />
         </div>
         {/* <div className="data_tbl table-responsive cocTable">

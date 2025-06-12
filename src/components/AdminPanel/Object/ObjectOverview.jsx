@@ -20,9 +20,7 @@ const ObjectOverview = () => {
   useEffect(() => {
     if (userID && contextData.length === 0) {
       axios
-        .get(
-          `${baseUrl}` + `get_single_user_auth_detail/${userID}`
-        )
+        .get(`${baseUrl}` + `get_single_user_auth_detail/${userID}`)
         .then((res) => {
           setDatas(res.data);
         });
@@ -77,7 +75,7 @@ const ObjectOverview = () => {
           {contextData &&
             contextData[2] &&
             contextData[2].update_value === 1 && (
-              <Link to={`/admin/object-update/${row.obj_id}`}>
+              <Link to={`/admin/user/object-update/${row.obj_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button"
@@ -97,7 +95,7 @@ const ObjectOverview = () => {
     <>
       <FormContainer
         mainTitle="Object"
-        link="/admin/object-master"
+        link="/admin/user/object-master"
         buttonAccess={
           contextData &&
           contextData[2] &&
@@ -440,7 +438,7 @@ const ObjectOverview = () => {
 //     <div>
 //       <FormContainer
 //         mainTitle="Object"
-//         link="/admin/object-master"
+//         link="/admin/user/object-master"
 //         buttonAccess={
 //           contextData &&
 //           contextData[2] &&
@@ -713,7 +711,7 @@ const ObjectOverview = () => {
 //                     ))}
 //                     <td>
 //                       <div className="dt-row-col">
-//                         <Link to={`/admin/object-update/${row.obj_id}`}>
+//                         <Link to={`/admin/user/object-update/${row.obj_id}`}>
 //                           <button title="Edit" className="icon-1">
 //                             <i className="bi bi-pencil"></i>
 //                           </button>
@@ -830,9 +828,6 @@ const ObjectOverview = () => {
 // };
 // export default ObjectOverview;
 
-
-
-
 // import { useState, useEffect, useRef } from "react";
 // import axios from "axios";
 // import FormContainer from "../FormContainer";
@@ -865,12 +860,12 @@ const ObjectOverview = () => {
 //       icon: "bi bi-pencil",
 //       header: "Edit Action",
 //       action: (row) => (
-//         <Link to={`/admin/object-update/${row.obj_id}`}>
+//         <Link to={`/admin/user/object-update/${row.obj_id}`}>
 //           <button title="Edit" className="icon-1">
 //             <i className="bi bi-pencil"></i>
 //           </button>
 //         </Link>
-//       ), 
+//       ),
 //     },
 //     {
 //       label: "Delete",
@@ -880,13 +875,13 @@ const ObjectOverview = () => {
 //         <DeleteButton endpoint="obj_delete" id={row.obj_id} getData={getData} />
 //       ),
 //     }
-//   ];  
+//   ];
 
 //   return (
 //     <div>
 //       <FormContainer
 //         mainTitle="Object"
-//         link="/admin/object-master"
+//         link="/admin/user/object-master"
 //         buttonAccess={
 //           contextData &&
 //           contextData[2] &&
@@ -895,9 +890,9 @@ const ObjectOverview = () => {
 //         }
 //       />
 
-//       <DynamicTable 
-//         tableName='object table' 
-//         tableFields={["Created_by","Dept_id","dept_name","obj_id","obj_name","soft_name","_id"]} 
+//       <DynamicTable
+//         tableName='object table'
+//         tableFields={["Created_by","Dept_id","dept_name","obj_id","obj_name","soft_name","_id"]}
 //         tableApi='get_all_objs'
 //         tableActions={tableActions}
 //       />

@@ -124,7 +124,7 @@ const DocumentTypeOverview = () => {
         </div>
         {loginUserRole === 1 && (
           <div className="action_btns">
-            <Link to={"/admin/sales-document-type-master"}>
+            <Link to={"/admin/sales/sales-document-type-master"}>
               <button className="btn cmnbtn btn-primary btn_sm">
                 Add Document Type
               </button>

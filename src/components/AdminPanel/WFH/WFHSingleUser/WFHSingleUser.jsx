@@ -6,7 +6,6 @@ import axios from "axios";
 import { useGlobalContext } from "../../../../Context/Context";
 import jwtDecode from "jwt-decode";
 import * as XLSX from "xlsx";
-import { generatePDF } from "../SalaryGeneration/pdfGenerator";
 import {
   Document,
   Image,
@@ -21,7 +20,7 @@ import MyTemplate3 from "../SalaryGeneration/Template3";
 import MyTemplate4 from "../SalaryGeneration/Template4";
 import MyTemplate5 from "../SalaryGeneration/Template5";
 import Modal from "react-modal";
-import DigitalSignature from "../../../DigitalSignature/DigitalSignature";
+// import DigitalSignature from "../../../DigitalSignature/DigitalSignature";
 import useInvoiceTemplateImages from "../Templates/Hooks/useInvoiceTemplateImages";
 import PreviewInvoice from "./PreviewInvoice";
 import { baseUrl } from "../../../../utils/config";
@@ -62,6 +61,11 @@ const WFHSingleUser = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isTemaplateModalOpen, setIsTemplateModalOpen] = useState(false);
+
+  const generatePDF = async (row) => {
+    const module = await import("../../WFH/SalaryGeneration/pdfGenerator");
+    return module.generatePDF(row);
+  };
 
   const openModal = () => {
     setIsModalOpen(true);

@@ -19,7 +19,6 @@ const CocMaster = () => {
   const decodedToken = jwtDecode(token);
   const loginUserId = decodedToken.id;
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -35,32 +34,26 @@ const CocMaster = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/pre-onboard-coc-overview" />;
+    return <Navigate to="/admin/preonboard/pre-onboard-coc-overview" />;
   }
   return (
     <div>
-      <FormContainer
-        link={true}
-        mainTitle="COC"
-        handleSubmit={handleSubmit}
-      >
-
+      <FormContainer link={true} mainTitle="COC" handleSubmit={handleSubmit}>
         {/* <div style={{ border: "solid" }}>
           <div dangerouslySetInnerHTML={{ __html: cocContent }}></div>
         </div> */}
       </FormContainer>
       <div className="card">
         <div className="card-header">
-          <div className="card-title">
-            Coc Creation
-          </div>
+          <div className="card-title">Coc Creation</div>
         </div>
         <div className="card-body">
           <TextEditor value={cocContent} onChange={setCocContent} />
-
         </div>
       </div>
-      <button className="btn btn-primary cmnbtn " onClick={handleSubmit}>Submit</button>
+      <button className="btn btn-primary cmnbtn " onClick={handleSubmit}>
+        Submit
+      </button>
     </div>
   );
 };

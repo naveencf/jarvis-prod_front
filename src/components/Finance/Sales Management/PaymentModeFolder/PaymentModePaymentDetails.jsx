@@ -86,7 +86,7 @@ const PaymentModePaymentDetails = () => {
     <div>
       <FormContainer
         mainTitle=" Add Payment Details"
-        link="/admin/finance-paymentmode"
+        link="/admin/finance/finance-paymentmode"
       />
 
       <div

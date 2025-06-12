@@ -99,7 +99,7 @@ function PlanHomeBeta() {
   const [pagequery, setPagequery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [inputValue, setInputValue] = useState(1);
-
+  console.log("first reached")
   const generateSuggestions = (value) => {
     const baseValue = parseFloat(value) || 0;
     if (baseValue === 0) return [];
@@ -443,7 +443,7 @@ function PlanHomeBeta() {
   // Updated handleRowClick to handle "Duplicate" action
   const handleRowClick = (params) => {
     const planId = params.id; // Get the plan's _id from the clicked row
-    navigate(`/admin/pms-plan-making-beta/${planId}`);
+    navigate(`/admin/inventory/pms-plan-making-beta/${planId}`);
   };
   const handleEditClick = (row) => {
     const selectedAccount = accounts.find((acc) => acc._id === row.account_id);
@@ -651,14 +651,14 @@ function PlanHomeBeta() {
         //   }`,
         //   preConfirm: () => {
         //     const planId = result.data._id;
-        //     isEdit ? '' : navigate(`/admin/pms-plan-making/${planId}`);
+        //     isEdit ? '' : navigate(`/admin/inventory/pms-plan-making/${planId}`);
         //   },
         // });
         const planId = result.data._id;
         if (isEdit) {
           fetchPlans();
         } else {
-          navigate(`/admin/pms-plan-making/${planId}`);
+          navigate(`/admin/inventory/pms-plan-making/${planId}`);
         }
       } else {
         Swal.fire({
@@ -1026,7 +1026,7 @@ function PlanHomeBeta() {
                 </button>
               </Link>
             )}
-            <Link to="/admin/pms-plan-pricing">
+            <Link to="/admin/inventory/pms-plan-pricing">
               <button className="btn cmnbtn btn-primary btn_sm">
                 Plan Pricing
               </button>

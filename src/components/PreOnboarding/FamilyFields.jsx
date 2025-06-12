@@ -1,11 +1,11 @@
 import React from "react";
-import OccupationList from "../../assets/js/OccupationList";
-import familyRelationList from "../../assets/js/familyRelationList";
+import OccupationList from "../../utils/OccupationList";
+import familyRelationList from "../../utils/familyRelationList";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import IncomeList from "../../assets/js/incomeList";
+import IncomeList from "../../utils/incomeList";
 
 const FamilyFields = ({
   familyDetails,

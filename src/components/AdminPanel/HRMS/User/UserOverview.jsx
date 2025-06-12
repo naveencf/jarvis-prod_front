@@ -65,7 +65,7 @@ const UserOverview = () => {
 
   const [isSummaryModal, setIsSummaryModal] = useState(false);
   const [historyData, setHistoryData] = useState([]);
-  console.log(userContextData, "userContextData")
+  console.log(userContextData, "userContextData");
   // toggle button
   const handleRadioChange = (value) => {
     setActiveButton(value);
@@ -197,7 +197,7 @@ const UserOverview = () => {
           const userRole = decodedToken.role_id;
           const onboardStatus = decodedToken.onboard_status;
           if (userRole !== 1 && deptId == 36 && onboardStatus == 1) {
-            window.open("/admin/sales-dashboard", "_blank");
+            window.open("/admin/sales/sales-dashboard", "_blank");
           } else if (deptId === 20) {
             navigate("/admin/pantry");
           } else {
@@ -205,7 +205,7 @@ const UserOverview = () => {
           }
           sessionStorage.setItem("token", oldToken);
         } else {
-          navigate("/admin/user-overview");
+          navigate("/admin/user/user-overview");
         }
       });
   };
@@ -393,7 +393,7 @@ const UserOverview = () => {
       name: "Employee Name",
       renderRowCell: (row) => (
         <Link
-          to={`/admin/user-single/${row.user_id}`}
+          to={`/admin/user/user-single/${row.user_id}`}
           style={{ color: "blue" }}
         >
           {row.user_name}
@@ -496,7 +496,7 @@ const UserOverview = () => {
       renderRowCell: (row) => (
         <>
           {roleToken == constant.CONST_ADMIN_ROLE && (
-            <Link to={`/admin/user-auth-detail/${row.user_id}`}>
+            <Link to={`/admin/user/user-auth-detail/${row.user_id}`}>
               <button
                 className="btn cmnbtn btn_sm btn-outline-primary"
                 variant="outline"
@@ -615,7 +615,7 @@ const UserOverview = () => {
             contextData[0] &&
             contextData[0].update_value === 1 &&
             row.user_id !== 889 && (
-              <Link to={`/admin/user-update/${row.user_id}`}>
+              <Link to={`/admin/user/user-update/${row.user_id}`}>
                 <div className="icon-1">
                   <i className="bi bi-pencil" />
                 </div>
@@ -736,24 +736,24 @@ const UserOverview = () => {
           />
         </div>
         <div className="action_btns">
-          <Link to="/admin/users-dashboard">
+          <Link to="/admin/user/users-dashboard">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Dashboard
             </button>
           </Link>
-          {contextData && contextData[2] && contextData[2].view_value === 1 && (
-            <Link className="collapse-item" to="/admin/object-overview">
-              <button type="button" className="btn btn-outline-primary btn-sm">
-                Objects Auth
-              </button>
-            </Link>
-          )}
-          <Link className="collapse-item" to="/admin/jobType">
+          {/* {contextData && contextData[2] && contextData[2].view_value === 1 && ( */}
+          <Link className="collapse-item" to="/admin/user/object-overview">
+            <button type="button" className="btn btn-outline-primary btn-sm">
+              Objects Auth
+            </button>
+          </Link>
+          {/* )} */}
+          <Link className="collapse-item" to="/admin/user/jobType">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Job Type
             </button>
           </Link>
-          <Link to="/admin/hobbies-overview">
+          <Link to="/admin/user/hobbies-overview">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Hobbies
             </button>
@@ -763,14 +763,14 @@ const UserOverview = () => {
               Reason
             </button>
           </Link> */}
-          <Link to="/admin/role-overview">
+          <Link to="/admin/user/role-overview">
             <button type="button" className="btn btn-outline-primary btn-sm">
               Roles
             </button>
           </Link>
 
           {contextData && contextData[3] && contextData[3].view_value === 1 && (
-            <Link to="/admin/department-overview">
+            <Link to="/admin/user/department-overview">
               <button type="button" className="btn btn-outline-primary btn-sm">
                 Department
               </button>
@@ -779,7 +779,7 @@ const UserOverview = () => {
           {contextData &&
             contextData[0] &&
             contextData[0].insert_value === 1 && (
-              <Link to="/admin/user">
+              <Link to="/admin/user/user">
                 <button
                   type="button"
                   className="btn btn-outline-primary btn-sm"
@@ -1019,13 +1019,13 @@ const UserOverview = () => {
               {(separationStatus === "On Long Leave" ||
                 separationStatus === "Subatical" ||
                 separationStatus === "Suspended") && (
-                  <FieldContainer
-                    label="Reinstated Date"
-                    type="date"
-                    value={separationReinstateDate}
-                    onChange={(e) => setSeparationReinstateDate(e.target.value)}
-                  />
-                )}
+                <FieldContainer
+                  label="Reinstated Date"
+                  type="date"
+                  value={separationReinstateDate}
+                  onChange={(e) => setSeparationReinstateDate(e.target.value)}
+                />
+              )}
 
               {/* {separationStatus == "Resigned" && ( */}
               <FieldContainer

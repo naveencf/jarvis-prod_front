@@ -5,7 +5,7 @@ const UnregisteredPagesModal = ({ open, handleClose, unregisteredPages }) => {
     const navigate = useNavigate();
 
     const handleNavigation = (username) => {
-        navigate(`/admin/pms-page-master?username=${encodeURIComponent(username)}`);
+        navigate(`/admin/inventory/pms-page-master?username=${encodeURIComponent(username)}`);
     };
     return (
         <Modal open={open} onClose={handleClose} aria-labelledby="modal-title">
@@ -29,8 +29,8 @@ const UnregisteredPagesModal = ({ open, handleClose, unregisteredPages }) => {
                     {unregisteredPages?.usernames?.map((username, index) => (
                         <ListItem key={index} onClick={() => handleNavigation(username)} style={{ cursor: "pointer", backgroundColor: "#f5f5f5" }}
                             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#e0e0e0"}
-                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f5f5f5"} 
-                            >
+                            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#f5f5f5"}
+                        >
                             <ListItemText primary={username} />
                         </ListItem>
 

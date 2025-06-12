@@ -116,7 +116,7 @@ const ExpenseManagementMaster = () => {
       setUser("");
       setMinorStatus("");
       setBill(null);
-      navigate("/admin/expense-Overview");
+      navigate("/admin/miscellaneous/expense-Overview");
       toastAlert("Created Successfully");
     } catch (err) {
       console.log(err);

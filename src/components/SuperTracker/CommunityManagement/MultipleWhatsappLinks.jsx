@@ -109,7 +109,7 @@ const MultipleWhatsappLinks = ({ creatorDetail }) => {
         }
     };
     const handleNavigateMeetingPage = () => {
-        navigate('/admin/instaapi/community/meetingPage', { state: { creatorDetail } });
+        navigate('/admin/community/meetingPage', { state: { creatorDetail } });
     };
     return (
         <>

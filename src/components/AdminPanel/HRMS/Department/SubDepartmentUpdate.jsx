@@ -66,7 +66,7 @@ export default function SubDepartmentUpdate() {
   }
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/sub-department-overview" />;
+    return <Navigate to="/admin/user/sub-department-overview" />;
   }
 
   const departmentOptions = DepartmentContext.map((option) => ({

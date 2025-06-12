@@ -22,7 +22,7 @@ export default function FinanceDashboard() {
     <div>
       <FormContainer
         mainTitle="Finance Dashboard"
-        link="/admin/finance-dashboard"
+        link="/admin/finance/finance-dashboard"
       />
 
       {/* <DummyCode /> */}

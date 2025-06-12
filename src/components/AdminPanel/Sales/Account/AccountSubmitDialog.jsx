@@ -21,7 +21,7 @@ const AccountSubmitDialog = ({
           {id != 0 && <h6>Account has been edited successfully.</h6>}
           <button
             className="btn cmnbtn btn-success"
-            onClick={() => navigate("/admin/sales-dashboard")}
+            onClick={() => navigate("/admin/sales/sales-dashboard")}
           >
             HOME
           </button>
@@ -29,7 +29,7 @@ const AccountSubmitDialog = ({
             <button
               className="btn cmnbtn btn-success"
               onClick={() =>
-                navigate("/admin/create-sales-booking", {
+                navigate("/admin/sales/create-sales-booking", {
                   state: {
                     account_data: accountMasterData,
                   },
@@ -42,7 +42,7 @@ const AccountSubmitDialog = ({
           {id != 0 && (
             <button
               className="btn cmnbtn btn-success"
-              onClick={() => navigate("/admin/sales-account-overview")}
+              onClick={() => navigate("/admin/sales/sales-account-overview")}
             >
               Continue to sale Overview
             </button>

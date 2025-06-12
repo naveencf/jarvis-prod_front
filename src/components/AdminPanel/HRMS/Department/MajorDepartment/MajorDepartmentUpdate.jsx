@@ -7,7 +7,6 @@ import { baseUrl } from "../../../../../utils/config";
 import FieldContainer from "../../../FieldContainer";
 import FormContainer from "../../../FormContainer";
 
-
 export default function MajorDepartmentUpdate() {
   const { toastAlert, toastError } = useGlobalContext();
   const [isFormSubmitted, setIsFormSubmitted] = useState(false);
@@ -59,7 +58,7 @@ export default function MajorDepartmentUpdate() {
   }
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/major-department-overview" />;
+    return <Navigate to="/admin/user/major-department-overview" />;
   }
 
   const departmentOptions = DepartmentContext.map((option) => ({

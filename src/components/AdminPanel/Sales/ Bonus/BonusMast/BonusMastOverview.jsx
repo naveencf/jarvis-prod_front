@@ -71,7 +71,7 @@ const BonusMastOverview = () => {
       getTotal: true,
       renderRowCell: (row) => (
         <div className="flex-row gap-2">
-          <Link to={`/admin/sales-bonus-master-add-edit/${row?._id}`}>
+          <Link to={`/admin/sales/sales-bonus-master-add-edit/${row?._id}`}>
             <button className="icon-1" title="Edit">
               <i className="bi bi-pencil"></i>
             </button>
@@ -108,7 +108,7 @@ const BonusMastOverview = () => {
       <div className="action_title d-flex justify-content-between">
         <FormContainer mainTitle={"Bonus List Overview"} link={true} />
 
-        <Link to={`/admin/sales-bonus-master-add-edit/${0}`}>
+        <Link to={`/admin/sales/sales-bonus-master-add-edit/${0}`}>
           <button className="btn cmnbtn btn-primary btn_sm">Bonus Add</button>
         </Link>
       </div>

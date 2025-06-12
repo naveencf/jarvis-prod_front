@@ -20,8 +20,13 @@ const CommonPDFDownload = ({ selectedRows }) => {
       const mergedPdf = await PDFDocument.create();
 
       for (const row of selectedRows) {
-        const fileUrl = row.invoice_file_url;
-        if (!fileUrl) continue;
+        const fileUrl = row.invoice_file_url?.trim();
+
+        // Skip if empty or invalid
+        if (!fileUrl) {
+          console.warn("Empty or invalid file URL. Skipping row:", row);
+          continue;
+        }
 
         try {
           const response = await axios.post(

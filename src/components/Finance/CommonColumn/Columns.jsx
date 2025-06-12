@@ -180,7 +180,7 @@ export const saleBookingCloseColumns = ({
         <div className="flex-row">
           {row?.tds_status === "close" && (
             <Link
-              to={`/admin/finance-transaction-list/${row?.sale_booking_id}`}
+              to={`/admin/finance/finance-transaction-list/${row?.sale_booking_id}`}
               className="link-primary"
             >
               {row?.paid_amount > 0 ? (
@@ -332,7 +332,7 @@ export const uniqueSaleBookingAccountColumn = ({
         <div className="flex-row">
           {params.row.tds_status === "close" && (
             <Link
-              to={`/admin/finance-transaction-list/${params.row.sale_booking_id}`}
+              to={`/admin/finance/finance-transaction-list/${params.row.sale_booking_id}`}
               className="link-primary"
             >
               {params.row.paid_amount > 0 ? (
@@ -501,7 +501,7 @@ export const uniqueSaleBookingSalesExecutiveColumn = ({
         <div className="flex-row">
           {params.row.tds_status === "close" && (
             <Link
-              to={`/admin/finance-transaction-list/${params.row.sale_booking_id}`}
+              to={`/admin/finance/finance-transaction-list/${params.row.sale_booking_id}`}
               className="link-primary"
             >
               {params.row.paid_amount > 0 ? (
@@ -1331,7 +1331,7 @@ export const pendingInvoiceColumn = ({
         <>
           <Link
             className="text-primary"
-            to={`/admin/finance-pending-invoice/customer-details/${row?.saleData?.account_id}`}
+            to={`/admin/finance/finance-pending-invoice/customer-details/${row?.saleData?.account_id}`}
           >
             {FormatString(row?.saleData?.account_name)}
           </Link>
@@ -1718,7 +1718,7 @@ export const pendingInvoiceProformaColumns = ({
           <div>
             {/* <Link
           className="text-primary"
-          to={`/admin/finance-pendinginvoice/customer-details/${params.row.saleData.account_id}`}
+          to={`/admin/finance/finance-pendinginvoice/customer-details/${params.row.saleData.account_id}`}
         > */}
             {params.row.saleData.account_name}
             {/* </Link> */}
@@ -2395,7 +2395,7 @@ export const outstandingColumns = ({
             ""
           )} */}
           <Link
-            to={`/admin/finance-transaction-list/${row?._id}`}
+            to={`/admin/finance/finance-transaction-list/${row?._id}`}
             className="link-primary"
           >
             {row?.paid_amount > 0 ? (
@@ -2990,7 +2990,7 @@ export const pendingPaymentRequestColumns = ({
             {/* } */}
             <button className="btn cmnbtn btn_sm btn-danger">
               <Link
-                to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
+                to={`/admin/finance/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
               >
                 Transaction List
               </Link>
@@ -3751,7 +3751,7 @@ export const paymentDoneColumns = ({
       renderRowCell: (row) => (
         <Button variant="outline" className="btn cmnbtn btn-primary">
           <Link
-            to={`/admin/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
+            to={`/admin/finance/finance-pruchasemanagement-paymentdone-transactionlist/${row?.request_id}`}
           >
             Transaction List
             {/* ({totalCount}) */}

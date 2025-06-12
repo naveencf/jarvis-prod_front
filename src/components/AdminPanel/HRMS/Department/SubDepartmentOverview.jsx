@@ -79,7 +79,7 @@ export default function SubDepartmentOverview() {
           {contextData &&
             contextData[3] &&
             contextData[3].update_value === 1 && (
-              <Link to={`/admin/sub-department-update/${row.id}`}>
+              <Link to={`/admin/user/sub-department-update/${row.id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button icon-1"
@@ -108,7 +108,7 @@ export default function SubDepartmentOverview() {
     <div>
       <FormContainer
         mainTitle="Sub-Department"
-        link="/admin/sub-department-master"
+        link="/admin/user/sub-department-master"
         buttonAccess={
           contextData &&
           contextData[3] &&

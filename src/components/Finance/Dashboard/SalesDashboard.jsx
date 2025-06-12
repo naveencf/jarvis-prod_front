@@ -179,7 +179,7 @@ export default function SalesDashboard() {
           <div className="card-body pb0">
             <div className="row">
               <div className="col-md-6">
-                <Link to="/admin/finance-incentivepayment">
+                <Link to="/admin/finance/finance-incentivepayment">
                   <div className="cardGrdnt orangeGrdnt">
                     <div className="financeCardBox border-bottom">
                       <div className="financeCardBoxIn">
@@ -215,7 +215,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col-md-6">
-                <Link to="/admin/finance-payment-release-report">
+                <Link to="/admin/finance/finance-payment-release-report">
                   <div className="cardGrdnt orangeGrdnt">
                     <div className="financeCardBox border-bottom">
                       <div className="financeCardBoxIn">
@@ -253,7 +253,7 @@ export default function SalesDashboard() {
             </div>
             <div className="row">
               <div className="col-md-6">
-                <Link to="/admin/finance-salebooking">
+                <Link to="/admin/finance/finance-salebooking">
                   <div className="cardGrdnt greenGrdnt">
                     <div className="financeCardBox border-bottom">
                       <div className="financeCardBoxIn">
@@ -284,7 +284,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col-md-6">
-                <Link to="/admin/finance-balancepayment">
+                <Link to="/admin/finance/finance-balancepayment">
                   <div className="cardGrdnt greenGrdnt">
                     <div className="financeCardBox border-bottom">
                       <div className="financeCardBoxIn">
@@ -322,7 +322,7 @@ export default function SalesDashboard() {
             </div>
             <div className="row">
               <div className="col">
-                <Link to="/admin/finance-pendingapproveupdate">
+                <Link to="/admin/finance/finance-pendingapproveupdate">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Pending Approval of Sales Payment</h2>
                     <h3>{data?.pendingPaymentReqCounts}</h3>
@@ -330,7 +330,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col">
-                <Link to="/admin/finance-invoice">
+                <Link to="/admin/finance/finance-invoice">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Total Invoice Pending</h2>
                     <h3>{data?.pendingInvoiceReqCounts}</h3>
@@ -338,7 +338,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col">
-                <Link to="/admin/finance-refundpayment">
+                <Link to="/admin/finance/finance-refundpayment">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Total Refund Request Amount Pending</h2>
                     <h3>
@@ -349,7 +349,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col">
-                <Link to="/admin/accounts-finance-dashboard">
+                <Link to="/admin/finance/accounts-finance-dashboard">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Total Payout Pending</h2>
                     <h3>
@@ -360,9 +360,9 @@ export default function SalesDashboard() {
                             .map((e) => e.toPay)
                             .reduce((prev, next) => prev + next, 0)
                             ? payoutData
-                              .map((e) => e.toPay)
-                              .reduce((prev, next) => prev + next, 0)
-                              .toLocaleString("en-IN")
+                                .map((e) => e.toPay)
+                                .reduce((prev, next) => prev + next, 0)
+                                .toLocaleString("en-IN")
                             : 0
                         }
                       />
@@ -371,7 +371,7 @@ export default function SalesDashboard() {
                 </Link>
               </div>
               <div className="col">
-                <Link to="/admin/finance-paymentmode">
+                <Link to="/admin/finance/finance-paymentmode">
                   <div className="card-body cardGrdnt blueGrdnt financeCardSmall">
                     <h2>Payment Mode</h2>
                     <h3>{0}</h3>
@@ -507,8 +507,8 @@ export default function SalesDashboard() {
                             .reduce((prev, next) => prev + next, 0) === "Nan"
                             ? 0
                             : payoutData
-                              .map((e) => e.toPay)
-                              .reduce((prev, next) => prev + next, 0),
+                                .map((e) => e.toPay)
+                                .reduce((prev, next) => prev + next, 0),
                         label: " Total Payout Pending",
                       },
                     ],

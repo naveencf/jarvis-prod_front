@@ -7,8 +7,8 @@ import { baseUrl } from "../../../utils/config";
 import DocumentTab from "../../PreOnboarding/DocumentTab";
 import { useParams, useNavigate } from "react-router-dom";
 import Select from "react-select";
-import { useLocation } from 'react-router-dom';
-import titleimg from '/bg-img.png'
+import { useLocation } from "react-router-dom";
+import titleimg from "/bg-img.png";
 const normalUserLayout = true;
 
 const UpdateDocument = () => {
@@ -107,7 +107,7 @@ const UpdateDocument = () => {
   //         att_status: "document_upload",
   //       });
   //     }
-  //     navigate("/admin/wfhd-overview");
+  //     navigate("/admin/wfhd/wfhd-overview");
   //     toastAlert("Documents Updated");
   //     getDocuments();
   //   } catch (error) {
@@ -159,7 +159,7 @@ const UpdateDocument = () => {
         });
       }
 
-      navigate("/admin/wfhd-overview");
+      navigate("/admin/wfhd/wfhd-overview");
       toastAlert("Documents Updated");
       getDocuments();
     } catch (error) {
@@ -224,7 +224,9 @@ const UpdateDocument = () => {
             <div className="form_heading_title">
               <h1>Documents</h1>
               <div className="pack">
-                <i className="bi bi-house"></i> {activeLink.slice(1).charAt(0).toUpperCase() + activeLink.slice(2)}
+                <i className="bi bi-house"></i>{" "}
+                {activeLink.slice(1).charAt(0).toUpperCase() +
+                  activeLink.slice(2)}
               </div>
             </div>
             {/* <Link to={`/admin/kra/${userId}`}>
@@ -244,9 +246,7 @@ const UpdateDocument = () => {
           </select> */}
           <div className="card">
             <div className="card-header">
-
-              <div className="pack" >
-
+              <div className="pack">
                 <Select
                   style={{ width: "300px" }}
                   value={mandatoryOptions.find(
@@ -258,13 +258,12 @@ const UpdateDocument = () => {
                   options={mandatoryOptions}
                 />
               </div>
-
             </div>
             <div className="card-body body-padding">
-
               <div
-                className={`docTable ${normalUserLayout && "docTableLight"
-                  } table-responsive`}
+                className={`docTable ${
+                  normalUserLayout && "docTableLight"
+                } table-responsive`}
               >
                 <table className="table">
                   <thead>
@@ -291,9 +290,17 @@ const UpdateDocument = () => {
                         <td>{item.document.period} days</td>
                         {/* <td>1 Day</td> */}
                         <td>
-                          <div className="uploadDocBtn " >
-                            <span style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "row", gap: "10px" }}>
-                              Upload  <i className="bi bi-cloud-arrow-up" />
+                          <div className="uploadDocBtn ">
+                            <span
+                              style={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                flexDirection: "row",
+                                gap: "10px",
+                              }}
+                            >
+                              Upload <i className="bi bi-cloud-arrow-up" />
                             </span>
                             <input
                               type="file"
@@ -304,18 +311,20 @@ const UpdateDocument = () => {
                           </div>
                         </td>
                         <td>
-                          <div className="docStatus" >
+                          <div className="docStatus">
                             <span
                               className={`warning_badges 
                         ${item.status == "" && "not_uploaded"}
-                        ${item.status == "Document Uploaded" &&
-                                "document_uploaded"
-                                }
+                        ${
+                          item.status == "Document Uploaded" &&
+                          "document_uploaded"
+                        }
                         ${item.status == "Verification Pending" && "pending"}
                         ${item.status == "Approved" && "approve"}
                         ${item.status == "Rejected" && "reject"}
                         `}
-                              style={{ zIndex: "0" }}>
+                              style={{ zIndex: "0" }}
+                            >
                               <h4>
                                 {item.status == "" && "Not Uploaded"}
                                 {item.status !== "" && item.status}

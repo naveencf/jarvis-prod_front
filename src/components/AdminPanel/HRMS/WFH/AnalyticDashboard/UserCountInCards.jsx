@@ -39,7 +39,7 @@ const UserCountInCards = () => {
       <div className="row">
         <div className="col-xxl-3 col-xl-3 col-lg-3 col-md-6 col-sm-12">
           <div className="card text-center">
-            <Link to="/admin/wfhd-overview">
+            <Link to="/admin/wfhd/wfhd-overview">
               <div className="card-body pb20">
                 <div className="iconBadge bgPrimaryLight">
                   <span>
@@ -58,7 +58,7 @@ const UserCountInCards = () => {
             className="col-xxl-4 col-xl-3 col-lg-4 col-md-6 col-sm-12"
           >
             <div className="card text-center">
-              <Link to={`/admin/wfhd-overview`}>
+              <Link to={`/admin/wfhd/wfhd-overview`}>
                 <div className="card-body pb20">
                   <div
                     className={`iconBadge ${classes[index % classes.length]}`}

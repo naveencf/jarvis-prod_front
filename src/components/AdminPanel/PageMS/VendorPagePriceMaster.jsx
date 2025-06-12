@@ -101,7 +101,7 @@ export default function VendorPagePriceMaster() {
       .then((res) => {
         if (res.status === 200) {
           if (vendorMast_name?.length > 0) {
-            return Navigate(`/admin/pms-vendor-overview`);
+            return Navigate(`/admin/inventory/pms-vendor-overview`);
           }
           Navigate("/admin/pms-vendor-page-price-overview");
         }

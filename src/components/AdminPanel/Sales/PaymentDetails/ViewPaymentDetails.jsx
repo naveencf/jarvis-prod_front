@@ -92,7 +92,7 @@ const ViewPaymentDetails = () => {
       renderRowCell: (row) => (
         <Link
           style={{ color: "blue" }}
-          to={`/admin/payment-update-bank-wise/${row._id}`}
+          to={`/admin/sales/payment-update-bank-wise/${row._id}`}
         >
           {row.title}
         </Link>
@@ -172,7 +172,7 @@ const ViewPaymentDetails = () => {
             </span>
           )}
 
-          <Link to={`/admin/edit-payment-details/${row._id}`}>
+          <Link to={`/admin/sales/edit-payment-details/${row._id}`}>
             <div className="icon-1" title="Edit">
               <i className="bi bi-pencil" />
             </div>
@@ -195,18 +195,18 @@ const ViewPaymentDetails = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Payment Detail"
-            link="/admin/create-payment-details"
+            link="/admin/sales/create-payment-details"
             // buttonAccess={true}
             submitButton={false}
           />
         </div>
         <div className="action_btns">
-          <Link to={"/admin/view-payment-mode"}>
+          <Link to={"/admin/sales/view-payment-mode"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Payment Mode
             </button>
           </Link>
-          <Link to={"/admin/create-payment-details"}>
+          <Link to={"/admin/sales/create-payment-details"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Add Payment Details
             </button>

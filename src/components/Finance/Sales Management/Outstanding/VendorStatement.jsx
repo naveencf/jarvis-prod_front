@@ -252,7 +252,7 @@ const VendorStatement = () => {
       key: "statement",
       name: "Statement",
       renderRowCell: (row) => (
-        <Link to={`/admin/vendor-statement-view/${row?.account_id}`}>
+        <Link to={`/admin/finance/vendor-statement-view/${row?.account_id}`}>
           <button className="btn btn-outline-primary btn-sm">Statement</button>
         </Link>
       ),

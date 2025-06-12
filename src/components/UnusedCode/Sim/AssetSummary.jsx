@@ -6,7 +6,6 @@ import FormContainer from "../../FormContainer";
 import { baseUrl } from "../../../../utils/config";
 import DateISOtoNormal from "../../../../utils/DateISOtoNormal";
 
-
 const AssetSummary = () => {
   const [search, setSearch] = useState("");
   const [datas, setData] = useState([]);
@@ -56,7 +55,7 @@ const AssetSummary = () => {
       //   d.obj_name?.toLowerCase().includes(search.toLowerCase()) ||
       //   d.soft_name?.toLowerCase().match(search.toLowerCase())
       // );
-      return Object.values(d).some(value =>
+      return Object.values(d).some((value) =>
         value?.toString().toLowerCase().includes(search.toLowerCase())
       );
     });
@@ -107,7 +106,7 @@ const AssetSummary = () => {
     <>
       <FormContainer
         mainTitle="Asset Summary"
-        link="/admin/object-master"
+        link="/admin/user/object-master"
         buttonAccess={false}
       />
 
@@ -124,24 +123,22 @@ const AssetSummary = () => {
         </div>
         <div className="card-body body-padding">
           <DataTable
-
             columns={columns}
             data={filterData}
-
             pagination
             selectableRows
-          // fixedHeaderScrollHeight="64vh"
-          // highlightOnHover
-          // subHeader
-          // subHeaderComponent={
-          //   <input
-          //     type="text"
-          //     placeholder="Search here"
-          //     className="w-50 form-control"
-          //     value={search}
-          //     onChange={(e) => setSearch(e.target.value)}
-          //   />
-          // }
+            // fixedHeaderScrollHeight="64vh"
+            // highlightOnHover
+            // subHeader
+            // subHeaderComponent={
+            //   <input
+            //     type="text"
+            //     placeholder="Search here"
+            //     className="w-50 form-control"
+            //     value={search}
+            //     onChange={(e) => setSearch(e.target.value)}
+            //   />
+            // }
           />
         </div>
         {/* <div className="data_tbl table-responsive">
@@ -206,15 +203,15 @@ const AssetSummary = () => {
             highlightOnHover
             // subHeade
             pagination
-          // subHeaderComponent={
-          //   <input
-          //     type="text"
-          //     placeholder="Search..."
-          //     className="w-50 form-control"
-          //     value={modalSearch}
-          //     onChange={(e) => setModalSearch(e.target.value)}
-          //   />
-          // }
+            // subHeaderComponent={
+            //   <input
+            //     type="text"
+            //     placeholder="Search..."
+            //     className="w-50 form-control"
+            //     value={modalSearch}
+            //     onChange={(e) => setModalSearch(e.target.value)}
+            //   />
+            // }
           />
         </div>
         {/* )} */}

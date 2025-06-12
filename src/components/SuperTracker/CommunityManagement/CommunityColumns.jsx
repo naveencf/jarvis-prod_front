@@ -41,7 +41,7 @@ export const CommunityHomeColumn = [
     width: 220,
     valueGetter: (params) => formatString(params.row.creatorName) || "",
     renderCell: (params) => {
-      const instagramProfileUrl = `/admin/instaapi/community/manager/${params.row.creatorName}`;
+      const instagramProfileUrl = `/admin/community/instaapi/community/manager/${params.row.creatorName}`;
       return (
         <Link href={instagramProfileUrl} rel="noopener noreferrer">
           {formatString(params.row.creatorName)}

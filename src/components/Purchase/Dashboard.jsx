@@ -317,8 +317,8 @@ const Dashboard = () => {
                         <Bank />
                       </span>
                     </div>
-                    {/* <Link to="/admin/vendor_outstanding"> */}
-                    <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero">
+                    {/* <Link to="/admin/purchase/vendor_outstanding"> */}
+                    <Link to="/admin/purchase/vendor_outstanding?filter=outstandingGreaterThanZero">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Total Outstanding</h6>
                         <h6 className="mt4 fs_16">
@@ -337,8 +337,8 @@ const Dashboard = () => {
                         <HandCoins />
                       </span>
                     </div>
-                    <Link to="/admin/vendor_outstanding">
-                      {/* <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero"> */}
+                    <Link to="/admin/purchase/vendor_outstanding">
+                      {/* <Link to="/admin/purchase/vendor_outstanding?filter=outstandingGreaterThanZero"> */}
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Total Advanced</h6>
                         <h6 className="mt4 fs_16">
@@ -359,7 +359,7 @@ const Dashboard = () => {
                         <Wallet />
                       </span>
                     </div>
-                    <Link to="/admin/vendor_outstanding?filter=outstandingGreaterThanZero">
+                    <Link to="/admin/purchase/vendor_outstanding?filter=outstandingGreaterThanZero">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Outstandings</h6>
                         <h6 className="mt4 fs_16">
@@ -586,7 +586,7 @@ const Dashboard = () => {
               </div>
               <hr />
               <div className="p12">
-                <Link to="/admin/pms-vendor-overview">
+                <Link to="/admin/inventory/pms-vendor-overview">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgPrimaryLight m-0">
                       <span>

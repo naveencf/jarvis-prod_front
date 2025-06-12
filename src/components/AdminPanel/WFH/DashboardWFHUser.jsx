@@ -98,7 +98,7 @@ const DashboardWFHUser = () => {
             {contextData &&
               contextData[35] &&
               contextData[35].view_value === 1 && (
-                <Link to="/admin/salary-summary">
+                <Link to="/admin/wfhd/salary-summary">
                   <button className="btn btn-warning mr-3">
                     Salary Summary
                   </button>
@@ -133,7 +133,7 @@ const DashboardWFHUser = () => {
 
                     <li>
                       <span>
-                        <Link to="/admin/pre-onboarding-overview">
+                        <Link to="/admin/preonboard/pre-onboarding-overview">
                           Onboarding Pending
                         </Link>
                       </span>

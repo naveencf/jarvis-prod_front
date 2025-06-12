@@ -110,7 +110,7 @@ const WFHUserOverview = () => {
       width: 120,
       renderCell: (params) => (
         <Link
-          to={`/admin/user-single/${params.row.user_id}`}
+          to={`/admin/user/user-single/${params.row.user_id}`}
           style={{ color: "blue" }}
         >
           {params.row.user_name}

@@ -48,7 +48,7 @@ const MonthlyWeeklyCard = ({
           month: monthName,
           startdate: new Date(
             pastMonthStart.getTime() -
-              pastMonthStart.getTimezoneOffset() * 60000
+            pastMonthStart.getTimezoneOffset() * 60000
           )
             .toISOString()
             .split("T")[0],
@@ -97,7 +97,7 @@ const MonthlyWeeklyCard = ({
   // // console.log("lastendDate", lastendDate.current);
 
   const handleNavigate = (start, end) => {
-    navigate("/admin/view-sales-booking", { state: { start, end } });
+    navigate("/admin/sales/view-sales-booking", { state: { start, end } });
   };
 
   const calculateDifference = (current, previous) => {
@@ -198,15 +198,15 @@ const MonthlyWeeklyCard = ({
                 <span>Average</span>{" "}
                 {data?.totalCampaignAmount && data?.totalSaleBookingCounts
                   ? formatIndianNumber(
-                      Number(data?.totalCampaignAmount) /
-                        Number(data?.totalSaleBookingCounts)
-                    )
+                    Number(data?.totalCampaignAmount) /
+                    Number(data?.totalSaleBookingCounts)
+                  )
                   : ""}
                 {title !== "Total" &&
                   renderGrowthBadge(
                     data?.totalCampaignAmount / data?.totalSaleBookingCounts,
                     previousData?.totalCampaignAmount /
-                      previousData?.totalSaleBookingCounts
+                    previousData?.totalSaleBookingCounts
                   )}
               </li>
             </ul>

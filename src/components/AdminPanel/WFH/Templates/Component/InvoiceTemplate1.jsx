@@ -1,6 +1,6 @@
 import React from "react";
 import "./InvoiceTemplate1.css";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 const InvoiceTemplate1 = ({ data }) => {
   const handleImageError = (e) => {

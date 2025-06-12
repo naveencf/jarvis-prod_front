@@ -241,7 +241,7 @@ const CreateSalesAccount = () => {
     try {
       await editDep(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const handleEdit = async (row, setEditFlag) => {
     const payload = {
@@ -251,7 +251,7 @@ const CreateSalesAccount = () => {
     try {
       await edit(payload).unwrap();
       setEditFlag(false);
-    } catch (error) { }
+    } catch (error) {}
   };
   const ViewBrandCategoryColumns = [
     {
@@ -716,7 +716,7 @@ const CreateSalesAccount = () => {
       setIsValIDPoc(pocs);
       return;
     }
-
+    console.log(filteredPocs, "filteredPocs")
     const formData = new FormData();
     Object.entries(payloads).forEach(([key, value]) => {
       if (Array.isArray(value)) {
@@ -778,7 +778,7 @@ const CreateSalesAccount = () => {
         toastAlert("Account Created Successfully");
         setAccountMasterData(response?.data?.accountMaster);
         openModal("SubmitDialogSuccess");
-        // navigate("/admin/create-sales-booking", {
+        // navigate("/admin/sales/create-sales-booking", {
         //   state: {
         //     account_data: response.data.accountMaster,
         //   },
@@ -832,7 +832,7 @@ const CreateSalesAccount = () => {
 
         toastAlert("Updated Successfully");
         openModal("SubmitDialogSuccess");
-        // navigate("/admin/sales-account-overview");
+        // navigate("/admin/sales/sales-account-overview");
       }
     } catch (error) {
       console.error("Error submitting form:", error);
@@ -1248,13 +1248,13 @@ const CreateSalesAccount = () => {
                     setSelectedId={setSelectedBrand}
                     required
                     astric
-                  // disabled={
-                  //   allAccountTypes?.find(
-                  //     (data) => data._id === selectedAccountType
-                  //   )?.account_type_name !== "Agency"
-                  //     ? false
-                  //     : true
-                  // }
+                    // disabled={
+                    //   allAccountTypes?.find(
+                    //     (data) => data._id === selectedAccountType
+                    //   )?.account_type_name !== "Agency"
+                    //     ? false
+                    //     : true
+                    // }
                   />
                   <span className="form-error">
                     Brand name & Account name can be different eg: Brand Name:
@@ -1738,8 +1738,8 @@ const CreateSalesAccount = () => {
                 ? "Submit"
                 : "Save"
               : id == 0
-                ? "Submitting..."
-                : "Saving..."}
+              ? "Submitting..."
+              : "Saving..."}
           </button>
           <button
             className="btn cmnbtn btn-warning"

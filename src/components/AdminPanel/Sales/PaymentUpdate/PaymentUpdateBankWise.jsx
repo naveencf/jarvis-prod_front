@@ -117,7 +117,7 @@ const PaymentUpdateBankWise = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Payment Update Logs"
-            link="/admin/create-payment-details"
+            link="/admin/sales/create-payment-details"
             // buttonAccess={true}
             submitButton={false}
           />
@@ -131,7 +131,7 @@ const PaymentUpdateBankWise = () => {
           pagination={[100]}
           isLoading={paymentDetailsLoading}
           tableName={"PaymentUpdateBankWise"}
-        //   rowSelectable={true}
+          //   rowSelectable={true}
         />
       </div>
     </>

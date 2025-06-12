@@ -69,7 +69,7 @@ const BillingOverview = () => {
           {contextData &&
             contextData[3] &&
             contextData[3].update_value === 1 && (
-              <Link to={`/admin/billing-update/${row?.billingheader_id}`}>
+              <Link to={`/admin/wfhd/billing-update/${row?.billingheader_id}`}>
                 <button
                   title="Edit"
                   className="btn btn-outline-primary btn-sm user-button icon-1"
@@ -102,7 +102,7 @@ const BillingOverview = () => {
     <div>
       <FormContainer
         mainTitle="Billing"
-        link="/admin/billing-master"
+        link="/admin/wfhd/billing-master"
         buttonAccess={
           // contextData &&
           // contextData[3] &&

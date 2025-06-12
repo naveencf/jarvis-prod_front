@@ -8,8 +8,6 @@ import MyTemplate2 from "../WFH/SalaryGeneration/Template2";
 import MyTemplate3 from "../WFH/SalaryGeneration/Template3";
 import MyTemplate4 from "../WFH/SalaryGeneration/Template4";
 import MyTemplate5 from "../WFH/SalaryGeneration/Template5";
-
-import { generatePDF } from "../WFH/SalaryGeneration/pdfGenerator";
 import { useGlobalContext } from "../../../Context/Context";
 import { baseUrl } from "../../../utils/config";
 import FormContainer from "../FormContainer";
@@ -45,6 +43,10 @@ const AccountsOverviewWFH = () => {
     } catch (error) {
       console.log(error);
     }
+  };
+  const generatePDF = async (row) => {
+    const module = await import("../WFH/SalaryGeneration/pdfGenerator");
+    return module.generatePDF(row);
   };
 
   useEffect(() => {

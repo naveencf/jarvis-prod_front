@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import IndianBankList from "../../../assets/js/IndianBankList";
+import IndianBankList from "../../../utils/IndianBankList";
 import { Autocomplete, TextField } from "@mui/material";
 import jwtDecode from "jwt-decode";
 import axios from "axios";

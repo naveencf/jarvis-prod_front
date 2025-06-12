@@ -134,7 +134,7 @@ body {
   color: var(--dark) !important;
 }
 
-[tabindex="-1"]:focus:not(:focus-visible) {
+[tabIndex="-1"]:focus:not(:focus-visible) {
   outline: 0 !important;
 }
 
@@ -24354,4 +24354,8 @@ hr.cardBodyHr {
   color: var(--dark);
   font-size: 16px;
   font-weight: 500;
+}
+
+.ReactModal__Content {
+  min-width: 760px;
 }

@@ -141,9 +141,9 @@ const LeftSideBarBeta = ({
     formatIndianNumber(
       Math.floor(
         planDetails?.[0]?.selling_price -
-          totalCost -
-          planDetails?.[0]?.content_cost * totalDeliverables -
-          finalOperationCost
+        totalCost -
+        planDetails?.[0]?.content_cost * totalDeliverables -
+        finalOperationCost
       )
     );
 
@@ -196,7 +196,7 @@ const LeftSideBarBeta = ({
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
-          navigate("/admin/pms-plan-making-beta");
+          navigate("/admin/inventory/pms-plan-making-beta");
         });
       } else {
         Swal.fire({
@@ -221,25 +221,27 @@ const LeftSideBarBeta = ({
   const platformCategory =
     Object.keys(updatedCategories).length > 0 ? updatedCategories : subCategory;
 
-    const handleDownload = async () => {
+  const handleDownload = async () => {
     setIsDownloading(true);
     setIsDownloadExcel(true);
     try {
       await downloadExcel(
-    {    selectedRow,
-        platformCategory,
-        postCount,
-        storyPerPage,
-        planDetails,
-        checkedDescriptions,
-        agencyFees,
-        deliverableText,
-        isdownloadExcel,
-        ugcVideoCost,
-        twitterTrendCost,
-        platformData,
-        renamedCategories,
-        subCategory}
+        {
+          selectedRow,
+          platformCategory,
+          postCount,
+          storyPerPage,
+          planDetails,
+          checkedDescriptions,
+          agencyFees,
+          deliverableText,
+          isdownloadExcel,
+          ugcVideoCost,
+          twitterTrendCost,
+          platformData,
+          renamedCategories,
+          subCategory
+        }
       );
       handleSave();
     } catch (error) {
@@ -317,8 +319,8 @@ const LeftSideBarBeta = ({
           storyCountForPage *
           getPriceDetail(page.page_price_list, "platform_story"),
         category: page.page_category_id,
-        page_sub_category_name:page.page_sub_category_name,
-        page_sub_category_id:page.page_sub_category_id
+        page_sub_category_name: page.page_sub_category_name,
+        page_sub_category_id: page.page_sub_category_id
       };
     });
     setPreviewData(preview);
@@ -757,7 +759,7 @@ const LeftSideBarBeta = ({
             Meme
             <span>1</span>
           </h6> */}
-         
+
         </div>
         <div
           style={{
@@ -830,74 +832,74 @@ const LeftSideBarBeta = ({
           )}
         </div>
         <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "1rem",
-              backgroundColor: "#111C42",
-              borderRadius: "2px",
-            }}
-          >
-            {Object.entries(platformCategories)?.map(
-              ([platform, categories]) => (
-                <div
-                  key={platform}
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1rem",
+            backgroundColor: "#111C42",
+            borderRadius: "2px",
+          }}
+        >
+          {Object.entries(platformCategories)?.map(
+            ([platform, categories]) => (
+              <div
+                key={platform}
+                style={{
+                  flex: "1 1 300px",
+                  padding: "0.4rem",
+                  backgroundColor: "#1D284C",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                }}
+              >
+                <span
                   style={{
-                    flex: "1 1 300px",
-                    padding: "0.4rem",
-                    backgroundColor: "#1D284C",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    color: "white",
+                    marginLeft: "0.6rem",
                   }}
                 >
-                  <span
-                    style={{
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      color: "white",
-                      marginLeft: "0.6rem",
-                    }}
+                  Categories
+                </span>
+                <h6
+                  onClick={handleToggleBtn}
+                  style={{
+                    fontSize: "1.2rem",
+                    fontWeight: "bold",
+                    color: "white",
+                    cursor: "pointer",
+                    marginBottom: "0.8rem",
+                    borderBottom: "2px solid #666",
+                    marginLeft: "0.6rem"
+                  }}
+                >
+                  {formatString(platform)}
+                </h6>
+                {Object.entries(categories).map(([category, count]) => (
+                  <div
+                    key={category}
+                    style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
                   >
-                    Categories
-                  </span>
-                  <h6
-                    onClick={handleToggleBtn}
-                    style={{
-                      fontSize: "1.2rem",
-                      fontWeight: "bold",
-                      color: "white",
-                      cursor: "pointer",
-                      marginBottom: "0.8rem",
-                      borderBottom: "2px solid #666",
-                      marginLeft:"0.6rem"
-                    }}
-                  >
-                    {formatString(platform)}
-                  </h6>
-                  {Object.entries(categories).map(([category, count]) => (
-                    <div
-                      key={category}
-                      style={{ marginBottom: "0.6rem", paddingLeft: "0.5rem" }}
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "white",
+                        fontSize: "1rem",
+                        lineHeight: "1.4",
+                      }}
                     >
-                      <p
-                        style={{
-                          margin: 0,
-                          color: "white",
-                          fontSize: "1rem",
-                          lineHeight: "1.4",
-                        }}
-                      >
-                        {formatString(category)}:{" "}
-                        <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
-                          {count}
-                        </span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )
-            )}
-          </div>
+                      {formatString(category)}:{" "}
+                      <span style={{ fontWeight: "bold", color: "#00d4ff" }}>
+                        {count}
+                      </span>
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )
+          )}
+        </div>
         <ExcelPreviewModalBeta
           open={openPreviewModal}
           sellingPrice={planDetails && planDetails?.[0]?.selling_price}

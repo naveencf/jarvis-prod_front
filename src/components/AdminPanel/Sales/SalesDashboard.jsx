@@ -58,22 +58,19 @@ const SalesDashboard = () => {
     try {
       const response1 = await axios.get(
         baseUrl +
-          `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
-            loginUserRole == 1 ? "true" : "false"
-          }${
-            loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
-          }${
-            startDate
-              ? "&startOfMonth=" +
-                startDate +
-                "&endOfMonth=" +
-                endDate +
-                "&lastMonthStart=" +
-                laststartDate +
-                "&lastMonthEnd=" +
-                lastendDate
-              : ""
-          }`,
+        `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${loginUserRole == 1 ? "true" : "false"
+        }${loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
+        }${startDate
+          ? "&startOfMonth=" +
+          startDate +
+          "&endOfMonth=" +
+          endDate +
+          "&lastMonthStart=" +
+          laststartDate +
+          "&lastMonthEnd=" +
+          lastendDate
+          : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -98,9 +95,8 @@ const SalesDashboard = () => {
     try {
       const response = await axios.get(
         baseUrl +
-          `sales/top20_account_list?userId=${loginUserId}&isAdmin=${
-            loginUserRole == 1
-          }`,
+        `sales/top20_account_list?userId=${loginUserId}&isAdmin=${loginUserRole == 1
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -110,11 +106,9 @@ const SalesDashboard = () => {
 
       const response1 = await axios.get(
         baseUrl +
-          `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${
-            loginUserRole == 1 ? "true" : "false"
-          }${
-            loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
-          }`,
+        `sales/weekly_monthly_quarterly_list?userId=${loginUserId}&isAdmin=${loginUserRole == 1 ? "true" : "false"
+        }${loginUserRole == 1 && Cat_id ? `&sales_category_id=${Cat_id}` : ""
+        }`,
         {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -159,7 +153,7 @@ const SalesDashboard = () => {
       setIsLoading(false);
     }
   }
-
+  console.log("reach dashboard")
   const {
     data: allTargetCompetitionsData,
     refetch: refetchTargetCompetitions,
@@ -234,7 +228,7 @@ const SalesDashboard = () => {
           <div
             style={{ color: "blue", cursor: "pointer" }}
             onClick={() =>
-              navigate("/admin/view-sales-booking", {
+              navigate("/admin/sales/view-sales-booking", {
                 state: { booking_status: row.booking_status },
               })
             }
@@ -339,29 +333,29 @@ How are you doing today?`}
         <div className="action_btns">
           {loginUserRole == 1 && (
             <>
-              <Link to="/admin/Sales-Point-Of-Contact">
+              <Link to="/admin/sales/Sales-Point-Of-Contact">
                 <button className="btn cmnbtn btn-primary btn_sm">
                   View POC
                 </button>
               </Link>
-              <Link to="/admin/sales-user-report">
+              <Link to="/admin/sales/sales-user-report">
                 <button className="btn cmnbtn btn-primary btn_sm">
                   Sales Report
                 </button>
               </Link>
             </>
           )}
-          <Link to={"/admin/view-target-competition"}>
+          <Link to={"/admin/sales/create-target-competition"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               View target competition
             </button>
           </Link>
-          <Link to={"/admin/create-sales-account/0"}>
+          <Link to={"/admin/sales/create-sales-account/0"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Add account
             </button>
           </Link>
-          <Link to={"/admin/create-sales-booking"}>
+          <Link to={"/admin/sales/create-sales-booking"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Create Sale Booking
             </button>
@@ -453,7 +447,7 @@ How are you doing today?`}
       )}
       <div className="row">
         <div className="col">
-          <NavLink to="/admin/sales-incentive-overview">
+          <NavLink to="/admin/sales/sales-incentive-overview">
             <div className="card shadow-none bgPrimaryLight">
               <div className="card-body text-center pb20">
                 <div className="iconBadge bgPrimaryLight">
@@ -471,7 +465,7 @@ How are you doing today?`}
         </div>
 
         <div className="col">
-          <NavLink to="/admin/view-invoice-request">
+          <NavLink to="/admin/sales/view-invoice-request">
             <div className="card shadow-none bgSecondaryLight">
               <div className="card-body text-center pb20">
                 <div className="iconBadge bgSecondaryLight">
@@ -490,7 +484,7 @@ How are you doing today?`}
 
         {loginUserRole === 1 && (
           <div className="col">
-            <NavLink to="/admin/sales-incentive-settlement-overview">
+            <NavLink to="/admin/sales/sales-incentive-settlement-overview">
               <div className="card shadow-none bgTertiaryLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgTertiaryLight">
@@ -530,7 +524,7 @@ How are you doing today?`}
 
         {contextData?.find((data) => data?._id == 64)?.view_value == 1 && (
           <div className="col">
-            <NavLink to="/admin/deleted-sales-booking">
+            <NavLink to="/admin/sales/deleted-sales-booking">
               <div className="card shadow-none bgDangerLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgDangerLight">

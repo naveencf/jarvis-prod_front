@@ -330,8 +330,8 @@ export default function TDSdeduct() {
               {item.status == 0
                 ? "Pending"
                 : item.status == 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -438,7 +438,7 @@ export default function TDSdeduct() {
     <div>
       <FormContainer
         mainTitle="TDS Deduction"
-        link="/admin/finance-pruchasemanagement-paymentdone"
+        link="/admin/finance/finance-pruchasemanagement-paymentdone"
         uniqueVendorCount={uniqueVendorCount}
         totalRequestAmount={totalRequestAmount}
         pendingRequestCount={pendingRequestCount}

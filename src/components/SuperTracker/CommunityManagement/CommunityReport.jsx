@@ -222,13 +222,13 @@ function CommunityReport({
   };
 
   const handleClick = (categoryId) => {
-    navigate("/admin/instaapi/community/categoryWise/pagesHistoey", {
+    navigate("/admin/community/categoryWise/pagesHistoey", {
       state: { categoryId },
     });
   };
 
   const handleClickPostWiseData = () => {
-    navigate("/admin/instaapi/community/categoryWise/pagesHistoey");
+    navigate("/admin/community/categoryWise/pagesHistoey");
   };
   return (
     <>

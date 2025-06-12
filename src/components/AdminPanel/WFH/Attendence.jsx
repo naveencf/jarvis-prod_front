@@ -39,7 +39,6 @@ const Attendence = () => {
 
   const [rowUpdateError, setRowUpdateError] = useState(null);
 
-
   let isInEditMode = false;
 
   const storedToken = sessionStorage.getItem("token");
@@ -148,7 +147,7 @@ const Attendence = () => {
 
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
     setRowUpdateError(null);
-    toastAlert("saved")
+    toastAlert("saved");
   };
 
   const handleCancelClick = (id) => () => {
@@ -405,10 +404,10 @@ const Attendence = () => {
       headerName: "Joining Date",
       width: 150,
       type: "text",
-      renderCell: (params) => { 
+      renderCell: (params) => {
         const isoDate = params?.row?.joining_date;
-        if (!isoDate) return "N/A"; 
-        const datePart = isoDate.split("T")[0]; 
+        if (!isoDate) return "N/A";
+        const datePart = isoDate.split("T")[0];
         const [year, month, day] = datePart.split("-");
         if (!year || !month || !day) return "Invalid Date";
         return `${day}-${month}-${year}`;
@@ -534,7 +533,7 @@ const Attendence = () => {
   const currentMonthForDis = new Date().getMonth() + 1;
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/salaryWFH" />;
+    return <Navigate to="/admin/wfhd/salaryWFH" />;
   }
 
   return (
@@ -554,16 +553,17 @@ const Attendence = () => {
                 className={
                   `timeline_slideItem
                   ${
-                  // data.deptCount == departmentdata?.length && "completed"
-                  // data.atdGenerated && "completed"
-                  // }
-                  RoleIDContext === constant.CONST_MANAGER_ROLE
-                    ? data.atdGenerated && "completed"
-                    : data.deptCount == departmentdata?.length && "completed"
+                    // data.deptCount == departmentdata?.length && "completed"
+                    // data.atdGenerated && "completed"
+                    // }
+                    RoleIDContext === constant.CONST_MANAGER_ROLE
+                      ? data.atdGenerated && "completed"
+                      : data.deptCount == departmentdata?.length && "completed"
                   } 
 
-                ${selectedCardIndex === index ? "selected" : ""} ${currentMonthForDis === cardMonth + 1 && "current"
-                  // currentMonthForDis === cardMonth && "current"
+                ${selectedCardIndex === index ? "selected" : ""} ${
+                    currentMonthForDis === cardMonth + 1 && "current"
+                    // currentMonthForDis === cardMonth && "current"
                   } 
                 ${isFutureCard && "disabled"}`
                   //    ${
@@ -596,13 +596,13 @@ const Attendence = () => {
                     ? data.atdGenerated == 1
                       ? "Completed"
                       : currentMonthNumber - 5 - index < 0
-                        ? "Upcoming"
-                        : "Pending"
+                      ? "Upcoming"
+                      : "Pending"
                     : data.deptCount == departmentdata?.length
-                      ? "Completed"
-                      : currentMonthNumber - 5 - index < 0
-                        ? "Upcoming"
-                        : "Pending"}
+                    ? "Completed"
+                    : currentMonthNumber - 5 - index < 0
+                    ? "Upcoming"
+                    : "Pending"}
                 </h3>
               </div>
             );
@@ -642,7 +642,11 @@ const Attendence = () => {
                     <i className="bi bi-arrow-right"></i>
                   </button>
 
-                  <WFHDSheetUpload department={department} selectedMonth={selectedMonth} selectedYear={selectedYear} />
+                  <WFHDSheetUpload
+                    department={department}
+                    selectedMonth={selectedMonth}
+                    selectedYear={selectedYear}
+                  />
                 </>
               )}
             {/* {deptSalary?.length !== departmentdata?.length &&
@@ -679,12 +683,13 @@ const Attendence = () => {
               return (
                 <div
                   // className="card hover body-padding"
-                  className={`card hover body-padding ${department === option.dept_id
-                    ? "btn-primary"
-                    : isDeptInSalary
+                  className={`card hover body-padding ${
+                    department === option.dept_id
+                      ? "btn-primary"
+                      : isDeptInSalary
                       ? "btn-success"
                       : "btn-outline-primary"
-                    }`}
+                  }`}
                   style={{
                     height: "100px",
                     minWidth: "300px",

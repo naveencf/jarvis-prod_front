@@ -141,7 +141,9 @@ const AccountInfo = () => {
               <a
                 className="btn cmnbtn btn_sm btn-primary"
                 onClick={() =>
-                  navigate(`/admin/create-sales-account/${SingleAccount?._id}`)
+                  navigate(
+                    `/admin/sales/create-sales-account/${SingleAccount?._id}`
+                  )
                 }
               >
                 <i className="bi bi-pencil" />

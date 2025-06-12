@@ -134,8 +134,9 @@ const SalesProductOverview = () => {
       name: "Status",
       renderRowCell: (row) => (
         <button
-          className={`btn cmnbtn btn_sm ${row.status === 0 ? "btn-success" : "btn-danger"
-            }`}
+          className={`btn cmnbtn btn_sm ${
+            row.status === 0 ? "btn-success" : "btn-danger"
+          }`}
           onClick={() => handleUpdateStatus(row)}
         >
           {row.status === 0 ? "Active" : "Inactive"}
@@ -162,10 +163,11 @@ const SalesProductOverview = () => {
       renderRowCell: (row) => (
         <div className="flex-row gap-2">
           <Link
-            to={`/admin/product/${allIncentiveData?.find(
-              (data) => row?._id === data?.sales_service_master_id
-            )?._id
-              }`}
+            to={`/admin/sales/product/${
+              allIncentiveData?.find(
+                (data) => row?._id === data?.sales_service_master_id
+              )?._id
+            }`}
           >
             <div className="icon-1">
               <i className="bi bi-pencil"></i>
@@ -198,7 +200,7 @@ const SalesProductOverview = () => {
             className="btn cmnbtn btn_sm btn-primary"
             onClick={() =>
               navigate({
-                pathname: "/admin/product/create",
+                pathname: "/admin/sales/product/create",
                 state: { task: "add" },
               })
             }

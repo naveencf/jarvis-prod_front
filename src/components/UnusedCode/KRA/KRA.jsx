@@ -3,8 +3,8 @@ import DataTable from "react-data-table-component";
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { useParams } from "react-router-dom";
-import { baseUrl } from "../../../../utils/config";
-import FormContainer from "../../FormContainer";
+import { baseUrl } from "../../../utils/config";
+import FormContainer from "../../AdminPanel/FormContainer";
 
 const KRA = () => {
   const { id } = useParams();
@@ -59,7 +59,7 @@ const KRA = () => {
 
   return (
     <>
-      <FormContainer mainTitle="KRA" link="/admin/department-master" />
+      <FormContainer mainTitle="KRA" link="/admin/user/department-master" />
 
       <div className="card">
         <div className="data_tbl table-responsive">

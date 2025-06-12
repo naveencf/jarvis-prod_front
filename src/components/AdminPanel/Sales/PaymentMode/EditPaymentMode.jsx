@@ -6,7 +6,10 @@ import { baseUrl } from "../../../../utils/config";
 import { useGlobalContext } from "../../../../Context/Context";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetSinglePaymentModeQuery, useUpdatePaymentModeMutation } from "../../../Store/API/Sales/PaymentModeApi";
+import {
+  useGetSinglePaymentModeQuery,
+  useUpdatePaymentModeMutation,
+} from "../../../Store/API/Sales/PaymentModeApi";
 
 const EditPaymentMode = () => {
   const { id } = useParams();
@@ -18,12 +21,12 @@ const EditPaymentMode = () => {
   const {
     data: paymentModeData,
     isLoading: paymentModeLoading,
-    isError: paymentModeError
-  } = useGetSinglePaymentModeQuery(id, { skip: !id })
-  const [updateMode, {
-    isLoading: updateModeLoading,
-    isError: updateModeError,
-  }] = useUpdatePaymentModeMutation()
+    isError: paymentModeError,
+  } = useGetSinglePaymentModeQuery(id, { skip: !id });
+  const [
+    updateMode,
+    { isLoading: updateModeLoading, isError: updateModeError },
+  ] = useUpdatePaymentModeMutation();
   // const getData = async () => {
   //   const response = await axios.get(
   //     `${baseUrl}sales/get_sale_payment_mode/${id}`
@@ -36,7 +39,6 @@ const EditPaymentMode = () => {
   useEffect(() => {
     if (paymentModeData) {
       setTitle(paymentModeData.payment_mode_name);
-
     }
   }, [paymentModeData]);
 
@@ -47,7 +49,7 @@ const EditPaymentMode = () => {
 
       setTitle("");
       toastAlert("Payment Mode Updated");
-      navigate("/admin/view-payment-mode");
+      navigate("/admin/sales/view-payment-mode");
     } catch (error) {
       toastError(error.message);
     }

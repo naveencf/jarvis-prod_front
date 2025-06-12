@@ -98,7 +98,7 @@ function ManagerTeamView() {
       headerName: "Page name",
       width: 220,
       renderCell: (params) => {
-        const instagramProfileUrl = `/admin/instaapi/community/manager/${params.row.page_name}`;
+        const instagramProfileUrl = `/admin/community/manager/${params.row.page_name}`;
 
         return (
           <Link to={instagramProfileUrl} rel="noopener noreferrer">

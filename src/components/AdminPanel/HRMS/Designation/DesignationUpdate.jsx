@@ -85,7 +85,7 @@ const DesignationUpdate = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/designation-overview" />;
+    return <Navigate to="/admin/user/designation-overview" />;
   }
 
   if (isLoading) {

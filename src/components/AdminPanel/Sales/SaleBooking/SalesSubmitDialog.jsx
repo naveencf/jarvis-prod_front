@@ -23,7 +23,7 @@ const SalesSubmitDialog = ({
             <button
               className="btn cmnbtn btn-success"
               onClick={() =>
-                navigate(`/admin/create-payment-update/0`, {
+                navigate(`/admin/sales/create-payment-update/0`, {
                   state: { sales_user: newSaleBookingData }, // your additional data here
                 })
               }
@@ -34,7 +34,7 @@ const SalesSubmitDialog = ({
 
           <button
             className="btn cmnbtn btn-success"
-            onClick={() => navigate("/admin/view-sales-booking")}
+            onClick={() => navigate("/admin/sales/view-sales-booking")}
           >
             Sale Booking
           </button>

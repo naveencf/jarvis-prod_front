@@ -90,7 +90,7 @@ const PreonboardingDocumentsUpdate = () => {
         setPeriod(null);
         setDescription("");
         toastAlert("Document Created");
-        navigate("/admin/preonboarding-documents-overview");
+        navigate("/admin/preonboard/preonboarding-documents-overview");
       });
   };
 

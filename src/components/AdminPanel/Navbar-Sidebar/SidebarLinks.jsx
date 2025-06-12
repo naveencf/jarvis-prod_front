@@ -17,11 +17,10 @@ import {
 } from "@phosphor-icons/react";
 import { constant } from "../../../utils/constants";
 import ExenseManagement from "./ExenseManagementSidebarLinks";
-import { RiOrganizationChart } from "react-icons/ri";
+
 import OperationSidebarLinks from "./OperationSidebarLinks";
 // import { useGlobalContext } from "../../../Context/Context";
 import { useAPIGlobalContext } from "../APIContext/APIContext";
-import context from "react-bootstrap/esm/AccordionContext";
 
 const SidebarLinks = () => {
   // const [contextData, setData] = useState([]);
@@ -106,9 +105,9 @@ const SidebarLinks = () => {
   const isWFHDHRPayrollManager = [38].some(
     (index) => contextData[index]?.view_value === 1
   );
-  const isAssetNotifierVisible = [40].some(
-    (index) => contextData[index]?.view_value === 1
-  );
+  // const isAssetNotifierVisible = [40].some(
+  //   (index) => contextData[index]?.view_value === 1
+  // );
   const isTaskManagment = [43].some(
     (index) => contextData[index]?.view_value === 1
   );
@@ -121,7 +120,7 @@ const SidebarLinks = () => {
     (index) => contextData[index]?.view_value === 1
   );
   const isSales = [52].some((index) => contextData[index]?.view_value === 1);
-  const isAssets = [53].some((index) => contextData[index]?.view_value === 1);
+  // const isAssets = [53].some((index) => contextData[index]?.view_value === 1);
   const isExenseManagement = [54].some(
     (index) => contextData[index]?.view_value === 1
   );
@@ -137,8 +136,9 @@ const SidebarLinks = () => {
       {deptId !== 36 && (
         <li className="nav-item nav-item-single">
           <Link
-            className={`nav-btn nav-link ${activelink === "/admin" ? "active" : ""
-              }`}
+            className={`nav-btn nav-link ${
+              activelink === "/admin" ? "active" : ""
+            }`}
             to="/admin"
           >
             <i className="ph">
@@ -176,7 +176,7 @@ const SidebarLinks = () => {
                 contextData[0].view_value === 1 && (
                   <NavLink
                     className="collapse-item"
-                    to="/admin/users-dashboard"
+                    to="/admin/user/users-dashboard"
                   >
                     <i className="bi bi-dot"></i> User Dashboard
                   </NavLink>
@@ -186,7 +186,7 @@ const SidebarLinks = () => {
                 contextData[0].view_value === 1 && (
                   <NavLink
                     className="collapse-item"
-                    to={`/admin/user-overview/${"Active"}`}
+                    to={`/admin/user/user-overview/${"Active"}`}
                   >
                     <i className="bi bi-dot"></i> User
                   </NavLink>
@@ -229,7 +229,10 @@ const SidebarLinks = () => {
               {contextData &&
                 contextData[21] &&
                 contextData[21].view_value === 1 && (
-                  <NavLink className="collapse-item" to="/admin/user-directory">
+                  <NavLink
+                    className="collapse-item"
+                    to="/admin/user/user-directory"
+                  >
                     <i className="bi bi-dot"></i> User Directory
                   </NavLink>
                 )}
@@ -268,7 +271,7 @@ const SidebarLinks = () => {
                   </>
                 )} */}
 
-              {/* <Link className="collapse-item" to="/admin/jobType">
+              {/* <Link className="collapse-item" to="/admin/user/jobType">
                 <i className="bi bi-dot"></i> Job Type
               </Link> */}
               {/* <Link className="collapse-item" to="/sim-overview">
@@ -421,7 +424,10 @@ const SidebarLinks = () => {
                 {contextData &&
                   contextData[6] &&
                   contextData[6].view_value === 1 && (
-                    <NavLink className="collapse-item" to="/admin/common-room">
+                    <NavLink
+                      className="collapse-item"
+                      to="/admin/user/common-room"
+                    >
                       <i className="bi bi-dash"></i> Sitting Arrangment
                     </NavLink>
                   )}
@@ -449,14 +455,14 @@ const SidebarLinks = () => {
                     {RoleId !== constant.CONST_MANAGER_ROLE && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/wfhd-analytic-dashbaord"
+                        to="/admin/wfhd/wfhd-analytic-dashbaord"
                       >
                         <i className="bi bi-dot"></i> WFHD Dashboard
                       </NavLink>
                     )}
                     <NavLink
                       className="collapse-item"
-                      to="/admin/billing-overview"
+                      to="/admin/wfhd/billing-overview"
                     >
                       <i className="bi bi-dot"></i> Billing Header Overview
                     </NavLink>
@@ -464,7 +470,7 @@ const SidebarLinks = () => {
                       isWFHDManager && (
                         <NavLink
                           className="collapse-item"
-                          to="/admin/wfhd-register"
+                          to="/admin/wfhd/wfhd-register"
                         >
                           <i className="bi bi-dot"></i> Add Buddy
                         </NavLink>
@@ -473,13 +479,13 @@ const SidebarLinks = () => {
                       isWFHDManager && (
                         <NavLink
                           className="collapse-item"
-                          to="/admin/wfhd-overview"
+                          to="/admin/wfhd/wfhd-overview"
                         >
                           <i className="bi bi-dot"></i> My Team
                         </NavLink>
                       )}
                     {/* {isWFHDHRPayrollManager && (
-                  <NavLink className="collapse-item" to="/admin/salaryWFH">
+                  <NavLink className="collapse-item" to="/admin/wfhd/salaryWFH">
                     <i className="bi bi-dot"></i> Payout Summary
                   </NavLink>
                 )} */}
@@ -488,7 +494,7 @@ const SidebarLinks = () => {
                   // <>
                   <NavLink
                     className="collapse-item"
-                    to="/admin/attendence-mast"
+                    to="/admin/wfhd/attendence-mast"
                   >
                     <i className="bi bi-dot"></i> Create Attendance
                   </NavLink>
@@ -508,7 +514,7 @@ const SidebarLinks = () => {
                     {RoleId == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/hr-template-overview"
+                        to="/admin/wfhd/hr-template-overview"
                       >
                         <i className="bi bi-dot"></i> Invoice Template Summary
                       </NavLink>
@@ -542,7 +548,7 @@ const SidebarLinks = () => {
                         contextData[20].insert_value === 1 && (
                           <NavLink
                             className="collapse-item"
-                            to="/admin/announcement-post"
+                            to="/admin/preonboard/announcement-post"
                           >
                             <i className="bi bi-dot"></i> Announcement Post
                           </NavLink>
@@ -552,7 +558,7 @@ const SidebarLinks = () => {
                         contextData[21].view_value === 1 && (
                           <NavLink
                             className="collapse-item"
-                            to="/admin/announcement-view"
+                            to="/admin/preonboard/announcement-view"
                           >
                             <i className="bi bi-dot"></i> Announcement View
                           </NavLink>
@@ -584,7 +590,7 @@ const SidebarLinks = () => {
                       contextData[18].view_value === 1 && (
                         <NavLink
                           className="collapse-item"
-                          to="/admin/pre-onboarding"
+                          to="/admin/preonboard/pre-onboarding"
                         >
                           <i className="bi bi-dot"></i> Add Pre Onboarding
                         </NavLink>
@@ -593,7 +599,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboarding-overview"
+                        to="/admin/preonboard/pre-onboarding-overview"
                       >
                         <i className="bi bi-dot"></i> Overview
                       </NavLink>
@@ -601,7 +607,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboard-extend-date-overview"
+                        to="/admin/preonboard/pre-onboard-extend-date-overview"
                       >
                         <i className="bi bi-dot"></i> Extend Date Overview
                       </NavLink>
@@ -609,7 +615,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboard-coc-master"
+                        to="/admin/preonboard/pre-onboard-coc-master"
                       >
                         <i className="bi bi-dot"></i> Coc Master
                       </NavLink>
@@ -617,7 +623,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboard-coc-overview"
+                        to="/admin/preonboard/pre-onboard-coc-overview"
                       >
                         <i className="bi bi-dot"></i> Coc Overview
                       </NavLink>
@@ -625,7 +631,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboard-user-login-history"
+                        to="/admin/preonboard/pre-onboard-user-login-history"
                       >
                         <i className="bi bi-dot"></i> Login History
                       </NavLink>
@@ -633,7 +639,7 @@ const SidebarLinks = () => {
                     {contextData && contextData[18]?.view_value == 1 && (
                       <NavLink
                         className="collapse-item"
-                        to="/admin/pre-onboard-all-notifications"
+                        to="/admin/preonboard/pre-onboard-all-notifications"
                       >
                         <i className="bi bi-dot"></i> All Notifications
                       </NavLink>
@@ -641,7 +647,7 @@ const SidebarLinks = () => {
 
                     <NavLink
                       className="collapse-item"
-                      to="/admin/preonboarding-documents-overview"
+                      to="/admin/preonboard/preonboarding-documents-overview"
                     >
                       <i className="bi bi-dot"></i> Documents
                     </NavLink>
@@ -674,7 +680,7 @@ const SidebarLinks = () => {
                         <>
                           <NavLink
                             className="collapse-item"
-                            to="/admin/product-overview"
+                            to="/admin/sales/product-overview"
                           >
                             <i className="bi bi-dot"></i> Product
                           </NavLink>
@@ -708,7 +714,7 @@ const SidebarLinks = () => {
                 </div>
               </li>
             )} */}
-            {isAssets && (
+            {/* {isAssets && (
               <li className="nav-item">
                 <a
                   className="nav-btn nav-link collapsed"
@@ -717,9 +723,7 @@ const SidebarLinks = () => {
                   aria-expanded="true"
                   aria-controls="collapsInnerAsset"
                 >
-                  {/* <i className="ph">
-                  <FolderSimpleStar weight="duotone" />
-                </i> */}
+                
                   <i className="bi bi-dash"></i>
                   <span>Assets</span>
                 </a>
@@ -800,7 +804,7 @@ const SidebarLinks = () => {
                   </div>
                 </div>
               </li>
-            )}
+            )} */}
           </div>
         </li>
       )}
@@ -855,7 +859,7 @@ const SidebarLinks = () => {
                     </NavLink> 
                     <NavLink
                       className="collapse-item"
-                      to="/admin/calender"
+                      to="/admin/operation/calender"
                     >
                       <i className="bi bi-dot"></i>
                       Phase Creation
@@ -911,25 +915,25 @@ const SidebarLinks = () => {
                       </NavLink>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/exeexecution/pending"
+                        to="/admin/pending"
                       >
                         <i className="bi bi-dot"></i> Pending
                       </NavLink>{" "}
                       {/* <NavLink
                         className="collapse-item"
-                        to="/admin/exeexecution/done"
+                        to="/admin/done"
                       >
                         <i className="bi bi-dot"></i> Executed
                       </NavLink>{" "} */}
             {/* <NavLink
                           className="collapse-item"
-                          to="/admin/exeexecution/accepted"
+                          to="/admin/admin/accepted"
                         >
                           In Progress
                         </NavLink>{" "} */}
             {/* <NavLink
                         className="collapse-item"
-                        to="/admin/exeexecution/rejected"
+                        to="/admin/admin/rejected"
                       >
                         <i className="bi bi-dot"></i> Rejected
                       </NavLink> 
@@ -1232,7 +1236,7 @@ const SidebarLinks = () => {
                               <>
                                 <NavLink
                                   className="collapse-item"
-                                  to="/admin/campaign-admin"
+                                  to="/admin/operation/campaign-admin"
                                 >
                                   <i className="bi bi-dot"></i> Campaign Admin
                                 </NavLink>
@@ -1303,27 +1307,12 @@ const SidebarLinks = () => {
           >
             <div className="collapse-inner">
               <li className="nav-item">
-                {/* <NavLink
-                  className="nav-btn nav-link collapsed"
-                  data-toggle="collapse"
-                  data-target="#collapsInnerEightFinanceEditDashboard"
-                  aria-expanded="true"
-                  aria-controls="collapsInnerEightFinanceEditDashboard"
-                >
-                  <span>Dashboard</span>
-                </NavLink> */}
-                {/* <div
-                  id="collapsInnerEightFinanceEditDashboard"
-                  className="collapse"
-                  aria-labelledby="headingTwo"
-                  // data-parent="#accordionSidebar"
-                > */}
                 <div className="internal collapse-inner">
                   <>
                     <li className="nav-item">
                       <NavLink
                         className="collapse-item"
-                        to="/admin/finance-dashboard"
+                        to="/admin/finance/finance-dashboard"
                       >
                         {/* <i className="bi bi-dash"></i> */}
                         <i className="bi bi-dot"></i>
@@ -1335,8 +1324,9 @@ const SidebarLinks = () => {
                 {/* </div> */}
 
                 <Link
-                  className={`nav-btn nav-link ${deptId == 36 ? "" : "collapsed"
-                    }`}
+                  className={`nav-btn nav-link ${
+                    deptId == 36 ? "" : "collapsed"
+                  }`}
                   data-toggle="collapse"
                   data-target="#collapsInnerEightFinanceEdit"
                   aria-expanded="true"
@@ -1350,7 +1340,7 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceEdit"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="collapse-inner">
                     <>
@@ -1373,26 +1363,26 @@ const SidebarLinks = () => {
                         <div className="internal collapse-inner">
                           <NavLink
                             className="collapse-item"
-                            to="/admin/finance-alltransactions"
+                            to="/admin/finance/finance-alltransactions"
                           >
                             <i className="bi bi-dot"></i>
                             Dashboard
                           </NavLink>
                           {/* <NavLink
                               className="collapse-item"
-                              to="/admin/finance-pending-sales-approval"
+                              to="/admin/finance/finance-pending-sales-approval"
                             >
                               <i className="bi bi-dot"></i> Pending for approval
                             </NavLink> */}
                           {/* <NavLink
                               className="collapse-item"
-                              to="/admin/finance-paymentmode"
+                              to="/admin/finance/finance-paymentmode"
                             >
                               <i className="bi bi-dot"></i> Payment Mode
                             </NavLink> */}
                           {/* <NavLink
                               className="collapse-item"
-                              to="/admin/finance-pendingapproveupdate"
+                              to="/admin/finance/finance-pendingapproveupdate"
                             >
                               <i className="bi bi-dot"></i> Pending Approval
                             </NavLink> */}
@@ -1421,14 +1411,14 @@ const SidebarLinks = () => {
                           <div className="internal collapse-inner">
                             <NavLink
                               className="collapse-item"
-                              to="/admin/finance-pendingapproverefund"
+                              to="/admin/finance/finance-pendingapproverefund"
                             >
                               <i className="bi bi-dot"></i> Pending Approval
                               Refund
                             </NavLink>
                             <NavLink
                               className="collapse-item"
-                              to="/admin/finance-pendingrequests"
+                              to="/admin/finance/finance-pendingrequests"
                             >
                               <i className="bi bi-dot"></i> All Refund Request
                             </NavLink>
@@ -1457,7 +1447,7 @@ const SidebarLinks = () => {
                         <>
                           <NavLink
                             className="collapse-item"
-                            to="/admin/finance-balancepayment"
+                            to="/admin/finance/finance-balancepayment"
                           >
                             <i className="bi bi-dot"></i> Outstanding
                           </NavLink>
@@ -1465,7 +1455,7 @@ const SidebarLinks = () => {
                         <>
                           <NavLink
                             className="collapse-item"
-                            to="/admin/vendor-statement"
+                            to="/admin/finance/vendor-statement"
                           >
                             <i className="bi bi-dot"></i> Vendor Statment
                           </NavLink>
@@ -1494,7 +1484,7 @@ const SidebarLinks = () => {
                             <>
                               <NavLink
                                 className="collapse-item"
-                                to="/admin/finance-incentive-parent"
+                                to="/admin/finance/finance-incentive-parent"
                               >
                                 <i className="bi bi-dot"></i>Incentive
                               </NavLink>
@@ -1524,20 +1514,20 @@ const SidebarLinks = () => {
                             <>
                               <NavLink
                                 className="collapse-item"
-                                to="/admin/finance-pendinginvoice"
+                                to="/admin/finance/finance-pendinginvoice"
                               >
                                 <i className="bi bi-dot"></i> Pending Invoice
                                 Creation
                               </NavLink>
                               <NavLink
                                 className="collapse-item"
-                                to="/admin/finance-createdinvoice"
+                                to="/admin/finance/finance-createdinvoice"
                               >
                                 <i className="bi bi-dot"></i> Invoice Created
                               </NavLink>
                               {/* <NavLink
                                 className="collapse-item"
-                                to="/admin/finance-invoice"
+                                to="/admin/finance/finance-invoice"
                               >
                                 <i className="bi bi-dot"></i> Invoice
                               </NavLink> */}
@@ -1548,7 +1538,7 @@ const SidebarLinks = () => {
                       {/* <li className="nav-item">
                         <NavLink
                           className="collapse-item"
-                          to="/admin/finance-invoice"
+                          to="/admin/finance/finance-invoice"
                         >
                           <i className="bi bi-dot"></i> Invoice
                         </NavLink>
@@ -1574,7 +1564,7 @@ const SidebarLinks = () => {
                             <>
                               <NavLink
                                 className="collapse-item"
-                                to="/admin/finance-salebooking"
+                                to="/admin/finance/finance-salebooking"
                               >
                                 <i className="bi bi-dot"></i> Sales Booking
                               </NavLink>
@@ -1604,33 +1594,34 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinance"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/finance-pruchasemanagement-alltransaction"
+                        to="/admin/finance/finance-pruchasemanagement-alltransaction"
                       >
                         <i className="bi bi-dot"></i> Purchase Dashboard
                       </NavLink>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/finance-pruchasemanagement-pendingpaymentrequest"
+                        to="/admin/finance/finance-pruchasemanagement-pendingpaymentrequest"
                       >
+                        
                         <i className="bi bi-dot"></i>
                         Pending Payment Request
                       </NavLink>{" "}
                       <NavLink
                         className="collapse-item"
-                        to="/admin/payment-mode-master"
+                        to="/admin/finance/payment-mode-master"
                       >
                         {/* <i className="bi bi-dot"></i> */}
                         Payment Mode Master
                       </NavLink>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/purchase-transaction"
+                        to="/admin/finance/purchase-transaction"
                       >
                         <i className="bi bi-dot"></i>Recent Transaction
                       </NavLink>
@@ -1642,13 +1633,13 @@ const SidebarLinks = () => {
                       </NavLink> */}
                       {/* <NavLink
                         className="collapse-item"
-                        to="/admin/finance-pruchasemanagement-paymentdone"
+                        to="/admin/finance/finance-pruchasemanagement-paymentdone"
                       >
                         <i className="bi bi-dot"></i> Payment Done
                       </NavLink> */}
                       {/* <NavLink
                         className="collapse-item"
-                        to="/admin/finance-pruchasemanagement-discardpayment"
+                        to="/admin/finance/finance-pruchasemanagement-discardpayment"
                       >
                         <i className="bi bi-dot"></i> Discard Payment
                       </NavLink> */}
@@ -1672,13 +1663,13 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinancePayout"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/accounts-finance-dashboard"
+                        to="/admin/finance/accounts-finance-dashboard"
                       >
                         <i className="bi bi-dot"></i>
                         Payout Summary
@@ -1686,7 +1677,7 @@ const SidebarLinks = () => {
 
                       <NavLink
                         className="collapse-item"
-                        to="/admin/accounts-finance-overview"
+                        to="/admin/finance/accounts-finance-overview"
                       >
                         <i className="bi bi-dot"></i>
                         Account Overview
@@ -1710,13 +1701,13 @@ const SidebarLinks = () => {
                   id="collapsInnerEightFinanceTask"
                   className="collapse"
                   aria-labelledby="headingTwo"
-                // data-parent="#accordionSidebar"
+                  // data-parent="#accordionSidebar"
                 >
                   <div className="internal collapse-inner">
                     <>
                       <NavLink
                         className="collapse-item"
-                        to="/admin/finance-task-pending"
+                        to="/admin/finance/finance-task-pending"
                       >
                         <i className="bi bi-dot"></i>
                         Pending
@@ -1724,7 +1715,7 @@ const SidebarLinks = () => {
 
                       <NavLink
                         className="collapse-item"
-                        to="/admin/finance-task-done/type"
+                        to="/admin/finance/finance-task-done/type"
                       >
                         <i className="bi bi-dot"></i>
                         Done
@@ -1737,7 +1728,7 @@ const SidebarLinks = () => {
                 <>
                   <NavLink
                     className="collapse-item"
-                    to="/admin/finance-gst-nongst-incentive-report"
+                    to="/admin/finance/finance-gst-nongst-incentive-report"
                   >
                     <i className="bi bi-dash"></i> Incentive Report
                   </NavLink>
@@ -1876,25 +1867,28 @@ const SidebarLinks = () => {
               {decodedToken.role_id == constant.CONST_ADMIN_ROLE && (
                 <NavLink
                   className="collapse-item"
-                  to="/admin/pms-inventory-dashboard"
+                  to="/admin/inventory/pms-inventory-dashboard"
                 >
                   <i className="bi bi-dot"></i>Dashboard
                 </NavLink>
               )}
               <NavLink
                 className="collapse-item"
-                to="/admin/pms-vendor-overview"
+                to="/admin/inventory/pms-vendor-overview"
               >
                 <i className="bi bi-dot"></i>Vendor
               </NavLink>
-              <NavLink className="collapse-item" to="/admin/pms-page-overview">
+              <NavLink
+                className="collapse-item"
+                to="/admin/inventory/pms-page-overview"
+              >
                 <i className="bi bi-dot"></i>Page
               </NavLink>
               {/* {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
               contextData &&
               contextData[4] &&
               contextData[4].insert_value === 1 ? (
-                <NavLink className="collapse-item" to="/admin/pms-plan-making">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-plan-making">
                   <i className="bi bi-dot"></i>Plan X
                 </NavLink>
               ) : (
@@ -1902,12 +1896,12 @@ const SidebarLinks = () => {
               )} */}
               {/* Plan X Beta */}
               {decodedToken?.role_id === constant.CONST_ADMIN_ROLE &&
-                contextData &&
-                contextData[4] &&
-                contextData[4].insert_value === 1 ? (
+              contextData &&
+              contextData[4] &&
+              contextData[4].insert_value === 1 ? (
                 <NavLink
                   className="collapse-item"
-                  to="/admin/pms-plan-making-beta"
+                  to="/admin/inventory/pms-plan-making-beta"
                 >
                   <i className="bi bi-dot"></i>Plan X Beta
                 </NavLink>
@@ -1917,7 +1911,7 @@ const SidebarLinks = () => {
               {/* {decodedToken.role_id == constant.CONST_ADMIN_ROLE && ( */}
               <NavLink
                 className="collapse-item"
-                to="/admin/pms-bulk-vendor-overview"
+                to="/admin/inventory/pms-bulk-vendor-overview"
               >
                 <i className="bi bi-dot"></i>Bulk Vendor
               </NavLink>
@@ -1925,7 +1919,7 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-vendor-type">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-vendor-type">
                   <i className="bi bi-dot"></i>Vendor Type
                 </NavLink>
               )} */}
@@ -1933,7 +1927,7 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-page-category">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-page-category">
                   <i className="bi bi-dot"></i> Page Category
                 </NavLink>
               )} */}
@@ -1941,7 +1935,7 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-profile-type">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-profile-type">
                   <i className="bi bi-dot"></i> Profile Type
                 </NavLink>
               )} */}
@@ -1949,7 +1943,7 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[0] &&
               contextData[0].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-page-ownership">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-page-ownership">
                   <i className="bi bi-dot"></i> Page Ownership
                 </NavLink>
               )} */}
@@ -1957,7 +1951,7 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[21] &&
               contextData[21].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-platform">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-platform">
                   <i className="bi bi-dot"></i> Platform
                 </NavLink>
               )} */}
@@ -1965,14 +1959,14 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[1] &&
               contextData[1].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-pay-method">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-pay-method">
                   <i className="bi bi-dot"></i> Payment Method
                 </NavLink>
               )} */}
               {/* {contextData &&
               contextData[2] &&
               contextData[2].view_value === 1 && (
-                <NavLink className="collapse-item" to="/admin/pms-pay-cycle">
+                <NavLink className="collapse-item" to="/admin/inventory/pms-pay-cycle">
                   <i className="bi bi-dot"></i> Payment Cycle
                 </NavLink>
               )} */}
@@ -1980,14 +1974,14 @@ const SidebarLinks = () => {
               {/* {contextData &&
               contextData[6] &&
               contextData[6].view_value === 1 && (
-                <Link className="collapse-item" to="/admin/pms-group-link-type">
+                <Link className="collapse-item" to="/admin/inventory/pms-group-link-type">
                   <i className="bi bi-dot"></i> Group Link Type
                 </Link>
               )} */}
               {/* {contextData &&
               contextData[6] &&
               contextData[6].view_value === 1 && (
-                <Link className="collapse-item" to="/admin/pms-price-type">
+                <Link className="collapse-item" to="/admin/inventory/pms-price-type">
                   <i className="bi bi-dot"></i> Price
                 </Link>
               )} */}
@@ -2012,13 +2006,13 @@ const SidebarLinks = () => {
                 </Link>
               )} */}
 
-              {/* <Link className="collapse-item" to="/admin/pms-vendor-overview">
+              {/* <Link className="collapse-item" to="/admin/inventory/pms-vendor-overview">
               <i className="bi bi-dot"></i> Vendor Overview
             </Link> */}
               {/* <Link className="collapse-item" to="/admin/pms-vendor-group-link">
               <i className="bi bi-dot"></i>Vendor Group Link
             </Link> */}
-              {/* <Link className="collapse-item" to="/admin/pms-page-overview">
+              {/* <Link className="collapse-item" to="/admin/inventory/pms-page-overview">
               <i className="bi bi-dot"></i> Page Overview
             </Link> */}
             </div>
@@ -2046,7 +2040,7 @@ const SidebarLinks = () => {
             id="cummunity"
             className="collapse"
             aria-labelledby="headingFive"
-          // data-parent="#accordionSidebar"
+            // data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
               {contextData &&
@@ -2056,7 +2050,7 @@ const SidebarLinks = () => {
                   <>
                     <NavLink
                       className="collapse-item"
-                      to="/admin/instaapi/community"
+                      to="/admin/community/community-home"
                     >
                       <i className="bi bi-dot"></i> Community-Overview
                     </NavLink>
@@ -2064,16 +2058,16 @@ const SidebarLinks = () => {
                 )}
               <NavLink
                 className="collapse-item"
-                to="/admin/instaapi/community/manager"
+                to="/admin/community/manager"
               >
                 <i className="bi bi-dot"></i> Community-Manager
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 className="collapse-item"
                 to="/instaapi/community/learning"
               >
                 <i className="bi bi-dot"></i> Learning
-              </NavLink>
+              </NavLink> */}
             </div>
           </div>
         </li>
@@ -2086,7 +2080,7 @@ const SidebarLinks = () => {
             data-target="#sarcasm"
             aria-expanded="false"
             aria-controls="sarcasm"
-          // to="/admin/sarcasm"
+            // to="/admin/sarcasm"
           >
             <i className="ph">
               <MaskHappy size={32} />
@@ -2130,7 +2124,7 @@ const SidebarLinks = () => {
             data-target="#statics"
             aria-expanded="false"
             aria-controls="statics"
-            to="/admin/statics"
+            to="/admin/operation/statics"
           >
             <i className="ph">
               <MaskHappy size={32} />
@@ -2161,20 +2155,61 @@ const SidebarLinks = () => {
               <div className="internal collapse-inner">
                 <NavLink
                   className="collapse-item"
-                  to="/admin/vendor-sale-overview"
+                  to="/admin/vendor-sale/vendor-sale-overview"
                 >
                   <i className="bi bi-dot"></i>Overview
                 </NavLink>
               </div>
               <div className="internal collapse-inner">
-                <NavLink className="collapse-item" to="/admin/vendor-inventory">
-                  <i className="bi bi-dot"></i>Vednor Inventory
+                <NavLink className="collapse-item" to="/admin/vendor-sale/vendor-inventory">
+                  <i className="bi bi-dot"></i>Vendor Inventory
                 </NavLink>
               </div>
             </div>
           </li>
         </>
       )}
+
+      {contextData && contextData[75] && contextData[75].view_value === 1 && (
+        <>
+          <li className="nav-item">
+            <Link
+              className="nav-link nav-btn collapsed"
+              data-toggle="collapse"
+              data-target="#collapseAdvanced"
+              aria-expanded="true"
+              aria-controls="collapseAdvanced"
+            >
+              <i className="bi bi-layers"></i>
+              <span>Advanced</span>
+            </Link>
+            <div
+              id="collapseAdvanced"
+              className="collapse"
+              aria-labelledby="headingAdvanced"
+              data-parent="#accordionSidebar"
+            >
+              <div className="internal collapse-inner">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/advanced-purchase-all-vendors"
+                >
+                  <i className="bi bi-dot"></i>Bulk Purchase
+                </NavLink>
+              </div>
+              <div className="internal collapse-inner">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase/vendor-advance-outstanding"
+                >
+                  <i className="bi bi-dot"></i>Vendor Overview
+                </NavLink>
+              </div>
+            </div>
+          </li>
+        </>
+      )}
+
       {contextData && contextData[64] && contextData[64]?.view_value === 1 && (
         <>
           <li className="nav-item">
@@ -2199,37 +2234,43 @@ const SidebarLinks = () => {
               <div className="internal collapse-inner">
                 <NavLink
                   className="collapse-item"
-                  to="/admin/purchase-dashboard"
+                  to="/admin/purchase/purchase-dashboard"
                 >
                   <i className="bi bi-dot"></i>Dashboard
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/record-purchase">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase/record-purchase"
+                >
                   <i className="bi bi-dot"></i>Record Purchase
                 </NavLink>
-                <NavLink className="collapse-item" to="/admin/purchased-record">
+                <NavLink
+                  className="collapse-item"
+                  to="/admin/purchase/purchased-record"
+                >
                   <i className="bi bi-dot"></i>Purchased Data
                 </NavLink>
                 <NavLink
                   className="collapse-item"
-                  to="/admin/advanced-purchase-overview"
+                  to="/admin/purchase/advanced-purchase-overview"
                 >
                   <i className="bi bi-dot"></i>Bulk Purchased Posts
                 </NavLink>
                 <NavLink
                   className="collapse-item"
-                  to="/admin/vendor_outstanding"
+                  to="/admin/purchase/vendor_outstanding"
                 >
                   <i className="bi bi-dot"></i>Vendor Overview
                 </NavLink>
                 <NavLink
                   className="collapse-item"
-                  to="/admin/finance-pruchasemanagement-pendingpaymentrequest"
+                  to="/admin/purchase/pending-payment-request"
                 >
                   <i className="bi bi-dot"></i>Vendor Payment Request
                 </NavLink>
                 <NavLink
                   className="collapse-item"
-                  to="/admin/purchase-transaction"
+                  to="/admin/purchase/purchase-transaction"
                 >
                   <i className="bi bi-dot"></i>Recent Transaction
                 </NavLink>
@@ -2259,13 +2300,19 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
-              <NavLink className="collapse-item" to="/admin/purchase-report">
+              <NavLink
+                className="collapse-item"
+                to="/admin/purchase/purchase-report"
+              >
                 <i className="bi bi-dot"></i>Purchase
               </NavLink>
               <NavLink className="collapse-item" to="/admin/audit-purchase">
                 <i className="bi bi-dot"></i>Sales
               </NavLink>
-              <NavLink className="collapse-item" to="/admin/record-purchase">
+              <NavLink
+                className="collapse-item"
+                to="/admin/purchase/record-purchase"
+              >
                 <i className="bi bi-dot"></i>Finance
               </NavLink>
             </div>
@@ -2292,13 +2339,19 @@ const SidebarLinks = () => {
             data-parent="#accordionSidebar"
           >
             <div className="internal collapse-inner">
-              <NavLink className="collapse-item" to="/admin/page-addition">
+              <NavLink
+                className="collapse-item"
+                to="/admin/boosting/page-addition"
+              >
                 <i className="bi bi-plus-circle"></i> Page Add
               </NavLink>
-              <NavLink className="collapse-item" to="/admin/recently-boosted">
+              <NavLink
+                className="collapse-item"
+                to="/admin/boosting/recently-boosted"
+              >
                 <i className="bi bi-graph-up"></i> Recently Boosted
               </NavLink>
-              {/* <NavLink className="collapse-item" to="/admin/default-service">
+              {/* <NavLink className="collapse-item" to="/admin/boosting/default-service">
                     <i className="bi bi-box"></i> Default Service
                   </NavLink> */}
             </div>
@@ -2355,7 +2408,7 @@ const SidebarLinks = () => {
               {contextData &&
                 contextData[71] &&
                 contextData[71]?.view_value === 1 && (
-                  <NavLink className="collapse-item" to="/admin/pantry-admin">
+                  <NavLink className="collapse-item" to="/admin/pantry/pantry-admin">
                     <i className="bi bi-graph-up"></i> Pantry Admin
                   </NavLink>
                 )}

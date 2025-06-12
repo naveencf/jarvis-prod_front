@@ -37,7 +37,9 @@ const BulkVendor = () => {
   const [m_post, setM_post] = useState('');
   const [m_both, setM_both] = useState('');
 
-  const { data: vendorData } = useGetAllVendorQuery();
+  const { data: allVendorData } = useGetAllVendorQuery();
+  const vendorData = allVendorData?.data
+ 
   const {
     data: pageList,
     refetch: refetchPageList,
@@ -55,7 +57,6 @@ const BulkVendor = () => {
       .then((res) => {
         setBulkData(res.data.data);
         setFilterData(res.data.data);
-        console.log(res.data.data, 'res.datab');
       });
   }, []);
 

@@ -8,7 +8,10 @@ import {
 } from "../../../Store/API/Sales/SalesBonusApi";
 import getDecodedToken from "../../../../utils/DecodedToken";
 import BonusStatementComponent from "./BonusStatementComponent";
-import { formatUTCDate, formatUTCToISODate } from "../../../../utils/formatUTCDate.jsx";
+import {
+  formatUTCDate,
+  formatUTCToISODate,
+} from "../../../../utils/formatUTCDate.jsx";
 
 const SalesBonusSummary = () => {
   const token = getDecodedToken();
@@ -56,7 +59,9 @@ const SalesBonusSummary = () => {
       renderRowCell: (row) => {
         let range = "";
         if (row?.date_range_start && row?.date_range_end) {
-          range = `${formatUTCToISODate(row?.date_range_start)} - ${formatUTCToISODate(
+          range = `${formatUTCToISODate(
+            row?.date_range_start
+          )} - ${formatUTCToISODate(
             // row?.date_range_end
             "2026-03-31T23:59:59.999Z"
           )}`;
@@ -72,7 +77,7 @@ const SalesBonusSummary = () => {
     <>
       <div className="action_title d-flex justify-content-between">
         <FormContainer mainTitle={"Bonus Summary"} link={true} />
-        <Link to={`/admin/sales-bonus-slab/${bonusQueryId}`}>
+        <Link to={`/admin/sales/sales-bonus-slab/${bonusQueryId}`}>
           <button className="btn cmnbtn btn-primary btn_sm">
             Assigned Bonus
           </button>

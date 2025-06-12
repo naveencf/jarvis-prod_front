@@ -91,8 +91,9 @@ const ViewTargetCompetition = () => {
 
         return (
           <button
-            className={`btn cmnbtn btn_sm ${row.status ? "btn-danger" : "btn-success"
-              }`}
+            className={`btn cmnbtn btn_sm ${
+              row.status ? "btn-danger" : "btn-success"
+            }`}
             onClick={() => handleUpdateStatus(row)}
           >
             {row.status ? "Inactive" : "Active"}
@@ -104,7 +105,7 @@ const ViewTargetCompetition = () => {
       name: "Actions",
       renderRowCell: (row) => (
         <div className="flex-row gap16">
-          <Link to={`/admin/create-target-competition/${row._id}`}>
+          <Link to={`/admin/sales/create-target-competition/${row._id}`}>
             <div className="icon-1" title="Edit">
               <i className="bi bi-pencil" />
             </div>
@@ -128,12 +129,12 @@ const ViewTargetCompetition = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Target Competition"
-            link="/admin/create-target-competition"
+            link="/admin/sales/create-target-competition"
             submitButton={false}
           />
         </div>
         <div className="action_btns">
-          <Link to={"/admin/create-target-competition"}>
+          <Link to={"/admin/sales/create-target-competition"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Add Target Competition
             </button>

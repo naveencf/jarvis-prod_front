@@ -2,7 +2,7 @@ import React from "react";
 import "../assets/css/Template.css";
 import "../assets/css/media-query.css";
 import textImage from "../assets/images/hotel/txt-img.png";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 import 'jspdf-autotable';
 const InvoiceTemplate6 = ({ data }) => {
   const handleImageError = (e) => {

@@ -23,8 +23,9 @@ const SalesSidebarLinks = () => {
   return (
     <li className="nav-item">
       <Link
-        className={`nav-link nav-btn ${loginUserRole !== 1 && deptId == 36 ? "" : "collapsed"
-          }`}
+        className={`nav-link nav-btn ${
+          loginUserRole !== 1 && deptId == 36 ? "" : "collapsed"
+        }`}
         // data-toggle={`${deptId !== 36 && "collapse"}`}
         data-toggle={"collapse"}
         data-target="#collapseTwom99"
@@ -39,29 +40,36 @@ const SalesSidebarLinks = () => {
 
       <div
         id="collapseTwom99"
-        className={`${loginUserRole !== 1 && deptId == 36
-          ? "collapse show"
-          : "collapse hide"
-          }`}
+        className={`${
+          loginUserRole !== 1 && deptId == 36
+            ? "collapse show"
+            : "collapse hide"
+        }`}
         aria-labelledby="headingTwo"
         data-parent="#accordionSidebar"
       >
         <div className="internal collapse-inner">
-          <NavLink className="collapse-item" to="/admin/sales-dashboard">
+          <NavLink className="collapse-item" to="/admin/sales/sales-dashboard">
             <i className="bi bi-dot" />
             Dashboard
           </NavLink>
 
-          <NavLink className="collapse-item" to="/admin/sales-account-overview">
+          <NavLink
+            className="collapse-item"
+            to="/admin/sales/sales-account-overview"
+          >
             <i className="bi bi-dot" />
             Accounts
           </NavLink>
-          <NavLink className="collapse-item" to="/admin/view-sales-booking">
+          <NavLink
+            className="collapse-item"
+            to="/admin/sales/view-sales-booking"
+          >
             <i className="bi bi-dot" />
             Closed Deal
           </NavLink>
 
-          {/* <NavLink className="collapse-item" to="/admin/product">
+          {/* <NavLink className="collapse-item" to="/admin/sales/product">
             <i className="bi bi-dot" />
             Product
           </NavLink> */}
@@ -70,17 +78,20 @@ const SalesSidebarLinks = () => {
             className="collapse-item"
             to={
               loginUserRole === 1
-                ? "/admin/sales-incentive-dashboard"
+                ? "/admin/sales/sales-document-type-overview"
                 : {
-                  pathname: "/admin/sales-user-incentve",
-                  state: { id: loginUserId, name: "monthwise" },
-                }
+                    pathname: "/admin/sales/sales-user-incentive",
+                    state: { id: loginUserId, name: "monthwise" },
+                  }
             }
           >
             <i className="bi bi-dot" />
             Incentive
           </NavLink>
-          <NavLink className="collapse-item" to="/admin/sales-plan-request">
+          <NavLink
+            className="collapse-item"
+            to="/admin/sales/sales-plan-request"
+          >
             <i className="bi bi-dot" />
             Plan Request
           </NavLink>
@@ -88,15 +99,18 @@ const SalesSidebarLinks = () => {
             className="collapse-item"
             to={
               isSalesAdmin
-                ? "/admin/sales-bonus-overview"
-                : `/admin/sales-bonus-summary/${loginUserId}`
+                ? "/admin/sales/sales-bonus-overview"
+                : `/admin/sales/sales-bonus-summary/${loginUserId}`
             }
           >
             <i className="bi bi-dot" />
             {isSalesAdmin ? "User Wise Bonus" : "Bonus Summary"}
           </NavLink>
           {isSalesAdmin && (
-            <NavLink className="collapse-item" to={"/admin/sales-bonus-list"}>
+            <NavLink
+              className="collapse-item"
+              to={"/admin/sales/sales-bonus-list"}
+            >
               <i className="bi bi-dot" />
               Bonus List
             </NavLink>

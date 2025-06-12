@@ -120,7 +120,7 @@ const ViewSaleBooking = () => {
   const [toDate, setToDate] = useState("");
   const [filterByIncentive, setFilterByIncentive] = useState("");
   const [quickFiltring, setQuickFiltring] = useState("");
-
+  console.log("reach sale booking");
   const handleDelete = async (rowId) => {
     try {
       await deleteSaleBooking(rowId).unwrap();
@@ -507,7 +507,11 @@ const ViewSaleBooking = () => {
               }}
             >
               {/* {row?.record_service_counts} */}
-              {row?.executionData?.length == 1 ? row?.executionData[0]?.execution_token : row?.executionData?.length == 0 ? 0 : row?.record_service_counts}
+              {row?.executionData?.length == 1
+                ? row?.executionData[0]?.execution_token
+                : row?.executionData?.length == 0
+                ? 0
+                : row?.record_service_counts}
             </div>
           );
         else return 0;
@@ -529,9 +533,11 @@ const ViewSaleBooking = () => {
       renderRowCell: (row) =>
         row.gst_amount > 0 ? (
           row?.campaign_amount == row?.invoice_requested_amount &&
-            "uploaded" == row?.invoice_request_status ? (
+          "uploaded" == row?.invoice_request_status ? (
             "Total Invoice Requested Amount Equals to Campaign Amount"
-          ) : row?.invoice_requested_amount < row?.campaign_amount && row.invoice_request_status !== "requested" && row.connected_booking_id == 0 ? (
+          ) : row?.invoice_requested_amount < row?.campaign_amount &&
+            row.invoice_request_status !== "requested" &&
+            row.connected_booking_id == 0 ? (
             <>
               <div
                 style={{ color: "blue", cursor: "pointer" }}
@@ -580,8 +586,9 @@ const ViewSaleBooking = () => {
       comapare: true,
       renderRowCell: (row) => (
         <span
-          className={`badge ${row.requested_amount ? "badge-success" : "badge-danger"
-            }`}
+          className={`badge ${
+            row.requested_amount ? "badge-success" : "badge-danger"
+          }`}
         >
           {row.requested_amount > 0 ? "Requested" : "Not Requested"}
         </span>
@@ -623,7 +630,10 @@ const ViewSaleBooking = () => {
     {
       key: "Outstanding_Amount_temp",
       name: "Outstanding Amount",
-      renderRowCell: (row) => row.tds_status == "close" ? 0 : row.campaign_amount - row.approved_amount,
+      renderRowCell: (row) =>
+        row.tds_status == "close"
+          ? 0
+          : row.campaign_amount - row.approved_amount,
       width: 100,
       getTotal: true,
       compare: true,
@@ -737,8 +747,9 @@ const ViewSaleBooking = () => {
       name: "GST Status",
       renderRowCell: (row) => (
         <span
-          className={`badge ${row.gst_status ? "badge-success" : "badge-danger"
-            }`}
+          className={`badge ${
+            row.gst_status ? "badge-success" : "badge-danger"
+          }`}
         >
           {row.gst_status ? "Applicable" : "Not Applicable"}
         </span>
@@ -850,7 +861,7 @@ const ViewSaleBooking = () => {
             <div className="flex-row">
               <Link
                 title="Edit sale booking"
-                to={`/admin/create-sales-booking/${row.sale_booking_id}/${row._id}`}
+                to={`/admin/sales/create-sales-booking/${row.sale_booking_id}/${row._id}`}
               >
                 <div className="icon-1">
                   <i className="bi bi-pencil" />
@@ -865,22 +876,23 @@ const ViewSaleBooking = () => {
                 />
               )}
 
-              {row?.campaign_amount > row?.approved_amount && row.gst_amount == 0 && (
-                <button
-                  title="Payment Update"
-                  className="icon-1"
-                  onClick={() => {
-                    navigate(`/admin/create-payment-update/0`, {
-                      state: {
-                        sale_id: row.sale_booking_id,
-                        userdata: row,
-                      },
-                    });
-                  }}
-                >
-                  <i className="bi bi-credit-card-2-back" />
-                </button>
-              )}
+              {row?.campaign_amount > row?.approved_amount &&
+                row.gst_amount == 0 && (
+                  <button
+                    title="Payment Update"
+                    className="icon-1"
+                    onClick={() => {
+                      navigate(`/admin/sales/create-payment-update/0`, {
+                        state: {
+                          sale_id: row.sale_booking_id,
+                          userdata: row,
+                        },
+                      });
+                    }}
+                  >
+                    <i className="bi bi-credit-card-2-back" />
+                  </button>
+                )}
               {isAdmin && (
                 <button
                   className="icon-1"
@@ -960,38 +972,38 @@ const ViewSaleBooking = () => {
             </Link>
           )}
           {loginUserRole == 1 && (
-            <Link to={"/admin/sales-services-overview"}>
+            <Link to={"/admin/sales/sales-services-overview"}>
               <button className="btn cmnbtn btn-primary btn_sm">
                 Services
               </button>
             </Link>
           )}
-          <Link to={"/admin/monthwise-sales-booking"}>
+          <Link to={"/admin/sales/monthwise-sales-booking"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Monthwise Sales
             </button>
           </Link>
 
-          <Link to={"/admin/record-servcies"}>
+          <Link to={" /admin/sales/record-servcies"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Record Services
             </button>
           </Link>
-          <Link to={"/admin/sales-account-overview"}>
+          <Link to={"/admin/sales/sales-account-overview"}>
             <button className="btn cmnbtn btn-primary btn_sm">Accounts</button>
           </Link>
-          <Link to={"/admin/view-payment-update"}>
+          <Link to={"/admin/sales/view-payment-update"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Payment update
             </button>
           </Link>
-          <Link to={"/admin/create-sales-booking"}>
+          <Link to={"/admin/sales/create-sales-booking"}>
             <button className="btn cmnbtn btn-primary btn_sm">
               Create Sale Booking
             </button>
           </Link>
           {isAdmin && (
-            <Link to={"/admin/sales-service-distribution"}>
+            <Link to={"/admin/sales/sales-service-distribution"}>
               <button className="btn cmnbtn btn-primary btn_sm">
                 Service Distribution
               </button>

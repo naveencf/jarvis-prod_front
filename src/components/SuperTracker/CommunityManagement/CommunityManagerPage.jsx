@@ -91,7 +91,7 @@ function CommunityManagerPage() {
       headerName: "Page name",
       width: 220,
       renderCell: (params) => {
-        const instagramProfileUrl = `/admin/instaapi/community/manager/${params.row.creatorName}`;
+        const instagramProfileUrl = `/admin/community/manager/${params.row.creatorName}`;
 
         return (
           <Link to={instagramProfileUrl} rel="noopener noreferrer">

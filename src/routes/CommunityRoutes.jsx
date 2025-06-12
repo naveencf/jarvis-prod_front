@@ -1,5 +1,5 @@
 import React from "react";
-import { Route } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
 
 import CommunityHome from "../components/SuperTracker/CommunityManagement/CommunityHome";
 import CommunityManager from "../components/SuperTracker/CommunityManagement/CommunityManager";
@@ -14,25 +14,25 @@ import CategoryWisePagesHistory from "../components/SuperTracker/CommunityManage
 import CommunityPages from "../components/SuperTracker/CommunityManagement/CommunityPages";
 
 const CommunityRoutes = ({ contextData }) => {
-  if (!contextData || !contextData[25] || contextData[25]?.view_value !== 1) {
-    return null;
-  }
+  // if (!contextData || !contextData[25] || contextData[25]?.view_value !== 1) {
+  //   return null;
+  // }
 
   return (
-    <>
-      <Route path="/instaapi/community" element={<CommunityHome />} />
-      <Route path="/instaapi/community/manager" element={<CommunityManager />} />
-      <Route path="/instaapi/community/internal-category" element={<CommunityInternalCategory />} />
-      <Route path="/instaapi/community/manager/:creatorName" element={<CommunityPageView />} />
-      <Route path="/instaapi/community/user" element={<CommunityUser />} />
-      <Route path="/instaapi/community/allAssignedcategory" element={<AllAssignedCategory />} />
-      <Route path="/instaapi/community/managerView" element={<CommunityManagerView />} />
-      <Route path="/instaapi/community/categoryWise/pagesHistoey" element={<CategoryWisePagesHistory />} />
-      <Route path="/instaapi/community/meetingPage" element={<MeetingPagesOverView />} />
-      <Route path="/instaapi/community/overviewMeetingVia" element={<OverviewMeetingVia />} />
-      <Route path="/instaapi/community/add-internal-category" element={<CommunityInternalCategory />} />
-      <Route path="/instaapi/community/community-pages" element={<CommunityPages />} />
-    </>
+    <Routes>
+      <Route path="/community-home" element={<CommunityHome />} />
+      <Route path="/manager" element={<CommunityManager />} />
+      <Route path="/internal-category" element={<CommunityInternalCategory />} />
+      <Route path="/manager/:creatorName" element={<CommunityPageView />} />
+      <Route path="/user" element={<CommunityUser />} />
+      <Route path="/allAssignedcategory" element={<AllAssignedCategory />} />
+      <Route path="/managerView" element={<CommunityManagerView />} />
+      <Route path="/categoryWise/pagesHistoey" element={<CategoryWisePagesHistory />} />
+      <Route path="/meetingPage" element={<MeetingPagesOverView />} />
+      <Route path="/overviewMeetingVia" element={<OverviewMeetingVia />} />
+      <Route path="/add-internal-category" element={<CommunityInternalCategory />} />
+      <Route path="/community-pages" element={<CommunityPages />} />
+    </Routes>
   );
 };
 

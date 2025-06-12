@@ -12,7 +12,7 @@ const InventoryDashboard = () => {
         </div>
         <div className="row">
           <div className="col">
-            <NavLink to="/admin/pms-tag-Category">
+            <NavLink to="/admin/inventory/pms-tag-Category">
               <div className="card shadow-none bgSuccessLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgSuccessLight">
@@ -26,7 +26,7 @@ const InventoryDashboard = () => {
             </NavLink>
           </div>
           <div className="col">
-            <NavLink to="/admin/pms-inventory-category-overview">
+            <NavLink to="/admin/inventory/pms-inventory-category-overview">
               <div className="card shadow-none bgPrimaryLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgPrimaryLight">
@@ -41,7 +41,7 @@ const InventoryDashboard = () => {
           </div>
 
           <div className="col">
-            <NavLink to="/admin/pms-unfetch-pages">
+            <NavLink to="/admin/inventory/pms-unfetch-pages">
               <div className="card shadow-none bgTertiaryLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgTertiaryLight">
@@ -56,7 +56,7 @@ const InventoryDashboard = () => {
           </div>
 
           <div className="col">
-            <NavLink to="/admin/pms-page-cat-assignment-overview">
+            <NavLink to="/admin/inventory/pms-page-cat-assignment-overview">
               <div className="card shadow-none bgSecondaryLight">
                 <div className="card-body text-center pb20">
                   <div className="iconBadge bgSecondaryLight">

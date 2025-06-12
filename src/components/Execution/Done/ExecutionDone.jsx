@@ -335,23 +335,22 @@ export default function ExecutionDone() {
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/pending")}
+          onClick={() => navigate("/admin/execution/pending")}
+          disabled
         >
           Pending
         </Button>
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/done")}
-          disabled
+          onClick={() => navigate("/admin/execution/done")}
         >
-          {" "}
           Executed
         </Button>
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/rejected ")}
+          onClick={() => navigate("/admin/execution/rejected")}
         >
           Rejected
         </Button>

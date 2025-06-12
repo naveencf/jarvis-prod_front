@@ -13,10 +13,10 @@ function VendorStatics(filterData, vendorDetails, setVendorDetails) {
                     <div className="card-header flexCenterBetween">
                         <h5 className="card-title">Vendor : {vendorData?.length}</h5>
                         <div className="flexCenter colGap8">
-                            <Link to={`/admin/pms-vendor-master`} className="btn cmnbtn btn_sm btn-outline-primary">
+                            <Link to={`/admin/inventory/pms-vendor-master`} className="btn cmnbtn btn_sm btn-outline-primary">
                                 Add Vendor <i className="fa fa-plus" />
                             </Link>
-                            <Link to={`/admin/pms-page-overview`} className="btn cmnbtn btn_sm btn-outline-primary">
+                            <Link to={`/admin/inventory/pms-page-overview`} className="btn cmnbtn btn_sm btn-outline-primary">
                                 Page <KeyboardArrowRightIcon />
                             </Link>
                         </div>

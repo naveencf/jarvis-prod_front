@@ -89,7 +89,7 @@ const IncentiveCreate = () => {
   };
 
   if (isFormSubmitted) {
-    navigate("/admin/sales-incentive-overview");
+    navigate("/admin/sales/sales-incentive-overview");
   }
 
   return (

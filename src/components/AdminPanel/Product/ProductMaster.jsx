@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
-import { baseUrl } from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 const ProductMaster = () => {
   // const [categoryNames, setCategoryNames] = useState({});
@@ -54,15 +54,11 @@ const ProductMaster = () => {
       };
 
       try {
-        await axios.post(
-          `${baseUrl}` + `add_proppost`,
-          payload,
-          {
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        await axios.post(`${baseUrl}` + `add_proppost`, payload, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         // console.log("Request successfully sent for", inputField);
       } catch (error) {
@@ -112,7 +108,7 @@ const ProductMaster = () => {
     }
   };
   if (isFormSubmitted) {
-    return <Navigate to="/admin/product-overview" />;
+    return <Navigate to="/admin/sales/product-overview" />;
   }
   return (
     <>

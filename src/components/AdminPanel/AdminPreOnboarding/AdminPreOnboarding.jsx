@@ -552,8 +552,8 @@ const AdminPreOnboarding = () => {
   }
 
   if (isFormSubmitted) {
-    // return <Navigate to="/admin/pre-onboarding-overview" />;
-    return navigate("/admin/pre-onboarding-overview");
+    // return <Navigate to="/admin/preonboard/pre-onboarding-overview" />;
+    return navigate("/admin/preonboard/pre-onboarding-overview");
   }
 
   // Password Auto Genrate

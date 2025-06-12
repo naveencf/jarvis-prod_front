@@ -6,9 +6,9 @@ import Select from "react-select";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { baseUrl } from "../../../../utils/config";
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { TextField } from "@mui/material";
 import { set } from "date-fns";
 
@@ -41,7 +41,7 @@ const mandatoryOption = [
 const PreonboardingDocuments = () => {
   const { toastAlert, toastError } = useGlobalContext();
   const navigate = useNavigate();
-  const [docName, setDocName] = useState("")
+  const [docName, setDocName] = useState("");
   const [documentType, setDocumentType] = useState("");
   const [period, setPeriod] = useState(null);
   const [priority, setPriority] = useState("");
@@ -52,14 +52,16 @@ const PreonboardingDocuments = () => {
   const [jobType, setJobType] = useState([]);
   const [jobTypeData, setJobTypeData] = useState([]);
   const [description, setDescription] = useState("");
-  const [selectedOption, setSelectedOption] = useState('no');
-  const [selectedOption2, setSelectedOption2] = useState('no');
-  const [expiredDate, setExpiredDate] = useState('');
+  const [selectedOption, setSelectedOption] = useState("no");
+  const [selectedOption2, setSelectedOption2] = useState("no");
+  const [expiredDate, setExpiredDate] = useState("");
 
   useEffect(() => {
     async function getJobtTypes() {
       const jobTypeResponse = await axios.get(baseUrl + "get_all_job_types");
-      const filteredData = jobTypeResponse.data.data.filter(option => option.job_type !== 'WFHD')
+      const filteredData = jobTypeResponse.data.data.filter(
+        (option) => option.job_type !== "WFHD"
+      );
       setJobTypeData(filteredData);
     }
     getJobtTypes();
@@ -88,7 +90,7 @@ const PreonboardingDocuments = () => {
         job_type: jobType,
         is_doc_number: selectedOption,
         is_document_expired: selectedOption2,
-        expired_date: expiredDate
+        expired_date: expiredDate,
       });
 
       setDocumentType("");
@@ -96,7 +98,7 @@ const PreonboardingDocuments = () => {
       setDescription("");
       setPriority(null);
       toastAlert("Document Created");
-      navigate("/admin/preonboarding-documents-overview");
+      navigate("/admin/preonboard/preonboarding-documents-overview");
     } catch (error) {
       if (error) return toastError("Document Type Already Exists");
     }
@@ -114,7 +116,6 @@ const PreonboardingDocuments = () => {
         <div className="card-body">
           <div className="row">
             <div className="col-md-3">
-
               <FieldContainer
                 label="Document Name"
                 astric
@@ -123,7 +124,6 @@ const PreonboardingDocuments = () => {
               />
             </div>
             <div className="col-md-3">
-
               <FieldContainer
                 label="Document Type"
                 astric
@@ -132,7 +132,6 @@ const PreonboardingDocuments = () => {
               />
             </div>
             <div className="col-md-3">
-
               <FieldContainer
                 label="Period (days)"
                 astric
@@ -175,16 +174,22 @@ const PreonboardingDocuments = () => {
                 Has Document Number ?<sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
-                value={selectedOption === 'yes' ? { value: "yes", label: "Yes" } : { value: "no", label: "No" }}
+                value={
+                  selectedOption === "yes"
+                    ? { value: "yes", label: "Yes" }
+                    : { value: "no", label: "No" }
+                }
                 label={documentaproval}
-                options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                ]}
                 onChange={(e) => setSelectedOption(e.value)}
                 required
               />
-
             </div>
 
-            {selectedOption === 'yes' && (
+            {selectedOption === "yes" && (
               <div className="col-md-3">
                 <FieldContainer
                   fieldGrid={3}
@@ -233,18 +238,23 @@ const PreonboardingDocuments = () => {
                 Has Document Expired ?<sup style={{ color: "red" }}>*</sup>
               </label>
               <Select
-                value={selectedOption2 === 'yes' ? { value: "yes", label: "Yes" } : { value: "no", label: "No" }}
+                value={
+                  selectedOption2 === "yes"
+                    ? { value: "yes", label: "Yes" }
+                    : { value: "no", label: "No" }
+                }
                 label={documentaproval}
-                options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]}
+                options={[
+                  { value: "yes", label: "Yes" },
+                  { value: "no", label: "No" },
+                ]}
                 onChange={(e) => setSelectedOption2(e.value)}
                 required
               />
-
             </div>
 
-            {selectedOption2 === 'yes' && (
+            {selectedOption2 === "yes" && (
               <div className="col-md-3 mt-4">
-
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     label="Expired Date"
@@ -255,11 +265,12 @@ const PreonboardingDocuments = () => {
                 </LocalizationProvider>
               </div>
             )}
-
           </div>
         </div>
       </div>
-      <button className="btn btn-primary cmnbtn" onClick={handleSubmit}>Submit</button>
+      <button className="btn btn-primary cmnbtn" onClick={handleSubmit}>
+        Submit
+      </button>
     </div>
   );
 };

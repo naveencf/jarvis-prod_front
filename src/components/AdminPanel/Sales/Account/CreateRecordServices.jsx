@@ -6,7 +6,7 @@ import { useGlobalContext } from "../../../../Context/Context";
 import { set } from "date-fns";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
 
-const RecordServices = ({
+const CreateRecordServices = ({
   records,
   setRecords,
   serviceTypes,
@@ -572,4 +572,4 @@ const RecordServices = ({
   );
 };
 
-export default RecordServices;
+export default CreateRecordServices;

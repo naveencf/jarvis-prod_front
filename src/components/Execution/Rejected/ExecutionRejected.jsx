@@ -145,57 +145,57 @@ export default function ExecutionRejected() {
 
     contextData
       ? {
-        field: "actions",
-        type: "actions",
-        headerName: "Actions",
-        width: 300,
-        cellClassName: "actions",
-        getActions: (params) => {
-          const id = params.row._id;
-          return [
-            <div
-              className="icon-1"
-              key={id}
-              onClick={() => handleClickOpenPaymentDetailDialog(params.row)}
-              title="Payment Details"
-            >
-              <GridActionsCellItem
-                icon={<PointOfSaleTwoToneIcon />}
-                color="inherit"
-              />
-            </div>,
-            <Link key={id} to={`/admin/exeexecution/${id}`}>
-              <div className="icon-1">
+          field: "actions",
+          type: "actions",
+          headerName: "Actions",
+          width: 300,
+          cellClassName: "actions",
+          getActions: (params) => {
+            const id = params.row._id;
+            return [
+              <div
+                className="icon-1"
+                key={id}
+                onClick={() => handleClickOpenPaymentDetailDialog(params.row)}
+                title="Payment Details"
+              >
+                <GridActionsCellItem
+                  icon={<PointOfSaleTwoToneIcon />}
+                  color="inherit"
+                />
+              </div>,
+              <Link key={id} to={`/admin/exeexecution/${id}`}>
+                <div className="icon-1">
+                  <GridActionsCellItem
+                    icon={<ListAltOutlinedIcon />}
+                    label="Delete"
+                    color="inherit"
+                    title="Record Service Detail"
+                  />
+                </div>
+              </Link>,
+            ];
+          },
+        }
+      : {
+          field: "actions",
+          type: "actions",
+          headerName: "Actions",
+          width: 300,
+          cellClassName: "actions",
+          getActions: (params) => {
+            const { id } = params;
+            return [
+              <Link key={id} to={`/admin/exeexecution/${id}`}>
                 <GridActionsCellItem
                   icon={<ListAltOutlinedIcon />}
                   label="Delete"
                   color="inherit"
-                  title="Record Service Detail"
                 />
-              </div>
-            </Link>,
-          ];
+              </Link>,
+            ];
+          },
         },
-      }
-      : {
-        field: "actions",
-        type: "actions",
-        headerName: "Actions",
-        width: 300,
-        cellClassName: "actions",
-        getActions: (params) => {
-          const { id } = params;
-          return [
-            <Link key={id} to={`/admin/exeexecution/${id}`}>
-              <GridActionsCellItem
-                icon={<ListAltOutlinedIcon />}
-                label="Delete"
-                color="inherit"
-              />
-            </Link>,
-          ];
-        },
-      },
   ];
 
   return (
@@ -205,23 +205,22 @@ export default function ExecutionRejected() {
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/pending")}
+          onClick={() => navigate("/admin/execution/pending")}
+          disabled
         >
           Pending
         </Button>
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/done")}
+          onClick={() => navigate("/admin/execution/done")}
         >
-          {" "}
           Executed
         </Button>
         <Button
           variant="outlined"
           sx={{ m: 1 }}
-          onClick={() => navigate("/admin/exeexecution/rejected")}
-          disabled
+          onClick={() => navigate("/admin/execution/rejected")}
         >
           Rejected
         </Button>

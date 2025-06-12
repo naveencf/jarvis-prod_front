@@ -66,7 +66,7 @@ const ViewPaymentMode = () => {
       name: "Actions",
       renderRowCell: (row) => (
         <div className="d-flex">
-          <Link to={`/admin/edit-payment-mode/${row._id}`}>
+          <Link to={`/admin/sales/edit-payment-mode/${row._id}`}>
             <div className="icon-1">
               <i className="bi bi-pencil" />
             </div>
@@ -88,7 +88,7 @@ const ViewPaymentMode = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Payment Mode"
-            link="/admin/create-payment-mode"
+            link="/admin/sales/create-payment-mode"
             buttonAccess={loginUserRole === 1}
             submitButton={false}
           />

@@ -1,12 +1,14 @@
-import React from 'react'
+import { lazy } from 'react'
+import { Route, Routes } from 'react-router-dom'
+// import React from 'react'
 import InventoryDashboard from '../components/AdminPanel/PageMS/InventoryDashboard/InventoryDashboard'
 import CategoryOverview from '../components/AdminPanel/PageMS/Category/CategoryOverview'
 import SubCategoryOverview from '../components/AdminPanel/PageMS/SubCategory/SubCategoryOverview'
 import TagCategory from '../components/AdminPanel/PageMS/InventoryDashboard/TagCategory'
 import GroupLinkType from '../components/AdminPanel/PageMS/GroupLinkType'
 import VendorMaster from '../components/AdminPanel/PageMS/VendorMaster'
-import PlanMaking from '../components/inventory/plan-making/PlanMaking'
-import PlanMakingBeta from '../components/inventory/plan-making-beta/PlanMakingBeta'
+// import PlanMaking from '../components/inventory/plan-making/PlanMaking'
+// import PlanMakingBeta from '../components/inventory/plan-making-beta/PlanMakingBeta'
 import PlanUpload from '../components/AdminPanel/Inventory/Plan-upload/PlanUpload'
 import VendorOverview from '../components/AdminPanel/PageMS/VendorOverview'
 import PageMaster from '../components/AdminPanel/PageMS/PageMaster'
@@ -15,12 +17,14 @@ import PageAssignmentUserAdd from '../components/AdminPanel/PageMS/PageAssignmen
 import PageOverviewNew from '../components/AdminPanel/PageMS/PageOverviewNew'
 import PageLogs from '../components/AdminPanel/PageMS/PageOverview/PageLogs'
 import PurchasePrice from '../components/AdminPanel/PageMS/PurchasePrice'
-import PageEdit from '../components/AdminPanel/PageMS/PageEdit'
 import UnfetchedPages from '../components/AdminPanel/PageMS/InventoryDashboard/UnfetchedPages.jsx'
-import { lazy } from 'react'
-import { Route } from 'react-router-dom'
+// import PlanHomeBeta from '../components/inventory/plan-making-beta/PlanHomeBeta.jsx'
+import BulkVendor from '../components/AdminPanel/PageMS/Vendor/BulkVendor/BulkVendor.jsx'
+import PageEdit from '../components/AdminPanel/PageMS/PageEdit.jsx'
 // import UnfetchedPages from "./../components/AdminPanel/PageMS/UnfetchedPages.jsx";
 const PlanPricing = lazy(() => import("../components/inventory/plan-making/PlanPricing.jsx"));
+// import PlanPricingHome from "../inventory/plan-pricing/PlanPricingHome.jsx";
+import PlanHomeBeta from '../components/inventory/plan-making-beta/PlanHomeBeta.jsx'
 const PlanMakingTableBeta = lazy(() =>
     import("../components/inventory/plan-making-beta/PlanMakingBeta.jsx")
 );
@@ -33,8 +37,7 @@ const PlanMakingTable = lazy(() =>
 
 function InventoryRoutes() {
     return (
-        <>
-
+        <Routes>
             <Route
                 path="/pms-inventory-dashboard"
                 element={<InventoryDashboard />}
@@ -63,11 +66,15 @@ function InventoryRoutes() {
                 path="/pms-vendor-master"
                 element={<VendorMaster />}
             />
-            <Route path="/pms-plan-making" element={<PlanMaking />} />
+            <Route path="/pms-plan-making" element={<PlanMakingTable />} />
             <Route
                 path="/pms-plan-making-beta"
-                element={<PlanMakingBeta />}
+                element={<PlanHomeBeta />}
             />
+            {/* <Route
+                path="/pms-plan-making-beta"
+                element={<PlanMakingBeta />}
+            /> */}
             <Route
                 path="/pms-plan-making-beta/:id"
                 element={<PlanMakingTableBeta />}
@@ -115,7 +122,11 @@ function InventoryRoutes() {
                 path="/pms-page-edit/:pageMast_id"
                 element={<PageEdit />}
             />
-        </>
+            <Route
+                path="/pms-bulk-vendor-overview"
+                element={<BulkVendor />}
+            />
+        </Routes>
     )
 }
 

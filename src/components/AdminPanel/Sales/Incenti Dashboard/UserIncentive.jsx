@@ -83,7 +83,7 @@ const UserIncentive = () => {
         }
       );
       setAdjustment(res?.data?.data?.adjustment_incentive_amount);
-    } catch (error) { }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -204,7 +204,7 @@ const UserIncentive = () => {
           <div
             className="hov-pointer"
             onClick={() =>
-              Navigate("/admin/incentive-status/earned", {
+              Navigate("/admin/sales/incentive-status/earned", {
                 state: {
                   name: "Earned",
                   id: userData.id,
@@ -256,7 +256,7 @@ const UserIncentive = () => {
           <div
             className="hov-pointer"
             onClick={() =>
-              Navigate("/admin/incentive-status/un-earned", {
+              Navigate("/admin/sales/incentive-status/un-earned", {
                 state: {
                   name: "Un-Earned",
                   id: userData.id,
@@ -285,7 +285,7 @@ const UserIncentive = () => {
             <div
               title={
                 disabledsate &&
-                  releaseButtonConditiondata?.finance_status === "pending"
+                releaseButtonConditiondata?.finance_status === "pending"
                   ? "Pending from finance side"
                   : ""
               }
@@ -384,7 +384,7 @@ const UserIncentive = () => {
             </div>
           )}
           <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
-            <Link to="/admin/incentive-statement">
+            <Link to="/admin/sales/incentive-statement">
               <div className="card">
                 <div className="card-body pb20 flexCenter colGap14">
                   <div className="iconBadge bgInfoLight m-0">
@@ -393,7 +393,9 @@ const UserIncentive = () => {
                     </span>
                   </div>
                   <div>
-                    <h6 className="colorMedium">Total Release Request Pending</h6>
+                    <h6 className="colorMedium">
+                      Total Release Request Pending
+                    </h6>
                     <h6 className="mt8 fs_16">
                       {userIncentiveData?.totalIncentiveRequestPendingAmount.toFixed(
                         2

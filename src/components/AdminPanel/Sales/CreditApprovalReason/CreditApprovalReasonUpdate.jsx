@@ -43,7 +43,7 @@ const CreditApprovalReasonUpdate = () => {
       setReason("");
       setDayCount("");
       toastAlert(response.data.message);
-      navigate("/admin/view-credit-reason-approval");
+      navigate("/admin/sales/view-credit-reason-approval");
     } catch (error) {
       toastError(error);
     }

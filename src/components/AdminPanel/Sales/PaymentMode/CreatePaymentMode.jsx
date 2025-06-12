@@ -15,7 +15,8 @@ const CreatePaymentMode = () => {
   const [title, setTitle] = useState("");
   const token = getDecodedToken();
   const loginUserId = token.id;
-  const [addMode, { isLoading: addModeLoading, isError: addModeError }] = useAddPaymentModeMutation();
+  const [addMode, { isLoading: addModeLoading, isError: addModeError }] =
+    useAddPaymentModeMutation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -23,7 +24,7 @@ const CreatePaymentMode = () => {
     formData.append("created_by", loginUserId);
     try {
       await addMode(formData).unwrap();
-      navigate("/admin/view-payment-mode");
+      navigate("/admin/sales/view-payment-mode");
       toastAlert("Payment Mode Created");
     } catch (error) {
       toastError(error.message);

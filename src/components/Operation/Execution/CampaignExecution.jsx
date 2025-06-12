@@ -42,7 +42,11 @@ import PurchasePagesStats from "../../Purchase/PurchaseVendor/PurchasePagesStats
 import DuplicayModal from "./DuplicayModal";
 import PostGenerator from "../../InstaPostGenerator/PostGenerator";
 import PhotoPreview from "./PhotoPreview";
-import { useGetPmsPlatformQuery } from "../../Store/reduxBaseURL";
+import {
+  useGetBankDetailsByVendorIdQuery,
+  useGetPmsPlatformQuery,
+  useGetVendorByIdQuery,
+} from "../../Store/reduxBaseURL";
 import { Autocomplete } from "@mui/lab";
 import { TextField } from "@mui/material";
 import {
@@ -62,6 +66,7 @@ import ConvertDateToOpposite from "../../../ConvertDateToOpposite.js";
 import Swal from "sweetalert2";
 import Loader from "../../Finance/Loader/Loader.jsx";
 import PriceUpdateModal from "../../Purchase/PriceUpdateModal.jsx";
+import VendorInvoice from "./VendorInvoice.jsx";
 const key = [
   { price_key: "instagram_post" },
   {
@@ -96,7 +101,8 @@ const CampaignExecution = () => {
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [selectedVendorId, setSelectedVendorId]= useState(null)
+  // const [selectedVendorId, setSelectedVendorId]= useState(null)
+
   const [startDate, setStartDate] = useState("");
   const [price, setPrice] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -122,7 +128,10 @@ const CampaignExecution = () => {
   const token = getDecodedToken();
   const { data: vendorsList, isLoading: vendorsLoading } = useGetVendorsQuery();
   const [verifyAdvancePurchase] = useVerifyAdvancePurchaseMutation();
-
+  const { data: vendorDetails, isLoading: vendorDetailsLoading } =
+    useGetVendorByIdQuery(selectedVendor, { skip: !selectedVendor });
+  const { data: vendorBankDetails, isLoading: vendorBankdetailLoading } =
+    useGetBankDetailsByVendorIdQuery(selectedVendor, { skip: !selectedVendor });
   // const {
   //   data: allPages,
   //   isLoading: allPagesLoading,
@@ -242,7 +251,8 @@ const CampaignExecution = () => {
 
       if (errors.length > 0) {
         invalidReasons.push(
-          `Post ${index + 1} (${item.shortCode || item.page_name
+          `Post ${index + 1} (${
+            item.shortCode || item.page_name
           }): ${errors.join(", ")}`
         );
       }
@@ -420,7 +430,7 @@ const CampaignExecution = () => {
       }
     }
   }, [phaseList]);
- console.log("pageName", pageName);
+
   async function handledataUpdate(row, setEditFlag) {
     const data = columns.reduce((acc, col) => {
       if (
@@ -455,12 +465,12 @@ const CampaignExecution = () => {
           row?.postType == "REEL"
             ? key[2].price_key
             : row?.postType == "CAROUSEL"
-              ? key[3].price_key
-              : row?.postType === "IMAGE"
-                ? key[0].price_key
-                : row?.story_link && row?.ref_link
-                  ? key[4].price_key
-                  : key[1].price_key
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key
         );
       }
     }
@@ -476,15 +486,12 @@ const CampaignExecution = () => {
         vendorsList?.find((item) => item.vendor_name === row.vendor_name)?._id
       );
     }
-console.log("data",data);
-console.log("row",row);
 
     Object.entries(data).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         if (key === "postImage") {
           formData.append("image", value);
         } else formData.append(key, value);
-        console.log("key", key, "value", value);
         if (!pageName) {
           formData.delete("page_name");
         }
@@ -606,31 +613,44 @@ console.log("row",row);
   //   return phasedData;
   // }, [PlanData, activeTab, fetchingPlanData, loadingPlanData, linkData]);
   const phaseWiseData = useMemo(() => {
-    // Always use localData if available (fallback to PlanData/linkData)
     const currentPlanData = localPlanData?.length ? localPlanData : PlanData;
     const currentLinkData = localLinkData?.length ? localLinkData : linkData;
+
+    if (Array?.isArray(PlanData) && PlanData.length === 0) {
+      return [];
+    }
 
     let phasedData = [];
 
     if (
       currentPlanData?.length > 0 &&
-      !currentPlanData.some((data) => data.phaseDate === activeTab)
+      !currentPlanData?.some((data) => data.phaseDate === activeTab)
     ) {
       return currentPlanData;
     }
 
     if (actTab !== 5) {
-      phasedData = currentPlanData?.filter((data) => {
-        return activeTab === "all" || data.phaseDate === activeTab;
-      });
+      phasedData = currentPlanData?.filter((data) =>
+        activeTab === "all" ? true : data?.phaseDate === activeTab
+      );
     } else {
-      phasedData = currentLinkData?.filter((data) => {
-        return activeTab === "all" || data.phaseDate === activeTab;
-      });
+      phasedData =
+        currentLinkData?.filter((data) =>
+          activeTab === "all" ? true : data?.phaseDate === activeTab
+        ) || [];
     }
 
     return phasedData;
-  }, [PlanData, linkData, localPlanData, localLinkData, activeTab, actTab, fetchingPlanData, loadingPlanData]);
+  }, [
+    PlanData,
+    linkData,
+    localPlanData,
+    localLinkData,
+    activeTab,
+    actTab,
+    fetchingPlanData,
+    loadingPlanData,
+  ]);
 
   // useEffect(() => {
   //   if (selectedPrice) {
@@ -646,14 +666,14 @@ console.log("row",row);
           row?.postType == ""
             ? ""
             : row?.postType == "REEL"
-              ? key[2].price_key
-              : row?.postType == "CAROUSEL"
-                ? key[3].price_key
-                : row?.postType === "IMAGE"
-                  ? key[0].price_key
-                  : row?.story_link && row?.ref_link
-                    ? key[4].price_key
-                    : key[1].price_key,
+            ? key[2].price_key
+            : row?.postType == "CAROUSEL"
+            ? key[3].price_key
+            : row?.postType === "IMAGE"
+            ? key[0].price_key
+            : row?.story_link && row?.ref_link
+            ? key[4].price_key
+            : key[1].price_key,
       };
       if (!data.platform_name) {
         toastError("Please select the platform");
@@ -669,7 +689,7 @@ console.log("row",row);
       await refetchPlanData();
       setSelectedPrice("");
       toastAlert("Price Updated");
-    } catch (error) { }
+    } catch (error) {}
   }
 
   async function handleBulkAudit() {
@@ -825,19 +845,19 @@ console.log("row",row);
       data =
         actTab == 4 && selectedData.length > 0
           ? {
-            userId: token.id,
+              userId: token.id,
 
-            isVendorWise: true,
-            vendor_id: vendorList.current,
-            shortCodes: selectedData.map((data) => data.shortCode),
-          }
+              isVendorWise: true,
+              vendor_id: vendorList.current,
+              shortCodes: selectedData.map((data) => data.shortCode),
+            }
           : actTab == 5 && selectedData.length === 1
-            ? {
+          ? {
               userId: token.id,
               shortCodes: selectedData.map((data) => data.shortCode),
               campaignId: selectedData[0].campaignId,
             }
-            : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
+          : // : selectedPlan == 0 || selectedPlan == null || selectedPlan == "null"
             // ?
             {
               userId: token.id,
@@ -943,8 +963,8 @@ console.log("row",row);
               row?.postType == "REEL"
                 ? Reel
                 : row?.postType == "CAROUSEL"
-                  ? Carousel
-                  : Image
+                ? Carousel
+                : Image
             }
             style={{ width: "20px", height: "20px" }}
             alt=""
@@ -1024,12 +1044,11 @@ console.log("row",row);
         selectedValue
       ) => {
         const filteredPages = allPages || [];
-      
+
         const selectedPageObj = filteredPages.find(
-          (page) =>
-            page.page_name === selectedValue || page._id === row.page_id
+          (page) => page.page_name === selectedValue || page._id === row.page_id
         );
-      
+
         return (
           <div style={{ position: "relative", width: "10rem" }}>
             <Autocomplete
@@ -1051,7 +1070,6 @@ console.log("row",row);
                   column,
                   true
                 );
-                console.log("newValue", newValue);
                 setPageName(newValue.page_name);
               }}
             />
@@ -1181,9 +1199,9 @@ console.log("row",row);
             <button
               title={
                 row.audit_status === "purchased" ||
-                  row.amount < 0 ||
-                  row?.vendor_name == "" ||
-                  row?.campaignId == null
+                row.amount < 0 ||
+                row?.vendor_name == "" ||
+                row?.campaignId == null
                   ? "Amount should be greater than or equal to 0 and select the vendor for the page or this link is not present in any campaign"
                   : ""
               }
@@ -1202,8 +1220,8 @@ console.log("row",row);
                     row.audit_status === "pending"
                       ? "audited"
                       : row.audit_status === "audited"
-                        ? "pending"
-                        : row.audit_status,
+                      ? "pending"
+                      : row.audit_status,
                 };
                 handleSingleAuditPending({
                   ...row,
@@ -1211,12 +1229,13 @@ console.log("row",row);
                 });
                 handelchange(data, index, column, true);
               }}
-              className={`pointer badge ${row.audit_status === "pending"
+              className={`pointer badge ${
+                row.audit_status === "pending"
                   ? "btn btn-sm cmnbtn btn-primary"
                   : row.audit_status !== "audited"
-                    ? "bg-success"
-                    : "btn btn-sm cmnbtn btn-primary"
-                }`}
+                  ? "bg-success"
+                  : "btn btn-sm cmnbtn btn-primary"
+              }`}
             >
               {row.audit_status}
             </button>
@@ -1799,7 +1818,7 @@ console.log("row",row);
     ],
     [campaignList]
   );
- 
+
   function modalViewer(name) {
     if (name === "auditedData")
       return (
@@ -1841,7 +1860,21 @@ console.log("row",row);
           handleEditClose={() => setToggleModal(false)}
         />
       );
-    else if (name == "duplicacyModal") {
+    else if (name === "invoiceModal") {
+      return (
+        <div className="max-w-3xl mx-auto bg-white p-6 overflow-auto max-h-[80vh]">
+          <VendorInvoice
+         selectedData={selectedData}
+         vendorDetails={vendorDetails?.data}
+         vendorBankDetails={vendorBankDetails?.data}
+            onClose={() => {
+              setToggleModal(false);
+              setModalName("");
+            }}
+          />
+        </div>
+      );
+    } else if (name == "duplicacyModal") {
       return (
         <DuplicayModal
           duplicateMsg={duplicateMsg}
@@ -1873,7 +1906,7 @@ console.log("row",row);
           </button>
           <div className="d-flex flex-column justify-content-center align-items-center">
             {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length ==
-              modalData?.data?.data?.requestStatsUpdate?.length ? (
+            modalData?.data?.data?.requestStatsUpdate?.length ? (
               <h4 className="text-center mb-3">
                 we found these{" "}
                 {modalData?.data?.data?.shortCodeNotPresentInCampaign?.length}{" "}
@@ -1973,7 +2006,7 @@ console.log("row",row);
             {selectedPlan == 0
               ? "Vendor Wise Data"
               : campaignList?.find((data) => data?._id == selectedPlan)
-                ?.exe_campaign_name}
+                  ?.exe_campaign_name}
           </div>
           <CustomSelect
             disabled={!!links}
@@ -2107,15 +2140,27 @@ console.log("row",row);
         tableSelectedRows={selectedData}
         addHtml={
           <div className="d-flex sb w-100">
-            <div></div>
+            <div>
+              <button
+                className="btn btn-sm btn-primary"
+                onClick={() => {
+                  setModalName("invoiceModal");
+                  setToggleModal(true);
+                }}
+                disabled={!selectedVendor}
+              >
+                Request Invoice
+              </button>
+            </div>
             <div className="d-flex">
               <button
                 title="Bulk Upload"
                 disabled={selectedData.length === 0}
-                className={`mr-3 cmnbtn btn btn-sm ${selectedData.length === 0
+                className={`mr-3 cmnbtn btn btn-sm ${
+                  selectedData.length === 0
                     ? "btn-outline-primary"
                     : "btn-primary"
-                  }`}
+                }`}
                 onClick={() => {
                   setModalName("bulkUpload");
                   setToggleModal(true);
@@ -2144,11 +2189,13 @@ console.log("row",row);
               ) : (
                 ""
               )}
+
               {phaseWiseData?.length > 0 && (actTab == 4 || actTab == 5) && (
                 <button
                   title="Upload Audited Data"
-                  className={`mr-3 cmnbtn btn btn-sm ${disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
-                    }`}
+                  className={`mr-3 cmnbtn btn btn-sm ${
+                    disableAuditUpload() ? "btn-outline-primary" : "btn-primary"
+                  }`}
                   onClick={handleAuditedDataUpload}
                   disabled={disableAuditUpload() || AuditedUploading}
                 >
@@ -2157,8 +2204,9 @@ console.log("row",row);
               )}
               <button
                 title="Reload Data"
-                className={`mr-3 icon-1 btn-outline-primary  ${fetchingPlanData && "animate_rotate"
-                  }`}
+                className={`mr-3 icon-1 btn-outline-primary  ${
+                  fetchingPlanData && "animate_rotate"
+                }`}
                 onClick={actTab == 5 ? handleFilterLinks : refetchPlanData}
               >
                 <ArrowClockwise />

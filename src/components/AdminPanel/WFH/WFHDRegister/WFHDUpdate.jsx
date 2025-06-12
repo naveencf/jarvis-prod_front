@@ -55,7 +55,7 @@ const WFHDUpdate = () => {
             submitButton={false}
             mainTitle="Update"
             title=""
-            link="admin/wfhd-overview"
+            link="admin/wfhd/wfhd-overview"
           />
         </div>
         <div className="tab">

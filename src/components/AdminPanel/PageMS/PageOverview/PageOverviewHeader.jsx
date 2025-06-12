@@ -585,13 +585,13 @@ function PageOverviewHeader({
               </button>
 
               <Link
-                to={`/admin/pms-page-master`}
+                to={`/admin/inventory/pms-page-master`}
                 className="btn cmnbtn btn_sm btn-outline-primary"
               >
                 Add Profile <AddIcon />
               </Link>
               <Link
-                to={`/admin/pms-vendor-overview`}
+                to={`/admin/inventory/pms-vendor-overview`}
                 className="btn cmnbtn btn_sm btn-outline-primary"
               >
                 Vendor <KeyboardArrowRightIcon />

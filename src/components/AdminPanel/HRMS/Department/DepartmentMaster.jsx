@@ -94,7 +94,7 @@ const DepartmentMaster = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/department-overview" />;
+    return <Navigate to="/admin/user/department-overview" />;
   }
 
   return (

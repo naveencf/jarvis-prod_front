@@ -48,7 +48,7 @@ const RoleMaster = () => {
   };
 
   if (isFormSubmitted) {
-    return <Navigate to="/admin/role-overview" />;
+    return <Navigate to="/admin/user/role-overview" />;
   }
   return (
     <>

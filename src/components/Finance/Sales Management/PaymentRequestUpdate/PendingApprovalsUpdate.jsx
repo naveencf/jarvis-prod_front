@@ -232,7 +232,7 @@ const PendingApprovalUpdate = () => {
     <div>
       <FormContainer
         mainTitle="Pending Approval "
-        link="/admin/finance-alltransaction"
+        link="/admin/finance/finance-alltransaction"
         buttonAccess={
           contextData &&
           contextData[2] &&

@@ -320,8 +320,8 @@ export default function GSThold() {
               {item.status == 0
                 ? "Pending"
                 : item.status == 2
-                ? "Discarded"
-                : "Paid"}
+                  ? "Discarded"
+                  : "Paid"}
             </p>
           ));
         } else {
@@ -428,7 +428,7 @@ export default function GSThold() {
     <div>
       <FormContainer
         mainTitle="GST Hold"
-        link="/admin/finance-pruchasemanagement-paymentdone"
+        link="/admin/finance/finance-pruchasemanagement-paymentdone"
         uniqueVendorCount={uniqueVendorCount}
         totalRequestAmount={totalRequestAmount}
         pendingRequestCount={pendingRequestCount}

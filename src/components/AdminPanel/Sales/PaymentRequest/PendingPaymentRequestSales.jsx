@@ -27,7 +27,6 @@ const PendingPaymentRequestSales = () => {
     getData();
   }, []);
 
-
   useEffect(() => {
     const result = originalData.filter((d) => {
       return d?.customer_name?.toLowerCase()?.includes(search?.toLowerCase());
@@ -82,7 +81,7 @@ const PendingPaymentRequestSales = () => {
       name: "Action",
       cell: (row) => (
         <>
-          <Link to={`/admin/create-payment-update`}>
+          <Link to={`/admin/sales/create-payment-update`}>
             <div className="icon-1" title="Document upload">
               <i className="bi bi-file-earmark-plus"></i>
             </div>
@@ -97,7 +96,7 @@ const PendingPaymentRequestSales = () => {
         <div className="action_title">
           <FormContainer
             mainTitle="Pending Payment Request"
-            link="/admin/create-sales-booking"
+            link="/admin/sales/create-sales-booking"
             buttonAccess={true}
             submitButton={false}
           />

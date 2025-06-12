@@ -6,7 +6,7 @@ import jwtDecode from "jwt-decode";
 import FormContainer from "../FormContainer";
 import FieldContainer from "../FieldContainer";
 import { useGlobalContext } from "../../../Context/Context";
-import {baseUrl} from '../../../utils/config'
+import { baseUrl } from "../../../utils/config";
 
 function ObjectUpdate() {
   const { id } = useParams();
@@ -23,7 +23,7 @@ function ObjectUpdate() {
   const userId = decodedToken.id;
   useEffect(() => {
     axios
-      .get(`${baseUrl}`+`objdata/${id}`)
+      .get(`${baseUrl}` + `objdata/${id}`)
       .then((res) => {
         const data = res.data.data;
         setObjData(data);
@@ -33,12 +33,12 @@ function ObjectUpdate() {
       })
       .catch((error) => console.error(error));
     axios
-      .get(baseUrl+"get_all_departments")
+      .get(baseUrl + "get_all_departments")
       .then((res) => setDeptData(res.data));
   }, [id]);
   const handleSubmit = (e) => {
     e.preventDefault();
-    axios.put(`${baseUrl}`+`obj_update`, {
+    axios.put(`${baseUrl}` + `obj_update`, {
       obj_id: id,
       soft_name: softwareName,
       obj_name: objectName,
@@ -57,7 +57,7 @@ function ObjectUpdate() {
     setSelectedDepartment(Number(e.target.value));
   }
   if (isFormSubmitted) {
-    return <Navigate to="/admin/object-overview" />;
+    return <Navigate to="/admin/user/object-overview" />;
   }
   return (
     <>
@@ -77,8 +77,8 @@ function ObjectUpdate() {
           onChange={(e) => setSoftwareName(e.target.value)}
         />
 
-<div className="col-6"></div>
-<label>Department</label>
+        <div className="col-6"></div>
+        <label>Department</label>
         <FieldContainer
           Tag="select"
           value={selectedDepartment}

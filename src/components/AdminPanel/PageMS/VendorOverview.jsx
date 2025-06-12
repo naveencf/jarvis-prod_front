@@ -449,7 +449,7 @@ const VendorOverview = () => {
         const totalFields = fields.length;
         let filledFields = fields.filter((field) => row[field] && row[field] !== 0).length;
         const percentage = (filledFields / totalFields) * 100;
-  
+
         if (percentage === 100) return "Full";
         else if (percentage > 50) return "More than Partial";
         else return "Less than Partial";
@@ -463,7 +463,7 @@ const VendorOverview = () => {
         <div
           onClick={() => handleClickVendorName(row)}
           className="link-primary cursor-pointer text-truncate"
-          style={{color:'#0B58CA', cursor:"pointer"}}
+          style={{ color: '#0B58CA', cursor: "pointer" }}
         >
           {formatString(row.vendor_name)}
         </div>
@@ -615,7 +615,7 @@ const VendorOverview = () => {
       width: 200,
       renderRowCell: (row) => (
         <>
-          <Link to={`/admin/pms-vendor-master/${row._id}`}>
+          <Link to={`/admin/inventory/pms-vendor-master/${row._id}`}>
             <button title="Edit" className="btn btn-outline-primary btn-sm user-button">
               <FaEdit />
             </button>
@@ -629,7 +629,7 @@ const VendorOverview = () => {
       ),
     },
   ];
-  
+
 
   const deletePhpData = async (row) => {
     await axios.delete(baseUrl + `node_data_to_php_delete_vendor`, {
@@ -940,14 +940,14 @@ const VendorOverview = () => {
                     </button>
 
                     <Link
-                      to={`/admin/pms-vendor-master`}
+                      to={`/admin/inventory/pms-vendor-master`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
                     >
                       Add Vendor <i className="fa fa-plus" />
                     </Link>
 
                     <Link
-                      to={`/admin/pms-page-overview`}
+                      to={`/admin/inventory/pms-page-overview`}
                       className="btn cmnbtn btn_sm btn-outline-primary"
                     >
                       Page <KeyboardArrowRightIcon />
@@ -1049,7 +1049,7 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {vendorStaticCount &&
-                  typeof vendorStaticCount === "object" ? (
+                    typeof vendorStaticCount === "object" ? (
                     Object.entries(vendorStaticCount).map(
                       ([category, count]) => (
                         <div
@@ -1348,8 +1348,8 @@ const VendorOverview = () => {
               <div className="card-body">
                 <div className="row">
                   {cityWiseCountData &&
-                  typeof cityWiseCountData === "object" &&
-                  Object.entries(cityWiseCountData).length > 0 ? (
+                    typeof cityWiseCountData === "object" &&
+                    Object.entries(cityWiseCountData).length > 0 ? (
                     Object.entries(cityWiseCountData).map(([city, data]) => (
                       <div
                         key={city}

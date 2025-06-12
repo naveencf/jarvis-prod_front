@@ -107,7 +107,7 @@ const PaymentSummary = () => {
     <>
       <FormContainer
         mainTitle="Payment Summary"
-        link="/admin/finance-paymentmode"
+        link="/admin/finance/finance-paymentmode"
         buttonAccess={
           contextData &&
           contextData[2] &&
