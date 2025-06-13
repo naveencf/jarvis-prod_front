@@ -45,7 +45,7 @@ const Admin = () => {
     const isSarcasmVisible = [29].some(
         (index) => contextData[index]?.view_value === 1
     );
-    const isOperationVisible = [42].some(
+    const isOperationVisible = [42, 54].some(
         (index) => contextData[index]?.view_value === 1
     );
     const isCommunityVisible = [25].some(
@@ -82,10 +82,10 @@ const Admin = () => {
                                         <Route path="preonboard/*" element={isUserManagementVisible && <Suspense fallback={<LoaderTwo />}><PreOnboardRoutes /></Suspense>} />  // Sales Routes shifting pending
                                         <Route path="user/*" element={isUserManagementVisible && <Suspense fallback={<LoaderTwo />}><UserRoutes /></Suspense>} />  // Sales Routes shifting pending
                                         <Route path="wfhd/*" element={isUserManagementVisible && <Suspense fallback={<LoaderTwo />}><UserWFHDRoutes /></Suspense>} />  // Sales Routes shifting pending
-                                        <Route path="operation/*" element={isOperationVisible && <Suspense fallback={<LoaderTwo />}><OperationRoutes /></Suspense>} />  
-                                        <Route path="execution/*" element={isOperationVisible && <Suspense fallback={<LoaderTwo />}><ExecutionRoutes /></Suspense>} />  
-                                        <Route path="sales/*" element={isSalesVisible && <Suspense fallback={<LoaderTwo />}><SalesRoutes /></Suspense>} />   
-                                        <Route path="community/*" element={isCommunityVisible && <Suspense fallback={<LoaderTwo />}><CommunityRoutes /></Suspense>} />  
+                                        <Route path="operation/*" element={isOperationVisible && <Suspense fallback={<LoaderTwo />}><OperationRoutes /></Suspense>} />
+                                        <Route path="execution/*" element={isOperationVisible && <Suspense fallback={<LoaderTwo />}><ExecutionRoutes /></Suspense>} />
+                                        <Route path="sales/*" element={isSalesVisible && <Suspense fallback={<LoaderTwo />}><SalesRoutes /></Suspense>} />
+                                        <Route path="community/*" element={isCommunityVisible && <Suspense fallback={<LoaderTwo />}><CommunityRoutes /></Suspense>} />
                                         <Route path="inventory/*" element={isInventoryVisible && <Suspense fallback={<LoaderTwo />}><InventoryRoutes /></Suspense>} />
                                         {/* <Route path="miscellaneous/*" element={<Suspense fallback={<LoaderTwo />}><MiscellaneousRoutes /></Suspense>} />// Sales Routes shifting pending */}
                                         <Route path="finance/*" element={isFinanceVisible && <Suspense fallback={<LoaderTwo />}><FinanceRoutes /></Suspense>} />// Testing pending
@@ -97,7 +97,7 @@ const Admin = () => {
 
 
                                     </Route>
-                                    <Route path="pantry/*" element={isPantryVisible && <Suspense fallback={<LoaderTwo />}><PantryRoutes /></Suspense>} /> 
+                                    <Route path="pantry/*" element={isPantryVisible && <Suspense fallback={<LoaderTwo />}><PantryRoutes /></Suspense>} />
                                     {/* {PantryRoutes()} */}
                                     <Route path="**" element={<ErrorPage />} />
                                 </Routes>
