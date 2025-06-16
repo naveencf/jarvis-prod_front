@@ -68,7 +68,7 @@ const VendorInventoryDetails = () => {
           tableName="Vendor Pages"
           addHtml={
             <div className="flexCenterBetween colGap8 ml-auto">
-              <Link to={`/admin/vendor-pages/${id}`}> Add Pages</Link>
+              <Link to={`/admin/vendor-sale/vendor-add-pages/${id}`}> Add Pages</Link>
             </div>
           }
         />

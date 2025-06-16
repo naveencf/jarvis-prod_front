@@ -50,6 +50,7 @@ function PlanRequest() {
     salesExecutiveId: '',
     accountId: '',
     brandId: '',
+    brandType:'existing',
     brief: '',
     planStatus: 'open',
     planSaved: false,
@@ -421,7 +422,7 @@ function PlanRequest() {
   const handleFileRemove = () => {
     setFile(null);
   };
-
+console.log("planDetails",planDetails);
   const handleFormSubmit = async () => {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
@@ -447,6 +448,9 @@ function PlanRequest() {
     }
     if (planDetails.brandId || planDetails.brand_id) {
       formData.append('brand_id', planDetails.brandId || planDetails.brand_id);
+    }
+    if (planDetails.brandType === 'new') {
+      formData.append('soft_account_name', planDetails.accountName); 
     }
     formData.append('brief', planDetails.brief);
     formData.append('plan_status', planDetails.planStatus);
@@ -484,6 +488,14 @@ function PlanRequest() {
           fetchPlans();
         } else {
           // navigate(`/admin/inventory/pms-plan-making/${planId}`);
+          Swal.fire({
+            icon: 'success',
+            title: 'Plan Request Submitted!',
+            text: 'Your requested plan has been successfully created.',
+            confirmButtonText: 'Okay',
+            confirmButtonColor: '#3085d6',
+          });
+          
           setOpenDialog(false);
         }
       } else {
@@ -524,6 +536,7 @@ function PlanRequest() {
       salesExecutiveId: '',
       accountId: '',
       brandId: '',
+      brandType:'existing',
       brief: '',
       planStatus: 'open',
       planSaved: false,
@@ -532,6 +545,7 @@ function PlanRequest() {
 
     setOpenDialog(true);
   };
+
 
   const handleStatusChange = (row) => {
     setStatusDialog(true);
@@ -582,6 +596,7 @@ function PlanRequest() {
                   accountName: e.target.value === 'new' ? '' : planDetails.accountName,
                 }))
               }
+              
               fullWidth
             >
               <MenuItem value="existing">Existing Brand/Agency</MenuItem>

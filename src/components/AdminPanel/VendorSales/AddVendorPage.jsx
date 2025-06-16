@@ -140,7 +140,7 @@ const AddVendorPage = () => {
       ]);
       setInputValue("");
       setSearch("");
-      navigate(`/admin/vendor-inventory/${selectedVendor._id}`);
+      navigate(`/admin/vendor-sale/vendor-inventory/${selectedVendor._id}`);
     } else if (isError) {
       toast.error(
         `Failed to add inventory: ${error?.data?.message || error.error}`

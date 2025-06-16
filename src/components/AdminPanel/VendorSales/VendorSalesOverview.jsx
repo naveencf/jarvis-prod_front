@@ -400,16 +400,6 @@ const VendorSalesOverview = () => {
     setActTab("");
   }, [selectedPlan]);
 
-  useEffect(() => {
-    const cachedData = JSON.parse(localStorage.getItem("tab"));
-    if (cachedData) {
-      const firstKey = Object.keys(cachedData)[0];
-      setSelectedPlan(firstKey && firstKey !== "null" ? firstKey : "dummy"); // dummy or some real fallback ID
-    } else {
-      setSelectedPlan("dummy");
-    }
-  }, []);
-
   
   // useEffect(() => {
   //   const fetchData = async () => {

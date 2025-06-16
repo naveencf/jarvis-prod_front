@@ -9,9 +9,12 @@ import { useGlobalContext } from "../../../Context/Context";
 import Loader from "../../Finance/Loader/Loader";
 import { RiLoginBoxLine } from "react-icons/ri";
 import jwtDecode from "jwt-decode";
+import { useAPIGlobalContext } from "../APIContext/APIContext";
 
 const PreOnboardOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
+  const { userContextData } = useAPIGlobalContext();
+  console.log(userContextData, "dsfsssdfds");
   const [search, setSearch] = useState("");
   const [datas, setDatas] = useState([]);
   const [filterdata, setFilterData] = useState([]);
@@ -24,19 +27,11 @@ const PreOnboardOverview = () => {
   const oldToken = sessionStorage.getItem("token");
 
   async function getData() {
-    try {
-      const response = await axios.get(baseUrl + "get_all_users");
-      const data = response.data.data;
-      const onboarddata = data.filter(
-        (d) => d.onboard_status === 2 && d.user_status === "Active"
-      );
-      setDatas(onboarddata);
-      setFilterData(onboarddata);
-    } catch (error) {
-      // console.log("Error fething Data", error);
-    } finally {
-      setLoading(false);
-    }
+    const onboarddata = userContextData.filter(
+      (d) => d.onboard_status === 2 && d.user_status === "Active"
+    );
+    setDatas(onboarddata);
+    setFilterData(onboarddata);
   }
 
   useEffect(() => {

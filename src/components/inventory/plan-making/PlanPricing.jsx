@@ -241,7 +241,7 @@ const PlanPricing = () => {
       return newCount;
     });
 
-    updateStatistics(updatedSelectedRows); // Update statistics with the new selected rows
+    updateStatistics(updatedSelectedRows);  
   };
 
   const handleToggleBtn = () => {
@@ -530,52 +530,44 @@ const PlanPricing = () => {
     const inputValue = event.target.value;
     setSearchInput(inputValue);
 
-    // Split and process search terms
-    const searchTerms = inputValue
+     const searchTerms = inputValue
       .split(' ')
       .map((term) => term.trim().toLowerCase())
       .filter(Boolean);
 
-    // Filter data based on search terms
-    if (searchTerms.length > 0) {
+     if (searchTerms.length > 0) {
       const filtered = pageList?.data?.filter((item) => searchTerms.some((term) => item?.page_name?.toLowerCase().includes(term)));
 
       setFilterData(filtered);
 
-      // Automatically check all rows that match the search terms
-      const updatedSelectedRows = [...selectedRows]; // Copy existing selected rows
-      const updatedPostValues = { ...postPerPageValues }; // Copy existing post per page values
+       const updatedSelectedRows = [...selectedRows];  
+      const updatedPostValues = { ...postPerPageValues }; 
 
-      // Loop through each filtered row
-      filtered.forEach((row) => {
-        // Check if the row is already selected
-        const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
+       filtered.forEach((row) => {
+         const isAlreadySelected = updatedSelectedRows.some((selectedRow) => selectedRow._id === row._id);
 
-        // If not already selected, select the row and update checkbox
-        if (!isAlreadySelected) {
-          handleCheckboxChange(row)({ target: { checked: true } }); // Set the checkbox to checked
+         if (!isAlreadySelected) {
+          handleCheckboxChange(row)({ target: { checked: true } }); 
 
-          // Add the row to selected rows
-          updatedSelectedRows.push(row);
+           updatedSelectedRows.push(row);
         }
 
-        // Set the post per page value to 1 for this row
-        updatedPostValues[row._id] = 1; // Set the value for ALL rows
+         updatedPostValues[row._id] = 1;  
 
         // Update category count for each matched row
         const categoryId = row.page_category_id;
         setPageCategoryCount((prevCount) => {
           const newCount = { ...prevCount };
-          newCount[categoryId] = (newCount[categoryId] || 0) + 1; // Increment category count
+          newCount[categoryId] = (newCount[categoryId] || 0) + 1; 
           return newCount;
         });
       });
 
       // Set post per page values for all rows at once
-      setPostPerPageValues(updatedPostValues); // Update post per page values for all selected rows
-      setSelectedRows(updatedSelectedRows); // Update the selected rows
+      setPostPerPageValues(updatedPostValues);  
+      setSelectedRows(updatedSelectedRows); 
 
-      updateStatistics(updatedSelectedRows); // Update statistics after selection
+      updateStatistics(updatedSelectedRows);  
 
       // Identify pages not found
       const filteredPageNames = new Set(filtered?.map((item) => item.page_name.toLowerCase()));
@@ -588,9 +580,8 @@ const PlanPricing = () => {
         setNotFoundPages([]);
       }
     } else {
-      // If no search terms, reset filterData and selectedRows
-      setFilterData(pageList?.data);
-      setSelectedRows([]); // Clear selected rows if no search terms
+       setFilterData(pageList?.data);
+      setSelectedRows([]);  
       setNotFoundPages([]);
     }
   };
@@ -622,8 +613,7 @@ const PlanPricing = () => {
       });
     }
 
-    // Fetch all necessary data
-    getData();
+     getData();
   }, []);
 
   const handleFollowersBlur = () => {

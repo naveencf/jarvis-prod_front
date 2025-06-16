@@ -154,7 +154,6 @@ const VendorMaster = () => {
     altMobile: false,
   });
   const [isContactTouched1, setisContactTouched1] = useState(false);
-  console.log("docDetails", docDetails);
   const { isLoading: typeLoading, data: typeData } = useGetAllVendorTypeQuery();
   const vendorTypeData = [
     { value: "Individual Vendor", label: "Individual Vendor" },

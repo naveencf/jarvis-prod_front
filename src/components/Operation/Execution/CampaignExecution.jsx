@@ -1,5 +1,5 @@
 import React, {
-  useCallback,
+  // useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -8,8 +8,8 @@ import React, {
 import FormContainer from "../../AdminPanel/FormContainer";
 import {
   useAuditedDataUploadMutation,
-  useBulkCampaignUpdateMutation,
-  useGetAllPagessByPlatformQuery,
+  // useBulkCampaignUpdateMutation,
+  // useGetAllPagessByPlatformQuery,
   useGetDeleteStoryDataQuery,
   useGetPlanByIdQuery,
   useGetPostDetailofPagenVendorMutation,
@@ -18,7 +18,7 @@ import {
   useUpdateMultipleAuditStatusMutation,
   useUpdatePriceforPostMutation,
   useUpdateVendorMutation,
-  useVendorDataQuery,
+  // useVendorDataQuery,
 } from "../../Store/API/Operation/OperationApi";
 
 import View from "../../AdminPanel/Sales/Account/View/View";
@@ -56,7 +56,7 @@ import {
 import formatDataObject from "../../../utils/formatDataObject";
 import StoryModal from "./StoryModal.jsx";
 import MultipleService from "./MultipleService.jsx";
-import { set } from "date-fns";
+// import { set } from "date-fns";
 import StringLengthLimiter from "../../../utils/StringLengthLimiter.js";
 import Carousel from "/copy.png";
 import Reel from "/reel.png";
@@ -101,6 +101,7 @@ const CampaignExecution = () => {
   const [selectedPrice, setSelectedPrice] = useState("");
   const [selectedVendor, setSelectedVendor] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [getTableData, setGetTableData] = useState([]);
   // const [selectedVendorId, setSelectedVendorId]= useState(null)
 
   const [startDate, setStartDate] = useState("");
@@ -615,6 +616,8 @@ const CampaignExecution = () => {
   const phaseWiseData = useMemo(() => {
     const currentPlanData = localPlanData?.length ? localPlanData : PlanData;
     const currentLinkData = localLinkData?.length ? localLinkData : linkData;
+    console.log("Current Plan Data:", currentPlanData);
+    console.log("Current Link Data:", currentLinkData);
 
     if (Array?.isArray(PlanData) && PlanData.length === 0) {
       return [];
@@ -622,24 +625,23 @@ const CampaignExecution = () => {
 
     let phasedData = [];
 
-    if (
-      currentPlanData?.length > 0 &&
-      !currentPlanData?.some((data) => data.phaseDate === activeTab)
-    ) {
-      return currentPlanData;
-    }
+    // if (
+    //   currentPlanData?.length > 0 &&
+    //   !currentPlanData?.some((data) => data.phaseDate === activeTab)
+    // ) {
+    //   return currentPlanData;
+    // }
 
     if (actTab !== 5) {
       phasedData = currentPlanData?.filter((data) =>
         activeTab === "all" ? true : data?.phaseDate === activeTab
       );
     } else {
-      phasedData =
+       phasedData =
         currentLinkData?.filter((data) =>
           activeTab === "all" ? true : data?.phaseDate === activeTab
         ) || [];
     }
-
     return phasedData;
   }, [
     PlanData,
@@ -1832,6 +1834,7 @@ const CampaignExecution = () => {
             (post) => post._id === modalData._id
           )}
           updateData={updateData}
+          tableData={getTableData}
           updateLocalData={(updatedItem) => {
             // if (actTab === 5) {
             setLocalLinkData((prevData) =>
@@ -1864,9 +1867,9 @@ const CampaignExecution = () => {
       return (
         <div className="max-w-3xl mx-auto bg-white p-6 overflow-auto max-h-[80vh]">
           <VendorInvoice
-         selectedData={selectedData}
-         vendorDetails={vendorDetails?.data}
-         vendorBankDetails={vendorBankDetails?.data}
+            selectedData={selectedData}
+            vendorDetails={vendorDetails?.data}
+            vendorBankDetails={vendorBankDetails?.data}
             onClose={() => {
               setToggleModal(false);
               setModalName("");
@@ -2132,6 +2135,7 @@ const CampaignExecution = () => {
         columns={columns}
         title={`Records`}
         tableName={"Campaign-execution"}
+        getFilteredData={setGetTableData}
         isLoading={loadingPlanData || fetchingPlanData || filterLoading}
         pagination={[50, 100, 200]}
         selectedData={(data) => setSelectedData(data)}

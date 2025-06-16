@@ -18,7 +18,7 @@ import View from "../../Sales/Account/View/View";
 import { constant } from "../../../../utils/constants";
 import ReJoinReusable from "./ReJoinReusable";
 import { useAPIGlobalContext } from "../../APIContext/APIContext";
-import { useGetAllUsersDataQuery } from "../../../Store/API/HRMS/User";
+// import { useGetAllUsersDataQuery } from "../../../Store/API/HRMS/User";
 
 const UserOverview = () => {
   // const { data: getAllUsersData } = useGetAllUsersDataQuery();

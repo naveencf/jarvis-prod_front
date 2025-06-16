@@ -10,17 +10,21 @@ import PurchaseReport from '../components/Purchase/purchase-report/PurchaseRepor
 import Dashboard from '../components/Purchase/Dashboard'
 import PendingPaymentRequest from '../components/Finance/Purchase Management/PendingPaymentRequest/PendingPaymentRequest'
 import PurchaseTransactions from '../components/Purchase/PurchaseTransactions'
+
 function PurchaseRoutes() {
     // useEffect(() => {
     //     const loadAndInject = async () => {
     //         const { default: DirectPurchaseApi } = await import("../components/Store/API/Purchase/DirectPurchaseApi");
     //         injectReducer(DirectPurchaseApi.reducerPath, DirectPurchaseApi.reducer);
+
     //         store.dispatch(
     //             DirectPurchaseApi.util.prefetch("getPurchaseList", undefined, { force: false })
     //         );
     //     };
+
     //     loadAndInject();
     // }, []);
+
     return (
         <Routes>
             <Route path="/ledger/:id" element={<Ledger />} />
@@ -40,7 +44,8 @@ function PurchaseRoutes() {
                 path="/advanced-purchase-overview"
                 element={<AdvancePurchaseOverview />}
             />
-            <Route
+
+         <Route
                 path="/vendor-advanced-purchase-overview"
                 element={<AdvancePurchaseOverview />}
             />
@@ -60,14 +65,20 @@ function PurchaseRoutes() {
                 path="/pending-payment-request"
                 element={<PendingPaymentRequest />}
             />
-            <Route
-                path="/purchase-transaction"
-                element={<PurchaseTransactions />}
-            />
+                <Route
+                 path="/purchase-transaction"
+                 element={<PurchaseTransactions />}
+           />
         </Routes>
     );
 }
+
 export default PurchaseRoutes;
+
+
+
+
+
 // import React from 'react'
 // import { Route, Routes } from 'react-router-dom'
 // import Ledger from '../components/Purchase/PurchaseVendor/Ledger'
@@ -77,6 +88,7 @@ export default PurchaseRoutes;
 // import AdvancePurchaseOverview from '../components/Purchase/AdvancePurchaseOverview'
 // import PurchaseReport from '../components/Purchase/purchase-report/PurchaseReport'
 // import PurchaseDashboard from '../components/Finance/Dashboard/PurchaseDashboard'
+
 // function PurchaseRoutes() {
 //     return (
 //         <Routes>
@@ -109,14 +121,5 @@ export default PurchaseRoutes;
 //         </Routes>
 //     )
 // }
+
 // export default PurchaseRoutes
-
-
-
-
-
-
-
-
-
-

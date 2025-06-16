@@ -21,10 +21,10 @@ import DirectPurchaseApi from "./API/Purchase/DirectPurchaseApi";
 import { purchaseApi } from "../Purchase/api/purchaseApiSlice";
 import PantryApi from "./API/Pantry/PantryApi";
 import BoostingApi from "./API/Boosting/BoostingApi";
-import UsersApi from "./API/HRMS/User";
 import vendorSaleApi from "./API/VendorSale/VendorSaleApi";
 import communityInternalCatApi from "./API/Community/CommunityInternalCatApi";
 import CommunityNewApi from "./API/Community/CommunityNewApi";
+import UsersApi from "./API/HRMS/UserApi";
 
 const store = configureStore({
   reducer: {

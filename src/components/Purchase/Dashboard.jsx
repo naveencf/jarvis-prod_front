@@ -570,7 +570,7 @@ const Dashboard = () => {
             <div className="card-body pl0 pr0">
 
               <div className="p12">
-                <Link to="/admin/pms-page-overview">
+                <Link to="/admin/inventory/pms-page-overview">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgSecondaryLight m-0">
                       <span>
@@ -602,7 +602,7 @@ const Dashboard = () => {
               </div>
               <hr />
               <div className="p12">
-                <Link to="/admin/pms-page-overview">
+                <Link to="/admin/inventory/pms-page-overview">
                   <div className="flexCenter flex_col">
                     <div className="iconBadge small bgSecondaryLight m-0">
                       <span>

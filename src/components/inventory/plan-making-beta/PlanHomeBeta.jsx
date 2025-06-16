@@ -601,6 +601,9 @@ function PlanHomeBeta() {
         planDetails?.brandId || planDetails?.brand_id
       );
     }
+    if (planDetails.brandType === 'new') {
+      formData.append('soft_account_name', planDetails.accountName); 
+    }
     // content_cost,
     // twitter_trend_cost,
     // ugc_video_cost,
@@ -718,7 +721,7 @@ function PlanHomeBeta() {
     setStatusDialogPlan(row);
     setSelectedPlanId(row.id);
   };
-
+ 
   const { columns } = DataGridOverviewColumns({
     handleOpenDialog,
     handleStatusChange,

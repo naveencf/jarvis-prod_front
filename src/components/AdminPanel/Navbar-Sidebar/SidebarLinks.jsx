@@ -2192,7 +2192,7 @@ const SidebarLinks = () => {
               <div className="internal collapse-inner">
                 <NavLink
                   className="collapse-item"
-                  to="/admin/advanced-purchase-all-vendors"
+                  to="/admin/purchase/v c vendor-advanced-purchase-overview"
                 >
                   <i className="bi bi-dot"></i>Bulk Purchase
                 </NavLink>
@@ -2401,7 +2401,7 @@ const SidebarLinks = () => {
               {contextData &&
                 contextData[15] &&
                 contextData[15]?.view_value === 1 && (
-                  <NavLink className="collapse-item" to="/admin/pantry">
+                  <NavLink className="collapse-item" to="/admin/pantry/pantry-dashboard">
                     <i className="bi bi-plus-circle"></i> Pantry
                   </NavLink>
                 )}
