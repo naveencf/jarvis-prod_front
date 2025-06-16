@@ -602,7 +602,7 @@ const WFHDOverview = () => {
                   <i className="bi bi-upload"></i>
                 </div>
               </Link> */}
-              <Link to={`/admin/wfhd-new-documentcom/${row.user_id}`}>
+              <Link to={`/admin/wfhd/wfhd-new-documentcom/${row.user_id}`}>
                 <div className="icon-1" title="Document upload">
                   <i className="bi bi-upload"></i>
                 </div>

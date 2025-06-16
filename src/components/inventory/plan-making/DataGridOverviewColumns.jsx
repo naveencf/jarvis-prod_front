@@ -87,7 +87,8 @@ const DataGridOverviewColumns = ({
       name: "Account Name",
       renderRowCell: (row) => (
         <div style={{ cursor: "pointer" }}>
-          {formatString(row.account_name)}
+          {/* {formatString( !row.account_name ? row.soft_account_name : row.account_name)} */}
+          {row?.soft_account_name?.trim() !== "" ? row.soft_account_name : row?.account_name }
         </div>
       ),
       width: 200,

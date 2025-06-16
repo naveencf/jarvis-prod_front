@@ -537,7 +537,7 @@ const PageMaster = () => {
 
   if (isFormSubmitted) {
     setFormLoading(false);
-    return navigate("/admin/pms-page-overview");
+    return navigate("/admin/inventory/pms-page-overview");
   }
 
   const addPriceRow = () => {

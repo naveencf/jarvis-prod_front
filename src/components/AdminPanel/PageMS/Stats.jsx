@@ -370,7 +370,7 @@ export default function Stats() {
         setStoryViewDate(null);
 
         toastAlert("Form Submitted success");
-        return navigation("/admin/pms-page-overview");
+        return navigation("/admin/inventory/pms-page-overview");
       });
   };
 

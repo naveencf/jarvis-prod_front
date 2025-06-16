@@ -70,7 +70,17 @@ export default function WFHDSheetUpload({
     setAlerttemp(false);
   };
 
-  const fieldname = ["S.No", "user_name", "user_id", "total_days", "absent_days", "salary", "bonus", "arrear_from_last_month", "salary_deduction"];
+  const fieldname = [
+    "S.No",
+    "user_name",
+    "user_id",
+    "total_days",
+    "absent_days",
+    "salary",
+    "bonus",
+    "arrear_from_last_month",
+    "salary_deduction",
+  ];
 
   const checkfieldname = (data) => {
     for (let i = 1; i < fieldname.length; i++) {
@@ -100,31 +110,43 @@ export default function WFHDSheetUpload({
     formData.append("year", selectedYear);
 
     try {
-      const response = await axios.post(`${baseUrl}add_attendance_with_excel`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        `${baseUrl}
+        `,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       // console.log("Response:", response.data);
-      handleClose()
+      handleClose();
     } catch (error) {
       console.error("Error uploading file:", error);
       alert("Failed to upload the file. Please try again.");
     } finally {
       setLoading(false);
-      handleClose() // Stop the loader
+      handleClose(); // Stop the loader
     }
   };
 
-
-
   const columns = [
-    { field: "s_no", headerName: "S No", renderCell: (params) => bulklead.indexOf(params.row) + 1 },
+    {
+      field: "s_no",
+      headerName: "S No",
+      renderCell: (params) => bulklead.indexOf(params.row) + 1,
+    },
     { field: "user_name", headerName: "User Name", width: 180, type: "text" },
     { field: "user_id", headerName: "Employee ID", type: "text" },
     { field: "salary", headerName: "Salary", type: "text" },
     { field: "total_days", headerName: "Total Days", type: "text" },
     { field: "absent_days", headerName: "Absent Days", type: "text" },
     { field: "bonus", headerName: "Bonus", type: "text" },
-    { field: "arrear_from_last_month", headerName: "Arrear From Last Month", width: 200, type: "text" },
+    {
+      field: "arrear_from_last_month",
+      headerName: "Arrear From Last Month",
+      width: 200,
+      type: "text",
+    },
     { field: "salary_deduction", headerName: "Deduction", type: "text" },
   ];
 
@@ -175,13 +197,19 @@ export default function WFHDSheetUpload({
           >
             {loading ? (
               <span style={{ display: "flex", alignItems: "center" }}>
-                <CircularProgress size={16} style={{ marginRight: 8 }} /> Uploading...
+                <CircularProgress size={16} style={{ marginRight: 8 }} />{" "}
+                Uploading...
               </span>
             ) : (
               "Upload"
             )}
           </Button>
-          <Button variant="outlined" color="error" size="small" onClick={handleClose}>
+          <Button
+            variant="outlined"
+            color="error"
+            size="small"
+            onClick={handleClose}
+          >
             Cancel
           </Button>
         </DialogActions>
@@ -200,7 +228,12 @@ export default function WFHDSheetUpload({
           Please check your uploaded sheet once before retry.
         </DialogContentText>
         <DialogActions>
-          <Button variant="outlined" color="error" size="small" onClick={handleAlertClose}>
+          <Button
+            variant="outlined"
+            color="error"
+            size="small"
+            onClick={handleAlertClose}
+          >
             OK
           </Button>
         </DialogActions>

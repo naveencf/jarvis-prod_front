@@ -101,15 +101,14 @@ const LinkUploadVendorSales = ({
   // }, [vendor]);
 
   useEffect(() => {
-    if(shortCodes.length){
-        const platformName = extractPlatformName(links);
-        const platformId = platformData?.find(
-          (item) => item.platform_name === platformName
-        )._id;
-        setCurrentPlatformId(platformId)
+    if (shortCodes.length) {
+      const platformName = extractPlatformName(links);
+      const platformId = platformData?.find(
+        (item) => item.platform_name === platformName
+      )._id;
+      setCurrentPlatformId(platformId);
     }
   }, [shortCodes]);
-
 
   useEffect(() => {
     if (record == 1 || record == 5) {
@@ -189,7 +188,7 @@ const LinkUploadVendorSales = ({
 
   const [addPostStats, { isLoading, isSuccess, isError }] =
     useAddPostStatsMutation();
- 
+
   useEffect(() => {
     checkLinksForErrors();
     setShortCodes(extractShortCodes());
@@ -203,29 +202,29 @@ const LinkUploadVendorSales = ({
     return uniqueLinks;
   };
 
-//   async function handleFetchPricing() {
-//     try {
-//       let payload;
-//       if (selectedData.length > 0) {
-//         payload = {
-//           shortCodes: selectedData?.map((data) => data.shortCode),
-//         };
-//       } else {
-//         payload = {
-//           campaignId: selectedPlan,
-//         };
-//       }
-//       let res = await fetchPricing(payload).unwrap();
-//       if (res.error) throw new Error(res.error);
-//       if (record == 5) handleFilterLinks();
-//       else await refetchPlanData();
-//       toastAlert("Pricing Fetched");
-//       setSelectedData([]);
-//     } catch (err) {
-//       toastError("Error Fetching Pricing");
-//     }
-//     setSelectedData([]);
-//   }
+  //   async function handleFetchPricing() {
+  //     try {
+  //       let payload;
+  //       if (selectedData.length > 0) {
+  //         payload = {
+  //           shortCodes: selectedData?.map((data) => data.shortCode),
+  //         };
+  //       } else {
+  //         payload = {
+  //           campaignId: selectedPlan,
+  //         };
+  //       }
+  //       let res = await fetchPricing(payload).unwrap();
+  //       if (res.error) throw new Error(res.error);
+  //       if (record == 5) handleFilterLinks();
+  //       else await refetchPlanData();
+  //       toastAlert("Pricing Fetched");
+  //       setSelectedData([]);
+  //     } catch (err) {
+  //       toastError("Error Fetching Pricing");
+  //     }
+  //     setSelectedData([]);
+  //   }
 
   function extractPlatformName(url) {
     try {
@@ -324,176 +323,177 @@ const LinkUploadVendorSales = ({
     return result;
   }
 
-  async function handleUpload() {
-    setFunctionLoading(true);
-    if (record === 0) {
-      if (!phaseDate) {
-        toastAlert("Please Select the phase Date");
-      }
-    }
-    let otherData = {
-      userId: token.id,
-      phaseDate: phaseDate,
-      //   campaignId: selectedPlan,
-      //   campaign_name: campaignsNameWiseData?.find(
-      //     (data) => data._id == selectedPlan
-      //   )?.exe_campaign_name,
-    //   postData: otherPlatform,
-      vendor_for_sales: vendorId,
-      platform_id:  currentPlatformId,
-      shortCodes:shortCodes,
-      department: token.dept_id
-    };
-    if (record == 3) {
-      otherData = {
-        ...otherData,
-        // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)?._id,
-        // vendor_name: vendorListData?.find((data) => data.vendor_id == vendor)
-        //   ?.vendor_name,
-        // vendor_id: vendor,
-      };
-      delete otherData.phaseDate;
-      delete otherData.campaignId;
-      delete otherData.campaign_name;
-    }
+  // async function handleUpload() {
+  //   setFunctionLoading(true);
+  //   // if (record === 0) {
+  //     if (!phaseDate) {
+  //       toastAlert("Please Select the phase Date");
+  //     }
+  //   // }
+  //   console.log("called");
+  //   let otherData = {
+  //     userId: token.id,
+  //     phaseDate: phaseDate,
+  //     //   campaignId: selectedPlan,
+  //     //   campaign_name: campaignsNameWiseData?.find(
+  //     //     (data) => data._id == selectedPlan
+  //     //   )?.exe_campaign_name,
+  //     //   postData: otherPlatform,
+  //     vendor_for_sales: vendorId,
+  //     platform_id: currentPlatformId,
+  //     shortCodes: shortCodes,
+  //     department: token.dept_id,
+  //   };
+  //   if (record == 3) {
+  //     otherData = {
+  //       ...otherData,
+  //       // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)?._id,
+  //       // vendor_name: vendorListData?.find((data) => data.vendor_id == vendor)
+  //       //   ?.vendor_name,
+  //       // vendor_id: vendor,
+  //     };
+  //     delete otherData.phaseDate;
+  //     delete otherData.campaignId;
+  //     delete otherData.campaign_name;
+  //   }
 
-    let Data =
-      record == 2
-        ? {
-            vendor_id: vendor,
-            // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-            //   ?._id,
-            // vendor_name: vendorListData?.find(
-            //   (data) => data.vendor_id == vendor
-            // )?.vendor_name,
-            amount: amount,
-            service_description: serviceName,
-            ref_link: links,
-            campaignId: selectedPlan,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedPlan
-            ).exe_campaign_name,
-            createdBy: token.id,
-            record_purchase_by: token.id,
-            audit_by: token.id,
-            file: file,
-          }
-        : record == 0
-        ? {
-            shortCodes: shortCodes,
-            department: token.dept_id,
-            userId: token.id,
-            phaseDate: phaseDate,
-            campaignId: selectedPlan,
-            manager: selectedOpUser,
-          }
-        : record == 1
-        ? {
-            dataToBeUpdate: {
-              record_purchase_by: token.id,
-            },
-            shortCodes: [
-              ...shortCodes.map((data) => data.shortCode),
-              ...otherPlatform.map((data) => data.shortCode),
-            ],
-            platform_name: pmsPlatformData?.data?.find(
-              (data) => data._id == platformID.current
-            ).platform_name,
-            vendor_id: vendor,
-            manager: selectedOpUser,
-          }
-        : {
-            vendor_id: vendor,
-            // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
-            //   ?._id,
-            // vendor_name: vendorListData?.find(
-            //   (data) => data.vendor_id == vendor
-            // )?.vendor_name,
-            shortCodes: shortCodes,
-            department: token.dept_id,
-            userId: token.id,
-            campaignId: selectedCampaign,
-            campaign_name: campaignsNameWiseData?.find(
-              (data) => data._id == selectedCampaign
-            )?.exe_campaign_name,
-          };
+  //   let Data =
+  //     record == 2
+  //       ? {
+  //           vendor_id: vendor,
+  //           // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+  //           //   ?._id,
+  //           // vendor_name: vendorListData?.find(
+  //           //   (data) => data.vendor_id == vendor
+  //           // )?.vendor_name,
+  //           amount: amount,
+  //           service_description: serviceName,
+  //           ref_link: links,
+  //           campaignId: selectedPlan,
+  //           campaign_name: campaignsNameWiseData?.find(
+  //             (data) => data._id == selectedPlan
+  //           ).exe_campaign_name,
+  //           createdBy: token.id,
+  //           record_purchase_by: token.id,
+  //           audit_by: token.id,
+  //           file: file,
+  //         }
+  //       : record == 0
+  //       ? {
+  //           shortCodes: shortCodes,
+  //           department: token.dept_id,
+  //           userId: token.id,
+  //           phaseDate: phaseDate,
+  //           campaignId: selectedPlan,
+  //           manager: selectedOpUser,
+  //         }
+  //       : record == 1
+  //       ? {
+  //           dataToBeUpdate: {
+  //             record_purchase_by: token.id,
+  //           },
+  //           shortCodes: [
+  //             ...shortCodes.map((data) => data.shortCode),
+  //             ...otherPlatform.map((data) => data.shortCode),
+  //           ],
+  //           platform_name: pmsPlatformData?.data?.find(
+  //             (data) => data._id == platformID.current
+  //           ).platform_name,
+  //           vendor_id: vendor,
+  //           manager: selectedOpUser,
+  //         }
+  //       : {
+  //           vendor_id: vendor,
+  //           // vendorId: vendorListData?.find((data) => data.vendor_id == vendor)
+  //           //   ?._id,
+  //           // vendor_name: vendorListData?.find(
+  //           //   (data) => data.vendor_id == vendor
+  //           // )?.vendor_name,
+  //           shortCodes: shortCodes,
+  //           department: token.dept_id,
+  //           userId: token.id,
+  //           campaignId: selectedCampaign,
+  //           campaign_name: campaignsNameWiseData?.find(
+  //             (data) => data._id == selectedCampaign
+  //           )?.exe_campaign_name,
+  //         };
 
-    let arrData = shortCodes.length + otherPlatform.length;
+  //   let arrData = shortCodes.length + otherPlatform.length;
 
-    let newIsValid =
-      record == 2
-        ? {
-            vendor: !vendor,
-            amount: !amount,
-            service_description: !serviceName,
-          }
-        : record == 0
-        ? {
-            shortCodes: !(arrData > 0),
-            department: !token.dept_id,
-            userId: !token.id,
-            phaseDate: !phaseDate,
-            campaignId: !selectedPlan,
-          }
-        : record == 1
-        ? {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          }
-        : {
-            shortCodes: !(arrData > 0),
-            vendor: !vendor,
-          };
+  //   let newIsValid =
+  //     record == 2
+  //       ? {
+  //           vendor: !vendor,
+  //           amount: !amount,
+  //           service_description: !serviceName,
+  //         }
+  //       : record == 0
+  //       ? {
+  //           shortCodes: !(arrData > 0),
+  //           department: !token.dept_id,
+  //           userId: !token.id,
+  //           phaseDate: !phaseDate,
+  //           campaignId: !selectedPlan,
+  //         }
+  //       : record == 1
+  //       ? {
+  //           shortCodes: !(arrData > 0),
+  //           vendor: !vendor,
+  //         }
+  //       : {
+  //           shortCodes: !(arrData > 0),
+  //           vendor: !vendor,
+  //         };
 
-    setIsValid(newIsValid);
+  //   setIsValid(newIsValid);
 
-    if (Object.values(newIsValid).includes(true)) {
-      return;
-    }
+  //   if (Object.values(newIsValid).includes(true)) {
+  //     return;
+  //   }
 
-    let serviceData = new FormData();
-    if (record == 2)
-      Object.keys(Data).forEach((key) => {
-        serviceData.append(key, Data[key]);
-      });
+  //   let serviceData = new FormData();
+  //   if (record == 2)
+  //     Object.keys(Data).forEach((key) => {
+  //       serviceData.append(key, Data[key]);
+  //     });
 
-    try {
-      if (record == 0 || record == 3) {
-        await addPostStats(otherData);
-      }
-      const res =
-        record == 2
-          ? await uploadServiceData(serviceData)
-          : record == 0 || record == 3
-          ? await uploadPlanData(Data)
-          : await updateVendor(Data);
-      console.log("data", Data);
-      if (res.error) throw new Error(res.error);
-      await refetchPlanData();
-      setLinks("");
-      setPhaseDate("");
-      setVendor("");
-      setAmount(0);
-      setServiceName("");
-      setFile(null);
-      setShortCodes([]);
-      setOtherPlatform([]);
+  //   try {
+  //     if (record == 0 || record == 3) {
+  //       await addPostStats(otherData);
+  //     }
+  //     const res =
+  //       record == 2
+  //         ? await uploadServiceData(serviceData)
+  //         : record == 0 || record == 3
+  //         ? await uploadPlanData(Data)
+  //         : await updateVendor(Data);
+  //     console.log("data", Data);
+  //     if (res.error) throw new Error(res.error);
+  //     await refetchPlanData();
+  //     setLinks("");
+  //     setPhaseDate("");
+  //     setVendor("");
+  //     setAmount(0);
+  //     setServiceName("");
+  //     setFile(null);
+  //     setShortCodes([]);
+  //     setOtherPlatform([]);
 
-      if (
-        (record == 0 || record == 3) &&
-        res?.data?.data?.shortCodeNotPresentInCampaign?.length > 0
-      ) {
-        setModalName("uploadMessage");
-        setModalData(res);
-        setToggleModal(true);
-      }
-      toastAlert("Plan Uploaded");
-    } catch (err) {
-      toastError("Error Uploading");
-    } finally {
-      setFunctionLoading(false);
-    }
-  }
+  //     if (
+  //       (record == 0 || record == 3) &&
+  //       res?.data?.data?.shortCodeNotPresentInCampaign?.length > 0
+  //     ) {
+  //       setModalName("uploadMessage");
+  //       setModalData(res);
+  //       setToggleModal(true);
+  //     }
+  //     toastAlert("Plan Uploaded");
+  //   } catch (err) {
+  //     toastError("Error Uploading");
+  //   } finally {
+  //     setFunctionLoading(false);
+  //   }
+  // }
 
   // useEffect(() => {
   //   if (record == 4)
@@ -503,11 +503,85 @@ const LinkUploadVendorSales = ({
   //   else vendorList.current = null;
   // }, [selectedVendor]);
 
+  async function handleUpload() {
+    setFunctionLoading(true);
+  
+    if (!phaseDate) {
+      toastAlert("Please Select the phase Date");
+      setFunctionLoading(false);
+      return;
+    }
+  
+    const arrData = shortCodes.length + otherPlatform.length;
+  
+    const newIsValid = {
+      shortCodes: !(arrData > 0),
+      department: !token.dept_id,
+      userId: !token.id,
+      phaseDate: !phaseDate,
+      campaignId: !selectedPlan,
+    };
+  
+    setIsValid(newIsValid);
+    // if (Object.values(newIsValid).includes(true)) {
+    //   setFunctionLoading(false);
+    //   return;
+    // }
+  
+    const otherData = {
+      userId: token.id,
+      phaseDate: phaseDate,
+      vendor_customer_id: vendorId,
+      platform_id: currentPlatformId,
+      shortCodes: shortCodes,
+      department: token.dept_id,
+    };
+  
+    const Data = {
+      shortCodes: shortCodes,
+      department: token.dept_id,
+      userId: token.id,
+      phaseDate: phaseDate,
+      campaignId: selectedPlan,
+      manager: selectedOpUser,
+    };
+  
+    try {
+      await addPostStats(otherData);
+      const res = await uploadPlanData(Data);
+  
+      if (res.error) throw new Error(res.error);
+  
+      await refetchPlanData();
+  
+      setLinks("");
+      setPhaseDate("");
+      setVendor("");
+      setAmount(0);
+      setServiceName("");
+      setFile(null);
+      setShortCodes([]);
+      setOtherPlatform([]);
+  
+      if (res?.data?.data?.shortCodeNotPresentInCampaign?.length > 0) {
+        setModalName("uploadMessage");
+        setModalData(res);
+        setToggleModal(true);
+      }
+  
+      toastAlert("Plan Uploaded");
+    } catch (err) {
+      toastError("Error Uploading");
+    } finally {
+      setFunctionLoading(false);
+    }
+  }
+
   function isValidISO8601(str) {
     const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
     return isoRegex.test(str);
   }
-
+console.log("record",record);
   function CheckDuplicateInPlan() {
     const duplicate = PlanData?.filter((data) => {
       return shortCodes?.some((item) => item?.shortCode === data?.shortCode);
@@ -626,14 +700,14 @@ const LinkUploadVendorSales = ({
     if (record == 0 && phaseDate) CheckDuplicateInPlan();
   }, [shortCodes, phaseDate]);
 
+  useEffect(() => {
+    setRecord(0);  
+  }, []);
+
   return (
     <div className="card">
       <div className="card-header">
-        {!(
-          selectedPlan == 0 ||
-          selectedPlan == null ||
-          selectedPlan == "null"
-        ) && (
+        {
           <div
             className={`pointer header-tab ${record == 0 && "header-active"}`}
             onClick={() => {
@@ -643,7 +717,7 @@ const LinkUploadVendorSales = ({
           >
             Record Links
           </div>
-        )}
+        }
         {/* <div
           className={`pointer header-tab ${record == 3 && "header-active"}`}
           onClick={() => {
@@ -673,11 +747,7 @@ const LinkUploadVendorSales = ({
             Update Vendor{" "}
           </div>
         } */}
-        {!(
-          selectedPlan == 0 ||
-          selectedPlan == null ||
-          selectedPlan == "null"
-        ) && (
+        {
           <div
             className={`pointer header-tab ${record == 2 && "header-active"}`}
             onClick={() => {
@@ -687,7 +757,7 @@ const LinkUploadVendorSales = ({
           >
             Service{" "}
           </div>
-        )}
+        }
 
         {/* <div
           className={`pointer header-tab ${record == 4 && "header-active"}`}

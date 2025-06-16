@@ -189,7 +189,7 @@ export default function ExeUPdate() {
         }
       )
       .then(() => {
-        navigate("/admin/pms-page-overview");
+        navigate("/admin/inventory/pms-page-overview");
         toastAlert("Form Submitted success");
       });
   };

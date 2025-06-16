@@ -335,7 +335,7 @@ export default function PageStats() {
         .unwrap()
         .then(() => {
           toastAlert("Stats Added Successfully");
-          navitage(`/admin/pms-page-overview`);
+          navitage(`/admin/inventory/pms-page-overview`);
         })
         .catch((err) => {
           toastError(`Something Went Wrong ${err.message}`);
@@ -351,7 +351,7 @@ export default function PageStats() {
         .unwrap()
         .then(() => {
           toastAlert("Stats Updated Successfully");
-          navitage(`/admin/pms-page-overview`);
+          navitage(`/admin/inventory/pms-page-overview`);
         })
         .catch((err) => {
           toastError(`Something Went Wrong ${err.message}`);

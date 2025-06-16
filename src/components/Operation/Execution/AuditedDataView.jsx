@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import FormContainer from "../../AdminPanel/FormContainer";
 
 const AuditedDataView = ({
@@ -10,41 +10,58 @@ const AuditedDataView = ({
   updateData,
   updateLocalData,
   allPages,
+  tableData = [],
 }) => {
+  const filteredPostLinks = useMemo(() => {
+    if (!tableData?.length) return postLinks;
+    const tableIds = new Set(tableData.map((row) => String(row._id)));
+    return postLinks.filter((post) => tableIds.has(String(post._id)));
+  }, [postLinks, tableData]);
+
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [currentPost, setCurrentPost] = useState({ ...modalData });
   const [originalPost, setOriginalPost] = useState({ ...modalData });
-  const [isEdit, setIsEdit] = useState(false);
+  const [isEdit, setIsEdit] = useState(true);
   const [loading, setLoading] = useState(false);
 
   const goToPrevious = () => {
     if (currentIndex > 0) {
       const newIndex = currentIndex - 1;
       setCurrentIndex(newIndex);
-      setCurrentPost({ ...postLinks[newIndex] });
-      setOriginalPost({ ...postLinks[newIndex] });
-      setIsEdit(false);
+      setCurrentPost({ ...filteredPostLinks[newIndex] });
+      setOriginalPost({ ...filteredPostLinks[newIndex] });
+      setIsEdit(true);
     }
   };
 
   const goToNext = () => {
-    if (currentIndex < postLinks.length - 1) {
+    if (currentIndex < filteredPostLinks.length - 1) {
       const newIndex = currentIndex + 1;
       setCurrentIndex(newIndex);
-      setCurrentPost({ ...postLinks[newIndex] });
-      setOriginalPost({ ...postLinks[newIndex] });
-      setIsEdit(false);
+      setCurrentPost({ ...filteredPostLinks[newIndex] });
+      setOriginalPost({ ...filteredPostLinks[newIndex] });
+      setIsEdit(true);
     }
   };
 
   useEffect(() => {
-    if (postLinks && postLinks.length > 0) {
-      setCurrentPost({ ...postLinks[currentIndex] });
-      setOriginalPost({ ...postLinks[currentIndex] });
-      setIsEdit(false);
+    if (filteredPostLinks.length > 0) {
+      const post = { ...filteredPostLinks[currentIndex] };
+      post.page_name = post.owner_info?.username || post.page_name;
+      setCurrentPost(post);
+      setOriginalPost(post);
+      setIsEdit(true);
     }
-  }, [currentIndex, postLinks]);
-
+  }, [currentIndex, filteredPostLinks]);
+  useEffect(() => {
+    if (tableData?.length > 0) {
+      const newIndex = tableData.findIndex(
+        (row) => String(row._id) === String(modalData?._id)
+      );
+      setCurrentIndex(newIndex >= 0 ? newIndex : 0);
+    }
+  }, [tableData, modalData]);
+  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "ArrowLeft") {
@@ -58,7 +75,7 @@ const AuditedDataView = ({
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [currentIndex, postLinks]);
+  }, [currentIndex, filteredPostLinks]);
 
   const handleInputChange = (value, key) => {
     setCurrentPost((prev) => ({
@@ -121,9 +138,12 @@ const AuditedDataView = ({
     <>
       <div className="flexCenterBetween formHeadingM0 mb16">
         <FormContainer
-          mainTitle={`Audited Data (${currentIndex + 1}/${postLinks.length})`}
+          mainTitle={`Audited Data (${currentIndex + 1}/${
+            filteredPostLinks.length
+          })`}
           link="true"
         />
+
         <div className="flexCenter colGap16">
           <div className="text-center flexCenter colGap4">
             <button
@@ -136,7 +156,7 @@ const AuditedDataView = ({
             <button
               className="btn cmnbtn btn_sm btn-outline-primary mr-2"
               onClick={goToNext}
-              disabled={currentIndex === postLinks.length - 1}
+              disabled={currentIndex === filteredPostLinks.length - 1}
             >
               Next ➡
             </button>
@@ -207,7 +227,7 @@ const AuditedDataView = ({
                   ];
                   if (!excludedKeys.includes(col.key)) {
                     return (
-                      <li key={index} className="">
+                      <li key={index}>
                         <span
                           className="auditedDataViewBoxLabel"
                           style={{ minWidth: "140px" }}
