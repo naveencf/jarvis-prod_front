@@ -205,7 +205,7 @@ const LinkUpload = ({
     } catch (err) {
       toastError("Error Fetching Pricing");
     }
-    setSelectedData([])
+    setSelectedData([]);
   }
 
   const extractShortCodes = () => {
@@ -482,8 +482,13 @@ const LinkUpload = ({
     let duplicateLinks = "";
     let NewLinks = "";
     if (duplicate?.length > 0) {
-      duplicateShortCodes = duplicate.map((data) => data.shortCode);
-      const duplicateShortCodesSet = new Set(duplicateShortCodes);
+      duplicateShortCodes = duplicate.map((data) => ({
+        ref_link: data.ref_link,
+        shortCode: data.shortCode,
+      }));
+      const duplicateShortCodesSet = new Set(
+        duplicateShortCodes.map((code) => code.shortCode)
+      );
       NewShortCodes =
         shortCodes?.filter(
           (code) => !duplicateShortCodesSet.has(code.shortCode)
@@ -523,7 +528,7 @@ const LinkUpload = ({
         const paylaod = {
           shortCodes: shortCode,
           dataToBeUpdate: {
-            record_purchase_by: token.id
+            record_purchase_by: token.id,
           },
           vendor_id: vendorId,
           // userId: token.id,
@@ -544,7 +549,7 @@ const LinkUpload = ({
 
         if (response?.data?.success) {
           const refetchResponse = await refetchPlanData();
-          setSelectedData([])
+          setSelectedData([]);
           // if (refetchResponse.isSuccess && refetchResponse.data) {
           //   setCampainPlanData(refetchResponse.data);
           // }
