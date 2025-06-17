@@ -156,18 +156,18 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     label: "Per Thousand",
   });
 
-  const getData = () => {
-    axios
-      .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMasterId}`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then((res) => {
-        setPriceDataNew(res.data.data);
-      });
-  };
+  // const getData = () => {
+  //   axios
+  //     .get(baseUrl + `v1/pagePriceMultipleByPageId/${pageMasterId}`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     })
+  //     .then((res) => {
+  //       setPriceDataNew(res.data.data);
+  //     });
+  // };
 
 
   const {
@@ -275,9 +275,9 @@ const Page = ({ pageMast_id, handleEditClose }) => {
     });
   };
 
-  const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
-    skip: !pageMasterId,
-  });
+  // const { data: priceData } = useGetMultiplePagePriceQuery(pageMasterId, {
+  //   skip: !pageMasterId,
+  // });
 
   const priceTypeMappings = {
     "667e6c7412fbbf002179f6d6": "instagram_post",

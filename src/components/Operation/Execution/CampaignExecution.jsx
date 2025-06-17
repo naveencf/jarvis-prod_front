@@ -588,6 +588,8 @@ const CampaignExecution = () => {
         data.campaignId != null
     );
   }
+
+
   // const phaseWiseData = useMemo(() => {
   //   let phasedData = [];
   //   // console.log(activeTab);
@@ -616,33 +618,22 @@ const CampaignExecution = () => {
   const phaseWiseData = useMemo(() => {
     const currentPlanData = localPlanData?.length ? localPlanData : PlanData;
     const currentLinkData = localLinkData?.length ? localLinkData : linkData;
-    console.log("Current Plan Data:", currentPlanData);
-    console.log("Current Link Data:", currentLinkData);
-
-    if (Array?.isArray(PlanData) && PlanData.length === 0) {
-      return [];
-    }
-
+  
     let phasedData = [];
-
-    // if (
-    //   currentPlanData?.length > 0 &&
-    //   !currentPlanData?.some((data) => data.phaseDate === activeTab)
-    // ) {
-    //   return currentPlanData;
-    // }
-
-    if (actTab !== 5) {
-      phasedData = currentPlanData?.filter((data) =>
+  
+    if (actTab === 5) {
+      // ✅ use linkData for actTab === 5
+      phasedData = currentLinkData?.filter((data) =>
         activeTab === "all" ? true : data?.phaseDate === activeTab
       );
     } else {
-       phasedData =
-        currentLinkData?.filter((data) =>
-          activeTab === "all" ? true : data?.phaseDate === activeTab
-        ) || [];
+      // ✅ use planData otherwise
+      phasedData = currentPlanData?.filter((data) =>
+        activeTab === "all" ? true : data?.phaseDate === activeTab
+      );
     }
-    return phasedData;
+  
+    return phasedData || [];
   }, [
     PlanData,
     linkData,
@@ -653,7 +644,12 @@ const CampaignExecution = () => {
     fetchingPlanData,
     loadingPlanData,
   ]);
-
+  
+  
+  console.log("phaseWiseData",phaseWiseData);
+  console.log("localPlanData",localPlanData);
+  console.log("linkData",linkData);
+  console.log("PlanData",PlanData);
   // useEffect(() => {
   //   if (selectedPrice) {
   //     handlePriceUpdate(selectedPrice);
