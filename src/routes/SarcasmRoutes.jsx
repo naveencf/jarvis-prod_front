@@ -4,6 +4,7 @@ import BlogDetail from '../components/sarcasm/blog-managment/blog-detail/index'
 import SarcasmCategory from '../components/sarcasm/category-management/index'
 import SarcasmDashboard from '../components/sarcasm/content-from/index'
 import { Route, Routes } from 'react-router-dom'
+import BlogList from '../components/sarcasm/blog-managment/BlogList'
 
 function SarcasmRoutes() {
     return (
@@ -18,7 +19,7 @@ function SarcasmRoutes() {
             />
             <Route
                 path="/sarcasm-blog"
-                element={<SarcasmBlog />}
+                element={<BlogList />}
             />
             <Route
                 path="/sarcasm-blog/:id"

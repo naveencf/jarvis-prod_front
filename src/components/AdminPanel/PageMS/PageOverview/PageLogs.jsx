@@ -41,7 +41,6 @@ const PageLogs = () => {
   }));
   const [openRecentLogsModel, setOpenRecentLogsModel] = useState(false);
   const [recentPageLogData, setRecentPageLogData] = useState([]);
-  console.log(recentPageLogData, "------------------recentPageLogData");
 
   const handleCloseRecentLogsModel = () => {
     setOpenRecentLogsModel(false);
