@@ -37,7 +37,6 @@ const PreOnboardOverview = () => {
     );
     setDatas(onboarddata);
     setFilterData(onboarddata);
-    setLoading(false);
   }, [userContextData]);
 
   const handleStatusChange = (row, onboard_status) => {
@@ -268,30 +267,28 @@ const PreOnboardOverview = () => {
         </div>
       </div>
 
-      {isloading ? (
-        <Loader />
-      ) : (
-        <div className="page_height">
-          <div className="card mb-4">
-            <div className="card-header sb">
-              Pre Onboard User
-              <input
-                type="text"
-                placeholder="Search here"
-                className="w-25 form-control "
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
-            <div className="card-body thn_table">
-              <DataTable
-                columns={columns}
-                data={filterdata}
-                pagination
-                paginationPerPage={100}
-              />
-              <div />
-              {/* <div className="data_tbl table-responsive">
+
+      <div className="page_height">
+        <div className="card mb-4">
+          <div className="card-header sb">
+            Pre Onboard User
+            <input
+              type="text"
+              placeholder="Search here"
+              className="w-25 form-control "
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+          </div>
+          <div className="card-body thn_table">
+            <DataTable
+              columns={columns}
+              data={filterdata}
+              pagination
+              paginationPerPage={100}
+            />
+            <div />
+            {/* <div className="data_tbl table-responsive">
               <DataTable
                 title="Pre Onboard User"
                 columns={columns}
@@ -312,10 +309,10 @@ const PreOnboardOverview = () => {
                 }
               />
             </div> */}
-            </div>
           </div>
         </div>
-      )}
+      </div>
+
     </>
   );
 };
