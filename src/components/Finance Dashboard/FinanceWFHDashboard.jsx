@@ -407,7 +407,8 @@ export default function FinanceWFHDashboard() {
       });
   }
   const generatePDF = async (row) => {
-    const module = await import("../AdminPanel/WFH/Templates/Component/InvoicePdfGenerator");
+    // const module = await import("../AdminPanel/WFH/Templates/Component/InvoicePdfGenerator");
+    const module = await import("../AdminPanel/WFH/SalaryGeneration/pdfGenerator");
     return module.generatePDF(row);
   };
 
