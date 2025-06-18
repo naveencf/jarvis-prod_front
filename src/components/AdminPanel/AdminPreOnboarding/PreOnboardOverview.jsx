@@ -26,17 +26,19 @@ const PreOnboardOverview = () => {
   const roleToken = decodedToken.role_id;
   const oldToken = sessionStorage.getItem("token");
 
-  async function getData() {
+  useEffect(() => {
+    if (!userContextData || !Array.isArray(userContextData)) {
+      setDatas([]);
+      setFilterData([]);
+      return;
+    }
     const onboarddata = userContextData.filter(
       (d) => d.onboard_status === 2 && d.user_status === "Active"
     );
     setDatas(onboarddata);
     setFilterData(onboarddata);
-  }
-
-  useEffect(() => {
-    getData();
-  }, []);
+    setLoading(false);
+  }, [userContextData]);
 
   const handleStatusChange = (row, onboard_status) => {
     const formData = new FormData();
