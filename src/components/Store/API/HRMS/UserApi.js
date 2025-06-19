@@ -7,8 +7,8 @@ const UsersApi = createApi({
   endpoints: (builder) => ({
     getAllUserData: builder.query({
       query: () => "get_all_users_new",
-      transformResponse: (response) => response?.data?.data?.paginatedUsers,
-      keepUnusedDataFor: 60 * 60 * 24,
+      transformResponse: (response) => response?.data?.paginatedUsers,
+      // keepUnusedDataFor: 60 * 60 * 24,
     }),
 
     addGroup: builder.mutation({
