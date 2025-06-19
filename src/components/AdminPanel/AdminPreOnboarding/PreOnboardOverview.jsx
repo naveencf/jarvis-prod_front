@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DataTable from "react-data-table-component";
 import FormContainer from "../FormContainer";
 import { Button } from "@mui/material";
@@ -9,67 +8,75 @@ import { useGlobalContext } from "../../../Context/Context";
 import Loader from "../../Finance/Loader/Loader";
 import { RiLoginBoxLine } from "react-icons/ri";
 import jwtDecode from "jwt-decode";
-import { useAPIGlobalContext } from "../APIContext/APIContext";
-
+import { useGetAllUserDataQuery } from "../../Store/API/HRMS/UserApi";
+import axios from "axios";
 const PreOnboardOverview = () => {
   const { toastAlert, toastError } = useGlobalContext();
-  const { userContextData } = useAPIGlobalContext();
-  console.log(userContextData, "dsfsssdfds");
+  const { data: UserData, isLoading, refetch } = useGetAllUserDataQuery();
   const [search, setSearch] = useState("");
-  const [datas, setDatas] = useState([]);
   const [filterdata, setFilterData] = useState([]);
-  const [isloading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   const storedToken = sessionStorage.getItem("token");
-  const decodedToken = jwtDecode(storedToken);
-  const userID = decodedToken.id;
-  const roleToken = decodedToken.role_id;
-  const oldToken = sessionStorage.getItem("token");
-
+  const decodedToken = storedToken ? jwtDecode(storedToken) : {};
+  const userID = decodedToken?.id;
+  const roleToken = decodedToken?.role_id;
+  // console.log(UserData, "UserData")
+  // Filter for onboarded active users on load
+  // useEffect(() => {
+  //   if (!UserData?.length) {
+  //     setFilterData([]);
+  //     return;
+  //   }
+  //   const onboarded = UserData.filter(
+  //     (d) => d.onboard_status === 2 && d.user_status === "Active"
+  //   );
+  //   setFilterData(onboarded);
+  // }, [UserData]);
+  // Apply search
   useEffect(() => {
-    if (!userContextData || !Array.isArray(userContextData)) {
-      setDatas([]);
-      setFilterData([]);
-      return;
-    }
-    const onboarddata = userContextData.filter(
+    if (!UserData?.length) return;
+    const onboarded = UserData.filter(
       (d) => d.onboard_status === 2 && d.user_status === "Active"
     );
-    setDatas(onboarddata);
-    setFilterData(onboarddata);
-  }, [userContextData]);
-
-  const handleStatusChange = (row, onboard_status) => {
-    const formData = new FormData();
-    formData.append("user_id", row);
-    formData.append("onboard_status", 1);
-    axios
-      .put(baseUrl + "update_user", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then(() => getData());
-    toastAlert("User Onboarded Successfully");
+    const result = onboarded.filter((d) =>
+      [d.user_name, d.department_name].some((val) =>
+        val?.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+    setFilterData(result);
+  }, [search, UserData]);
+  // Onboard user status change
+  const handleStatusChange = async (user_id) => {
+    try {
+      const formData = new FormData();
+      formData.append("user_id", user_id);
+      formData.append("onboard_status", 1);
+      await axios.put(baseUrl + "update_user", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      refetch();
+      toastAlert("User Onboarded Successfully");
+    } catch {
+      toastError("Error updating status");
+    }
   };
-
+  // Login as user and open appropriate page
   const handleLogin = (user_id, user_login_id, user_login_password) => {
     axios
       .post(baseUrl + "login_user", {
-        user_id: user_id,
-        user_login_id: user_login_id,
-        user_login_password: user_login_password,
+        user_id,
+        user_login_id,
+        user_login_password,
         role_id: roleToken,
       })
       .then((res) => {
         const token1 = res.data.token;
-        sessionStorage.getItem("token", token1);
-        if (oldToken && token1) {
-          sessionStorage.setItem("token", token1);
-          const decodedToken = jwtDecode(token1);
-          const deptId = decodedToken.dept_id;
-          const userRole = decodedToken.role_id;
-          const onboardStatus = decodedToken.onboard_status;
+        const oldToken = sessionStorage.getItem("token");
+        sessionStorage.setItem("token", token1);
+        if (token1) {
+          const decoded = jwtDecode(token1);
+          const deptId = decoded?.dept_id;
+          const onboardStatus = decoded?.onboard_status;
           if (deptId == 36 && onboardStatus == 1) {
             window.open("/admin/sales/sales-dashboard", "_blank");
           } else if (deptId === 20) {
@@ -77,42 +84,30 @@ const PreOnboardOverview = () => {
           } else {
             window.open("/", "_blank");
           }
-          sessionStorage.setItem("token", oldToken);
-        } else {
-          navigate("/admin/user/user-overview");
         }
+        // Restore old token after login for security
+        sessionStorage.setItem("token", oldToken);
+      })
+      .catch(() => {
+        toastError("Login failed");
       });
   };
-
-  useEffect(() => {
-    const result = datas.filter((d) => {
-      return (
-        d.user_name?.toLowerCase().includes(search.toLowerCase()) ||
-        d.department_name?.toLowerCase().includes(search.toLowerCase())
-      );
-    });
-    setFilterData(result);
-  }, [search]);
-
+  // Exit status update
   const handleExitStatusUpdate = async (userID) => {
     try {
       const formData = new FormData();
       formData.append("user_id", userID);
       formData.append("onboard_status", 1);
       formData.append("user_status", "Exit");
-
-      await axios.put(`${baseUrl}/update_user`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+      await axios.put(baseUrl + "update_user", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+      refetch();
       toastAlert("Status Updated Successfully.");
-      await getData();
-    } catch (error) {
-      console.error("Error updating user status:", error);
+    } catch {
+      toastError("Error updating exit status.");
     }
   };
-
   const columns = [
     {
       name: "S.No",
@@ -121,42 +116,17 @@ const PreOnboardOverview = () => {
       sortable: true,
       reorder: true,
     },
-
     {
       name: "User Name",
       selector: (row) => (
-        <>
-          <Link to={`/admin/user/user-single/${row.user_id}`}>
-            <span style={{ color: "blue" }}>{row.user_name}</span>
-          </Link>
-        </>
+        <Link to={`/admin/user/user-single/${row.user_id}`}>
+          <span style={{ color: "blue" }}>{row.user_name}</span>
+        </Link>
       ),
       width: "200px",
       sortable: true,
       reorder: true,
     },
-
-    // {
-    //   name: "Total Documents Filled Percentage",
-    //   selector: (row) => Math.ceil(row.documentPercentage) + "%",
-    //   width: "150px",
-    //   sortable: true,
-    //   reorder: true,
-    // },
-    // {
-    //   name: "Mandatory Documents Filled Percentage",
-    //   selector: (row) => row.document_percentage_mandatory,
-    //   width: "5%",
-    //   sortable: true,
-    //   reorder: true,
-    // },
-    // {
-    //   name: "Non Mandatory Documents Filled Percentage",
-    //   selector: (row) => row.document_percentage_non_mandatory,
-    //   width: "5%",
-    //   sortable: true,
-    //   reorder: true,
-    // },
     {
       name: "Role",
       selector: (row) => row.Role_name,
@@ -195,10 +165,9 @@ const PreOnboardOverview = () => {
     },
     {
       name: "Log",
-      selector: (row) => row.user_login_id,
       cell: (row) => (
         <Button
-          className=" cmnbtn btn_sm"
+          className="cmnbtn btn_sm"
           size="small"
           color="primary"
           variant="outlined"
@@ -214,47 +183,39 @@ const PreOnboardOverview = () => {
     },
     {
       name: "Status",
-      selector: (row) => row.user_status,
-      width: "4%",
       cell: (row) => (
-        <>
-          <Button
-            sx={{ marginRight: "10px" }}
-            className=" cmnbtn btn_sm"
-            size="small"
-            onClick={() => handleStatusChange(row.user_id, row.onboard_status)}
-            variant="outlined"
-            color="secondary"
-          >
-            Onboard
-          </Button>
-        </>
+        <Button
+          sx={{ marginRight: "10px" }}
+          className="cmnbtn btn_sm"
+          size="small"
+          onClick={() => handleStatusChange(row.user_id, row.onboard_status)}
+          variant="outlined"
+          color="secondary"
+        >
+          Onboard
+        </Button>
       ),
+      width: "8%",
       reorder: true,
     },
-
     {
       name: "Exit",
-      selector: (row) => row.user_status,
-      width: "4%",
       cell: (row) => (
-        <>
-          <Button
-            sx={{ marginRight: "10px" }}
-            className=" cmnbtn btn_sm"
-            size="small"
-            onClick={() => handleExitStatusUpdate(row.user_id)}
-            variant="outlined"
-            color="error"
-          >
-            Exit
-          </Button>
-        </>
+        <Button
+          sx={{ marginRight: "10px" }}
+          className="cmnbtn btn_sm"
+          size="small"
+          onClick={() => handleExitStatusUpdate(row.user_id)}
+          variant="outlined"
+          color="error"
+        >
+          Exit
+        </Button>
       ),
+      width: "8%",
       reorder: true,
     },
   ];
-
   return (
     <>
       <div className="action_heading">
@@ -266,8 +227,6 @@ const PreOnboardOverview = () => {
           />
         </div>
       </div>
-
-
       <div className="page_height">
         <div className="card mb-4">
           <div className="card-header sb">
@@ -278,42 +237,27 @@ const PreOnboardOverview = () => {
               className="w-25 form-control "
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              style={{ float: "right", width: 220 }}
             />
           </div>
           <div className="card-body thn_table">
-            <DataTable
-              columns={columns}
-              data={filterdata}
-              pagination
-              paginationPerPage={100}
-            />
-            <div />
-            {/* <div className="data_tbl table-responsive">
+            {isLoading ? (
+              <Loader />
+            ) : (
               <DataTable
-                title="Pre Onboard User"
                 columns={columns}
                 data={filterdata}
-                fixedHeader
-                // pagination
-                fixedHeaderScrollHeight="64vh"
-                highlightOnHover
-                subHeader
-                subHeaderComponent={
-                  <input
-                    type="text"
-                    placeholder="Search here"
-                    className="w-50 form-control "
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                }
+                pagination
+                paginationPerPage={100}
               />
-            </div> */}
+            )}
           </div>
         </div>
       </div>
-
     </>
   );
 };
 export default PreOnboardOverview;
+
+
+

@@ -62,7 +62,7 @@ import WhatsappAPI from "../WhatsappAPI/WhatsappAPI";
 import { useGlobalContext } from "../../Context/Context";
 import JobSection from "./OnboardingForms/JobSection";
 import EducationFields from "./EducationFields";
-// import WorkExperience from "./OnboardingForms/WorkExperience";
+import WorkExperience from "./OnboardingForms/WorkExperience";
 
 var settings = {
   arrows: false,
@@ -1330,9 +1330,8 @@ const PreOnboardingUserMaster = () => {
               <div className="sidebar_wrapper_in">
                 <div className="sidebar_items sidebar_items_desktop">
                   <div
-                    className={`sidebar_itembox ${
-                      activeTab == 1 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarFormBox"
                     onClick={() => setActiveTab(1)}
                   >
@@ -1353,9 +1352,8 @@ const PreOnboardingUserMaster = () => {
                     </div>
                   </div>
                   <div
-                    className={`sidebar_itembox sidebar_itemboxCol ${
-                      activeTab == 2 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarDocumentBox"
                     onClick={() => setActiveTab(2)}
                   >
@@ -1393,9 +1391,8 @@ const PreOnboardingUserMaster = () => {
                   {currentDate >= allUserData?.joining_date?.split("T")[0] &&
                     allUserData?.pan_validate !== "hide" && (
                       <div
-                        className={`sidebar_itembox ${
-                          activeTab === 5 ? "sidebar_item_active" : ""
-                        }`}
+                        className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
+                          }`}
                         id="sidebarLetterBox"
                         onClick={() => setActiveTab(5)}
                       >
@@ -1415,11 +1412,10 @@ const PreOnboardingUserMaster = () => {
                     // className={`sidebar_itembox  ${
                     //   activeTab == 3 ? "sidebar_item_active" : ""
                     // }`}
-                    className={`sidebar_itembox ${
-                      activeTab === 3 && documentPercentage < 90
+                    className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
                         ? "sidebar_item_active"
                         : ""
-                    }`}
+                      }`}
                     id="sidebarPolicyBox"
                     // style={{
                     //   pointerEvents: documentPercentage < 90 ? "none" : "auto",
@@ -1446,9 +1442,8 @@ const PreOnboardingUserMaster = () => {
                     </h2>
                   </div>
                   <div
-                    className={`sidebar_itembox ${
-                      activeTab == 4 ? "sidebar_item_active" : ""
-                    }`}
+                    className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
+                      }`}
                     id="sidebarFaqBox"
                     onClick={() => setActiveTab(4)}
                   >
@@ -1467,9 +1462,8 @@ const PreOnboardingUserMaster = () => {
                 <div className="sidebar_items_mobile">
                   <Slider {...settings}>
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab == 1 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab == 1 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarFormBox"
                       onClick={() => setActiveTab(1)}
                     >
@@ -1491,9 +1485,8 @@ const PreOnboardingUserMaster = () => {
                       </div>
                     </div>
                     <div
-                      className={`sidebar_itembox sidebar_itemboxCol ${
-                        activeTab == 2 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox sidebar_itemboxCol ${activeTab == 2 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarDocumentBox"
                       onClick={() => setActiveTab(2)}
                     >
@@ -1528,9 +1521,8 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* {allUserData.offer_letter_send && ( */}
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab === 5 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab === 5 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarLetterBox"
                       onClick={() => setActiveTab(5)}
                     >
@@ -1547,11 +1539,10 @@ const PreOnboardingUserMaster = () => {
                     </div>
                     {/* )} */}
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab === 3 && documentPercentage < 90
+                      className={`sidebar_itembox ${activeTab === 3 && documentPercentage < 90
                           ? "sidebar_item_active"
                           : ""
-                      }`}
+                        }`}
                       id="sidebarPolicyBox"
                       onClick={() => setActiveTab(3)}
                     >
@@ -1574,9 +1565,8 @@ const PreOnboardingUserMaster = () => {
                       </h2>
                     </div>
                     <div
-                      className={`sidebar_itembox ${
-                        activeTab == 4 ? "sidebar_item_active" : ""
-                      }`}
+                      className={`sidebar_itembox ${activeTab == 4 ? "sidebar_item_active" : ""
+                        }`}
                       id="sidebarFaqBox"
                       onClick={() => setActiveTab(4)}
                     >
