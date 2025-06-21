@@ -169,10 +169,10 @@ function FinanceRoutes() {
                 path="/purchase-transaction"
                 element={<PurchaseTransactions />}
             />
-            <Route
+            {/* <Route
                 path="/audited-outstanding-total"
                 element={<PendingAuditOutstandingTotal />}
-            />
+            /> */}
 
             <Route
                 path="/vendor-inventory"

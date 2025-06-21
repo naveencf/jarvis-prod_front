@@ -74,6 +74,10 @@ function PurchaseRoutes() {
                 path="/pending-outstanding-total"
                 element={<PendingAuditOutstandingTotal />}
             />
+            <Route
+                path="/audited-outstanding-total"
+                element={<PendingAuditOutstandingTotal />}
+            />
         </Routes>
     );
 }
