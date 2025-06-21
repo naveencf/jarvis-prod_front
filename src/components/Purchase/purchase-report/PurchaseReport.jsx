@@ -14,7 +14,7 @@ import { ctrlKey } from "jodit/esm/core/helpers";
 import CampaignReport from "./CampaignReport";
 
 const PurchaseReport = () => {
-  const [currentTab, setCurrentTab] = useState("Tab1");
+  const [currentTab, setCurrentTab] = useState("Tab4");
   const [tabData, setTabData] = useState({
     Tab1: null,
     Tab2: null,
@@ -41,9 +41,9 @@ const PurchaseReport = () => {
       ...(filters.selectedVendorId && { vendorId: filters.selectedVendorId }),
       ...(filters.startDate &&
         filters.endDate && {
-          startDate: filters.startDate,
-          endDate: filters.endDate,
-        }),
+        startDate: filters.startDate,
+        endDate: filters.endDate,
+      }),
       ...(filters.selectedDate && { phaseDate: filters.selectedDate }),
       ...(filters.selectedPlan && { campaignId: filters.selectedPlan }),
     };
@@ -52,7 +52,7 @@ const PurchaseReport = () => {
     setTabData((prev) => ({ ...prev, [currentTab]: response?.data }));
   };
 
-  
+
   const handleTabClick = (tab) => {
     setCurrentTab(tab);
     setFilters({
@@ -222,7 +222,7 @@ const PurchaseReport = () => {
     Tab2: columnsFlag2,
     Tab3: columnsFlag3,
   };
-   
+
 
   return (
     <div className="card">
@@ -252,132 +252,132 @@ const PurchaseReport = () => {
       {(currentTab === "Tab1" ||
         currentTab === "Tab2" ||
         currentTab === "Tab3") && (
-        <div className="card-body">
-          <div className="row">
-            <div className="col-12">
-              <Calendar
-                startDate={filters.startDate}
-                endDate={filters.endDate}
-                setStartDate={(date) =>
-                  setFilters((prev) => ({ ...prev, startDate: date }))
-                }
-                setEndDate={(date) =>
-                  setFilters((prev) => ({ ...prev, endDate: date }))
-                }
-              />
-            </div>
-
-            <div className="col-md-6 col-12">
-              <div className="form-group">
-                <label>Select Vendor</label>
-                <Autocomplete
-                  fullWidth
-                  options={vendorsList}
-                  getOptionLabel={(option) => option.vendor_name}
-                  value={
-                    vendorsList?.find(
-                      (item) => item._id === filters?.selectedVendorId
-                    ) || null
+          <div className="card-body">
+            <div className="row">
+              <div className="col-12">
+                <Calendar
+                  startDate={filters.startDate}
+                  endDate={filters.endDate}
+                  setStartDate={(date) =>
+                    setFilters((prev) => ({ ...prev, startDate: date }))
                   }
-                  onChange={(event, newValue) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      selectedVendorId: newValue?._id || null,
-                    }))
-                  }
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Select Vendor"
-                      variant="outlined"
-                    />
-                  )}
-                />
-              </div>
-            </div>
-
-            <div className="col-md-6 col-12">
-              <div className="form-group">
-                <label>Select Plans</label>
-                <Autocomplete
-                  fullWidth
-                  options={
-                    campaignList?.filter(
-                      (data) => data?.is_sale_booking_created
-                    ) || []
-                  }
-                  getOptionLabel={(option) => option.exe_campaign_name || ""}
-                  value={
-                    campaignList?.find(
-                      (option) => option._id === filters.selectedPlan
-                    ) || null
-                  }
-                  onChange={(event, newValue) =>
-                    setFilters((prev) => ({
-                      ...prev,
-                      selectedPlan: newValue ? newValue._id : null,
-                    }))
-                  }
-                  renderInput={(params) => (
-                    <TextField {...params} label="Plans" variant="outlined" />
-                  )}
-                  clearOnEscape
-                />
-              </div>
-            </div>
-
-            <div className="col-md-6 col-12 p0">
-              <div className="form-group">
-                <label>Select Date</label>
-                <DatePicker
-                  value={filters.selectedDate}
-                  onChange={(date) =>
-                    setFilters((prev) => ({ ...prev, selectedDate: date }))
+                  setEndDate={(date) =>
+                    setFilters((prev) => ({ ...prev, endDate: date }))
                   }
                 />
               </div>
+
+              <div className="col-md-6 col-12">
+                <div className="form-group">
+                  <label>Select Vendor</label>
+                  <Autocomplete
+                    fullWidth
+                    options={vendorsList}
+                    getOptionLabel={(option) => option.vendor_name}
+                    value={
+                      vendorsList?.find(
+                        (item) => item._id === filters?.selectedVendorId
+                      ) || null
+                    }
+                    onChange={(event, newValue) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        selectedVendorId: newValue?._id || null,
+                      }))
+                    }
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Select Vendor"
+                        variant="outlined"
+                      />
+                    )}
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6 col-12">
+                <div className="form-group">
+                  <label>Select Plans</label>
+                  <Autocomplete
+                    fullWidth
+                    options={
+                      campaignList?.filter(
+                        (data) => data?.is_sale_booking_created
+                      ) || []
+                    }
+                    getOptionLabel={(option) => option.exe_campaign_name || ""}
+                    value={
+                      campaignList?.find(
+                        (option) => option._id === filters.selectedPlan
+                      ) || null
+                    }
+                    onChange={(event, newValue) =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        selectedPlan: newValue ? newValue._id : null,
+                      }))
+                    }
+                    renderInput={(params) => (
+                      <TextField {...params} label="Plans" variant="outlined" />
+                    )}
+                    clearOnEscape
+                  />
+                </div>
+              </div>
+
+              <div className="col-md-6 col-12 p0">
+                <div className="form-group">
+                  <label>Select Date</label>
+                  <DatePicker
+                    value={filters.selectedDate}
+                    onChange={(date) =>
+                      setFilters((prev) => ({ ...prev, selectedDate: date }))
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="col-12 p0">
+                <button onClick={fetchData} className="btn cmnbtn btn-primary">
+                  Fetch Report
+                </button>
+              </div>
             </div>
 
-            <div className="col-12 p0">
-              <button onClick={fetchData} className="btn cmnbtn btn-primary">
-                Fetch Report
-              </button>
-            </div>
-          </div>
-
-          {/* Report Section */}
-          {isLoading ? (
-            <Spinner />
-          ) : tabData[currentTab] ? (
-            <div>
-              {currentTab === "Tab1" && (
-                <p>
-                  Total Amount:{" "}
-                  {tabData[currentTab]?.data?.data?.calculatedData?.totalAmount}
-                </p>
-              )}
-              <View
-                columns={columnsMap[currentTab]}
-                data={
-                  currentTab === "Tab1"
-                    ? tabData[currentTab]?.data?.data?.calculatedData
+            {/* Report Section */}
+            {isLoading ? (
+              <Spinner />
+            ) : tabData[currentTab] ? (
+              <div>
+                {currentTab === "Tab1" && (
+                  <p>
+                    Total Amount:{" "}
+                    {tabData[currentTab]?.data?.data?.calculatedData?.totalAmount}
+                  </p>
+                )}
+                <View
+                  columns={columnsMap[currentTab]}
+                  data={
+                    currentTab === "Tab1"
+                      ? tabData[currentTab]?.data?.data?.calculatedData
                         ?.priceDetails
-                    : tabData[currentTab]?.data?.data || []
-                }
-                title={`${currentTab} Report`}
-                pagination={[5, 10]}
-                tableName="Report Summary"
-              />
-            </div>
-          ) : (
-            <div className="mb16 mt16">
-              <h6 className="fw_400">
-                No data available. Click 'Fetch Report' to load.
-              </h6>
-            </div>
-          )}
-        </div>
-      )}
+                      : tabData[currentTab]?.data?.data || []
+                  }
+                  title={`${currentTab} Report`}
+                  pagination={[5, 10]}
+                  tableName="Report Summary"
+                />
+              </div>
+            ) : (
+              <div className="mb16 mt16">
+                <h6 className="fw_400">
+                  No data available. Click 'Fetch Report' to load.
+                </h6>
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Tab4 Component */}
       {currentTab === "Tab4" && <CampaignReport />}

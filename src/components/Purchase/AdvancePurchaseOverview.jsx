@@ -102,7 +102,7 @@ const AdvancePurchaseOverview = () => {
       renderRowCell: (row) =>
         row?.vendor_name ? (
           <span
-            style={{ cursor: "pointer" , color:"blue"}}
+            style={{ cursor: "pointer", color: "blue" }}
             onClick={() =>
               handleNameClick({
                 vendor_obj_id: row.vendor_obj_id,
@@ -126,7 +126,7 @@ const AdvancePurchaseOverview = () => {
           renderRowCell: (row) =>
             row?.page_name ? (
               <span
-                style={{ cursor: "pointer" ,color:"blue"}}
+                style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => handleNameClick({ page_name: row.page_name })}
                 disabled={!isDefaultView}
               >
@@ -153,32 +153,32 @@ const AdvancePurchaseOverview = () => {
           renderRowCell: (row) => {
             const advance = row?.advance_amount || 0;
             const remaining = row?.remaining_advance_amount || 0;
-        
+
             if (advance === 0) return "0%";
-        
+
             const percentage = ((advance - remaining) / advance) * 100;
             return `${Math.round(percentage)}%`;
           },
         }
-        
-           
+
+
       ]
       : []),
-      ...(activeTab !== "Tab1"
-        ? [
-          {
-            key: "remaining_advance_amount",
-            name: "Remaining Post",
-            width: 180,
-            renderRowCell: (row) =>
-              Math.floor(
-                ((row?.remaining_advance_amount || 0) -
-                  (row?.gst_amount || 0)) /
-                (row?.at_price || 1)
-              ) || 0,
-          },
-        ]
-        : []),
+    ...(activeTab !== "Tab1"
+      ? [
+        {
+          key: "remaining_advance_amount",
+          name: "Remaining Post",
+          width: 180,
+          renderRowCell: (row) =>
+            Math.floor(
+              ((row?.remaining_advance_amount || 0) -
+                (row?.gst_amount || 0)) /
+              (row?.at_price || 1)
+            ) || 0,
+        },
+      ]
+      : []),
     {
       key: 'remaining_advance_amount',
       name: 'Remaining Advance',
@@ -280,6 +280,7 @@ const AdvancePurchaseOverview = () => {
         }
         rowSelectable={true}
         pagination={[100, 200, 1000]}
+        showExport={true}
       />
     </div>
   );
