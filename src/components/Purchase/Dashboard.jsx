@@ -399,7 +399,7 @@ const Dashboard = () => {
                         <Browser />
                       </span>
                     </div>
-                    <Link to="/admin/audited-outstanding-total">
+                    <Link to="/admin/purchase/audited-outstanding-total">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Purchase Pending</h6>
                         <h6 className="mt4 fs_16">
