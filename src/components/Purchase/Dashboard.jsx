@@ -378,7 +378,7 @@ const Dashboard = () => {
                         <Wallet />
                       </span>
                     </div>
-                    <Link to="/admin/pending-outstanding-total">
+                    <Link to="/admin/purchase/pending-outstanding-total">
                       <div className="mt12 text-center">
                         <h6 className="colorMedium">Audit Pending</h6>
                         <h6 className="mt4 fs_16">

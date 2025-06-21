@@ -27,7 +27,7 @@ const VendorOutstandingOverview = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
-  const [vendorData, setVendorData] = useState([]);
+  const [vendorData, setVendorData] = useState(null);
   const [vendorDetail, setVendorDetail] = useState("");
   const [reqestPaymentDialog, setReqestPaymentDialog] = useState(false);
   const [rangeCounts, setRangeCounts] = useState([]);
@@ -40,7 +40,7 @@ const VendorOutstandingOverview = () => {
 
   useEffect(() => {
     if (filter === "outstandingGreaterThanZero") {
-      fetchVendors("abh", true);
+      fetchVendors("", true);
     } else {
       fetchVendors("abh");
     }
@@ -62,12 +62,12 @@ const VendorOutstandingOverview = () => {
   };
 
   const fetchVendors = useCallback(
-    debounce(async (search, includeOutstandingFilter = false,vendorContactType = "all") => {
+    debounce(async (search, includeOutstandingFilter = false, vendorContactType = "all") => {
       try {
         const queryParams = new URLSearchParams();
         if (isAdvanceOutstandingRoute) {
           queryParams.append("vendor_contact_type", vendorContactType);
-          if(search!==""){
+          if (search !== "") {
             queryParams.append("search", search);
           }
           queryParams.append("page", page);
@@ -86,7 +86,7 @@ const VendorOutstandingOverview = () => {
             return;
           }
         }
-      
+
         const res = await axios.get(
           `${baseUrl}v1/vendor_v2?${queryParams.toString()}`,
           {
@@ -188,11 +188,11 @@ const VendorOutstandingOverview = () => {
 
   const filteredData = selectedRange
     ? vendorData.filter(
-        (item) =>
-          item.vendor_outstandings &&
-          item.vendor_outstandings > selectedRange.min &&
-          item.vendor_outstandings <= selectedRange.max
-      )
+      (item) =>
+        item.vendor_outstandings &&
+        item.vendor_outstandings > selectedRange.min &&
+        item.vendor_outstandings <= selectedRange.max
+    )
     : vendorData;
 
   const columns = [
@@ -299,7 +299,7 @@ const VendorOutstandingOverview = () => {
           vendorDetail={vendorDetail}
           setVendorDetail={setVendorDetail}
           userName={userName}
-          isAdvanced ={isAdvanceOutstandingRoute}
+          isAdvanced={isAdvanceOutstandingRoute}
         />
       )}
       {isAdvanceOutstandingRoute && (
@@ -349,6 +349,7 @@ const VendorOutstandingOverview = () => {
           rowSelectable={true}
           pagination={[100, 200, 1000]}
           onPaginationChange={handlePaginationChange}
+          isLoading={vendorData ? false : true}
           showTotal={true}
           showExport={true}
           tableName="Vendor Overview"
@@ -375,7 +376,7 @@ const VendorOutstandingOverview = () => {
                   {formatToLakh(range.totalOutstanding)}
                 </Button>
               ))} */}
-            {!isAdvanceOutstandingRoute&&  <FormControl size="small" sx={{ minWidth: 250 }}>
+              {!isAdvanceOutstandingRoute && <FormControl size="small" sx={{ minWidth: 250 }}>
                 <InputLabel>Filter by Outstanding Range</InputLabel>
                 <Select
                   value={selectedRange?.label || ""}
@@ -404,16 +405,16 @@ const VendorOutstandingOverview = () => {
                   ))}
                 </Select>
               </FormControl>
-}
+              }
               {selectedRange && (
                 <Button
                   variant="text"
                   color="error"
                   onClick={() => {
                     setSelectedRange(null);
-                    fetchVendors("", filter === "outstandingGreaterThanZero"); 
+                    fetchVendors("", filter === "outstandingGreaterThanZero");
                   }}
-                  
+
                 >
                   Clear Filter
                 </Button>
