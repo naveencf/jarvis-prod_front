@@ -5,6 +5,7 @@ import formatString from "../../../utils/formatString";
 import { useGetPurchaseOverviewWithPaginationQuery } from "../../Store/API/Purchase/DirectPurchaseApi";
 import { TextField } from "@mui/material";
 import { debounce } from "../../../utils/helper";
+import { formatIndianNumber } from "../../../utils/formatIndianNumber";
 
 const CampaignReport = () => {
   const [startDate, setStartDate] = useState(null);
@@ -46,34 +47,67 @@ const CampaignReport = () => {
       renderRowCell: (row) => formatString(row.exe_campaign_name) || "-",
       width: 150,
     },
+    // {
+    //   key: "campaign_amount",
+    //   name: "Campaign Amount",
+    //   renderRowCell: (row) => row.campaign_amount || 0,
+    //   width: 120,
+    // },
     {
-      key: "campaign_amount",
-      name: "Campaign Amount",
-      renderRowCell: (row) => row.campaign_amount || 0,
+      key: "cf_purchase_amount",
+      name: "CF Purchase",
+      renderRowCell: (row) => row.cf_purchase_amount || 0,
       width: 120,
     },
     {
+      key: "other_purchase_amount",
+      name: "Actual Purchase",
+      renderRowCell: (row) => formatIndianNumber((row.campaign_post_amount - row.cf_purchase_amount) || 0),
+
+      width: 120,
+    },
+    {
+      key: "profit_amount",
+      name: "Profit",
+      renderRowCell: (row) => formatIndianNumber((row.base_amount - (row.campaign_post_amount - row.cf_purchase_amount)) || 0),
+      width: 120,
+
+
+    },
+    {
       key: "base_amount",
-      name: "Base Amount",
+      name: "Sale",
       renderRowCell: (row) => row.base_amount || 0,
       width: 120,
     },
     {
       key: "campaign_post_amount",
-      name: "Post Amount",
+      name: "Total Purchase",
       renderRowCell: (row) => row.campaign_post_amount || 0,
       width: 120,
     },
+    // {
+    //   key: "gst_amount",
+    //   name: "GST Amount",
+    //   renderRowCell: (row) => row.gst_amount || 0,
+    //   width: 100,
+    // },
     {
-      key: "gst_amount",
-      name: "GST Amount",
-      renderRowCell: (row) => row.gst_amount || 0,
+      key: "link_count",
+      name: "Total Link",
+      renderRowCell: (row) => row.link_count || 0,
       width: 100,
     },
     {
-      key: "link_count",
-      name: "Link Count",
-      renderRowCell: (row) => row.link_count || 0,
+      key: "cf_link_count",
+      name: "CF Link",
+      renderRowCell: (row) => row.cf_link_count || 0,
+      width: 100,
+    },
+    {
+      key: "other_link_count",
+      name: "Other Link",
+      renderRowCell: (row) => (row.link_count - row.cf_link_count) || 0,
       width: 100,
     },
     {
@@ -118,17 +152,17 @@ const CampaignReport = () => {
             totalRows: data?.data?.totalCount || 0,
             currentPage: page,
           }}
-          addHtml={
-            <>
-              <TextField
-                label="Search"
-                variant="outlined"
-                size="small"
-                value={inputValue}
-                onChange={handleSearchChange}
-              />
-            </>
-          }
+        // addHtml={
+        //   <>
+        //     <TextField
+        //       label="Search Campaign"
+        //       variant="outlined"
+        //       size="small"
+        //       value={inputValue}
+        //       onChange={handleSearchChange}
+        //     />
+        //   </>
+        // }
         />
       </div>
     </div>
