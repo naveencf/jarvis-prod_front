@@ -26,7 +26,7 @@ const PendingAuditOutstandingTotal = () => {
   const { toastAlert, toastError } = useGlobalContext();
 
   const shouldFetch = auditStatus || vendorId;
-
+  console.log(pageName, "pageName")
   const {
     data: pendingLinksData,
     error: pendingLinksError,

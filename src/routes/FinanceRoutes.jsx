@@ -187,10 +187,10 @@ function FinanceRoutes() {
                 element={<AddVendorPage />}
             />
 
-            <Route
+            {/* <Route
                 path="/pending-outstanding-total"
                 element={<PendingAuditOutstandingTotal />}
-            />
+            /> */}
             <Route
                 path="/finance-dashboard"
                 element={<FinanceDashboard />}

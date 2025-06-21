@@ -10,6 +10,7 @@ import PurchaseReport from '../components/Purchase/purchase-report/PurchaseRepor
 import Dashboard from '../components/Purchase/Dashboard'
 import PendingPaymentRequest from '../components/Finance/Purchase Management/PendingPaymentRequest/PendingPaymentRequest'
 import PurchaseTransactions from '../components/Purchase/PurchaseTransactions'
+import PendingAuditOutstandingTotal from '../components/Purchase/PurchaseVendor/PendingAuditOutstandingTotal'
 
 function PurchaseRoutes() {
     // useEffect(() => {
@@ -45,7 +46,7 @@ function PurchaseRoutes() {
                 element={<AdvancePurchaseOverview />}
             />
 
-         <Route
+            <Route
                 path="/vendor-advanced-purchase-overview"
                 element={<AdvancePurchaseOverview />}
             />
@@ -65,10 +66,14 @@ function PurchaseRoutes() {
                 path="/pending-payment-request"
                 element={<PendingPaymentRequest />}
             />
-                <Route
-                 path="/purchase-transaction"
-                 element={<PurchaseTransactions />}
-           />
+            <Route
+                path="/purchase-transaction"
+                element={<PurchaseTransactions />}
+            />
+            <Route
+                path="/pending-outstanding-total"
+                element={<PendingAuditOutstandingTotal />}
+            />
         </Routes>
     );
 }
